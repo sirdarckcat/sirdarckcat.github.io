@@ -6,16 +6,7 @@ sdcGithub.controller('IndexCtrl', function ($scope) {
 
 sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) {
   $scope.fetchUrl = $location.search().fetchUrl;
-  $scope.fetchInfo = $location.search().fetchInfo;
-  $scope.updateUrl = function() {
-    $location.search({'fetchUrl': $scope.fetchUrl, 'fetchInfo': $scope.fetchInfo});
-  };
-  $scope.$watch('fetchUrl', function() {
-    $scope.updateUrl();
-  });
-  $scope.$watch('fetchInfo', function() {
-    $scope.updateUrl();
-  });
+  $scope.fetchInfo = $filter('json')(JSON.parse($location.search().fetchInfo));
   $scope.styleFetchInfo = function() {
     var fetchInfo = $filter('json')(JSON.parse($scope.fetchInfo));
     if ($scope.fetchInfo != fetchInfo) {
