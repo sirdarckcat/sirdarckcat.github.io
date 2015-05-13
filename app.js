@@ -6,17 +6,19 @@ sdcGithub.controller('IndexCtrl', function ($scope) {
 
 sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location) {
   $scope.fetchUrl = $location.search().fetchUrl;
+  $scope.fetchInfo = $location.search().fetchInfo;
   $scope.$watch('fetchUrl', function() {
     $location.search({'fetchUrl': $scope.fetchUrl});
   });
-  $scope.fetchInfo = $location.search().fetchInfo;
   $scope.$watch('fetchInfo', function() {
     $location.search({'fetchInfo': $scope.fetchInfo});
+  });
+  $scope.styleFetchInfo = function() {
     var fetchInfo = $filter('json')($scope.fetchInfo);
     if ($scope.fetchInfo != fetchInfo) {
       $scope.fetchInfo = fetchInfo;
     }
-  });
+  };
 });
 
 sdcGithub.config(['$routeProvider', function($routeProvider) {
