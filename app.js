@@ -1,7 +1,12 @@
 var sdcGithub = angular.module('sdcGithub', ['ngRoute']);
 
-sdcGithub.controller('IndexCtrl', function ($scope) {});
-sdcGithub.controller('ServiceWorkerCtrl', function ($scope) {});
+sdcGithub.controller('IndexCtrl', function ($scope) {
+  debugger;
+});
+
+sdcGithub.controller('ServiceWorkerCtrl', function ($scope) {
+  debugger;
+});
 
 sdcGithub.config(['$routeProvider', function($routeProvider) {
   $routeProvider.
