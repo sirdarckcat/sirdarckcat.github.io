@@ -4,7 +4,7 @@ sdcGithub.controller('IndexCtrl', function ($scope) {
   debugger;
 });
 
-sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location) {
+sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) {
   $scope.fetchUrl = $location.search().fetchUrl;
   $scope.fetchInfo = $location.search().fetchInfo;
   $scope.updateUrl = function() {
