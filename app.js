@@ -9,7 +9,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.fetchInfo = $filter('json')(JSON.parse($location.search().fetchInfo));
   $scope.doFetch = function() {
     var fetchInfo = JSON.parse($scope.fetchInfo);
-    var responsePromise = fetch(fetchUrl, fetchInfo);
+    var responsePromise = fetch($scope.fetchUrl, fetchInfo);
   };
 });
 
