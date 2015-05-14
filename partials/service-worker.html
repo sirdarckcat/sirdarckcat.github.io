@@ -1,34 +1,45 @@
-<h2>Request Inspector</h2>
-<!-- list comes from https://fetch.spec.whatwg.org/#requestcontext -->
-<select ng-options='source for source in ["audio", "beacon", "cspreport", "download", "embed", "eventsource", "favicon",
-  "fetch", "font", "form", "frame", "hyperlink", "iframe", "image", "imageset", "import",
-  "internal", "location", "manifest", "metarefresh", "object", "ping", "plugin",
-  "prefetch", "preload", "prerender", "script", "serviceworker", "sharedworker",
-  "subresource", "style", "track", "video", "worker", "xmlhttprequest", "xslt"]' ng-model="selectedSource"></select>
-<div ng-switch="selectedSource">
-  <div ng-switch-when="form">
-    <input ng-model="formMethod" placeholder="method">
-    <input ng-model="formAction" placeholder="action">
-    <input ng-model="formType" placeholder="type">
-    <input ng-model="formElements" placeholder="elements">
-    <fieldset>
-      <legend>Form</legend>
-      <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" type="{{ type }}" target="_blank">
-        <textarea ng-repeat="element in formElements.split(',')" name="{{ element }}" placeholder="{{ element }}"></textarea>
-        <input type=submit>
-      </form>
-    </fieldset>
+<div>
+  <h2>Request Inspector</h2>
+  <!-- list comes from https://fetch.spec.whatwg.org/#requestcontext -->
+  <select ng-options='source for source in [
+    "", audio", "beacon", "cspreport", "download", "embed", "eventsource", "favicon",
+    "fetch", "font", "form", "frame", "hyperlink", "iframe", "image", "imageset", "import",
+    "internal", "location", "manifest", "metarefresh", "object", "ping", "plugin",
+    "prefetch", "preload", "prerender", "script", "serviceworker", "sharedworker",
+    "subresource", "style", "track", "video", "worker", "xmlhttprequest", "xslt"
+  ]' ng-model="selectedSource"></select>
+  <div ng-switch="selectedSource">
+    <div ng-switch-when="form">
+      &lt;form
+      method="<input ng-model="formMethod" placeholder="method">"
+      action="<input ng-model="formAction" placeholder="action">"
+      enctype="<input ng-model="formEncType" placeholder="enctype">"
+      &gt;
+      <textarea ng-model="formElements" placeholder="elements (comma separated)"></textarea>
+      <span ng-repeat="element in formElements.split(',')">
+        &lt;textarea name="{{ element }}"&gt;&lt;/textarea&gt;
+      </span>
+      &lt;/form&gt;
+      <fieldset>
+        <legend>Form</legend>
+        <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
+          <textarea ng-repeat="element in formElements.split(',')" name="{{ element }}" placeholder="{{ element }}"></textarea>
+          <input type=submit>
+        </form>
+      </fieldset>
+    </div>
+    <div ng-switch-when="xmlhttprequest">
+      open(method, url, async);
+      setRequestHeader(headerName, headerValue);
+      credentials=;
+      folowRedirects=;
+      send(string,formData);
+      onreadystatechange=
+        readyState, status, responseText.length, console.log(responseText)
+    </div>
+    <div ng-switch-default>Option not supported.</div>
   </div>
-  <div ng-switch-when="xhr">
-    open(method, url, async);
-    setRequestHeader(headerName, headerValue);
-    credentials=;
-    folowRedirects=;
-    send(string,formData);
-    onreadystatechange=
-      readyState, status, responseText.length, console.log(responseText)
-  </div>
-  <div ng-switch-default>Option not supported.</div>
+  <iframe name="hidden_iframe" height="1" width="1" frameborder="0"></iframe>
 </div>
 <h2>Response Generator</h2>
 <select ng-options="sink for sink in []" ng-model="selectedSink"></select>
