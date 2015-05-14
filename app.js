@@ -4,7 +4,7 @@ sdcGithub.controller('IndexCtrl', function ($scope) {
   debugger;
 });
 
-sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) {
+sdcGithub.controller('FetchCtrl', function ($scope, $location, $filter) {
   $scope.fetchUrl = $location.search().fetchUrl;
   $scope.fetchInfo = $location.search().fetchInfo;
   $scope.doFetch = function() {
@@ -20,9 +20,9 @@ sdcGithub.config(['$routeProvider', function($routeProvider) {
       templateUrl: 'partials/index.html',
       controller: 'IndexCtrl'
     }).
-    when('/service-worker', {
-      templateUrl: 'partials/service-worker.html',
-      controller: 'ServiceWorkerCtrl'
+    when('/fetch', {
+      templateUrl: 'partials/fetch.html',
+      controller: 'FetchCtrl'
     }).
     otherwise({
       redirectTo: '/'
