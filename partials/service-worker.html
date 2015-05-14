@@ -1,3 +1,1 @@
-<input ng-model="fetchUrl">
-<textarea ng-model="fetchInfo"></textarea>
-<button ng-click="doFetch()">Fetch</button>
+<select ng-options="sink.name for sink in responseSinks" ng-model="selectedSink"/>
