@@ -13,7 +13,7 @@
     <input ng-model="formElements" placeholder="elements">
     <fieldset>
       <legend>Form</legend>
-      <form method="{{ formMethod }}" action="/sw/request/{{ formAction }}" type="{{ type }}" target="_blank">
+      <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" type="{{ type }}" target="_blank">
         <textarea ng-repeat="element in formElements.split(',')" name="{{ element }}" placeholder="{{ element }}"></textarea>
         <input type=submit>
       </form>
