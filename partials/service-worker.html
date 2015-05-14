@@ -4,7 +4,7 @@
   "fetch", "font", "form", "frame", "hyperlink", "iframe", "image", "imageset", "import",
   "internal", "location", "manifest", "metarefresh", "object", "ping", "plugin",
   "prefetch", "preload", "prerender", "script", "serviceworker", "sharedworker",
-  "subresource", "style", "track", "video", "worker", "xmlhttprequest", "xslt"]' ng-model="selectedSource"/>
+  "subresource", "style", "track", "video", "worker", "xmlhttprequest", "xslt"]' ng-model="selectedSource"></select>
 <div ng-switch="selectedSource">
   <div ng-switch-when="form">
     <input ng-model="formMethod" placeholder="method">
@@ -31,4 +31,4 @@
   <div ng-switch-default>Option not supported.</div>
 </div>
 <h2>Response Generator</h2>
-<select ng-options="sink for sink in []" ng-model="selectedSink"/>
+<select ng-options="sink for sink in []" ng-model="selectedSink"></select>
