@@ -17,7 +17,7 @@
           enctype="<input ng-model="formEncType" list="formEncTypeList" placeholder="enctype">"
         &gt;
           &lt;input type="submit"&gt;<span ng-repeat="element in formElements.split(',')">
-          &lt;textarea name="{{ element.replace(/"/g, "&amp;#x22;") }}"&gt;&lt;/textarea&gt;</span>
+          &lt;textarea name="{{ element.split('"').join("&amp;#x22;") }}"&gt;&lt;/textarea&gt;</span>
         &lt;/form&gt;
       </pre>
       <textarea ng-model="formElements" placeholder="Form elements (comma separated)"></textarea>
