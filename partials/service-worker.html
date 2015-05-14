@@ -16,11 +16,14 @@
           action="/sw/request/<input ng-model="formAction" placeholder="action">"
           enctype="<input ng-model="formEncType" list="formEncTypeList" placeholder="enctype">"
         &gt;
-          &lt;input type="submit"&gt;<span ng-repeat="element in formElements.split(',')">
+          &lt;input type="submit"&gt;
+          <textarea
+            ng-model="formElements"
+            placeholder="Form elements (comma separated)"></textarea
+          ><span ng-repeat="element in formElements.split(',')">
           &lt;textarea name="{{ element.split('"').join("&amp;#x22;") }}"&gt;&lt;/textarea&gt;</span>
         &lt;/form&gt;
       </pre>
-      <textarea ng-model="formElements" placeholder="Form elements (comma separated)"></textarea>
       <datalist id="formMethodList">
         <option>GET</option>
         <option>POST</option>
@@ -31,7 +34,7 @@
         <option>text/plain</option>
       </datalist>
       <fieldset>
-        <legend>Form</legend>
+        <legend>Form {method:{{formMethod}}, enctype:{{formEncType}}}</legend>
         <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
           <textarea ng-repeat="element in formElements.split(',')" name="{{ element }}" placeholder="{{ element }}"></textarea>
           <input type=submit>
