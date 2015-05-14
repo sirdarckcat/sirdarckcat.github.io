@@ -10,16 +10,19 @@
   ]' ng-model="selectedSource"></select>
   <div ng-switch="selectedSource">
     <div ng-switch-when="form">
-      &lt;form
-      method="<input ng-model="formMethod" placeholder="method">"
-      action="<input ng-model="formAction" placeholder="action">"
-      enctype="<input ng-model="formEncType" placeholder="enctype">"
-      &gt;
-      <textarea ng-model="formElements" placeholder="elements (comma separated)"></textarea>
-      <span ng-repeat="element in formElements.split(',')">
-        &lt;textarea name="{{ element }}"&gt;&lt;/textarea&gt;
-      </span>
-      &lt;/form&gt;
+      <pre>
+        &lt;form
+        method="<input ng-model="formMethod" list="formMethodList" placeholder="method">"
+        action="/sw/request/<input ng-model="formAction" placeholder="action">"
+        enctype="<input ng-model="formEncType" list="formEncTypeList" placeholder="enctype">"
+        &gt;
+        &lt;input type="submit"&gt;<span ng-repeat="element in formElements.split(',')">
+          &lt;textarea name="{{ element }}"&gt;&lt;/textarea&gt;
+        </span>&lt;/form&gt;
+      </pre>
+      <textarea ng-model="formElements" placeholder="Form elements (comma separated)"></textarea>
+      <datalist id="formMethodList" ng-options="method for method in ['GET', 'POST']"></datalist>
+      <datalist id="formEncTypeList" ng-options="enctype for enctype in ['application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain']"></datalist>
       <fieldset>
         <legend>Form</legend>
         <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
