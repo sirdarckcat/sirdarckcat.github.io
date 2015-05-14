@@ -21,8 +21,15 @@
         </span>&lt;/form&gt;
       </pre>
       <textarea ng-model="formElements" placeholder="Form elements (comma separated)"></textarea>
-      <datalist id="formMethodList" ng-options="method for method in ['GET', 'POST']"></datalist>
-      <datalist id="formEncTypeList" ng-options="enctype for enctype in ['application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain']"></datalist>
+      <datalist id="formMethodList">
+        <option>GET</option>
+        <option>POST</option>
+      </datalist>
+      <datalist id="formEncTypeList">
+        <option>application/x-www-form-urlencoded</option>
+        <option>multipart/form-data</option>
+        <option>text/plain</option>
+      </datalist>
       <fieldset>
         <legend>Form</legend>
         <form method="{{ formMethod }}" action="{{ '/sw/request/' + formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
