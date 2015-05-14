@@ -10,8 +10,29 @@ sdcGithub.controller('FetchCtrl', function ($scope, $location, $filter) {
   $scope.doFetch = function() {
     $scope.fetchInfo = $filter('json')(JSON.parse($scope.fetchInfo));
     $location.search({fetchUrl: $scope.fetchUrl, fetchInfo: $scope.fetchInfo});
-    var responsePromise = fetch($scope.fetchUrl, JSON.parse($scope.fetchInfo));
+    fetch($scope.fetchUrl, JSON.parse($scope.fetchInfo)).then(function(response) {
+      $scope.$apply(function(scope) {
+        scope.fetchResponse = response;
+      });
+    }).catch(function(error) {
+      $scope.$apply(function(scope) {
+        scope.fetchError = error;
+      });
+    });
   };
+});
+
+sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) {
+  $scope.responseSources = [
+    '1',
+    '2',
+    '3'
+  ];
+  $scope.responseSinks = [
+    'a',
+    'b',
+    'c'
+  ];
 });
 
 sdcGithub.config(['$routeProvider', function($routeProvider) {
@@ -23,6 +44,10 @@ sdcGithub.config(['$routeProvider', function($routeProvider) {
     when('/fetch', {
       templateUrl: 'partials/fetch.html',
       controller: 'FetchCtrl'
+    }).
+    when('/service-worker', {
+      templateUrl: 'partials/service-worker.html',
+      controller: 'ServiceWorkerCtrl'
     }).
     otherwise({
       redirectTo: '/'
