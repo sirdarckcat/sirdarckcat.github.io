@@ -16,12 +16,12 @@
           action="/sw/request/<input ng-model="formAction" placeholder="action">"
           enctype="<input ng-model="formEncType" list="formEncTypeList" placeholder="enctype">"
         &gt;
-          &lt;input type="submit"&gt;
           <textarea
             ng-model="formElements"
             placeholder="Form elements (comma separated)"></textarea
           ><span ng-repeat="element in formElements.split(',')">
           &lt;textarea name="{{ element.split('"').join("&amp;#x22;") }}"&gt;&lt;/textarea&gt;</span>
+          &lt;input type="submit"&gt;
         &lt;/form&gt;
       </pre>
       <datalist id="formMethodList">
