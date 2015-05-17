@@ -1,4 +1,13 @@
 <div>
+  <h2>Service Worker</h2>
+  <pre>
+    navigator.serviceWorker.controller == {{ serviceWorkerController|json }};
+    navigator.serviceWorker.<button ng-click="registerServiceWorker()">register</button>(
+      '<input ng-model="serviceWorkerUrl"/>',
+      <textarea ng-model="serviceWorkerInit"></textarea>);
+  </pre>
+</div>
+<div>
   <h2>Response Generator</h2>
 </div>
 <div>
@@ -13,20 +22,22 @@
   ]' ng-model="selectedSource"></select>
   <div ng-switch="selectedSource">
     <div ng-switch-when="form">
+      <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
       <pre>
         &lt;form
           method="<input ng-model="formMethod" list="formMethodList" placeholder="method">"
-          action="<input ng-model="formAction" list="serviceWorkerUrlList" placeholder="action">"
+          action="<input ng-model="formAction" list="serviceWorkerUtilUrlList" placeholder="action">"
           enctype="<input ng-model="formEncType" list="formEncTypeList" placeholder="enctype">"
         &gt;
           <textarea
             ng-model="formElements"
             placeholder="Form elements (comma separated)"></textarea
           ><span ng-repeat="element in formElements.split(',')">
-          &lt;textarea name="{{ element }}"&gt;&lt;/textarea&gt;</span>
-          &lt;input type="submit"&gt;
+          &lt;textarea name="{{ element }}" value="<textarea name="{{ element }}" placeholder="{{ element }}"></textarea>"&gt;&lt;/textarea&gt;</span>
+          <input type="submit" value="&lt;input type=&#x22;submit&#x22;&gt;"/>
         &lt;/form&gt;
       </pre>
+      </form>
       <datalist id="formMethodList">
         <option>GET</option>
         <option>POST</option>
@@ -36,19 +47,12 @@
         <option>multipart/form-data</option>
         <option>text/plain</option>
       </datalist>
-      <fieldset>
-        <legend>Form {method:{{formMethod}}, enctype:{{formEncType}}}</legend>
-        <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
-          <textarea ng-repeat="element in formElements.split(',')" name="{{ element }}" placeholder="{{ element }}"></textarea>
-          <input type=submit>
-        </form>
-      </fieldset>
     </div>
     <div ng-switch-when="xmlhttprequest">
       <pre>
         xhr.open(
           "<input ng-model="xhrMethod" list="xhrMethodList" placeholder="method"/>",
-          "<input ng-model="xhrUrl" list="serviceWorkerUrlList" placeholder="url"/>",
+          "<input ng-model="xhrUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>",
           /*async*/<select ng-model="xhrAsync" ng-options="b for b in [true, false]"></select>,
           /* <input ng-model="xhrUseAuth" type="checkbox" /> use user/passwd auth */
           "<input ng-disabled="!xhrUseAuth" ng-model="xhrUsername" placeholder="username"/>",
@@ -60,7 +64,7 @@
         data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
         <button ng-click="fetchXhr()">xhr.send(data);</button>
       </pre>
-      <pre>
+      <pre><b>Log</b>
         <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message }}
         </span>
       </pre>
@@ -81,9 +85,9 @@
     <div ng-switch-default>Option not supported.</div>
   </div>
   <iframe name="hidden_iframe" height="1" width="1" frameborder="0"></iframe>
-  <datalist id="serviceWorkerUrlList">
+  <datalist id="serviceWorkerUtilUrlList">
     <option>/sw/request</option>
-    <option>/sw/fetch?url=&init=</option>
-    <option>/sw/response?response=&init=</option>
+    <option>/sw/fetch?url=&amp;init=</option>
+    <option>/sw/response?response=&amp;init=</option>
   </datalist>
 </div>
