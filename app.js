@@ -51,12 +51,13 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   };
   $scope.fetchXhr = function(xhrMethod, xhrUrl, xhrAsync, xhrUsername, xhrPassword, xhrHeader, xhrTimeout, xhrWithCredentials, xhrData) {
     var xhr = new XMLHttpRequest;
-    xhr.open(xhrMethod, xhrUrl, xhrAsync, xhrUsername, xhrPassword);
+    xhr.open(xhrMethod, xhrUrl, xhrAsync===true, xhrUsername?xhrUsername:undefined, xhrPassword?xhrPassword:undefined);
     for (header in xhrHeader) {
       xhr.setRequestHeader(header, xhrHeader[header]);
     }
-    xhr.timeout = xhrTimeout * 1;
-    xhr.withCredentials = xhrWithCredentials;
+    if (xhrTimeout)
+      xhr.timeout = xhrTimeout * 1;
+    xhr.withCredentials = xhrWithCredentials === true;
     logXhrProgress('XHR.upload.', xhr.upload);
     logXhrProgress('XHR.', xhr);
     xhr.send(xhrData);
