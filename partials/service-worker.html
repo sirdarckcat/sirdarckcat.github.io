@@ -20,8 +20,9 @@
   <div ng-switch="selectedSource">
     <div ng-switch-when="audio">
       <pre>
-        &lt;audio src="<input ng-model="audioSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;&lt;/audio&gt;
-        <audio ng-src="{{ audioSrc }}"></audio>
+        &lt;audio src="<input ng-model="audioSrc" list="serviceWorkerUtilUrlList" placeholder="src">" crossorigin="<select ng-model="audioCrossorigin" ng-options="crossorigin for crossorigin in ['', 'anonymous', 'use-credentials']"></select>"&gt;&lt;/audio&gt;
+        <audio ng-attr="{autoplay: audioPlay}" ng-src="{{ audioSrc }}" crossorigin="{{ audioCrossorigin }}"></audio>
+        <button ng-click="audioPlay=true">play</button>
       </pre>
     </div>
     <div ng-switch-when="form">
