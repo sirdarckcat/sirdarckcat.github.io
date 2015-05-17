@@ -32,6 +32,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
       JSON.parse($scope.serviceWorkerInit));
   };
   // XMLHttpRequest
+  $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
     function log(type, message) {
       $scope.$apply(function(scope) {
