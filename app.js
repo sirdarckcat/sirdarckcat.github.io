@@ -26,6 +26,11 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.serviceWorkerController = navigator.serviceWorker.controller;
   $scope.serviceWorkerUrl = '/sw.js';
   $scope.serviceWorkerInit = $filter('json')({'scope': '/'});
+  $scope.registerServiceWorker = function() {
+    navigator.serviceWorker.register(
+      $scope.serviceWorkerUrl,
+      JSON.parse($scope.serviceWorkerInit));
+  };
 });
 
 sdcGithub.config(['$routeProvider', function($routeProvider) {
