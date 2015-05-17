@@ -43,12 +43,35 @@
     </div>
     <div ng-switch-when="xmlhttprequest">
       <pre>
-        open(method, url, async);
-        setRequestHeader(headerName, headerValue);
-        credentials=;
-        folowRedirects=;
-        send(string, formData);
+        xhr.open(
+          "<input ng-model="xhrMethod" list="xhrMethodList" placeholder="method"/>",
+          "<input ng-model="xhrUrl" placeholder="url"/>",
+          /*async*/<select ng-model="xhrAsync" ng-options="b for b in [true, false]"></select>,
+          /* <input ng-model="xhrUseAuth" type="checkbox" /> use user/passwd auth */
+          "<input ng-disabled="!xhrUseAuth" ng-model="xhrUsername" placeholder="username"/>",
+          "<input ng-disabled="!xhrUseAuth" ng-model="xhrPassword" placeholder="password"/>");
+        <textarea ng-model="xhrHeaders" placeholder="Additional request headers (comma separated)"></textarea>
+        <span ng-repeat="header in xhrHeaders.split(',')">xhr.setRequestHeader({{ header }}, <textarea ng-model="xhrHeader[header]"></textarea>);</span>
+        xhr.withCredentials=<select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
+        data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
+        <button ng-click="fetchXhr()">xhr.send(data);</button>
       </pre>
+      <pre>
+        <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message }}</span>
+      </pre>
+      <datalist id="xhrMethodList">
+        <option>GET</option>
+        <option>HEAD</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>PATCH</option>
+        <option>DELETE</option>
+        <options>CONNECT</options>
+        <option>OPTIONS</option>
+        <option>TRACE</option>
+        <option>TRACK</option>
+        <option>DEBUG</option>
+      </datalist>
     </div>
     <div ng-switch-default>Option not supported.</div>
   </div>
