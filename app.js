@@ -64,7 +64,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   };
 });
 
-sdcGithub.config(['$routeProvider', function($routeProvider) {
+sdcGithub.config(['$routeProvider', function($routeProvider, $sceDelegateProvider) {
   $routeProvider.
     when('/', {
       templateUrl: 'partials/index.html',
@@ -81,4 +81,6 @@ sdcGithub.config(['$routeProvider', function($routeProvider) {
     otherwise({
       redirectTo: '/'
     });
+  // allow all URLs as resource URLs
+  $sceDelegateProvider.resourceUrlWhitelist(['**']);
 }]);
