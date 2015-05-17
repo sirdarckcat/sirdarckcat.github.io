@@ -3,7 +3,7 @@
   <pre>
     navigator.serviceWorker.controller == {{ serviceWorkerController | json }};
     swUrl = "<input ng-model="serviceWorkerUrl"/>";
-    swInfo = <textarea ng-model="serviceWorkerInit"></textarea>;
+    swInit = <textarea ng-model="serviceWorkerInit"></textarea>;
     <button ng-click="registerServiceWorker()">navigator.serviceWorker.register(swUrl, swInit);</button>
   </pre>
 </div>
