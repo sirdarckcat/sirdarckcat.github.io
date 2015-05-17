@@ -11,15 +11,21 @@
   <h2>Request Generator</h2>
   <!-- list comes from https://fetch.spec.whatwg.org/#requestcontext -->
   Request Context: <select ng-options='source for source in [
-    "", "audio", "beacon", "cspreport", "download", "embed", "eventsource", "favicon",
+    "audio", "beacon", "cspreport", "download", "embed", "eventsource", "favicon",
     "fetch", "font", "form", "frame", "hyperlink", "iframe", "image", "imageset", "import",
     "internal", "location", "manifest", "metarefresh", "object", "ping", "plugin",
     "prefetch", "preload", "prerender", "script", "serviceworker", "sharedworker",
     "subresource", "style", "track", "video", "worker", "xmlhttprequest", "xslt"
   ]' ng-model="selectedSource"></select>
   <div ng-switch="selectedSource">
+    <div ng-switch-when="audio">
+      <pre>
+        &lt;audio src="<input ng-model="audioSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;&lt;/audio&gt;
+        <audio ng-src="{{ audioSrc }}"></audio>
+      </pre>
+    </div>
     <div ng-switch-when="form">
-      <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="hidden_iframe">
+      <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="_blank">
       <pre>
         &lt;form
           method="<input ng-model="formMethod" list="formMethodList" placeholder="method">"
@@ -97,7 +103,6 @@
     </div>
     <div ng-switch-default>Option not supported.</div>
   </div>
-  <iframe name="hidden_iframe" height="1" width="1" frameborder="0"></iframe>
   <datalist id="serviceWorkerUtilUrlList">
     <option>/sw/request</option>
     <option>/sw/fetch?url=&amp;init={}</option>
