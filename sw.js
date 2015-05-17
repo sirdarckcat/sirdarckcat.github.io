@@ -4,7 +4,7 @@ var dbPromise = new Promise(function(resolve, reject) {
     e.target.result.createObjectStore("requests", {autoIncrement: true});
     resolve(e.target.result);
   };
-  dbRequest.onopen = function(e) {
+  dbRequest.onsuccess = function(e) {
     resolve(e.target.result);
   };
   dbRequest.onerror = reject;
