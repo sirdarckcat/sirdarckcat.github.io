@@ -25,6 +25,45 @@
         &lt;/audio&gt;
       </pre>
     </div>
+    <div ng-switch-when="beacon">
+      <pre>
+        url = '<input ng-model="beaconUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>';
+        data = '<textarea ngModel="beaconData" placeholder="data"></textarea>'
+        <button ng-click="beaconFetch(beaconUrl, beaconData)">navigator.sendBeacon(url, data);</button>
+      </pre>
+    </div>
+    <div ng-switch-when="cspreport">
+      <pre>
+        X-Content-Security-Policy: report-uri <input
+          ng-model="cspReportUrl" list="serviceWorkerUtilUrlList" placeholder="report-uri"
+        />; default-src 'none';
+        
+        &lt;img src=#&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="download">
+      <pre>
+        &lt;a href="<input ng-model="downloadUrl" list="serviceWorkerUtilUrlList" placeholder="href">"
+          download="<input ng-model="downloadFilename" placeholder="filename">"&gt;
+          <a href="{{ downloadUrl }}" download="{{ downloadFilename }}">go</a>
+        &lt;/a&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="embed">
+      <pre>
+        &lt;embed
+          src="<input ng-model="embedSrc" list="serviceWorkerUtilUrlList" placeholder="src">"
+          type="<input ng-model="embedType" placeholder="type">"&gt;
+          <embed ng-src="{{ audioSrc }}" type="{{ embedType }}"></embed>
+        &lt;/embed&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="eventsource">
+      <pre>
+        url = <input ng-model="eventSourceUrl" list="serviceWorkerUtilUrlList" placeholder="url">
+        <button ng-click="eventSourceFetch(eventSourceUrl)">new EventSource(url)</button>.onmessage = log;
+      </pre>
+    </div>
     <div ng-switch-when="form">
       <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="_blank">
       <pre>
