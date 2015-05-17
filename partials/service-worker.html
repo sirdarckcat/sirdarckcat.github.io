@@ -20,8 +20,9 @@
   <div ng-switch="selectedSource">
     <div ng-switch-when="audio">
       <pre>
-        &lt;audio controls src="<input ng-model="audioSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;&lt;/audio&gt;
+        &lt;audio controls src="<input ng-model="audioSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
         <audio controls ng-src="{{ audioSrc }}"></audio>
+        &lt;/audio&gt;
       </pre>
     </div>
     <div ng-switch-when="form">
@@ -53,6 +54,12 @@
         <option>multipart/form-data</option>
         <option>text/plain</option>
       </datalist>
+    </div>
+    <div ng-switch-when="image">
+      <pre>
+        &lt;img src="<input ng-model="imageSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
+        <img ng-src="{{ audioSrc }}">
+      </pre>
     </div>
     <div ng-switch-when="xmlhttprequest">
       <pre ng-init="xhrHeader = {}">
