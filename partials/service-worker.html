@@ -54,8 +54,7 @@
         &lt;embed
           src="<input ng-change="showEmbed=false" ng-model="embedSrc" list="serviceWorkerUtilUrlList" placeholder="src">"
           type="<input ng-change="showEmbed=false" ng-model="embedType" placeholder="type">"&gt;
-          <button ng-click="showEmbed=true">embed</button>
-          <div ng-show="showEmbed">
+          <button ng-click="showEmbed=true">embed</button><div ng-show="showEmbed">
             <embed ng-src="{{ audioSrc }}" type="{{ embedType }}"></embed>
           </div>
         &lt;/embed&gt;
@@ -63,8 +62,28 @@
     </div>
     <div ng-switch-when="eventsource">
       <pre>
-        url = <input ng-model="eventSourceUrl" list="serviceWorkerUtilUrlList" placeholder="url">
+        url = "<input ng-model="eventSourceUrl" list="serviceWorkerUtilUrlList" placeholder="url">";
         <button ng-click="eventSourceFetch(eventSourceUrl)">new EventSource(url)</button>.onmessage = log;
+      </pre>
+    </div>
+    <div ng-switch-when="favicon">
+      <pre>
+        &lt;link rel="favicon" href="<input ng-model="faviconUrl" list="serviceWorkerUtilUrlList" placeholder="url">"&gt;
+        <link rel="favicon" href="{{ faviconUrl }}">
+      </pre>
+    </div>
+    <div ng-switch-when="fetch">
+      <pre>
+        url = "<input ng-model="faviconUrl" list="serviceWorkerUtilUrlList" placeholder="url">";
+        init = {
+          "method": "<input ng-model="fetchMethod">",
+          "headers": [],
+          "body": <textarea ng-model="fetchBody"></textarea>,
+          "mode": ,
+          "credentials: ,
+          "cache": ,
+          "redirect": ,
+        };
       </pre>
     </div>
     <div ng-switch-when="form">
