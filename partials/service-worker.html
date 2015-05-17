@@ -62,7 +62,7 @@
           "{{ header }}",
           <textarea ng-model="xhrHeader[header]"></textarea>);
         </span>
-        xhr.timeout = <input type="number" ng-model="xhrTimeout" placeholder="timeout (in ms)"/>
+        xhr.timeout = <input type="number" ng-disabled="!xhrAsync" ng-model="xhrTimeout" placeholder="timeout (in ms)"/>
         xhr.withCredentials = <select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
         data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
         <button ng-click="
