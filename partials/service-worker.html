@@ -1,14 +1,11 @@
 <div>
   <h2>Service Worker</h2>
   <pre>
-    navigator.serviceWorker.controller == {{ serviceWorkerController|json }};
+    navigator.serviceWorker.controller == {{ serviceWorkerController | json }};
     navigator.serviceWorker.<button ng-click="registerServiceWorker()">register</button>(
       '<input ng-model="serviceWorkerUrl"/>',
       <textarea ng-model="serviceWorkerInit"></textarea>);
   </pre>
-</div>
-<div>
-  <h2>Response Generator</h2>
 </div>
 <div>
   <h2>Request Generator</h2>
