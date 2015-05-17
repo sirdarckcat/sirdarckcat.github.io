@@ -64,7 +64,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   };
 });
 
-sdcGithub.config(['$routeProvider', function($routeProvider, $sceDelegateProvider) {
+sdcGithub.config(['$routeProvider', '$sceDelegateProvider', function($routeProvider, $sceDelegateProvider) {
   $routeProvider.
     when('/', {
       templateUrl: 'partials/index.html',
