@@ -49,7 +49,7 @@
       </datalist>
     </div>
     <div ng-switch-when="xmlhttprequest">
-      <pre>
+      <pre ng-init="xhrHeader = {}">
         xhr.open(
           "<input ng-model="xhrMethod" list="xhrMethodList" placeholder="method"/>",
           "<input ng-model="xhrUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>",
@@ -65,7 +65,17 @@
         xhr.timeout = <input type="number" ng-model="xhrTimeout" placeholder="timeout (in ms)"/>
         xhr.withCredentials = <select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
         data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
-        <button ng-click="fetchXhr()">xhr.send(data);</button>
+        <button ng-click="
+          fetchXhr(
+            xhrMethod,
+            xhrUrl,
+            xhrAsync,
+            xhrUsername,
+            xhrPassword,
+            xhrHeader,
+            xhrTimeout,
+            xhrWithCredentials,
+            xhrData)">xhr.send(data);</button>
       </pre>
       <pre><b>Log</b>
         <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message|json }}
