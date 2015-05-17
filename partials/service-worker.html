@@ -78,7 +78,7 @@
             xhrData)">xhr.send(data);</button>
       </pre>
       <pre><b>Log</b>
-        <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message|json }}
+        <span ng-repeat="log in xhrLog">{{ log.type }}: <span class="xhr-log-message">{{ log.message|json }}</span>
         </span>
       </pre>
       <datalist id="xhrMethodList">
