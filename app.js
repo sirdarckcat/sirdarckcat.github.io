@@ -35,6 +35,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
     function log(type, message) {
+      message = JSON.parse($filter('json')(message));
       setTimeout(function() {
         $scope.$apply(function(scope) {
           var logEntry = {type: type, message: message};
