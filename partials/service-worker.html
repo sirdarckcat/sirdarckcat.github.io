@@ -30,7 +30,10 @@
             ng-model="formElements"
             placeholder="Form elements (comma separated)"></textarea
           ><span ng-repeat="element in formElements.split(',')">
-          &lt;textarea name="{{ element }}" value="<textarea name="{{ element }}" placeholder="{{ element }}"></textarea>"&gt;&lt;/textarea&gt;</span>
+          &lt;textarea
+            name="{{ element }}"&gt;
+          <textarea name="{{ element }}" placeholder="{{ element }}"></textarea>
+          &lt;/textarea&gt;</span>
           <input type="submit" value="&lt;input type=&#x22;submit&#x22;&gt;"/>
         &lt;/form&gt;
       </pre>
@@ -55,14 +58,17 @@
           "<input ng-disabled="!xhrUseAuth" ng-model="xhrUsername" placeholder="username"/>",
           "<input ng-disabled="!xhrUseAuth" ng-model="xhrPassword" placeholder="password"/>");
         <textarea ng-model="xhrHeaders" placeholder="Additional request headers (comma separated)"></textarea>
-        <span ng-repeat="header in xhrHeaders.split(',')">xhr.setRequestHeader("{{ header }}", <textarea ng-model="xhrHeader[header]"></textarea>);
+        <span ng-repeat="header in xhrHeaders.split(',')">xhr.setRequestHeader(
+          "{{ header }}",
+          <textarea ng-model="xhrHeader[header]"></textarea>);
         </span>
-        xhr.withCredentials=<select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
+        xhr.timeout = <input type="number" ng-model="xhrTimeout" placeholder="timeout (in ms)"/>
+        xhr.withCredentials = <select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
         data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
         <button ng-click="fetchXhr()">xhr.send(data);</button>
       </pre>
       <pre><b>Log</b>
-        <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message }}
+        <span ng-repeat="log in xhrLog">{{ log.type }}: {{ log.message|json }}
         </span>
       </pre>
       <datalist id="xhrMethodList">
