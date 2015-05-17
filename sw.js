@@ -22,6 +22,6 @@ self.addEventListener('fetch', function(event) {
       JSON.parse(unescape(url.search.match(/(?:&|^\?)init=([^&]+)/)[1]))));
   if (url.pathname.match(/\/sw\/request$/))
     dbPromise.then(function(db) {
-      db.transaction(["requests"], "readwrite").objectStore("requests").add(event.request);
+      db.transaction(["requests"], "readwrite").objectStore("requests").add(JSON.stringify(event.request));
     });
 });
