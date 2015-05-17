@@ -23,16 +23,9 @@ sdcGithub.controller('FetchCtrl', function ($scope, $location, $filter) {
 });
 
 sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) {
-  $scope.responseSources = [
-    '1',
-    '2',
-    '3'
-  ];
-  $scope.responseSinks = [
-    'a',
-    'b',
-    'c'
-  ];
+  $scope.serviceWorkerController = navigator.serviceWorker.controller;
+  $scope.serviceWorkerUrl = '/sw.js';
+  $scope.serviceWorkerInit = $filter('json')({'scope': '/'});
 });
 
 sdcGithub.config(['$routeProvider', function($routeProvider) {
