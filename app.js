@@ -35,11 +35,11 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
     function log(type, message) {
-      $scope.$apply(function(scope) {
+      //$scope.$apply(function(scope) {
         var logEntry = {type: type, message: message};
-        scope.xhrLog.push(logEntry);
+        $scope.xhrLog.push(logEntry);
         console.log(logEntry);
-      });
+      //});
     }
     var events = ['loadstart', 'progress', 'abort', 'error', 'load', 'timeout', 'loadend', 'readystatechange'];
     for (var i=0; i<events.length; i++) {
