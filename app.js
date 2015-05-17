@@ -55,7 +55,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
     for (header in xhrHeader) {
       xhr.setRequestHeader(header, xhrHeader[header]);
     }
-    if (xhrTimeout)
+    if (xhrAsync)
       xhr.timeout = xhrTimeout * 1;
     xhr.withCredentials = xhrWithCredentials === true;
     logXhrProgress('XHR.upload.', xhr.upload);
