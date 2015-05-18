@@ -150,6 +150,12 @@
         <option>manual</option>
       </datalist>
     </div>
+    <div ng-switch-when="font">
+      <pre>
+        font = new FontFace("fontName", "url('<input ng-model="fontUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>')");
+        <button ng-click="fontFetch()">font.load()</button>
+      </pre>
+    </div>
     <div ng-switch-when="form">
       <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="_blank">
       <pre>
