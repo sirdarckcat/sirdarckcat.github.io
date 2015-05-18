@@ -190,7 +190,7 @@
       <pre>
         &lt;frameset&gt;
           &lt;frame src="<input ng-model="frameUrl" pattern="[^']+" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
-          <a href="{{ '/sw/response?init={}&response=<frameset><frame src=\''+(frameUrl|escape)+'\'>' }}" target="_blank">go</a>
+          <a href="{{ '/sw/response?init=' + ({'headers':{'content-type':'text/html'},'status':200}|json:0|escape) + '&amp;response=<frameset><frame src=\''+(frameUrl|escape)+'\'>' }}" target="_blank">go</a>
         &lt;/frameset&gt;
       </pre>
     </div>
