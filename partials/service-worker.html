@@ -203,7 +203,7 @@
         xhr.withCredentials = <select ng-model="xhrWithCredentials" ng-options="b for b in [true, false]"></select>;
         data = <textarea ng-model="xhrData" placeholder="data"></textarea>;
         <button ng-click="
-          fetchXhr(
+          xhrFetch(
             xhrMethod,
             xhrUrl,
             xhrAsync,
@@ -213,10 +213,6 @@
             xhrTimeout,
             xhrWithCredentials,
             xhrData)">xhr.send(data);</button>
-      </pre>
-      <pre><b>Log</b>
-        <span ng-repeat="log in xhrLog">{{ log.message.timeStamp }}: {{ log.type }}
-        </span>
       </pre>
       <datalist id="xhrMethodList">
         <option>GET</option>
