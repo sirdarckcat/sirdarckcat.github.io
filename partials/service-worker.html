@@ -28,10 +28,16 @@
     <div ng-switch-when="beacon">
       <pre>
         url = '<input ng-model="beaconUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>';
-        data = '<textarea ngModel="beaconData" placeholder="data"></textarea>'
-        <button ng-click="beaconFetch(beaconUrl, beaconData)">navigator.sendBeacon(url, data);</button>
+        data = new Blob(
+          ['<textarea ngModel="beaconData" placeholder="data"></textarea>'],
+          {'type': <input ngModel="beaconType" list="beaconTypeList" placeholder="type"/>});
+        <button ng-click="beaconFetch(beaconUrl, beaconData, beaconType)">navigator.sendBeacon(url, data);</button>
       </pre>
     </div>
+    <datalist id="beaconTypeList">
+      <option>text/plain</option>
+      <option>text/xml</option>
+    </datalist>
     <div ng-switch-when="cspreport">
       <pre>
         Content-Security-Policy: report-uri <input
