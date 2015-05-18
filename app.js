@@ -35,6 +35,10 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
       $scope.serviceWorkerUrl,
       JSON.parse($scope.serviceWorkerInit));
   };
+  // beacon
+  $scope.beaconFetch = function (beaconUrl, beaconData) {
+    navigator.sendBeacon(beaconUrl, beaconData);
+  };
   // XMLHttpRequest
   $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
