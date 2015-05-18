@@ -105,13 +105,26 @@
               "{{ header }}": <textarea ng-model="fetchHeader[header]"></textarea>,
             </span>],
           "body": <textarea ng-model="fetchBody"></textarea>,
-          "mode": <input ng-model="fetchMode" list="fetchModeList"/>,
-          "credentials: <input ng-model="fetchCredentials" list="fetchCredentialsList"/>,
-          "cache": <input ng-model="fetchCache" list="fetchCacheList"/>,
-          "redirect": <input ng-model="fetchRedirect" list="fetchRedirectList"/>,
+          "mode": "<input ng-model="fetchMode" list="fetchModeList" placeholder="mode"/>",
+          "credentials: "<input ng-model="fetchCredentials" list="fetchCredentialsList" placeholder="credentials"/>",
+          "cache": "<input ng-model="fetchCache" list="fetchCacheList" placeholder="cache"/>",
+          "redirect": "<input ng-model="fetchRedirect" list="fetchRedirectList" placeholder="redirect"/>",
         };
         <button ng-click="fetchFetch(fetchUrl, fetchMethod, fetchHeader, fetchBody, fetchMode, fetchCredentials, fetchCache, fetchRedirect)">fetch(url, init)</button>.then(log)
       </pre>
+      <datalist id="fetchMethodList">
+        <option>GET</option>
+        <option>HEAD</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>PATCH</option>
+        <option>DELETE</option>
+        <options>CONNECT</options>
+        <option>OPTIONS</option>
+        <option>TRACE</option>
+        <option>TRACK</option>
+        <option>DEBUG</option>
+      </datalist>
       <datalist id="fetchModeList">
         <option>same-origin</option>
         <option>cors</option>
