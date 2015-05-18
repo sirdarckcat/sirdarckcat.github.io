@@ -1,5 +1,11 @@
 var sdcGithub = angular.module('sdcGithub', ['ngRoute']);
 
+sdcGithub.filter('escape', function() {
+  return function(input) {
+    return escape(input);
+  };
+});
+
 sdcGithub.controller('IndexCtrl', function ($scope) {
   debugger;
 });
