@@ -84,7 +84,9 @@
     <div ng-switch-when="eventsource">
       <pre>
         url = "<input ng-model="eventSourceUrl" list="serviceWorkerUtilUrlList" placeholder="url">";
-        <button ng-click="eventSourceFetch(eventSourceUrl)">new EventSource(url)</button>.onmessage = log;
+        init = {withCredentials: <select
+          ng-model="eventSourceWithCredentials" ng-options="bool for bool in [true, false]"></select>};
+        <button ng-click="eventSourceFetch(eventSourceUrl, eventSourceWithCredentials)">new EventSource(url, init)</button>.onmessage = log;
       </pre>
     </div>
     <div ng-switch-when="favicon">
