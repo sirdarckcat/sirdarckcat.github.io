@@ -49,6 +49,10 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
     };
     fetch(url, info).then(console.log.bind(console, 'Fetch'));
   };
+  // font
+  $scope.fontFetch = function(fontUrl) {
+    new FontFace("fontName", "url(" + JSON.stringify(fontUrl) + ")").load().then(console.log.bind(console, 'Font'));
+  };
   // XMLHttpRequest
   function logXhrProgress(prefix, target) {
     var events = ['loadstart', 'progress', 'abort', 'error', 'load', 'timeout', 'loadend', 'readystatechange'];
