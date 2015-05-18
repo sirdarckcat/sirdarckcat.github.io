@@ -101,7 +101,7 @@
         init = {
           "method": "<input ng-model="fetchMethod" list="fetchMethodList" placeholder="method">",
           "headers": [<textarea ng-model="fetchHeaders" placeholder="Additional request headers (comma separated)"></textarea>
-            <span ng-repeat="header in fetchHeaders.split(',')">
+            <span ng-repeat="header in fetchHeaders.split(',')" ng-show="fetchHeaders.length">
               "{{ header }}": <input ng-model="fetchHeader[header]" placeholder="{{ header }}" />,
             </span>],
           "body": <textarea ng-model="fetchBody" placeholder="body"></textarea>,
@@ -161,7 +161,7 @@
           <textarea
             ng-model="formElements"
             placeholder="Form elements (comma separated)"></textarea
-          ><span ng-repeat="element in formElements.split(',')">
+          ><span ng-repeat="element in formElements.split(',')" ng-show="formElements.length">
           &lt;textarea
             name="{{ element }}"&gt;
           <textarea name="{{ element }}" placeholder="{{ element }}"></textarea>
@@ -196,7 +196,7 @@
           "<input ng-disabled="!xhrUseAuth" ng-model="xhrUsername" placeholder="username"/>",
           "<input ng-disabled="!xhrUseAuth" ng-model="xhrPassword" placeholder="password"/>");
         <textarea ng-model="xhrHeaders" placeholder="Additional request headers (comma separated)"></textarea>
-        <span ng-repeat="header in xhrHeaders.split(',')">xhr.setRequestHeader(
+        <span ng-repeat="header in xhrHeaders.split(',')" ng-show="xhrHeaders.length">xhr.setRequestHeader(
           "{{ header }}", "<input ng-model="xhrHeader[header]" placeholder="{{ header }}"/>");
         </span>
         xhr.timeout = <input type="number" ng-disabled="!xhrAsync" ng-model="xhrTimeout" placeholder="timeout (in ms)"/>
