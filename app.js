@@ -47,24 +47,13 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
       cache: fetchCache,
       redirect: fetchRedirect
     };
-    fetch(url, info).then(console.log.bind('Fetch'));
+    fetch(url, info).then(console.log.bind(console, 'Fetch'));
   };
   // XMLHttpRequest
-  $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
-    function log(type, message) {
-      message = JSON.parse($filter('json')(message));
-      setTimeout(function() {
-        $scope.$apply(function(scope) {
-          var logEntry = {type: type, message: message};
-          scope.xhrLog.push(logEntry);
-          console.log(logEntry);
-        });
-      }, 1);
-    }
     var events = ['loadstart', 'progress', 'abort', 'error', 'load', 'timeout', 'loadend', 'readystatechange'];
     for (var i=0; i<events.length; i++) {
-      target.addEventListener(events[i], log.bind(null, prefix + events[i]));
+      target.addEventListener(events[i], console.log.bind(console, prefix + events[i]));
     }
   };
   $scope.xhrFetch = function(xhrMethod, xhrUrl, xhrAsync, xhrUsername, xhrPassword, xhrHeader, xhrTimeout, xhrWithCredentials, xhrData) {
