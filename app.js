@@ -46,6 +46,13 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
     eventSource.onmessage = console.log.bind(console, 'EventSource.onmessage');
     eventSource.onopen = console.log.bind(console, 'EventSource.onopen');
   };
+  // favicon
+  $scope.faviconFetch = function(faviconUrl) {
+    var link = document.createElement('link');
+    link.setAttribute('rel', 'icon');
+    link.setAttribute('href', faviconUrl);
+    document.documentElement.appendChild(link);
+  };
   // XMLHttpRequest
   $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
