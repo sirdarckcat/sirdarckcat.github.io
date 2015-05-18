@@ -29,8 +29,8 @@
       <pre>
         url = '<input ng-model="beaconUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>';
         data = new Blob(
-          ['<textarea ngModel="beaconData" placeholder="data"></textarea>'],
-          {'type': <input ngModel="beaconType" list="beaconTypeList" placeholder="type"/>});
+          ['<textarea ng-model="beaconData" placeholder="data"></textarea>'],
+          {'type': <input ng-model="beaconType" list="beaconTypeList" placeholder="type"/>});
         <button ng-click="beaconFetch(beaconUrl, beaconData, beaconType)">navigator.sendBeacon(url, data);</button>
       </pre>
     </div>
