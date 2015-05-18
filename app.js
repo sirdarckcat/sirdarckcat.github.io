@@ -51,7 +51,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
     var link = document.createElement('link');
     link.setAttribute('rel', 'icon');
     link.setAttribute('href', faviconUrl);
-    document.documentElement.appendChild(link);
+    document.getElementsByTagName('head')[0].appendChild(link);
   };
   // XMLHttpRequest
   $scope.xhrLog = [];
