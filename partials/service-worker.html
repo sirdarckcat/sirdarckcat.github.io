@@ -102,9 +102,9 @@
           "method": "<input ng-model="fetchMethod" list="fetchMethodList" placeholder="method">",
           "headers": [<textarea ng-model="fetchHeaders" placeholder="Additional request headers (comma separated)"></textarea>
             <span ng-repeat="header in fetchHeaders.split(',')">
-              "{{ header }}": <textarea ng-model="fetchHeader[header]"></textarea>,
+              "{{ header }}": <textarea ng-model="fetchHeader[header]" placeholder="{{ header }}"></textarea>,
             </span>],
-          "body": <textarea ng-model="fetchBody"></textarea>,
+          "body": <textarea ng-model="fetchBody" placeholder="body"></textarea>,
           "mode": "<input ng-model="fetchMode" list="fetchModeList" placeholder="mode"/>",
           "credentials: "<input ng-model="fetchCredentials" list="fetchCredentialsList" placeholder="credentials"/>",
           "cache": "<input ng-model="fetchCache" list="fetchCacheList" placeholder="cache"/>",
