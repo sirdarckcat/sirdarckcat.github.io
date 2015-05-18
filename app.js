@@ -49,7 +49,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   // favicon
   $scope.faviconFetch = function(faviconUrl) {
     var link = document.createElement('link');
-    link.setAttribute('rel', 'icon');
+    link.setAttribute('rel', 'shortcut icon');
     link.setAttribute('href', faviconUrl);
     document.getElementsByTagName('head')[0].appendChild(link);
   };
