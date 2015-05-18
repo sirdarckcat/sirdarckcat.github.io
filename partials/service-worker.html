@@ -34,11 +34,21 @@
     </div>
     <div ng-switch-when="cspreport">
       <pre>
-        X-Content-Security-Policy: report-uri <input
+        Content-Security-Policy: report-uri <input
           ng-model="cspReportUrl" list="serviceWorkerUtilUrlList" placeholder="report-uri"
         />; default-src 'none';
         
-        &lt;img src=#&gt;
+        <textarea ng-model="cspContent">&lt;img src=#&gt;</textarea>
+        <a ng-href="{{
+          '/sw/response?response=' +
+          (cspContent|escape) +
+          '&init=' +
+          (
+            {'headers':
+              {'content-type': 'text/html',
+               'content-security-policy': cspPolicy
+              }
+            }|json:0|escape)}}" target="_blank">open</a>
       </pre>
     </div>
     <div ng-switch-when="download">
