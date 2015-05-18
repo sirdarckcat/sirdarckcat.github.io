@@ -38,7 +38,7 @@
           ng-model="cspReportUrl" list="serviceWorkerUtilUrlList" placeholder="report-uri"
         />; default-src 'none';
         
-        <textarea ng-model="cspContent">&lt;img src=#&gt;</textarea>
+        <textarea ng-model="cspContent" ng-init="cspContent='&lt;img src=#&gt;';"></textarea>
         <a ng-href="{{
           '/sw/response?response=' +
           (cspContent|escape) +
