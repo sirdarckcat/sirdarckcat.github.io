@@ -96,18 +96,46 @@
       </pre>
     </div>
     <div ng-switch-when="fetch">
-      <pre>
-        url = "<input ng-model="faviconUrl" list="serviceWorkerUtilUrlList" placeholder="url">";
+      <pre ng-init="fetchHeader = {}">
+        url = "<input ng-model="fetchUrl" list="serviceWorkerUtilUrlList" placeholder="url">";
         init = {
-          "method": "<input ng-model="fetchMethod">",
-          "headers": [],
+          "method": "<input ng-model="fetchMethod" list="fetchMethodList" placeholder="method">",
+          "headers": [<textarea ng-model="fetchHeaders" placeholder="Additional request headers (comma separated)"></textarea>
+            <span ng-repeat="header in fetchHeaders.split(',')">
+              "{{ header }}": <textarea ng-model="fetchHeader[header]"></textarea>,
+            </span>],
           "body": <textarea ng-model="fetchBody"></textarea>,
-          "mode": ,
-          "credentials: ,
-          "cache": ,
-          "redirect": ,
+          "mode": <input ng-model="fetchMode" list="fetchModeList"/>,
+          "credentials: <input ng-model="fetchCredentials" list="fetchCredentialsList"/>,
+          "cache": <input ng-model="fetchCache" list="fetchCacheList"/>,
+          "redirect": <input ng-model="fetchRedirect" list="fetchRedirectList"/>,
         };
+        <button ng-click="fetchFetch(fetchUrl, fetchMethod, fetchHeader, fetchBody, fetchMode, fetchCredentials, fetchCache, fetchRedirect)">fetch(url, init)</button>.then(log)
       </pre>
+      <datalist id="fetchModeList">
+        <option>same-origin</option>
+        <option>cors</option>
+        <option>cors-with-forced-preflight</option>
+        <option>no-cors</option>
+      </datalist>
+      <datalist id="fetchCredentialsList">
+        <option>omit</option>
+        <option>same-origin</option>
+        <option>include</option>
+      </datalist>
+      <datalist id="fetchCacheList">
+        <option>default</option>
+        <option>no-store</option>
+        <option>reload</option>
+        <option>no-cache</option>
+        <option>force-cache</option>
+        <option>only-if-cached</option>
+      </datalist>
+      <datalist id="fetchRedirectList">
+        <option>follow</option>
+        <option>error</option>
+        <option>manual</option>
+      </datalist>
     </div>
     <div ng-switch-when="form">
       <form method="{{ formMethod }}" action="{{ formAction }}" enctype="{{ formEncType }}" target="_blank">
