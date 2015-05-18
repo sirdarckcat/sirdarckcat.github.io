@@ -92,7 +92,7 @@
     <div ng-switch-when="favicon">
       <pre>
         &lt;link rel="icon" href="<input ng-model="faviconUrl" list="serviceWorkerUtilUrlList" placeholder="url">"&gt;
-        <link rel="icon" href="{{ faviconUrl }}">
+        <button ng-click="faviconFetch(faviconUrl)">fetch</button>
       </pre>
     </div>
     <div ng-switch-when="fetch">
