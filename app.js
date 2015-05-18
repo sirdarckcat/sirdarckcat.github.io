@@ -35,6 +35,20 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
     link.setAttribute('href', faviconUrl);
     document.getElementsByTagName('head')[0].appendChild(link);
   };
+  // fetch
+  $scope.fetchFetch = function(fetchUrl, fetchMethod, fetchHeader, fetchBody, fetchMode, fetchCredentials, fetchCache, fetchRedirect) {
+    var url = fetchUrl;
+    var info = {
+      method: fetchMethod,
+      headers: fetchHeader,
+      body: fetchBody,
+      mode: fetchMode,
+      credentials: fetchCredentials,
+      cache: fetchCache,
+      redirect: fetchRedirect
+    };
+    fetch(url, info).then(console.log.bind('Fetch'));
+  };
   // XMLHttpRequest
   $scope.xhrLog = [];
   function logXhrProgress(prefix, target) {
@@ -53,7 +67,7 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
       target.addEventListener(events[i], log.bind(null, prefix + events[i]));
     }
   };
-  $scope.fetchXhr = function(xhrMethod, xhrUrl, xhrAsync, xhrUsername, xhrPassword, xhrHeader, xhrTimeout, xhrWithCredentials, xhrData) {
+  $scope.xhrFetch = function(xhrMethod, xhrUrl, xhrAsync, xhrUsername, xhrPassword, xhrHeader, xhrTimeout, xhrWithCredentials, xhrData) {
     var xhr = new XMLHttpRequest;
     xhr.open(xhrMethod, xhrUrl, xhrAsync===true, xhrUsername?xhrUsername:undefined, xhrPassword?xhrPassword:undefined);
     for (header in xhrHeader) {
