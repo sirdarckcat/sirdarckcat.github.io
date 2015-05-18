@@ -76,7 +76,7 @@
           src="<input ng-change="showEmbed=false" ng-model="embedSrc" list="serviceWorkerUtilUrlList" placeholder="src">"
           type="<input ng-change="showEmbed=false" ng-model="embedType" placeholder="type">"&gt;
           <button ng-click="showEmbed=true">embed</button><div ng-show="showEmbed">
-            <embed ng-src="{{ audioSrc }}" type="{{ embedType }}"></embed>
+            <embed ng-src="{{ embedSrc }}" type="{{ embedType }}"></embed>
           </div>
         &lt;/embed&gt;
       </pre>
