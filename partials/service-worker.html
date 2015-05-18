@@ -186,6 +186,14 @@
         <option>text/plain</option>
       </datalist>
     </div>
+    <div ng-switch-when="frame">
+      <pre>
+        &lt;frameset&gt;
+          &lt;frame src="<input ng-model="frameUrl" pattern="[^']+" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
+          <a href="{{ '/sw/response?init={}&response=<frameset><frame src=\''+(frameUrl|escape)+'\'>' }}" target="_blank">go</a>
+        &lt;/frameset&gt;
+      </pre>
+    </div>
     <div ng-switch-when="image">
       <pre>
         &lt;img src="<input ng-model="imageSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
