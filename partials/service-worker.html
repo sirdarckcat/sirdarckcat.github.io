@@ -42,11 +42,16 @@
         <a ng-href="{{
           '/sw/response?response=' +
           (cspContent|escape) +
-          '&init=' +
+          '&amp;init=' +
           (
-            {'headers':
-              {'content-type': 'text/html',
-               'content-security-policy': cspPolicy
+            {
+              'headers':
+              {
+                'content-type': 'text/html',
+                'content-security-policy':
+                  'report-uri ' +
+                  (cspReportUrl|escape) +
+                  '; default-src \'none\''
               }
             }|json:0|escape)}}" target="_blank">open</a>
       </pre>
