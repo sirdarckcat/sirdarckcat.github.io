@@ -224,10 +224,8 @@
     </div>
     <div ng-switch-when="import">
       <pre>
-        @import url('<input ng-change="showImportStyle=false" ng-model="importUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>');
-        <button ng-click="showImportStyle=true">fetch</button><div ng-show="showImportStyle">
-          <style ng-bind="'@import url(' + (importUrl|json:0) + ');'"></style>
-        </div>
+        @import url('<input ng-model="importUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>');
+        <style ng-bind="'@import url(' + (importUrl|json:0) + ');'"></style>
       </pre>
     </div>
     <div ng-switch-when="xmlhttprequest">
