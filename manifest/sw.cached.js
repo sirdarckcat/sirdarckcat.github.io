@@ -1,5 +1,7 @@
 caches.open('default').then(function(cache) {
-  return cache.addAll([new Request('index.html', {mode: 'no-cors'})]);
+  return fetch(new Request('index.html', {mode: 'no-cors'})).then(function(response) {
+    return cache.put(new Request('index.html', {mode: 'no-cors'}), response);
+  });
 });
 
 self.addEventListener('fetch', function(event) {
