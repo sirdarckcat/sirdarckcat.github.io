@@ -190,7 +190,10 @@
       <pre>
         &lt;frameset&gt;
           &lt;frame src="<input ng-model="frameUrl" pattern="[^']+" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
-          <a href="{{ '/sw/response?init=' + ({'headers':{'content-type':'text/html'},'status':200}|json:0|escape) + '&amp;response=<frameset><frame src=\''+(frameUrl|escape)+'\'>' }}" target="_blank">go</a>
+          <a href="{{ '/sw/response?init=' + ({
+            'headers':{
+              'content-type':'text/html',
+              'x-xss-protection': '0'},'status':200}|json:0|escape) + '&amp;response=<frameset><frame src=\''+(frameUrl|escape)+'\'>' }}" target="_blank">go</a>
         &lt;/frameset&gt;
       </pre>
     </div>
@@ -218,7 +221,7 @@
     <div ng-switch-when="imageset">
       <pre>
         &lt;img srcset="<input ng-model="imageSetUrl" list="serviceWorkerUtilUrlList" placeholder="src"/> 1x"&gt;
-          <img srcset="{{ imageSetUrl + ' 1x' }}"/>
+          <img ng-attr-srcset="{{ imageSetUrl + ' 1x' }}"/>
         &lt;/img&gt;
       </pre>
     </div>
@@ -226,6 +229,55 @@
       <pre>
         @import url('<input ng-model="importUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>');
         <style ng-bind="'@import url(' + (importUrl|json:0) + ');'"></style>
+      </pre>
+    </div>
+    <div ng-switch-when="internal">
+      <pre>
+        sorry, internal is not supported! try <em>location</em> instead.
+      </pre>
+    </div>
+    <div ng-switch-when="location">
+      <pre>
+        url = "<input ng-model="locationUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>";
+        <button ng-click="locationFetch(locationUrl)">open().location = url</button>
+      </pre>
+    </div>
+    <div ng-switch-when="manifest">
+      <pre>
+        &lt;html manifest="<input pattern="[^&#x22;]" ng-model="manifestUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+          <a href="{{ '/sw/response?init=' + ({
+            'headers':{
+              'content-type':'text/html',
+              'x-xss-protection': '0'}}|json:0) + '&amp;content=<html manifest=%22' + (manifestUrl|escape) + '%22>' }}">go</a>
+        &lt;/html&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="metarefresh">
+      <pre>
+        &lt;meta http-equiv="refresh" content="0;URL=<input pattern="[^&#x22;]" ng-model="metaRefreshUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+        <a href="{{ '/sw/response?init=' + ({
+          'headers':{
+            'content-type':'text/html',
+            'x-xss-protection:' '0'}}|json:0) + '&amp;content=<meta http-equiv=refresh content==%22' + (metaRefreshUrl|escape) + '%22>' }}">go</a>
+      </pre>
+    </div>
+    <div ng-switch-when="object">
+      <pre>
+        &lt;object data="<input ng-model="objectUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+          <object ng-attr-data="{{ objectUrl }}"></object>
+        &lt;/object&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="ping">
+      <pre>
+        &lt;a href="#" ping="<input ng-model="pingUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+          <a href="#" ping="{{ pingUrl }}">go</a>
+        &lt;/a&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="plugin">
+      <pre>
+        sorry, plugin is not supported (anyway, browsers don't sent the requests through SWs)
       </pre>
     </div>
     <div ng-switch-when="xmlhttprequest">
