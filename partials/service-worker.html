@@ -275,6 +275,25 @@
         sorry, plugin is not supported (anyway, browsers don't sent the requests through SWs)
       </pre>
     </div>
+    <div ng-switch-when="script">
+      <pre>
+        &lt;script src="<input ng-model="scriptUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
+          <script ng-src="{{ scriptUrl }}"></script>
+        &lt;/script&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="sharedworker">
+      <pre>
+        url = "<input ng-model="sharedWorkerUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>";
+        <button ng-click="sharedWorkerFetch(sharedWorkerUrl)">new SharedWorker(url);</button>
+      </pre>
+    </div>
+    <div ng-switch-when="worker">
+      <pre>
+        url = "<input ng-model="workerUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>";
+        <button ng-click="workerFetch(workerUrl)">new Worker(url);</button>
+      </pre>
+    </div>
     <div ng-switch-when="xmlhttprequest">
       <pre ng-init="xhrHeader = {}">
         xhr.open(
