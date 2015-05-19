@@ -190,7 +190,7 @@
     <div ng-switch-when="frame">
       <pre>
         &lt;frameset&gt;
-          &lt;frame src="<input ng-model="frameUrl" pattern="[^']+" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
+          &lt;frame src="<input ng-model="frameUrl" pattern="[^']*" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
           <a href="{{ '/sw/response?init=' + ({
             'headers':{
               'content-type':'text/html',
@@ -245,7 +245,7 @@
     </div>
     <div ng-switch-when="manifest">
       <pre>
-        &lt;html manifest="<input pattern="[^&#x22;]" ng-model="manifestUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+        &lt;html manifest="<input pattern="[^&#x22;]*" ng-model="manifestUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
           <a target="_blank" href="{{ '/sw/response?init=' + ({
             'headers':{
               'content-type':'text/html',
@@ -255,7 +255,7 @@
     </div>
     <div ng-switch-when="metarefresh">
       <pre>
-        &lt;meta http-equiv="refresh" content="0;URL=<input pattern="[^&#x22;]" ng-model="metaRefreshUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
+        &lt;meta http-equiv="refresh" content="0;URL=<input pattern="[^&#x22;]*" ng-model="metaRefreshUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
         <a target="_blank" href="{{ '/sw/response?init=' + ({
           'headers':{
             'content-type':'text/html',
