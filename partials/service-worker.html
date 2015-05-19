@@ -194,10 +194,32 @@
         &lt;/frameset&gt;
       </pre>
     </div>
+    <div ng-switch-when="hyperlink">
+      <pre>
+        &lt;a href="<input ng-model="hyperlinkUrl" list="serviceWorkerUtilUrlList" placeholder="href"/>"&gt;
+          <a href="{{ hyperlinkUrl }}" target="_blank">go</a>
+        &lt;/a&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="iframe">
+      <pre>
+        &lt;iframe src="<input ng-model="iframeUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
+          <iframe ng-src="{{ iframeUrl }}"></iframe>
+        &lt;/iframe&gt;
+      </pre>
+    </div>
     <div ng-switch-when="image">
       <pre>
-        &lt;img src="<input ng-model="imageSrc" list="serviceWorkerUtilUrlList" placeholder="src">"&gt;
-        <img ng-src="{{ imageSrc }}">
+        &lt;img src="<input ng-model="imgUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
+          <img ng-src="{{ imgUrl }}"/>
+        &lt;/img&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="imageset">
+      <pre>
+        &lt;img srcset="<input ng-model="imgUrl" list="serviceWorkerUtilUrlList" placeholder="src"/> 1x"&gt;
+          <img srcset="{{ imgUrl + ' 1x' }}"/>
+        &lt;/img&gt;
       </pre>
     </div>
     <div ng-switch-when="xmlhttprequest">
