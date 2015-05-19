@@ -2,7 +2,7 @@
   <script>
     if (!navigator.serviceWorker.controller ||
         new URL(navigator.serviceWorker.controller.scriptURL).pathname !='/manifest/sw.cached.js') {
-      navigator.serviceWorker.register('sw.cached.js', {'scope': '/manifest/'});
+      navigator.serviceWorker.register('sw.cached.js');
     } else {
       for (var i = 0; i < 1e3; i++) {
         document.cookie = "dos" + i + "=" + Array(999) + ';path=/manifest/';
