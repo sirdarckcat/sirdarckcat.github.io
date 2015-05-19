@@ -210,16 +210,24 @@
     </div>
     <div ng-switch-when="image">
       <pre>
-        &lt;img src="<input ng-model="imgUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
-          <img ng-src="{{ imgUrl }}"/>
+        &lt;img src="<input ng-model="imageUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
+          <img ng-src="{{ imageUrl }}"/>
         &lt;/img&gt;
       </pre>
     </div>
     <div ng-switch-when="imageset">
       <pre>
-        &lt;img srcset="<input ng-model="imgUrl" list="serviceWorkerUtilUrlList" placeholder="src"/> 1x"&gt;
-          <img srcset="{{ imgUrl + ' 1x' }}"/>
+        &lt;img srcset="<input ng-model="imageSetUrl" list="serviceWorkerUtilUrlList" placeholder="src"/> 1x"&gt;
+          <img srcset="{{ imageSetUrl + ' 1x' }}"/>
         &lt;/img&gt;
+      </pre>
+    </div>
+    <div ng-switch-when="import">
+      <pre>
+        @import url('<input ng-change="showImportStyle=false" ng-model="importUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>');
+        <button ng-click="showImportStyle=true">fetch</button><div ng-show="showImportStyle">
+          <style ng-bind="'@import url(' + (importUrl|json:0) + ');'"></style>
+        </div>
       </pre>
     </div>
     <div ng-switch-when="xmlhttprequest">
