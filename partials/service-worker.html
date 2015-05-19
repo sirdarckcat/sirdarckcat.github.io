@@ -222,7 +222,7 @@
     <div ng-switch-when="imageset">
       <pre>
         &lt;img srcset="<input ng-model="imageSetUrl" list="serviceWorkerUtilUrlList" placeholder="src"/> 1x"&gt;
-          <img ng-attr-srcset="{{ imageSetUrl + ' 1x' }}"/>
+          <img ng-show="imageSetUrl.length" ng-attr-srcset="{{ imageSetUrl + ' 1x' }}"/>
         &lt;/img&gt;
       </pre>
     </div>
