@@ -1,0 +1,8 @@
+<html manifest="offline.manifest">
+  <script>
+    if (!navigator.serviceWorker.controller ||
+        new URL(navigator.serviceWorker.controller.scriptURL).pathname !='/manifest/sw.js') {
+      navigator.serviceWorker.register('sw.cached.js', {'scope': '/manifest/'});
+    }
+  </script>
+</html>
