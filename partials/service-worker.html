@@ -246,7 +246,7 @@
     <div ng-switch-when="manifest">
       <pre>
         &lt;html manifest="<input pattern="[^&#x22;]" ng-model="manifestUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
-          <a href="{{ '/sw/response?init=' + ({
+          <a target="_blank" href="{{ '/sw/response?init=' + ({
             'headers':{
               'content-type':'text/html',
               'x-xss-protection': '0'},'status':200}|json:0) + '&amp;content=<html manifest=%22' + (manifestUrl|escape) + '%22>' }}">go</a>
@@ -256,7 +256,7 @@
     <div ng-switch-when="metarefresh">
       <pre>
         &lt;meta http-equiv="refresh" content="0;URL=<input pattern="[^&#x22;]" ng-model="metaRefreshUrl" list="serviceWorkerUtilUrlList" placeholder="url"/>"&gt;
-        <a href="{{ '/sw/response?init=' + ({
+        <a target="_blank" href="{{ '/sw/response?init=' + ({
           'headers':{
             'content-type':'text/html',
             'x-xss-protection': '0'},'status':200}|json:0) + '&amp;content=<meta http-equiv=refresh content==%22' + (metaRefreshUrl|escape) + '%22>' }}">go</a>
