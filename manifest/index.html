@@ -3,6 +3,7 @@
     if (!navigator.serviceWorker.controller ||
         new URL(navigator.serviceWorker.controller.scriptURL).pathname !='/manifest/sw.js') {
       navigator.serviceWorker.register('sw.cached.js', {'scope': '/manifest/'});
+      location.reload();
     }
   </script>
 </html>
