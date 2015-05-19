@@ -58,7 +58,8 @@
                   'report-uri ' +
                   (cspReportUrl|escape) +
                   '; default-src \'none\''
-              }
+              },
+              'status':200
             }|json:0|escape)}}" target="_blank">open</a>
       </pre>
     </div>
@@ -248,7 +249,7 @@
           <a href="{{ '/sw/response?init=' + ({
             'headers':{
               'content-type':'text/html',
-              'x-xss-protection': '0'}}|json:0) + '&amp;content=<html manifest=%22' + (manifestUrl|escape) + '%22>' }}">go</a>
+              'x-xss-protection': '0'},'status':200}|json:0) + '&amp;content=<html manifest=%22' + (manifestUrl|escape) + '%22>' }}">go</a>
         &lt;/html&gt;
       </pre>
     </div>
@@ -258,7 +259,7 @@
         <a href="{{ '/sw/response?init=' + ({
           'headers':{
             'content-type':'text/html',
-            'x-xss-protection:' '0'}}|json:0) + '&amp;content=<meta http-equiv=refresh content==%22' + (metaRefreshUrl|escape) + '%22>' }}">go</a>
+            'x-xss-protection:' '0'},'status':200}|json:0) + '&amp;content=<meta http-equiv=refresh content==%22' + (metaRefreshUrl|escape) + '%22>' }}">go</a>
       </pre>
     </div>
     <div ng-switch-when="object">
