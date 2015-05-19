@@ -57,6 +57,14 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.locationFetch = function(locationUrl) {
     open().location = locationUrl;
   };
+  // sharedworker
+  $scope.sharedWorkerFetch = function(sharedWorkerUrl) {
+    console.log('SharedWorker', new SharedWorker(sharedWorkerUrl));
+  };
+  // worker
+  $scope.workerFetch = function(workerUrl) {
+    console.log('Worker', new Worker(workerUrl));
+  };
   // XMLHttpRequest
   function logXhrProgress(prefix, target) {
     var events = ['loadstart', 'progress', 'abort', 'error', 'load', 'timeout', 'loadend', 'readystatechange'];
