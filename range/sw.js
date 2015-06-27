@@ -12,7 +12,7 @@ onfetch = function(e) {
       ranges[parts[0]]=parts;
     });
     var step, range = e.request.headers.get('range');
-    if (step = ranges[range]) {
+    if ((step = ranges[range]) || (step = ranges['default'])) {
       switch(step[1]) {
         case 'response':
           e.respondWith(new Response(atob(step[2]), JSON.parse(unescape(step[3]))));
