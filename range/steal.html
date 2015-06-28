@@ -38,14 +38,14 @@ String.fromCharCode(
 stop=false;
 function bf() {
   var offset = 1;
-  var char = 0x0a;
+  var char = 0x10;
   var buffer = [];
   var loop = function() {
     console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
     if(stop || offset > 0x7e)return;
     guess(offset, char).then(function() {
       buffer.push(char);
-      char = 0x0a;
+      char = 0x10;
       offset++;
       console.log('>>', offset, char);
       setTimeout(loop, 100);
@@ -53,7 +53,7 @@ function bf() {
       char++;
       if (char>127) {
         console.log('>>!', offset, char);
-        char=0x0a;
+        char=0x10;
         offset++;
       }
       console.log('>', offset, char);
