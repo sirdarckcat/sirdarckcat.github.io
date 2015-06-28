@@ -15,7 +15,7 @@ onfetch = function(e) {
     if ((step = ranges[range]) || (step = ranges['default'])) {
       switch(step[1]) {
         case 'response':
-          e.respondWith(new Response(atob(step[2]), JSON.parse(unescape(step[3]))));
+          e.respondWith(new Response(new Blob([atob(step[2])]), JSON.parse(unescape(step[3]))));
           break;
         case 'fetch':
           e.respondWith(fetch(unescape(step[2]), JSON.parse(unescape(step[3]))));
