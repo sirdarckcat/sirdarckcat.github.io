@@ -41,7 +41,7 @@ function bf() {
   var char = 0x01;
   var buffer = [];
   var loop = function() {
-    console.log(String.fromCharCode.apply(String, buffer), offset, char);
+    console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
     if(stop || offset > 0x7e)return;
     guess(offset, char).then(function() {
       buffer.push(char);
