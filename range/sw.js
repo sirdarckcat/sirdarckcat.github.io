@@ -15,7 +15,10 @@ onfetch = function(e) {
     if ((step = ranges[range]) || (step = ranges['default'])) {
       switch(step[1]) {
         case 'response':
-          e.respondWith(new Response(new Blob([atob(step[2])]), JSON.parse(unescape(step[3]))));
+          var binData = new Uint8Array(atob(step[2]).split('').map(function(strArray) {
+            return strArray.charCodeAt();
+          }));
+          e.respondWith(new Response(binData, JSON.parse(unescape(step[3]))));
           break;
         case 'fetch':
           e.respondWith(fetch(unescape(step[2]), JSON.parse(unescape(step[3]))));
