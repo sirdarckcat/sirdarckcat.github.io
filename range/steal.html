@@ -55,6 +55,7 @@ function bf() {
         console.log('>>!', offset, char);
         char=0x10;
         offset++;
+        buffer.push(0xFFFD);
       }
       console.log('>', offset, char);
       setTimeout(loop, 100);
