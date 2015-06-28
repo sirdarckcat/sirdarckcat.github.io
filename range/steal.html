@@ -47,13 +47,16 @@ function bf() {
       buffer.push(char);
       char = 0x01;
       offset++;
+      console.log('>>', offset, char);
       setTimeout(loop, 100);
     }).catch(function() {
       char++;
       if (char>256) {
+        console.log('>>!', offset, char);
         char=0x01;
         offset++;
       }
+      console.log('>', offset, char);
       setTimeout(loop, 100);
     });
   };
