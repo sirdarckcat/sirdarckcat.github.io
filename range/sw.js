@@ -23,7 +23,7 @@ onfetch = function(e) {
         case 'fetch+response':
           e.respondWith(
             fetch(unescape(step[2]), JSON.parse(unescape(step[3]))).then(function(res) {
-              return res.blob();
+              return res.arrayBuffer();
             }).then(function(b) {
               return new Response(b.slice(step[4], step[5]), JSON.parse(unescape(step[6])));
             }));
