@@ -1,0 +1,19 @@
+<audio autoplay></audio>
+<script>
+var audio = document.querySelector('audio');
+audio.onerror = function() {document.write('FAIL');};
+audio.onencrypted = function() {document.write('PASS');};
+var url = location.hash.slice(1) || 'testfile3';
+bodyLength=0x12A;totalLength=308;audio.src=url + '?&steps=bytes=0-:fetch+response:'+escape('https://raw.githubusercontent.com/ChromiumWebApps/blink/master/LayoutTests/media/content/test-encrypted.webm')+':'+escape(JSON.stringify({'mode':'cors'}))+':0:'+bodyLength+':'+escape(JSON.stringify({status: 206, headers: {'content-range': 'bytes 0-'+bodyLength+'/'+totalLength}}))+';bytes=298-:response:'+btoa(String.fromCharCode(
+
+0xE0, 0x87,
+/*{*/
+   0xBA, 0x82,
+   /* { */
+     0x71, 0xFF,
+   /* } */
+   0xB0, 0x82 // , 0x20, 0x38
+/* }*/
+
+))+':'+escape(JSON.stringify({status:206,headers:{'content-range':'bytes 298-305/308'}}));
+</script>
