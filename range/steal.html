@@ -45,15 +45,15 @@ function bf() {
     if(stop || offset > 0x7e)return;
     guess(offset, char).then(function() {
       buffer.push(char);
-      char = 0x01;
+      char = 0x0a;
       offset++;
       console.log('>>', offset, char);
       setTimeout(loop, 100);
     }).catch(function() {
       char++;
-      if (char>256) {
+      if (char>127) {
         console.log('>>!', offset, char);
-        char=0x01;
+        char=0x0a;
         offset++;
       }
       console.log('>', offset, char);
