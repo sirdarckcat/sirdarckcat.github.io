@@ -84,7 +84,7 @@ function ask() {
 function binsearch() {
   if(test==right)return Promise.resolve(test);
   return ask().then(function(result) {
-    console.log('@', i, ':', left, '<', test, '<', right, '=', result);
+    console.log('@', o, ':', left, '<', test, '<', right, '=', result);
     cycle(result);
     test = getNext();
   }).then(binsearch);
