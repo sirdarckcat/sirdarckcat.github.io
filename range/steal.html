@@ -78,7 +78,7 @@ function cycle(answer) {
 
 function ask() {
   //return Promise.resolve(test<1337);
-  return new Promise(function(resolve){guess(o, i, test).then(resolve.bind(null, true)).catch(resolve.bind(null, false))});
+  return new Promise(function(resolve){guess(o, 0, test).then(resolve.bind(null, true)).catch(resolve.bind(null, false))});
 }
 
 function binsearch() {
