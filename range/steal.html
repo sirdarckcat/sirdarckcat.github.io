@@ -98,7 +98,8 @@ function bf() {
   var buffer = [];
   var loop = function() {
     if(stop)return;
-    getChar(offset).then(function(char) {
+    getChar(offset).then(function(answer) {
+      char = getComplement2(answer)>>8;
       buffer.push(char);
       console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
       offset++;
