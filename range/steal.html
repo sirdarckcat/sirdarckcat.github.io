@@ -1,5 +1,7 @@
 <script>
-  navigator.serviceWorker.register('sw.js');
+  if(!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.register('sw.js').then(function(){location.reload()});
+  }
 </script>
 <form onsubmit="location='?'+url.value;return false;">
 <input type=url name=url placeholder='url to steal' autofocus onfocus='if(this.value==""&&location.search.length>0)this.value=location.search.slice(1)'>
