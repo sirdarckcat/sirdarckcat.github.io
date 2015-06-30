@@ -1,4 +1,6 @@
 <script>
-  navigator.serviceWorker.register('sw.js');
+  if(!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.register('sw.js').then(function(){location.reload()});
+  }
 </script>
 <audio controls src="https://upload.wikimedia.org/wikipedia/ru/c/c6/Glorious.ogg">
