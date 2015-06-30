@@ -1,3 +1,6 @@
+<script>
+  navigator.serviceWorker.register('sw.js');
+</script>
 <form onsubmit="location='?'+url.value;return false;">
 <input type=url name=url placeholder='url to steal' autofocus onfocus='if(this.value==""&&location.search.length>0)this.value=location.search.slice(1)'>
 <input type=submit>
