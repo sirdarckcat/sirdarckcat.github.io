@@ -97,10 +97,10 @@ function bf() {
   var offset = 1;
   var buffer = [];
   var loop = function() {
-    console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
     if(stop)return;
     getChar(offset).then(function(char) {
       buffer.push(char);
+      console.log('>>>', String.fromCharCode.apply(String, buffer), offset, char);
       offset++;
       console.log('>>', offset, char);
       setTimeout(loop, 100);
