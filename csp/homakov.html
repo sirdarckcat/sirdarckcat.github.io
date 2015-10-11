@@ -1,0 +1,11 @@
+<script>
+  if(!navigator.serviceWorker.controller || navigator.serviceWorker.controller.scriptURL.indexOf('/csp/sw.js') < 0) {
+    navigator.serviceWorker.register('sw.js').then(function(){location.reload()});
+  }
+  document.addEventListener('securitypolicyviolation', function (e) { 
+    console.dir(e);
+ }); 
+</script>
+<meta http-equiv="content-security-policy" content="img-src https://github.com/login https://www.facebook.com/login.php">
+<img src="https://github.com/login">
+<img src="https://www.facebook.com/login.php">
