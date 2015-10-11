@@ -1,0 +1,10 @@
+<script>
+  if(!navigator.serviceWorker.controller) {
+    navigator.serviceWorker.register('sw.js').then(function(){location.reload()});
+  }
+</script>
+<meta http-equiv="content-security-policy" content="img-src https://www.google.com/search?this.is.ignored">
+<img src="https://www.google.com/favicon.ico" alt="this should fail">
+<img src="https://www.google.com/url?q=/favicon.ico" alt="this should fail">
+<img src="https://www.google.com/search?q=foo" alt="this will return favicon.ico, should fail">
+<img src="https://www.google.com/search?q=bar" alt="this will return a redirection to favicon.ico, should work">
