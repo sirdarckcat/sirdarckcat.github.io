@@ -1,5 +1,5 @@
 <script>
-  if(!navigator.serviceWorker.controller) {
+  if(!navigator.serviceWorker.controller || navigator.serviceWorker.controller.scriptURL.indexOf('/csp/sw.js') < 0) {
     navigator.serviceWorker.register('sw.js').then(function(){location.reload()});
   }
 </script>
