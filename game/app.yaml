@@ -5,5 +5,8 @@ api_version: 1
 threadsafe: true
 
 handlers:
-- url: /
-  static_dir: ./
+- url: /(.*)
+  static_files: \1
+  upload: .*
+  secure: always
+  login: required
