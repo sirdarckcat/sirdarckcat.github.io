@@ -6,4 +6,4 @@ threadsafe: true
 
 handlers:
 - url: /
-  static_dir: .
+  static_dir: ./
