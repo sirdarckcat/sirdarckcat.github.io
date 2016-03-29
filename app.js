@@ -57,6 +57,13 @@ sdcGithub.controller('ServiceWorkerCtrl', function ($scope, $location, $filter) 
   $scope.locationFetch = function(locationUrl) {
     open().location = locationUrl;
   };
+  // script
+  $scope.scriptFetch = function (scriptUrl) {
+    var script = document.createElement('script');
+    script.src = scriptUrl;
+    document.documentElement.appendChild(script)
+    console.log('script', script);
+  };
   // sharedworker
   $scope.sharedWorkerFetch = function(sharedWorkerUrl) {
     console.log('SharedWorker', new SharedWorker(sharedWorkerUrl));
