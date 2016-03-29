@@ -278,7 +278,7 @@
     <div ng-switch-when="script">
       <pre>
         &lt;script src="<input ng-model="scriptUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
-           <script ng-if="scriptUrl.length" ng-attr-src="{{ scriptUrl }}"></script>
+           <button ng-click="scriptFetch(scriptUrl)">load</button>
         &lt;/script&gt;
       </pre>
     </div>
