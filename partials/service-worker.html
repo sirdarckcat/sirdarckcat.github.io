@@ -278,7 +278,7 @@
     <div ng-switch-when="script">
       <pre>
         &lt;script src="<input ng-model="scriptUrl" list="serviceWorkerUtilUrlList" placeholder="src"/>"&gt;
-          <script ng-src="{{ scriptUrl }}"></script>
+          <iframe srcdoc='<script src="{{ scriptUrl }}"></script>'></iframe>
         &lt;/script&gt;
       </pre>
     </div>
