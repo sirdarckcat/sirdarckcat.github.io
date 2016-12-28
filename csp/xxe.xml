@@ -1,0 +1,1 @@
+<!DOCTYPE x[<!ENTITY x SYSTEM "http://sirdarckcat.github.io/csp/test.xxe">]><y>&x;</y>
