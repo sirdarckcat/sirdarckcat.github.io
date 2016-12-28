@@ -9,5 +9,5 @@
   </defs>
 
   <rect x="10" y="10" width="60" height="10" 
-        fill="url(http://evilwebsite.com/foo#Gradient01)" />
+        fill="url(foo#Gradient01)" />
 </svg>
