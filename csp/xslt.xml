@@ -3,7 +3,7 @@
 <xsl:template match="/">
 <html> 
 <body>
-  <script nonce="random">alert(1);</script>
+  <script nonce="random" xmlns="http://www.w3.org/1999/xhtml">alert(1);</script>
 </body>
 </html>
 </xsl:template>
