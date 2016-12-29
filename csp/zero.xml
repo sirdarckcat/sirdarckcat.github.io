@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet href="zero.xsl" type="text/xsl" ?>
+<thing>
+  <height>50</height>
+  <width>100</width>
+</thing>
