@@ -3,7 +3,7 @@
     <rect x="10" y="10" width="190" id="xss"
     height="190" fill="red" stroke="black">
        <script type="text/javascript">console.log(42);</script>
-       <set xlink:href="#xss" attributeName="fill" begin="1s" to="blue" />
+       <set id="set" xlink:href="#xss" attributeName="fill" begin="1s" to="blue" />
     </rect>
   </svg>
 </html>
