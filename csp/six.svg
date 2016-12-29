@@ -7,6 +7,7 @@
            <p>This is HTML.</p>
            <script nonce="random">console.log(17);</script>
            <iframe src="data:text/html,%3Cscript nonce=random%3Econsole.log(999)%3C/script%3E"></iframe>
+           <iframe src="data:text/html,%3Cscript nonce=wrong%3Econsole.log(888)%3C/script%3E"></iframe>
          </body>
        </foreignObject>
        <rect x="10" y="10" width="190" height="190" fill="red" stroke="black">
