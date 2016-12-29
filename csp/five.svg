@@ -2,7 +2,8 @@
   <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" xmlns:xlink="http://www.w3.org/1999/xlink">
     <rect x="10" y="10" width="190" id="xss" height="190" fill="red" stroke="black">
        <script id="script" nonce="nonce-random" type="text/javascript">console.log(42);</script>
-       <set id="set" attributeName="fill" begin="1s" to="blue" />
+       <set id="set" attributeName="fill" begin="0" to="blue" />
+       <animate id="animate" attributeName="stroke" begin="0" from="orange" to="&" />
     </rect>
   </svg>
 </html>
