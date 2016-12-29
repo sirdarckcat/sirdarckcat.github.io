@@ -1,7 +1,12 @@
 <html>
   <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" xmlns:xlink="http://www.w3.org/1999/xlink">
     <symbol id="xss">
-       <script id="script" nonce="random" type="text/javascript">console.log(42);</script>
+       <script nonce="random" type="text/javascript">console.log(42);</script>
+       <foreignObject width="100" height="50">
+         <body xmlns="http://www.w3.org/1999/xhtml">
+           <p>This is HTML.</p>
+         </body>
+       </foreignObject>
        <rect x="10" y="10" width="190" height="190" fill="red" stroke="black">
          <set attributeName="fill" begin="0" to="blue" />
          <animate attributeName="stroke" begin="0" from="orange" to="brown" />
