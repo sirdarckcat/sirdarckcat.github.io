@@ -6,6 +6,6 @@
          <set attributeName="fill" begin="0" to="blue" />
          <animate attributeName="stroke" begin="0" from="orange" to="brown" />
        </rect>
-    </defs>
+    </symbol>
   </svg>
 </html>
