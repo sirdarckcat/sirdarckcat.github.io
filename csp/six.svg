@@ -1,0 +1,11 @@
+<html>
+  <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="xss">
+       <script id="script" nonce="random" type="text/javascript">console.log(42);</script>
+       <rect x="10" y="10" width="190" height="190" fill="red" stroke="black">
+         <set attributeName="fill" begin="0" to="blue" />
+         <animate attributeName="stroke" begin="0" from="orange" to="brown" />
+       </rect>
+    </defs>
+  </svg>
+</html>
