@@ -12,6 +12,7 @@
 <xsl:import href="imported.xsl" />
 
 <xsl:template match="/root">
+	<b>works?</b>
 	<xsl:call-template name="works" />
 </xsl:template>
 
