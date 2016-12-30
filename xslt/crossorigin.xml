@@ -14,7 +14,7 @@
 
 <xsl:template match="/">
 	<b id="b">
-		(&logdata;&logdata2;&logdata4;&logdata5;&logdata6;) works?
+		(&logdata;&logdata2;) works?
 		<xsl:call-template name="works" />
 	</b>
 </xsl:template>
