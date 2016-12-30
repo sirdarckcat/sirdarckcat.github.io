@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
+<!DOCTYPE log [
+ <!ENTITY logdata SYSTEM "https://sirdarckcat.github.io/xslt/data.txt">
+ <!ENTITY logdata2 "logdata2">
+]>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:import href="imported.xsl" />
+
+<xsl:template match="/">
+	<b>
+		works? &logdata;&logdata2;
+		<xsl:call-template name="works" />
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
