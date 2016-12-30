@@ -1,1 +1,6 @@
-hello, world.
+<!DOCTYPE data [
+   <!ENTITY logdata4 "logdata4">
+   <!ENTITY logdata5 SYSTEM "data5.txt">
+   <!ENTITY logdata6 SYSTEM "https://sirdarckcat.github.io/xslt/data6.txt">
+]>
+<xml></xml>
