@@ -1,0 +1,9 @@
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-random'; object-src 'none'"/>
+<title>datacsp.xhtml</title>
+</head>
+<body>
+<iframe srcdoc='&lt;?xml version="1.0"?&gt;<br>&lt;?xml-stylesheet type="text/xsl" href="%23"?&gt;<br>&lt;xsl:stylesheet version="1.0" id="xslt"<br>  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"<br>  xmlns="http://www.w3.org/1999/xhtml"&gt;<br>&lt;xsl:import href="https://sirdarckcat.github.io./xslt/imported.xsl" /&gt;<br>&lt;xsl:template match="/"&gt;<br>	&lt;b&gt;<br>		works?<br>		&lt;xsl:call-template name="works" /&gt;<br>	&lt;/b&gt;<br>&lt;/xsl:template&gt;<br>&lt;/xsl:stylesheet&gt;'></iframe>
+</body>
+</html>
