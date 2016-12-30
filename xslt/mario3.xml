@@ -4,10 +4,11 @@
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml">
 
-<xsl:import href="imported.xsl" />
+<xsl:import href="https://sirdarckcat.github.io/xslt/imported.xsl" />
 
 <xsl:template match="/">
 	<b>works?</b>
+	<xsl:call-template name="works" />
 </xsl:template>
 
 </xsl:stylesheet>
