@@ -1,0 +1,14 @@
+<iframe src='data:text/xml,
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xml" href="%23stylesheet"?>
+<!DOCTYPE doc [
+<!ATTLIST xsl:stylesheet
+ id ID %23REQUIRED>
+]>
+<svg xmlns="http://www.w3.org/2000/svg">
+<xsl:stylesheet id="stylesheet" version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:template match="/"><b xmlns="http://www.w3.org/1999/xhtml">foo</b></xsl:template>
+</xsl:stylesheet>
+<circle fill="red" r="40"></circle>
+</svg>
+'>
