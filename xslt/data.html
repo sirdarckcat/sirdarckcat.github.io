@@ -1,0 +1,17 @@
+<iframe src='data:text/xml,<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:import href="https://sirdarckcat.github.io/xslt/imported.xsl" />
+
+<xsl:template match="/">
+	<b>
+		works?
+		<xsl:call-template name="works" />
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
+'></iframe>
