@@ -13,7 +13,7 @@
 <xsl:import href="imported.xsl" />
 
 <xsl:template match="/">
-	<b>
+	<b id="b">
 		(&logdata;&logdata2;&logdata4;&logdata5;&logdata6;) works?
 		<xsl:call-template name="works" />
 	</b>
