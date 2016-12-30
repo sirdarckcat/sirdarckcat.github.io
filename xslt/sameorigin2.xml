@@ -3,6 +3,7 @@
 <!DOCTYPE log [
  <!ENTITY logdata SYSTEM "https://sirdarckcat.github.io/xslt/data.txt">
  <!ENTITY logdata2 "logdata2">
+ <!ENTITY % logdata3 SYSTEM "data.txt?param">
 ]>
 <xsl:stylesheet version="1.0" id="xslt"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -12,7 +13,7 @@
 
 <xsl:template match="/">
 	<b>
-		works? &logdata;&logdata2;
+		works? &logdata;&logdata2;%logdata3;
 		<xsl:call-template name="works" />
 	</b>
 </xsl:template>
