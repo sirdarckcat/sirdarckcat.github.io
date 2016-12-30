@@ -4,6 +4,7 @@
  <!ENTITY logdata SYSTEM "data.txt">
  <!ENTITY logdata2 "logdata2">
  <!ENTITY % logdata3 SYSTEM "data.txt?param">
+ %logdata3;
 ]>
 <xsl:stylesheet version="1.0" id="xslt"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -13,7 +14,7 @@
 
 <xsl:template match="/">
 	<b>
-		works? &logdata;&logdata2;%logdata3;
+		works? &logdata;&logdata2;
 		<xsl:call-template name="works" />
 	</b>
 </xsl:template>
