@@ -7,8 +7,10 @@
 <xsl:import href="https://sirdarckcat.github.io/xslt/imported.xsl" />
 
 <xsl:template match="/">
-	<b>works?</b>
-	<xsl:call-template name="works" />
+	<b>
+		works?
+		<xsl:call-template name="works" />
+	</b>
 </xsl:template>
 
 </xsl:stylesheet>
