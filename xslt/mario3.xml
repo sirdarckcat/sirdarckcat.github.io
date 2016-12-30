@@ -6,9 +6,8 @@
 
 <xsl:import href="imported.xsl" />
 
-<xsl:template match="/root">
-	works?
-	<xsl:call-template name="works" />
+<xsl:template match="/">
+	<b>works?</b>
 </xsl:template>
 
 </xsl:stylesheet>
