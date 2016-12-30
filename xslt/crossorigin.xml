@@ -3,7 +3,7 @@
 <!DOCTYPE log [
  <!ENTITY logdata SYSTEM "https://sirdarckcat.github.io/xslt/data.txt">
  <!ENTITY logdata2 "logdata2">
- <!ENTITY % logdata3 SYSTEM "https://sirdarckcat.github.io/xslt/data.txt?param">
+ <!ENTITY % logdata3 SYSTEM "https://sirdarckcat.github.io/xslt/logdata.dtd">
  %logdata3;
 ]>
 <xsl:stylesheet version="1.0" id="xslt"
