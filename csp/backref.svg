@@ -1,0 +1,1 @@
+<svg><use href=#x x=60 /><use href=#x y=20 x=30 /><text y=40>foo</text><defs><text y=50 id=x>Hello, out there.<script nonce=foo>document.write(1)</script>
