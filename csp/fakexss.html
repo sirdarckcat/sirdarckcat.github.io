@@ -3,10 +3,9 @@
 <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-random-secret'">
 <title> Fake XSS </title> </head>
 <body>
-<div>
+
 <script nonce=random-secret>document.write(unescape(location.href))</script>
 
-</div>
 
 <script id=script nonce=random-secret>foo.bar()</script>
 </body>
