@@ -1,3 +1,4 @@
+<?xml-stylesheet type="text/xsl" href="#"?>
 <!DOCTYPE html [
     <!ENTITY attack SYSTEM "simple.html">
     <!ATTLIST script xmlns CDATA "http://www.w3.org/1999/xhtml" src CDATA "data:,alert(1337)">
