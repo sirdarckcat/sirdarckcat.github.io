@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE log [
+ <!ENTITY logdata SYSTEM "data.txt">
+ <!ENTITY logdata2 "logdata2">
+ <!ENTITY % logdata3 SYSTEM "logdata.dtd">
+ %logdata3;
+]>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:import href="imported.xsl" />
+
+<xsl:template match="/">
+	<b id="b">
+		(&logdata;&logdata2;&logdata4;&logdata5;&logdata6;) works?
+		<xsl:call-template name="works" />
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
