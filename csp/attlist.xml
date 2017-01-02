@@ -2,6 +2,8 @@
     <!ENTITY attack SYSTEM "simple.html">
     <!ATTLIST script xmlns CDATA "http://www.w3.org/1999/xhtml" src CDATA "data:,alert(1337)">
 ]>
-<html>
-    &attack;
-</html>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+        &attack;
+    </xsl:template>
+</xsl:stylesheet>
