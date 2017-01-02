@@ -1,0 +1,10 @@
+<html>
+  <head>
+    <title>CSP nonce</title>
+    <meta http-equiv="content-security-policy" content="object-src 'none'; script-src 'nonce-secret';"/>
+  </head>
+  <body>
+    <script nonce="secret"></script>
+    <script nonce="secret" src="data:,1"></script>
+  </body>
+</html>
