@@ -1,0 +1,15 @@
+<body>
+<script>
+htmlEscape = t=>t.replace(/[<>"'& ]/g,c=>"&#"+c.charCodeAt()+";");
+urlEscape = t=>encodeURIComponent(t);
+urlSanitize = t=>t.replace(/^(?:http(s)?:)?/,'http$1:');
+jsEscape = t=>JSON.stringify(String(t));
+
+var url = unescape(unescape(location.hash.slice(1)));
+
+url = urlEscape(jsEscape(htmlEscape(urlSanitize(url))));
+
+
+var html = 'javascript:"<body><object data=\\"' + url + '\\" width=1 height=1 style=\\"visibility:hidden;\\"></body>"';
+document.body.appendChild(document.createElement('iframe')).src=html;
+</script>
