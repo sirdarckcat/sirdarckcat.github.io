@@ -1,0 +1,6 @@
+<body>
+<script>
+var url = unescape(unescape(location.hash.slice(1)));
+var html = 'javascript:"<body><object data=\\"' + url + '\\" width=1 height=1 style=\\"visibility:hidden;\\"></body>"';
+document.body.appendChild(document.createElement('iframe')).src=html;
+</script>
