@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:import href="https://bug1326403.bmoattachments.org/attachment.cgi?id=8824541" />
+
+<xsl:template match="/">
+	<b id="b">
+		(&logdata;&logdata2;) works?
+		<xsl:call-template name="works" />
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
