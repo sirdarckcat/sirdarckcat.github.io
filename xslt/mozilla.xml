@@ -8,7 +8,7 @@
 
 <xsl:template match="/">
 	<b id="b">
-		(&logdata;&logdata2;) works?
+		works?
 		<xsl:call-template name="works" />
 	</b>
 </xsl:template>
