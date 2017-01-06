@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf8">
   <title>Fake XSS w/jQuery templates!</title>
-  <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-secret';">
+  <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-secret' 'unsafe-eval';">
   <script nonce=secret type='text/javascript' src='http://code.jquery.com/jquery-1.8.3.js'></script>
   <script nonce=secret type='text/javascript' src="https://s3.amazonaws.com/machty/emblem.min.js"></script>
   <script nonce=secret type='text/javascript' src="https://s3.amazonaws.com/machty/ember.js"></script>
