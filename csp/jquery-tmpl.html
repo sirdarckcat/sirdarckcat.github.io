@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Fake XSS w/jQuery templates!</title>
-  <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-secret';">
+  <meta http-equiv=content-security-policy content="object-src 'none';script-src 'nonce-secret' 'unsafe-eval';">
   <script nonce=secret src="https://code.jquery.com/jquery-3.1.1.js"></script>
   <script nonce=secret src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
   <script nonce=secret type="text/javascript">
