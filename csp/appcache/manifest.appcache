@@ -1,0 +1,8 @@
+CACHE MANIFEST
+index.html
+
+NETWORK:
+*
+
+FALLBACK:
+* /index.html
