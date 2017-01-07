@@ -1,5 +1,5 @@
 <script>
   navigator.serviceWorker.getRegistration().then(
-    r=>r?0:navigator.serviceWorker.register('sw.js').then(
+    r=>r?location.replace('index.html'):navigator.serviceWorker.register('sw.js').then(
       r=>location.replace('index.html')));
 </script>
