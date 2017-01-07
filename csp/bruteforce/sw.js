@@ -9,4 +9,4 @@ onfetch=e=>{
     .then(b=>new Response(b, {headers: {"content-security-policy":"object-src 'none';script-src 'nonce-"+nonce+"';"}})));
 }
 
-oninstall=e=>event.waitUntil(caches.open('v1'));
+oninstall=e=>e.waitUntil(caches.open('v1'));
