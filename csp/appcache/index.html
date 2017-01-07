@@ -6,6 +6,5 @@
   <body>
     Hello <span id="fullName"></span>
     <script nonce=random>fullName.innerHTML = unescape(location.search.match(/[?]fullName=([^&]+)/)[1]);</script>
-    <script nonce=random>onbeforeunload=onunload=function(){console.log(/disable bfcache/)};</script>
   </body>
 </html>
