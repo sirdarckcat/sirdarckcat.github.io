@@ -3,6 +3,17 @@
     <title>KnockoutJS Hello World example</title>
     <meta http-equiv=content-security-policy content="object-src 'none'; script-src 'nonce-secret' 'unsafe-eval';"/>
     <script nonce=secret src=http://knockoutjs.com/downloads/knockout-3.2.0.js></script>
+  </head>
+  <body>
+    <h1><a href="https://raw.githubusercontent.com/cure53/mustache-security/master/wiki/KnockoutJS.wiki">KnockoutJS XSS by cure53</a></h1>
+    <div class='liveExample'>   
+        <p>First name: <input data-bind='value: firstName' /></p> 
+        <p>Last name: <input data-bind='value: lastName' /></p> 
+        <h2>Hello, <span data-bind='text: fullName'> </span>!</h2>
+        XSS XSS XSS XSS
+        <select data-bind="options: alert(99)"></select>
+        XSS XSS XSS XSS
+    </div>
     <script nonce=secret>
       // Here's my data model
       var ViewModel = function(first, last) {
@@ -17,16 +28,5 @@
 
       ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
     </script>
-  </head>
-  <body>
-    <h1><a href="https://raw.githubusercontent.com/cure53/mustache-security/master/wiki/KnockoutJS.wiki">KnockoutJS XSS by cure53</a></h1>
-    <div class='liveExample'>   
-        <p>First name: <input data-bind='value: firstName' /></p> 
-        <p>Last name: <input data-bind='value: lastName' /></p> 
-        <h2>Hello, <span data-bind='text: fullName'> </span>!</h2>
-        XSS XSS XSS XSS
-        <select data-bind="options: alert(99)"></select>
-        XSS XSS XSS XSS
-    </div>
   </body>
 </html>
