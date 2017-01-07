@@ -4,7 +4,8 @@
     <meta http-equiv=content-security-policy content="object-src 'none'; script-src 'nonce-random';">
   </head>
   <body>
-    <script nonce=random>document.write(unescape(location.search.match(/[?]xss=([^&]+)/)[1]));</script>
+    Hello <span id="fullName"></span>
+    <script nonce=random>fullName.innerHTML = unescape(location.search.match(/[?]fullName=([^&]+)/)[1]);</script>
     <script nonce=random>onbeforeunload=onunload=function(){console.log(/disable bfcache/)};</script>
   </body>
 </html>
