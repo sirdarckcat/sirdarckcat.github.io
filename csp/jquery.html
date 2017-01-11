@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-security-policy" content="script-src 'nonce-random' 'strict-dynamic';">
+<script nonce=random src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+<script nonce=random>
+$(document).ready(function(){
+    // code taken from http://api.jquery.com/after/
+    $( ".container" ).after( $( ".child" ) );
+});
+</script>
+</head>
+<body>
+
+
+XSS XSS XSS
+<form class="child"><input name="ownerDocument"/><script>alert(1);</script></form>
+XSS XSS XSS
+
+
+<p class="container"></p>
+
+</body>
+</html>
