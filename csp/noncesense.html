@@ -1,17 +1,27 @@
 <html>
   <head>
     <meta http-equiv="content-security-policy" content="script-src 'nonce-random'; object-src 'none';" />
+    <style>
+      .salutation {
+        border: 1px solid red;
+        background-color: green;
+      }
+      .question {
+        border: 1px solid green;
+        background-color: red;
+      }
+    </style>
   </head>
   <body>
-    <div>
+    <div class="salutation">
       <script nonce="random">
         if (location.hash.length > 2)
           document.write('Hello ' + location.hash.slice(1));
       </script>
     </div>
-    <div>
+    <span class="question">
       Type your name: <input type="text" id="user_name" />
-    </div>
+    </span>
     <script nonce="random">
       document.querySelector('#user_name').onchange = event => {
         location.hash = event.target.value;
