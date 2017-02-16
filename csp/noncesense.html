@@ -13,8 +13,8 @@
       Type your name: <input type="text" id="user_name" />
     </div>
     <script nonce="random">
-      document.querySelector('#user_name').onchange = element => {
-        location.hash = element.value;
+      document.querySelector('#user_name').onchange = event => {
+        location.hash = event.target.value;
         location.reload();
       };
     </script>
