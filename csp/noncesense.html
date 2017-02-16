@@ -16,7 +16,7 @@
     <div class="salutation">
       <script nonce="random">
         if (location.hash.length > 2)
-          document.write('Hello ' + location.hash.slice(1));
+          document.write('Hello ' + unescape(location.hash.slice(1)));
       </script>
     </div>
     <span class="question">
