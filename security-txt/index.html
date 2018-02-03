@@ -19,6 +19,7 @@
               return r.text().then(function(t){
                 if (t.match(/^\w+:\s*\S*\n/)) {
                   li.className += ' list-group-item-success';
+                  ccc.innerHTML = (ccc.innerHTML*1) + 1;
                 } else {
                   throw 'wtf';
                 }
@@ -34,7 +35,7 @@
     </script>
   </head>
   <body>
-    <h1>security.txt adoption</h1>
+    <h1>security.txt adoption <span id=ccc>0</span>/50</h1>
     <ul id=listi class="list-group">
     </ul>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
