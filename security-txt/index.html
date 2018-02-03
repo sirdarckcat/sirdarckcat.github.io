@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>security.txt adoption</title>
+    <script>
+      var alexaTop50=["//google.com/.well-known/security.txt", "//youtube.com/.well-known/security.txt", "//facebook.com/.well-known/security.txt", "//baidu.com/.well-known/security.txt", "//wikipedia.org/.well-known/security.txt", "//reddit.com/.well-known/security.txt", "//yahoo.com/.well-known/security.txt", "//google.co.in/.well-known/security.txt", "//qq.com/.well-known/security.txt", "//amazon.com/.well-known/security.txt", "//taobao.com/.well-known/security.txt", "//twitter.com/.well-known/security.txt", "//tmall.com/.well-known/security.txt", "//google.co.jp/.well-known/security.txt", "//live.com/.well-known/security.txt", "//vk.com/.well-known/security.txt", "//instagram.com/.well-known/security.txt", "//sohu.com/.well-known/security.txt", "//sina.com.cn/.well-known/security.txt", "//jd.com/.well-known/security.txt", "//weibo.com/.well-known/security.txt", "//360.cn/.well-known/security.txt", "//google.de/.well-known/security.txt", "//google.co.uk/.well-known/security.txt", "//google.com.br/.well-known/security.txt", "//google.fr/.well-known/security.txt", "//google.ru/.well-known/security.txt", "//yandex.ru/.well-known/security.txt", "//netflix.com/.well-known/security.txt", "//linkedin.com/.well-known/security.txt", "//google.it/.well-known/security.txt", "//twitch.tv/.well-known/security.txt", "//t.co/.well-known/security.txt", "//google.com.hk/.well-known/security.txt", "//google.es/.well-known/security.txt", "//pornhub.com/.well-known/security.txt", "//alipay.com/.well-known/security.txt", "//xvideos.com/.well-known/security.txt", "//yahoo.co.jp/.well-known/security.txt", "//google.ca/.well-known/security.txt", "//ebay.com/.well-known/security.txt", "//list.tmall.com/.well-known/security.txt", "//google.com.mx/.well-known/security.txt", "//microsoft.com/.well-known/security.txt", "//bing.com/.well-known/security.txt", "//imgur.com/.well-known/security.txt", "//ok.ru/.well-known/security.txt", "//bongacams.com/.well-known/security.txt", "//office.com/.well-known/security.txt", "//aliexpress.com/.well-known/security.txt"];
+
+      console.log(alexaTop50.map(function(a){
+        var li = listi.appendChild(document.createElement('li'));
+        li.className = 'list-group-item';
+        li.innerHTML = a.link(a);
+        return fetch('https://cors-anywhere.herokuapp.com/https:'+a).then(function(r){
+          if (r.status == 404) {
+            throw '404';
+          } else {
+            return r.text().then(function(t){
+              if (t.match(/^\w+:\s*\S*$/)) {
+                li.className += ' list-group-item-success';
+              } else {
+                throw 'wtf';
+              }
+              return [a, t];
+            });
+          }
+        }).catch(function(e){
+          li.className += ' list-group-item-danger';
+          throw e;
+        });
+      }));
+    </script>
+  </head>
+  <body>
+    <h1>security.txt adoption</h1>
+    <ul id=listi class="list-group">
+    </ul>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
