@@ -17,7 +17,7 @@
               throw '404';
             } else {
               return r.text().then(function(t){
-                if (t.match(/^\w+:\s*\S*$/)) {
+                if (t.match(/^\w+:\s*\S*\n/)) {
                   li.className += ' list-group-item-success';
                 } else {
                   throw 'wtf';
