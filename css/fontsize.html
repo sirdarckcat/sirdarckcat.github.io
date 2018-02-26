@@ -1,0 +1,118 @@
+<style>
+  @font-face{
+    font-family: 'easysize';
+    src: local('carlito');
+    unicode-range: U+30-39, U+60-66;
+  }
+  @font-face{
+    font-family: 'easysize';
+    src: local('caladea');
+    unicode-range: U+33, U+61;
+  }
+  @font-face{
+    font-family: 'easysize';
+    src: local('arimo');
+    unicode-range: U+38;
+  }
+  @font-face{
+    font-family: 'easysize';
+    src: local('tinos');
+    unicode-range: U+39;
+  }
+  @font-face{
+    font-family: 'easysize';
+    src: local('cousine');
+    unicode-range: U+64;
+  }
+</style>
+<p>Secret: <a id="secret" style="width:0px"><script>
+  document.write([...crypto.getRandomValues(new Uint8Array(16))].map(n=>('0'+n.toString(16)).slice(-2)).join(''));
+</script></a></p>
+
+look at the console.
+
+<style>
+  #secret {
+    display: block;
+  }
+  body {
+    height: 10000px;
+    width: 10000px;
+  }
+  .probe, #secret {
+    font-variant-ligatures: none;
+    font-feature-settings: "kern" 0, "liga" 0;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    font-kerning: none;
+    text-rendering: optimizeSpeed;
+    font-style: oblique;
+    outline: 1px solid blue;
+    font-size: 1000px;
+    font-family: 'easysize';
+    word-break: break-all;
+    text-align: right;
+  }
+  /*caladea carlito arimo tinos cousine*/
+</style>
+
+<script type=text/javascript>
+  var map = {};
+  var rev = {};
+  let s = document.body.appendChild(document.createElement('span'));
+  s.className = 'probe';
+  for(let i=0;i<16;i++){
+    for(let j=0;j<17;j++){
+      for(let k=0;k<17;k++){
+        s.style.display='inline';
+        s.style.width='auto';
+        let jC = j<16?j.toString(16):'';
+        let kC = k<16?k.toString(16):'';
+        let token = i.toString(16) + jC + kC;
+        s.innerHTML = token;
+        let {width} = s.getBoundingClientRect();
+        let maxWidth = Math.ceil(width);
+        s.style.display='block';
+        s.innerHTML += '7';
+        s.style.width=maxWidth+'px';
+        let {height} = s.getBoundingClientRect();
+        let minHeight = height, minWidth = width;
+        let wraps = token.length==2?2:0;
+        for(let o=0;wraps>0 && o<maxWidth;o++){
+          s.style.width=(maxWidth-o)+'px';
+          let {width, height} = s.getBoundingClientRect();
+          if(height>minHeight){
+            minHeight = height;
+            minWidth = width+1;
+            wraps--;
+          }
+        }
+        minWidth = Math.ceil(minWidth);
+        map[minWidth]=map[minWidth]||[];
+        map[minWidth].push(token);
+        map[maxWidth]=map[maxWidth]||[];
+        map[maxWidth].push(token);
+        rev[token] = [maxWidth, minWidth];
+      }
+    }
+  }
+</script>
+
+<script type=text/javascript>
+  let lastHeight = null, lastWidth = 0, i=0, heights = [];
+  setInterval((_=>{
+    secret.style.width = secret.style.width.match(/\d+/)*1+1+'px';
+    let rect = secret.getBoundingClientRect();
+    let heightDiff = rect.height - lastHeight;
+    if (heightDiff) {
+      heights.push(heightDiff);
+      let width = Math.ceil(rect.width);
+      lastHeight = rect.height;
+      lastWidth = rect.width;
+      if(map[width]) {
+        console.log(i++, width, map[width].filter((c,i,a)=>a.indexOf(c)==i), lastHeight);
+      }else{
+        console.log(i++, width, 'not found', heightDiff);
+      }
+    }
+  }),1);
+</script>
