@@ -52,10 +52,10 @@ look at the console.
     word-break: break-all;
     text-align: right;
   }
-  /*caladea carlito arimo tinos cousine*/
 </style>
 
 <script type=text/javascript>
+  // these calculations only need to be done once per font, and can be done offline/server-side.
   var map = {};
   var rev = {};
   let s = document.body.appendChild(document.createElement('span'));
@@ -98,6 +98,11 @@ look at the console.
 </script>
 
 <script type=text/javascript>
+  // this can be implemented in CSS with transitions and scrollbars by:
+  //   1. have several (as many as the string length) wrapping containers
+  //   2. have each container match it's max-height to the line-height*length
+  //   3. overflow's scrollbar pointing to an external resource, marking it triggered
+  //   4. profit! you need to calculate the width from the animation timing and the request timing
   let lastHeight = null, lastWidth = 0, i=0, heights = [];
   setInterval((_=>{
     secret.style.width = secret.style.width.match(/\d+/)*1+1+'px';
