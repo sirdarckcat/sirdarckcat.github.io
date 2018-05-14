@@ -1,0 +1,324 @@
+<script>if(top!=self)location='data:,'</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://www.gstatic.com/firebasejs/5.0.2/firebase.js"></script>
+<style>
+.category-card {float: left;margin: 10px;}
+.task-card {
+	margin: 5px;
+    width: 90%;
+}
+.home-card {
+	float: left;
+    margin: 20px;
+}
+#scoreboardNode {
+  display: flex;
+  flex-direction: column;
+}
+#scoreboardNode li {
+  order: var(--rank);
+}
+#scoreboardNode li::before {
+  content: attr(data-rank) ". ";
+  display: block;
+}
+body:not([data-team-name]) .submitFlagButton {display:none;}
+body:not([data-team-name]) .SignedInUser {display:none;}
+body[data-team-name] .SignedOutUser {display:none;}
+[data-visible="false"]{display: none;}
+</style>
+<div aria-live="assertive" aria-atomic="true" aria-relevant="text" class="mdl-snackbar mdl-js-snackbar">
+    <div class="mdl-snackbar__text"></div>
+    <button type="button" class="mdl-snackbar__action"></button>
+</div>
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+  <div class="mdl-tabs__tab-bar">
+      <a href="#home-panel" class="mdl-tabs__tab is-active">Home</a>
+      <a href="#tasks-panel" class="mdl-tabs__tab">Tasks</a>
+      <a href="#scoreboard-panel" class="mdl-tabs__tab">Scoreboard</a>
+  </div>
+
+  <div class="mdl-tabs__panel is-active" id="home-panel">
+  	<div class="SignedInUser">
+    	You are signed in.
+    </div>
+    <div class="SignedOutUser">
+    	You are signed out.
+    </div>
+    <div class="home-card mdl-card mdl-shadow--2dp">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">Sign-in</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="recruitingSwitch" style="margin-bottom:2em">
+          <input type="checkbox" id="recruitingSwitch" class="mdl-switch__input" onchange="parentElement.nextElementSibling.dataset.visible=this.checked">
+          <span class="mdl-switch__label">I would like to receive email from Google for recruiting purposes.</span>
+        </label>
+        <div data-visible="false" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input class="mdl-textfield__input" type="email" id="emailAddress">
+          <label class="mdl-textfield__label" for="emailAddress">Email Address</label>
+        </div>
+        <dialog class="mdl-dialog" id="joinTeamDialog">
+          <form id=joinTeamForm action="javascript:" onsubmit="joinTeam(teamKeyNode.value);" class="mdl-dialog__content">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="teamKeyNode" autofocus onfocus="value=new window.URL(location.href).searchParams.get('key')">
+              <label class="mdl-textfield__label" for="teamKeyNode">Team Key</label>
+            </div>
+          </form>
+          <div class="mdl-dialog__actions">
+          	<input type=submit form=joinTeamForm class='mdl-button mdl-button-colored' value="Join Team">
+          </div>
+        </dialog>
+        <dialog class="mdl-dialog" id="createTeamDialog">
+          <h4 class="mdl-dialog__title">New team</h4>
+          <form id=createTeamForm action="javascript:" onsubmit="createTeam(teamNameNode.value)" class="mdl-dialog__content">
+            The team name can't contain any of the following characters: .$[]#/
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text"  id="teamNameNode" pattern="^[^.$[\]#/]+$">
+              <label class="mdl-textfield__label" for="teamNameNode">Team Name</label>
+            </div>
+          </form>
+          <div class="mdl-dialog__actions">
+            <input type=submit class='mdl-button mdl-button-colored' form=createTeamForm value="Create Team">
+          </div>
+        </dialog>
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <input type=button class='mdl-button mdl-button-colored' value="Join Existing Team" onclick="joinTeamDialog.showModal()">
+        <input type=button class='mdl-button mdl-button-colored' value="Create New Team" onclick="loginToGoogle(emailAddress.value).then(teamName=>{teamNameNode.value=teamName;createTeamDialog.showModal()})" >
+      </div>
+    </div>
+  </div>
+  <div class="mdl-tabs__panel" id="tasks-panel">
+    <div id=taskListNode></div>
+    <dialog class="mdl-dialog" id=submitFlagDialog>
+      <h4 class="mdl-dialog__title">Submit flag</h4>
+      <div class="mdl-dialog__content">
+        <form action="javascript:" id=submitFlagForm onsubmit="submitFlag(taskFormNode.value, flag.value)">
+            <select style=visibility:hidden id="taskFormNode"></select>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text"  id="flag">
+              <label class="mdl-textfield__label" for="sample1">Flag</label>
+            </div>
+        </form>
+      </div>
+      <div class="mdl-dialog__actions">
+        <input type=submit class=mdl-button form=submitFlagForm value=Submit>
+      </div>
+    </dialog>
+  </div>
+  <div class="mdl-tabs__panel" id="scoreboard-panel">
+    <ul id=scoreboardNode class=mdl-list></ul>
+  </div>
+</div>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDvD4ELO1S22-8pOxBEHxy2TA5ALKBFtck",
+    authDomain: "retro-ctf.firebaseapp.com",
+    databaseURL: "https://retro-ctf.firebaseio.com",
+    projectId: "retro-ctf",
+    storageBucket: "retro-ctf.appspot.com",
+    messagingSenderId: "928918119601"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+(function(){
+  var user = null;
+  var newTeamRef = null;
+  var googleAuth = new firebase.auth.GoogleAuthProvider();
+  window.loginToGoogle = function(emailAddress) {
+    googleAuth.setCustomParameters({
+      'login_hint': emailAddress
+    });
+    return firebase.auth().signInWithPopup(googleAuth).then(result=>{
+    	user = result.user;
+        return new Promise(resolve=>{
+          database.ref('userTeams').child(user.uid).once('value', data=>{
+            var teamKey = data.val();
+            if (teamKey) {
+              newTeamRef = database.ref('teams').child(teamKey);
+              newTeamRef.child('name').once('value', data=>{
+              	resolve(data.val()||'');
+              });
+            } else {
+              resolve('');
+            }
+          });
+        });
+    }).catch(error=>{
+    	alert('You need a Google account to create a new team');
+        throw error;
+    });
+  };
+  var database = firebase.database();
+  window.joinTeam = function(newTeamKey) {
+  	database.ref('teams').child(newTeamKey).child('name').once('value', async function(entry) {
+    	teamName = entry.val();
+    	teamKey = newTeamKey;
+        var notification = document.querySelector('.mdl-js-snackbar');
+        var data = {
+          message: 'Joined team ' + teamName,
+          timeout: 10000
+        };
+        notification.MaterialSnackbar.showSnackbar(data);
+        history.replaceState({}, '', '?key='+teamKey);
+        document.body.dataset.teamName = teamName;
+    });
+  };
+  window.createTeam = async function(newTeamName) {
+    newTeamRef = newTeamRef || database.ref('teams').push();
+  	var userTeamRef = database.ref('userTeams').child(user.uid);
+  	await userTeamRef.set(newTeamRef.key);
+    await database.ref('mapping').child(newTeamName).set(newTeamRef.key);
+    await newTeamRef.child('name').set(newTeamName);
+    joinTeam(newTeamRef.key);
+  };
+  var taskPoints = {};
+  var taskPointNodes = {};
+  function updateTaskPointNode(name, points) {
+  	points = taskPoints[name] || 500;
+  	var taskPointNode = taskPointNodes[name] = taskPointNodes[name] || document.createElement('span');
+    taskPointNode.innerHTML = '';
+    taskPointNode.appendChild(document.createTextNode(` (${points})`)); 
+    return taskPointNode;
+  }
+  var categoryNodes = {};
+  var taskNodes = {};
+  function getCategoryNode(category) {
+  	if (categoryNodes[category]) {
+    	return categoryNodes[category];
+    }
+  	var cardNode = taskListNode.appendChild(document.createElement('div'));
+    cardNode.className = 'mdl-card mdl-shadow--2dp category-card';
+    var titleNode = cardNode.appendChild(document.createElement('div'));
+    titleNode.className = 'mdl-card__title';
+    var h2 = titleNode.appendChild(document.createElement('h2'));
+    h2.className = 'mdl-card__title-text';
+    h2.appendChild(document.createTextNode(category));
+    var contentNode = cardNode.appendChild(document.createElement('div'));
+    contentNode.className = 'mdl-card__supporting-text mdl-card--expand';
+    return categoryNodes[category] = contentNode;
+  }
+  function updateTask(entry) {
+  	var task = entry.val();
+    var taskNode = taskNodes[entry.key] = taskNodes[entry.key] || getCategoryNode(task.category).appendChild(document.createElement('div'));
+    taskNode.dataset.score = '0';
+    taskNode.dataset.flags = '0';
+    taskNode.className = 'mdl-card mdl-shadow--2dp task-card';
+    taskNode.innerHTML = '';
+    var taskNodeTitle = taskNode.appendChild(document.createElement('div'));
+    taskNodeTitle.className = 'mdl-card__title';
+    var taskNodeText = taskNode.appendChild(document.createElement('div'));
+    taskNodeText.className = 'mdl-card__supporting-text mdl-card--expand';
+    var titleNodeH = document.createElement('h3');
+    titleNodeH.className = 'mdl-card__title-text';
+    titleNodeH.appendChild(document.createTextNode(task.name));
+    taskNodeTitle.appendChild(titleNodeH); 
+    taskNodeText.appendChild(document.createTextNode(task.description)); 
+    var taskPointNode = updateTaskPointNode(entry.key);
+    titleNodeH.appendChild(taskPointNode);
+    var taskNodeTool = taskNode.appendChild(document.createElement('div'));
+    taskNodeTool.className = 'mdl-dialog__actions';
+    var taskNodeButton = taskNodeTool.appendChild(document.createElement('button'));
+    taskNodeButton.className = 'mdl-button mdl-button--colored submitFlagButton'
+    taskNodeButton.appendChild(document.createTextNode('Submit'));
+	taskNodeButton.onclick=function(){
+    	taskFormNode.value=entry.key;
+    	submitFlagDialog.showModal();
+    };
+    taskFormNode.appendChild(new Option(task.name, entry.key));
+  }
+  database.ref('tasks').on('child_added', updateTask);
+  database.ref('tasks').on('child_changed', updateTask);
+  var teamNodes = {};
+  function sortTeams() {
+  	Object.keys(teamNodes).sort(
+      (a, b)=>
+      (teamNodes[b].dataset.score - teamNodes[a].dataset.score) ||
+      (teamNodes[a].dataset.last - teamNodes[b].dataset.last)
+    ).forEach((teamName, rank)=>{
+    	rank += 1;
+    	teamNodes[teamName].style.setProperty('--rank', rank);
+        teamNodes[teamName].dataset.rank = rank;
+        teamNodes[teamName].tabindex = 10e3 + rank;
+    });
+  }
+  var sortTeamsTimeout = false;
+  function sortTeamsOnce() {
+  	if (sortTeamsTimeout) return;
+  	sortTeamsTimeout = setTimeout(function() {
+    	sortTeamsTimeout = false;
+        sortTeams();
+    }, 1);
+  }
+  var teamTasks = {};
+  function updateTeam(teamName) {
+    var teamNode = teamNodes[teamName] = teamNodes[teamName] || scoreboardNode.appendChild(document.createElement('li'));
+    var points = teamTasks[teamName]?Object.keys(teamTasks[teamName]).reduce(
+    	(acc, task)=>acc+taskPoints[task],0):0;
+    var last = teamTasks[teamName]?Object.keys(teamTasks[teamName]).reduce(
+    	(prev, task)=>Math.max(prev, teamTasks[teamName][task]), 0):0;
+    teamNode.dataset.score = points;
+    teamNode.dataset.last = last;
+    teamNode.innerHTML = '';
+    teamNode.className = 'mdl-list__item';
+    teamNode.appendChild(document.createTextNode(`${teamName} (${points})`));
+    sortTeamsOnce();
+  }
+  function updateTaskPoints(entry) {
+  	taskPoints[entry.key] = Math.floor(500/entry.numChildren());
+    updateTaskPointNode(entry.key, taskPoints[entry.key]);
+    entry.forEach(function(teamEntry) {
+    	updateTeam(teamEntry.key);
+    });
+  }
+  database.ref('taskSolutions').on('child_added', updateTaskPoints);
+  database.ref('taskSolutions').on('child_changed', updateTaskPoints);
+  function updateTeamEntry(entry) {
+  	var team = entry.val();
+    teamTasks[entry.key] = team.tasks;
+    updateTeam(entry.key);
+  }
+  database.ref('scoreboard').on('child_added', updateTeamEntry);
+  database.ref('scoreboard').on('child_changed', updateTeamEntry);
+  window.submitFlag = async function(task, flag) {
+  	var teamRef =  database.ref('teams').child(teamKey);
+  	var submitRef = teamRef.child('tasks').child(task);
+    await submitRef.set({
+    	flag: flag,
+        solved: firebase.database.ServerValue.TIMESTAMP
+    });
+    submitRef.once('value', async function(entry) {
+    	try {
+          var submission = entry.val();
+          var solutionRef = database.ref('taskSolutions').child(task).child(teamName);
+          await solutionRef.set(submission.solved);
+          solutionRef.once('value', async function(entry) {
+              var scoreboardRef = database.ref('scoreboard').child(teamName).child('tasks').child(task);
+              await scoreboardRef.set(submission.solved);
+              scoreboardRef.once('value', function() {
+                var notification = document.querySelector('.mdl-js-snackbar');
+                var data = {
+                  message: 'Flag submitted!',
+                  timeout: 10000
+                };
+                notification.MaterialSnackbar.showSnackbar(data);
+              });
+          });
+        } catch(e) {
+          var notification = document.querySelector('.mdl-js-snackbar');
+          var data = {
+            message: 'Error ' + e,
+            timeout: 10000
+          };
+          notification.MaterialSnackbar.showSnackbar(data);
+        }
+    });
+  }
+})();
+</script>
