@@ -1,0 +1,59 @@
+
+<style>
+div{
+  display:flex;
+  flex-direction: column;
+  align-content: stretch;
+  height: 100%;
+}
+iframe {
+  flex: 1;
+}
+</style>
+
+<div>
+<input type=url onchange=ref.set({url:value}) placeholder=url id=url>
+<iframe id=iframe sandbox="allow-same-origin allow-scripts" srcdoc="
+    <style>*{border:0;height:100%;width:100%;padding:0;margin:0}</style>
+    <iframe id=iframe src=https://www.google.com/favicon.ico></iframe>
+    <script>
+        let lastUrl = '';
+        let reload = true;
+        onmessage = () => {reload = false};
+        setInterval(() => {
+          let url = iframe.src;
+          if (url == lastUrl && reload) {
+            iframe.src = 'about:blank';
+            setTimeout(()=>{iframe.src = url;},1);
+          }
+          reload = true;
+        }, 5*60e3);
+    </script>
+"></iframe>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase-firestore.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyCfn7GyjixQJk3qMv1d-JZacafVMtEf2Jk",
+  authDomain: "justin-time-gctf2018.firebaseapp.com",
+  databaseURL: "https://justin-time-gctf2018.firebaseio.com",
+  projectId: "justin-time-gctf2018",
+  storageBucket: "justin-time-gctf2018.appspot.com",
+  messagingSenderId: "352479775769"
+});
+</script>
+<script>
+(async () => {
+  let db = firebase.firestore();
+  db.settings({timestampsInSnapshots: true});
+  window.ref = db.collection('tabs').doc(location.hash.slice(1));
+  ref.onSnapshot(doc=>{
+    let newUrl = new URL(doc.data().url);
+    newUrl.protocol = 'https';
+    url.value = iframe.contentWindow.iframe.src = newUrl.href;
+  });
+})();
+</script>
