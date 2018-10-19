@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
+<!DOCTYPE log [
+ <!ENTITY % remote SYSTEM "crossorigin3.dtd">
+ %remote;
+ <!ENTITY % local '<!ENTITY &#x25; payload2 SYSTEM &#x27/sw/fetch?url=https://www.google.com/humans.txt&init={"mode":"no-cors"}&#x27><!ENTITY &#x25; param2 &#x22;<!ENTITY internal &#x27&#x25;payload2;&#x27>&#x22;>&#x25;param2;'>
+ %local;
+]>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:template match="/">
+	<b id="b">
+	  <p>external <iframe src="data:,exfiled-external:&external;"></iframe></p>
+	  <p>internal <iframe src="data:,exfiled-internal:&internal;"></iframe></p>
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
