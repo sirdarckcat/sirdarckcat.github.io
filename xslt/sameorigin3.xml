@@ -3,7 +3,7 @@
 <!DOCTYPE log [
  <!ENTITY % remote SYSTEM "sameorigin3.dtd">
  %remote;
- <!ENTITY % local "<!ENTITY &#x25; payload2 SYSTEM &#x22;secret.txt&#x22;><!ENTITY &#x25; param2 &#x22;<!ENTITY internal '&#x25;payload2;'>&#x22;>&#x25;param2;">
+ <!ENTITY % local "<!ENTITY &#x25; payload2 SYSTEM &#x22;xslt/secret.txt&#x22;><!ENTITY &#x25; param2 &#x22;<!ENTITY internal '&#x25;payload2;'>&#x22;>&#x25;param2;">
  %local;
 ]>
 <xsl:stylesheet version="1.0" id="xslt"
