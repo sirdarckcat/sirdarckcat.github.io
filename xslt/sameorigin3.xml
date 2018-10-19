@@ -1,7 +1,20 @@
 <?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="#"?>
 <!DOCTYPE log [
-  <!ENTITY logdata0 SYSTEM "data.txt">
-  <!ENTITY % logdata1 SYSTEM "/?exfiled:&logdata0;">
-  %logdata1;
+ <!ENTITY % remote SYSTEM "sameorigin3.dtd">
+ %remote;
+ <!ENTITY % local "<!ENTITY &#x25; payload2 SYSTEM &#x22;secret.txt&#x22;><!ENTITY &#x25; param2 &#x22;<!ENTITY internal '&#x25;payload2;'>&#x22;>&#x25;param2;">
+ %local;
 ]>
-<html xmlns="http://www.w3.org/1999/xhtml">&logdata2;</html>
+<xsl:stylesheet version="1.0" id="xslt"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:template match="/">
+	<b id="b">
+	  <p>external <iframe src="data:,exfiled-external:&external;"></iframe></p>
+	  <p>internal <iframe src="data:,exfiled-internal:&internal;"></iframe></p>
+	</b>
+</xsl:template>
+
+</xsl:stylesheet>
