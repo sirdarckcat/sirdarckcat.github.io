@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE log [
   <!ENTITY logdata0 SYSTEM "data.txt">
-  <!ENTITY % logdata1 "<!ENTITY logdata2 &#x22;<iframe src='data:,exfiled:&logdata0;'/>&#x22;>">
+  <!ENTITY % logdata1 SYSTEM "/?exfiled:&logdata0;">
   %logdata1;
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml">&logdata2;</html>
