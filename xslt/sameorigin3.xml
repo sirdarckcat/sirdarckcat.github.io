@@ -1,5 +1,3 @@
 <?xml version="1.0"?>
-<!DOCTYPE log [ <!ENTITY SYSTEM "data.txt"><!ENTITY logdata1 "<iframe src='data:,exfiled:&logdata0;'/>"> ]>
-<html xmlns="http://www.w3.org/1999/xhtml">
-	&logdata0;&logdata1;
-</html>
+<!DOCTYPE log [ <!ENTITY logdata0 SYSTEM "data.txt"><!ENTITY logdata1 "<iframe src='data:,exfiled:&logdata0;'/>"> ]>
+<html xmlns="http://www.w3.org/1999/xhtml">&logdata1;</html>
