@@ -12,6 +12,8 @@ var dbPromise = new Promise(function(resolve, reject) {
 
 self.addEventListener('fetch', function(event) {
   var url = new URL(event.request.url);
+  if (url.pathname.match(/\/sw\/debugger$/))
+    debugger;
   if (url.pathname.match(/\/sw\/fetch$/))
     event.respondWith(fetch(new Request(
       unescape(url.search.match(/(?:&|^\?)url=([^&]+)/)[1]),
