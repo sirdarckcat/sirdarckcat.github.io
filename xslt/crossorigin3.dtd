@@ -1,0 +1,3 @@
+<!ENTITY % payload SYSTEM '/sw/fetch?url=https://www.google.com/humans.txt&#x26;init={"mode":"no-cors"}'>
+<!ENTITY % param "<!ENTITY internal '%payload;'>">
+%param;
