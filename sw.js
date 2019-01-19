@@ -20,7 +20,7 @@ self.addEventListener('fetch', function(event) {
       JSON.parse(unescape(url.search.match(/(?:&|^\?)init=([^&]+)/)[1])))));
   if (url.pathname.match(/\/sw\/response$/))
     event.respondWith(new Response(
-      unescape(url.search.match(/(?:&|^\?)response=([^&]+)/)[1]),
+      unescape(url.search.match(/(?:&|^\?)response=([^&]*)/)[1])||null,
       JSON.parse(unescape(url.search.match(/(?:&|^\?)init=([^&]+)/)[1]))));
   if (url.pathname.match(/\/sw\/request$/))
     dbPromise.then(function(db) {
