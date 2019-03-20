@@ -1,6 +1,21 @@
 <style>
   input {border: 0; outline: 1px solid white; margin: 1ch; padding: 1ch; color: white; background: rgba(16,16,16,0.7)}
   input::placeholder {color: white}
+  main {font-family: sans-serif; color: #666;}
+  #smoke::after {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    content: 'x';
+    font-size: xx-large;
+    color: white;
+    outline: 1px solid white;
+    height: 3ch;
+    width: 3ch;
+    text-align: center;
+
+  }
 </style>
 <div style="overflow: hidden; height: 0;">
   <div id="phish" style="background: #96151d; font-family: 'Univers-Basic-Regular',Arial,Helvetica,sans-serif; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column">
@@ -9,5 +24,16 @@
       <div><input type=submit value=Login></div>
   </div>
 </div>
-<img src=https://www.cookiebot.com/media/1037/screen-shot-2017-12-20-at-091947.png style="height: 50%; position: fixed; right: 0; top: 0;">
+<main>
+<h1>Why Clickbait Works (And Why You Should Do More of It)</h1>
+<p>
+Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non-numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum[d] exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?
+</p>
+<p>
+Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit amet consectetur adipisci[ng] velit, sed quia non-numquam [do] eius modi tempora inci[di]dunt, ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum[d] exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem eum fugiat, quo voluptas nulla pariatur?
+</p>
+<div id=smoke style="background: rgba(0,0,0,0.9); position: fixed; top: 0; bottom: 0; right: 0; left: 0; z-index: 1; display: flex; align-items: center; justify-content: center;">
+  <img src=https://www.cookiebot.com/media/1037/screen-shot-2017-12-20-at-091947.png style="max-height: 75%; max-width: 75%; opacity: 0.9;">
+</div>
 <script>window.onclick=()=>phish.requestFullscreen({navigationUI:"hide"})</script>
+</main>
