@@ -1,0 +1,9 @@
+Click the Browser Action and open the console.
+<script>
+(async () => {
+  for(;;) { 
+    await new Promise(res=>setTimeout(res, 1e3));
+    with(await fetch('?')){console.log([...headers],await text());}
+  }
+})();
+</script>
