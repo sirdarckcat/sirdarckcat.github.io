@@ -1,0 +1,4 @@
+dump1 - xls copy
+dump2 - recursive meaning
+dump3 - known symbols
+dump4 - expanded vocabulary
