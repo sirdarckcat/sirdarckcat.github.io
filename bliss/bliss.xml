@@ -3,7 +3,7 @@
 <style>
 @font-face {
   font-family: 'New Bliss Grid';
-  src: url('AOFFACEverblissninetyeight.woff') format('woff');
+  src: url('fixed2.woff2') format('woff2');
   unicode-range: E000-U+E37F;
 }
 @font-face {
