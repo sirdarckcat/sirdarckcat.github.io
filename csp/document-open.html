@@ -1,0 +1,11 @@
+<script>
+setTimeout(() => {
+document.close();
+document.open('text/html');
+document.write('<html><head><meta http-equiv=content-security-policy content="default-src \'none\'"></head></html>');
+document.close();
+document.open('text/html');
+document.write('<script>alert(1)<\/script>');
+document.close();
+});
+</script>
