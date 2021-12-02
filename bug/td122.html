@@ -3,7 +3,7 @@ Click the Browser Action and open the console.
 (async () => {
   for(;;) { 
     await new Promise(res=>setTimeout(res, 1e3));
-    with(await fetch('?')){console.log([...headers],await text());}
+    with(await fetch('?INTERCEPTME')){console.log(status,[...headers],await text());}
   }
 })();
 </script>
