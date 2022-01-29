@@ -10,9 +10,9 @@ class MyAudioProcessor extends AudioWorkletProcessor {
     this.counter++;
     for(let i=0;i<128;i++) {
       for(let j=0;j<inputList.length;j++){
-        const baseline = inputList[0][j][i];
+        const baseline = inputList[j][0][i];
         for(let k=j+1;k<inputList.length;k++){
-          if (inputList[0][k][i]!=baseline) {
+          if (inputList[k][0][i]!=baseline) {
             this.differences.push({
               counter: this.counter,
               sample: i,

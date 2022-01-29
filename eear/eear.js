@@ -15,7 +15,7 @@ onload = async function () {
   await audioContext.resume();
   console.log(audioContext);
   await audioContext.audioWorklet.addModule("processor1.js");
-  const workletNode = new AudioWorkletNode(audioContext, "my-audio-processor");
+  const workletNode = new AudioWorkletNode(audioContext, "my-audio-processor", {numberOfInputs: deviceStreams.length});
   console.log(workletNode);
-  deviceStreams.forEach(deviceStream=>audioContext.createMediaStreamSource(deviceStream).connect(workletNode));
+  deviceStreams.forEach((deviceStream, index)=>audioContext.createMediaStreamSource(deviceStream).connect(workletNode, 0, index));
 };
