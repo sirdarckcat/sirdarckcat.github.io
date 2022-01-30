@@ -1,40 +1,44 @@
+import {RingBufferWriter} from "./ring-buffer.js";
+
 class MyAudioProcessor extends AudioWorkletProcessor {
-  counter = 0;
-  differences = null;
+  ringBuffer1 = null;
+  ringBuffer2 = null;
+  readData = 0;
+  started = false;
+  N = 0;
   constructor() {
     super();
-    this.differences = [];
+    this.port.onmessage = e => {
+      if (e.data.type != 'setSabs') return;
+      this.ringBuffer1 = new RingBufferWriter(
+        new Float32Array(e.data.sab1), e.data.off1);
+      this.ringBuffer2 = new RingBufferWriter(
+        new Float32Array(e.data.sab2), e.data.off2);
+      this.N = e.data.N;
+    };
+    this.port.postMessage({type:'setSampleRate', sampleRate});
   }
 
   process(inputList, outputList, parameters) {
-    this.counter++;
-    for(let i=0;i<128;i++) {
-      for(let j=0;j<inputList.length;j++){
-        if (inputList[j].length == 0) {
-          return true;
-        }
-        const baseline = inputList[j][0][i];
-        for(let k=j+1;k<inputList.length;k++){
-          if (inputList[k].length == 0) {
-            return true;
-          }
-          if (inputList[k][0][i]!=baseline) {
-            this.differences.push({
-              counter: this.counter,
-              sample: i,
-              input1: j,
-              input2: k,
-              input1Value: baseline,
-              input2Value: inputList[k][0][i]
-            });
-          }
-        }
-      }
+    if (inputList.length != 2) {
+      throw new Error('Need exactly two mics, sorry.');
     }
-    if(Math.random()<0.001) {
-      console.log(this.differences);
-      throw new Error('fuck');
+
+    if(!this.started && (!inputList[0][0][0] || !inputList[1][0][0])) {
+      // mics not sending data yet
+      return true;
     }
+    if (!this.ringBuffer1 || !this.ringBuffer2) {
+      // buffers not ready yet
+      return true;
+    }
+    this.started = true;
+
+    if (inputList[0][0].length != inputList[1][0].length) {
+      throw new Error('Sample size is different accross inputs');
+    }
+    this.ringBuffer1.add(inputList[0][0]);
+    this.ringBuffer2.add(inputList[1][0]);
     return true;
   }
 };
