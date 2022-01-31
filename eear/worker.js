@@ -43,7 +43,7 @@ class TDOAWorker {
     let cc = tf.reshape(tf.spectral.irfft(R2), [n]);
     let max_shift = interp * n / 2;
     if (max_tau) {
-      max_shift = Math.min(interp * fs * max_tau, max_shift)
+      max_shift = Math.min(parseInt(interp * fs * max_tau), max_shift)
     }
     cc = tf.concat([
       tf.slice(cc, cc.shape[0] - max_shift, max_shift),
