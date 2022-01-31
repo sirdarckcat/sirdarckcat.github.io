@@ -51,7 +51,7 @@ class TDOAWorker {
     ]);
     const shift = tf.argMax(tf.abs(cc));
     const shiftCorrected = shift.arraySync() - max_shift;
-    const tau = shiftCorrected / interp * fs;
+    const tau = shiftCorrected / (interp * fs);
     return {shift: shiftCorrected, tau};
   }
 
