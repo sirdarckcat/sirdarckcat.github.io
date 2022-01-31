@@ -58,8 +58,10 @@ class TDOAWorker {
   process() {
     const sound_speed = 343.2;
     const distance = 0.14;
-    const mic1 = tf.tensor1d(this.ringBuffer1.last(this.N));
-    const mic2 = tf.tensor1d(this.ringBuffer2.last(this.N));
+    do {
+      mic1 = this.ringBuffer1.last(this.N);
+      mic2 = this.ringBuffer2.last(this.N);
+    } while (mic1.findIndex(x=>!x) != -1 || mic2.findIndex(x=>!x) != -1);
     const max_tau = distance / sound_speed;
 
     const tau = this.gccPhat(mic1, mic2, this.sampleRate, max_tau);
