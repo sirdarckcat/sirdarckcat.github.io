@@ -39,7 +39,7 @@ class TDOAWorker {
     const RSIG_conj = tf.complex(tf.real(RSIG), tf.neg(tf.imag(RSIG)));
     const R = tf.mul(SIG, RSIG_conj);
     // R2=R/abs(R)
-    const R2 = tf.complex(tf.div(tf.real(R),tf.abs(R)),tf.div(tf.imag(R),tf.abs(R)));
+    const R2 = tf.complex(tf.mul(tf.real(R), tf.div(1, tf.abs(R))), tf.mul(tf.imag(R), tf.div(1, tf.abs(R))));
     let cc = tf.reshape(tf.spectral.irfft(R2), [n]);
     let max_shift = interp * n / 2;
     if (max_tau) {
