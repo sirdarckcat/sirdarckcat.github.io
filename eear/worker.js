@@ -63,7 +63,7 @@ class TDOAWorker {
     const max_tau = distance / sound_speed;
 
     const tau = this.gccPhat(mic1, mic2, this.sampleRate, max_tau);
-    return {tau, theta: Math.asin(tau.tau/max_tau)*180/Math.PI};
+    return { tau, m: tau.tau * sound_speed, theta: Math.asin(tau.tau / max_tau) * 180 / Math.PI };
   }
 };
 
