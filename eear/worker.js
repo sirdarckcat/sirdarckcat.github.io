@@ -15,9 +15,9 @@ class TDOAWorker {
       switch (e.data.type) {
         case "setSabs":
           this.ringBuffer1 = new RingBufferReader(
-            new Float32Array(e.data.sab1), e.data.off1);
+            new Float32Array(e.data.sab1), e.data.off1, e.data.pause);
           this.ringBuffer2 = new RingBufferReader(
-            new Float32Array(e.data.sab2), e.data.off2);
+            new Float32Array(e.data.sab2), e.data.off2, e.data.pause);
           this.N = e.data.N;
           this.sampleRate = e.data.sampleRate;
           e.ports[0].postMessage({});
@@ -58,10 +58,17 @@ class TDOAWorker {
   process() {
     const sound_speed = 343.2;
     const distance = 0.14;
+    let mic1Raw, mic2Raw;
     do {
-      mic1 = this.ringBuffer1.last(this.N);
-      mic2 = this.ringBuffer2.last(this.N);
-    } while (mic1.findIndex(x=>!x) != -1 || mic2.findIndex(x=>!x) != -1);
+      mic1Raw = this.ringBuffer1.last(this.N);
+      mic2Raw = this.ringBuffer2.last(this.N);
+    } while (mic1Raw.findIndex(x => !x) != -1 || mic2Raw.findIndex(x => !x) != -1);
+    this.ringBuffer1.pause();
+    this.ringBuffer2.pause();
+    const mic1 = mic1Raw.slice();
+    const mic2 = mic2Raw.slice();
+    this.ringBuffer1.resume();
+    this.ringBuffer2.resume();
     const max_tau = distance / sound_speed;
 
     const tau = this.gccPhat(mic1, mic2, this.sampleRate, max_tau);

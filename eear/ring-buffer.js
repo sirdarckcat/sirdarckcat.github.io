@@ -1,15 +1,17 @@
 class RingBufferWriter {
-  constructor(typedArray, offsetBuffer) {
+  constructor(typedArray, offsetBuffer, pauseBuffer) {
     this.typedArray = typedArray;
     this.maxSize = typedArray.length / 2;
     this.offsetBuffer = offsetBuffer;
     this.byteOffset = 0;
+    this.pauseView = new Uint8Array(pauseBuffer);
   }
 
   add(elements) {
     if (elements.length > this.maxSize) {
       throw new Error('Cant fit ' + elements.length);
     }
+    if (this.pauseView[0]) return;
     const subView1 = new this.typedArray.constructor(
       this.typedArray.buffer, this.byteOffset, elements.length);
     const secondByteOffset = (
@@ -26,11 +28,12 @@ class RingBufferWriter {
 }
 
 class RingBufferReader {
-  constructor(typedArray, offsetBuffer) {
+  constructor(typedArray, offsetBuffer, pauseBuffer) {
     this.typedArray = typedArray;
     this.maxSize = typedArray.length / 2;
     this.offsetBuffer = offsetBuffer;
     this.byteOffset = 0;
+    this.pauseView = new Uint8Array(pauseBuffer);
   }
 
   last(num) {
@@ -42,6 +45,14 @@ class RingBufferReader {
     const numBytes = num * this.typedArray.BYTES_PER_ELEMENT;
     return new this.typedArray.constructor(
       this.typedArray.buffer, middle + this.byteOffset - numBytes, num);
+  }
+
+  pause() {
+    this.pauseView.set([1], 0);
+  }
+
+  resume() {
+    this.pauseView.set([0], 0);
   }
 }
 

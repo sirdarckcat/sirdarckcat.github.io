@@ -11,9 +11,9 @@ class MyAudioProcessor extends AudioWorkletProcessor {
     this.port.onmessage = e => {
       if (e.data.type != 'setSabs') return;
       this.ringBuffer1 = new RingBufferWriter(
-        new Float32Array(e.data.sab1), e.data.off1);
+        new Float32Array(e.data.sab1), e.data.off1, e.data.pause);
       this.ringBuffer2 = new RingBufferWriter(
-        new Float32Array(e.data.sab2), e.data.off2);
+        new Float32Array(e.data.sab2), e.data.off2, e.data.pause);
       this.N = e.data.N;
     };
     this.port.postMessage({type:'setSampleRate', sampleRate});

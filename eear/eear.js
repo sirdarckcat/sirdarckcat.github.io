@@ -20,6 +20,7 @@ onload = async function () {
   const sab2 = new SharedArrayBuffer(N * 4 * 2);
   const off1 = new SharedArrayBuffer(4);
   const off2 = new SharedArrayBuffer(4);
+  const pause = new SharedArrayBuffer(4);
   const permission = await navigator.permissions.query({ name: 'microphone' });
   console.log(permission);
   const media = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -36,13 +37,13 @@ onload = async function () {
   await audioContext.audioWorklet.addModule("processor1.js");
   const workletNode = new AudioWorkletNode(audioContext, "my-audio-processor", { numberOfInputs: deviceStreams.length });
   console.log(workletNode);
-  workletNode.port.postMessage({ type: 'setSabs', sab1, sab2, off1, off2, N });
+  workletNode.port.postMessage({ type: 'setSabs', sab1, sab2, off1, off2, pause, N });
   workletNode.port.onmessage = async e => {
     if (e.data.type != 'setSampleRate') return;
     const worker = new Worker('worker.js', { type: "module" });
     console.log(worker);
     const mc = new MessageChannel;
-    worker.postMessage({ type: 'setSabs', sab1, sab2, off1, off2, N, sampleRate: e.data.sampleRate }, [mc.port1]);
+    worker.postMessage({ type: 'setSabs', sab1, sab2, off1, off2, pause, N, sampleRate: e.data.sampleRate }, [mc.port1]);
     await new Promise(res=>mc.port2.onmessage = res);
     while(true) {
       const mc = new MessageChannel;
