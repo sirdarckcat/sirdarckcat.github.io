@@ -1,5 +1,11 @@
 console.log('eear');
 onload = async function () {
+  const output = document.getElementById('output');
+  if (!output) {
+    alert('No output');
+    location.reload();
+    return;
+  }
   let sw = await navigator.serviceWorker.getRegistration();
   if (!sw) {
     let sw = navigator.serviceWorker.register('sw.js');
@@ -9,6 +15,7 @@ onload = async function () {
       console.log('SABs ready');
     } catch (e) {
       location.reload();
+      return;
     }
   }
   if (!crossOriginIsolated) {
@@ -48,7 +55,9 @@ onload = async function () {
     while(true) {
       const mc = new MessageChannel;
       worker.postMessage({type: 'getShift'}, [mc.port1]);
-      console.log(await new Promise(res=>mc.port2.onmessage = e=>res(e.data)));
+      const data = await new Promise(res=>mc.port2.onmessage = e=>res(e.data));
+      console.log(data);
+      output.appendChild(document.createTextNode(JSON.stringify(data)+"\n"));
     }
   };
   deviceStreams.forEach((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(workletNode, 0, index));
