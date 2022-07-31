@@ -44,7 +44,7 @@ class TDOAWorker {
     const shift = tf.argMax(tf.abs(cc)).arraySync();
     const shiftCorrected = (cc.shape[0] - shift) % cc.shape[0];
     const tau = shiftCorrected / sampleRate;
-    return { shift, shiftCorrected, tau, mic1, mic2, cc: cc.arraySync() };
+    return { shift, shiftCorrected, tau/* mic1, mic2, cc: cc.arraySync()*/ };
   }
 
   process() {
