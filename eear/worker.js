@@ -11,7 +11,7 @@ class TDOAWorker {
   ringBuffer2 = null;
   N;
   constructor() {
-    onmessage = e => {
+    onmessage = async e => {
       switch (e.data.type) {
         case "setSabs":
           this.ringBuffer1 = new RingBufferReader(
@@ -23,13 +23,13 @@ class TDOAWorker {
           e.ports[0].postMessage({});
           break;
         case "getShift":
-          const result = this.process();
+          const result = await this.process();
           e.ports[0].postMessage(result);
       }
     };
   }
 
-  gccPhat(mic1, mic2, sampleRate) {
+  async gccPhat(mic1, mic2, sampleRate) {
     const window = tf.signal.hannWindow(this.N);
     const sig = tf.mul(window, mic1);
     const rsig = tf.mul(window, mic2);
@@ -41,13 +41,13 @@ class TDOAWorker {
     // R2=R/abs(R)
     const R2 = tf.complex(tf.mul(tf.real(R), tf.divNoNan(1, tf.abs(R))), tf.mul(tf.imag(R), tf.divNoNan(1, tf.abs(R))));
     let cc = tf.reshape(tf.spectral.irfft(R2), [n]);
-    const shift = tf.argMax(tf.abs(cc)).arraySync();
+    const shift = await tf.argMax(tf.abs(cc)).array();
     const shiftCorrected = (cc.shape[0] - shift) % cc.shape[0];
     const tau = shiftCorrected / sampleRate;
     return { shift, shiftCorrected, tau/* mic1, mic2, cc: cc.arraySync()*/ };
   }
 
-  process() {
+  async process() {
     let mic1Raw, mic2Raw;
     do {
       mic1Raw = this.ringBuffer1.last(this.N);
@@ -60,7 +60,7 @@ class TDOAWorker {
     this.ringBuffer1.resume();
     this.ringBuffer2.resume();
 
-    return this.gccPhat(mic1, mic2, this.sampleRate);
+    return await this.gccPhat(mic1, mic2, this.sampleRate);
   }
 };
 
