@@ -1,0 +1,48 @@
+<script>
+  onload = async () => {
+    const permission = await navigator.permissions.query({ name: 'microphone' });
+    console.log(permission);
+    const media = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log(media);
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    console.log(devices);
+    const audioDevices = devices.filter(device => device.kind == 'audioinput' && device.deviceId != 'default');
+    console.log(audioDevices);
+
+    async function addRecorder(parent, deviceId) {
+      const downloadLink = document.createElement('a');
+      parent.appendChild(downloadLink);
+      downloadLink.appendChild(document.createTextNode('download'));
+      let rec;
+
+      const handleSuccess = function(stream) {
+        const options = {mimeType: 'audio/webm'};
+        const recordedChunks = [];
+        const mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.addEventListener('dataavailable', function(e) {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        });
+
+        mediaRecorder.addEventListener('stop', function() {
+          downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
+          downloadLink.download = deviceId + '.wav';
+        });
+
+        mediaRecorder.start();
+        rec=mediaRecorder;
+      };
+
+      await navigator.mediaDevices.getUserMedia(
+        { audio: { deviceId: { exact: deviceId } }, video: false })
+          .then(handleSuccess);
+      return rec;
+    }
+
+    const recorders = await Promise.all(
+      audioDevices.map(device=>addRecorder(document.body, device.deviceId)));
+    setTimeout(()=>{
+      recorders.forEach(r=>r.stop());
+    }, 10e3);
+  }
+</script>
