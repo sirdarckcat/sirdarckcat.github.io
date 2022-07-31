@@ -1,7 +1,7 @@
 import "./tf-core.js";
-import "./tf-backend-cpu.js";
+// import "./tf-backend-cpu.js";
 // import "./tf-backend-wasm.js";
-// import "./tf-backend-webgl.js";
+import "./tf-backend-webgl.js";
 import { RingBufferReader } from "./ring-buffer.js";
 
 tf.ready();
