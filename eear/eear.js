@@ -37,7 +37,7 @@ onload = async function () {
   const audioDevices = devices.filter(device => device.kind == 'audioinput' && device.deviceId != 'default');
   console.log(audioDevices);
   media.getTracks().forEach(track => track.stop());
-  const deviceStreams = await Promise.all(audioDevices.map(audioDevice => navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: audioDevice.deviceId } } })));
+  const deviceStreams = await Promise.all(audioDevices.map(audioDevice => navigator.mediaDevices.getUserMedia({ audio: { autoGainControl: false, channelCount: 2, echoCancellation: false, latency: 0, noiseSuppression: false, sampleRate: 48000, sampleSize: 16, volume: 1.0, deviceId: { exact: audioDevice.deviceId } } })));
   console.log(deviceStreams);
   const audioContext = new AudioContext();
   console.log(audioContext);
