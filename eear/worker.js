@@ -49,10 +49,11 @@ class TDOAWorker {
 
   async process() {
     let mic1Raw, mic2Raw;
+    let ignoreZeros = true;
     do {
       mic1Raw = this.ringBuffer1.last(this.N);
       mic2Raw = this.ringBuffer2.last(this.N);
-    } while (mic1Raw.findIndex(x => !x) != -1 || mic2Raw.findIndex(x => !x) != -1);
+    } while (ignoreZeros && (mic1Raw.findIndex(x => !x) != -1 || mic2Raw.findIndex(x => !x) != -1));
     this.ringBuffer1.pause();
     this.ringBuffer2.pause();
     const mic1 = mic1Raw.slice();
