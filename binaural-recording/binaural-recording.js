@@ -2,6 +2,7 @@ console.log('eear');
 onload = async function () {
   try {
     const output = document.getElementById('output');
+    const downloadLink = document.getElementById('downloadLink');
     if (!output) {
       alert('No output');
       location.reload();
@@ -39,19 +40,26 @@ onload = async function () {
     const audioContext = new AudioContext();
     log(audioContext);
     const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(workletNode, index));
+    log("outputs mapped");
     await audioContext.resume();
+    log("audio context started");
     const recordedChunks = [];
     const mediaRecorder = new MediaRecorder(audioCtx.destination, {mimeType: 'audio/webm'});
+    log(mediaRecorder);
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) recordedChunks.push(e.data);
     });
     mediaRecorder.addEventListener('stop', function() {
+      log("creating download");
       downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
       downloadLink.download = 'recording.wav';
     });
     mediaRecorder.start();
+    log("starting media recorder");
     await new Promise(r=>setTimeout(r, 10e3));
+    log("waited 10s");
     mediaRecorder.stop();
+    log("stopped media recorder");
   } catch(e) {
     log("Error", e);
   }
