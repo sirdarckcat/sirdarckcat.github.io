@@ -12,8 +12,12 @@ onload = async function () {
     output.textContent += o.join(' ') + '\n';
   };
   try {
-    const permission = await navigator.permissions.query({ name: 'microphone' });
-    log(permission);
+    try {
+      const permission = await navigator.permissions.query({ name: 'microphone' });
+      log(permission);
+    } catch(e) {
+      log("Permission Error", e);
+    }
     const media = await navigator.mediaDevices.getUserMedia({ audio: true });
     log(media);
     const devices = await navigator.mediaDevices.enumerateDevices();
