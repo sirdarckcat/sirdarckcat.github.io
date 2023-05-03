@@ -41,7 +41,7 @@ onload = async function () {
     log(audioContext);
     const destination = audioContext.createMediaStreamDestination();
     log(destination);
-    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(destination.stream, index));
+    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(destination, index));
     log(outputs);
     await audioContext.resume();
     log("audio context started");
