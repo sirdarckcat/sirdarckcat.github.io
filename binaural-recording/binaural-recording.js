@@ -1,17 +1,17 @@
 console.log('eear');
 onload = async function () {
+  const output = document.getElementById('output');
+  const downloadLink = document.getElementById('downloadLink');
+  if (!output) {
+    alert('No output');
+    location.reload();
+    return;
+  }
+  const log = (...o) => {
+    console.log(...o);
+    output.textContent += o.join(' ') + '\n';
+  };
   try {
-    const output = document.getElementById('output');
-    const downloadLink = document.getElementById('downloadLink');
-    if (!output) {
-      alert('No output');
-      location.reload();
-      return;
-    }
-    const log = (...o) => {
-      console.log(...o);
-      output.textContent += o.join(' ') + '\n';
-    };
     const permission = await navigator.permissions.query({ name: 'microphone' });
     log(permission);
     const media = await navigator.mediaDevices.getUserMedia({ audio: true });
