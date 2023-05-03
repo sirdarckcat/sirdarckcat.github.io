@@ -40,6 +40,7 @@ onload = async function () {
     const audioContext = new AudioContext();
     log(audioContext);
     const destination = audioContext.createMediaStreamDestination();
+    destination.channelCount = deviceStreams.length;
     log(destination);
     const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(destination, 0, index));
     log(outputs);
