@@ -39,17 +39,17 @@ onload = async function () {
     log(deviceStreams);
     const audioContext = new AudioContext();
     log(audioContext);
-    const destination = audioContext.createMediaStreamDestination();
-    destination.channelCount = deviceStreams.length;
-    log(destination);
     const merger = audioContext.createChannelMerger(deviceStreams.length);
     log(merger);
     const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(merger, 0, index));
     log(outputs);
-    await audioContext.resume();
-    log("audio context started");
     const recordedChunks = [];
-    const mediaRecorder = new MediaRecorder(merger.stream, {mimeType: 'audio/webm'});
+    const destination = audioContext.createMediaStreamDestination();
+    destination.channelCount = deviceStreams.length;
+    log(destination);
+    merger.connect(destination);
+    console.log("connected merger to destination");
+    const mediaRecorder = new MediaRecorder(destination.stream, {mimeType: 'audio/webm'});
     log(mediaRecorder);
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) recordedChunks.push(e.data);
@@ -59,12 +59,14 @@ onload = async function () {
       downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
       downloadLink.download = 'recording.wav';
     });
+    await audioContext.resume();
+    log("audio context started");
     mediaRecorder.start();
-    log("starting media recorder");
+    log("media recorder started");
     await new Promise(r=>setTimeout(r, 10e3));
     log("waited 10s");
     mediaRecorder.stop();
-    log("stopped media recorder");
+    log("media recorder stopped");
   } catch(e) {
     log("Error", e);
   }
