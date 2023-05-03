@@ -39,12 +39,14 @@ onload = async function () {
     log(deviceStreams);
     const audioContext = new AudioContext();
     log(audioContext);
-    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(workletNode, index));
-    log("outputs mapped");
+    const destination = audioContext.createMediaStreamDestination();
+    log(destination);
+    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(destination.stream, index));
+    log(outputs);
     await audioContext.resume();
     log("audio context started");
     const recordedChunks = [];
-    const mediaRecorder = new MediaRecorder(audioCtx.destination, {mimeType: 'audio/webm'});
+    const mediaRecorder = new MediaRecorder(destination.stream, {mimeType: 'audio/webm'});
     log(mediaRecorder);
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) recordedChunks.push(e.data);
