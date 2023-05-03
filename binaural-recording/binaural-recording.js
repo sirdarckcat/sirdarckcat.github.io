@@ -24,7 +24,7 @@ onload = async function () {
     const deviceStreams = await Promise.all(
       audioDevices.map(audioDevice => navigator.mediaDevices.getUserMedia({
         audio: {
-          autoGainControl: false,
+          autoGainControl: true,
           channelCount: 1,
           echoCancellation: false,
           latency: 0,
