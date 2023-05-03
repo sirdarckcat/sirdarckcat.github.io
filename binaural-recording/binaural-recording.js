@@ -50,7 +50,7 @@ onload = async function () {
       downloadLink.download = 'recording.wav';
     });
     mediaRecorder.start();
-    await new Promise(r=>this.setTimeout(r, 10e3));
+    await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
   } catch(e) {
     log("Error", e);
