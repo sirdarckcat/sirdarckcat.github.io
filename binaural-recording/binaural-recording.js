@@ -26,7 +26,7 @@ onload = async function () {
         audio: {
           autoGainControl: false,
           channelCount: 1,
-          echoCancellation: false,
+          echoCancellation: {exact: false},
           latency: 0,
           noiseSuppression: false,
           sampleRate: 48000,
