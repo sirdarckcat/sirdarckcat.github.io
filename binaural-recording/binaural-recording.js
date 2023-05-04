@@ -86,16 +86,23 @@ onload = async function () {
     });
     const oscillatorRight = new OscillatorNode(audioContext, {
       type: "sine",
-      frequency: 3520.00,
+      frequency: 3520,
     });
+    const oscillatorCenter = new OscillatorNode(audioContext, {
+      type: "sine",
+      frequency: 2093,
+    }); 
     oscillatorLeft.connect(speakerMerger, 0, 0);
     oscillatorRight.connect(speakerMerger, 0, 1);
+    oscillatorCenter.connect(audioContext.destination);
     speakerMerger.connect(audioContext.destination);
     const soundStart = audioContext.currentTime + 1;
-    oscillatorLeft.start(soundStart);
-    oscillatorRight.start(soundStart + 0.1);
-    oscillatorLeft.stop(soundStart + 0.2);
-    oscillatorRight.stop(soundStart + 0.3);
+    oscillatorCenter.start(soundStart);
+    oscillatorLeft.start(soundStart + 0.1);
+    oscillatorRight.start(soundStart + 0.2);
+    oscillatorLeft.stop(soundStart + 0.3);
+    oscillatorRight.stop(soundStart + 0.4);
+    oscillatorCenter.start(soundStart + 0.5);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
