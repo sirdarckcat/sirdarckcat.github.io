@@ -98,11 +98,11 @@ onload = async function () {
     speakerMerger.connect(audioContext.destination);
     const soundStart = audioContext.currentTime + 1;
     oscillatorCenter.start(soundStart);
-    oscillatorLeft.start(soundStart + 0.1);
-    oscillatorRight.start(soundStart + 0.2);
-    oscillatorLeft.stop(soundStart + 0.3);
-    oscillatorRight.stop(soundStart + 0.4);
-    oscillatorCenter.stop(soundStart + 0.5);
+    oscillatorLeft.start(soundStart + 0.01);
+    oscillatorRight.start(soundStart + 0.02);
+    oscillatorLeft.stop(soundStart + 0.03);
+    oscillatorRight.stop(soundStart + 0.04);
+    oscillatorCenter.stop(soundStart + 0.05);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
