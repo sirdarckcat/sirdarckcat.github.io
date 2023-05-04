@@ -24,13 +24,12 @@ Capture happens in a worklet, which copies data to a sharedarraybuffer of both c
 
 ## Android phone experiments
 
-After some testing, it seems like Android on a Pixel 6 Pro does post-processing on one of the mics (the bottom one) even when requested not to.
-In addition, the two mics are out of sync by some variable number of miliseconds. The variance changes between sessions. Volume is also different.
+After some testing, it seems like Android on a Pixel 6 Pro does post-processing on one of the mics (the bottom one) even when requested not to. In addition, the two mics are out of sync by some variable number of miliseconds. The variance changes between sessions. Volume is also different.
 
-Playing a tone and measuring the distance between them may work, but the accuracy needs to be very tight. The speed of sound is 343m/s which is
-343m/1000ms which is 0.343m/ms which is 34.3cm/ms so for an average phone the difference between mics will be max around 1/3rd of a second.
-The sample rate is 48,000 samples per second, so 48 samples per milisecond, so approximately 1-2samples different per cm.
+Playing a tone and measuring the distance between them may work, but the accuracy needs to be very tight. The speed of sound is 343m/s which is 343m/1000ms which is 0.343m/ms which is 34.3cm/ms so for an average phone the difference between mics will be max around 1/3rd of a millisecond. The sample rate is 48,000 samples per second, so 48 samples per milisecond, so approximately 1-2samples different per cm.
 
-This means that the accuracy needed is very high to get good data, and the variability between mics might make things very difficult.
+This means that the accuracy needed is very high to get good data, and the variability between mics means calibration needs to happen on every recording.
 
 Possibly other phones might be better. Pixel 7 Pro has 3 microphones, so maybe that works better.
+
+
