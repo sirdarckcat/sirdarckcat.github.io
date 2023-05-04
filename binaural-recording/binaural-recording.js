@@ -102,7 +102,7 @@ onload = async function () {
     oscillatorRight.start(soundStart + 0.2);
     oscillatorLeft.stop(soundStart + 0.3);
     oscillatorRight.stop(soundStart + 0.4);
-    oscillatorCenter.start(soundStart + 0.5);
+    oscillatorCenter.stop(soundStart + 0.5);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
