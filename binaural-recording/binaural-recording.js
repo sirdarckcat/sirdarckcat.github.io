@@ -43,7 +43,7 @@ onload = async function () {
           echoCancellation: {exact: false},
           latency: 0,
           noiseSuppression: false,
-          sampleRate: 16000, // 48000
+          sampleRate: 48000,
           sampleSize: 16,
           deviceId: {
             exact: audioDevice.deviceId
@@ -79,30 +79,6 @@ onload = async function () {
     await new Promise(r=>setTimeout(r, 1e3));
     mediaRecorder.start();
     log("media recorder started");
-    const speakerMerger = audioContext.createChannelMerger(2);
-    const oscillatorLeft = new OscillatorNode(audioContext, {
-      type: "sine",
-      frequency: 7040,
-    });
-    const oscillatorRight = new OscillatorNode(audioContext, {
-      type: "sine",
-      frequency: 3520,
-    });
-    const oscillatorCenter = new OscillatorNode(audioContext, {
-      type: "sine",
-      frequency: 2093,
-    }); 
-    oscillatorLeft.connect(speakerMerger, 0, 0);
-    oscillatorRight.connect(speakerMerger, 0, 1);
-    oscillatorCenter.connect(audioContext.destination);
-    speakerMerger.connect(audioContext.destination);
-    const soundStart = audioContext.currentTime + 1;
-    oscillatorCenter.start(soundStart + 0.01);
-    oscillatorCenter.stop(soundStart +  0.02);
-    oscillatorLeft.start(soundStart +   1.01);
-    oscillatorLeft.stop(soundStart +    1.02);
-    oscillatorRight.start(soundStart +  2.01);
-    oscillatorRight.stop(soundStart +   2.02);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
