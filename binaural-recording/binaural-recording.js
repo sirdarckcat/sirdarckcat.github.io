@@ -53,17 +53,17 @@ onload = async function () {
     log(deviceStreams);
     const audioContext = new AudioContext();
     log(audioContext);
-    const merger = audioContext.createChannelMerger(deviceStreams.length);
-    log(merger);
-    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(merger, 0, index));
+    const micMerger = audioContext.createChannelMerger(deviceStreams.length);
+    log(micMerger);
+    const outputs = deviceStreams.map((deviceStream, index) => audioContext.createMediaStreamSource(deviceStream).connect(micMerger, 0, index));
     log(outputs);
     const recordedChunks = [];
-    const destination = audioContext.createMediaStreamDestination();
-    destination.channelCount = deviceStreams.length;
-    log(destination);
-    merger.connect(destination);
-    console.log("connected merger to destination");
-    const mediaRecorder = new MediaRecorder(destination.stream, {mimeType: 'audio/webm'});
+    const micDestination = audioContext.createMediaStreamDestination();
+    micDestination.channelCount = deviceStreams.length;
+    log(micDestination);
+    micMerger.connect(micDestination);
+    console.log("connected micMerger to micDestination");
+    const mediaRecorder = new MediaRecorder(micDestination.stream, {mimeType: 'audio/webm'});
     log(mediaRecorder);
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) recordedChunks.push(e.data);
@@ -79,6 +79,22 @@ onload = async function () {
     await new Promise(r=>setTimeout(r, 1e3));
     mediaRecorder.start();
     log("media recorder started");
+    const speakerMerger = audioContext.createChannelMerger(2);
+    const oscillatorLeft = new OscillatorNode(audioContext, {
+      type: "sine",
+      frequency: 440,
+    });
+    const oscillatorRight = new OscillatorNode(audioContext, {
+      type: "sine",
+      frequency: 370,
+    });
+    oscillatorLeft.connect(speakerMerger, 0, 0);
+    oscillatorRight.connect(speakerMerger, 0, 1);
+    oscillatorLeft.start(0);
+    oscillatorRight.start(0);
+    oscillatorLeft.stop(2);
+    oscillatorRight.stop(2);
+    speakerMerger.connect(audioContext.destination);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
