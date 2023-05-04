@@ -9,7 +9,7 @@ onload = async function () {
   }
   const log = (...o) => {
     console.log(...o);
-    output.textContent += o.join(' ') + '\n';
+    output.textContent += o.map(o=>o.toJSON?o.toJSON():o.toString()).join(' ') + '\n';
   };
   try {
     try {
