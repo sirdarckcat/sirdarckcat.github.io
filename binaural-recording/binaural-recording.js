@@ -43,7 +43,7 @@ onload = async function () {
           echoCancellation: {exact: false},
           latency: 0,
           noiseSuppression: false,
-          sampleRate: 48000,
+          sampleRate: 16000, // 48000
           sampleSize: 16,
           deviceId: {
             exact: audioDevice.deviceId
