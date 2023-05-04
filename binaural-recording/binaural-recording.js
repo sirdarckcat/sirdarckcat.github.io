@@ -9,7 +9,13 @@ onload = async function () {
   }
   const log = (...o) => {
     console.log(...o);
-    output.textContent += o.map(o=>o.toJSON?o.toJSON():o.toString()).join(' ') + '\n';
+    output.textContent += o.map(o=>{
+      const asJson = JSON.stringify(o);
+      if (asJson.match(/\w/)) {
+        return asJson;
+      }
+      return o.toString();
+    }).join(' ') + '\n';
   };
   try {
     try {
