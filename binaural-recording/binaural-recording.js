@@ -41,9 +41,9 @@ onload = async function () {
           autoGainControl: false,
           channelCount: 1,
           echoCancellation: {exact: false},
-          latency: 0,
+          latency: {ideal: 0},
           noiseSuppression: false,
-          sampleRate: 48000,
+          sampleRate: {exact: 16000}, // 48000
           sampleSize: 16,
           deviceId: {
             exact: audioDevice.deviceId
