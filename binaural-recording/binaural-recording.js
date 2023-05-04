@@ -73,12 +73,13 @@ onload = async function () {
       downloadLink.href = URL.createObjectURL(new Blob(recordedChunks));
       downloadLink.download = 'recording.wav';
     });
+    await new Promise(r=>setTimeout(r, 1e3));
     await audioContext.resume();
     log("audio context started");
+    await new Promise(r=>setTimeout(r, 1e3));
     mediaRecorder.start();
     log("media recorder started");
     await new Promise(r=>setTimeout(r, 10e3));
-    log("waited 10s");
     mediaRecorder.stop();
     log("media recorder stopped");
   } catch(e) {
