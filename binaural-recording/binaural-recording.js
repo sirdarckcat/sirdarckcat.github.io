@@ -91,10 +91,11 @@ onload = async function () {
     oscillatorLeft.connect(speakerMerger, 0, 0);
     oscillatorRight.connect(speakerMerger, 0, 1);
     speakerMerger.connect(audioContext.destination);
-    oscillatorLeft.start(audioContext.currentTime);
-    oscillatorRight.start(audioContext.currentTime+1);
-    oscillatorLeft.stop(audioContext.currentTime+2);
-    oscillatorRight.stop(audioContext.currentTime+3);
+    const soundStart = audioContext.currentTime + 1;
+    oscillatorLeft.start(soundStart);
+    oscillatorRight.start(soundStart + 1);
+    oscillatorLeft.stop(soundStart + 2);
+    oscillatorRight.stop(soundStart + 3);
     await new Promise(r=>setTimeout(r, 10e3));
     mediaRecorder.stop();
     log("media recorder stopped");
