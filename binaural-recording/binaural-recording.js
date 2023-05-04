@@ -41,7 +41,7 @@ onload = async function () {
           autoGainControl: false,
           channelCount: 1,
           echoCancellation: {exact: false},
-          latency: {exact: 0},
+          latency: 0,
           noiseSuppression: false,
           sampleRate: 48000,
           sampleSize: 16,
