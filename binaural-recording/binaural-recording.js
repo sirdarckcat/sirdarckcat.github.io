@@ -1,4 +1,8 @@
-console.log('eear');
+console.log('binaural-recording');
+
+const KNOWN_GOOD_MICS = ['Speakerphone', 'Headset earpiece'];
+const KNOWN_BAD_MICS = ['Default', '']; // Bluetooth headset
+
 onload = async function () {
   const output = document.getElementById('output');
   const downloadLink = document.getElementById('downloadLink');
@@ -28,7 +32,7 @@ onload = async function () {
     log(media);
     const devices = await navigator.mediaDevices.enumerateDevices();
     log(devices);
-    const audioDevices = devices.filter(device => device.kind == 'audioinput' && device.deviceId != 'default');
+    const audioDevices = devices.filter(device => device.kind == 'audioinput' && device.deviceId != 'default' && KNOWN_GOOD_MICS.includes(device.label));
     log(audioDevices);
     media.getTracks().forEach(track => track.stop());
     const deviceStreams = await Promise.all(
