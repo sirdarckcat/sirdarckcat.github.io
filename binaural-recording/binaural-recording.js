@@ -85,11 +85,11 @@ onload = async function () {
       frequency: 7040,
     });
     const oscillatorRight = new OscillatorNode(audioContext, {
-      type: "sine",
+      type: "triangle",
       frequency: 3520,
     });
     const oscillatorCenter = new OscillatorNode(audioContext, {
-      type: "sine",
+      type: "square",
       frequency: 2093,
     }); 
     oscillatorLeft.connect(speakerMerger, 0, 0);
