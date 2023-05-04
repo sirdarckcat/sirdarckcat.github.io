@@ -91,8 +91,8 @@ onload = async function () {
     oscillatorLeft.connect(speakerMerger, 0, 0);
     oscillatorRight.connect(speakerMerger, 0, 1);
     oscillatorLeft.start(0);
-    oscillatorRight.start(0);
-    oscillatorLeft.stop(2);
+    oscillatorLeft.stop(1);
+    oscillatorRight.start(1);
     oscillatorRight.stop(2);
     speakerMerger.connect(audioContext.destination);
     await new Promise(r=>setTimeout(r, 10e3));
