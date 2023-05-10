@@ -63,7 +63,7 @@ onload = async function () {
     log(micDestination);
     micMerger.connect(micDestination);
     console.log("connected micMerger to micDestination");
-    const mediaRecorder = new MediaRecorder(micDestination.stream, {mimeType: 'audio/wav'});
+    const mediaRecorder = new MediaRecorder(micDestination.stream, {mimeType: 'audio/webm'});
     log(mediaRecorder);
     mediaRecorder.addEventListener('dataavailable', function(e) {
       if (e.data.size > 0) recordedChunks.push(e.data);
