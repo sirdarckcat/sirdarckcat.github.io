@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TensorFlow.js Model Runner</title>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Load WebGPU Backend -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgpu@latest/dist/tf-backend-webgpu.min.js"></script>
+    <style>
+        :root { --bg: #0d1117; --text: #c9d1d9; --accent: #58a6ff; --panel: #161b22; --err: #f85149; --success: #238636; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+        }
+        h2 { color: var(--accent); border-bottom: 1px solid #30363d; padding-bottom: 10px; width: 100%; max-width: 800px; text-align: center; }
+        
+        .container { 
+            background: var(--panel); 
+            padding: 25px; 
+            border-radius: 8px; 
+            border: 1px solid #30363d; 
+            width: 100%; 
+            max-width: 800px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        /* Model Loading Section */
+        .section-title { font-weight: bold; color: #fff; margin-bottom: 15px; border-bottom: 1px solid #30363d; padding-bottom: 5px; display: block; }
+        .file-upload-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .file-label { width: 120px; color: var(--accent); font-size: 0.9em; }
+        input[type="file"] { color: #8b949e; cursor: pointer; flex-grow: 1; }
+
+        /* Backend Select */
+        select {
+            background: #0d1117; color: #fff; border: 1px solid #30363d; 
+            padding: 5px; border-radius: 4px; flex-grow: 1; cursor: pointer;
+        }
+
+        /* Tabs */
+        .tabs { display: flex; margin-top: 20px; border-bottom: 1px solid #30363d; }
+        .tab { 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            border: 1px solid transparent; 
+            border-bottom: none; 
+            color: #8b949e;
+            font-weight: bold;
+        }
+        .tab.active { 
+            color: #fff; 
+            background: var(--bg); 
+            border-color: #30363d; 
+            border-radius: 6px 6px 0 0;
+            margin-bottom: -1px;
+        }
+        .tab-content { 
+            display: none; 
+            padding: 20px; 
+            background: var(--bg); 
+            border: 1px solid #30363d; 
+            border-top: none; 
+            border-radius: 0 0 6px 6px;
+        }
+        .tab-content.active { display: block; }
+
+        /* Inputs */
+        textarea { 
+            width: 100%; height: 80px; padding: 10px; 
+            background: #0d1117; border: 1px solid #30363d; 
+            color: #fff; font-family: monospace; font-size: 1em; 
+            box-sizing: border-box; resize: vertical; 
+        }
+        
+        /* Buttons */
+        .btn { 
+            background: #1f6feb; color: white; border: none; 
+            padding: 10px 20px; font-size: 1em; cursor: pointer; 
+            width: 100%; border-radius: 6px; transition: background 0.2s; 
+            font-weight: bold; margin-top: 10px;
+        }
+        .btn-green { background: var(--success); }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background: #30363d; cursor: not-allowed; opacity: 0.7; }
+
+        /* Log */
+        #log { 
+            margin-top: 20px; 
+            white-space: pre-wrap; 
+            background: #0d1117; 
+            padding: 15px; 
+            border-radius: 4px; 
+            min-height: 100px; 
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #30363d; 
+            font-family: monospace;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        .status-ok { color: #3fb950; font-weight: bold; }
+        .status-err { color: var(--err); font-weight: bold; }
+        .hex-output { color: var(--accent); font-weight: bold; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+    <h2>Batch Model Processor (WebGPU)</h2>
+    
+    <div class="container">
+        <!-- 1. MODEL LOADER -->
+        <span class="section-title">1. Load Configuration</span>
+        <div class="file-upload-row">
+            <span class="file-label">Model JSON:</span>
+            <input type="file" id="json-upload" accept=".json">
+        </div>
+        <div class="file-upload-row">
+            <span class="file-label">Model Weights:</span>
+            <input type="file" id="bin-upload" accept=".bin">
+        </div>
+        <div class="file-upload-row">
+            <span class="file-label">Backend:</span>
+            <select id="backend-select">
+                <option value="webgpu" selected>WebGPU (Fastest)</option>
+                <option value="webgl">WebGL (Compatible)</option>
+                <option value="cpu">CPU (Slowest)</option>
+            </select>
+        </div>
+        <button id="loadBtn" class="btn" onclick="loadModel()">Initialize Backend & Model</button>
+
+        <!-- 2. INPUT TABS -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('text')">Text Input</div>
+            <div class="tab" onclick="switchTab('file')">File Upload</div>
+        </div>
+
+        <!-- TAB: TEXT -->
+        <div id="tab-text" class="tab-content active">
+            <label style="display:block; margin-bottom:5px;">Enter Input String:</label>
+            <textarea id="inputText" placeholder="Enter data to process..."></textarea>
+            <button id="runTextBtn" class="btn btn-green" onclick="runTextProcess()" disabled>Model Not Loaded</button>
+        </div>
+
+        <!-- TAB: FILE -->
+        <div id="tab-file" class="tab-content">
+            <label style="display:block; margin-bottom:5px;">Select Input File:</label>
+            <input type="file" id="data-file-upload">
+            <button id="runFileBtn" class="btn btn-green" onclick="runFileProcess()" disabled>Model Not Loaded</button>
+        </div>
+        
+        <div id="log">Select model files and click Load.</div>
+    </div>
+
+<script>
+    let model = null;
+
+    // --- UI Logic ---
+    function switchTab(mode) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if(mode === 'text') {
+            document.querySelector('.tab:nth-child(1)').classList.add('active');
+            document.getElementById('tab-text').classList.add('active');
+        } else {
+            document.querySelector('.tab:nth-child(2)').classList.add('active');
+            document.getElementById('tab-file').classList.add('active');
+        }
+    }
+
+    // --- 1. Load Model ---
+    async function loadModel() {
+        const jsonInput = document.getElementById('json-upload');
+        const binInput = document.getElementById('bin-upload');
+        const backendSelect = document.getElementById('backend-select').value;
+        const logDiv = document.getElementById('log');
+        
+        if (!jsonInput.files[0] || !binInput.files[0]) {
+            logDiv.innerHTML = "<span class='status-err'>Error: Please select BOTH model.json and .bin files.</span>";
+            return;
+        }
+
+        try {
+            logDiv.innerText = `Initializing ${backendSelect} backend...`;
+
+            // --- Critical WebGPU Check ---
+            if (backendSelect === 'webgpu') {
+                if (!navigator.gpu) {
+                    throw new Error("WebGPU is not supported by this browser. \nNote: WebGPU requires HTTPS or localhost (it does not work on file://). \nTry switching to WebGL.");
+                }
+            }
+
+            // 1. Set Backend
+            await tf.setBackend(backendSelect);
+            
+            // 2. Wait for it to be ready
+            await tf.ready();
+
+            // 3. Verify
+            const currentBackend = tf.getBackend();
+            if (currentBackend !== backendSelect) {
+                // If TFJS silently fell back (e.g. to CPU), warn the user
+                logDiv.innerText += `\nWarning: Requested ${backendSelect}, but active backend is ${currentBackend}.`;
+            } else {
+                logDiv.innerText += `\nBackend active: ${currentBackend.toUpperCase()}`;
+            }
+
+            logDiv.innerText += `\nLoading model files...`;
+
+            // 4. Load Graph Model
+            model = await tf.loadGraphModel(tf.io.browserFiles([jsonInput.files[0], binInput.files[0]]));
+
+            logDiv.innerText += "\nWarming up (compiling shaders)...";
+            
+            // 5. Warmup
+            const dummy = tf.zeros([1, 64]);
+            const res = model.execute(dummy);
+            await res.data(); // Explicitly wait for execution
+            res.dispose();
+            dummy.dispose();
+
+            logDiv.innerHTML += "\n<span class='status-ok'>Model Loaded & Ready!</span>";
+            
+            document.getElementById('runTextBtn').disabled = false;
+            document.getElementById('runFileBtn').disabled = false;
+
+        } catch (e) {
+            console.error(e);
+            logDiv.innerHTML += `\n<span class="status-err">Load Error: ${e.message}</span>`;
+            
+            // Helpful hint for WebGPU errors
+            if (backendSelect === 'webgpu' && (e.message.includes('not supported') || e.message.includes('backend'))) {
+                 logDiv.innerHTML += `\n<span class="status-err">Tip: Try selecting 'WebGL' in the dropdown.</span>`;
+            }
+        }
+    }
+
+    // --- Core: Bytes -> Tensor [N, 64] ---
+    function bytesToBatchedTensor(uint8Array) {
+        // 1. Pad to block size
+        const blockSize = 8;
+        const paddingNeeded = blockSize - (uint8Array.length % blockSize);
+        const totalLen = uint8Array.length + paddingNeeded;
+        
+        // Create new array with padding
+        const padded = new Uint8Array(totalLen);
+        padded.set(uint8Array);
+        padded.fill(paddingNeeded, uint8Array.length);
+
+        const numBlocks = totalLen / blockSize;
+        const allBits = new Float32Array(numBlocks * 64); // Flat array for speed
+
+        // 2. Convert to Bits (Parallel-ish logic)
+        const view = new DataView(padded.buffer);
+        
+        for (let b = 0; b < numBlocks; b++) {
+            const offset = b * 8;
+            const left = view.getUint32(offset, false); // Big Endian
+            const right = view.getUint32(offset + 4, false);
+            
+            const base = b * 64;
+            for(let i=0; i<32; i++) {
+                allBits[base + i] = (left >>> i) & 1;      // Left bits
+                allBits[base + 32 + i] = (right >>> i) & 1; // Right bits
+            }
+        }
+
+        return tf.tensor2d(allBits, [numBlocks, 64]);
+    }
+
+    // --- Core: Tensor -> Bytes ---
+    function batchedTensorToBytes(tensor) {
+        const data = tensor.dataSync(); // Float32 array of 0s/1s
+        const numBlocks = data.length / 64;
+        const resultBytes = new Uint8Array(numBlocks * 8);
+        const view = new DataView(resultBytes.buffer);
+
+        for (let b = 0; b < numBlocks; b++) {
+            const base = b * 64;
+            let left = 0, right = 0;
+
+            // Reconstruct integers
+            for(let i=0; i<32; i++) {
+                if(data[base + i] > 0.5) left |= (1 << i);
+                if(data[base + 32 + i] > 0.5) right |= (1 << i);
+            }
+            
+            const offset = b * 8;
+            view.setUint32(offset, left, false);     // Big Endian
+            view.setUint32(offset + 4, right, false);
+        }
+        return resultBytes;
+    }
+
+    // --- Text Processing ---
+    async function runTextProcess() {
+        const text = document.getElementById('inputText').value;
+        const logDiv = document.getElementById('log');
+        if(!text) return;
+
+        try {
+            const result = tf.tidy(() => {
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(text);
+                const inputBatch = bytesToBatchedTensor(bytes);
+                
+                const start = performance.now();
+                const outputBatch = model.execute(inputBatch);
+                const end = performance.now();
+                
+                const outBytes = batchedTensorToBytes(outputBatch);
+                // Convert bytes to Hex string
+                const hex = Array.from(outBytes).map(b => b.toString(16).padStart(2,'0')).join('').toUpperCase();
+                
+                return { hex, time: (end - start).toFixed(2), blocks: inputBatch.shape[0] };
+            });
+
+            logDiv.innerHTML = `Mode: Text (Batch)\n` + 
+                               `Time: ${result.time}ms (${result.blocks} blocks)\n` +
+                               `Output Hex:\n<span class="hex-output">${result.hex}</span>`;
+        } catch (e) {
+            console.error(e);
+            logDiv.innerHTML = `<span class="status-err">Processing Error: ${e.message}</span>`;
+        }
+    }
+
+    // --- File Processing ---
+    async function runFileProcess() {
+        const fileInput = document.getElementById('data-file-upload');
+        const logDiv = document.getElementById('log');
+        
+        if (!fileInput.files[0]) {
+            logDiv.innerHTML = "<span class='status-err'>Please select a file first.</span>";
+            return;
+        }
+
+        try {
+            const file = fileInput.files[0];
+            logDiv.innerText = `Reading ${file.name} (${(file.size/1024).toFixed(1)} KB)...`;
+
+            const buffer = await file.arrayBuffer();
+            const bytes = new Uint8Array(buffer);
+
+            // Warning for huge files (Browser memory limits)
+            if (bytes.length > 50 * 1024 * 1024) {
+                logDiv.innerHTML += "\n<span class='status-err'>Warning: File > 50MB. This might crash the browser tab due to WebGL/WebGPU memory limits.</span>";
+                await new Promise(r => setTimeout(r, 100)); // UI refresh
+            }
+
+            const result = tf.tidy(() => {
+                const inputBatch = bytesToBatchedTensor(bytes);
+                
+                const start = performance.now();
+                logDiv.innerText += "\nProcessing on GPU...";
+                const outputBatch = model.execute(inputBatch);
+                const end = performance.now();
+                
+                const processedBytes = batchedTensorToBytes(outputBatch);
+                return { data: processedBytes, time: (end - start).toFixed(2), blocks: inputBatch.shape[0] };
+            });
+
+            // Trigger Download
+            const blob = new Blob([result.data], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = file.name + ".out";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            logDiv.innerHTML = `Mode: File (Batch)\n` + 
+                               `File: ${file.name}\n` +
+                               `Time: <b>${result.time}ms</b>\n` +
+                               `Throughput: ${((file.size / 1024 / 1024) / (result.time / 1000)).toFixed(2)} MB/s\n` +
+                               `<span class="status-ok">Download started automatically.</span>`;
+        } catch (e) {
+            console.error(e);
+            logDiv.innerHTML += `\n<span class="status-err">Processing Error: ${e.message}</span>`;
+        }
+    }
+</script>
+
+</body>
+</html>
+
