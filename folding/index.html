@@ -287,6 +287,13 @@
 
     /* --- MATH CORE --- */
     const PAPER_SIZE = 300;
+    const INV_ROOT_2 = 1 / Math.sqrt(2); // Pre-computed 1/√2 for diagonal fold calculations
+    const MAX_FOLD_ANGLE = 179; // Maximum fold angle (179° prevents complete 180° fold-back)
+    
+    // Cubic ease-in-out function for smooth animations
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
 
     class Vec2 {
         constructor(x, y) { this.x = x; this.y = y; }
@@ -347,18 +354,16 @@
 
     function getFoldLine(type) {
         const c = PAPER_SIZE / 2; 
-        // Note: Using normalized vectors helps math stability
-        const invRoot2 = 1/Math.sqrt(2);
 
         if (type === 'horizontal') return { nx: 0, ny: 1, c: -c, axis: 'X', origin: '50% 50%' }; // y > center moves
         if (type === 'vertical')   return { nx: 1, ny: 0, c: -c, axis: 'Y', origin: '50% 50%' }; // x > center moves
         // Diag1: TopLeft to BottomRight (\). Line x - y = 0.
         // We want Bottom-Left (x < y) to move? or Top-Right?
         // Let's make Top-Right move (x > y). Normal (1, -1).
-        if (type === 'diag1')      return { nx: invRoot2, ny: -invRoot2, c: 0, axis: 'D1', origin: '50% 50%' }; 
+        if (type === 'diag1')      return { nx: INV_ROOT_2, ny: -INV_ROOT_2, c: 0, axis: 'D1', origin: '50% 50%' }; 
         // Diag2: TopRight to BottomLeft (/). Line x + y = PAPER_SIZE.
         // Let's make Bottom-Right move (x + y > size).
-        if (type === 'diag2')      return { nx: invRoot2, ny: invRoot2, c: -PAPER_SIZE*invRoot2, axis: 'D2', origin: '50% 50%' };
+        if (type === 'diag2')      return { nx: INV_ROOT_2, ny: INV_ROOT_2, c: -PAPER_SIZE*INV_ROOT_2, axis: 'D2', origin: '50% 50%' };
         
         return { nx: 0, ny: 1, c: -c, axis: 'X', origin: '50% 50%' };
     }
@@ -502,15 +507,13 @@
             // Easing for this specific fold step
             // e.g. if totalProgress is 1.5, Fold 0 is done, Fold 1 is 50%, Fold 2 is 0.
             let localT = Math.max(0, Math.min(1, totalProgress - i));
-            
-            // Cubic ease in-out
-            localT = localT < 0.5 ? 4 * localT * localT * localT : 1 - Math.pow(-2 * localT + 2, 3) / 2;
-            
+            localT = easeInOutCubic(localT);
             f.currentAngle = localT * f.targetAngle;
         });
         
-        const currentStep = Math.min(folds.length, Math.floor(totalProgress) + 1);
-        document.getElementById('progress-text').innerText = `Sequence: ${Math.floor(totalProgress*100/folds.length)}%`;
+        // Guard against division by zero when folds array is empty
+        const progressPercent = folds.length > 0 ? Math.floor(totalProgress * 100 / folds.length) : 0;
+        document.getElementById('progress-text').innerText = `Sequence: ${progressPercent}%`;
         
         renderTree();
     }
@@ -536,7 +539,7 @@
                     <i data-lucide="trash-2" width="16" class="btn-delete" onclick="removeFold(${index})"></i>
                 </div>
                 <div class="flex items-center gap-3">
-                    <input type="range" min="0" max="179" value="${fold.targetAngle}" 
+                    <input type="range" min="0" max="${MAX_FOLD_ANGLE}" value="${fold.targetAngle}" 
                            oninput="updateFoldAngle(${index}, this.value)">
                     <span class="text-sm font-mono w-10 text-right text-blue-300">${fold.targetAngle}°</span>
                 </div>
