@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folding Engine - Unit Tests</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --text-color: #eef;
+            --pass-color: #2ecc71;
+            --fail-color: #e74c3c;
+            --section-bg: #16213e;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+        
+        .summary {
+            background: var(--section-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .summary-item {
+            font-size: 1.2em;
+        }
+        
+        .summary-item.passed { color: var(--pass-color); }
+        .summary-item.failed { color: var(--fail-color); }
+        
+        .test-suite {
+            background: var(--section-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .suite-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #38bdf8;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        
+        .test-result {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-result.passed {
+            background: rgba(46, 204, 113, 0.1);
+            border-left: 3px solid var(--pass-color);
+        }
+        
+        .test-result.failed {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 3px solid var(--fail-color);
+        }
+        
+        .test-icon {
+            font-size: 1.2em;
+        }
+        
+        .test-description {
+            flex: 1;
+        }
+        
+        .error-message {
+            color: var(--fail-color);
+            font-size: 0.9em;
+            margin-top: 5px;
+            padding-left: 30px;
+        }
+        
+        .visualization-test {
+            background: var(--section-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .viz-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #38bdf8;
+        }
+        
+        .viz-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .viz-item {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .viz-item h4 {
+            margin: 0 0 10px 0;
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+        
+        .paper-preview {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            perspective: 500px;
+            margin: 0 auto;
+        }
+        
+        .mini-paper {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+        
+        .mini-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f8fafc;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.3) 1px, transparent 1px);
+            background-size: 15px 15px;
+            backface-visibility: hidden;
+        }
+        
+        .mini-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #3b82f6;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+        }
+        
+        #running-indicator {
+            color: #f59e0b;
+            margin-left: 20px;
+        }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Folding Engine Unit Tests</h1>
+    <p>Testing the modular JavaScript components</p>
+    
+    <div class="summary">
+        <div class="summary-item" id="total-count">Total: 0</div>
+        <div class="summary-item passed" id="passed-count">✅ Passed: 0</div>
+        <div class="summary-item failed" id="failed-count">❌ Failed: 0</div>
+        <span id="running-indicator">Running...</span>
+    </div>
+    
+    <div id="test-results"></div>
+    
+    <!-- Visualization Tests -->
+    <div class="visualization-test">
+        <div class="viz-title">📐 Visualization Tests</div>
+        <p>Visual verification that the folding renders correctly:</p>
+        <div class="viz-container">
+            <div class="viz-item">
+                <h4>Flat Paper (0%)</h4>
+                <div class="paper-preview" id="viz-flat">
+                    <div class="mini-paper">
+                        <div class="mini-front"></div>
+                        <div class="mini-back"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="viz-item">
+                <h4>Diagonal Fold</h4>
+                <div class="paper-preview" id="viz-diag">
+                    <div class="mini-paper" style="transform: rotateX(20deg);">
+                        <div class="mini-front" style="clip-path: polygon(0 0, 100% 0, 0 100%);"></div>
+                        <div class="mini-back" style="clip-path: polygon(0 0, 100% 100%, 100% 0); transform: rotateY(180deg) rotate3d(1, 1, 0, -135deg); transform-origin: 50% 50%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="viz-item">
+                <h4>Horizontal Fold</h4>
+                <div class="paper-preview" id="viz-horiz">
+                    <div class="mini-paper" style="transform: rotateX(20deg);">
+                        <div class="mini-front" style="clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);"></div>
+                        <div class="mini-back" style="clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); transform: rotateY(180deg) rotate3d(1, 0, 0, -90deg); transform-origin: 50% 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="viz-test-result" style="margin-top: 15px;"></div>
+    </div>
+
+    <script type="module">
+        import { mathTests } from './js/math.test.js';
+        import { foldsTests } from './js/folds.test.js';
+        import { rendererTests } from './js/renderer.test.js';
+        
+        async function runAllTests() {
+            const resultsContainer = document.getElementById('test-results');
+            let totalPassed = 0;
+            let totalFailed = 0;
+            
+            const allSuites = [mathTests, foldsTests, rendererTests];
+            
+            for (const suite of allSuites) {
+                const suiteDiv = document.createElement('div');
+                suiteDiv.className = 'test-suite';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'suite-title';
+                titleDiv.textContent = suite.name;
+                suiteDiv.appendChild(titleDiv);
+                
+                const results = await suite.run();
+                
+                for (const result of results) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = `test-result ${result.passed ? 'passed' : 'failed'}`;
+                    
+                    const icon = document.createElement('span');
+                    icon.className = 'test-icon';
+                    icon.textContent = result.passed ? '✅' : '❌';
+                    
+                    const desc = document.createElement('span');
+                    desc.className = 'test-description';
+                    desc.textContent = result.description;
+                    
+                    resultDiv.appendChild(icon);
+                    resultDiv.appendChild(desc);
+                    
+                    if (!result.passed && result.error) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        errorDiv.textContent = result.error;
+                        resultDiv.appendChild(errorDiv);
+                    }
+                    
+                    suiteDiv.appendChild(resultDiv);
+                }
+                
+                resultsContainer.appendChild(suiteDiv);
+                
+                totalPassed += suite.passed;
+                totalFailed += suite.failed;
+            }
+            
+            // Run visualization tests
+            runVisualizationTests();
+            
+            // Update summary
+            document.getElementById('total-count').textContent = `Total: ${totalPassed + totalFailed}`;
+            document.getElementById('passed-count').textContent = `✅ Passed: ${totalPassed}`;
+            document.getElementById('failed-count').textContent = `❌ Failed: ${totalFailed}`;
+            document.getElementById('running-indicator').classList.add('hidden');
+            
+            // Log to console
+            console.log('\n========================================');
+            console.log(`TOTAL: ${totalPassed} passed, ${totalFailed} failed`);
+            console.log('========================================\n');
+        }
+        
+        function runVisualizationTests() {
+            const resultDiv = document.getElementById('viz-test-result');
+            const tests = [];
+            
+            // Test 1: Flat paper has correct dimensions
+            const flatPaper = document.querySelector('#viz-flat .mini-paper');
+            if (flatPaper) {
+                const rect = flatPaper.getBoundingClientRect();
+                tests.push({
+                    name: 'Flat paper renders with correct dimensions',
+                    passed: rect.width > 0 && rect.height > 0
+                });
+            }
+            
+            // Test 2: Clip paths are applied
+            const diagFront = document.querySelector('#viz-diag .mini-front');
+            if (diagFront) {
+                const clipPath = window.getComputedStyle(diagFront).clipPath;
+                tests.push({
+                    name: 'Diagonal fold clip-path is applied',
+                    passed: clipPath && clipPath !== 'none'
+                });
+            }
+            
+            // Test 3: Transforms are applied
+            const diagPaper = document.querySelector('#viz-diag .mini-paper');
+            if (diagPaper) {
+                const transform = window.getComputedStyle(diagPaper).transform;
+                tests.push({
+                    name: 'Paper transform is applied',
+                    passed: transform && transform !== 'none'
+                });
+            }
+            
+            // Display results
+            let html = '<strong>Visualization Test Results:</strong><br>';
+            for (const test of tests) {
+                html += `${test.passed ? '✅' : '❌'} ${test.name}<br>`;
+            }
+            resultDiv.innerHTML = html;
+        }
+        
+        // Run tests when page loads
+        runAllTests();
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origami Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- 3D Scene -->
+    <div class="scene" id="scene-container">
+        <div class="turntable" id="turntable">
+            <div class="paper-root" id="paper-root">
+                <!-- Generated Recursively -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle-area">
+        <div class="toggle-btn active" id="btn-mode-config" onclick="switchMode('config')">
+            <i data-lucide="settings-2" width="16"></i> Config
+        </div>
+        <div class="toggle-btn" id="btn-mode-play" onclick="switchMode('play')">
+            <i data-lucide="play-circle" width="16"></i> Play
+        </div>
+    </div>
+
+    <!-- View Rotation (Always Visible) -->
+    <div class="view-controls">
+        <div style="background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; color: #94a3b8; pointer-events: none;">
+            Drag scene to rotate
+        </div>
+    </div>
+
+    <!-- CONFIG DRAWER -->
+    <div class="config-drawer open" id="config-drawer">
+        <div class="drawer-header">
+            <span>🦢 Origami Simulator</span>
+            <span class="text-xs text-slate-400 font-normal" id="step-count">0 steps</span>
+        </div>
+        
+        <!-- Preset Selector -->
+        <div class="preset-section">
+            <label class="section-label">Load Preset</label>
+            <select id="preset-selector" class="preset-select" onchange="loadSelectedPreset()">
+                <option value="">-- Select a pattern --</option>
+            </select>
+        </div>
+        
+        <div class="fold-list" id="fold-list">
+            <!-- Items injected via JS -->
+        </div>
+
+        <div class="btn-add-group">
+            <button class="btn-act" onclick="addFold('horizontal')">+ Horiz (—)</button>
+            <button class="btn-act" onclick="addFold('vertical')">+ Vert (|)</button>
+            <button class="btn-act" onclick="addFold('diag1')">+ Diag (\)</button>
+            <button class="btn-act" onclick="addFold('diag2')">+ Diag (/)</button>
+        </div>
+        
+        <!-- Export/Import Section -->
+        <div class="export-section">
+            <button class="btn-act btn-export" onclick="exportPattern()">📤 Export</button>
+            <button class="btn-act btn-import" onclick="importPattern()">📥 Import</button>
+        </div>
+    </div>
+
+    <!-- PLAY BAR -->
+    <div class="play-bar" id="play-bar">
+        <div class="flex justify-between items-end mb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Sequence Timeline</h3>
+            <span class="text-xs text-slate-400" id="progress-text">Step 0 / 0</span>
+        </div>
+        <div class="slider-container">
+            <i data-lucide="skip-back" width="16" class="text-slate-500 cursor-pointer hover:text-white" onclick="animateTo(0)"></i>
+            <input type="range" id="master-slider" min="0" max="100" value="0" step="0.1">
+            <i data-lucide="skip-forward" width="16" class="text-slate-500 cursor-pointer hover:text-white" onclick="animateTo(100)"></i>
+        </div>
+    </div>
+
+    <!-- Load the application as an ES module -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

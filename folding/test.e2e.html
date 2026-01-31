@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folding Engine - E2E Tests</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .test-header {
+            background: var(--panel-bg, rgba(15, 23, 42, 0.9));
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .test-header h1 {
+            margin: 0 0 10px 0;
+            color: #38bdf8;
+        }
+        
+        .test-layout {
+            display: flex;
+            flex: 1;
+        }
+        
+        .scene-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+        }
+        
+        .results-panel {
+            width: 400px;
+            background: rgba(15, 23, 42, 0.95);
+            border-left: 1px solid rgba(255,255,255,0.1);
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .summary {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        
+        .summary-item {
+            font-weight: bold;
+        }
+        
+        .summary-item.passed { color: #2ecc71; }
+        .summary-item.failed { color: #e74c3c; }
+        
+        .test-result {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .test-result.passed {
+            border-left: 3px solid #2ecc71;
+        }
+        
+        .test-result.failed {
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .test-message {
+            font-size: 0.85em;
+            color: #94a3b8;
+        }
+        
+        .test-screenshot {
+            margin-top: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .test-screenshot img {
+            width: 100%;
+            display: block;
+        }
+        
+        .golden-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .golden-section h3 {
+            margin: 0 0 15px 0;
+            color: #38bdf8;
+        }
+        
+        .golden-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .golden-item {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .golden-item img {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        
+        .golden-item .label {
+            font-size: 0.75em;
+            color: #94a3b8;
+        }
+        
+        .running-indicator {
+            color: #f59e0b;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .btn-generate {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+        
+        .btn-generate:hover {
+            background: #2563eb;
+        }
+        
+        #progress-text {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-header">
+        <h1>🧪 E2E Visual Regression Tests</h1>
+        <p>Testing the folding engine visualization with golden image comparison</p>
+    </div>
+    
+    <div class="test-layout">
+        <!-- Hidden scene for rendering -->
+        <div class="scene-panel">
+            <div class="scene" id="scene-container" style="width: 500px; height: 500px;">
+                <div class="turntable" id="turntable">
+                    <div class="paper-root" id="paper-root"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results panel -->
+        <div class="results-panel">
+            <div class="summary" id="summary">
+                <div class="summary-item" id="total-count">Total: 0</div>
+                <div class="summary-item passed" id="passed-count">✅ 0</div>
+                <div class="summary-item failed" id="failed-count">❌ 0</div>
+                <span class="running-indicator" id="running-indicator">Running...</span>
+            </div>
+            
+            <div id="test-results"></div>
+            
+            <div class="golden-section">
+                <h3>📸 Golden Images</h3>
+                <p style="font-size: 0.85em; color: #94a3b8; margin-bottom: 15px;">
+                    Reference screenshots captured during test runs
+                </p>
+                <div class="golden-grid" id="golden-grid"></div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-generate" id="btn-generate-goldens">
+                        🔄 Generate Goldens
+                    </button>
+                    <button class="btn-generate" id="btn-download-json" style="display: none; background: #10b981;">
+                        📥 Download goldens.json
+                    </button>
+                    <button class="btn-generate" id="btn-download" style="display: none; background: #6366f1;">
+                        📷 Download Images
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden progress text for controller -->
+    <span id="progress-text"></span>
+
+    <script type="module">
+        import { E2ETestSuite, defineE2ETests } from './e2e/e2e-tests.js';
+        
+        let currentSuite = null;
+        
+        async function runTests(generateMode = false) {
+            const suite = new E2ETestSuite();
+            currentSuite = suite;
+            await suite.init();
+            
+            suite.setGenerateMode(generateMode);
+            defineE2ETests(suite);
+            
+            // Show running state
+            document.getElementById('running-indicator').style.display = 'inline';
+            document.getElementById('running-indicator').textContent = 
+                generateMode ? 'Generating goldens...' : 'Running tests...';
+            
+            const results = await suite.run();
+            
+            // Update summary
+            const passed = results.filter(r => r.passed).length;
+            const failed = results.filter(r => !r.passed).length;
+            
+            document.getElementById('total-count').textContent = `Total: ${results.length}`;
+            document.getElementById('passed-count').textContent = `✅ ${passed}`;
+            document.getElementById('failed-count').textContent = `❌ ${failed}`;
+            document.getElementById('running-indicator').style.display = 'none';
+            
+            // Display results
+            const resultsContainer = document.getElementById('test-results');
+            resultsContainer.innerHTML = '';
+            
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `test-result ${result.passed ? 'passed' : 'failed'}`;
+                
+                div.innerHTML = `
+                    <div class="test-name">
+                        ${result.passed ? '✅' : '❌'} ${result.name}
+                    </div>
+                    <div class="test-message">${result.message}</div>
+                `;
+                
+                if (result.screenshot) {
+                    const screenshotDiv = document.createElement('div');
+                    screenshotDiv.className = 'test-screenshot';
+                    const img = document.createElement('img');
+                    img.src = result.screenshot;
+                    screenshotDiv.appendChild(img);
+                    div.appendChild(screenshotDiv);
+                }
+                
+                resultsContainer.appendChild(div);
+            });
+            
+            // Display golden images from successful tests
+            const goldenGrid = document.getElementById('golden-grid');
+            goldenGrid.innerHTML = '';
+            
+            const goldenCandidates = results.filter(r => r.passed && r.screenshot);
+            goldenCandidates.slice(0, 6).forEach((result, i) => {
+                const div = document.createElement('div');
+                div.className = 'golden-item';
+                div.innerHTML = `
+                    <img src="${result.screenshot}" alt="${result.name}">
+                    <div class="label">${result.name.substring(0, 30)}...</div>
+                `;
+                goldenGrid.appendChild(div);
+            });
+            
+            // Show download buttons if in generate mode
+            if (generateMode && Object.keys(suite.generatedGoldens).length > 0) {
+                const btnJson = document.getElementById('btn-download-json');
+                btnJson.style.display = 'block';
+                btnJson.onclick = () => downloadGoldensJSON(suite);
+            }
+            
+            // Show image download button if we have screenshots
+            if (goldenCandidates.length > 0) {
+                const btn = document.getElementById('btn-download');
+                btn.style.display = 'block';
+                btn.onclick = () => downloadGoldenImages(goldenCandidates);
+            }
+        }
+        
+        function downloadGoldensJSON(suite) {
+            const json = suite.getGeneratedGoldensJSON();
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'goldens.json';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadGoldenImages(results) {
+            results.forEach((result, i) => {
+                const link = document.createElement('a');
+                link.download = `golden-${i + 1}-${result.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
+                link.href = result.screenshot;
+                link.click();
+            });
+        }
+        
+        // Set up generate goldens button
+        document.getElementById('btn-generate-goldens').onclick = () => runTests(true);
+        
+        // Run tests on load (comparison mode)
+        runTests(false);
+    </script>
+</body>
+</html>

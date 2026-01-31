@@ -1,0 +1,327 @@
+/**
+ * Styles for the Origami Simulator
+ */
+
+:root {
+    --paper-size: 300px;
+    --bg-color: #0f172a;
+    --paper-color: #f8fafc;
+    --paper-back: #3b82f6; /* Blue back */
+    --accent: #38bdf8;
+    --panel-bg: rgba(15, 23, 42, 0.9);
+    --border: rgba(255,255,255,0.1);
+    --mountain-color: #22c55e;
+    --valley-color: #ef4444;
+}
+
+body {
+    background-color: var(--bg-color);
+    overflow: hidden;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #e2e8f0;
+    user-select: none;
+    margin: 0;
+}
+
+/* --- 3D SCENE --- */
+.scene {
+    width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    perspective: 2500px;
+    overflow: hidden;
+    cursor: grab;
+}
+.scene:active { cursor: grabbing; }
+
+.turntable {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.1s linear; /* Smooth view rotation */
+}
+
+.paper-root {
+    width: var(--paper-size); height: var(--paper-size);
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+/* --- RECURSIVE FOLD ELEMENTS --- */
+.fold-group {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    pointer-events: none; 
+}
+
+.fold-static, .fold-moving {
+    position: absolute; inset: 0; transform-style: preserve-3d;
+}
+
+.fold-moving { z-index: 10; }
+
+/* Mountain/Valley fold styling - reserved for future enhanced visuals */
+.fold-mountain { /* Mountain fold visual styling */ }
+.fold-valley { /* Valley fold visual styling */ }
+
+.paper-leaf {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Faces - inherit paper-leaf positioning */
+.face-front,
+.face-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+}
+
+.face-front {
+    background-color: var(--paper-color);
+    /* Subtle grid pattern */
+    background-image: 
+        linear-gradient(rgba(148, 163, 184, 0.3) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.3) 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: #64748b;
+}
+
+.face-back {
+    background-color: var(--paper-back);
+    transform: rotateY(180deg) translateZ(-0.1px); /* Slight offset behind front face to prevent z-fighting */
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: rgba(255,255,255,0.2);
+    font-size: 1.5rem;
+}
+
+/* Realistic Shadow Overlay */
+.fold-shadow {
+    position: absolute; inset: 0; background: black;
+    pointer-events: none; opacity: 0; transition: opacity 0.05s;
+    mix-blend-mode: multiply;
+}
+
+/* --- UI OVERLAYS --- */
+
+/* 1. View Controls (Always visible, subtle) */
+.view-controls {
+    position: fixed; bottom: 20px; left: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 40;
+}
+
+/* 2. Top Right Toggle */
+.mode-toggle-area {
+    position: fixed; top: 20px; right: 20px;
+    z-index: 50;
+    background: var(--panel-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 4px;
+    display: flex; gap: 4px;
+}
+
+.toggle-btn {
+    padding: 8px 16px; border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+.toggle-btn:hover { opacity: 1; background: rgba(255,255,255,0.05); }
+.toggle-btn.active {
+    background: var(--accent);
+    color: #0f172a; opacity: 1;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+/* 3. Config Drawer (Left) */
+.config-drawer {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 360px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 45;
+    display: flex; flex-direction: column;
+}
+.config-drawer.open { transform: translateX(0); }
+
+.drawer-header {
+    padding: 20px; border-bottom: 1px solid var(--border);
+    font-weight: 700; font-size: 1.1rem;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+/* Preset Section */
+.preset-section {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.preset-select {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+.preset-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.fold-list {
+    flex: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+.fold-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    transition: background 0.2s;
+}
+.fold-item:hover { background: rgba(255,255,255,0.06); }
+
+.fold-item-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; color: #94a3b8;
+}
+
+/* Fold Controls */
+.fold-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fold-control-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 45px;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.control-value {
+    font-size: 0.8rem;
+    font-family: monospace;
+    color: var(--accent);
+    text-align: right;
+}
+
+.fold-direction-select {
+    width: 100%;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.btn-add-group {
+    padding: 15px; border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+
+.btn-act {
+    background: rgba(255,255,255,0.1); border: none; color: white;
+    padding: 10px; border-radius: 8px; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s;
+}
+.btn-act:hover { background: rgba(255,255,255,0.2); }
+.btn-delete { color: #ef4444; cursor: pointer; padding: 4px; }
+.btn-delete:hover { color: #f87171; }
+
+/* Export/Import Section */
+.export-section {
+    padding: 15px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-export, .btn-import {
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.btn-export:hover, .btn-import:hover {
+    background: rgba(56, 189, 248, 0.2);
+}
+
+/* 4. Play Bar (Bottom) */
+.play-bar {
+    position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 150%);
+    width: 90%; max-width: 600px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 45;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.play-bar.visible { transform: translate(-50%, 0); }
+
+.slider-container { display: flex; align-items: center; gap: 16px; }
+.slider-label { font-size: 0.8rem; font-weight: bold; color: var(--accent); white-space: nowrap; width: 60px; }
+
+/* Custom Range Slider */
+input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 6px; background: rgba(255,255,255,0.1);
+    border-radius: 3px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px; background: var(--accent);
+    border-radius: 50%; border: 2px solid #0f172a;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    transition: transform 0.1s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Crease Pattern Overlay */
+.crease-pattern-overlay {
+    pointer-events: none;
+}
+
+.crease-line {
+    pointer-events: none;
+}
+
+.crease-mountain {
+    background: var(--mountain-color) !important;
+}
+
+.crease-valley {
+    background: var(--valley-color) !important;
+}
