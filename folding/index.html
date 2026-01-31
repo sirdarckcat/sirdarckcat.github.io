@@ -339,6 +339,14 @@
         return `polygon(${poly.map(p => `${p.x}px ${p.y}px`).join(', ')})`;
     }
 
+    // Mirror polygon horizontally for the back face (since rotateY(180deg) flips it)
+    function polygonToMirroredClipPath(poly) {
+        if (!poly) return 'none';
+        // Mirror X coordinates around the center (PAPER_SIZE / 2 becomes the axis)
+        // After rotateY(180deg), a point at x becomes PAPER_SIZE - x
+        return `polygon(${poly.map(p => `${PAPER_SIZE - p.x}px ${p.y}px`).join(', ')})`;
+    }
+
     /* --- STATE --- */
     let folds = [
         { id: 1, type: 'diag1', targetAngle: 135, currentAngle: 0 },
@@ -447,6 +455,7 @@
         const div = document.createElement('div');
         div.className = 'paper-leaf';
         const clip = polygonToClipPath(geometry);
+        const mirroredClip = polygonToMirroredClipPath(geometry);
         
         const front = document.createElement('div');
         front.className = 'face-front paper-leaf';
@@ -454,7 +463,7 @@
         
         const back = document.createElement('div');
         back.className = 'face-back paper-leaf';
-        back.style.clipPath = clip;
+        back.style.clipPath = mirroredClip; // Use mirrored clip for back face (compensates for rotateY(180deg))
         back.innerText = ""; // Text on back?
 
         div.appendChild(back);
