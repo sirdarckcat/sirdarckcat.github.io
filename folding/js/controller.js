@@ -173,7 +173,8 @@ export class FoldingController {
             const label = getFoldLabel(fold.type);
             const position = fold.position !== undefined ? fold.position : 50;
             const direction = fold.direction || FOLD_DIRECTION.MOUNTAIN;
-            const directionIcon = direction === FOLD_DIRECTION.MOUNTAIN ? '⛰️' : '🏔️';
+            // Use triangle symbols: ▲ for mountain (peak), ▽ for valley (trough)
+            const directionIcon = direction === FOLD_DIRECTION.MOUNTAIN ? '▲' : '▽';
 
             el.innerHTML = `
                 <div class="fold-item-header">
@@ -196,8 +197,8 @@ export class FoldingController {
                     <div class="fold-control-row">
                         <label class="control-label">Direction</label>
                         <select data-index="${index}" class="fold-direction-select">
-                            <option value="mountain" ${direction === FOLD_DIRECTION.MOUNTAIN ? 'selected' : ''}>⛰️ Mountain</option>
-                            <option value="valley" ${direction === FOLD_DIRECTION.VALLEY ? 'selected' : ''}>🏔️ Valley</option>
+                            <option value="mountain" ${direction === FOLD_DIRECTION.MOUNTAIN ? 'selected' : ''}>▲ Mountain</option>
+                            <option value="valley" ${direction === FOLD_DIRECTION.VALLEY ? 'selected' : ''}>▽ Valley</option>
                         </select>
                     </div>
                 </div>

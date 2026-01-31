@@ -158,7 +158,8 @@ export function getFoldLabel(type) {
  * @returns {string} Display label with symbol
  */
 export function getFoldDirectionLabel(direction) {
-    return direction === FOLD_DIRECTION.MOUNTAIN ? '⛰️ Mountain' : '🏔️ Valley';
+    // Mountain = fold towards viewer (peak up), Valley = fold away (trough down)
+    return direction === FOLD_DIRECTION.MOUNTAIN ? '▲ Mountain' : '▽ Valley';
 }
 
 /**

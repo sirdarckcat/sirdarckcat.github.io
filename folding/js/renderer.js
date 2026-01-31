@@ -169,6 +169,7 @@ export class FoldingRenderer {
                 const x2 = line.p2.x, y2 = line.p2.y;
                 const length = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
                 const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
+                const colorVar = fold.direction === 'valley' ? 'var(--valley-color)' : 'var(--mountain-color)';
                 
                 creaseLine.style.cssText = `
                     position: absolute;
@@ -176,7 +177,7 @@ export class FoldingRenderer {
                     top: ${y1}px;
                     width: ${length}px;
                     height: 2px;
-                    background: ${fold.direction === 'valley' ? '#ef4444' : '#22c55e'};
+                    background: ${colorVar};
                     transform-origin: 0 50%;
                     transform: rotate(${angle}deg);
                     opacity: 0.7;
