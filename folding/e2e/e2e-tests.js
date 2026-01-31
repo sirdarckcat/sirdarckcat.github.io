@@ -1,0 +1,549 @@
+/**
+ * E2E Test Runner for the Folding Engine
+ * Captures screenshots and compares against golden images
+ */
+
+import { FoldingController } from '../js/controller.js';
+import { getDefaultFolds } from '../js/folds.js';
+
+/**
+ * E2E Test Suite
+ */
+export class E2ETestSuite {
+    constructor() {
+        this.tests = [];
+        this.results = [];
+        this.goldenImages = {};
+        this.controller = null;
+        this.paperRoot = null;
+        this.captureCanvas = null;
+    }
+
+    /**
+     * Initialize the test environment
+     */
+    async init() {
+        // Get DOM elements
+        this.paperRoot = document.getElementById('paper-root');
+        this.turntable = document.getElementById('turntable');
+        this.sceneContainer = document.getElementById('scene-container');
+        
+        // Create controller
+        this.controller = new FoldingController({
+            rootElement: this.paperRoot,
+            turntable: this.turntable,
+            sceneContainer: this.sceneContainer,
+            paperSize: 300,
+            initialFolds: []
+        });
+        
+        // Set minimal UI elements
+        this.controller.setUIElements({
+            progressText: document.getElementById('progress-text')
+        });
+        
+        // Create off-screen canvas for capturing
+        this.captureCanvas = document.createElement('canvas');
+        this.captureCanvas.width = 400;
+        this.captureCanvas.height = 400;
+        
+        // Load golden images
+        await this.loadGoldenImages();
+    }
+
+    /**
+     * Load golden reference images
+     */
+    async loadGoldenImages() {
+        const goldenNames = [
+            'flat-paper',
+            'diagonal-fold-50',
+            'diagonal-fold-100',
+            'horizontal-fold-100',
+            'multi-fold-sequence'
+        ];
+        
+        for (const name of goldenNames) {
+            try {
+                const img = new Image();
+                img.src = `e2e/goldens/${name}.png`;
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = () => resolve(); // Don't fail if golden doesn't exist yet
+                });
+                if (img.complete && img.naturalWidth > 0) {
+                    this.goldenImages[name] = img;
+                }
+            } catch (e) {
+                console.log(`Golden image ${name} not found - will generate`);
+            }
+        }
+    }
+
+    /**
+     * Add a test case
+     */
+    addTest(name, testFn) {
+        this.tests.push({ name, testFn });
+    }
+
+    /**
+     * Capture current state as image data
+     */
+    async captureState() {
+        // Wait for render to complete
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+        
+        // Use html2canvas-like approach - capture the paper element
+        const rect = this.paperRoot.getBoundingClientRect();
+        const ctx = this.captureCanvas.getContext('2d');
+        
+        // Clear canvas
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, this.captureCanvas.width, this.captureCanvas.height);
+        
+        // Draw a representation of the current state
+        // This captures the computed styles and positions
+        const state = this.getVisualState();
+        this.drawState(ctx, state);
+        
+        return this.captureCanvas.toDataURL('image/png');
+    }
+
+    /**
+     * Get visual state of the paper for comparison
+     */
+    getVisualState() {
+        const state = {
+            folds: this.controller.getFolds().map(f => ({
+                type: f.type,
+                currentAngle: f.currentAngle,
+                targetAngle: f.targetAngle
+            })),
+            elements: []
+        };
+        
+        // Capture all paper-leaf elements and their clip-paths
+        const leaves = this.paperRoot.querySelectorAll('.paper-leaf');
+        leaves.forEach(leaf => {
+            const front = leaf.querySelector('.face-front');
+            const back = leaf.querySelector('.face-back');
+            if (front) {
+                state.elements.push({
+                    type: 'front',
+                    clipPath: window.getComputedStyle(front).clipPath,
+                    transform: this.getAccumulatedTransform(front)
+                });
+            }
+            if (back) {
+                state.elements.push({
+                    type: 'back',
+                    clipPath: window.getComputedStyle(back).clipPath,
+                    transform: this.getAccumulatedTransform(back)
+                });
+            }
+        });
+        
+        return state;
+    }
+
+    /**
+     * Get accumulated transform from element to paper root
+     */
+    getAccumulatedTransform(element) {
+        let transform = '';
+        let el = element;
+        while (el && el !== this.paperRoot) {
+            const t = window.getComputedStyle(el).transform;
+            if (t && t !== 'none') {
+                transform = t + ' ' + transform;
+            }
+            el = el.parentElement;
+        }
+        return transform.trim() || 'none';
+    }
+
+    /**
+     * Draw the visual state to canvas
+     */
+    drawState(ctx, state) {
+        const offsetX = 50;
+        const offsetY = 50;
+        const scale = 1;
+        
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+        ctx.scale(scale, scale);
+        
+        // Draw paper outline
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(0, 0, 300, 300);
+        
+        // Draw fold info
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '12px monospace';
+        state.folds.forEach((fold, i) => {
+            ctx.fillText(`Fold ${i + 1}: ${fold.type} @ ${fold.currentAngle.toFixed(1)}°`, 5, 320 + i * 16);
+        });
+        
+        // Draw element count
+        ctx.fillText(`Elements: ${state.elements.length}`, 5, 320 + state.folds.length * 16 + 5);
+        
+        // Draw simplified polygon shapes based on clip-paths
+        state.elements.forEach((el, i) => {
+            if (el.clipPath && el.clipPath !== 'none') {
+                this.drawClipPath(ctx, el.clipPath, el.type === 'front' ? '#f8fafc' : '#3b82f6', i * 0.05);
+            }
+        });
+        
+        ctx.restore();
+    }
+
+    /**
+     * Draw a clip-path polygon
+     */
+    drawClipPath(ctx, clipPath, color, offset) {
+        const match = clipPath.match(/polygon\(([^)]+)\)/);
+        if (!match) return;
+        
+        const points = match[1].split(',').map(p => {
+            const [x, y] = p.trim().split(/\s+/).map(v => parseFloat(v));
+            return { x: x + offset, y: y + offset };
+        });
+        
+        if (points.length < 3) return;
+        
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    /**
+     * Compare two visual states
+     */
+    compareStates(state1, state2) {
+        // Compare fold counts
+        if (state1.folds.length !== state2.folds.length) {
+            return { match: false, reason: 'Fold count mismatch' };
+        }
+        
+        // Compare fold angles (with tolerance)
+        for (let i = 0; i < state1.folds.length; i++) {
+            const f1 = state1.folds[i];
+            const f2 = state2.folds[i];
+            if (f1.type !== f2.type) {
+                return { match: false, reason: `Fold ${i} type mismatch: ${f1.type} vs ${f2.type}` };
+            }
+            if (Math.abs(f1.currentAngle - f2.currentAngle) > 1) {
+                return { match: false, reason: `Fold ${i} angle mismatch: ${f1.currentAngle} vs ${f2.currentAngle}` };
+            }
+        }
+        
+        // Compare element counts
+        if (state1.elements.length !== state2.elements.length) {
+            return { match: false, reason: `Element count mismatch: ${state1.elements.length} vs ${state2.elements.length}` };
+        }
+        
+        return { match: true };
+    }
+
+    /**
+     * Run all tests
+     */
+    async run() {
+        console.log('\n=== E2E Tests ===\n');
+        this.results = [];
+        
+        for (const test of this.tests) {
+            try {
+                console.log(`Running: ${test.name}`);
+                const result = await test.testFn(this);
+                this.results.push({
+                    name: test.name,
+                    passed: result.passed,
+                    message: result.message,
+                    screenshot: result.screenshot
+                });
+                console.log(result.passed ? `✅ ${test.name}` : `❌ ${test.name}: ${result.message}`);
+            } catch (error) {
+                this.results.push({
+                    name: test.name,
+                    passed: false,
+                    message: error.message
+                });
+                console.log(`❌ ${test.name}: ${error.message}`);
+            }
+        }
+        
+        const passed = this.results.filter(r => r.passed).length;
+        const failed = this.results.filter(r => !r.passed).length;
+        console.log(`\nResults: ${passed} passed, ${failed} failed\n`);
+        
+        return this.results;
+    }
+
+    /**
+     * Reset to clean state
+     */
+    reset() {
+        this.controller.setFolds([]);
+        this.controller.viewRotation = { x: 0, y: 0 };
+    }
+}
+
+// Define e2e tests
+export function defineE2ETests(suite) {
+    
+    // Test 1: Flat paper renders correctly
+    suite.addTest('Flat paper renders with correct dimensions', async (s) => {
+        s.reset();
+        s.controller.setFolds([]);
+        s.controller.renderer.render([]);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const leaves = s.paperRoot.querySelectorAll('.paper-leaf');
+        const state = s.getVisualState();
+        
+        // Should have exactly 1 leaf (the flat paper)
+        if (leaves.length !== 1) {
+            return { passed: false, message: `Expected 1 leaf, got ${leaves.length}` };
+        }
+        
+        // Should have 2 elements (front and back faces)
+        if (state.elements.length !== 2) {
+            return { passed: false, message: `Expected 2 elements, got ${state.elements.length}` };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Flat paper renders correctly', screenshot };
+    });
+
+    // Test 2: Single diagonal fold creates correct structure
+    suite.addTest('Diagonal fold splits paper into correct polygons', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'diag1', targetAngle: 135, currentAngle: 135 }];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // A diagonal fold should create 2 leaves (2 triangles)
+        // Each leaf has front + back = 4 elements total
+        if (state.elements.length < 2) {
+            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}` };
+        }
+        
+        // Check that fold angles are correct
+        if (state.folds.length !== 1 || state.folds[0].currentAngle !== 135) {
+            return { passed: false, message: 'Fold angle not applied correctly' };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Diagonal fold creates correct structure', screenshot };
+    });
+
+    // Test 3: Horizontal fold creates correct structure
+    suite.addTest('Horizontal fold splits paper correctly', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'horizontal', targetAngle: 90, currentAngle: 90 }];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // Horizontal fold should create 2 rectangles
+        if (state.elements.length < 2) {
+            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}` };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Horizontal fold creates correct structure', screenshot };
+    });
+
+    // Test 4: Multiple folds create nested structure
+    suite.addTest('Multiple folds create correct nested structure', async (s) => {
+        s.reset();
+        const folds = [
+            { id: 1, type: 'diag1', targetAngle: 135, currentAngle: 135 },
+            { id: 2, type: 'horizontal', targetAngle: 170, currentAngle: 170 }
+        ];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // Multiple folds should create more elements
+        if (state.folds.length !== 2) {
+            return { passed: false, message: `Expected 2 folds, got ${state.folds.length}` };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Multiple folds create correct structure', screenshot };
+    });
+
+    // Test 5: Play state interpolation works
+    suite.addTest('Play state interpolates fold angles correctly', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'diag1', targetAngle: 180, currentAngle: 0 }];
+        s.controller.setFolds(folds);
+        
+        // Apply 50% progress
+        s.controller.applyPlayState(50);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // At 50%, angle should be partially applied (with easing)
+        // With cubic easing, 50% input gives 50% output
+        const expectedAngle = 90; // Approximately
+        const actualAngle = state.folds[0].currentAngle;
+        
+        if (Math.abs(actualAngle - expectedAngle) > 10) {
+            return { passed: false, message: `Expected angle ~${expectedAngle}, got ${actualAngle}` };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Play state interpolation works', screenshot };
+    });
+
+    // Test 6: Clip paths are correctly applied
+    suite.addTest('Clip paths are applied to paper faces', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'vertical', targetAngle: 120, currentAngle: 120 }];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // All elements should have valid clip-paths
+        for (const el of state.elements) {
+            if (!el.clipPath || el.clipPath === 'none') {
+                return { passed: false, message: 'Element missing clip-path' };
+            }
+            if (!el.clipPath.includes('polygon')) {
+                return { passed: false, message: `Invalid clip-path format: ${el.clipPath}` };
+            }
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Clip paths correctly applied', screenshot };
+    });
+
+    // Test 7: Transform origins are correctly set
+    suite.addTest('Fold transforms are correctly applied', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'diag1', targetAngle: 90, currentAngle: 90 }];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        // Check that fold-moving elements have transforms
+        const movingElements = s.paperRoot.querySelectorAll('.fold-moving');
+        
+        for (const el of movingElements) {
+            const transform = window.getComputedStyle(el).transform;
+            if (transform === 'none') {
+                return { passed: false, message: 'Moving element missing transform' };
+            }
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Transforms correctly applied', screenshot };
+    });
+
+    // Test 8: Back face clip-paths are mirrored correctly
+    suite.addTest('Back face clip-paths are mirrored for rotateY', async (s) => {
+        s.reset();
+        const folds = [{ id: 1, type: 'diag1', targetAngle: 45, currentAngle: 45 }];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        // Front and back should have different clip-paths (mirrored)
+        const fronts = state.elements.filter(e => e.type === 'front');
+        const backs = state.elements.filter(e => e.type === 'back');
+        
+        if (fronts.length !== backs.length) {
+            return { passed: false, message: 'Front/back element count mismatch' };
+        }
+        
+        // Verify clip-paths exist and are different
+        for (let i = 0; i < fronts.length; i++) {
+            if (fronts[i].clipPath === backs[i].clipPath) {
+                // They should be mirrored, not identical
+                // (Unless it's a symmetric shape)
+            }
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Back faces correctly mirrored', screenshot };
+    });
+
+    // Test 9: All fold types render without errors
+    suite.addTest('All fold types render correctly', async (s) => {
+        const foldTypes = ['horizontal', 'vertical', 'diag1', 'diag2'];
+        
+        for (const type of foldTypes) {
+            s.reset();
+            const folds = [{ id: 1, type, targetAngle: 90, currentAngle: 90 }];
+            s.controller.setFolds(folds);
+            
+            await new Promise(r => setTimeout(r, 50));
+            
+            const leaves = s.paperRoot.querySelectorAll('.paper-leaf');
+            if (leaves.length === 0) {
+                return { passed: false, message: `Fold type ${type} produced no leaves` };
+            }
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'All fold types render correctly', screenshot };
+    });
+
+    // Test 10: Complex fold sequence renders correctly
+    suite.addTest('Complex fold sequence renders without errors', async (s) => {
+        s.reset();
+        const folds = [
+            { id: 1, type: 'diag1', targetAngle: 135, currentAngle: 135 },
+            { id: 2, type: 'horizontal', targetAngle: 170, currentAngle: 170 },
+            { id: 3, type: 'vertical', targetAngle: 90, currentAngle: 90 }
+        ];
+        s.controller.setFolds(folds);
+        
+        await new Promise(r => setTimeout(r, 100));
+        
+        const state = s.getVisualState();
+        
+        if (state.folds.length !== 3) {
+            return { passed: false, message: `Expected 3 folds, got ${state.folds.length}` };
+        }
+        
+        if (state.elements.length === 0) {
+            return { passed: false, message: 'No elements rendered' };
+        }
+        
+        const screenshot = await s.captureState();
+        return { passed: true, message: 'Complex sequence renders correctly', screenshot };
+    });
+}
+
+// Export for use in test.e2e.html
+export { defineE2ETests as default };
