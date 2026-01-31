@@ -199,7 +199,9 @@ export class FoldingController {
         // Try to update lucide icons if available
         try { 
             if (typeof lucide !== 'undefined') lucide.createIcons(); 
-        } catch(e) {}
+        } catch(e) {
+            // Icon loading is optional, log for debugging only
+        }
     }
 
     /**

@@ -111,11 +111,11 @@ export class FoldingRenderer {
         const mirroredClip = polygonToMirroredClipPath(geometry, this.paperSize);
         
         const front = document.createElement('div');
-        front.className = 'face-front paper-leaf';
+        front.className = 'face-front';
         front.style.clipPath = clip;
         
         const back = document.createElement('div');
-        back.className = 'face-back paper-leaf';
+        back.className = 'face-back';
         back.style.clipPath = mirroredClip;
 
         div.appendChild(back);

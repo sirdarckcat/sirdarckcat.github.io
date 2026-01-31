@@ -62,7 +62,13 @@ body {
     transform-style: preserve-3d;
 }
 
-/* Faces */
+/* Faces - inherit paper-leaf positioning */
+.face-front,
+.face-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+}
+
 .face-front {
     background-color: var(--paper-color);
     /* Subtle grid pattern */
