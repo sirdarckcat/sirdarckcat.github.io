@@ -199,9 +199,17 @@
                     Reference screenshots captured during test runs
                 </p>
                 <div class="golden-grid" id="golden-grid"></div>
-                <button class="btn-generate" id="btn-download" style="display: none;">
-                    📥 Download Golden Images
-                </button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-generate" id="btn-generate-goldens">
+                        🔄 Generate Goldens
+                    </button>
+                    <button class="btn-generate" id="btn-download-json" style="display: none; background: #10b981;">
+                        📥 Download goldens.json
+                    </button>
+                    <button class="btn-generate" id="btn-download" style="display: none; background: #6366f1;">
+                        📷 Download Images
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -212,10 +220,20 @@
     <script type="module">
         import { E2ETestSuite, defineE2ETests } from './e2e/e2e-tests.js';
         
-        async function runTests() {
+        let currentSuite = null;
+        
+        async function runTests(generateMode = false) {
             const suite = new E2ETestSuite();
+            currentSuite = suite;
             await suite.init();
+            
+            suite.setGenerateMode(generateMode);
             defineE2ETests(suite);
+            
+            // Show running state
+            document.getElementById('running-indicator').style.display = 'inline';
+            document.getElementById('running-indicator').textContent = 
+                generateMode ? 'Generating goldens...' : 'Running tests...';
             
             const results = await suite.run();
             
@@ -270,15 +288,33 @@
                 goldenGrid.appendChild(div);
             });
             
-            // Show download button if we have screenshots
+            // Show download buttons if in generate mode
+            if (generateMode && Object.keys(suite.generatedGoldens).length > 0) {
+                const btnJson = document.getElementById('btn-download-json');
+                btnJson.style.display = 'block';
+                btnJson.onclick = () => downloadGoldensJSON(suite);
+            }
+            
+            // Show image download button if we have screenshots
             if (goldenCandidates.length > 0) {
                 const btn = document.getElementById('btn-download');
                 btn.style.display = 'block';
-                btn.onclick = () => downloadGoldens(goldenCandidates);
+                btn.onclick = () => downloadGoldenImages(goldenCandidates);
             }
         }
         
-        function downloadGoldens(results) {
+        function downloadGoldensJSON(suite) {
+            const json = suite.getGeneratedGoldensJSON();
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = 'goldens.json';
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function downloadGoldenImages(results) {
             results.forEach((result, i) => {
                 const link = document.createElement('a');
                 link.download = `golden-${i + 1}-${result.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.png`;
@@ -287,8 +323,11 @@
             });
         }
         
-        // Run tests on load
-        runTests();
+        // Set up generate goldens button
+        document.getElementById('btn-generate-goldens').onclick = () => runTests(true);
+        
+        // Run tests on load (comparison mode)
+        runTests(false);
     </script>
 </body>
 </html>

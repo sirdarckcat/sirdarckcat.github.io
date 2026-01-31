@@ -1,0 +1,144 @@
+{
+  "Flat paper renders with correct dimensions": {
+    "folds": [],
+    "elements": [
+      {
+        "type": "back",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 300px, 0px 300px)"
+      },
+      {
+        "type": "front",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 300px, 0px 300px)"
+      }
+    ]
+  },
+  "Diagonal fold splits paper into correct polygons": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 135,
+        "targetAngle": 135
+      }
+    ],
+    "elements": [
+      {
+        "type": "back",
+        "clipPath": "polygon(0px 0px, 0px 300px, 300px 300px)"
+      },
+      {
+        "type": "front",
+        "clipPath": "polygon(0px 0px, 0px 300px, 300px 300px)"
+      },
+      {
+        "type": "back",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 300px)"
+      },
+      {
+        "type": "front",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 300px)"
+      }
+    ]
+  },
+  "Horizontal fold splits paper correctly": {
+    "folds": [
+      {
+        "type": "horizontal",
+        "currentAngle": 90,
+        "targetAngle": 90
+      }
+    ],
+    "elements": [
+      {
+        "type": "back",
+        "clipPath": "polygon(0px 150px, 300px 150px, 300px 300px, 0px 300px)"
+      },
+      {
+        "type": "front",
+        "clipPath": "polygon(0px 150px, 300px 150px, 300px 300px, 0px 300px)"
+      },
+      {
+        "type": "back",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 150px, 0px 150px)"
+      },
+      {
+        "type": "front",
+        "clipPath": "polygon(0px 0px, 300px 0px, 300px 150px, 0px 150px)"
+      }
+    ]
+  },
+  "Multiple folds create correct nested structure": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 135,
+        "targetAngle": 135
+      },
+      {
+        "type": "horizontal",
+        "currentAngle": 170,
+        "targetAngle": 170
+      }
+    ],
+    "elements": []
+  },
+  "Play state interpolates fold angles correctly": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 90,
+        "targetAngle": 180
+      }
+    ],
+    "elements": []
+  },
+  "Clip paths are applied to paper faces": {
+    "folds": [
+      {
+        "type": "vertical",
+        "currentAngle": 120,
+        "targetAngle": 120
+      }
+    ],
+    "elements": []
+  },
+  "Fold transforms are correctly applied": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 90,
+        "targetAngle": 90
+      }
+    ],
+    "elements": []
+  },
+  "Back face clip-paths are mirrored for rotateY": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 45,
+        "targetAngle": 45
+      }
+    ],
+    "elements": []
+  },
+  "Complex fold sequence renders without errors": {
+    "folds": [
+      {
+        "type": "diag1",
+        "currentAngle": 135,
+        "targetAngle": 135
+      },
+      {
+        "type": "horizontal",
+        "currentAngle": 170,
+        "targetAngle": 170
+      },
+      {
+        "type": "vertical",
+        "currentAngle": 90,
+        "targetAngle": 90
+      }
+    ],
+    "elements": []
+  }
+}

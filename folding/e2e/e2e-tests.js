@@ -1,22 +1,25 @@
 /**
  * E2E Test Runner for the Folding Engine
- * Captures screenshots and compares against golden images
+ * Captures screenshots and compares against golden images/states
  */
 
 import { FoldingController } from '../js/controller.js';
 import { getDefaultFolds } from '../js/folds.js';
 
 /**
- * E2E Test Suite
+ * E2E Test Suite with golden generation and comparison
  */
 export class E2ETestSuite {
     constructor() {
         this.tests = [];
         this.results = [];
         this.goldenImages = {};
+        this.goldenStates = {};  // JSON-based golden states
         this.controller = null;
         this.paperRoot = null;
         this.captureCanvas = null;
+        this.generateMode = false;  // When true, generate goldens instead of comparing
+        this.generatedGoldens = {}; // Captured goldens during generation
     }
 
     /**
@@ -47,37 +50,56 @@ export class E2ETestSuite {
         this.captureCanvas.width = 400;
         this.captureCanvas.height = 400;
         
-        // Load golden images
-        await this.loadGoldenImages();
+        // Load golden states
+        await this.loadGoldenStates();
     }
 
     /**
-     * Load golden reference images
+     * Load golden reference states (JSON format)
      */
-    async loadGoldenImages() {
-        const goldenNames = [
-            'flat-paper',
-            'diagonal-fold-50',
-            'diagonal-fold-100',
-            'horizontal-fold-100',
-            'multi-fold-sequence'
-        ];
-        
-        for (const name of goldenNames) {
-            try {
-                const img = new Image();
-                img.src = `e2e/goldens/${name}.png`;
-                await new Promise((resolve, reject) => {
-                    img.onload = resolve;
-                    img.onerror = () => resolve(); // Don't fail if golden doesn't exist yet
-                });
-                if (img.complete && img.naturalWidth > 0) {
-                    this.goldenImages[name] = img;
-                }
-            } catch (e) {
-                console.log(`Golden image ${name} not found - will generate`);
+    async loadGoldenStates() {
+        try {
+            const response = await fetch('e2e/goldens/goldens.json');
+            if (response.ok) {
+                this.goldenStates = await response.json();
+                console.log(`Loaded ${Object.keys(this.goldenStates).length} golden states`);
             }
+        } catch (e) {
+            console.log('No golden states found - run in generate mode first');
         }
+    }
+
+    /**
+     * Set generation mode
+     */
+    setGenerateMode(enabled) {
+        this.generateMode = enabled;
+        this.generatedGoldens = {};
+    }
+
+    /**
+     * Get generated goldens as JSON string
+     */
+    getGeneratedGoldensJSON() {
+        return JSON.stringify(this.generatedGoldens, null, 2);
+    }
+
+    /**
+     * Compare current state against golden
+     */
+    compareWithGolden(testName, currentState) {
+        const golden = this.goldenStates[testName];
+        if (!golden) {
+            return { match: false, reason: 'No golden state found - generate goldens first' };
+        }
+        return this.compareStates(currentState, golden);
+    }
+
+    /**
+     * Save current state as golden
+     */
+    saveAsGolden(testName, state) {
+        this.generatedGoldens[testName] = state;
     }
 
     /**
@@ -234,7 +256,7 @@ export class E2ETestSuite {
     compareStates(state1, state2) {
         // Compare fold counts
         if (state1.folds.length !== state2.folds.length) {
-            return { match: false, reason: 'Fold count mismatch' };
+            return { match: false, reason: `Fold count mismatch: ${state1.folds.length} vs ${state2.folds.length}` };
         }
         
         // Compare fold angles (with tolerance)
@@ -249,9 +271,12 @@ export class E2ETestSuite {
             }
         }
         
-        // Compare element counts
-        if (state1.elements.length !== state2.elements.length) {
-            return { match: false, reason: `Element count mismatch: ${state1.elements.length} vs ${state2.elements.length}` };
+        // Compare element counts (support both elements array and elementCount number)
+        const count1 = state1.elements ? state1.elements.length : state1.elementCount;
+        const count2 = state2.elements ? state2.elements.length : state2.elementCount;
+        
+        if (count2 !== undefined && count1 !== undefined && count1 !== count2) {
+            return { match: false, reason: `Element count mismatch: ${count1} vs ${count2}` };
         }
         
         return { match: true };
@@ -261,13 +286,22 @@ export class E2ETestSuite {
      * Run all tests
      */
     async run() {
-        console.log('\n=== E2E Tests ===\n');
+        const modeLabel = this.generateMode ? 'GOLDEN GENERATION' : 'E2E Tests';
+        console.log(`\n=== ${modeLabel} ===\n`);
         this.results = [];
         
         for (const test of this.tests) {
             try {
                 console.log(`Running: ${test.name}`);
                 const result = await test.testFn(this);
+                
+                // In generate mode, save the captured state
+                if (this.generateMode && result.state) {
+                    this.saveAsGolden(test.name, result.state);
+                    result.passed = true;
+                    result.message = 'Golden captured';
+                }
+                
                 this.results.push({
                     name: test.name,
                     passed: result.passed,
@@ -317,16 +351,24 @@ export function defineE2ETests(suite) {
         
         // Should have exactly 1 leaf (the flat paper)
         if (leaves.length !== 1) {
-            return { passed: false, message: `Expected 1 leaf, got ${leaves.length}` };
+            return { passed: false, message: `Expected 1 leaf, got ${leaves.length}`, state };
         }
         
         // Should have 2 elements (front and back faces)
         if (state.elements.length !== 2) {
-            return { passed: false, message: `Expected 2 elements, got ${state.elements.length}` };
+            return { passed: false, message: `Expected 2 elements, got ${state.elements.length}`, state };
+        }
+        
+        // Golden comparison mode
+        if (!s.generateMode && s.goldenStates['Flat paper renders with correct dimensions']) {
+            const comparison = s.compareWithGolden('Flat paper renders with correct dimensions', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Flat paper renders correctly', screenshot };
+        return { passed: true, message: 'Flat paper renders correctly', screenshot, state };
     });
 
     // Test 2: Single diagonal fold creates correct structure
@@ -342,16 +384,24 @@ export function defineE2ETests(suite) {
         // A diagonal fold should create 2 leaves (2 triangles)
         // Each leaf has front + back = 4 elements total
         if (state.elements.length < 2) {
-            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}` };
+            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}`, state };
         }
         
         // Check that fold angles are correct
         if (state.folds.length !== 1 || state.folds[0].currentAngle !== 135) {
-            return { passed: false, message: 'Fold angle not applied correctly' };
+            return { passed: false, message: 'Fold angle not applied correctly', state };
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Diagonal fold splits paper into correct polygons']) {
+            const comparison = s.compareWithGolden('Diagonal fold splits paper into correct polygons', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Diagonal fold creates correct structure', screenshot };
+        return { passed: true, message: 'Diagonal fold creates correct structure', screenshot, state };
     });
 
     // Test 3: Horizontal fold creates correct structure
@@ -366,11 +416,19 @@ export function defineE2ETests(suite) {
         
         // Horizontal fold should create 2 rectangles
         if (state.elements.length < 2) {
-            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}` };
+            return { passed: false, message: `Expected at least 2 elements, got ${state.elements.length}`, state };
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Horizontal fold splits paper correctly']) {
+            const comparison = s.compareWithGolden('Horizontal fold splits paper correctly', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Horizontal fold creates correct structure', screenshot };
+        return { passed: true, message: 'Horizontal fold creates correct structure', screenshot, state };
     });
 
     // Test 4: Multiple folds create nested structure
@@ -388,11 +446,19 @@ export function defineE2ETests(suite) {
         
         // Multiple folds should create more elements
         if (state.folds.length !== 2) {
-            return { passed: false, message: `Expected 2 folds, got ${state.folds.length}` };
+            return { passed: false, message: `Expected 2 folds, got ${state.folds.length}`, state };
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Multiple folds create correct nested structure']) {
+            const comparison = s.compareWithGolden('Multiple folds create correct nested structure', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Multiple folds create correct structure', screenshot };
+        return { passed: true, message: 'Multiple folds create correct structure', screenshot, state };
     });
 
     // Test 5: Play state interpolation works
@@ -414,11 +480,19 @@ export function defineE2ETests(suite) {
         const actualAngle = state.folds[0].currentAngle;
         
         if (Math.abs(actualAngle - expectedAngle) > 10) {
-            return { passed: false, message: `Expected angle ~${expectedAngle}, got ${actualAngle}` };
+            return { passed: false, message: `Expected angle ~${expectedAngle}, got ${actualAngle}`, state };
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Play state interpolates fold angles correctly']) {
+            const comparison = s.compareWithGolden('Play state interpolates fold angles correctly', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Play state interpolation works', screenshot };
+        return { passed: true, message: 'Play state interpolation works', screenshot, state };
     });
 
     // Test 6: Clip paths are correctly applied
@@ -434,15 +508,23 @@ export function defineE2ETests(suite) {
         // All elements should have valid clip-paths
         for (const el of state.elements) {
             if (!el.clipPath || el.clipPath === 'none') {
-                return { passed: false, message: 'Element missing clip-path' };
+                return { passed: false, message: 'Element missing clip-path', state };
             }
             if (!el.clipPath.includes('polygon')) {
-                return { passed: false, message: `Invalid clip-path format: ${el.clipPath}` };
+                return { passed: false, message: `Invalid clip-path format: ${el.clipPath}`, state };
+            }
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Clip paths are applied to paper faces']) {
+            const comparison = s.compareWithGolden('Clip paths are applied to paper faces', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
             }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Clip paths correctly applied', screenshot };
+        return { passed: true, message: 'Clip paths correctly applied', screenshot, state };
     });
 
     // Test 7: Transform origins are correctly set
@@ -453,18 +535,28 @@ export function defineE2ETests(suite) {
         
         await new Promise(r => setTimeout(r, 100));
         
+        const state = s.getVisualState();
+        
         // Check that fold-moving elements have transforms
         const movingElements = s.paperRoot.querySelectorAll('.fold-moving');
         
         for (const el of movingElements) {
             const transform = window.getComputedStyle(el).transform;
             if (transform === 'none') {
-                return { passed: false, message: 'Moving element missing transform' };
+                return { passed: false, message: 'Moving element missing transform', state };
+            }
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Fold transforms are correctly applied']) {
+            const comparison = s.compareWithGolden('Fold transforms are correctly applied', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
             }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Transforms correctly applied', screenshot };
+        return { passed: true, message: 'Transforms correctly applied', screenshot, state };
     });
 
     // Test 8: Back face clip-paths are mirrored correctly
@@ -482,7 +574,7 @@ export function defineE2ETests(suite) {
         const backs = state.elements.filter(e => e.type === 'back');
         
         if (fronts.length !== backs.length) {
-            return { passed: false, message: 'Front/back element count mismatch' };
+            return { passed: false, message: 'Front/back element count mismatch', state };
         }
         
         // Verify clip-paths exist and are different
@@ -493,13 +585,22 @@ export function defineE2ETests(suite) {
             }
         }
         
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Back face clip-paths are mirrored for rotateY']) {
+            const comparison = s.compareWithGolden('Back face clip-paths are mirrored for rotateY', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
+        }
+        
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Back faces correctly mirrored', screenshot };
+        return { passed: true, message: 'Back faces correctly mirrored', screenshot, state };
     });
 
     // Test 9: All fold types render without errors
     suite.addTest('All fold types render correctly', async (s) => {
         const foldTypes = ['horizontal', 'vertical', 'diag1', 'diag2'];
+        let lastState = null;
         
         for (const type of foldTypes) {
             s.reset();
@@ -510,12 +611,13 @@ export function defineE2ETests(suite) {
             
             const leaves = s.paperRoot.querySelectorAll('.paper-leaf');
             if (leaves.length === 0) {
-                return { passed: false, message: `Fold type ${type} produced no leaves` };
+                return { passed: false, message: `Fold type ${type} produced no leaves`, state: lastState };
             }
+            lastState = s.getVisualState();
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'All fold types render correctly', screenshot };
+        return { passed: true, message: 'All fold types render correctly', screenshot, state: lastState };
     });
 
     // Test 10: Complex fold sequence renders correctly
@@ -533,15 +635,23 @@ export function defineE2ETests(suite) {
         const state = s.getVisualState();
         
         if (state.folds.length !== 3) {
-            return { passed: false, message: `Expected 3 folds, got ${state.folds.length}` };
+            return { passed: false, message: `Expected 3 folds, got ${state.folds.length}`, state };
         }
         
         if (state.elements.length === 0) {
-            return { passed: false, message: 'No elements rendered' };
+            return { passed: false, message: 'No elements rendered', state };
+        }
+        
+        // Golden comparison
+        if (!s.generateMode && s.goldenStates['Complex fold sequence renders without errors']) {
+            const comparison = s.compareWithGolden('Complex fold sequence renders without errors', state);
+            if (!comparison.match) {
+                return { passed: false, message: comparison.reason, state };
+            }
         }
         
         const screenshot = await s.captureState();
-        return { passed: true, message: 'Complex sequence renders correctly', screenshot };
+        return { passed: true, message: 'Complex sequence renders correctly', screenshot, state };
     });
 }
 
