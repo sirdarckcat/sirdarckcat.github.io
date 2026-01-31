@@ -1,10 +1,13 @@
 /**
- * Main application entry point for the folding engine
+ * Main application entry point for the Origami Simulator
  * Initializes the controller and wires up UI elements
  */
 
 import { FoldingController } from './controller.js';
-import { getDefaultFolds } from './folds.js';
+import { getDefaultFolds, ORIGAMI_PRESETS } from './folds.js';
+
+// Global controller reference
+let controller = null;
 
 /**
  * Initialize the folding application
@@ -17,7 +20,7 @@ export function initFoldingApp() {
     const sceneContainer = document.getElementById('scene-container');
     
     // Create controller
-    const controller = new FoldingController({
+    controller = new FoldingController({
         rootElement,
         turntable,
         sceneContainer,
@@ -34,7 +37,8 @@ export function initFoldingApp() {
         foldList: document.getElementById('fold-list'),
         stepCount: document.getElementById('step-count'),
         masterSlider: document.getElementById('master-slider'),
-        progressText: document.getElementById('progress-text')
+        progressText: document.getElementById('progress-text'),
+        presetSelector: document.getElementById('preset-selector')
     });
     
     // Setup slider event
@@ -45,6 +49,9 @@ export function initFoldingApp() {
         });
     }
     
+    // Populate preset selector
+    populatePresetSelector();
+    
     // Initialize
     controller.init();
     
@@ -54,6 +61,9 @@ export function initFoldingApp() {
     window.removeFold = (index) => controller.removeFold(index);
     window.updateFoldAngle = (index, val) => controller.updateFoldAngle(index, parseInt(val));
     window.animateTo = (percent) => controller.animateTo(percent);
+    window.loadSelectedPreset = loadSelectedPreset;
+    window.exportPattern = exportPattern;
+    window.importPattern = importPattern;
     
     // Initialize Lucide icons if available
     try { 
@@ -63,6 +73,88 @@ export function initFoldingApp() {
     }
     
     return controller;
+}
+
+/**
+ * Populate the preset selector dropdown
+ */
+function populatePresetSelector() {
+    const selector = document.getElementById('preset-selector');
+    if (!selector) return;
+    
+    // Clear existing options except the first
+    selector.innerHTML = '<option value="">-- Select a pattern --</option>';
+    
+    // Add presets
+    for (const [key, preset] of Object.entries(ORIGAMI_PRESETS)) {
+        const option = document.createElement('option');
+        option.value = key;
+        option.textContent = `${preset.name}`;
+        option.title = preset.description;
+        selector.appendChild(option);
+    }
+}
+
+/**
+ * Load the selected preset from the dropdown
+ */
+function loadSelectedPreset() {
+    const selector = document.getElementById('preset-selector');
+    if (!selector || !controller) return;
+    
+    const presetName = selector.value;
+    if (presetName) {
+        controller.loadPreset(presetName);
+        // Switch to config mode to see the result
+        controller.switchMode('config');
+    }
+}
+
+/**
+ * Export current pattern as JSON
+ */
+function exportPattern() {
+    if (!controller) return;
+    
+    const json = controller.exportFolds();
+    
+    // Create download link
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'origami-pattern.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+/**
+ * Import pattern from JSON file
+ */
+function importPattern() {
+    if (!controller) return;
+    
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const success = controller.importFolds(event.target.result);
+            if (!success) {
+                alert('Failed to import pattern. Please check the file format.');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
 }
 
 // Auto-initialize when DOM is ready if this is the main script

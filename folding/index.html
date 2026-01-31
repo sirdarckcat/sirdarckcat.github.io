@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Folding Engine</title>
+    <title>Origami Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -40,8 +40,16 @@
     <!-- CONFIG DRAWER -->
     <div class="config-drawer open" id="config-drawer">
         <div class="drawer-header">
-            <span>Fold Sequence</span>
+            <span>🦢 Origami Simulator</span>
             <span class="text-xs text-slate-400 font-normal" id="step-count">0 steps</span>
+        </div>
+        
+        <!-- Preset Selector -->
+        <div class="preset-section">
+            <label class="section-label">Load Preset</label>
+            <select id="preset-selector" class="preset-select" onchange="loadSelectedPreset()">
+                <option value="">-- Select a pattern --</option>
+            </select>
         </div>
         
         <div class="fold-list" id="fold-list">
@@ -49,10 +57,16 @@
         </div>
 
         <div class="btn-add-group">
-            <button class="btn-act" onclick="addFold('horizontal')">+ Horiz (-)</button>
+            <button class="btn-act" onclick="addFold('horizontal')">+ Horiz (—)</button>
             <button class="btn-act" onclick="addFold('vertical')">+ Vert (|)</button>
             <button class="btn-act" onclick="addFold('diag1')">+ Diag (\)</button>
             <button class="btn-act" onclick="addFold('diag2')">+ Diag (/)</button>
+        </div>
+        
+        <!-- Export/Import Section -->
+        <div class="export-section">
+            <button class="btn-act btn-export" onclick="exportPattern()">📤 Export</button>
+            <button class="btn-act btn-import" onclick="importPattern()">📥 Import</button>
         </div>
     </div>
 

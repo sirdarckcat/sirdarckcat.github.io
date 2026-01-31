@@ -4,7 +4,7 @@
  */
 
 import { easeInOutCubic, MAX_FOLD_ANGLE } from './math.js';
-import { createFold, getFoldLabel } from './folds.js';
+import { createFold, getFoldLabel, FOLD_DIRECTION, ORIGAMI_PRESETS, loadPreset, getPresetNames } from './folds.js';
 import { FoldingRenderer, updateTurntable } from './renderer.js';
 
 /**
@@ -171,16 +171,35 @@ export class FoldingController {
             el.className = 'fold-item';
             
             const label = getFoldLabel(fold.type);
+            const position = fold.position !== undefined ? fold.position : 50;
+            const direction = fold.direction || FOLD_DIRECTION.MOUNTAIN;
+            const directionIcon = direction === FOLD_DIRECTION.MOUNTAIN ? '⛰️' : '🏔️';
 
             el.innerHTML = `
                 <div class="fold-item-header">
-                    <span>${index + 1}. ${label}</span>
+                    <span>${index + 1}. ${label} ${directionIcon}</span>
                     <span class="btn-delete" data-index="${index}">🗑️</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <input type="range" min="0" max="${MAX_FOLD_ANGLE}" value="${fold.targetAngle}" 
-                           data-index="${index}" class="fold-angle-slider">
-                    <span class="text-sm font-mono w-10 text-right text-blue-300">${fold.targetAngle}°</span>
+                <div class="fold-controls">
+                    <div class="fold-control-row">
+                        <label class="control-label">Angle</label>
+                        <input type="range" min="0" max="${MAX_FOLD_ANGLE}" value="${fold.targetAngle}" 
+                               data-index="${index}" class="fold-angle-slider">
+                        <span class="control-value">${fold.targetAngle}°</span>
+                    </div>
+                    <div class="fold-control-row">
+                        <label class="control-label">Position</label>
+                        <input type="range" min="10" max="90" value="${position}" 
+                               data-index="${index}" class="fold-position-slider">
+                        <span class="control-value">${position}%</span>
+                    </div>
+                    <div class="fold-control-row">
+                        <label class="control-label">Direction</label>
+                        <select data-index="${index}" class="fold-direction-select">
+                            <option value="mountain" ${direction === FOLD_DIRECTION.MOUNTAIN ? 'selected' : ''}>⛰️ Mountain</option>
+                            <option value="valley" ${direction === FOLD_DIRECTION.VALLEY ? 'selected' : ''}>🏔️ Valley</option>
+                        </select>
+                    </div>
                 </div>
             `;
             
@@ -191,6 +210,14 @@ export class FoldingController {
             
             el.querySelector('.fold-angle-slider').addEventListener('input', (e) => {
                 this.updateFoldAngle(index, parseInt(e.target.value));
+            });
+            
+            el.querySelector('.fold-position-slider').addEventListener('input', (e) => {
+                this.updateFoldPosition(index, parseInt(e.target.value));
+            });
+            
+            el.querySelector('.fold-direction-select').addEventListener('change', (e) => {
+                this.updateFoldDirection(index, e.target.value);
             });
             
             container.appendChild(el);
@@ -209,7 +236,7 @@ export class FoldingController {
      * @param {string} type - Fold type
      */
     addFold(type) {
-        this.folds.push(createFold(type, 135));
+        this.folds.push(createFold(type, 135, 50, FOLD_DIRECTION.MOUNTAIN));
         if (this.appMode === 'config') {
             this.applyConfigState();
         }
@@ -239,6 +266,118 @@ export class FoldingController {
         this.renderer.render(this.folds);
         this.renderFoldList();
         if (this.onFoldsChange) this.onFoldsChange(this.folds);
+    }
+
+    /**
+     * Update fold position
+     * @param {number} index - Fold index
+     * @param {number} position - New position value (0-100%)
+     */
+    updateFoldPosition(index, position) {
+        this.folds[index].position = position;
+        this.renderer.render(this.folds);
+        this.renderFoldList();
+        if (this.onFoldsChange) this.onFoldsChange(this.folds);
+    }
+
+    /**
+     * Update fold direction
+     * @param {number} index - Fold index
+     * @param {string} direction - New direction ('mountain' or 'valley')
+     */
+    updateFoldDirection(index, direction) {
+        this.folds[index].direction = direction;
+        this.renderer.render(this.folds);
+        this.renderFoldList();
+        if (this.onFoldsChange) this.onFoldsChange(this.folds);
+    }
+
+    /**
+     * Load a preset pattern
+     * @param {string} presetName - Name of the preset to load
+     */
+    loadPreset(presetName) {
+        const folds = loadPreset(presetName);
+        this.folds = folds;
+        if (this.appMode === 'config') {
+            this.applyConfigState();
+        }
+        if (this.onFoldsChange) this.onFoldsChange(this.folds);
+    }
+
+    /**
+     * Get available preset names
+     * @returns {string[]} Array of preset names
+     */
+    getPresetNames() {
+        return getPresetNames();
+    }
+
+    /**
+     * Get preset info
+     * @param {string} name - Preset name
+     * @returns {Object} Preset info
+     */
+    getPresetInfo(name) {
+        return ORIGAMI_PRESETS[name];
+    }
+
+    /**
+     * Export current folds as JSON
+     * @returns {string} JSON string of current folds
+     */
+    exportFolds() {
+        return JSON.stringify({
+            version: 1,
+            name: 'Custom Pattern',
+            folds: this.folds.map(f => ({
+                type: f.type,
+                targetAngle: f.targetAngle,
+                position: f.position || 50,
+                direction: f.direction || FOLD_DIRECTION.MOUNTAIN
+            }))
+        }, null, 2);
+    }
+
+    /**
+     * Import folds from JSON
+     * @param {string} jsonString - JSON string to import
+     * @returns {boolean} Success status
+     */
+    importFolds(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+            if (!data.folds || !Array.isArray(data.folds)) {
+                return false;
+            }
+            
+            this.folds = data.folds.map((f, i) => ({
+                id: Date.now() + i,
+                type: f.type,
+                targetAngle: f.targetAngle,
+                currentAngle: 0,
+                position: f.position || 50,
+                direction: f.direction || FOLD_DIRECTION.MOUNTAIN
+            }));
+            
+            if (this.appMode === 'config') {
+                this.applyConfigState();
+            }
+            if (this.onFoldsChange) this.onFoldsChange(this.folds);
+            return true;
+        } catch (e) {
+            console.error('Failed to import folds:', e);
+            return false;
+        }
+    }
+
+    /**
+     * Toggle crease pattern visibility
+     * @param {boolean} visible - Whether to show crease pattern
+     */
+    setCreasePatternVisible(visible) {
+        this.renderer.setCreasePatternVisible(visible);
+        this.renderer.render(this.folds);
     }
 
     /**
