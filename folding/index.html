@@ -82,7 +82,7 @@
 
         .face-back {
             background-color: var(--paper-back);
-            transform: rotateY(180deg) translateZ(0.1px); /* Slight offset to prevent z-fighting */
+            transform: rotateY(180deg) translateZ(-0.1px); /* Slight offset behind front face to prevent z-fighting */
             display: flex; align-items: center; justify-content: center;
             font-weight: bold; color: rgba(255,255,255,0.2);
             font-size: 1.5rem;
