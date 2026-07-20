@@ -51,7 +51,8 @@ def init_spec(spec, sieve_b, block):
     # k-residues killing q: k == (q - N0) * M^-1  (mod s)
     kres = {}
     for q in U:
-        kres[q] = ((q - n0m) * inv) % S
+        kres[q] = (((q - n0m) * inv) % S).astype(np.int32)
+    S = S.astype(np.int32)
     small = S < block
     G.update(N0=N0, M=M, U=U, block=block, Q=spec["Q"],
              cq=[N0 - q for q in U],
@@ -80,8 +81,9 @@ def run_block(k0):
     alive_total = int(alive.sum())
     successes = []
     cq = G["cq"]
+    aliveT = np.ascontiguousarray(alive.T)
     for j in range(L):
-        col = alive[:, j]
+        col = aliveT[j]
         if not col.any():
             successes.append(k0 + j)   # fully sieved out -> success
             continue
@@ -153,7 +155,7 @@ def main():
     ap.add_argument("specs", nargs="+")
     ap.add_argument("--kmax", type=int, default=200000)
     ap.add_argument("--procs", type=int, default=4)
-    ap.add_argument("--block", type=int, default=16384)
+    ap.add_argument("--block", type=int, default=32768)
     ap.add_argument("--sieve-b", type=int, default=3000000)
     ap.add_argument("--out", default="found.jsonl")
     args = ap.parse_args()
