@@ -1,0 +1,19 @@
+{
+ "N_digits": 2692,
+ "g": 1134871,
+ "k": 14,
+ "offsets_checked": 88239,
+ "by_parity": 1,
+ "by_congruence": 85476,
+ "by_trial_division": 895,
+ "by_strong_base2": 1867,
+ "by_bpsw_lucas": 0,
+ "complement_status": "BPSW probable prime (ECPP certificate separate)",
+ "local_gap_audit": {
+  "prev_prime_offset": 7329,
+  "next_prime_offset": 1641,
+  "containing_gap": 8970,
+  "g": 1134871,
+  "ratio_g_over_gap": 126.51850613154961
+ }
+}
