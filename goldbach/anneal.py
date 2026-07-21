@@ -167,8 +167,9 @@ def main():
     out = sys.argv[3]
     seed = int(sys.argv[4]) if len(sys.argv) > 4 else 0
     iters = int(sys.argv[5]) if len(sys.argv) > 5 else 60000
-    res = C.build_cover(Q, e_target=e_cap, verbose=False)
-    st = State(Q, res["cover"], e_cap=e_cap)
+    rmax = int(sys.argv[6]) if len(sys.argv) > 6 else 8000
+    res = C.build_cover(Q, e_target=e_cap, rmax=rmax, verbose=False)
+    st = State(Q, res["cover"], e_cap=e_cap, rmax=rmax)
     print(f"greedy: congr={len(st.chosen)} M={st.logm/LN10:.1f}d |U|={st.n_res()} "
           f"E={st.energy()[2]:.2f} D~{st.energy()[1]:.1f}")
     st = anneal(st, iters=iters, seed=seed)
