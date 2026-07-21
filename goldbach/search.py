@@ -100,12 +100,26 @@ def run_block(k0):
 
 
 def verify_success(spec, k):
-    """Exhaustive check: no prime q < Q is a summand; then find g(N)."""
+    """Check no prime q < Q is a summand; then find g(N).
+
+    For small Q, exhaustively BPSW-test every prime offset.  For large Q
+    (mega covers), covered offsets have a congruence divisor by
+    construction, so re-check only the residual offsets; the exhaustive
+    per-offset evidence is produced later by verify_record.py.
+    """
     N = mpz(spec["N0"]) + k * mpz(spec["M"])
     Q = spec["Q"]
-    for q in primerange(2, Q):
-        if is_prime(N - q):
-            return None
+    if spec.get("fast_verify"):
+        for r, a in spec["cover"]:
+            if (N - a) % r != 0:
+                return None          # CRT reconstruction mismatch
+        for q in spec["residual"]:
+            if is_prime(N - q):
+                return None
+    else:
+        for q in primerange(2, Q):
+            if is_prime(N - q):
+                return None
     q = int(gmpy2.next_prime(Q - 1))
     while not is_prime(N - q):
         q = int(gmpy2.next_prime(q))
@@ -138,6 +152,9 @@ def search_spec(spec, args, out):
                           f"g={res['g']}", flush=True)
                     out.write(json.dumps(res) + "\n")
                     out.flush()
+            if found and spec.get("stop_on_success"):
+                pool.terminate()
+                break
     dt = time.time() - t0
     kdone = kmax - kstart
     phat = prps / tests if tests else 0.0
