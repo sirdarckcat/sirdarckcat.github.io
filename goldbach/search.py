@@ -48,18 +48,15 @@ def init_spec(spec, sieve_b, block):
         inv[i] = pow(mv, -1, si) if mv else 0
     good = mm != 0          # drop any s | M (cover primes already removed)
     S, n0m, inv = S[good], n0m[good], inv[good]
-    # k-residues killing q: k == (q - N0) * M^-1  (mod s)
-    kres = {}
-    for q in U:
-        kres[q] = (((q - n0m) * inv) % S).astype(np.int32)
-    S = S.astype(np.int32)
     small = S < block
+    # k-residues killing q (k == (q - N0) * M^-1 mod s) are computed per
+    # residual on the fly in run_block: storing them for all (q, s) pairs
+    # costs |U| * pi(B) ints, which is GBs for large target sets.
     G.update(N0=N0, M=M, U=U, block=block, Q=spec["Q"],
              cq=[N0 - q for q in U],
+             n0m=n0m, inv=inv, S=S, small=small,
              S_small=S[small], S_small_list=[int(s) for s in S[small]],
-             S_large=S[~small],
-             kres_small={q: kres[q][small] for q in U},
-             kres_large={q: kres[q][~small] for q in U})
+             S_large=S[~small])
 
 
 def run_block(k0):
@@ -68,13 +65,15 @@ def run_block(k0):
     L = G["block"]
     Ss, Sl = G["S_small"], G["S_large"]
     Ss_list = G["S_small_list"]
+    S, n0m, inv, small = G["S"], G["n0m"], G["inv"], G["small"]
     alive = np.ones((len(U), L), dtype=bool)
     for i, q in enumerate(U):
         row = alive[i]
-        js = ((G["kres_small"][q] - k0) % Ss).tolist()
+        kres = ((q - n0m) * inv - k0) % S
+        js = kres[small].tolist()
         for j, s in zip(js, Ss_list):
             row[j::s] = False
-        jl = (G["kres_large"][q] - k0) % Sl
+        jl = kres[~small]
         hit = jl < L
         row[jl[hit]] = False
     tests = prps = 0
