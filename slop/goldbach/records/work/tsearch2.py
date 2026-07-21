@@ -32,6 +32,15 @@ def crt(classes):
     return N0 % M, M
 
 def worker(wid, nw, args, cov, out_q, stop_ev):
+    try:
+        _worker(wid, nw, args, cov, out_q, stop_ev)
+    except Exception:
+        import traceback
+        print(f"[worker {wid} CRASH]", flush=True)
+        traceback.print_exc()
+        out_q.put(("done", wid, -1, None, "", 0, 0.0))
+
+def _worker(wid, nw, args, cov, out_q, stop_ev):
     classes = [(int(r), int(b)) for r, b in cov["classes"]]
     residual = np.array(sorted(int(p) for p in cov["residual"]), dtype=np.int64)
     kres = len(residual)
@@ -53,7 +62,7 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
         pb = ps[lo:lo+4096]
         pim = residual[None, :] % pb[:, None]                 # (S_b, k)
         blk = ((pim - N0m[lo:lo+4096, None]) % pb[:, None]) * Minv[lo:lo+4096, None] % pb[:, None]
-        t0_blocks.append(blk.astype(np.int64))
+        t0_blocks.append(blk.astype(np.int32))
     t0 = np.concatenate(t0_blocks); del t0_blocks             # (S, k) first-hit t per (s, residual)
     res_mpz = [mpz(int(p)) for p in residual]
     # uncovered q candidates above Q
@@ -64,14 +73,23 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
             qc.append(qq)
     W = args.window
     small = ps < W                                       # primes with multiple hits/window
-    ps_s, t0_s = ps[small], t0[small]
+    ps_s, t0_s = ps[small], t0[small].astype(np.int64)
     ps_l, t0_l = ps[~small], t0[~small]
-    Sflat_l = np.repeat(ps_l, kres)
-    t0flat_l = t0_l.ravel()
-    iflat_l = np.tile(np.arange(kres, dtype=np.int64), len(ps_l))
+    Sflat_l = np.repeat(ps_l, kres).astype(np.int32)
+    iflat_l = np.tile(np.arange(kres, dtype=np.int32), len(ps_l))
     idxk = np.arange(kres)
     tested = 0; t_start = time.time()
     win = args.t_lo + wid * W
+    stride = nw * W
+    # incremental per-pair offsets: cur = (first hit t - win) mod s, int32
+    cur_l = np.empty(len(Sflat_l), dtype=np.int32)
+    t0flat_l = t0_l.ravel()
+    B = 1 << 22
+    for lo in range(0, len(cur_l), B):
+        cur_l[lo:lo+B] = ((t0flat_l[lo:lo+B].astype(np.int64) - win) % Sflat_l[lo:lo+B]).astype(np.int32)
+    del t0flat_l, t0_l, t0
+    rows = [((t0_s[j] - win) % int(ps_s[j])).astype(np.int64) for j in range(len(ps_s))]
+    del t0_s
     while win < args.t_hi and not stop_ev.is_set():
         if Nmax is not None and N0 + win * M >= Nmax:
             break
@@ -79,16 +97,15 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
         # small primes: stride over the window, vectorized across residuals
         for j in range(len(ps_s)):
             s = int(ps_s[j])
-            row = (t0_s[j] - win) % s                    # first offset per residual
+            row = rows[j]
             for m in range(0, W, s):
                 idx = row + m
                 v = idx < W
                 alive[idx[v], idxk[v]] = False
-                if s >= W: break
+            rows[j] = (row - stride) % s
         # large primes: at most one hit each
-        off = (t0flat_l - win) % Sflat_l
-        hm = off < W
-        alive[off[hm], iflat_l[hm]] = False
+        hm = cur_l < W
+        alive[cur_l[hm], iflat_l[hm]] = False
         surv = alive.sum(axis=1)
         if args.select_frac < 1.0:
             thr = np.quantile(surv, args.select_frac)
@@ -118,7 +135,8 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
             if tested % args.report == 0:
                 out_q.put(("prog", wid, t, None, "", tested, time.time() - t_start))
                 if stop_ev.is_set(): return
-        win += nw * W
+        cur_l = (cur_l - stride) % Sflat_l
+        win += stride
     out_q.put(("done", wid, win, None, "", tested, time.time() - t_start))
 
 def main():
