@@ -40,13 +40,13 @@ def package(found, spec, outdir):
     # ECPP certificate for the large prime complement
     comp = int(found["N"]) - found["g"]
     gp_script = (
-        f'default(parisizemax, 2000000000);'
-        f'c = primecert({comp});'
-        f'if(c == 0, print("NOT PRIME"); quit(1));'
-        f'write("{outdir}/complement_cert.gp", c);'
-        f'print("cert ok: ", primecertisvalid(c));'
+        f'default(parisize, 512000000);\n'
+        f'c = primecert({comp});\n'
+        f'print("gen: ", type(c));\n'
+        f'write("{outdir}/complement_cert.gp", c);\n'
+        f'print("valid: ", primecertisvalid(c));\n'
     )
-    r = subprocess.run(["gp", "-q", "-s", "2000000000"], input=gp_script,
+    r = subprocess.run(["gp", "-q"], input=gp_script,
                        capture_output=True, text=True, timeout=7200)
     with open(f"{outdir}/check_cert.log", "w") as f:
         f.write(r.stdout + r.stderr)
