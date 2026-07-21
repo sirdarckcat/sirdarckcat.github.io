@@ -1,5 +1,45 @@
 # Goldbach Desert Records
 
+## Prime-gap domination record (2026-07-21): g(N) = 1 134 871
+
+**The certified Goldbach desert exceeds the largest known prime gap with
+proven endpoints** (1 113 106, between 18 662-digit primes), while the
+ordinary prime gap around this N is just 8 970 — the desert is **126.5×
+longer** than the local prime-free interval, so it comes entirely from
+covering *prime* offsets, not from an ordinary prime gap.
+
+N has 2 692 digits (6.9× smaller than the certified-gap endpoints); see
+`records/megagap_2692digit_g1134871/record.json` (reconstructable as
+N = N0 + 14·M from the stored 813-congruence cover).
+
+| quantity | value |
+|---|---|
+| g(N) — least Goldbach summand | **1 134 871** (= 1.0196 × certified-gap record) |
+| digits of N | 2 692 |
+| prime offsets q < g proven non-summands | 88 239 |
+| — by parity / congruence divisor / trial divisor | 1 / 85 476 / 895 |
+| — by strong base-2 witness (unconditional) | 1 867 |
+| prev/next prime around N | N−7 329 / N+1 641 (gap 8 970) |
+| g(N) ÷ local prime gap | **126.5** |
+
+The complement N − 1 134 871 is certified prime by the PARI/GP ECPP
+certificate in `complement_cert.gp` (`primecertisvalid` = 1); every
+negative witness is deterministic. Search: E = 6.56 cover found the hit
+at k = 14. The larger the construction, the *easier* the search — E =
+|U|·boost/ln N falls as N grows — so this game optimizes at a ~2 700-digit
+N, unlike the digit-frugal bounded games below.
+
+**Remaining open targets from the challenge**: the absolute-known-gap
+milestone g ≥ 16 045 849 (beating the largest PRP-endpoint gap) needs
+π(16M) ≈ 1.03M covered offsets → M ≈ 20 000 digits and ~0.2 s/modexp,
+i.e. a distributed campaign roughly 100–1000× this 4-core box. The
+"1M-desert below 200 digits" bonus is beyond covering methods entirely:
+a ≤192-digit modulus leaves ≥20 000 residual primes below 1.1M, giving
+success density e^−400; note (log N)²·log log N ≈ 1.3×10⁶ at 200 digits,
+so such an N sits at the extremal constant of the conjectured
+Granville–van de Lune–te Riele maximal order.
+
+
 Machinery and results for the two bounded record games defined in *Cute
 Goldbach Gaps* (July 2026): for an even N, let g(N) be the least prime p
 such that N − p is also prime (the least Goldbach summand).
