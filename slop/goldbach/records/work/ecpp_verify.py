@@ -90,6 +90,7 @@ def is_prime_small(n):
     for p in SMALL_PRIMES:
         if n % p == 0: return n == p
     for a in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]:
+        if n == a: return True
         if mr_witness(n, a): return False
     return True
 

@@ -45,7 +45,9 @@ def sieve_flags(n):
 def sprp_composite(n, a):
     """True iff a proves n composite by the strong probable-prime test.
     (Primes NEVER return True: this is a rigorous compositeness witness.)"""
-    if n % 2 == 0: return n != 2
+    assert n > 2
+    if n % 2 == 0: return True
+    if a % n == 0: return False          # test says nothing when a ≡ 0 (mod n)
     d, s = n - 1, 0
     while d % 2 == 0: d //= 2; s += 1
     x = pow(a, d, n)
@@ -93,7 +95,7 @@ def ec_mul(k, P, a, n):
 
 def is_prime_u64(n):
     assert 1 < n < 3317044064679887385961981
-    for p in (2,3,5,7,11,13,17,19,23,29,31,37):
+    for p in (2,3,5,7,11,13,17,19,23,29,31,37,41):
         if n % p == 0: return n == p
     return not any(sprp_composite(n, a) for a in (2,3,5,7,11,13,17,19,23,29,31,37,41))
 
@@ -180,8 +182,7 @@ def main(path):
           f"all covered complements divisible by their class modulus")
 
     # C. the partition N = q + (N - q)
-    assert flags[q] if q < len(flags) else all(q % d for d in range(2, math.isqrt(q) + 1)), "q not prime"
-    assert all(q % d for d in range(2, math.isqrt(q) + 1)) and q > 1, "q not prime"
+    assert q > 1 and all(q % d for d in range(2, math.isqrt(q) + 1)), "q not prime"
     ecpp_verify(pkg["ecpp_cert"], N - q)
     print(f"[C] q = {q} prime (trial division); N - q proven prime by ECPP "
           f"({len(pkg['ecpp_cert'])} steps, independently re-verified)")

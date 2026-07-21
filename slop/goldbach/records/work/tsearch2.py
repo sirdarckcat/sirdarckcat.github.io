@@ -43,8 +43,8 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
         nm = mpz(args.nmax)
         Nmax = nm if Nmax is None else min(Nmax, nm)
     used = set(r for r, _ in classes); used.add(2)
-    ps = np.array([s for s in prime_sieve(args.presieve) if int(s) not in used][1:],
-                  dtype=np.int64)  # skip s=2 (complements are odd)
+    ps = np.array([s for s in prime_sieve(args.presieve) if int(s) not in used],
+                  dtype=np.int64)  # s=2 excluded via 'used' (complements are odd)
     # t0(i,s): smallest t>=0 with s | N0 + t*M - p_i  => t ≡ (p_i-N0)*M^{-1} (mod s)
     Minv = np.array([int(gmpy2.invert(int(M % int(s)), int(s))) for s in ps], dtype=np.int64)
     N0m = np.array([int(N0 % int(s)) for s in ps], dtype=np.int64)
@@ -90,7 +90,12 @@ def worker(wid, nw, args, cov, out_q, stop_ev):
         hm = off < W
         alive[off[hm], iflat_l[hm]] = False
         surv = alive.sum(axis=1)
-        order = np.argsort(surv, kind="stable")
+        if args.select_frac < 1.0:
+            thr = np.quantile(surv, args.select_frac)
+            sel = np.nonzero(surv <= thr)[0]
+            order = sel[np.argsort(surv[sel], kind="stable")]
+        else:
+            order = np.argsort(surv, kind="stable")
         for tt in order:
             t = win + int(tt)
             if t >= args.t_hi: continue
@@ -128,6 +133,8 @@ def main():
     ap.add_argument("--qmax", type=int, default=2 * 10**6)
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--report", type=int, default=5000)
+    ap.add_argument("--select-frac", type=float, default=1.0,
+                    help="only PRP-test this fraction of t (lowest presieve-survivor counts)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     cov = json.load(open(args.cover))
