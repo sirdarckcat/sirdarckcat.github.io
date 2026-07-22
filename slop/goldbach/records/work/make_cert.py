@@ -88,9 +88,12 @@ quit(0);
     print("independent python ECPP verify: OK")
     if not a.skip_aprcl:
         print("running PARI APR-CL as second algorithm...", flush=True)
-        r2 = subprocess.run(["gp", "-q"], input=f'default(parisizemax,8G); print("aprcl=", isprime({P}, 2)); quit',
-                            capture_output=True, text=True, timeout=100000)
-        assert "aprcl=1" in r2.stdout, "APR-CL disagrees!"
+        gp2 = os.path.join(work, "aprcl_run.gp")
+        open(gp2, "w").write(f'default(parisizemax,8000000000);\n'
+                             f'P = eval(readstr("{pf}")[1]);\n'
+                             f'print("aprcl=", isprime(P, 2));\nquit\n')
+        r2 = subprocess.run(["gp", "-q", gp2], capture_output=True, text=True, timeout=1000000)
+        assert "aprcl=1" in r2.stdout, f"APR-CL disagrees! {r2.stdout[-300:]} {r2.stderr[-300:]}"
         print("APR-CL: prime")
     pkg = {"N": str(N), "q": a.q, "t": a.t,
            "classes": [[r, b] for r, b in classes],
