@@ -38,10 +38,12 @@ PREV_OFF, NEXT_OFF = 7329, 1641
 def gp_validate(cert_path, expected):
     cert = parse_cert(cert_path)
     assert mpz(cert[0][0]) == expected, f"BINDING FAILURE for {cert_path}"
+    # NB: default(parisize,...) reallocates the stack and discards the
+    # rest of its input line, so every statement needs its own line.
     r = subprocess.run(
         ["gp", "-q"],
-        input=f'default(parisize,3000000000);'
-              f'c=read("{cert_path}");print(primecertisvalid(c));',
+        input=f'default(parisize,3000000000);\n'
+              f'c=read("{cert_path}");\nprint(primecertisvalid(c));\n',
         capture_output=True, text=True, timeout=36000)
     assert r.stdout.strip().splitlines()[-1] == "1", f"PARI rejects {cert_path}"
 
