@@ -22,8 +22,8 @@
 
 | game | target q > | #congr | log10 M | k | p1·k | E[t to hit] | fits range? |
 |------|-----------|--------|---------|---|------|-------------|-------------|
-| G2/3 | 105,667 | 88+1 | 190.4 | 743 | 17.86 | 5.7e7 | E[hits<N*]=3.98 ✓ |
-| G1 | 1,113,137 | 759+1 | ~2,476 | 2,915 | ~8.0 | ~3e3 | unbounded ✓ |
+| G2/3 | 105,667 | 88+1 | 190.3 | 729 | 17.53 | 4.1e7 | HIT t=299,581,384 q=110,917 CERTIFIED ✓ |
+| G1 | 1,113,137 | 759+1 | 2,474.6 | 2,844 | 7.68 | ~2.2e3 | searching (4 workers, ~29 s/tested t) |
 
 ## Key design decisions
 
@@ -40,3 +40,11 @@
 - SA without move diversity stalls immediately (k frozen at greedy value) → fixed by
   GRASP-randomized refill + residue kicks (2026-07-21).
 - build_cover killed runs lost state → checkpointing added.
+
+## Certified results
+
+- **Games 2+3 (2026-07-22)**: N = 58265...638 (199 digits) < N_*, g(N) = 110,917.
+  Package records/g23/record_g23.json (sha256 1b1113...ad65). Verified by:
+  standalone verifier (gmpy2 + stdlib modes), PARI full-scan crosscheck
+  (10,526 primes, 0 violations), ECPP 30 steps + python re-verify + APR-CL.
+  Search cost: 1.66e7 tested t of 3.0e8 range (hit at 99.9% of range).
