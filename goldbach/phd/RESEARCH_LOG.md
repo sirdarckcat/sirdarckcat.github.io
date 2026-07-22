@@ -125,3 +125,8 @@ Cover frontier at Q = 107,720 (cover.py):
   v0–v25), 0 hits, throughput steady at ~1950 k/s, Ê ≈ 18.8 nominal.
 - Cadence going forward: wakeup turns of ~6–8 chunks (~1 h compute) chained ~1 min
   apart; expected first hit around slice ~510 (Poisson, e^18.7 elements).
+
+### 2026-07-22 — compute turns #3–#4 (12:25–14:55 UTC)
+- 88/1200 slices complete (2.3e7 progression elements), 0 hits; throughput steady
+  ~1870 k/s per slice incl. init overhead; chunks reliably complete 4 slices each.
+  Survival to this depth has Poisson probability e^(-88/510) ≈ 0.84 — unremarkable.
