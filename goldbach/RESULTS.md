@@ -1,6 +1,6 @@
 # Goldbach Desert Records
 
-## Joint representative/coverage optimization (2026-07-22): a 219-digit
+## Joint representative/coverage optimization (2026-07-22): a 221-digit
 ## modulus with a sub-10^197 representative
 
 Question: can we deliberately build a CRT system whose modulus M has far
@@ -44,6 +44,7 @@ residual set recomputed from scratch):
 |---|---|---|---|---|---|
 | `m211_x196.json` | 2 + 95 | 211 | **196** | 738 | 18.09 |
 | `m219_x197.json` | 2 + 98 | 219 | **< 197** | 784 | 19.33 |
+| `m221_x197.json` | 2 + 98 | 221 | **< 197** | 782 | 19.32 |
 
 The 211-digit system (4 lists × 8 moduli × top-5, 14.9 digits
 cancelled) is a strictly *better* cover than the record's own (|U| 738
@@ -51,7 +52,12 @@ vs 752, E 18.09 vs 18.20) — the seven added moduli cover more residuals
 than the block reassignment exposes. The 219-digit system (8 lists ×
 8 moduli × top-5, 21.3 digits cancelled, 52 solutions where the
 window/entropy calculus predicted ~50) shows the 4-level Wagner tree
-delivering its full (d+1)·log10 L budget.
+delivering its full (d+1)·log10 L budget. The deepest run, 8 lists ×
+8 moduli × top-6 over 64 block moduli, cancelled **24.3 digits**
+(83 solutions, ~25 min / ~8 GB on 4 cores) for the 221-digit system —
+within half a digit of its 24.9-digit entropy ceiling, and with no
+coverage penalty over the top-5 run because the larger solution pool
+compensates for the looser residue lists.
 
 **Why this does not improve the bounded record games.** A sieved
 progression scan generates ~1 850 candidates/s; k-list construction
