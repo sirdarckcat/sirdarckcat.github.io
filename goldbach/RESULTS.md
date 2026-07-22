@@ -70,10 +70,15 @@ this target.
 
 **The achievable 200-digit frontier** is the budget game R(10^199)
 itself: at Q = 107,720 the annealer lands M = 194.3 digits, |U| = 764,
-E = 18.0 (18.27 at the 199-digit budget) — 500 residue-swap variants
-of ~47,000 sub-budget candidates each give a ~25% shot per 3.5 h scan
-at beating g = 107,719. One such scan was run as part of this work
-(outcome recorded below in this section's history).
+E = 18.0 (~18.3 at the 199-digit budget) — each residue-swap variant
+progression holds ~47,000 sub-budget candidates, so a scan block of
+several hundred variants is a ~25–35% lottery at beating g = 107,719.
+Round 1 (500 progressions, 2.3·10^7 elements, 0.27 expected hits)
+scanned clean with no hit, exactly the likely draw; further rounds over
+fresh variants (`gen_variants.py` now takes a `pair_pool` size, so the
+catalog extends to thousands of provably distinct progressions) are a
+matter of core-hours. Cumulative odds grow by ~30% per ~5 h of 4-core
+scan; the incumbent record itself consumed ~21 h at the same frontier.
 
 ## Joint representative/coverage optimization (2026-07-22): a 221-digit
 ## modulus with a sub-10^197 representative
