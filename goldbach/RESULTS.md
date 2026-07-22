@@ -1,5 +1,70 @@
 # Goldbach Desert Records
 
+## Joint representative/coverage optimization (2026-07-22): a 219-digit
+## modulus with a sub-10^197 representative
+
+Question: can we deliberately build a CRT system whose modulus M has far
+more than 197 digits but whose least positive representative x has fewer
+than 197 digits — while keeping record-class coverage of prime offsets?
+Answer: **yes, by tens of digits, and the gain is exactly the entropy of
+the residue search; hundreds or thousands of digits are out of reach.**
+
+`joint.py` extends the annealer's objective log M + E to the expected-hit
+objective **Phi = E − log K(x, M; B)**, where K = max(0, ⌊(B−1−x)/M⌋+1)
+counts progression elements below the size budget B. It tracks the exact
+representative incrementally through the CRT basis C_{r,a} =
+a·(M/r)·((M/r)^{-1} mod r): a residue move shifts x by (a′−a)·C_{r,1}
+mod M, so coverage counts and x anneal together. The heavy tool is a
+multiple-choice modular meet-in-the-middle (`klist_solve`): split a block
+of moduli into 2^d lists, enumerate the top-c residue classes of each,
+and Wagner-merge with shrinking centered windows until the representative
+lands in a target interval. 2^d lists of size L buy about
+(d+1)·log10(L) digits of cancellation below M.
+
+Measured on the 197-digit record's cover (88 odd moduli, M = 191
+digits, |U| = 752, B = 10^197):
+
+- **No structural small-x bias.** Over 2 000 random top-4 residue
+  reassignments the deciles of x/M are (0.10, 0.25, 0.50, 0.75, 0.90) —
+  uniform; the minimum matches the 1/samples order a uniform draw
+  predicts. Only search entropy buys small representatives.
+- **Phi reduces to the old objective while M ≪ B.** Across all x in
+  [0, M), K changes by at most one (Δlog K = 7.3·10^−7): the record
+  pipeline was already optimal in its regime, and E computed at the
+  budget scale (18.20) reproduces the measured search density Ê = 18.2.
+- **2-list MITM, moduli held fixed**: 46 solutions with x/M < 10^−8
+  from 4^8 combos per side (entropy predicts ~43); the best costs
+  **+8 residuals** (752 → 760) for **8.3 digits of cancellation**.
+
+Constructions past the budget (`constructions/`, each re-verified
+end-to-end: x ≡ a_r (mod r) for all 96–99 congruences, x < 10^197,
+residual set recomputed from scratch):
+
+| file | moduli | digits(M) | digits(x) | \|U\| | E at 10^197 |
+|---|---|---|---|---|---|
+| `m211_x196.json` | 2 + 95 | 211 | **196** | 738 | 18.09 |
+| `m219_x197.json` | 2 + 98 | 219 | **< 197** | 784 | 19.33 |
+
+The 211-digit system (4 lists × 8 moduli × top-5, 14.9 digits
+cancelled) is a strictly *better* cover than the record's own (|U| 738
+vs 752, E 18.09 vs 18.20) — the seven added moduli cover more residuals
+than the block reassignment exposes. The 219-digit system (8 lists ×
+8 moduli × top-5, 21.3 digits cancelled, 52 solutions where the
+window/entropy calculus predicted ~50) shows the 4-level Wagner tree
+delivering its full (d+1)·log10 L budget.
+
+**Why this does not improve the bounded record games.** A sieved
+progression scan generates ~1 850 candidates/s; k-list construction
+generates 0.1–100 constructions/s of K = 1 candidates each, i.e.
+candidates are 10^1–10^4× more expensive, while E is no lower. In Phi
+terms: the record progression scores Phi = 18.20 − log 1 371 832 = 4.07,
+an M > B construction scores Phi = E ≥ 18. Joint optimization is the
+right tool exactly when the modulus *must* exceed the budget, and it
+caps out at the search entropy: reaching 197 digits from the 2 692-digit
+Game-1 cover would need ~10^2495 enumerated states (with lists of 10^6
+that is 2^415 lists), so compressing that cover is impossible — matching
+the uniform-representative estimate 10^(197−2692).
+
 ## Prime-gap domination record (2026-07-21): g(N) = 1 134 871
 
 **The certified Goldbach desert exceeds the largest known prime gap with
