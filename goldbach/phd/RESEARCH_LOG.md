@@ -99,3 +99,19 @@ Cover frontier at Q = 107,720 (cover.py):
   exhaustively (BPSW over all primes < Q) by verify_success before being reported.
 - Monitoring via hourly check-ins; on first hit: stop, certify (evidence + PARI ECPP +
   independent ecpp_check.py + manifest), package record, push.
+
+### 2026-07-22 — check-in #1 (10:22 UTC): infrastructure hardening after two container restarts
+- Finding (operational, WP1-adjacent): the remote container is reclaimed during idle
+  periods between session turns, killing detached (`nohup`/`setsid`) processes. Two
+  restarts (~09:47, ~10:21 UTC) each wiped in-flight scanning with zero completed-spec
+  checkpoints — coarse per-variant checkpointing (12 min/unit) loses too much.
+- Fix, campaign driver v2: the 200×1.5e6-k budget is now cut into 1,200 interleaved
+  slices of 262,144 k (~2 min each), checkpointed per slice in search.log and resumed
+  idempotently; the search runs as a harness-tracked background task instead of a
+  detached process, with a log monitor armed for hit/crash signatures.
+- Bonus: interleaving slices round-robin across variants makes the global scan
+  breadth-first in k, so the first hit found also tends to minimise k — and hence
+  N ≈ k·M — which is exactly the threshold-game (smallest N) preference.
+- Progress at check-in: 0 hits, 0 completed slices survive the restarts; effective
+  campaign clock restarted 10:24 UTC. Forecast unchanged (~17.5 h expected to hit,
+  subject to duty-cycle losses from restarts).
