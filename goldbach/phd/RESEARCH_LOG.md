@@ -7,9 +7,9 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,692-digit N (813-congruence cover, k=14) | g = 1,134,871 | audit in progress |
-| Threshold T(100,000) (Game 2) | N₁₉₇ ≈ 6.939·10^196 (197 digits) | g = 107,719 | audit in progress |
-| Budget R(10^199) (Game 3) | same N₁₉₇ | g = 107,719 | audit in progress |
+| Height H (Game 1) | 2,692-digit N (813-congruence cover, k=14) | g = 1,134,871 | **audited PASS** (2026-07-22) |
+| Threshold T(100,000) (Game 2) | N₁₉₇ ≈ 6.939·10^196 (197 digits) | g = 107,719 | **audited PASS** (2026-07-22) |
+| Budget R(10^199) (Game 3) | same N₁₉₇ | g = 107,719 | **audited PASS** (2026-07-22) |
 
 Grand-slam target: N < N₁₉₇ **and** g(N) ≥ 1,134,877 — aspirational (O5);
 RESULTS.md notes covering methods leave ≥20,000 residuals under a ≤192-digit
@@ -19,7 +19,7 @@ modulus (success density e^−400), so O5 requires mechanisms beyond static cove
 
 | WP | Scope | Status |
 |---|---|---|
-| WP1 (E1) | Independent audit of both incumbents + adversarial mutation tests | **delegated** — running |
+| WP1 (E1) | Independent audit of both incumbents + adversarial mutation tests | **done — PASS** |
 | WP2/WP6 (E2/E8) | Cover frontier Q=107,720; density calibration on this box | **done** — see below |
 | WP8 (E10) | Incremental record campaign: g > 107,719 with N < 10^199 AND N < N₁₉₇ | **launched** |
 | Certification | PARI/GP 2.15.4 installed for ECPP; ecpp_check.py as independent verifier | ready |
@@ -42,6 +42,31 @@ modulus (success density e^−400), so O5 requires mechanisms beyond static cove
   evidence regeneration matches committed witness counts, ECPP binding verified.
 - Part C (adversarial audit): PASS — all three deliberate corruptions detected.
 - Part B (megagap 88,239-witness replay + 3 ECPP chains) still running.
+
+### 2026-07-22 — WP1 final verdict: PASS (O1 achieved)
+Delegated audit report (full text in agent log; scripts in scratchpad wp1/):
+- **Dual 197-digit record** — N reconstructed byte-identical from (N0, M, k=951,928);
+  parity/size/bound checks pass; verify_record.py re-derives all 10,250 witnesses from
+  scratch and they are IDENTICAL to committed evidence.json (parity 1, congruence 9,471,
+  trial 378, strong-MR 400; offsets = π(107,718) confirmed independently); g prime,
+  N−g BPSW-prime; ECPP chain (26 steps) validated by the PARI-independent
+  ecpp_check.py incl. binding cert[0][0] = N−g.
+- **Megagap 2,692-digit record** — MANIFEST.sha256 matches all 7 artifacts;
+  verify_megagap.py end-to-end on a copy: all 813 cover congruences hold, all 88,239
+  prime offsets < g re-proven non-summands (85,476 congruence + 895 trial + 1,867
+  strong base-2 + parity), regenerated manifest byte-identical; local gap 8,970
+  fully certified; all three ECPP chains (253/267/246 steps) validated by
+  ecpp_check.py with correct bindings.
+- **Adversarial audit** — digit flip in N, deleted offset witness, and swapped
+  certificate candidate were each loudly DETECTED (plus a colluding-expected-value
+  variant also detected via chain arithmetic).
+- **PARI second opinion (lead)** — after installing PARI/GP 2.15.4,
+  `primecertisvalid` = 1 for all four certificates: dual complement, megagap
+  complement, and both local-gap endpoints. Every ECPP certificate in the corpus is
+  now validated by two independent implementations.
+- One environmental note: the audit agent's Part B originally ran without PARI
+  present; its ecpp_check.py validation is a superset of the missing step, and the
+  lead's PARI cross-check above closes the second-implementation gap.
 
 ### 2026-07-22 — WP2/WP6 results (delegated agent)
 Cover frontier at Q = 107,720 (cover.py):
