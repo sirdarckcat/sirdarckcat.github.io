@@ -115,3 +115,13 @@ Cover frontier at Q = 107,720 (cover.py):
 - Progress at check-in: 0 hits, 0 completed slices survive the restarts; effective
   campaign clock restarted 10:24 UTC. Forecast unchanged (~17.5 h expected to hit,
   subject to duty-cycle losses from restarts).
+
+### 2026-07-22 — check-in #2 (11:25–12:30 UTC): driver v3, chunked foreground compute
+- Harness-tracked background tasks ALSO die on idle reclaim (measured duty cycle ~12%
+  in the 10:24–11:24 window: 3 slices/54 min). Driver v3 therefore runs the search as
+  timeboxed foreground chunks inside scheduled session turns: ~9.7 min per chunk,
+  whole slices only, exit code 3 signals a hit for immediate certification.
+- This check-in turn ran 6 chunks: 26/1200 slices complete (rounds 0 of variants
+  v0–v25), 0 hits, throughput steady at ~1950 k/s, Ê ≈ 18.8 nominal.
+- Cadence going forward: wakeup turns of ~6–8 chunks (~1 h compute) chained ~1 min
+  apart; expected first hit around slice ~510 (Poisson, e^18.7 elements).
