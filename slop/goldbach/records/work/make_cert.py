@@ -62,10 +62,13 @@ def main():
     pf = os.path.join(work, f"P_{a.q}.txt")
     open(pf, "w").write(str(P))
     gp = f'''
-default(parisizemax, 8G);
+default(parisize, 2000000000);
+default(parisizemax, 8000000000);
+default(threadsize, 1000000000);
+default(threadsizemax, 4000000000);
 P = eval(readstr("{pf}")[1]);
 c = primecert(P);
-if (c == 0, print("ECPP-FAILED"); quit(1));
+if (type(c) != "t_VEC", print("ECPP-FAILED type=", type(c)); quit(1));
 v = primecertisvalid(c);
 print("pari_selfcheck=", v);
 f = fileopen("{pf}.cert", "w");
