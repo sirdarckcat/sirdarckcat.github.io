@@ -1,5 +1,77 @@
 # Goldbach Desert Records
 
+## The 1M-desert-below-200-digits question (2026-07-22): measured — the
+## frontier is ~1,250 digits, and 199 digits is short by a factor e^170
+
+Target: even N < 10^200 with g(N) > 10^6, i.e. all 78,498 primes
+q ≤ 10^6 have N − q composite. `exp1m.py` measures what that costs.
+
+**Mechanism audit.** Compositeness of N − q across many q at once can
+only be forced by congruence covers — r | N − q exactly when q ≡ N
+(mod r), one residue class per prime r. Everything else is dead on
+arrival: composite or prime-power moduli cover subsets of what their
+prime factors already cover; algebraic factorizations of N − q need q of
+a special polynomial shape no prime > 2 has; perfect powers in the
+window [N − 10^6, N] don't exist (consecutive squares at 10^200 are
+~10^100 apart); and hiding the desert inside a genuine prime gap of
+10^6 needs gap merit 2,180 versus ~42 ever observed and ~460
+conjecturally possible anywhere. What the cover leaves uncovered must
+be composite by luck, at density e^−E with E = |U|·boost/ln N — a model
+this repo has now validated at four scales (toy 26-digit: predicted
+E 12.53, measured 12.51; toy 62-digit: 13.52/13.57; the 197-digit
+record: 18.2/18.2; the 2,692-digit mega: 6.6/6.56).
+
+**The E(D) frontier at Q = 10^6** (lazy-greedy digit-capped covers,
+`exp1m.py frontier`; E at ln N = D·ln 10):
+
+| digits D | moduli | |U| | E | search cost e^E |
+|---|---|---|---|---|
+| 199 | 91 | 8 157 | 196.7 | 10^85.4 |
+| 300 | 127 | 7 311 | 124.3 | 10^54.0 |
+| 400 | 161 | 6 728 | 89.3 | 10^38.8 |
+| 600 | 226 | 5 865 | 54.9 | 10^23.8 |
+| 800 | 288 | 5 241 | 38.2 | 10^16.6 |
+| 1000 | 347 | 4 741 | 28.4 | 10^12.3 |
+| 1300 | 435 | 4 100 | 19.6 | 10^8.5 |
+| 1600 | 519 | 3 588 | 14.2 | 10^6.2 |
+| 2400 | 736 | 2 492 | 6.9 | 10^3.0 |
+
+D_min for a record-scale search (1.4·10^8 candidates, E ≤ 16.6):
+**~1,470 digits**; heavy single-box (10^9, E ≤ 21): **~1,250**;
+distributed (7·10^10, E ≤ 25): **~1,120**; a cosmological budget
+(10^12/s for the age of the universe, E ≤ 68): **~520 digits**. The
+2,400-digit row reproduces the mega record's regime (E 6.9 vs its 6.56)
+— the model and the ladder are consistent end to end.
+
+**The 199-digit wall** (`constructions/wall_1M_199d.json`, verified):
+the best 199-digit system found — 91 moduli, residue-annealed — leaves
+|U| = 8,146 residual primes, E = 196.4, success density 10^−85.3.
+Annealing recovers only ~0.3% of E: the wall is structural (a 199-digit
+modulus admits ~91 prime moduli whose classes sieve out ~90% of
+targets, no more), not an optimization shortfall. Joint x/M
+optimization does not help either: +25 digits of k-list entropy moves
+E from 196 to ~194. Meanwhile the existence heuristic (E_random ≈ 445
+for unstructured even N) predicts ~10^6.5 such N below 10^200 *exist* —
+the conjectured (log N)²·log log N maximal order sits at 1.3·10^6
+exactly at 200 digits — but the cheapest known path to *exhibit* one
+costs 10^85 primality tests. This is a construction-versus-existence
+gap of fifty-nine orders of magnitude beyond cosmological.
+
+**The blueprint** (`constructions/blueprint_1M_1250d.json`, verified):
+the cheapest practical 1M desert this machinery can specify — 420
+moduli, M = 1,247 digits, |U| = 4,205, E = 20.74, i.e. ~10^9
+progression elements ≈ **235 core-days** at 50 candidates/s. A
+distributed campaign at mega-record throughput would find an
+N ≈ 1,255 digits with g(N) > 10^6; that is the realistic version of
+this target.
+
+**The achievable 200-digit frontier** is the budget game R(10^199)
+itself: at Q = 107,720 the annealer lands M = 194.3 digits, |U| = 764,
+E = 18.0 (18.27 at the 199-digit budget) — 500 residue-swap variants
+of ~47,000 sub-budget candidates each give a ~25% shot per 3.5 h scan
+at beating g = 107,719. One such scan was run as part of this work
+(outcome recorded below in this section's history).
+
 ## Joint representative/coverage optimization (2026-07-22): a 221-digit
 ## modulus with a sub-10^197 representative
 
