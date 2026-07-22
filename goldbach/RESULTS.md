@@ -46,9 +46,12 @@ distributed (7·10^10, E ≤ 25): **~1,120**; a cosmological budget
 **The 199-digit wall** (`constructions/wall_1M_199d.json`, verified):
 the best 199-digit system found — 91 moduli, residue-annealed — leaves
 |U| = 8,146 residual primes, E = 196.4, success density 10^−85.3.
-Annealing recovers only ~0.3% of E: the wall is structural (a 199-digit
-modulus admits ~91 prime moduli whose classes sieve out ~90% of
-targets, no more), not an optimization shortfall. Joint x/M
+Annealing recovers only ~0.3% of E: the wall is structural, not an
+optimization shortfall. (Structural in the sieve sense, not the
+counting sense: the 91 best classes hold 148,290 slots for 78,497
+targets, a 1.89× supply, so a union bound alone forbids nothing — but
+prime residue classes overlap like independent sieves, coverage stops
+at ~90%, and 60,000 anneal moves reclaim 11 residuals of 8,157.) Joint x/M
 optimization does not help either: +25 digits of k-list entropy moves
 E from 196 to ~194. Meanwhile the existence heuristic (E_random ≈ 445
 for unstructured even N) predicts ~10^6.5 such N below 10^200 *exist* —
