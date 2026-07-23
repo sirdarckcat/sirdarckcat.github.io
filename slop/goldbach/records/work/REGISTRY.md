@@ -23,7 +23,7 @@
 | game | target q > | #congr | log10 M | k | p1·k | E[t to hit] | fits range? |
 |------|-----------|--------|---------|---|------|-------------|-------------|
 | G2/3 | 105,667 | 88+1 | 190.3 | 729 | 17.53 | 4.1e7 | HIT t=299,581,384 q=110,917 CERTIFIED ✓ |
-| G1 | 1,113,137 | 759+1 | 2,474.6 | 2,844 | 7.68 | ~2.2e3 | searching (4 workers, ~29 s/tested t) |
+| G1 | 1,113,137 | 759+1 | 2,474.6 | 2,844 | 7.68 | ~2.2e3 | HIT t=14,544 q=1,157,341 after 443 tested ✓ |
 
 ## Key design decisions
 
@@ -48,3 +48,9 @@
   standalone verifier (gmpy2 + stdlib modes), PARI full-scan crosscheck
   (10,526 primes, 0 violations), ECPP 30 steps + python re-verify + APR-CL.
   Search cost: 1.66e7 tested t of 3.0e8 range (hit at 99.9% of range).
+
+- **Game 1 (2026-07-22/23)**: N = 13551...(2,480 digits), g(N) = 1,157,341 > 1,113,137.
+  Package records/g1/record_g1.json (sha256 c356f98a...6532). ECPP 245 steps
+  (PARI primecert ~1.7h) verified independently in pure Python (7,036s);
+  APR-CL isprime(P,2)=1 (7,409s); PARI full-scan crosscheck of all 89,841
+  primes p <= q: 0 violations (27.4 min). Search: 443 tested t (E was ~1,800).
