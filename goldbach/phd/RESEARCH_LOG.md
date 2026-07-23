@@ -137,3 +137,5 @@ Cover frontier at Q = 107,720 (cover.py):
   advanced during the gap; checkpoint state (142/1200 slices, 0 hits) survived intact
   and the chain resumed losslessly — validation of the slice-checkpoint design.
 - Wakeup chain re-armed; compute turns continue at ~32 slices/turn.
+- Turn #7 (21:30–22:55 UTC): 178/1200 slices (4.7e7 elements), 0 hits; slices running
+  slightly faster post-restart (~530 s/chunk). Survival probability ≈ 0.70 — on-model.
