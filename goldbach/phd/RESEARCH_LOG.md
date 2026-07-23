@@ -130,3 +130,10 @@ Cover frontier at Q = 107,720 (cover.py):
 - 88/1200 slices complete (2.3e7 progression elements), 0 hits; throughput steady
   ~1870 k/s per slice incl. init overhead; chunks reliably complete 4 slices each.
   Survival to this depth has Poisson probability e^(-88/510) ≈ 0.84 — unremarkable.
+
+### 2026-07-23 — 28-hour suspension and restart (21:30 UTC)
+- The session was suspended mid-compute-turn on 2026-07-22 ~17:20 UTC (user
+  interruption followed by session idle) and resumed 2026-07-23 21:28 UTC. No compute
+  advanced during the gap; checkpoint state (142/1200 slices, 0 hits) survived intact
+  and the chain resumed losslessly — validation of the slice-checkpoint design.
+- Wakeup chain re-armed; compute turns continue at ~32 slices/turn.
