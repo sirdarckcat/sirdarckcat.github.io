@@ -156,7 +156,9 @@ def search_spec(spec, args, out):
                 pool.terminate()
                 break
     dt = time.time() - t0
-    kdone = kmax - kstart
+    # blocks overshoot kmax (run_block always scans a full block), so the
+    # denominator for rate/density stats is what actually ran, not the cap
+    kdone = len(blocks) * args.block
     phat = prps / tests if tests else 0.0
     e_hat = (alive / kdone) * phat if kdone else 0.0
     print(f"[{spec['name']}] k=[{kstart},{kmax}) {dt:.0f}s "
