@@ -1,5 +1,36 @@
 # Goldbach Desert Records
 
+## New record (2026-07-23): g(N) = 112 249 below 10^200
+
+**N** (200 digits, `records/budget_1e200_200digit_g112249/record.json`,
+N = N0 + 56 770·M over a 90-modulus cover with M of 194.3 digits):
+
+```
+10336361862320265637534248784107115912943733452949552173021625784255
+26491232455104184949353771968786907192598875701371548940638695734951
+1701812962805353232599898800895271779892845641377568833632
+```
+
+**g(N) = 112 249** — the largest least-Goldbach-summand known below
+10^200, beating the best previous sub-10^200 value g = 107 719 (the
+197-digit record below) and the paper's 237-digit height-game incumbent
+g = 109 621 at 37 fewer digits. It misses the budget game R(10^199) by
+3.4%: N = 1.0336·10^199. The find is a by-product of the R(10^199)
+frontier campaign (see the 1M section below): search blocks are sieved
+in full 16 384-element chunks, so ~16% of scanned candidates sit just
+above the 10^199 ceiling, and the first success of the campaign landed
+there (k = 56 770 vs the in-budget cap k ≤ 54 924) — at the measured
+density Ê = 18.4 that is a fair draw from ~4.6·10^7 scanned elements.
+
+Evidence (`evidence.json`, fully machine-checkable): all 10 642 prime
+offsets q < 112 249 have N − q composite — parity (1), congruence
+divisor from the cover (9 830), trial divisor < 10^5 (409), strong
+base-2 Miller–Rabin witness (402, unconditional). 112 249 is prime and
+N − 112 249 is a BPSW probable prime; the ECPP certificate is pending
+(no PARI/GP in this session's container — run
+`primecert(N - 112249)` to complete the positive side as with the
+earlier records).
+
 ## The 1M-desert-below-200-digits question (2026-07-22): measured — the
 ## frontier is ~1,250 digits, and 199 digits is short by a factor e^170
 
