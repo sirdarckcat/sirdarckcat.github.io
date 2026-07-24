@@ -26,6 +26,12 @@ g(N) = min { p prime : N − p prime }. Proving g(N) = q requires
 - Independent full-scan crosscheck (PARI, separate code path from the
   verifier): all 89,841 primes p ≤ q scanned; 0 violations (27.4 min).
 
+### Game 1 verification status
+Standalone verifier: **PASS** (exit 0) — 89,840 primes below q all proven
+composite (86,714 by covering divisor, 3,126 by failed SPRP), ECPP chain of
+245 steps re-verified from scratch, APR-CL concurs (isprime(P,2)=1, 7,409 s),
+PARI independent full scan of all 89,841 primes ≤ q: 0 violations.
+
 ## Games 2+3 — threshold-size and digit-budget records   **[SOLVED]**
 
 - **N** (199 digits) =
@@ -92,3 +98,11 @@ progressions (expectation ≈ 1,800).
   additionally confirmed by APR-CL.
 - Goldbach partition exhibited: N = q + (N − q) with both parts proven
   prime — so g(N) is exactly q, not merely ≥ q.
+
+## Ratchet rounds (post-solve improvements)
+
+- **T(100,000) upper bound, round 1**: 193-digit N = 21748...708 with
+  g(N) = 102,337 (package `t100k/record_t100k_r1.json`) — verifier PASS,
+  ECPP 24 steps + APR-CL, PARI scan 9,802 primes clean. Round 2 (targeting
+  ~187 digits) in progress.
+- **R(10^200) lower bound**: round 1 in progress (Q = 114,000 cover).
