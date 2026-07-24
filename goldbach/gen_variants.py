@@ -23,7 +23,8 @@ import cover as C
 LN10 = math.log(10)
 
 
-def variants(base, n_want, kmax=None, ceiling=None, max_extra_res=12):
+def variants(base, n_want, kmax=None, ceiling=None, max_extra_res=12,
+             pair_pool=40):
     Q = base["Q"]
     targets = np.array(list(primerange(3, Q)), dtype=np.int64)
     chosen = {int(r): int(a) for r, a in base["cover"]}
@@ -54,7 +55,7 @@ def variants(base, n_want, kmax=None, ceiling=None, max_extra_res=12):
     seen = set()
     # single swaps first, then pairs of the cheapest swaps
     combos = [(i,) for i in range(len(alts))] + \
-        [c for c in itertools.combinations(range(min(len(alts), 40)), 2)]
+        [c for c in itertools.combinations(range(min(len(alts), pair_pool)), 2)]
     for combo in combos:
         rs = [alts[i][1] for i in combo]
         if len(set(rs)) < len(rs):
