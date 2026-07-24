@@ -209,11 +209,20 @@ N = N0 + 14·M from the stored 813-congruence cover).
 | g(N) ÷ local prime gap | **126.5** |
 
 The complement N − 1 134 871 is certified prime by the PARI/GP ECPP
-certificate in `complement_cert.gp` (`primecertisvalid` = 1); every
-negative witness is deterministic. Search: E = 6.56 cover found the hit
-at k = 14. The larger the construction, the *easier* the search — E =
-|U|·boost/ln N falls as N grows — so this game optimizes at a ~2 700-digit
-N, unlike the digit-frugal bounded games below.
+certificate in `complement_cert.gp` (`primecertisvalid` = 1), and the
+253-step certificate is additionally re-verified by the PARI-independent
+projective-coordinate checker `ecpp_check.py`, which also asserts the
+binding between the certificate's top-level candidate and N − g. The
+local-gap endpoints N−7 329 and N+1 641 carry their own validated ECPP
+certificates (`localgap_{prev,next}_cert.gp`), and every interior number
+of that interval is deterministically composite, so the 8 970 local gap
+is fully certified as well. Every negative witness is deterministic.
+`verify_megagap.py` re-checks the entire record from the committed
+artifacts in one run and writes `MANIFEST.sha256`. Search: E = 6.56
+cover found the hit at k = 14. The larger the construction, the *easier*
+the search — E = |U|·boost/ln N falls as N grows — so this game
+optimizes at a ~2 700-digit N, unlike the digit-frugal bounded games
+below.
 
 **Remaining open targets from the challenge**: the absolute-known-gap
 milestone g ≥ 16 045 849 (beating the largest PRP-endpoint gap) needs
