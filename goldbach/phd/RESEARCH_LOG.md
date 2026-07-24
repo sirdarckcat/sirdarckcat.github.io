@@ -144,3 +144,7 @@ Cover frontier at Q = 107,720 (cover.py):
 - 242/1200 slices (6.3e7 elements, 20.2% of budget), 0 hits; survival ≈ 0.62.
   Round 0 of all 200 variants nearly complete (k < 262,144 across the ensemble);
   first hit still expected near slice ~510. Two worker restarts absorbed losslessly.
+
+### 2026-07-24 — compute turns #10–#12 (01:32–05:25 UTC)
+- 338/1200 slices (8.9e7 elements, 28.2% of budget), 0 hits; survival ≈ 0.52.
+  Steady state: 32 slices/turn, ~555 s/chunk, no restarts lost work.
