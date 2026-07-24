@@ -155,6 +155,10 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-24 — compute turns #19–#21 (13:10–16:55 UTC)
+- 626/1200 slices (1.64e8 elements, 52% of budget), 0 hits; survival ≈ 0.29.
+  Steady 32 slices/turn; a worker restart mid-turn-21 cost only the in-flight slice.
+
 ### 2026-07-24 — compute turns #16–#18 (09:19–13:10 UTC)
 - 529/1200 slices (1.39e8 elements, 44% of budget), 0 hits; survival ≈ 0.35.
   Now past the naive expected-hit depth (1.33e8 elements). By the memoryless
