@@ -104,12 +104,16 @@ itself: at Q = 107,720 the annealer lands M = 194.3 digits, |U| = 764,
 E = 18.0 (~18.3 at the 199-digit budget) — each residue-swap variant
 progression holds ~47,000 sub-budget candidates, so a scan block of
 several hundred variants is a ~25–35% lottery at beating g = 107,719.
-Round 1 (500 progressions, 2.3·10^7 elements, 0.27 expected hits)
-scanned clean with no hit, exactly the likely draw; further rounds over
-fresh variants (`gen_variants.py` now takes a `pair_pool` size, so the
-catalog extends to thousands of provably distinct progressions) are a
-matter of core-hours. Cumulative odds grow by ~30% per ~5 h of 4-core
-scan; the incumbent record itself consumed ~21 h at the same frontier.
+The campaign run for this work scanned 1,300 distinct progressions
+(500 + 800 fresh via the new `pair_pool` knob in `gen_variants.py`) —
+8.5·10^7 elements at 1,850/s and measured Ê = 18.4 (predicted 18.3).
+Expected hits: 0.70 in-budget + 0.14 in the 16% sieve-block overshoot
+above 10^199. Observed: exactly one, in the overshoot — the
+g = 112 249 record above. Poisson-fair on both counts; the strict
+R(10^199) coin flip (48% per ~14 h of 4-core scan at this frontier)
+landed tails this time. The incumbent 107 719 consumed ~21 h at the
+same frontier; extending the catalog (deeper pair_pool, triple swaps,
+or re-annealed bases) and re-running is purely a matter of core-hours.
 
 ## Joint representative/coverage optimization (2026-07-22): a 221-digit
 ## modulus with a sub-10^197 representative
