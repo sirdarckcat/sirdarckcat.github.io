@@ -47,11 +47,13 @@ Measure the gap vs exact/ILP at small Q where exhaustive residue
 choice is feasible; if the gap is real at scale, parallel tempering /
 LP-rounding at Q = 100,003 buys direct E. Each −0.1 in E = 10% less
 search.
-Status: EVIDENCE FOUND — the T-campaign's variant catalog spans E
-17.07..17.25 around a base of 17.28: single next-best residue swaps
-*improve* the annealed cover, so the annealer plateau is not the
-optimum. Next: steepest-descent/tabu from the best variants; then
-ILP at small Q for the true gap.
+Status: CORRECTED — the apparent E 17.07 < 17.28 in the catalog was a
+convention mismatch (self-consistent-D vs fixed-195d evaluation), not
+better covers; those variants have exactly |U| = 704. Steepest descent
+(all moduli × top-8 residues, first-improvement, to fixpoint) from 5
+starts finds zero improving single swaps: the annealed cover is
+single-swap-stable. The optimality gap question stays open — needs
+pair/triple moves, basin hopping, or ILP at small Q.
 
 ## F4 — Zero-penalty variant catalogs (OPEN)
 
@@ -60,7 +62,11 @@ gen_variants pays +0..12 residuals per variant (catalog-average E
 assignments exist; enumerate them (tabu walks at T=0, or k-list
 assignment enumeration filtered to d|U| = 0) for catalogs whose E
 equals the base everywhere.
-Status: not started.
+Status: MEASURED on the Q=100,003 T-cover: 26 zero-penalty single
+swaps (e.g. r=401 has 4 equal-coverage alternatives) → 325 pairs →
+~2,600 triples: a ~3,000-progression catalog at exactly base E —
+just what the 194-digit round needs (K = 10^4 per variant there).
+The current 195d catalog's early variants are already zero-penalty.
 
 ## F5 — Throughput engineering (OPEN)
 
