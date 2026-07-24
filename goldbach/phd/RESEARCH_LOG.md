@@ -139,3 +139,8 @@ Cover frontier at Q = 107,720 (cover.py):
 - Wakeup chain re-armed; compute turns continue at ~32 slices/turn.
 - Turn #7 (21:30–22:55 UTC): 178/1200 slices (4.7e7 elements), 0 hits; slices running
   slightly faster post-restart (~530 s/chunk). Survival probability ≈ 0.70 — on-model.
+
+### 2026-07-24 — compute turns #8–#9 (23:00–01:30 UTC)
+- 242/1200 slices (6.3e7 elements, 20.2% of budget), 0 hits; survival ≈ 0.62.
+  Round 0 of all 200 variants nearly complete (k < 262,144 across the ensemble);
+  first hit still expected near slice ~510. Two worker restarts absorbed losslessly.
