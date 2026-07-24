@@ -148,3 +148,9 @@ Cover frontier at Q = 107,720 (cover.py):
 ### 2026-07-24 — compute turns #10–#12 (01:32–05:25 UTC)
 - 338/1200 slices (8.9e7 elements, 28.2% of budget), 0 hits; survival ≈ 0.52.
   Steady state: 32 slices/turn, ~555 s/chunk, no restarts lost work.
+
+### 2026-07-24 — compute turns #13–#15 (05:26–09:15 UTC)
+- 434/1200 slices (1.14e8 elements, 36.2% of budget), 0 hits; survival ≈ 0.43.
+  Passed the model median (~slice 354 for 50%); Ê per-slice remains 18.7–18.9,
+  so the deficit is ordinary Poisson variance, not model error. Worker restarts
+  continue to be absorbed at zero slice loss.
