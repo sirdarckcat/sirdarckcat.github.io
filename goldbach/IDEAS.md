@@ -14,9 +14,12 @@ one digit of N-size improvement per ~2.3 nats. Plan: verify with a
 real cover, then campaign 195 → 194 → 193 digits.
 Status: CONFIRMED — annealed Q=100,003 cover reaches |U| = 704,
 E = 17.28 at 195 digits (exact (1-p)^a density e^-17.51). Campaign
-launched: 600 variants × 10^5 sub-10^195 candidates (catalog E
-17.07..17.25, expected hits ~1.3, P(hit) ~0.74, ~9 h at ~1.8k k/s).
-Any hit beats the 197-digit incumbent by two digits.
+round 1: 600 variants × 10^5 sub-10^195 candidates, ~6.6·10^7
+elements scanned (incl. block overshoot) at measured Ê = 17.42;
+expected ~1.4 hits, observed 0 — P(0) ≈ 25%, an unlucky but
+in-model draw. Round 2 (600 fresh deduped variants, E 17.07..17.16)
+launched immediately; each round is an independent ~74% shot at a
+195-digit record, and the machinery re-rolls in ~10 h per round.
 
 ## F2 — Order-statistics search: test emptiest k first (ACTIVE)
 
