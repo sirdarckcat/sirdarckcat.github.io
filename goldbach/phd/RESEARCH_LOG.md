@@ -154,3 +154,10 @@ Cover frontier at Q = 107,720 (cover.py):
   Passed the model median (~slice 354 for 50%); Ê per-slice remains 18.7–18.9,
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
+
+### 2026-07-24 — compute turns #16–#18 (09:19–13:10 UTC)
+- 529/1200 slices (1.39e8 elements, 44% of budget), 0 hits; survival ≈ 0.35.
+  Now past the naive expected-hit depth (1.33e8 elements). By the memoryless
+  property the expected additional wait is still ~510 slices of compute; the
+  full-budget hit probability from here is 1−e^−1.32 ≈ 0.73. Decision standing:
+  run the full 1,200-slice budget before any redesign (per §11.4 stopping rules).
