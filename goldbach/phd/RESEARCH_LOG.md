@@ -3,13 +3,16 @@
 Programme: *Extremal Least Goldbach Summands* (4-year proposal, record snapshot 2026-07-22).
 Student log, year 3 — project kickoff with delegated subagent execution.
 
-## Record board (project incumbents at kickoff, 2026-07-22)
+## Record board (updated 2026-07-25 after master merge)
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,692-digit N (813-congruence cover, k=14) | g = 1,134,871 | **audited PASS** (2026-07-22) |
-| Threshold T(100,000) (Game 2) | N₁₉₇ ≈ 6.939·10^196 (197 digits) | g = 107,719 | **audited PASS** (2026-07-22) |
-| Budget R(10^199) (Game 3) | same N₁₉₇ | g = 107,719 | **audited PASS** (2026-07-22) |
+| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session; verifier available |
+| Threshold T(100,000) (Game 2) | **186-digit** N (t100k round 2) | g = 109,357 | **re-verified PASS** (2026-07-25, standalone verifier) |
+| Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | **re-verified PASS** (2026-07-25, standalone verifier) |
+
+Superseded (this project's kickoff incumbents, all audited PASS 2026-07-22):
+height 1,134,871 @ 2,692d; dual N₁₉₇ (197d, g=107,719).
 
 Grand-slam target: N < N₁₉₇ **and** g(N) ≥ 1,134,877 — aspirational (O5);
 RESULTS.md notes covering methods leave ≥20,000 residuals under a ≤192-digit
@@ -154,6 +157,29 @@ Cover frontier at Q = 107,720 (cover.py):
   Passed the model median (~slice 354 for 50%); Ê per-slice remains 18.7–18.9,
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
+
+### 2026-07-25 — CAMPAIGN 1 RETIRED, CAMPAIGN 2 LAUNCHED (~18:30 UTC)
+- Master merge brought records from parallel sessions (PRs #18/#21): height
+  g=1,157,341 @ 2,480d; **T(100,000) = 186 digits (g=109,357)**; **R = 119,419 @ 199d**
+  plus a stdlib-only standalone verifier. Both bounded-game incumbents re-verified
+  here (verifier PASS on t100k_r2 and r200_r1; SHA warning is the self-referential
+  SHA256SUMS line only).
+- Campaign 1 (g>107,719, N<N₁₉₇) thereby became strictly obsolete at 1,213/2,400
+  slices, 0 hits (a P≈0.30 outcome). Retired. Scientific value kept: 3.18e8 elements
+  of density-model validation (Ê−E within 0.1 throughout) and the restart-safe
+  chunked-compute methodology.
+- PR #20 (Jules) audit: 168-digit blueprint (Q=100,003, 79 congr, M=167.9d, 754
+  residuals) is mathematically VALID (CRT + cover completeness verified here), but
+  its claims were inflated: honest self-consistent E=19.84 (not 20.85), expected-hit
+  N ≈ 176.5 digits (not 168), and its 1,111 shipped variants had ceiling_digits=170
+  ⇒ only ~120 candidates/variant (~1.3e5 total vs ~4e8 needed) — unusable as shipped.
+- **Campaign 2** (user-approved adoption of PR #20 code): variants re-parameterized
+  to kmax=1.5e6, ceiling 185 (strictly below the 186d incumbent). Any hit ⇒ new
+  T(100,000) record. search.py sieve-inverse cache adopted + driver batches 4 slices
+  per process: measured **~2,900 k/s** (+47% vs campaign 1), Ê ≈ 20.2 at k≈0 (drifts
+  down with log N; effective E ≈ 19.9). Batch 1 = 400 specs (2,400 slices, capacity
+  6.3e8 elements, λ≈1.5); 712 variants in reserve. Expected ~1,700 slices ≈ 2.5 days
+  of chunked compute to first hit.
 
 ### 2026-07-25 — original budget EXHAUSTED, extension launched (~16:45 UTC)
 - Turns #31–#39 completed the original 1,200-slice budget: **3.15e8 progression
