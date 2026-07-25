@@ -108,4 +108,8 @@ progressions (expectation ≈ 1,800).
   g(N) = 109,357 (package `t100k/record_t100k_r2.json`) — verifier PASS,
   ECPP + python re-verify + APR-CL, PARI scan 10,395 primes clean.
   Round 3 (targeting ~179 digits) in progress.
-- **R(10^200) lower bound**: round 1 in progress (Q = 114,000 cover).
+- **R(10^200) lower bound, round 1**: 199-digit N = 24613...972 with
+  **g(N) = 119,419** (package `r200/record_r200_r1.json`) — verifier PASS,
+  ECPP 19 steps + python re-verify + APR-CL, PARI scan 11,249 primes clean.
+  This also improves R(10^199) (Game 3 boundary) from 110,917 to 119,419.
+  Round 2 (higher Q) planned.
