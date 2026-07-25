@@ -103,6 +103,9 @@ progressions (expectation ≈ 1,800).
 
 - **T(100,000) upper bound, round 1**: 193-digit N = 21748...708 with
   g(N) = 102,337 (package `t100k/record_t100k_r1.json`) — verifier PASS,
-  ECPP 24 steps + APR-CL, PARI scan 9,802 primes clean. Round 2 (targeting
-  ~187 digits) in progress.
+  ECPP 24 steps + APR-CL, PARI scan 9,802 primes clean.
+- **T(100,000) upper bound, round 2**: **186-digit** N = 12868...018 with
+  g(N) = 109,357 (package `t100k/record_t100k_r2.json`) — verifier PASS,
+  ECPP + python re-verify + APR-CL, PARI scan 10,395 primes clean.
+  Round 3 (targeting ~179 digits) in progress.
 - **R(10^200) lower bound**: round 1 in progress (Q = 114,000 cover).
