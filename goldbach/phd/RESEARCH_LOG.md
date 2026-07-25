@@ -155,6 +155,12 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-25 — compute turns #28–#30 (01:14–04:45 UTC)
+- 909/1200 slices (2.38e8 elements, 76% of budget), 0 hits; survival ≈ 0.17 — an
+  unlucky but unexceptional draw (a 1-in-6 outcome). Per-slice p̂ and alive/k remain
+  exactly on-model, ruling out an implementation regression. Contingency (200 extra
+  residue-swap variants preserving the dual-game property) locked in for rc=2.
+
 ### 2026-07-25 — compute turns #25–#27 (20:58–01:10 UTC)
 - 815/1200 slices (2.14e8 elements, 68% of budget), 0 hits; survival ≈ 0.21.
   Deeper than any depth the July campaign reached (1.4e8). Contingency planning
