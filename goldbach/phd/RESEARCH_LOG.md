@@ -158,6 +158,21 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-25 — AlphaEvolve cover-optimizer analysis (WP2 cross-pollination)
+- Reviewed evolved_program.py and evolved_program_1.py (branch
+  goldbach-alphaevolve-analysis-*): SA over ADD/DROP/SWAP moves with Boltzmann
+  acceptance, minimizing self-consistent D. The shipped evaluate() harness confirms
+  the fitness was unconstrained −D from an empty cover — with no E cap the block
+  collapses to infeasible covers (D=50.7 at E=111 observed here). With an E≤20
+  penalty added, it improves the 168d blueprint by 0.9 digits (D 176.5→175.6 at
+  E=20.0): the blueprint is near-locally-optimal at this E budget.
+- Adopted: move-set + penalized objective as campaign2/evolved_cover_step.py
+  experiment; improved cover saved (evolved_best_cover.json) for a post-hit ratchet.
+  Evolved hyperparameters noted for that round: temp schedule 0.8→0.02 geometric,
+  candidate moduli to 8,000.
+- Campaign 2 progress: 124/2,400 slices (3.3e7 elements), 0 hits — early days
+  (expected hit ≈ slice 1,700).
+
 ### 2026-07-25 — CAMPAIGN 1 RETIRED, CAMPAIGN 2 LAUNCHED (~18:30 UTC)
 - Master merge brought records from parallel sessions (PRs #18/#21): height
   g=1,157,341 @ 2,480d; **T(100,000) = 186 digits (g=109,357)**; **R = 119,419 @ 199d**
