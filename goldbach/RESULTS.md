@@ -1,5 +1,40 @@
 # Goldbach Desert Records
 
+## New record (2026-07-25): T(100 000) at 195 digits — 100× below the
+## previous smallest desert past 100 000
+
+**N** (195 digits, `records/threshold_195digit_g100297/record.json`,
+N = N0 + 70 186·M over an 88-modulus cover with M of 190.0 digits):
+
+```
+71214124265787855971290038426160102511378229003272506217668297957
+68214756376976852660013284997485991512845267319174394030269434418
+51527812156074627008575588613267417336439269800778493535893423578
+```
+
+**g(N) = 100 297 > 100 000** with N ≈ 7.12·10^194 — the smallest known
+even integer whose least Goldbach summand exceeds 100 000, beating the
+197-digit record below by two orders of magnitude (and the paper's
+199-digit incumbent by four). Evidence (`evidence.json`, fully
+machine-checkable): all 9 614 prime offsets q < 100 297 have N − q
+composite — parity (1), congruence divisor from the cover (8 903),
+trial divisor < 10^5 (312), strong base-2 Miller–Rabin witness (398,
+unconditional). 100 297 is prime and N − 100 297 is a BPSW probable
+prime; ECPP certificate pending (no PARI/GP in this container; run
+`primecert(N - 100297)`).
+
+Why this was reachable (see IDEAS.md for the measured ledger): the old
+197-digit record came from a *dual-game* cover built at Q = 105 668; a
+pure threshold cover at Q = 100 003 needs |U| = 704 instead of 752,
+dropping the failure exponent from 18.2 to 17.28 (~3× cheaper), and
+the new ascending-survivor test order (`search.py --sort-tests`,
+measured 1.8× conditional discovery gain) plus the B = 10^6 sieve
+optimum stack on top. The hit arrived after 1 590 progressions
+(~1.75·10^8 sieved elements) across two 600-spec catalogs — cumulative
+expectation ~1.9 at the exact density e^-17.5, so the draw landed
+right at the mean. Measured Ê = 17.4 throughout, matching prediction
+to 0.1.
+
 ## New record (2026-07-23): g(N) = 112 249 below 10^200
 
 **N** (200 digits, `records/budget_1e200_200digit_g112249/record.json`,
