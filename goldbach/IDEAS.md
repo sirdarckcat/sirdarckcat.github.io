@@ -28,6 +28,12 @@ Round-2 tail addendum: a second independent hit at v1088, k = 76,862
 (N ≈ 7.80·10^194, g = 101,611) — larger than the record N, so the
 record stands, but the tally is now 2 hits in ~1,780 progressions
 vs cumulative expectation ~2.1: the density model is exact.
+CAMPAIGN CLOSED (2026-07-25): both 600-spec catalogs fully scanned
+(plus ~260 specs of crash/rollback re-scans). Final score: 2 distinct
+hits, record stands at g = 100,297 / 195 digits. The 194-digit rung
+is specced and ready: F4 zero-penalty catalog (~3,000 variants of the
+same |U|=704 cover, K = 10^4 each), E unchanged at 17.3 → ~10× the
+195 scan time per expected hit — a multi-day campaign on this box.
 
 ## F2 — Order-statistics search: test emptiest k first (ACTIVE)
 
