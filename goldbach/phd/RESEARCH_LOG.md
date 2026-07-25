@@ -155,6 +155,21 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-25 — original budget EXHAUSTED, extension launched (~16:45 UTC)
+- Turns #31–#39 completed the original 1,200-slice budget: **3.15e8 progression
+  elements scanned across 200 variants (all k < 1.5e6), zero successes.**
+- Negative-result assessment: at Ê ≈ 18.7 the expected hit count for the full budget
+  was λ ≈ 2.2, so P(no hit) ≈ 0.11 — an unlucky but statistically ordinary draw.
+  Per-slice p̂ (0.0588–0.0592) and alive/k (318–319) matched the calibrated model
+  throughout; no evidence of implementation error or model bias. This is exactly the
+  E8-validated regime: the density model is confirmed, the dice were cold.
+- Contingency executed: 200 additional residue-swap variants generated from the same
+  base cover (deduplicated against the first 200 by cover; E ∈ [18.546, 18.661]),
+  committed as specs_variants2.json; driver now reads both spec files (2,400-slice
+  extended budget). Every hit still beats both bounded games (kmax unchanged).
+- Forecast for the extension: λ ≈ 2.0 → P(hit) ≈ 0.86; expected ~12 further compute
+  turns to first hit.
+
 ### 2026-07-25 — compute turns #28–#30 (01:14–04:45 UTC)
 - 909/1200 slices (2.38e8 elements, 76% of budget), 0 hits; survival ≈ 0.17 — an
   unlucky but unexceptional draw (a 1-in-6 outcome). Per-slice p̂ and alive/k remain

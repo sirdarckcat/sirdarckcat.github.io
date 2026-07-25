@@ -25,7 +25,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GOLDBACH = os.path.dirname(os.path.dirname(HERE))
-SPECS = os.path.join(HERE, "specs_variants.json")
+SPEC_FILES = ["specs_variants.json", "specs_variants2.json"]
 LOG = os.path.join(HERE, "search.log")
 FOUND = os.path.join(HERE, "found.jsonl")
 SLICE_JSON = os.path.join(HERE, "current_slice.json")
@@ -36,7 +36,11 @@ KMAX = 1_500_000
 
 
 def pending_slices():
-    specs = json.load(open(SPECS))
+    specs = []
+    for fn in SPEC_FILES:
+        path = os.path.join(HERE, fn)
+        if os.path.exists(path):
+            specs.extend(json.load(open(path)))
     done = set()
     if os.path.exists(LOG):
         for line in open(LOG):
