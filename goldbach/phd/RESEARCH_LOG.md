@@ -155,6 +155,14 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-25 — compute turns #25–#27 (20:58–01:10 UTC)
+- 815/1200 slices (2.14e8 elements, 68% of budget), 0 hits; survival ≈ 0.21.
+  Deeper than any depth the July campaign reached (1.4e8). Contingency planning
+  for possible budget exhaustion: extend the same 200 variants to kmax ≈ 2.4e8/M-cap
+  under ceiling 199 digits (keeps the R(10^199) game live; drops the automatic
+  sub-N₁₉₇ guarantee), OR regenerate more residue-swap variants at kmax 1.5e6 to
+  retain the dual-game property. Decision due at rc=2.
+
 ### 2026-07-24 — compute turns #22–#24 (17:07–20:55 UTC)
 - 719/1200 slices (1.88e8 elements, 60% of budget), 0 hits; survival ≈ 0.24.
   All variants now past k = 786,432 (round 3); remaining budget is rounds 4–5.
