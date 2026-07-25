@@ -268,17 +268,17 @@ def goldbach_cover_evaluation(program_candidate) -> dict:
 experiment = AlphaEvolveExperiment(
     client,
     goldbach_cover_evaluation,
-    max_programs_evaluated=30,
+    max_programs_evaluated=100,
 )
 
 # Deep, large, high-capacity model config targeting high exploration
 exp_config = {
-    "title": "Super Hard Goldbach Cover Step-Heuristic Optimization",
+    "title": "Super Hard Goldbach Cover Step-Heuristic Optimization - 100 Runs",
     "problem_description": "Evolve the Simulated Annealing step-heuristic function optimize_cover_step to find the optimal congruence cover for Goldbach desert. Must try extremely hard across many parallel generations to produce highly creative and sophisticated thermodynamic/probabilistic search heuristics.",
     "program_language": "python",
     "run_settings": {
-        "max_programs": 30,
-        "concurrency": 6,
+        "max_programs": 100,
+        "concurrency": 8,
     },
     "generation_settings": {
         "include_full_program_in_prompt": True,
@@ -311,7 +311,7 @@ experiment.create_initial_program(initial_program)
 experiment.start_experiment()
 
 nest_asyncio.apply()
-asyncio.run(run_controller_loop(experiment, num_samplers=4, num_evaluators=6))
+asyncio.run(run_controller_loop(experiment, num_samplers=4, num_evaluators=8))
 
 # Query best programs
 best_res = experiment.list_programs(params={"order_by": "neg_est_digits desc"})
