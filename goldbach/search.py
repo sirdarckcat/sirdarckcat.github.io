@@ -86,6 +86,7 @@ def run_block(k0):
     order = np.argsort(aliveT.sum(axis=1), kind="stable") \
         if G.get("sort_tests") else range(L)
     for j in order:
+        j = int(j)                     # np.int64 k would break JSON output
         col = aliveT[j]
         if not col.any():
             successes.append(k0 + j)   # fully sieved out -> success

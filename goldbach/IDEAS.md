@@ -12,14 +12,18 @@ cover only needs Q = 100,003: ~8% fewer targets → |U| ≈ 700 →
 E ≈ 17.2 at 195 digits (~3× less search than the record's 18.2), with
 one digit of N-size improvement per ~2.3 nats. Plan: verify with a
 real cover, then campaign 195 → 194 → 193 digits.
-Status: CONFIRMED — annealed Q=100,003 cover reaches |U| = 704,
-E = 17.28 at 195 digits (exact (1-p)^a density e^-17.51). Campaign
-round 1: 600 variants × 10^5 sub-10^195 candidates, ~6.6·10^7
-elements scanned (incl. block overshoot) at measured Ê = 17.42;
-expected ~1.4 hits, observed 0 — P(0) ≈ 25%, an unlucky but
-in-model draw. Round 2 (600 fresh deduped variants, E 17.07..17.16)
-launched immediately; each round is an independent ~74% shot at a
-195-digit record, and the machinery re-rolls in ~10 h per round.
+Status: **WON** (2026-07-25) — records/threshold_195digit_g100297:
+N ≈ 7.12·10^194 (195 digits) with g = 100,297, a 100× improvement on
+the 197-digit incumbent. Round 1 (600 specs) came up empty (P(0) ≈
+25%); the hit landed in round 2 at spec v990, k = 70,186 — 1,590
+progressions ≈ 1.75·10^8 sieved elements total, cumulative
+expectation ~1.9 at exact density e^-17.5: the draw landed at the
+mean. Measured Ê = 17.4 throughout (predicted 17.28 naive / 17.51
+exact). The F1+F2+F5 stack (pure-threshold cover 3×, sorted testing
+1.8× conditional, sieve tuning 1.1×) delivered the two-digit record
+on a 4-core box in ~30 h of scan. Next rungs: finish round 2's
+remaining 209 specs for a possibly smaller N, then 194 digits via
+the F4 zero-penalty catalog (needs ~3,000 variants at K = 10^4).
 
 ## F2 — Order-statistics search: test emptiest k first (ACTIVE)
 
