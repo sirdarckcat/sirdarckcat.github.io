@@ -24,6 +24,10 @@ exact). The F1+F2+F5 stack (pure-threshold cover 3×, sorted testing
 on a 4-core box in ~30 h of scan. Next rungs: finish round 2's
 remaining 209 specs for a possibly smaller N, then 194 digits via
 the F4 zero-penalty catalog (needs ~3,000 variants at K = 10^4).
+Round-2 tail addendum: a second independent hit at v1088, k = 76,862
+(N ≈ 7.80·10^194, g = 101,611) — larger than the record N, so the
+record stands, but the tally is now 2 hits in ~1,780 progressions
+vs cumulative expectation ~2.1: the density model is exact.
 
 ## F2 — Order-statistics search: test emptiest k first (ACTIVE)
 
