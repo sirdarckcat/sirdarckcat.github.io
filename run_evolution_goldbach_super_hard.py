@@ -200,22 +200,24 @@ def optimize_cover_step(congr_dict, cand_mods, targets, cnt_array, logm, logboos
 
 def evaluate(eval_inputs: Mapping[str, Any]) -> dict[str, float]:
     \"\"\"Run evaluation on the optimized step.\"\"\"
-    # Let's say we maximize -n_digits_est (smaller estimated N-size)
-    # Using sympy/math to compute est digits
     import sympy
     import numpy as np
     Q = 100003
     targets = np.array(list(sympy.primerange(3, Q)), dtype=np.int64)
-    # Let's run the optimize_cover_step starting from empty cover for some iterations
-    congr_dict = {}
+
+    # Warm-start from the 195-digit record cover instead of starting empty
+    congr_dict = {int(r): int(a) for r, a in eval_inputs["warm_start_cover"]}
+
     cand_mods = [int(r) for r in sympy.primerange(3, 8000)]
     cnt_array = np.zeros(len(targets), dtype=np.int16)
-    logm = math.log(2)
-    logboost = math.log(2.0)
+
+    # Pre-populate counts
+    for r, a in congr_dict.items():
+        cnt_array += (targets % r) == a
 
     for it in range(10):
         t_temp = 0.8 * (0.02 / 0.8) ** (it / 10)
-        # Update cnt_array based on congr_dict
+        # Recalculate cnt_array based on congr_dict
         cnt_array = np.zeros(len(targets), dtype=np.int16)
         logm = math.log(2)
         logboost = math.log(2.0)
@@ -242,24 +244,64 @@ def evaluate(eval_inputs: Mapping[str, Any]) -> dict[str, float]:
     ub = n_res * boost
     LN10 = math.log(10)
     D = (m_digits + math.sqrt(m_digits ** 2 + 4 * ub / (LN10 * LN10))) / 2
-    return {"neg_est_digits": -float(D)}
+
+    # Constrain E <= 17.5 via Lagrangian penalty to prevent reward hacking
+    E_limit = 17.5
+    E_actual = ub / (D * LN10) if D > 0 else 0.0
+    lagrangian_penalty = 0.0
+    if E_actual > E_limit:
+        lagrangian_penalty = 100.0 * (E_actual - E_limit) ** 2
+
+    score_headline = -float(D + lagrangian_penalty)
+
+    # Expose E, |U|, digits(M) as negated secondary metrics for joint optimization visibility
+    return {
+        "neg_est_digits": score_headline,
+        "neg_E": -float(E_actual),
+        "neg_residual_count": -float(n_res),
+        "neg_m_digits": -float(m_digits)
+    }
 """
 
 def goldbach_cover_evaluation(program_candidate) -> dict:
     code = program_candidate["content"]["files"][0]["content"]
+
+    # Initialize with default penalty scores
     score_value = -1e12
+    score_E = -1e12
+    score_res = -1e12
+    score_m = -1e12
     insights_list = []
+
     try:
         exec_namespace = {"np": np, "math": math, "random": random}
         exec(code, exec_namespace)
         eval_func = exec_namespace.get("evaluate")
         if callable(eval_func):
-            res = eval_func({})
+            # Inject the 195-digit record cover as warm-start context
+            inputs = {
+                "warm_start_cover": base_cover["cover"]
+            }
+            res = eval_func(inputs)
             score_value = float(res.get("neg_est_digits", -1e12))
+            score_E = float(res.get("neg_E", -1e12))
+            score_res = float(res.get("neg_residual_count", -1e12))
+            score_m = float(res.get("neg_m_digits", -1e12))
+
+            # Attach structural stats as actionable insights to the LLM
+            insights_list.append({
+                "label": "Evaluation Metrics",
+                "text": f"Estimated Digits: {-score_value:.4f} (constrained), E: {-score_E:.4f}, |U|: {-score_res:.0f}, digits(M): {-score_m:.2f}"
+            })
     except Exception as e:
         insights_list.append({"label": "Runtime Error", "text": str(e)})
 
-    scores = [{"metric": "neg_est_digits", "score": score_value}]
+    scores = [
+        {"metric": "neg_est_digits", "score": score_value},
+        {"metric": "neg_E", "score": score_E},
+        {"metric": "neg_residual_count", "score": score_res},
+        {"metric": "neg_m_digits", "score": score_m}
+    ]
     evaluation = {"scores": {"scores": scores}}
     if insights_list:
         evaluation["insights"] = {"insights": insights_list}
@@ -273,8 +315,8 @@ experiment = AlphaEvolveExperiment(
 
 # Deep, large, high-capacity model config targeting high exploration
 exp_config = {
-    "title": "Super Hard Goldbach Cover Step-Heuristic Optimization - 100 Runs",
-    "problem_description": "Evolve the Simulated Annealing step-heuristic function optimize_cover_step to find the optimal congruence cover for Goldbach desert. Must try extremely hard across many parallel generations to produce highly creative and sophisticated thermodynamic/probabilistic search heuristics.",
+    "title": "Super Hard Constrained Multi-Objective Goldbach Cover Step-Heuristic",
+    "problem_description": "Evolve the Simulated Annealing step-heuristic function optimize_cover_step to find the optimal congruence cover for Goldbach desert. Warm-started from the 195-digit record. Strictly minimize estimated digits D while keeping the failure exponent E <= 17.5. Expose neg_E, neg_residual_count, and neg_m_digits as secondary metrics to see the actual feasibility frontier.",
     "program_language": "python",
     "run_settings": {
         "max_programs": 100,
@@ -302,7 +344,12 @@ initial_program = {
     },
     "evaluation": {
         "scores": {
-            "scores": [{"metric": "neg_est_digits", "score": -1e12}]
+            "scores": [
+                {"metric": "neg_est_digits", "score": -1e12},
+                {"metric": "neg_E", "score": -1e12},
+                {"metric": "neg_residual_count", "score": -1e12},
+                {"metric": "neg_m_digits", "score": -1e12}
+            ]
         }
     },
 }
