@@ -8,7 +8,7 @@
     243269632,
     25000000000
    ],
-   "safe_k": 10349445120
+   "safe_k": 10536091648
   },
   "gba100": {
    "gpu": "A100",
@@ -16,9 +16,9 @@
     25664797184,
     75177659976
    ],
-   "safe_k": 58852227584
+   "safe_k": 59454110208
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time.",
- "updated": "2026-07-26T20:40Z"
+ "updated": "2026-07-26T20:57Z"
 }
