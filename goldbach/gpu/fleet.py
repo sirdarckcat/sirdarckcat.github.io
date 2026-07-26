@@ -251,13 +251,15 @@ def run_cycle(force_shard=None):
                 attention |= res == "launch-failed"
             continue
         if p["status"] == "reading":
-            if p["candidates"]:
+            new_cands = [c for c in p["candidates"]
+                         if c not in cfg.get("banked", [])]
+            if new_cands:
                 n = rescue_hits(shard)
                 candidate = True
                 summaries.append(
-                    f"{shard}: CANDIDATE k={p['candidates']} "
+                    f"{shard}: CANDIDATE k={new_cands} "
                     f"({n} new rescued)")
-                git_push(f"fleet: rescue {len(p['candidates'])} candidate(s) "
+                git_push(f"fleet: rescue {len(new_cands)} candidate(s) "
                          f"from {shard}")
                 # do not advance safe_k past a candidate: leave the mark
                 # below it until verification banks the record

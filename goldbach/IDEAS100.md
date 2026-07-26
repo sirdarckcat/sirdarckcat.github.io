@@ -172,6 +172,15 @@ must chase. Every idea below carries its small-number test status.
   works — the validation record.
 - **E5. Milestone: 150 digits** (E ≈ 24.4+k-room ≈ 25.5): ~7-20 h
   on one T4 — a 45-digit leap over our own 3-day-old record.
+  **WON (2026-07-26)**: records/threshold_150digit_g104527 —
+  N ≈ 8.27·10^149, g = 104 527. True E at 150d was 24.91; the hit
+  landed at k = 6.21·10^10, 63.8% into the [0, 7.5·10^10) round
+  (cumulative expectation 0.40), on the A100 shard of the two-session
+  fleet after ~26 wall-clock hours of supervised rotation (~10 session
+  culls, zero coverage loss via git-committed safe_k marks). The T4/
+  A100 split ran at 185k/604k k/s = 2.5M/8.5M tests/s. Next rung: E6
+  at 140 digits (E ≈ 28, ~22× this round's search — needs either
+  patience or the E3 cover nats).
 - **E6. Flagship: 140 digits** (E ≈ 26.8+1 ≈ 28): ~2 days A100 or
   ~1 week T4, P(hit) per pass ~0.6.
 - **E7. Stretch: 130 digits** (E ≈ 30.5): ~3-4 weeks single-A100 or

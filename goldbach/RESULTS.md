@@ -1,5 +1,41 @@
 # Goldbach Desert Records
 
+## New record (2026-07-26): T(100 000) at 150 digits — the GPU rung,
+## 45 digits below our own 195-digit record
+
+**N** (150 digits, `records/threshold_150digit_g104527/record.json`,
+N = N0 + 62 147 038 260·M over a 68-modulus cover with M of 140 digits):
+
+```
+82666896361422214889140173486824909338317018059813
+51031435344058125034274739390508125558021767403422
+36249163597526688699521722930930329320505713336368
+```
+
+**g(N) = 104 527 > 100 000** with N ≈ 8.27·10^149 — the smallest known
+even integer whose least Goldbach summand exceeds 100 000, taking 45
+digits off the 195-digit record below (10^45× smaller). Evidence
+(`evidence.json`, fully machine-checkable): all 9 977 prime offsets
+q < 104 527 have N − q composite — parity (1), congruence divisor from
+the cover (9 097), trial divisor < 10^5 (433), strong base-2
+Miller–Rabin witness (446, unconditional). 104 527 is prime and
+N − 104 527 is a BPSW probable prime; ECPP certificate pending (no
+PARI/GP in this container; run `primecert(N - 104527)`).
+
+This rung was unreachable by the CPU pipeline (failure exponent
+E = 24.91 at 150 digits vs 17.5 at 195 — e^7.4 ≈ 1 600× more search
+per hit) and is the first result from the CUDA engine
+(`gpu/engine150.py`: bit-matrix sieve + Montgomery CIOS base-2 Fermat
+waves, validated bit-for-bit against Python; ~2.5M tests/s on a T4,
+~8.5M tests/s on an A100 — ~430× the 4-core CPU pipeline). The k-range
+[0, 7.5·10^10) was sharded across a rotating two-session Colab fleet
+driven by `gpu/fleet.py` (safe_k checkpointing in git survived ~10
+session culls and several container rollbacks with zero coverage
+loss). The hit landed at k = 6.21·10^10, 63.8% into the round —
+cumulative expectation ~0.63·0.64 ≈ 0.40 at the exact density
+e^-24.91, within the central mass of the Poisson draw. The engine
+found it after ~1.9·10^9 Fermat tests on this shard alone.
+
 ## New record (2026-07-25): T(100 000) at 195 digits — 100× below the
 ## previous smallest desert past 100 000
 
