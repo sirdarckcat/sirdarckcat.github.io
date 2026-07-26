@@ -1,0 +1,6 @@
+[blueprint_q100003_d168@0] k=[0,262144) 94s (2803 k/s) tests=3926082 prp=262144 p^=0.0668 alive/k=303.6 E^=20.27 found=0
+[blueprint_q100003_d168_v0@0] k=[0,262144) 90s (2914 k/s) tests=3909553 prp=262144 p^=0.0671 alive/k=303.2 E^=20.33 found=0
+[blueprint_q100003_d168_v403@0] k=[0,262144) 92s (2844 k/s) tests=3937874 prp=262144 p^=0.0666 alive/k=303.2 E^=20.18 found=0
+[blueprint_q100003_d168_v404@0] k=[0,262144) 86s (3057 k/s) tests=3931595 prp=262144 p^=0.0667 alive/k=303.2 E^=20.21 found=0
+[blueprint_q100003_d168_v405@0] k=[0,262144) 91s (2879 k/s) tests=3937426 prp=262144 p^=0.0666 alive/k=303.1 E^=20.18 found=0
+[blueprint_q100003_d168_v409@0] k=[0,262144) 93s (2807 k/s) tests=3933702 prp=262144 p^=0.0666 alive/k=303.2 E^=20.20 found=0
