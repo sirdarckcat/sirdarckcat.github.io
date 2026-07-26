@@ -91,7 +91,8 @@ def main():
         with open(LOG, "a", buffering=1) as log:
             rc = subprocess.call(
                 [sys.executable, os.path.join(GOLDBACH, "search.py"),
-                 SLICE_JSON, "--procs", "4", "--out", FOUND],
+                 SLICE_JSON, "--procs", "4", "--sort-tests",
+                 "--out", FOUND],
                 cwd=GOLDBACH, stdout=log, stderr=log)
         if rc != 0:
             print(f"search.py rc={rc} on {batch[0]['name']}...", flush=True)
