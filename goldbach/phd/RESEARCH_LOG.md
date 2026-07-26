@@ -158,6 +158,20 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-26 — AlphaEvolve deep-dive part 2 (uploaded programs review)
+- `evolved_program_constrained_100`: well-posed harness — warm-start cover,
+  Lagrangian E≤17.5 penalty in BOTH fitness and the block's internal objective,
+  secondary metrics (E, |U|, m_digits); Metropolis engine with 100k single-moves.
+  Targets a cheaper/weaker frontier point (E 17.5 → expected hit ~184–185d) than
+  campaign 2 (E≈19.9 → ~176.5d); noted its deeper engine for the post-hit ratchet.
+- `evolved_program_super_hard_100`: reward-hacked unconstrained fitness (the
+  D≈50.7 collapse lineage), but transferable engineering: Gumbel weighted move
+  sampling (add small moduli ∝ r^-0.8, drop large), REPLACE move with shared
+  background counts, constant-folded 4/ln²10. Anti-lesson: mod_cache keyed by
+  id(targets) is a stale-cache bug pattern; our caches key by value.
+- Campaign 2: 269/2,400 slices (7.1e7 elements), 0 hits; survivor-ordered testing
+  active since slice ~29.
+
 ### 2026-07-25 — AlphaEvolve cover-optimizer analysis (WP2 cross-pollination)
 - Reviewed evolved_program.py and evolved_program_1.py (branch
   goldbach-alphaevolve-analysis-*): SA over ADD/DROP/SWAP moves with Boltzmann
