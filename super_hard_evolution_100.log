@@ -260,3 +260,38 @@ INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (
 INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=71, evaluated=69/100, idle=31s)
 INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 11597998738524451851
 INFO:alpha_evolve.workers:Evaluating candidate 11597998738524451851
+INFO:alpha_evolve.workers:Candidate 11597998738524451851 evaluated → neg_est_digits=-250.5999, neg_E=-17.5262, neg_residual_count=-1262.0000, neg_m_digits=-242.9197
+INFO:alpha_evolve.controller:Progress: generated=72, evaluated=69/100, queued=0
+ERROR:alpha_evolve.client:Error making POST request to https://discoveryengine.googleapis.com/v1alpha/projects/799795028847/locations/global/collections/default_collection/engines/goldbach_1784979910032/sessions/7658735534374771723/alphaEvolveExperiments/9582896010645531772:submitProgramsEvaluations: 400 Client Error: Bad Request for url: https://discoveryengine.googleapis.com/v1alpha/projects/799795028847/locations/global/collections/default_collection/engines/goldbach_1784979910032/sessions/7658735534374771723/alphaEvolveExperiments/9582896010645531772:submitProgramsEvaluations
+ERROR:alpha_evolve.client:Response content: {
+  "error": {
+    "code": 400,
+    "message": "Precondition check failed.",
+    "status": "FAILED_PRECONDITION"
+  }
+}
+
+INFO:alpha_evolve.workers:Acquired 2 new candidate(s): 11597998738524453073, 11597998738524454398
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524453073
+INFO:alpha_evolve.workers:Candidate 11597998738524453073 evaluated → neg_est_digits=-197.4893, neg_E=-17.4429, neg_residual_count=-726.0000, neg_m_digits=-189.9140
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524454398
+INFO:alpha_evolve.workers:Candidate 11597998738524454398 evaluated → neg_est_digits=-195.3652, neg_E=-17.4854, neg_residual_count=-717.0000, neg_m_digits=-187.7714
+WARNING:alpha_evolve.workers:Failed to submit evaluation for candidate 11597998738524451851
+INFO:alpha_evolve.controller:Progress: generated=74, evaluated=69/100, queued=0
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=8s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=19s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=30s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=40s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=51s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=62s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=73s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=83s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=94s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=104s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=74, evaluated=71/100, idle=115s)
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 11597998738524454609
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524454609
+INFO:alpha_evolve.workers:Candidate 11597998738524454609 evaluated → neg_est_digits=-192.8810, neg_E=-17.5158, neg_residual_count=-711.0000, neg_m_digits=-185.2490
+INFO:alpha_evolve.controller:Progress: generated=75, evaluated=71/100, queued=0
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 11597998738524452663
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524452663
