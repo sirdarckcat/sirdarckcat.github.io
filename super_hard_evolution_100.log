@@ -120,3 +120,86 @@ INFO:alpha_evolve.workers:Candidate 7662895210918132617 evaluated → neg_est_di
 INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133288
 INFO:alpha_evolve.workers:Candidate 7662895210918133288 evaluated → neg_est_digits=-193.7684, neg_E=-17.5214, neg_residual_count=-718.0000, neg_m_digits=-186.1132
 INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133556
+INFO:alpha_evolve.workers:Candidate 7662895210918133556 evaluated → neg_est_digits=-195.0293, neg_E=-17.4492, neg_residual_count=-713.0000, neg_m_digits=-187.4512
+INFO:alpha_evolve.workers:Acquired 5 new candidate(s): 7662895210918131074, 7662895210918131478, 7662895210918131544, 7662895210918131545, 7662895210918132147
+INFO:alpha_evolve.workers:Acquired 2 new candidate(s): 7662895210918132350, 7662895210918133625
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131074
+INFO:alpha_evolve.workers:Candidate 7662895210918131074 evaluated → neg_est_digits=-194.9071, neg_E=-17.4221, neg_residual_count=-711.0000, neg_m_digits=-187.3407
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131478
+INFO:alpha_evolve.workers:Candidate 7662895210918131478 evaluated → neg_est_digits=-195.8942, neg_E=-17.4222, neg_residual_count=-718.0000, neg_m_digits=-188.3278
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131544
+INFO:alpha_evolve.workers:Candidate 7662895210918131544 evaluated → neg_est_digits=-196.6547, neg_E=-17.5075, neg_residual_count=-746.0000, neg_m_digits=-189.0457
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131545
+INFO:alpha_evolve.workers:Candidate 7662895210918131545 evaluated → neg_est_digits=-247.7230, neg_E=-12.0876, neg_residual_count=-605.0000, neg_m_digits=-242.4734
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132147
+INFO:alpha_evolve.workers:Candidate 7662895210918132147 evaluated → neg_est_digits=-595.0053, neg_E=-2.0814, neg_residual_count=-220.0000, neg_m_digits=-594.1014
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132350
+INFO:alpha_evolve.workers:Candidate 7662895210918132350 evaluated → neg_est_digits=-204.7356, neg_E=-17.5080, neg_residual_count=-782.0000, neg_m_digits=-197.1256
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133625
+INFO:alpha_evolve.workers:Candidate 7662895210918133625 evaluated → neg_est_digits=-194.9642, neg_E=-17.5281, neg_residual_count=-727.0000, neg_m_digits=-187.2726
+INFO:alpha_evolve.controller:Progress: generated=38, evaluated=31/100, queued=0
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=38, evaluated=38/100, idle=9s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=38, evaluated=38/100, idle=20s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=38, evaluated=38/100, idle=31s)
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 7662895210918131949
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131949
+INFO:alpha_evolve.workers:Candidate 7662895210918131949 evaluated → neg_est_digits=-192.3314, neg_E=-17.5453, neg_residual_count=-718.0000, neg_m_digits=-184.5064
+INFO:alpha_evolve.controller:Progress: generated=39, evaluated=38/100, queued=0
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 7662895210918133225
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133225
+INFO:alpha_evolve.workers:Candidate 7662895210918133225 evaluated → neg_est_digits=-193.1659, neg_E=-17.5426, neg_residual_count=-713.0000, neg_m_digits=-185.3657
+INFO:alpha_evolve.controller:Progress: generated=40, evaluated=39/100, queued=0
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=40, evaluated=40/100, idle=9s)
+INFO:alpha_evolve.controller:Waiting for the backend to generate candidates... (generated=40, evaluated=40/100, idle=20s)
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 7662895210918130673
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918130673
+INFO:alpha_evolve.workers:Candidate 7662895210918130673 evaluated → neg_est_digits=-405.6403, neg_E=-4.9896, neg_residual_count=-379.0000, neg_m_digits=-403.4733
+INFO:alpha_evolve.workers:Acquired 4 new candidate(s): 7662895210918129734, 7662895210918130271, 7662895210918130338, 7662895210918133696
+INFO:alpha_evolve.controller:Progress: generated=45, evaluated=40/100, queued=4
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918129734
+INFO:alpha_evolve.workers:Candidate 7662895210918129734 evaluated → neg_est_digits=-192.5329, neg_E=-17.5023, neg_residual_count=-708.0000, neg_m_digits=-184.9313
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918130271
+INFO:alpha_evolve.workers:Candidate 7662895210918130271 evaluated → neg_est_digits=-193.7991, neg_E=-17.5631, neg_residual_count=-728.0000, neg_m_digits=-185.7730
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918130338
+INFO:alpha_evolve.workers:Candidate 7662895210918130338 evaluated → neg_est_digits=-224.9982, neg_E=-17.4370, neg_residual_count=-939.0000, neg_m_digits=-217.4254
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133696
+INFO:alpha_evolve.workers:Candidate 7662895210918133696 evaluated → neg_est_digits=-233.7057, neg_E=-17.5228, neg_residual_count=-1063.0000, neg_m_digits=-226.0435
+INFO:alpha_evolve.workers:Acquired 5 new candidate(s): 7662895210918129873, 7662895210918130945, 7662895210918131480, 7662895210918132085, 7662895210918132557
+INFO:alpha_evolve.workers:Acquired 2 new candidate(s): 7662895210918132891, 7662895210918133295
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918129873
+INFO:alpha_evolve.workers:Candidate 7662895210918129873 evaluated → neg_est_digits=-195.6711, neg_E=-17.4130, neg_residual_count=-721.0000, neg_m_digits=-188.1087
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918130945
+INFO:alpha_evolve.workers:Candidate 7662895210918130945 evaluated → neg_est_digits=-192.7737, neg_E=-17.4122, neg_residual_count=-706.0000, neg_m_digits=-185.2117
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131480
+INFO:alpha_evolve.workers:Candidate 7662895210918131480 evaluated → neg_est_digits=-236.8163, neg_E=-17.5064, neg_residual_count=-1103.0000, neg_m_digits=-229.2093
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132085
+ERROR:alpha_evolve.client:Error making POST request to https://discoveryengine.googleapis.com/v1alpha/projects/799795028847/locations/global/collections/default_collection/engines/goldbach_1784979910032/sessions/7658735534374771723/alphaEvolveExperiments/9582896010645531772:submitProgramsEvaluations: 400 Client Error: Bad Request for url: https://discoveryengine.googleapis.com/v1alpha/projects/799795028847/locations/global/collections/default_collection/engines/goldbach_1784979910032/sessions/7658735534374771723/alphaEvolveExperiments/9582896010645531772:submitProgramsEvaluations
+ERROR:alpha_evolve.client:Response content: {
+  "error": {
+    "code": 400,
+    "message": "Precondition check failed.",
+    "status": "FAILED_PRECONDITION"
+  }
+}
+
+INFO:alpha_evolve.workers:Candidate 7662895210918132085 evaluated → neg_est_digits=-192.8369, neg_E=-17.5270, neg_residual_count=-711.0000, neg_m_digits=-185.1520
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132557
+INFO:alpha_evolve.workers:Candidate 7662895210918132557 evaluated → neg_est_digits=-195.4603, neg_E=-17.3993, neg_residual_count=-714.0000, neg_m_digits=-187.9038
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132891
+INFO:alpha_evolve.workers:Candidate 7662895210918132891 evaluated → neg_est_digits=-192.0888, neg_E=-17.5078, neg_residual_count=-716.0000, neg_m_digits=-184.4791
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918133295
+INFO:alpha_evolve.workers:Candidate 7662895210918133295 evaluated → neg_est_digits=-191.8505, neg_E=-17.5013, neg_residual_count=-714.0000, neg_m_digits=-184.2497
+INFO:alpha_evolve.controller:Progress: generated=52, evaluated=45/100, queued=0
+INFO:alpha_evolve.workers:Acquired 5 new candidate(s): 11597998738524451449, 11597998738524452014, 7662895210918129673, 7662895210918131822, 7662895210918132023
+INFO:alpha_evolve.workers:Acquired 1 new candidate(s): 7662895210918133436
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524451449
+INFO:alpha_evolve.workers:Candidate 11597998738524451449 evaluated → neg_est_digits=-191.5822, neg_E=-17.5420, neg_residual_count=-714.0000, neg_m_digits=-183.7875
+INFO:alpha_evolve.workers:Evaluating candidate 11597998738524452014
+INFO:alpha_evolve.workers:Candidate 11597998738524452014 evaluated → neg_est_digits=-192.6593, neg_E=-17.5028, neg_residual_count=-709.0000, neg_m_digits=-185.0571
+WARNING:alpha_evolve.workers:Failed to submit evaluation for candidate 7662895210918131480
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918129673
+INFO:alpha_evolve.workers:Candidate 7662895210918129673 evaluated → neg_est_digits=-267.2203, neg_E=-17.4629, neg_residual_count=-1617.0000, neg_m_digits=-259.6363
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918131822
+INFO:alpha_evolve.workers:Candidate 7662895210918131822 evaluated → neg_est_digits=-196.4046, neg_E=-17.5123, neg_residual_count=-745.0000, neg_m_digits=-188.7839
+INFO:alpha_evolve.workers:Acquired 3 new candidate(s): 11597998738524451402, 11597998738524453413, 11597998738524453895
+INFO:alpha_evolve.workers:Evaluating candidate 7662895210918132023
