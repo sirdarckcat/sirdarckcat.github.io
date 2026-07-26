@@ -23,5 +23,5 @@
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-26T23:14Z"
+ "updated": "2026-07-26T23:33Z"
 }
