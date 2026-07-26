@@ -28,26 +28,35 @@ from sympy import primerange
 
 # ---------------- worker globals (shared via fork) ----------------
 G = {}
+_SIEVE_CACHE = {}
 
 
 def init_spec(spec, sieve_b, block):
     N0 = mpz(spec["N0"])
     M = mpz(spec["M"])
     U = [int(q) for q in spec["residual"]]
-    cover_primes = set(r for r, _ in spec.get("cover", []))
-    S = np.array([s for s in primerange(3, sieve_b) if s not in cover_primes],
-                 dtype=np.int64)
-    n0m = np.empty(len(S), dtype=np.int64)
-    mm = np.empty(len(S), dtype=np.int64)
-    inv = np.empty(len(S), dtype=np.int64)
-    for i, s in enumerate(S):
-        si = int(s)
-        n0m[i] = int(N0 % si)
-        mv = int(M % si)
-        mm[i] = mv
-        inv[i] = pow(mv, -1, si) if mv else 0
-    good = mm != 0          # drop any s | M (cover primes already removed)
-    S, n0m, inv = S[good], n0m[good], inv[good]
+
+    cache_key = (int(M), sieve_b)
+    if cache_key in _SIEVE_CACHE:
+        S, inv = _SIEVE_CACHE[cache_key]
+    else:
+        cover_primes = set(r for r, _ in spec.get("cover", []))
+        S_raw = np.array([s for s in primerange(3, sieve_b) if s not in cover_primes],
+                         dtype=np.int64)
+        mm = np.empty(len(S_raw), dtype=np.int64)
+        inv_raw = np.empty(len(S_raw), dtype=np.int64)
+        for i, s in enumerate(S_raw):
+            si = int(s)
+            mv = int(M % si)
+            mm[i] = mv
+            inv_raw[i] = pow(mv, -1, si) if mv else 0
+        good = mm != 0
+        S = S_raw[good]
+        inv = inv_raw[good]
+        _SIEVE_CACHE[cache_key] = (S, inv)
+
+    n0_val = int(N0)
+    n0m = np.array([n0_val % int(s) for s in S], dtype=np.int64)
     small = S < block
     # k-residues killing q (k == (q - N0) * M^-1 mod s) are computed per
     # residual on the fly in run_block: storing them for all (q, s) pairs
