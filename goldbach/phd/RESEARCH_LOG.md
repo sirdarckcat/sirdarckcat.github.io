@@ -158,6 +158,19 @@ Cover frontier at Q = 107,720 (cover.py):
   so the deficit is ordinary Poisson variance, not model error. Worker restarts
   continue to be absorbed at zero slice loss.
 
+### 2026-07-26 — constrained_100 benchmarked (warm-start = 168d blueprint, 6-iter schedule)
+- cap E≤17.5 (as shipped): D=193.2 (85 congr, M=185.6d, |U|=723) — its own frontier
+  point does NOT beat the 186-digit incumbent; the E↔D trade is steeper than the
+  harness authors assumed.
+- cap E≤20.0 (edited): D=179.6 — WORSE than both the blueprint (176.5) and our
+  greedy-proposal anneal (175.6) at equal wall-time. The random single-move
+  Metropolis walk degrades the warm start at high temperature and cannot recover;
+  deterministic best-residue proposals with Boltzmann selection dominate it here.
+- Conclusion: harness design is exemplary (constraint in fitness AND internal
+  objective, warm start, multi-metric); the evolved *search engine* is not
+  competitive with our current optimizer under warm-start conditions. No adoption
+  beyond the harness pattern.
+
 ### 2026-07-26 — AlphaEvolve deep-dive part 2 (uploaded programs review)
 - `evolved_program_constrained_100`: well-posed harness — warm-start cover,
   Lagrangian E≤17.5 penalty in BOTH fitness and the block's internal objective,
