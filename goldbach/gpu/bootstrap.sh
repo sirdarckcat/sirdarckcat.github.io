@@ -4,7 +4,7 @@ set -e
 export PATH="$HOME/.local/bin:$PATH"
 command -v colab >/dev/null 2>&1 || {
   pip install -q uv 2>/dev/null | tail -0
-  uv tool install -q google-colab-cli --python 3.12
+  uv tool install -q google-colab-cli --python 3.12 --with "jupyter-kernel-client<1"
 }
 SP=/tmp/claude-0/-home-user-sirdarckcat-github-io/baa8b498-20b7-5e39-a641-6ce05571c44f/scratchpad
 if [ ! -f ~/.config/colab-cli/token.json ]; then
