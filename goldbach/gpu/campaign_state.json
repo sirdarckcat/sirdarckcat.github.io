@@ -8,7 +8,7 @@
     243269632,
     25000000000
    ],
-   "safe_k": 11855200256
+   "safe_k": 12046041088
   },
   "gba100": {
    "gpu": "A100",
@@ -16,12 +16,12 @@
     25664797184,
     75177659976
    ],
-   "safe_k": 63774243328,
+   "safe_k": 64395000320,
    "banked": [
     62147038260
    ]
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-27T00:17Z"
+ "updated": "2026-07-27T00:37Z"
 }
