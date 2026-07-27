@@ -1,5 +1,5 @@
 {
- "campaign": "T(100000) at 150 digits, spec gpu/spec150.json, E=24.91",
+ "campaign": "T(100000) at 150 digits, spec gpu/spec150.json, E=24.91 \u2014 ROUND 1 COMPLETE 2026-07-27: 1 hit (banked record g=104527 at k=62147038260)",
  "kend": 75177659976,
  "shards": {
   "gb150": {
@@ -29,9 +29,10 @@
     18000000000,
     25000000000
    ],
-   "safe_k": 24580862976
+   "safe_k": 25000000000,
+   "complete": true
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-27T14:57Z"
+ "updated": "2026-07-27T14:45Z"
 }

@@ -36,6 +36,12 @@ cumulative expectation ~0.63·0.64 ≈ 0.40 at the exact density
 e^-24.91, within the central mass of the Poisson draw. The engine
 found it after ~1.9·10^9 Fermat tests on this shard alone.
 
+ROUND COMPLETE (2026-07-27): the full k-round [0, 7.5·10^10) has now
+been scanned end to end (~2.1·10^12 Fermat tests across the fleet) —
+exactly one hit, the record above. One draw against a Poisson mean of
+0.63 is an unremarkable outcome; the density model stays unfalsified.
+The next rung is 140 digits (E ≈ 28, ~22× this round's search).
+
 ## New record (2026-07-25): T(100 000) at 195 digits — 100× below the
 ## previous smallest desert past 100 000
 
