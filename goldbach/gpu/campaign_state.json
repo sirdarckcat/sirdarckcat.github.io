@@ -6,7 +6,7 @@
    "gpu": "T4",
    "range": [
     243269632,
-    25000000000
+    18000000000
    ],
    "safe_k": 15598616576
   },
@@ -21,8 +21,16 @@
     62147038260
    ],
    "complete": true
+  },
+  "gba150b": {
+   "gpu": "A100",
+   "range": [
+    18000000000,
+    25000000000
+   ],
+   "safe_k": 18000000000
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-27T08:14Z"
+ "updated": "2026-07-27T08:00Z"
 }
