@@ -1,38 +1,28 @@
 {
- "campaign": "T(100000) at 150 digits, spec gpu/spec150.json, E=24.91 \u2014 ROUND 1 COMPLETE 2026-07-27: 1 hit (banked record g=104527 at k=62147038260)",
- "kend": 75177659976,
+ "campaign": "R(10^200): max g(N) with N < 10^200. Round 1: Q=140,009, spec gpu/spec200.json, E=24.96 at 200d, full-range expectation 4.75. Beats incumbent g=119,419 on any hit.",
+ "kend": 327058424910,
  "shards": {
-  "gb150": {
+  "gb200": {
    "gpu": "T4",
+   "engine": "engine.py",
+   "spec": "spec200.json",
    "range": [
-    243269632,
-    18000000000
+    0,
+    82000000000
    ],
-   "safe_k": 18000000000,
-   "complete": true
+   "safe_k": 0
   },
-  "gba100": {
+  "gba200": {
    "gpu": "A100",
+   "engine": "engine.py",
+   "spec": "spec200.json",
    "range": [
-    25664797184,
-    75177659976
+    82000000000,
+    327058424910
    ],
-   "safe_k": 75177659976,
-   "banked": [
-    62147038260
-   ],
-   "complete": true
-  },
-  "gba150b": {
-   "gpu": "A100",
-   "range": [
-    18000000000,
-    25000000000
-   ],
-   "safe_k": 25000000000,
-   "complete": true
+   "safe_k": 82000000000
   }
  },
- "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-27T14:45Z"
+ "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~1.5-3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
+ "updated": "2026-07-29T00:00Z"
 }

@@ -31,8 +31,6 @@ GPU_DIR = Path(__file__).resolve().parent
 REPO = GPU_DIR.parent.parent
 STATE = GPU_DIR / "campaign_state.json"
 HITS = GPU_DIR / "hits_incoming.jsonl"
-ENGINE = GPU_DIR / "engine150.py"
-SPEC = GPU_DIR / "spec150.json"
 TILE = 2097152                      # engine default --tile
 CACHE = Path(os.environ.get("FLEET_CACHE",
                             Path.home() / ".cache" / "goldbach-fleet"))
@@ -63,7 +61,7 @@ print(open(p).read() if os.path.exists(p) else "")
 
 PGREP_SCRIPT = """\
 import subprocess
-r = subprocess.run("pgrep -af engine150 || true", shell=True,
+r = subprocess.run("pgrep -af "engine" || true", shell=True,
                    capture_output=True, text=True)
 print(r.stdout.strip())
 """
@@ -174,6 +172,8 @@ def git_push(msg):
 
 def relaunch(shard, cfg):
     """Fresh session + upload + detached launch from safe_k."""
+    engine = GPU_DIR / cfg.get("engine", "engine150.py")
+    spec = GPU_DIR / cfg.get("spec", "spec150.json")
     k0, kend = cfg["safe_k"], cfg["range"][1]
     if k0 >= kend:
         cfg["complete"] = True
@@ -190,8 +190,8 @@ def relaunch(shard, cfg):
         print(f"[{shard}] colab new --gpu {gpu} failed: {out.strip()[-200:]}")
     if not up:
         return "launch-failed"
-    for local, remote in [(ENGINE, "/content/engine150.py"),
-                          (SPEC, "/content/spec150.json")]:
+    for local, remote in [(engine, "/content/engine.py"),
+                          (spec, "/content/spec.json")]:
         ok = False
         for _ in range(2):
             rc, out = sh(f"colab upload -s {shard} {local} {remote}",
@@ -204,13 +204,13 @@ def relaunch(shard, cfg):
             return "launch-failed"
     launcher = (
         "import subprocess\n"
-        "subprocess.Popen(\"nohup python /content/engine150.py "
-        f"/content/spec150.json {k0} {kend} --out /content/hits.jsonl "
+        "subprocess.Popen(\"nohup python /content/engine.py "
+        f"/content/spec.json {k0} {kend} --out /content/hits.jsonl "
         "> /content/scan.log 2>&1 &\", shell=True)\n"
         "print('launched')\n")
     colab_exec(shard, launcher, timeout=30)
     rc, out = colab_exec(shard, PGREP_SCRIPT, timeout=30)
-    if "/content/engine150.py" not in out:
+    if "/content/engine" not in out:
         rc, out = colab_exec(shard, TAIL_SCRIPT)
         print(f"[{shard}] engine not running after launch; log tail:\n"
               f"{out[-500:]}")
@@ -243,7 +243,7 @@ def run_cycle(force_shard=None):
             continue
         if p["status"] == "empty":
             rc, out = colab_exec(shard, PGREP_SCRIPT, timeout=30)
-            if "/content/engine150.py" in out:
+            if "/content/engine" in out:
                 summaries.append(f"{shard}: alive, warming up")
             else:
                 res = relaunch(shard, cfg)
