@@ -129,6 +129,59 @@ Forward programme (in priority order):
    no-go (e.g., equivalence to average-case-hard lattice problems) — the
    "conventional model cannot reach sub-100 without solving X" barrier theorem.
 
+### 2026-07-28 — costed menu for follow-up work (validated: model reproduces the
+150d record at "6 days on 2 Colab GPUs" — the actual campaign duration)
+| rung | E | candidates | A100-yr | spot-$ | 2-GPU-Colab wall |
+|---|---|---|---|---|---|
+| 140d | 28.1 | 1.6e12 | 0.10 | ~$1k | ~2 months |
+| 135d | 29.7 | 7.7e12 | 0.49 | ~$5k | ~10 months |
+| 130d | 31.2 | 3.6e13 | 2.3 | ~$24k | — |
+| 125d | 32.9 | 1.9e14 | 12 | ~$125k | — |
+| 120d | 34.7 | 1.2e15 | 73 | ~$770k | — |
+| 100d | 44.1 | 1.4e19 | 8.9e5 | ~$9.4B | — |
+(Expected values; ×1.6 for 80% confidence. Throughput engineering shifts all rows.)
+Toy CRT decoder: ~zero compute, 2–4 sessions; measures practical-vs-Johnson gap.
+WP7 probes: ~zero compute, ~5 bounded probes × 1–2 sessions; only unbounded-upside route.
+
+### 2026-07-28 — master reconciliation: FRONTIER.md + SoK §7 (PRs #27/#28)
+- Merged parallel sessions' work. FRONTIER.md independently measures the sub-100
+  wall: realizable E = 43.66 vs our 44.1 (agreement to 0.4 nats — two independent
+  implementations of the costing now concur), and its set-valued-conditioning study
+  (gain saturates at H^0.35, worth 1–2.8 nats) plus enumerability theorem ("classic
+  cover = unique freely-enumerable design") confirm our density-1.026 subset-sum
+  barrier from the constructive side.
+- CORRECTION to our memo: sub-100 cost is ~9×10^5 GPU-years, not 5×10^4 — a units
+  slip (divided by test rate instead of candidate rate). Costed-menu table row was
+  already correct ($9.4B at D=100); memo prose fixed. FRONTIER's fleet band also
+  supersedes our Colab wall-clock estimates (140d ≈ 13 days, not ~2 months).
+- SoK §7 lists 10 open angles; #2 (prime-first construction), #9 (NP-hardness of
+  the existence problem) and #10 (Grover: sub-100 at ~e^22 quantum queries) are
+  genuinely complementary to our WP3/WP7 program and noted in the memo.
+
+### 2026-07-28 — toy CRT decoder + WP7 probes both executed (post-merge follow-ups)
+- **Toy CRT decoder (delegated; goldbach/phd/toy_crt/)**: Howgrave-Graham/GSS lattice
+  decoder implemented (FLINT LLL, cross-validated pure-Python fallback), 61-position
+  pool, B=10^12, A_J=87.38, 390 decodes. Verdict: practical LLL does NOT penetrate
+  below the Johnson radius — the empirical threshold is A ≈ 1.028·A_J at ℓ=30,
+  approaching A_J from above like 1+c/ℓ (ℓ=45 post-hoc: cutoff ≈1.02, one failure at
+  1.0041·A_J). Below threshold the failure is TOTAL: reduced bases yield zero integer
+  roots, and across all 390 decodes no non-planted solution was ever found despite
+  ~10^7 valid alternatives existing at ρ=0.7 — solution abundance buys nothing.
+  Empirics track finite-dimension determinant bounds to ~1%: the radius is tight in
+  practice for this family, closing the last "maybe practical reduction beats the
+  proof" hope from the WP3 memo.
+- **WP7 probes (wp7_probes.md)**: all five terminated at predeclared gates — P1
+  prime-powers strictly dominated (zero new kills); P2 value-set identities 26×
+  dominated on average, 2–3× at the margin, with a provable Q^(1/2) offset ceiling;
+  P3 exponent families reduce to covering (search-throughput note kept); P4 norm
+  forms are covering in Galois clothing; P5 hidden bias empirically ≤0.1 nats from
+  1.2e9 banked candidates. Output: 3 simultaneous conditions any real mechanism must
+  meet (≫√Q offsets, o(ln r) entropy each, invisible to bulk density stats).
+- **Programme position, final**: sub-100 T(100,000) has exactly one live route
+  (Regime-I brute force, ~5×10^4 GPU-years) and three precisely-stated mathematical
+  problems that would change that. RQ7 chapter complete; 140d rung (~$1k) remains
+  the cheap constructive next step.
+
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
   implementation ECPP validation, adversarial mutation tests); two later external

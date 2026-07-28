@@ -46,13 +46,17 @@ Let A = cover mass (nats), lnB = 230.
 **Regime I — A ≤ lnB (modulus fits under the bound).** The CRT progression
 N = N₀ + kM itself supplies e^(lnB − A) candidates; cost = e^E.
 [V] Optimum at Q = 10^5, B = 10^100: **44 moduli, M = 10^79, |U| = 1060,
-boost 9.6, E = 44.1 → 1.4×10^19 candidates ≈ 5×10^4 GPU-years** (at the
-record session's 8.5M tests/s). That is 2×10^8 times the 150-digit record's
-E = 24.9 — a wall, but a *finite* one: an org-scale fleet reaches ~120–125
-digits, and sub-100 sits ~10^4 GPU-years beyond that.
-(v1 of the forward memo said 3×10^8 GPU-years for D=100; that extrapolation
-was too pessimistic because it assumed the cover keeps growing past the
-usable mass. 5×10^4 GPU-years is the correct figure.)
+boost 9.6, E = 44.1 → 1.4×10^19 candidates ≈ 9×10^5 GPU-years** at the
+record engine's ~5×10^5 candidates/s (a candidate costs ~17 Fermat tests;
+an earlier revision of this paragraph divided by the 8.5M tests/s TEST rate
+and reported 5×10^4 GPU-years — a units error, corrected 2026-07-28).
+Independent confirmation: goldbach/FRONTIER.md (parallel session, PR #28)
+measures realizable E = 43.66 at 100 digits — 0.4 nats from this memo's
+44.1 — and quotes 1.9×10^5 GPU-years at an optimistic 1.5M cand/s; at equal
+throughput conventions the two studies agree. Sub-100 is ~7 orders of
+magnitude beyond plausible compute; the fundable frontier is 130–140 digits
+(FRONTIER.md's measured fleet band: 140d ≈ 13 days, 130d ≈ 5 months on the
+existing 2-GPU engine — superseding this memo's cruder Colab estimates).
 
 **Regime II — A > lnB (oversized cover).** Coverage is then excellent —
 [V] all 9,592 primes q < 10^5 are covered by 355 moduli of mass 1,019 digits,
@@ -114,15 +118,29 @@ are worthless; couple the parameters first. The published table in v1
 
 ## 7. Where this leaves the programme
 
-1. **Regime I is the only currently viable route to sub-100** and it is
-   merely expensive: ~5×10^4 GPU-years, i.e. ~10^4 A100s for a few years, or
-   a 10–100× algorithmic speedup away from a large-but-fundable campaign.
-   Realistic near-term target: 120–125 digits (~10^2 GPU-years).
+1. **Regime I is the only currently viable route to sub-100** and it is out
+   of reach: ~9×10^5 GPU-years (corrected; see §3), ~7 orders of magnitude
+   beyond plausible compute — FRONTIER.md concurs independently. Realistic
+   near-term targets: 140 digits (~13 fleet-days) to 130 (~5 fleet-months);
+   120–125 digits (~10^2 GPU-years) is the institutional-scale edge.
 2. **Two well-posed open problems** now sit under the record, either of which
    would collapse it: (i) CRT list-recovery beyond the Johnson radius for
    *structured, solution-abundant* instances; (ii) modular subset-sum with
    choices at density ≈ 1 where 2^82 solutions exist. Both are of independent
    interest — which is the right way for a thesis to end up.
+2b. **Cross-validation with FRONTIER.md (merged from master 2026-07-28):** the
+   parallel session's "set-valued conditioning" study measures the L>1
+   relaxation this memo treats combinatorially: the sqrt extreme-value gain
+   saturates at ~H^0.35 (overlap + Poisson discreteness), worth only 1–2.8
+   nats of E — and its enumerability analysis states the structural theorem
+   cleanly: *the classic cover is the unique design whose admissible set is
+   an arithmetic progression (free to enumerate); every relaxation that buys
+   coverage destroys enumerability and vice versa.* That is the constructive-
+   side statement of this memo's density-1.026 barrier; the two analyses
+   confirm each other from opposite directions. SoK §7's open angles #2
+   (prime-first two-sided construction), #9 (complexity-theoretic placement
+   of ∃N<B: g(N)>Q) and #10 (Grover halves the exponent: sub-100 at ~e^22
+   quantum queries) are complementary directions not covered here.
 3. **WP7 (algebraic mechanisms) is now the highest-value untested route**:
    every analysis here assumes compositeness is certified by *congruence
    divisors*. A mechanism certifying many N − q composite for algebraic
