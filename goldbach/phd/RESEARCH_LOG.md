@@ -11,6 +11,38 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-07-28 — CAMPAIGN 3 LAUNCH: budget game, target g > 119,419 under 10^199
+- Target switched by user directive: largest g(N) below 200 digits. Cover: the
+  ratchet session's unstarted round-2 leftover c1 (Q=122,000, 88 classes,
+  M=191d, |U|=867, boost 11.01), independently re-verified here (CRT ✓,
+  uncovered ≡ residual ✓); a fresh greedy re-derivation at 199d matched its E
+  to 3 decimals — the frontier is flat at this Q, no better cover exists in
+  this family. **Any hit gives g(N) ≥ 122,011 > 119,419 with N < 10^199.**
+- 40 residue-swap variants (shared M ⇒ shared sieve-inverse cache), kmax
+  4.5e8 each under the 199d ceiling ⇒ 1.8e10 raw candidates in the pool.
+- **Engine: the 179d winner's selective-testing lesson, adopted exactly.**
+  New `--skip-frac f` in search.py tests only the emptiest (1−f) of each
+  block in survivor-count order; the sacrificed hit mass is computed exactly
+  from the survivor histogram (w = (1−p̂)^a) and logged per-slice as hit%.
+  p̂ stays unbiased, so Ê model validation continues to work under skipping.
+- Calibration at 199d (131k-k slices): baseline 1,772 k/s (p̂=0.063,
+  alive/k=337, Ê=21.24±0.06 — 0.4 nats above theory's 20.83; watching).
+  Selected **f=0.92, sieve-B=1e6: 14,957 raw k/s with 29.6% hit mass kept ⇒
+  ~3× net discovery rate**. Two mechanisms: test cost per candidate is
+  ≈1/p̂ Fermat tests regardless of survivor count (every k dies at its first
+  PRP pass), so skipping full k's is nearly pure profit; and once tests stop
+  dominating, the per-block sieve-residue cost (∝ π(B)·|U|) makes the small
+  sieve win. Measured hit% matched the Gaussian survivor-histogram model
+  to ±0.4pp at every f tried.
+- Plan: e^21.25 ≈ 1.7e9 equivalent candidates ⇒ expected first hit ≈ 3.5–4.5
+  wall-days at ~85% duty. Pool capacity 1.8e10 × 0.296 ⇒ E[hits] ≈ 3.1,
+  P(≥1) ≈ 96%; if exhausted hitless, mint more residue-swap variants (free)
+  and continue. On hit: stop_on_success, then the standard certification
+  pipeline (verify_record.py witnesses + PARI ECPP + independent checker).
+- Driver: phd/campaign3/run_campaign3.py — chunked (≤560s/chunk), slices of
+  1.048e6 k checkpointed in git-tracked search.log (rollback-safe),
+  idempotent resume, lazy round materialization, exit 3 on hit.
+
 ### 2026-07-28 — CAMPAIGN 2 STOPPED at user request (session close)
 - Stopped at **2,132/2,400 batch-1 slices (5.6e8 elements), 0 hits** — survival
   probability ≈ 0.22 under the validated model; a second consecutive unlucky-but-
