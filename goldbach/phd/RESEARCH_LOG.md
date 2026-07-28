@@ -8,7 +8,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
 | Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session |
-| Threshold T(100,000) (Game 2) | **179-digit** N (t100k round 3, ratchet session) | g = 101,149 | certified on master 2026-07-28 |
+| Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
 ### 2026-07-28 — CAMPAIGN 2 STOPPED at user request (session close)
@@ -46,6 +46,24 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   cover_r200_c1 q>122k) with search positions in their logs; our campaign 2
   checkpoint (≤175d attainable, 268+4272 slices remaining) — the two approaches
   could be merged (their engine, our smaller-N spec set).
+
+### 2026-07-28 — evaluation of the 150-digit GPU record (post-close addendum)
+- **Verified PASS here**: verify_record.py re-derives all 9,977 witnesses; ECPP chain
+  (17 steps) passes the PARI-independent checker with correct binding. Dual-validated.
+- Construction: 68-modulus cover, M=140 digits, k=62,147,038,260 of a full
+  [0, 7.5e10) scan at E=24.91 — hit at 63.8% depth, cumulative expectation ≈0.40,
+  a central Poisson draw. No luck debt this time; they simply bought enough tickets.
+- **The enabler was raw throughput, not mathematics**: CUDA engine (bit-matrix sieve +
+  Montgomery CIOS Fermat waves, validated bit-for-bit vs Python) at 2.5–8.5M tests/s
+  ≈ 430× our 4-core pipeline. ln(430) ≈ 6.1 — exactly the E-gap (24.9 vs ~19) between
+  their reachable rung and ours. The record frontier is log(compute); covers and
+  strategy were already saturated at our scale.
+- Other adoptable practices: full-range scan then bank the MINIMAL hit (optimal for
+  the smallest-N game, vs stop-on-first-hit); git-committed safe_k checkpoints
+  surviving ~10 Colab culls (our slice-checkpoint pattern, independently converged);
+  bit-for-bit GPU-vs-CPU validation as certification hygiene.
+- Standing record board after reconciliation: T(100k)=150d/g=104,527 (GPU session),
+  R: g=119,419 @199d (slop session), Height: g=1,157,341 @2,480d.
 
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
