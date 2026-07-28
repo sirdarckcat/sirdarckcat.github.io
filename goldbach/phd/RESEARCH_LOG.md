@@ -65,6 +65,51 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 - Standing record board after reconciliation: T(100k)=150d/g=104,527 (GPU session),
   R: g=119,419 @199d (slop session), Height: g=1,157,341 @2,480d.
 
+### 2026-07-28 — FORWARD MEMO: the road to sub-100 digits (WP3/WP7 synthesis)
+Brute-force frontier (validated model, Q≈10^5, dE/dD ≈ −0.10..−0.19/digit):
+| D | E | candidates e^E | A100-years @8.5M tests/s |
+|---|---|---|---|
+| 140 | ~28 | 1.6e12 | 0.01 |
+| 130 | ~32 | 1.1e14 | 0.6 |
+| 120 | ~38 | 2.7e16 | ~160 |
+| 110 | ~44 | 1.8e19 | ~1e5 |
+| 100 | ~52 | 4.7e22 | ~3e8 |
+Verdict: the covering+scan paradigm ends near D≈125 even for org-scale fleets.
+Sub-100 is NOT a compute problem — it needs e^~30 of algorithmic efficiency.
+
+Existence is not the obstacle: conjecturally max g(N) ≈ (ln N)²·ln ln N ≈ 287,000
+already at 10^100 (crosses 100,000 near 10^60), so sub-100 deserts exist in
+abundance heuristically. The obstacle is purely constructive.
+
+**The breakthrough required: decouple digits(N) from digits(M)** (proposal RQ2/WP3).
+Entropy accounting says it is possible in principle: a cover drawing ~150 moduli
+from the 668 primes < 5,000 carries ~809 bits of design freedom (subset ~509 +
+residue choices ~300), while shrinking a 10^300-mass cover's least representative
+into [0,10^100) needs only ~664 bits — a surplus of ~145 bits, i.e. ~2^145 valid
+systems are expected to exist with N < 10^100 and residual load E ≈ 19–26
+(a trivially searchable e^19–e^26 tail). Sub-100 T(100,000) is therefore an
+ALGORITHMIC SEARCH problem: find one member of an exponentially large but
+exponentially sparse family — formally, an inhomogeneous modular subset-sum /
+CVP-with-choices instance at density ≈ 809/997 ≈ 0.81, uncomfortably close to but
+not obviously outside the lattice-reducible regime (low-density subset-sum breaks
+< 0.94 for point targets; here the target is a 2^332-wide window, which helps).
+
+Forward programme (in priority order):
+1. WP3 theory memo: exact reduction of small-representative-with-choices to
+   modular subset-sum; identify which relaxations (fixed subset, ±1 residue swaps
+   as shift vectors δ_r) make it a clean lattice problem.
+2. E4 falsifiable toy (per proposal gate): Q=1,000, pool primes<300, target a
+   representative ≥30 digits below M via BKZ/fplll on the swap-shift lattice.
+   Predeclared success metric; negative scaling result is publishable (RQ7).
+3. If signal: ladder 10^40 → 10^60 → 10^100 targets; the found system's E≈20
+   means the *search* phase runs on CPU — only certification is unchanged.
+4. In parallel (cheap wins, log-compute track): merge the GPU engine with
+   full-range-minimal-hit ratcheting to grind 150 → ~135 digits; D=130 costs
+   only ~0.6 A100-years — reachable by a patient Colab fleet.
+5. Fallback (RQ7): if lattice attacks fail at density 0.81, prove a restricted
+   no-go (e.g., equivalence to average-case-hard lattice problems) — the
+   "conventional model cannot reach sub-100 without solving X" barrier theorem.
+
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
   implementation ECPP validation, adversarial mutation tests); two later external
