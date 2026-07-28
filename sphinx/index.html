@@ -1,0 +1,1439 @@
+<title>Cryptanalysis Lab — watch a cipher break</title>
+<style>
+:root{
+  --bg:#FAF9F7; --panel:#FFFFFF; --sunk:#F2F1ED; --line:#E2DFD8;
+  --text:#141A21; --muted:#5B6874; --faint:#8B949E;
+  --hot:#A65F0B; --cool:#12756A; --mid:#3F5FA6; --dead:#98A0A8;
+  --hot-bg:#FAEBD6; --cool-bg:#DFF0ED; --mid-bg:#E5EBF7; --dead-bg:#EDEFF1;
+  --hot-line:#E4A14A;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0F1419; --panel:#161C23; --sunk:#11171D; --line:#252D36;
+  --text:#D9E0E8; --muted:#8A96A3; --faint:#5F6B77;
+  --hot:#E89B3C; --cool:#3FA79A; --mid:#7A9BD8; --dead:#59636F;
+  --hot-bg:#2A1F10; --cool-bg:#0F2422; --mid-bg:#151E30; --dead-bg:#1A1F25;
+  --hot-line:#8A5E1E;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1419; --panel:#161C23; --sunk:#11171D; --line:#252D36;
+  --text:#D9E0E8; --muted:#8A96A3; --faint:#5F6B77;
+  --hot:#E89B3C; --cool:#3FA79A; --mid:#7A9BD8; --dead:#59636F;
+  --hot-bg:#2A1F10; --cool-bg:#0F2422; --mid-bg:#151E30; --dead-bg:#1A1F25;
+  --hot-line:#8A5E1E;
+}
+:root[data-theme="light"]{
+  --bg:#FAF9F7; --panel:#FFFFFF; --sunk:#F2F1ED; --line:#E2DFD8;
+  --text:#141A21; --muted:#5B6874; --faint:#8B949E;
+  --hot:#A65F0B; --cool:#12756A; --mid:#3F5FA6; --dead:#98A0A8;
+  --hot-bg:#FAEBD6; --cool-bg:#DFF0ED; --mid-bg:#E5EBF7; --dead-bg:#EDEFF1;
+  --hot-line:#E4A14A;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+  font-size:16.5px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:70ch;margin:0 auto;padding:0 22px}
+.bleed{max-width:1080px;margin-left:auto;margin-right:auto;padding:0 22px}
+h1,h2,h3{font-family:var(--mono);text-wrap:balance;letter-spacing:-.02em;line-height:1.15;margin:0}
+h1{font-size:clamp(30px,5.4vw,52px);font-weight:700}
+h2{font-size:clamp(21px,3vw,28px);font-weight:700;margin-bottom:6px}
+h3{font-size:16px;font-weight:700;margin-bottom:4px}
+p{margin:0 0 1em}
+a{color:var(--hot)}
+code{font-family:var(--mono);font-size:.9em;background:var(--sunk);
+  border:1px solid var(--line);border-radius:3px;padding:.08em .34em}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:10px}
+.lede{font-size:19px;color:var(--muted);text-wrap:pretty}
+header.top{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.num{font-family:var(--mono);color:var(--hot);font-size:13px;letter-spacing:.1em}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:16px;margin:20px 0}
+.panel-title{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:12px;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap}
+.ctrls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:14px;
+  font-family:var(--mono);font-size:12.5px}
+.ctrl{display:flex;align-items:center;gap:7px}
+label{color:var(--muted);font-size:12px;letter-spacing:.04em}
+select,input[type=text]{font-family:var(--mono);font-size:12.5px;background:var(--sunk);
+  color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px 7px}
+input[type=range]{accent-color:var(--hot);width:120px}
+button{font-family:var(--mono);font-size:12.5px;font-weight:600;background:var(--hot);
+  color:var(--bg);border:0;border-radius:5px;padding:7px 13px;cursor:pointer;letter-spacing:.03em}
+button:hover{filter:brightness(1.09)}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--hot);outline-offset:2px}
+.scroll{overflow-x:auto}
+table.grid{border-collapse:collapse;font-family:var(--mono);font-size:12.5px;
+  font-variant-numeric:tabular-nums;width:100%}
+table.grid th{color:var(--faint);font-weight:500;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;text-align:center;padding:0 5px 8px;white-space:nowrap}
+table.grid td{padding:2px 4px;text-align:center;white-space:nowrap}
+td.rnd{color:var(--faint);text-align:right;padding-right:9px;width:1%}
+.by{display:inline-block;width:2.05em;padding:2px 0;border-radius:3px;
+  background:var(--cool-bg);color:var(--cool);transition:background .25s,color .25s}
+.by.on{background:var(--hot-bg);color:var(--hot);font-weight:600}
+td.sbcol{position:relative}
+td.sbcol .by{box-shadow:0 0 0 1px var(--muted)}
+th.sbcol{color:var(--text)}
+.eqcol{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-size:10.5px;letter-spacing:.09em;padding:2px 7px;
+  border-radius:99px;text-transform:uppercase;font-weight:600}
+.chip.act{background:var(--hot-bg);color:var(--hot)}
+.chip.ina{background:var(--cool-bg);color:var(--cool)}
+.lb{display:inline-block;width:2.05em;padding:3px 0;border-radius:3px;font-weight:700}
+.lb.A{background:var(--hot-bg);color:var(--hot)}
+.lb.C{background:var(--cool-bg);color:var(--cool)}
+.lb.B{background:var(--mid-bg);color:var(--mid)}
+.lb.Q{background:var(--dead-bg);color:var(--dead)}
+.row-dead td{opacity:.5}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;
+  color:var(--muted);margin-top:12px}
+.legend span b{font-weight:700}
+.out{font-family:var(--mono);font-size:12.5px;background:var(--sunk);border:1px solid var(--line);
+  border-radius:6px;padding:11px 13px;white-space:pre-wrap;color:var(--muted);
+  font-variant-numeric:tabular-nums;overflow-x:auto}
+.out em{color:var(--hot);font-style:normal;font-weight:600}
+.out .ok{color:var(--cool);font-weight:600}
+.bar{height:7px;background:var(--hot);border-radius:2px;min-width:1px}
+.bar.zero{background:var(--dead);opacity:.5}
+.bar.full{background:var(--cool)}
+.note{border-left:2px solid var(--hot-line);padding:2px 0 2px 15px;color:var(--muted);
+  margin:20px 0;font-size:15.5px}
+.kbd{font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:720px){.two{grid-template-columns:1fr}}
+footer{padding:40px 0 64px;color:var(--muted);font-size:14.5px}
+.tog{position:fixed;top:12px;right:12px;z-index:9;background:var(--panel);
+  border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:6px 10px;font-size:11px}
+
+.machine{display:flex;flex-direction:column;gap:14px}
+.bytes{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.half{display:flex;flex-direction:column;gap:5px}
+.half-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--faint)}
+.cells{display:flex;gap:4px}
+.bcell{font-family:var(--mono);font-size:15px;font-weight:600;width:2.5em;text-align:center;
+  padding:9px 0;border-radius:5px;background:var(--sunk);border:1px solid var(--line);
+  color:var(--text);position:relative;
+  transition:background .3s,color .3s,border-color .3s}
+.bcell.pulse{animation:pulse .5s ease-out}
+@keyframes pulse{0%{transform:scale(1)}38%{transform:scale(1.17)}100%{transform:scale(1)}}
+.bcell.chg{background:var(--hot-bg);border-color:var(--hot-line);color:var(--hot)}
+.bcell.sbin{background:var(--cool-bg);border-color:var(--cool);color:var(--cool)}
+.bcell .ix{display:block;font-size:9px;font-weight:400;color:var(--faint);letter-spacing:.06em}
+.stepbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.opline{font-family:var(--mono);font-size:13px;color:var(--text);min-height:2.6em;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.opline .tag{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
+.prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--hot);transition:width .25s}
+/* --- S-box rolodex + XOR ghosts (section 01 round machine) --- */
+.sbghost{position:fixed;z-index:60;font-family:var(--mono);font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;border-radius:4px;
+  background:var(--cool-bg);color:var(--cool);border:1px solid var(--cool);
+  pointer-events:none;box-shadow:0 2px 10px rgba(0,0,0,.28);
+  transition:transform .54s cubic-bezier(.34,.06,.24,1),opacity .54s ease-in}
+.bcell.xortgt{border-color:var(--cool);box-shadow:0 0 0 2px var(--cool-bg)}
+.rolo{display:flex;gap:14px;align-items:center;margin-top:4px;opacity:.32;
+  transition:opacity .3s;flex-wrap:wrap}
+.rolo.live{opacity:1}
+.rolo-win{position:relative;height:108px;width:224px;flex:none;overflow:hidden;
+  border-radius:6px;border:1px solid var(--line);background:var(--sunk)}
+.rolo-list{position:absolute;left:0;right:0;top:0;will-change:transform}
+.rolo-row{height:18px;line-height:18px;font-family:var(--mono);font-size:11.5px;
+  color:var(--faint);padding:0 9px;white-space:nowrap}
+.rolo-row.hit{color:var(--cool);font-weight:700}
+.rolo-win::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,var(--sunk) 0%,transparent 24%,transparent 76%,var(--sunk) 100%)}
+.rolo-band{position:absolute;left:0;right:0;top:45px;height:18px;
+  border-top:1px solid var(--cool);border-bottom:1px solid var(--cool);
+  background:var(--cool-bg);opacity:.4;pointer-events:none}
+.rolo-out{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.5;flex:1 1 200px}
+.rolo-out b{color:var(--cool);font-weight:700;font-size:14px}
+.obytes{display:flex;gap:4px;margin-top:5px}
+.obyte{font-family:var(--mono);font-size:12px;font-weight:600;width:2.3em;text-align:center;
+  padding:4px 0;border-radius:4px;background:var(--cool-bg);color:var(--cool);
+  border:1px solid var(--cool);opacity:.34;transition:opacity .3s}
+.rolo.live .obyte{opacity:1}
+.swc{width:12px;height:19px;margin:0 1px 2px 0;border-radius:2px;background:var(--dead-bg);
+  border:1px solid var(--line);padding:0;cursor:pointer}
+.swc:hover{border-color:var(--text)}
+.swc.hit{background:var(--hot);border-color:var(--hot)}
+#swgrid{display:flex;flex-wrap:wrap;max-width:100%}
+.bitpanel{display:flex;flex-direction:column;gap:2px;min-width:min-content}
+.brow{display:flex;align-items:center;gap:11px}
+.blab{font-family:var(--mono);font-size:11px;color:var(--faint);width:5.4em;
+  text-align:right;flex:none;letter-spacing:.03em}
+.brow.hl .blab{color:var(--hot);font-weight:700}
+.bits64{display:flex;gap:1px;flex:none}
+.bits64>span{width:10px;height:13px;border-radius:1px;background:var(--dead-bg)}
+.bits64>span.d{background:var(--hot)}
+.bits64>*:nth-child(8n+1){margin-left:5px}
+.bits64>*:first-child{margin-left:0}
+.bitbtn{width:10px;height:16px;border-radius:2px;font-family:var(--mono);font-size:8.5px;
+  line-height:14px;text-align:center;cursor:pointer;padding:0;color:var(--faint);
+  background:var(--sunk);border:1px solid var(--line)}
+.bitbtn:hover{border-color:var(--hot);color:var(--text)}
+.bitbtn.on{background:var(--hot);color:var(--bg);border-color:var(--hot);font-weight:700}
+.bcount{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;
+  font-variant-numeric:tabular-nums;flex:none}
+.bcount b{color:var(--hot);font-weight:700}
+.bcount i{color:var(--faint);font-style:normal}
+.bytehdr{display:flex;gap:1px;flex:none}
+.bytehdr>span{width:10px}
+.bytehdr>*:nth-child(8n+1){margin-left:5px}
+.bytehdr>*:first-child{margin-left:0}
+.bytetag{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.05em;
+  width:calc(10px*8 + 7px)!important;text-align:center}
+.bsep{height:1px;background:var(--line);margin:7px 0 5px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<button class="tog ghost" id="tog" aria-label="Toggle colour theme">theme</button>
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">Interactive laboratory · Khafre / GoogleCTF 2025 “sphinx”</div>
+  <h1>Watch a cipher break.</h1>
+  <p class="lede" style="margin-top:14px">Two techniques — <b>differential</b> and <b>integral</b>
+  cryptanalysis — run live in your browser against a real 16-round block cipher.
+  Every number on this page is computed as you read it, by a WebAssembly build of
+  the same code that recovers the key.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="num">01</div><h2>How the cipher actually works</h2>
+  <p>Everything on this page rests on one small machine, so it's worth meeting it properly.
+  The block is <b>8 bytes</b>, split into two 32-bit halves called <code>lo</code> and
+  <code>hi</code>. A round does exactly three things:</p>
+  <div class="out" style="margin-bottom:16px">hi = hi ⊕ SB[ lo &amp; 0xff ]     <em>← look up ONE byte, XOR the 4-byte result into hi</em>
+lo = ror(lo, ROT[r])          <em>← rotate lo right (ROT = 16,16,8,8,16,16,24,24)</em>
+lo, hi = hi, lo               <em>← swap the halves</em></div>
+  <p>That's it, sixteen times. The <b>S-box</b> (<code>SB</code>) is a fixed public table of 256
+  entries mapping one byte to four; it never changes and doesn't depend on the key. The key is
+  XORed in just three times: before round 0, between rounds 7 and 8, and after round 15.</p>
+  <p>Rather than take that on faith — step it.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>The round machine</span><span class="kbd" id="mpos">step 0</span></div>
+  <div class="machine">
+    <div class="bytes">
+      <div class="half"><div class="half-lab">lo &nbsp;bytes 0–3</div><div class="cells" id="cl"></div></div>
+      <div class="half"><div class="half-lab">hi &nbsp;bytes 4–7</div><div class="cells" id="ch"></div></div>
+    </div>
+    <div class="rolo" id="rolo">
+      <div class="rolo-win"><div class="rolo-list" id="rololist"></div><div class="rolo-band"></div></div>
+      <div class="rolo-out" id="roloout">the S-box is a fixed table of 256 entries.<br>
+        one byte goes in, four bytes come out.</div>
+    </div>
+    <div class="prog"><i id="prog" style="width:0%"></i></div>
+    <div class="opline" id="opl">—</div>
+    <div class="stepbar">
+      <button id="bprev" class="ghost">◀ back</button>
+      <button id="bplay">▶ play</button>
+      <button id="bnext" class="ghost">step ▶</button>
+      <button id="brst" class="ghost">reset</button>
+      <span class="kbd" id="mround"></span>
+    </div>
+  </div>
+  <div class="legend"><span><b class="bcell sbin" style="width:auto;padding:2px 7px;font-size:11px">byte</b> feeds the S-box</span>
+    <span><b class="bcell chg" style="width:auto;padding:2px 7px;font-size:11px">byte</b> just changed</span></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Watch <code>lo</code>'s <b>last</b> byte: it is the only thing the
+  S-box ever sees. Everything else in the state is just being carried along, rotated and swapped,
+  waiting for its turn in that position. Sixteen rounds is how long it takes for every byte to get
+  a turn and for the results to mix together.</p>
+  <p>Which raises the obvious question: how fast <i>does</i> a change spread? Flip a single bit of
+  the plaintext and count how many bits differ as the rounds go by.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Avalanche — flip one bit, watch it spread</span>
+    <span class="kbd" id="avastat">—</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="avahex">baseline plaintext</label>
+      <input type="text" id="avahex" size="17" maxlength="16" value="0011223344556677"></div>
+    <button id="avarand" class="ghost">random</button>
+    <span class="kbd">click any bit below to flip it</span>
+  </div>
+  <div class="scroll"><div class="bitpanel" id="bitpanel"></div></div>
+  <div class="legend"><span><b class="bits64" style="display:inline-flex;vertical-align:-2px"><span></span></b> same as baseline</span>
+    <span><b class="bits64" style="display:inline-flex;vertical-align:-2px"><span class="d"></span></b> flipped</span></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Each row is the full 64-bit state, one square per bit, marked when it
+  differs from the un-flipped run. Two things to notice.</p>
+  <p>First, once the S-box finally <i>sees</i> the flipped bit, the damage is near-instant: one
+  round takes you from a single square to twenty-odd, and within two rounds about <b>half of all
+  64 bits</b> differ. Half is exactly the target — it means every output bit is behaving like a
+  coin flip — and the cipher sits there for the remaining rounds. That is what a cipher is
+  supposed to do.</p>
+  <p>Second, and far more interesting: watch how long that single square survives <i>before</i>
+  the explosion, and try bits in different bytes. A bit in <b>byte 3</b> spreads immediately. A bit
+  in <b>byte 6</b> sits alone and untouched for <b>seven rounds</b> — because that is how long it
+  takes to reach the one position the S-box reads. Every byte gives a different delay:</p>
+  <div class="scroll"><table class="grid" style="margin:14px 0">
+    <tr><th>bit in byte</th><th>3</th><th>7</th><th>1</th><th>5</th><th>0</th><th>4</th><th>2</th><th>6</th></tr>
+    <tr><td class="rnd">rounds before it spreads</td><td>0</td><td>1</td><td>2</td><td>3</td>
+      <td>4</td><td>5</td><td>6</td><td style="color:var(--hot);font-weight:700">7</td></tr>
+  </table></div>
+  <p>Press <b>random</b> or type a different baseline: the exact counts move around, because they
+  depend on which plaintext you started from. The <i>delay</i> never moves. It isn't a property of
+  your data — it's a property of the cipher.</p>
+  <div class="note">You just found the crack. Both attacks on this page are built on that column
+  of sevens — one spends it on luck, the other on certainty.</div>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Encrypt anything</span><span class="kbd">live</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="ptx">plaintext</label><input type="text" id="ptx" value="0011223344556677" size="17" maxlength="16"></div>
+    <div class="ctrl"><label for="kx">key</label><input type="text" id="kx" value="cafebabecafebabe" size="17" maxlength="16"></div>
+  </div>
+  <div class="out" id="encout">…</div>
+  <div class="legend"><span>these two boxes drive every panel on the page</span></div>
+</div></div>
+</section>
+
+<section><div class="wrap">
+  <div class="num">02</div><h2>Differential: follow a difference</h2>
+  <p>Take <b>two</b> plaintexts that differ in one byte. Because the key is only XORed in, it
+  <b>cancels</b> out of any difference — <code>(P⊕K)⊕(P'⊕K) = P⊕P'</code> — so a difference moves
+  through the cipher in a way you can predict <i>without knowing the key</i>.</p>
+  <p>Each round the S-box is either <b>active</b> (the byte feeding it differs, so it injects an
+  unpredictable difference) or <b>inactive</b> (that byte is identical, so it contributes nothing
+  and the difference sails through untouched). The whole game is keeping S-boxes inactive.</p>
+  <p><b>Only one byte decides it.</b> The S-box always reads <b>state byte 3</b> — the boxed column
+  below. So a round is inactive precisely when <i>that one byte</i> is the same in both
+  encryptions, no matter how much the rest of the row is changing. The table shows both actual
+  values and their XOR, so you can see it rather than take it on trust.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Difference trail — 16 rounds</span><span class="kbd">change the byte and watch</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="bp">difference in plaintext byte</label>
+      <select id="bp"><option>0</option><option>1</option><option>2</option><option>3</option>
+      <option>4</option><option>5</option><option selected>6</option><option>7</option></select></div>
+    <div class="ctrl"><label for="dv">value</label><input type="range" id="dv" min="1" max="255" value="64"><span id="dvl" class="kbd">0x40</span></div>
+  </div>
+  <div class="scroll"><table class="grid" id="dtab"></table></div>
+  <div class="legend"><span><b class="by" style="width:auto;padding:2px 6px">00</b> identical in both runs</span>
+    <span><b class="by on" style="width:auto;padding:2px 6px">nonzero</b> differs</span>
+    <span><b class="by" style="width:auto;padding:2px 6px;box-shadow:0 0 0 1px var(--muted)">3</b> the byte the S-box reads</span>
+    <span><b class="chip ina">inactive</b> free round</span>
+    <span><b class="chip act">active</b> difference injected</span></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Put the difference in <b>byte 6</b> and it rides <b>seven rounds
+  free</b> — a lone byte wandering around while every S-box stays inactive — then detonates at
+  round 7. Try byte 3: it is the lookup byte, so it is active immediately. Every position gives a
+  different number of free rounds, and byte 6 is the best there is.</p>
+  <div class="note">This is the single most valuable fact about this cipher, and
+  <b>both</b> attacks on this page are built on it.</div>
+</div>
+</section>
+
+<section><div class="wrap">
+  <div class="num">03</div><h2>Where the luck lives</h2>
+  <p>After round 7 the difference has spread and every S-box is active. To get another free round
+  we need a <b>cancellation</b>: the byte feeding some later S-box has to come out
+  <i>identical</i> in both encryptions, so that S-box goes quiet again.</p>
+  <p>Whether that can happen at all is decided by a very small piece of arithmetic. The byte that
+  feeds round <i>r</i>'s S-box is the XOR of exactly two things:</p>
+  <div class="out" style="margin-bottom:6px">input difference at round r  =  <span style="color:var(--mid)">A</span>  ⊕  <span style="color:var(--cool)">B</span>
+
+  <span style="color:var(--mid)">A</span>  the difference that <em>arrived by rotation</em> — carried over from earlier, untouched
+  <span style="color:var(--cool)">B</span>  the difference the <em>previous round's S-box</em> just injected there</div>
+  <p>It cancels exactly when <b>A = B</b>. So the question "can round <i>r</i> be free?" is really
+  "are there two nonzero bytes here that could possibly match?"</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Where the two bytes come from</span>
+    <span class="kbd">for the trail above · live</span></div>
+  <div class="scroll"><table class="grid" id="abtab"></table></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Three different reasons, and only the last one leaves room for luck:</p>
+  <p><b>Round 7</b> — <span style="color:var(--cool)">B = 0</span>. The previous round's S-box was
+  inactive, so it injected nothing. The input difference is just our own δ, which is nonzero by
+  construction. No cancellation possible.</p>
+  <p><b>Rounds 8 and 9</b> — <span style="color:var(--mid)">A = 0</span>. Nothing has been carried
+  into that position yet, so the input difference <i>is</i> the S-box output byte. Cancelling would
+  need that byte to be zero, and this S-box — four independent byte permutations — never emits a
+  zero difference byte: <span id="zdb">checking…</span> Impossible, not merely unlikely.</p>
+  <p><b>Round 10 onward</b> — both are nonzero. Now they <i>can</i> match. One byte against one
+  byte: one chance in 256.</p>
+  <div class="note">The trap: “the S-box never outputs a zero difference” is true, and it does
+  <b>not</b> mean “differences never cancel”. From round 10 the cancellation is against a
+  <b>nonzero</b> byte. Confusing the two makes you declare a cipher safe when it isn't — a mistake
+  made, and caught, while writing this.</div>
+  <p>And here is the thing: <b>δ is ours to choose.</b> Changing δ changes every S-box output down
+  the trail, including <span style="color:var(--cool)">B</span>. So we don't have to wait for luck —
+  we can go hunting for a δ that makes the two bytes agree. There are only 255 to try.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Hunt for a difference that cancels</span>
+    <span class="kbd" id="swstat">255 candidates</span></div>
+  <div class="ctrls">
+    <button id="runsw">Search all 255 differences</button>
+    <span class="kbd">then click a hit to load it into the trail above</span>
+  </div>
+  <div id="swout" class="out">Each of the 255 possible one-byte differences at byte 6 is tried against
+this plaintext. Most buy nothing. A few buy an extra free round.</div>
+  <div class="scroll"><div id="swgrid" style="margin-top:13px"></div></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">So a cancellation is findable, not miraculous — roughly one δ in 256
+  per round, which is why a 255-wide search turns up a handful.</p>
+  <p>But the real attack is greedier: it wants rounds <b>12 and 14</b> to <i>both</i> go quiet in the
+  same pair. That is <code>1/256 × 1/256 ≈ 2⁻¹⁶</code> — about one pair in 65,000, far too rare for
+  a 255-wide sweep to find. For that you stop hunting and start counting:</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>P(S-box inactive) per round, over many random pairs</span>
+    <span class="kbd" id="mstat">idle</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="tr">pairs</label>
+      <select id="tr"><option value="200000">200 thousand</option><option value="2000000" selected>2 million</option>
+      <option value="10000000">10 million</option></select></div>
+    <button id="runm">Measure</button>
+  </div>
+  <div class="scroll"><table class="grid" id="mtab"></table></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">The three regimes appear exactly as predicted: rounds 0–6 always,
+  rounds 7–9 never, rounds 10+ at about 1 in 256 each. And the joint row at the bottom is the
+  attack's actual characteristic — roughly one pair in 65,000. That single number is where the
+  attack's data cost comes from: ~196,000 pairs to expect about three usable ones.</p>
+</div>
+</section>
+
+<section><div class="wrap">
+  <div class="num">04</div><h2>Integral: stop hoping, start proving</h2>
+  <p>Same structural fact, spent differently. Instead of two texts, take a whole <b>set</b>: one
+  byte running through all 256 values, everything else fixed. Now track four labels per byte —</p>
+  <div class="legend" style="margin:14px 0 18px;font-size:13px">
+    <span><b class="lb A">A</b> &nbsp;saturated — hits all 256 values</span>
+    <span><b class="lb C">C</b> &nbsp;constant</span>
+    <span><b class="lb B">B</b> &nbsp;balanced — XORs to zero</span>
+    <span><b class="lb Q">?</b> &nbsp;unknown</span>
+  </div>
+  <p>Two rules do all the work. <b>XOR is linear</b>, so balance survives it — but
+  <code>A ⊕ A = B</code>, saturation decays into mere balance. And <b>the S-box</b>: a constant in
+  gives a constant out, a saturated byte in gives saturated bytes out (it's a bijection) — but a
+  merely <i>balanced</i> byte in gives <b>nothing</b>, because a sum tells you nothing about
+  individual values and the S-box needs values.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Integral propagation — measured, not predicted</span><span class="kbd" id="istat">…</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="s1">saturate byte</label>
+      <select id="s1"><option>0</option><option>1</option><option>2</option><option>3</option>
+      <option>4</option><option>5</option><option selected>6</option><option>7</option></select></div>
+    <div class="ctrl"><label for="s2">and byte</label>
+      <select id="s2"><option value="255" selected>— (256 texts)</option>
+      <option value="0">0</option><option value="1">1</option><option value="2">2</option>
+      <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      <option value="7">7</option></select></div>
+  </div>
+  <div class="scroll"><table class="grid" id="itab"></table></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Read it downward. A lone <b class="lb A">A</b> drifts for seven rounds
+  — the same free ride, now costing <i>no probability at all</i>. At round 7 it enters the S-box
+  and spreads. Then <code>A⊕A</code> collapses saturation into balance, and the moment a
+  <b class="lb B">B</b> is the byte feeding the S-box, everything downstream turns to
+  <b class="lb Q">?</b>.</p>
+  <p>Now add byte <b>2</b> as a second saturated byte (65,536 texts). The property reaches a round
+  deeper — and that extra round is exactly what the real key recovery needs. Of all 28 possible
+  pairs, only <code>{2,6}</code> gets there, because 6 and 2 are the two positions that take
+  longest to reach an S-box.</p>
+  <div class="note">Differential needs <code>2⁻¹⁶</code> luck and statistics. Integral needs none —
+  it is true for every key, every time. You pay in queries instead: a whole set, not a pair.</div>
+</div>
+</section>
+
+<section><div class="wrap">
+  <div class="num">05</div><h2>Take the key</h2>
+  <p>A property isn't a key. The bridge: <b>guess a little key, undo a little cipher, check whether
+  the property survives.</b> The rounds contain no key here — it lives only in the final whitening
+  — so once you guess those few bytes, running rounds backwards is public arithmetic.</p>
+  <p>Right guess ⇒ the bytes really are balanced, guaranteed. Wrong guess ⇒ balanced only by luck,
+  1 in 256 per byte checked. Below is the real thing, on a cipher shortened so the naive
+  “try every guess” fits in a browser tab.</p>
+</div>
+<div class="bleed"><div class="panel">
+  <div class="panel-title"><span>Integral key recovery</span><span class="kbd" id="rstat">idle</span></div>
+  <div class="ctrls">
+    <div class="ctrl"><label for="rr">cipher</label>
+      <select id="rr">
+        <option value="4">12 rounds — toy, brute-forced</option>
+        <option value="5">13 rounds — toy, brute-forced</option>
+        <option value="16" selected>16 rounds — the real cipher</option>
+      </select></div>
+    <div class="ctrl" id="luckwrap">
+      <label for="luck" style="cursor:pointer"><input type="checkbox" id="luck" checked>
+        extra 🤞 luck</label></div>
+    <div class="ctrl" id="corewrap"><label for="cores">cores</label>
+      <select id="cores"></select></div>
+    <button id="runr">Recover the key</button>
+    <button id="stopr" class="ghost" style="display:none">Stop</button>
+    <button id="newk" class="ghost">New random key</button>
+  </div>
+  <div class="prog" id="rprog" style="display:none;margin-bottom:10px"><i style="width:0%"></i></div>
+  <div class="out" id="rout">Press <em>Recover the key</em>. A fresh random key is generated and never shown to the attack.</div>
+  <div class="legend" id="lucknote"><span>🤞 <b>luck</b> skips the 256-way outer sweep by starting at
+    the correct <code>W2_hi2</code> — a demo shortcut, <b>not</b> part of the attack. The real attack
+    tries all 256, which is the difference between seconds and the better part of an hour.</span></div>
+</div></div>
+<div class="wrap">
+  <p style="margin-top:22px">Each extra round you unwind costs exactly <b>one more key byte</b> —
+  a factor of 256 — because only one byte feeds each S-box:</p>
+  <div class="scroll"><table class="grid" style="margin:14px 0">
+    <tr><th>rounds unwound</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+    <tr><td class="rnd">key bytes</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+    <tr><td class="rnd">guesses</td><td>2⁸</td><td>2¹⁶</td><td>2²⁴</td><td>2³²</td></tr>
+    <tr><td class="rnd">feasible by enumeration</td><td style="color:var(--cool)">yes</td>
+      <td style="color:var(--cool)">yes</td><td style="color:var(--hot)">slow</td>
+      <td style="color:var(--dead)">no</td></tr>
+  </table></div>
+  <p>The full 16-round cipher needs all four bytes — <code>2³²</code>, far too many to enumerate.
+  The fix isn't a bigger computer, it's a better search: the balance test is an
+  <b>XOR-correlation</b>, and a <b>Walsh–Hadamard transform</b> evaluates it for all
+  <code>2²⁴</code> candidate keys at once, the way an FFT does for ordinary convolution. That turns
+  the real attack into <b>65,536 chosen plaintexts and about five minutes</b> — three times less
+  data than the intended differential attack, with a unique answer instead of a majority vote.</p>
+</div>
+</section>
+
+<footer><div class="wrap">
+  <div class="eyebrow">What you just ran</div>
+  <p>A 14 KB WebAssembly module — the cipher, difference tracing, the measurement loop, integral
+  labelling and the key recovery above — compiled with <code>clang --target=wasm32 -msimd128</code>
+  from the same C that solves the challenge. Nothing is precomputed or faked.</p>
+  <p>Speed is why this is possible in a tab. Two million difference pairs take about
+  <b>240 ms</b> here; the identical measurement in NumPy takes <b>4.9 s</b> — a 20× gap, because
+  NumPy has to materialise sixteen intermediate arrays where WebAssembly keeps one byte in a
+  register. On the heavier Walsh–Hadamard kernel the gap narrows to about 5×, landing within
+  1.6× of native C.</p>
+  <p>The full 16-round key recovery is the one thing <i>not</i> run here: it needs 65,536 chosen
+  plaintexts and about five minutes of native C. Everything leading up to it is above.</p>
+  <p>Full write-ups, the verified reference implementation, the Python labs and the complete
+  key-recovery solver live in the <code>crypto-sphinx</code> solution directory —
+  <code>DIFFERENTIAL.md</code>, <code>INTEGRAL.md</code>, <code>difflab.py</code>,
+  <code>intlab.py</code>, <code>solve_integral_opt.c</code>.</p>
+  <p style="color:var(--faint);font-size:13.5px">The cipher is Ralph Merkle's Khafre (1989),
+  published for study. Keys here are generated in your browser and thrown away.</p>
+</div></footer>
+
+<script>
+const WASM_B64="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64mAAEEAIAFBGHciBDYCxOuJgABBACAENgK864mAAEEAIAQ2ArDriYAAQQAgAUH/AXEiATYCoOuJgABBACABQQJ0QaCIgIAAaigCACIBNgKk64mAAEEAIAEgAHMiATYCwOuJgABBACABNgK464mAAEEAIAE2ArTriYAAQQAgATYCrOuJgAAgAUH/AXEiBUECdEGgiICAAGooAgAhBkEAIAFBEHciADYC7OuJgABBACAANgLk64mAAEEAIAA2AtjriYAAQQAgATYC0OuJgABBACAGNgLM64mAAEEAIAU2AsjriYAAQQAgBiAEcyIBNgLo64mAAEEAIAE2AuDriYAAQQAgATYC3OuJgABBACABNgLU64mAACABQf8BcSIFQQJ0QaCIgIAAaigCACEGQQAgAUEQdyIENgKU7ImAAEEAIAQ2AozsiYAAQQAgBDYCgOyJgABBACABNgL464mAAEEAIAY2AvTriYAAQQAgBTYC8OuJgABBACAGIABzIgE2ApDsiYAAQQAgATYCiOyJgABBACABNgKE7ImAAEEAIAE2AvzriYAAIAFB/wFxIgVBAnRBoIiAgABqKAIAIQZBACABQQh3IgA2ArzsiYAAQQAgADYCtOyJgABBACAANgKo7ImAAEEAIAE2AqDsiYAAQQAgBjYCnOyJgABBACAFNgKY7ImAAEEAIAYgBHMiATYCuOyJgABBACABNgKw7ImAAEEAIAE2AqzsiYAAQQAgATYCpOyJgAAgAUH/AXEiBUECdEGgiICAAGooAgAhBEEAIAFBCHciBiADQR93cyIHNgLk7ImAAEEAIAY2AtzsiYAAQQAgBjYC0OyJgABBACABNgLI7ImAAEEAIAQ2AsTsiYAAQQAgBTYCwOyJgABBACAEIABzIgE2AtjsiYAAQQAgATYC1OyJgABBACABNgLM7ImAAEEAIAEgAkEfd3MiATYC4OyJgAAgAUH/AXEiBkECdEGgkICAAGooAgAhBEEAIAFBEHciADYCjO2JgABBACAANgKE7YmAAEEAIAA2AvjsiYAAQQAgATYC8OyJgABBACAENgLs7ImAAEEAIAY2AujsiYAAQQAgBCAHcyIBNgKI7YmAAEEAIAE2AoDtiYAAQQAgATYC/OyJgABBACABNgL07ImAACABQf8BcSIFQQJ0QaCQgIAAaigCACEGQQAgAUEQdyIENgK0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wah+r7+HkOW7GdLLAIVgpEBpPltffTv3hl654cLNCHet9wLx2rVAklRyjiyoD3To+JQwCoElycaW+onRdUN8g7M2L0/HYaRtkCZE2j4JINjfQSyXYODYAxqL0HLqu14lCFatiBNbef5Nb31O99nnoRmJ7F+18ILU/HALx9czxLjDBQNugsycSFgKmzBxpLPtJD1jF+LcPXZuN7is/TkBaTeiXFlbvmu7rjuIBebWIc0jtlOAy/H1wgTPSrSROkyY6UXaJHtfsbxMp1cdC05nPYrRsHtn0OnAnS84ARcDNAIbmxqpfd7lc6HEMw+LG01vL2437i5+JKjP9idN4BQofudaFTxIkiVDMUcXRs0jmdkGGt/maU9y+nBrt/s2pbZRCe707H417lK5TYcfnFdSMg/k/gkwS12K73G8S4is/cxQnEuOuCv3TJcLe4zM06vFYclYKEJzLb8F+1onYnaq+b3odh4pDsedGEj7eQr0yp6MKQ/T8xyfcHSOZSY7zsLf0wRtjYDHjMlDvZKQtIyoDYRSW1j/2DLIf7LZFSzSDlpvY3oYnplW8ttQ8ClRZ0IaKjyiGZtmmEAViB7zifXTXPVk0UXVyhOr8KrzttChXwhJ7JqiOuWlVKIS4g72bJ1rHpAuNmx5Eq2DwshjIR1BNeTXB3TeEUaTWpamYCY05H/lwyb1lRDxkY+pk0q3LroE7mXD6ac4VT7ddR3kUzHMIeh3u0QOt5Fe1pEGplwW3mjJeKPQNBPNlGYAzjooDHF6yC3mffkeHKqSq+AueUay3vq5TxysdFFXJWhpN1WY6KNtpkWZSx+W+Dx/3AwCAkl8+xduR4f9wGrrj8u5zliElvG8ZNaqIRCzH8BQddHFriKaTIYbheN/M6u4PP1OmjETZcbrZOHp4YU1sUjio92PBx3UNl2f4XA5PyfBsZhqg3EzMKGBeCw6hhZdClABBtWPtsgFwab4vhEDgioQT7qAynaf6jvKgO9VR3zUie0HvZV6wfpWK545bNLaFqVBKs/rsa1q9l7bgZst5mz8B++evRBiZkkgIJRiOVz5sPSgGbJj+fIUc+uXZmQIQ84N7R/c/j74MaTnxjiOv4q1RfMi3V17lbqTFfzDqQERKr4i9sR8/u2cPeoJ18Qk//Rq1dYAzQIEbmFtZQAJCGxhYi53YXNtAZMCGAAHc2IwX3B0cgEHc2IxX3B0cgIHb3V0X3B0cgMJdHJhY2VfcHRyBAdjbnRfcHRyBQdkZHRfcHRyBgdsYmxfcHRyBwhzdXJ2X3B0cggEZW5jMQkHZW5jcnlwdAoKdHJhY2VfcGFpcgsQbWVhc3VyZV9pbmFjdGl2ZQwHZGR0X3Jvdw0PemVyb19kaWZmX2J5dGVzDhBpbnRlZ3JhbF9tZWFzdXJlDwdzdWJfcHRyEA1zdWJzdGVwX3RyYWNlEQlzd2VlcF9wdHISC3N3ZWVwX2RlbHRhEwdhdmFfcHRyFAlhdmFsYW5jaGUVDHdoaWNoX21hdHRlchYRYnVpbGRfcmVkdWNlZF9zZXQXB3JlY292ZXIHEgEAD19fc3RhY2tfcG9pbnRlcgkRAgAHLnJvZGF0YQEFLmRhdGEAOAlwcm9kdWNlcnMBDHByb2Nlc3NlZC1ieQEMVWJ1bnR1IGNsYW5nETE4LjEuMyAoMXVidW50dTEpADUPdGFyZ2V0X2ZlYXR1cmVzAysPbXV0YWJsZS1nbG9iYWxzKwhzaWduLWV4dCsHc2ltZDEyOA==";
+const hex=(v,n)=>v.toString(16).padStart(n,"0");
+const ror32=(x,r)=>r?(((x>>>r)|(x<<(32-r)))>>>0):(x>>>0);
+let SBOX0=null,SBOX1=null;   // read out of lab.wasm, which has them baked in
+const $=s=>document.querySelector(s);
+let E,M32,M8;
+
+// theme toggle
+$("#tog").onclick=()=>{const r=document.documentElement;
+  const cur=r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  r.setAttribute("data-theme",cur==="dark"?"light":"dark");};
+
+function b64ToBytes(b64){const s=atob(b64);const a=new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a;}
+
+function parseHex16(s,fallback){const t=s.replace(/[^0-9a-fA-F]/g,"").padEnd(16,"0").slice(0,16);
+  return [parseInt(t.slice(0,8),16)>>>0,parseInt(t.slice(8,16),16)>>>0];}
+
+function keyWords(){return parseHex16($("#kx").value);}
+
+/* ---------- 01 encrypt ---------- */
+function doEnc(){
+  const [pl,ph]=parseHex16($("#ptx").value), [k0,k1]=keyWords();
+  E.enc1(pl,ph,k0,k1); const o=E.out_ptr()>>>2;
+  $("#encout").innerHTML="plaintext   "+hex(pl,8)+hex(ph,8)+
+    "\nkey         "+hex(k0,8)+hex(k1,8)+
+    "\nciphertext  <em>"+hex(M32[o],8)+hex(M32[o+1],8)+"</em>";
+}
+
+
+/* ---------- 01a the round machine ---------- */
+let STEPS=[], SI=0, PLAY=null, CELLS=[], BUSY=false, GEN=0;
+const RM=()=>matchMedia("(prefers-reduced-motion:reduce)").matches;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const raf=()=>new Promise(r=>requestAnimationFrame(()=>r()));
+
+function buildCells(){
+  CELLS=[];
+  for(const [host,base] of [[$("#cl"),0],[$("#ch"),4]]){
+    host.innerHTML="";
+    for(let k=0;k<4;k++){
+      const d=document.createElement("div");
+      d.className="bcell";
+      d.innerHTML="<span class='v'>00</span><span class='ix'>"+(base+k)+"</span>";
+      host.appendChild(d); CELLS.push(d);
+    }
+  }
+}
+function setBytes(lo,hi){
+  for(let i=0;i<8;i++){
+    const w=i<4?lo:hi, v=(w>>>(8*(3-(i&3))))&0xff;
+    CELLS[i].querySelector(".v").textContent=hex(v,2);
+  }
+}
+function setMarks(chg,sb){
+  CELLS.forEach((c,i)=>{
+    c.classList.toggle("sbin", i===sb);
+    c.classList.toggle("chg", i!==sb && !!((chg>>>i)&1));
+  });
+}
+/* move the values in slots to new slots, animating along the way */
+async function moveCells(map,arc){
+  if(RM()){return;}
+  const r=CELLS.map(c=>c.getBoundingClientRect());
+  let moved=false;
+  CELLS.forEach((c,i)=>{
+    const d=map[i]; if(d===undefined||d===i) return;
+    moved=true;
+    const dx=r[d].left-r[i].left, dy=arc?arc(i,d):0;
+    c.style.transition="transform .46s cubic-bezier(.45,.02,.25,1)";
+    c.style.transform="translate("+dx+"px,"+dy+"px)";
+    c.style.zIndex="3";
+  });
+  if(!moved) return;
+  await wait(500);
+  CELLS.forEach(c=>{c.style.transition="none";c.style.transform="";c.style.zIndex="";});
+  await raf();
+  CELLS.forEach(c=>{c.style.transition="";});
+}
+/* send a ghost of each S-box output byte to the hi byte it lands on */
+async function flyXor(sbo){
+  if(RM()) return;
+  const chips=[...document.querySelectorAll("#roloout .obyte")];
+  if(chips.length<4) return;
+  const ghosts=[];
+  for(let k=0;k<4;k++){
+    const from=chips[k].getBoundingClientRect();
+    const to=CELLS[4+k].getBoundingClientRect();
+    const g=document.createElement("div");
+    g.className="sbghost";
+    g.textContent=hex((sbo>>>(8*(3-k)))&0xff,2);
+    g.style.cssText+=";left:"+from.left+"px;top:"+from.top+"px;width:"+from.width+
+      "px;height:"+from.height+"px";
+    document.body.appendChild(g);
+    CELLS[4+k].classList.add("xortgt");
+    ghosts.push({g,
+      dx:to.left+(to.width-from.width)/2-from.left,
+      dy:to.top+(to.height-from.height)/2-from.top});
+  }
+  await raf();
+  ghosts.forEach(({g,dx,dy},k)=>{
+    g.style.transitionDelay=(k*55)+"ms";
+    g.style.transform="translate("+dx+"px,"+dy+"px) scale(1.12)";
+    g.style.opacity="0";
+  });
+  await wait(560+3*55);
+  killGhosts();
+}
+function killGhosts(){
+  document.querySelectorAll(".sbghost").forEach(g=>g.remove());
+  CELLS.forEach(c=>c.classList.remove("xortgt"));
+}
+async function pulse(mask){
+  if(RM())return;
+  CELLS.forEach((c,i)=>{ if((mask>>>i)&1) c.classList.add("pulse"); });
+  await wait(500);
+  CELLS.forEach(c=>c.classList.remove("pulse"));
+}
+
+/* ---- the S-box rolodex ---- */
+let ROLO_BUILT=-1;
+function buildRolo(which){
+  if(ROLO_BUILT===which) return;
+  ROLO_BUILT=which;
+  const p=(which? E.sb1_ptr():E.sb0_ptr())>>>2;
+  let h="";
+  for(let i=0;i<256;i++)
+    h+="<div class='rolo-row' data-i='"+i+"'>SB"+which+"["+hex(i,2)+"] = "+hex(M32[p+i],8)+"</div>";
+  $("#rololist").innerHTML=h;
+}
+function spinRolo(which,idx,animate){
+  buildRolo(which);
+  const list=$("#rololist");
+  list.style.transition=(animate&&!RM())?"transform .62s cubic-bezier(.2,.7,.25,1)":"none";
+  list.style.transform="translateY("+(45-idx*18)+"px)";
+  list.querySelectorAll(".hit").forEach(e=>e.classList.remove("hit"));
+  const row=list.querySelector("[data-i='"+idx+"']"); if(row) row.classList.add("hit");
+}
+function roloOut(which,idx,val,live){
+  $("#rolo").classList.toggle("live",!!live);
+  let ob="";
+  for(let k=0;k<4;k++) ob+="<div class='obyte'>"+hex((val>>>(8*(3-k)))&0xff,2)+"</div>";
+  $("#roloout").innerHTML="index byte <b>"+hex(idx,2)+"</b> selects one row of 256<div class='obytes'>"+
+    ob+"</div><span style='color:var(--faint)'>these four bytes are what gets XORed into hi</span>";
+}
+
+function buildSteps(){
+  const [pl,ph]=parseHex16($("#ptx").value), [k0,k1]=keyWords();
+  E.substep_trace(pl,ph,k0,k1);
+  const o=E.out_ptr()>>>2, S=E.sub_ptr()>>>2;
+  const st=[];
+  const push=x=>st.push(x);
+  push({lo:M32[o],hi:M32[o+1],tag:"input",anim:null,chg:0,sb:-1,
+    text:"the plaintext, before anything happens"});
+  push({lo:M32[o+2],hi:M32[o+3],tag:"key",anim:"key",chg:255,sb:-1,
+    text:"<em>⊕ key</em> — the first of three whitening steps. XOR only; nothing is mixed yet."});
+  for(let r=0;r<16;r++){
+    const b=S+r*10, oc=r<8?0:1, rot=[16,16,8,8,16,16,24,24][r%8];
+    if(r===8) push({lo:M32[b],hi:M32[b+1],tag:"key",anim:"key",chg:255,sb:-1,
+      text:"<em>⊕ key</em> — the middle whitening. A second S-box takes over from here."});
+    push({lo:M32[b],hi:M32[b+1],tag:"round "+r,anim:"sbox",chg:0,sb:3,oc:oc,
+      sbi:M32[b+2],sbo:M32[b+3],
+      text:"the last byte of <code>lo</code> is <em>"+hex(M32[b+2],2)+
+        "</em> — the S-box spins to that row"});
+    push({lo:M32[b+4],hi:M32[b+5],tag:"round "+r,anim:"xor",chg:0xf0,sb:3,oc:oc,
+      sbi:M32[b+2],sbo:M32[b+3],
+      text:"<em>SB["+hex(M32[b+2],2)+"] = "+hex(M32[b+3],8)+
+        "</em> lands on <code>hi</code> — all four bytes change"});
+    push({lo:M32[b+6],hi:M32[b+7],tag:"round "+r,anim:"rot",rot:rot,chg:0x0f,sb:-1,oc:oc,
+      sbi:M32[b+2],sbo:M32[b+3],
+      text:"<code>lo</code> rotates right by <em>"+rot+"</em> bits — its bytes slide "+
+        (rot/8)+" place"+(rot===8?"":"s")+", wrapping around"});
+    push({lo:M32[b+8],hi:M32[b+9],tag:"round "+r,anim:"swap",chg:0xff,sb:-1,oc:oc,
+      sbi:M32[b+2],sbo:M32[b+3],
+      text:"the halves <em>swap</em> — what was just mixed becomes what gets read next"});
+  }
+  push({lo:M32[o+4],hi:M32[o+5],tag:"key",anim:"key",chg:255,sb:-1,
+    text:"<em>⊕ key</em> — the final whitening. This is the ciphertext."});
+  STEPS=st;
+}
+
+async function renderStep(animate){
+  const s=STEPS[SI], prev=STEPS[SI-1];
+  $("#opl").innerHTML="<span class='tag'>"+s.tag+"</span> <span>"+s.text+"</span>";
+  $("#mpos").textContent="step "+SI+" / "+(STEPS.length-1);
+  $("#prog").style.width=(SI/(STEPS.length-1)*100)+"%";
+
+  const live=(s.anim==="sbox"||s.anim==="xor");
+  if(s.sbi!==undefined) { spinRolo(s.oc||0, s.sbi, animate && s.anim==="sbox");
+    roloOut(s.oc||0, s.sbi, s.sbo, live); }
+  else { $("#rolo").classList.remove("live"); }
+
+  if(!animate||RM()||!prev){ setBytes(s.lo,s.hi); setMarks(s.chg,s.sb); return; }
+
+  const gen=++GEN; BUSY=true;
+  const alive=()=>gen===GEN;
+  if(s.anim==="rot"){
+    const sft=(s.rot/8)|0, map={};
+    for(let i=0;i<4;i++) map[i]=(i+sft)%4;
+    setMarks(0,-1);
+    await moveCells(map,(i,d)=>(d<i?30:0));
+    if(!alive())return;
+    setBytes(s.lo,s.hi); setMarks(s.chg,s.sb);
+  } else if(s.anim==="swap"){
+    const map={}; for(let i=0;i<4;i++){map[i]=i+4; map[i+4]=i;}
+    setMarks(0,-1);
+    await moveCells(map,(i)=>(i<4?-34:34));
+    if(!alive())return;
+    setBytes(s.lo,s.hi); setMarks(s.chg,s.sb);
+  } else if(s.anim==="xor"){
+    setMarks(0,s.sb);              /* keep showing the OLD hi while they travel */
+    await flyXor(s.sbo);
+    if(!alive())return;
+    setBytes(s.lo,s.hi); setMarks(s.chg,s.sb);
+    await pulse(0xf0);
+    if(!alive())return;
+  } else {
+    setBytes(s.lo,s.hi); setMarks(s.chg,s.sb);
+    if(s.anim==="key") await pulse(0xff);
+    if(!alive())return;
+  }
+  if(alive()) BUSY=false;
+}
+function settle(){
+  GEN++;                       /* orphan any in-flight animation */
+  killGhosts();
+  CELLS.forEach(c=>{c.style.transition="none";c.style.transform="";c.style.zIndex="";
+    c.classList.remove("pulse");});
+  const s=STEPS[SI]; if(s){ setBytes(s.lo,s.hi); setMarks(s.chg,s.sb); }
+  void CELLS[0].offsetWidth;   /* flush, so the next transition starts clean */
+  CELLS.forEach(c=>{c.style.transition="";});
+  BUSY=false;
+}
+async function step(d){
+  if(BUSY) settle();           /* an impatient click skips ahead, never gets dropped */
+  const n=Math.max(0,Math.min(STEPS.length-1,SI+d));
+  if(n===SI) return;
+  const fwd=(n===SI+1);
+  SI=n; await renderStep(fwd);
+}
+function togglePlay(){
+  if(PLAY){clearInterval(PLAY);PLAY=null;$("#bplay").textContent="▶ play";return;}
+  $("#bplay").textContent="❚❚ pause";
+  PLAY=setInterval(async()=>{
+    if(SI>=STEPS.length-1){clearInterval(PLAY);PLAY=null;$("#bplay").textContent="▶ play";return;}
+    await step(1);
+  }, RM()?260:620);
+}
+
+/* ---------- 01b avalanche: every bit, same vs flipped ---------- */
+let AVBIT=48, BASEBITS=[], DIFFCELLS=[], BASEBTNS=[];
+
+function buildBitPanel(){
+  const P=$("#bitpanel"); P.innerHTML=""; DIFFCELLS=[]; BASEBTNS=[];
+  // byte ruler
+  const hdr=document.createElement("div"); hdr.className="brow";
+  hdr.innerHTML="<span class='blab'></span><div class='bytehdr'></div>";
+  const hb=hdr.querySelector(".bytehdr");
+  for(let g=0;g<8;g++){const t=document.createElement("span");
+    t.className="bytetag"; t.textContent="byte "+g; hb.appendChild(t);}
+  P.appendChild(hdr);
+  // clickable baseline, in binary
+  const br=document.createElement("div"); br.className="brow";
+  br.innerHTML="<span class='blab'>plaintext</span>";
+  const bb=document.createElement("div"); bb.className="bits64";
+  for(let i=0;i<64;i++){
+    const t=document.createElement("button");
+    t.className="bitbtn"; t.dataset.b=i; t.setAttribute("aria-label","bit "+i+", byte "+(i>>3));
+    t.onclick=()=>{AVBIT=i;doAva();};
+    bb.appendChild(t); BASEBTNS.push(t);
+  }
+  br.appendChild(bb);
+  const bc=document.createElement("span"); bc.className="bcount";
+  bc.id="basecount"; br.appendChild(bc);
+  P.appendChild(br);
+  P.appendChild(Object.assign(document.createElement("div"),{className:"bsep"}));
+  // 17 difference rows
+  for(let r=0;r<17;r++){
+    const row=document.createElement("div"); row.className="brow";
+    row.innerHTML="<span class='blab'>"+(r===0?"input":"after "+(r-1))+"</span>";
+    const g=document.createElement("div"); g.className="bits64"; const cells=[];
+    for(let i=0;i<64;i++){const c=document.createElement("span"); g.appendChild(c); cells.push(c);}
+    row.appendChild(g);
+    const cnt=document.createElement("span"); cnt.className="bcount"; row.appendChild(cnt);
+    P.appendChild(row);
+    DIFFCELLS.push({cells,cnt,row});
+  }
+}
+function doAva(){
+  const [pl,ph]=parseHex16($("#avahex").value);
+  const [k0,k1]=keyWords();
+  // baseline in binary; the flipped bit is the one that differs, so it wears the flip colour
+  for(let i=0;i<64;i++){
+    const w=i<32?pl:ph, bit=(w>>>(31-(i&31)))&1;
+    BASEBTNS[i].textContent=bit;
+    BASEBTNS[i].classList.toggle("on",i===AVBIT);
+  }
+  $("#basecount").innerHTML="<i>bit "+AVBIT+" of byte "+(AVBIT>>3)+" flipped</i>";
+  E.avalanche(pl,ph,k0,k1,AVBIT);
+  const A=E.ava_ptr()>>>2;
+  let free=0;
+  for(let r=0;r<17;r++){
+    const dl=M32[A+r*3], dh=M32[A+r*3+1], n=M32[A+r*3+2];
+    const {cells,cnt,row}=DIFFCELLS[r];
+    for(let i=0;i<64;i++){
+      const w=i<32?dl:dh;
+      cells[i].className=((w>>>(31-(i&31)))&1)?"d":"";
+    }
+    cnt.innerHTML="<b>"+n+"</b> flipped <i>· "+(64-n)+" same</i>";
+    row.classList.toggle("hl",n===1);
+    if(r>0 && n===1 && free===r-1) free=r;
+  }
+  $("#avastat").textContent="bit "+AVBIT+" · byte "+(AVBIT>>3)+" · alone for "+free+" round"+(free===1?"":"s");
+}
+
+/* ---------- 02 difference trail ---------- */
+function doTrail(){
+  const bp=+$("#bp").value, dv=+$("#dv").value;
+  $("#dvl").textContent="0x"+hex(dv,2);
+  const [pl,ph]=parseHex16($("#ptx").value), [k0,k1]=keyWords();
+  let l2=pl,h2=ph; const sh=8*(3-(bp&3));
+  if(bp<4) l2=(pl^(dv<<sh))>>>0; else h2=(ph^(dv<<sh))>>>0;
+  E.trace_pair(pl,ph,l2,h2,k0,k1);
+  const t=E.trace_ptr()>>>2;
+  let html="<tr><th>rnd</th><th>S-box</th><th colspan='3'>byte the S-box reads</th>"+
+    "<th></th><th>0</th><th>1</th><th>2</th><th class='sbcol'>3</th>"+
+    "<th>4</th><th>5</th><th>6</th><th>7</th></tr>"+
+    "<tr><th></th><th></th><th>run A</th><th>run B</th><th>A⊕B</th>"+
+    "<th colspan='9' style='text-align:left;padding-left:9px'>state difference, byte by byte</th></tr>";
+  for(let r=0;r<16;r++){
+    const i1=M32[t+r*4],i2=M32[t+r*4+1],dl=M32[t+r*4+2],dh=M32[t+r*4+3];
+    const act=i1!==i2;
+    let cells="";
+    for(let i=0;i<8;i++){const w=i<4?dl:dh;const b=(w>>>(8*(3-(i&3))))&0xff;
+      cells+="<td"+(i===3?" class='sbcol'":"")+"><span class='by"+(b?" on":"")+"'>"+
+        hex(b,2)+"</span></td>";}
+    const eq=act?"var(--hot)":"var(--cool)";
+    html+="<tr><td class='rnd'>"+r+"</td>"+
+      "<td><span class='chip "+(act?"act":"ina")+"'>"+(act?"active":"inactive")+"</span></td>"+
+      "<td class='eqcol' style='color:"+eq+"'>"+hex(i1,2)+"</td>"+
+      "<td class='eqcol' style='color:"+eq+"'>"+hex(i2,2)+"</td>"+
+      "<td class='eqcol' style='color:"+eq+";font-weight:700'>"+hex(i1^i2,2)+"</td>"+
+      "<td style='width:12px'></td>"+cells+"</tr>";
+  }
+  $("#dtab").innerHTML=html;
+}
+
+/* ---------- 03 measurement ---------- */
+function doMeasure(){
+  const trials=+$("#tr").value, [k0,k1]=keyWords();
+  $("#mstat").textContent="running…"; $("#runm").disabled=true;
+  setTimeout(()=>{
+    const t0=performance.now();
+    E.measure_inactive(6,trials,k0,k1,(Math.random()*4294967295)>>>0);
+    const ms=Math.round(performance.now()-t0);
+    const c=E.cnt_ptr()>>>2, N=M32[c+17];
+    let html="<tr><th>rnd</th><th style='text-align:left'>P(inactive)</th><th></th><th>count</th></tr>";
+    for(let r=0;r<16;r++){
+      const v=M32[c+r]; const frac=v/N;
+      const w=v===0?0:Math.max(2,Math.min(100,frac*100*25));
+      const cls=v===0?"zero":(v===N?"full":"");
+      const lbl=v===0?"0 — impossible":(v===N?"1 — always":"1 / "+Math.round(N/v));
+      html+="<tr><td class='rnd'>"+r+"</td><td style='text-align:left;color:var(--"+
+        (v===0?"dead":v===N?"cool":"text")+")'>"+lbl+"</td>"+
+        "<td style='width:60%'><div class='bar "+cls+"' style='width:"+(v===N?100:w)+"%'></div></td>"+
+        "<td style='color:var(--faint)'>"+v+"</td></tr>";
+    }
+    const j=M32[c+16];
+    html+="<tr><td class='rnd'>12&amp;14</td><td colspan='3' style='text-align:left;color:var(--hot)'>"+
+      (j?("1 / "+Math.round(N/j)):"none seen")+" &nbsp;<span style='color:var(--faint)'>"+
+      j+" of "+N.toLocaleString()+" pairs — the attack's characteristic</span></td></tr>";
+    $("#mtab").innerHTML=html;
+    $("#mstat").textContent=N.toLocaleString()+" pairs in "+ms+" ms";
+    $("#runm").disabled=false;
+  },20);
+}
+
+
+/* ---------- 03a where the two bytes come from ---------- */
+function doAB(){
+  const t=E.trace_ptr()>>>2;                 /* trace_pair already run by doTrail */
+  const inDiff=r=>(M32[t+r*4]^M32[t+r*4+1])&0xff;
+  const carried=r=>(r===0?0:M32[t+(r-1)*4+3])&0xff;   /* low byte of prev round's hi difference */
+  let h="<tr><th>round</th><th>A carried in</th><th>B S-box just put there</th>"+
+        "<th>input Δ = A⊕B</th><th style='text-align:left'>can it cancel?</th></tr>";
+  for(let r=7;r<16;r++){
+    const A=carried(r), D=inDiff(r), B=(A^D)&0xff;
+    let why,col;
+    if(B===0){ why="no — previous S-box was inactive, so B is 0"; col="dead"; }
+    else if(A===0){ why="no — A is 0, so the input <i>is</i> B, which is never 0"; col="dead"; }
+    else { why="yes — it would cancel if B were <b>"+hex(A,2)+"</b>"; col="hot"; }
+    h+="<tr><td class='rnd'>"+r+"</td>"+
+       "<td style='color:var(--"+(A?"mid":"dead")+")'>"+hex(A,2)+"</td>"+
+       "<td style='color:var(--"+(B?"cool":"dead")+")'>"+hex(B,2)+"</td>"+
+       "<td>"+hex(D,2)+"</td>"+
+       "<td style='text-align:left;color:var(--"+col+")'>"+why+"</td></tr>";
+  }
+  $("#abtab").innerHTML=h;
+}
+
+/* ---------- 03b hunt for a cancelling difference ---------- */
+function doSweep(){
+  const [pl,ph]=parseHex16($("#ptx").value), [k0,k1]=keyWords();
+  const t0=performance.now();
+  E.sweep_delta(pl,ph,k0,k1,6);
+  const raw=performance.now()-t0, ms=raw<1?"<1":Math.round(raw);
+  const S=E.sweep_ptr()>>>2;
+  let hits=[], h="";
+  for(let d=1;d<256;d++){
+    const extra=(M32[S+d]>>>0)&0xFC00;          /* rounds 10..15 only */
+    const rounds=[]; for(let r=10;r<16;r++) if(extra&(1<<r)) rounds.push(r);
+    if(rounds.length) hits.push({d,rounds});
+    h+="<button class='swc"+(rounds.length?" hit":"")+"' data-d='"+d+"' "+
+       "title='δ=0x"+hex(d,2)+(rounds.length?" — free round at "+rounds.join(", "):" — nothing")+"'></button>";
+  }
+  $("#swgrid").innerHTML=h;
+  $("#swgrid").querySelectorAll(".swc").forEach(el=>el.onclick=()=>{
+    $("#dv").value=el.dataset.d; $("#bp").value="6"; doTrail(); doAB();
+    $("#dtab").scrollIntoView({block:"center",behavior:RM()?"auto":"smooth"});
+  });
+  if(!hits.length){
+    $("#swout").innerHTML="Swept all 255 differences in "+ms+" ms — <em>none</em> bought an extra "+
+      "free round for this plaintext. That happens: the odds are about 1 in 256 per round, so a "+
+      "255-wide sweep sometimes comes up empty. Try another baseline plaintext.";
+  } else {
+    const best=hits.reduce((a,b)=>(Math.max(...b.rounds)>Math.max(...a.rounds)?b:a));
+    $("#swout").innerHTML="Swept all 255 differences in "+ms+" ms. <em>"+hits.length+
+      "</em> of them buy an extra free round:\n\n"+
+      hits.map(x=>"  δ = <em>0x"+hex(x.d,2)+"</em>   round"+(x.rounds.length>1?"s":"")+" "+
+        x.rounds.join(", ")+" goes quiet").join("\n")+
+      "\n\nDeepest: <em>0x"+hex(best.d,2)+"</em> reaching round "+Math.max(...best.rounds)+
+      ". Click any marked square to send that difference to the trail above.";
+  }
+  $("#swstat").textContent=hits.length+" of 255 cancel · "+ms+" ms";
+}
+
+/* ---------- 04 integral ---------- */
+function doIntegral(){
+  const s1=+$("#s1").value, s2=+$("#s2").value, [k0,k1]=keyWords();
+  $("#istat").textContent="computing…";
+  setTimeout(()=>{
+    const t0=performance.now();
+    const n=E.integral_measure(s1,s2,0x1234abcd>>>0,0x5678ef01>>>0,k0,k1);
+    const ms=Math.round(performance.now()-t0);
+    const L=E.lbl_ptr();
+    let html="<tr><th>after round</th>";
+    for(let i=0;i<8;i++)html+="<th>byte "+i+"</th>";
+    html+="<th style='text-align:left'>guaranteed balanced</th></tr>";
+    // LBL[r] is the state BEFORE round r, i.e. AFTER round r-1
+    for(let r=1;r<=16;r++){
+      let cells="",bal=[];
+      for(let i=0;i<8;i++){
+        const ch=String.fromCharCode(M8[L+r*8+i]);
+        const cls=ch==="?"?"Q":ch;
+        if(ch!=="?")bal.push(i);
+        cells+="<td><span class='lb "+cls+"'>"+ch+"</span></td>";
+      }
+      const dead=bal.length===0;
+      html+="<tr class='"+(dead?"row-dead":"")+"'><td class='rnd'>"+(r-1)+"</td>"+cells+
+        "<td style='text-align:left;color:var(--"+(dead?"dead":"muted")+")'>"+
+        (dead?"—":(bal.length===8?"all 8":bal.join(" ")))+"</td></tr>";
+    }
+    $("#itab").innerHTML=html;
+    $("#istat").textContent=n.toLocaleString()+" texts in "+ms+" ms";
+  },20);
+}
+
+/* ---------- 05 key recovery ---------- */
+let RK=null;
+function newKey(){RK=[(Math.random()*4294967295)>>>0,(Math.random()*4294967295)>>>0];}
+function doRecover(){
+  if(!RK)newKey();
+  const r1=+$("#rr").value, nInv=r1-3;
+  const [k0,k1]=RK;
+  $("#rstat").textContent="searching…"; $("#runr").disabled=true;
+  $("#rout").textContent="building the integral set and searching…";
+  setTimeout(()=>{
+    const bl=(Math.random()*4294967295)>>>0, bh=(Math.random()*4294967295)>>>0;
+    const mask=E.which_matter(r1,nInv,6,bl,bh,k0,k1);
+    const names=["lo0","lo1","lo2","lo3","hi0","hi1","hi2","hi3"];
+    const matter=names.filter((_,i)=>mask&(1<<i));
+    const t0=performance.now();
+    const ns=E.recover(r1,nInv,mask,6,bl,bh,k0,k1);
+    const ms=Math.round(performance.now()-t0);
+    const o=E.out_ptr()>>>2, sp=E.surv_ptr()>>>2;
+    const truth=M32[o], total=M32[o+2];
+    let found=false, list=[];
+    for(let i=0;i<ns;i++){list.push(M32[sp+i]); if(M32[sp+i]===truth)found=true;}
+    const fmt=g=>matter.map((nm,i)=>nm+"="+hex((g>>>(8*i))&0xff,2)).join(" ");
+    $("#rout").innerHTML=
+      "cipher          8 + "+r1+" = "+(8+r1)+" rounds\n"+
+      "integral set    saturate byte 6 → 256 chosen plaintexts\n"+
+      "unwind          "+nInv+" round"+(nInv>1?"s":"")+" from the ciphertext\n"+
+      "key bytes that matter   <em>"+matter.join(", ")+"</em>  → "+total.toLocaleString()+" guesses\n"+
+      "\nsurvivors       "+ns+"  ["+list.slice(0,4).map(fmt).join(" | ")+"]\n"+
+      "actual key      "+fmt(truth)+"\n"+
+      "result          "+(found?"<span class='ok'>✓ KEY RECOVERED</span>":"<em>not found</em>")+
+      "   <span style='color:var(--faint)'>"+ms+" ms</span>";
+    $("#rstat").textContent=total.toLocaleString()+" guesses in "+ms+" ms";
+    $("#runr").disabled=false;
+  },20);
+}
+
+
+/* ---------- 05b the real 16-round attack ---------- */
+const HEAVY_B64="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AAJAAkAgBw0AQQAhCgwBCyAGQQh0IQtBACEMQQEhCgNAIAIgAyAGIAxqIg1BCHZBgID8B3EgAHIgDUEQdkH/AXFyQQJ3Ig4gDUH/AXEgAXIgC0GAgPwHcXJBAnciDSAJQQxqIAlBCGoQhoCAgAACQCAJKAIMIARHDQAgCSgCCCAFRw0AIAggDTYCBCAIIA42AgAMAgsgC0GAAmohCyAMQQFqIgwgB0khCiAHIAxHDQALCyAJQRBqJICAgIAAIApBAXELAJcCBG5hbWUACwpoZWF2eS53YXNtAe4BFgAHc2IwX3B0cgEHc2IxX3B0cgIIY3Rsb19wdHIDCGN0aGlfcHRyBAhjYW5kX3B0cgUEZW5jMQYLZW5jcnlwdF9md2QHCWJ1aWxkX3NldAgIYnVpbGRfZzUJCmZ3aHRfYmVuY2gKCGJ1aWxkX2c3CwVoX3B0cgwFdF9wdHINBmZ3aHRfdA4JZXh0cmFjdF90DxJidWlsZF9wbGFuZV9pbnRvX3QQCnBhc3NfYmVnaW4RCnBhc3NfcGxhbmUSC3Bhc3NfZmluaXNoEwthdHRhY2tfcGFzcxQJZW5jX2JlbmNoFQticnV0ZV9yYW5nZQcSAQAPX19zdGFja19wb2ludGVyADgJcHJvZHVjZXJzAQxwcm9jZXNzZWQtYnkBDFVidW50dSBjbGFuZxExOC4xLjMgKDF1YnVudHUxKQA1D3RhcmdldF9mZWF0dXJlcwMrD211dGFibGUtZ2xvYmFscysIc2lnbi1leHQrB3NpbWQxMjg=";
+const BRUTE_B64="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bexrBHFaUJYi2CSP/IcJDsbLZgM5tpJg99kLp5PTiqAxHclx2ZxF9B5clLb6hmVBtP2+/KqO68bKS+WUevtO0IlXNc8T+qmNayMA8DNBHCYkYjvyEvSkVl7nFiECMB9/8br5cpjQnGmjwaoC6PHcRdENk+DcT/AShI1289BsPbfmPX9zuoTyMDq0aZ9WRMrq5ACw4421yBORlen+LtaDH4aQdJjWzu48eS8wHFfo0WU2SDGwB6tPhEyR6Du/FZoqPyzUX7meLUfnklvMlyKCJ1/uYrV3U8+7jtvd3mH5YFybxQ2R0xutBtIm2BSFslJrz167eOp/rHlIUISoNO08HeU2HXRTF+3KR4zvQAqdIeJFMXDrJ9qjC3PfiYc8GKbAmnPG31iawTSxVC4kPqwCOUnMmdotewG8FY/HOP0pjzHVJ/WvSmAYaJzy7KKKw8PUGRBuk/uoOXvtIBlhaAtvkKCJnoLHHEvvUpmMng6FkDoGzY4vAGe3jKzPEUui6mxOi5jfZvBGCOx+ymSmu8e9Fx2D5nX1Yw41ZJdCDYdHoqRsAofVZ4GrrbZh0mRlqnsj2nBKx+EloAHJodqlsA5B93B26lrAUTL6PZMa/1kHuAoBVnjL3l/47TI/udu+rm0y+DnFWAjS5ItjmwrIcqWfoeAo/JkgQ83DNzqFxZW/KsGSs9cHp2phavZSsYPUEl5bQ5YrgHU+MyulO6VRn6lX4aG9DOfCeOB8rvxnImDRTaz/KkcJUUo6uLIKeeUEeoD9DTQi6Ra5m16d4vRKYvWv2alM/iy9ayD2t+MHbnTCtrlCW7wZaaAPxPLwtXohcvOdwRSuLYDztL6U4P8aEKJdVykFfLLNVbLdO6N9syhl2wUMdMRiaulGKHhABtcwbSyO9Lve0+K8+jeeBDTmtQGNbYgtfi5afhMgQdeXD+kGuj5d5IYzrbglGwUTVFMDDHWbyHHQ+zjGoRF/GfsID+9RhkT4Y5VAOENEL0VVTUZdTHbYAzjWuLEvugunENKzlKeSZuvZwgnUJoWDaBWK26aYbB91iJp23mhG7slzo4IaSaqWCIE2I0LLVSz2BFQcn1yxT/cSQ27Acl3+b4tnqIop0Xwz/c4RggB7BG5hbWUACwpicnV0ZS53YXNtAUcIAAdvdXRfcHRyAQRlbmMxAgNlbmMDBGRlYzEEB3Nsb19wdHIFB3NoaV9wdHIGC2J1aWxkX3NldDE2BwticnV0ZV9yYW5nZQcSAQAPX19zdGFja19wb2ludGVyCQoBAAcucm9kYXRhADgJcHJvZHVjZXJzAQxwcm9jZXNzZWQtYnkBDFVidW50dSBjbGFuZxExOC4xLjMgKDF1YnVudHUxKQA1D3RhcmdldF9mZWF0dXJlcwMrD211dGFibGUtZ2xvYmFscysIc2lnbi1leHQrB3NpbWQxMjg=";
+// Measured in-browser: ~10.5 s per W2_hi2 step on one worker, 28.7M keys/s per brute shard.
+// Both phases parallelise. An earlier version of this file pinned the sweep to one worker on the
+// strength of a bad measurement: only four completions were timed, with ~200 MB of per-worker
+// startup inside the window, which made two workers look slower than one. Measured properly, with
+// startup excluded, transforms scale 1.81x on two workers and 3.38x on four, and the sweep itself
+// went 9.90 s/step on one worker to 2.93 s/step on four (42 min -> 13 min for all 256). That is the
+// same ballpark as the native OpenMP solver, so the sweep uses the cores you give it.
+const STEP_MS=10500, BRUTE_KPS=28.7e6;
+// Retained planes need SharedArrayBuffer, which needs cross-origin isolation. A service
+// worker can synthesise the COOP/COEP headers a static host cannot set, so this works on
+// GitHub Pages -- see sab/README.md. Verified: 33 transforms per step drops to 17.
+const ISOLATED = (typeof SharedArrayBuffer!=="undefined") && self.crossOriginIsolated===true;
+let USE_PLANES = ISOLATED;
+let BRUTE=null, POOL=[], ABORT=false;
+
+async function bruteMod(){
+  if(BRUTE) return BRUTE;
+  BRUTE=(await WebAssembly.instantiate(b64ToBytes(BRUTE_B64),{})).instance.exports;
+  return BRUTE;
+}
+function fmtDur(s){
+  if(s<90) return s.toFixed(0)+" s";
+  if(s<5400) return (s/60).toFixed(1)+" min";
+  return (s/3600).toFixed(1)+" h";
+}
+/* the worker: one heavy wasm instance, sweeping whichever W2_hi2 values it is given */
+const WORKER_SRC=`
+let E=null, PLANES=null, EXC=null;
+function b64(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+onmessage=async(ev)=>{
+  const m=ev.data;
+  try{
+    if(m.t==="init"){
+      PLANES=null; EXC=null;
+      E=(await WebAssembly.instantiate(b64(m.wasm),{})).instance.exports;
+      const M=new Uint32Array(E.memory.buffer);
+      if(E.sb0_ptr){ M.set(m.sb0,E.sb0_ptr()>>>2); M.set(m.sb1,E.sb1_ptr()>>>2); }
+      if(E.ctlo_ptr&&m.ctlo){ M.set(m.ctlo,E.ctlo_ptr()>>>2); M.set(m.cthi,E.cthi_ptr()>>>2); }
+      if(E.build_g5){ E.build_g5(); E.build_g7(); }   // FWHT kernel only
+      postMessage({t:"ready"});
+    } else if(m.t==="buildplanes"){
+      // fill the shared int16 plane store, and report the values that do not fit
+      const M=new Uint32Array(E.memory.buffer), T=E.t_ptr()>>>2, N=1<<24;
+      const dst=new Int16Array(m.sab); const exc=[];
+      for(let w=0;w<2;w++) for(let b=0;b<8;b++){
+        E.build_plane_into_t(w,b);
+        const off=(w*8+b)*N;
+        for(let i=0;i<N;i++){ const v=M[T+i]|0; dst[off+i]=v;
+          if(v<-32768||v>32767) exc.push(w*8+b,i,M[T+i]); }
+      }
+      postMessage({t:"planes",exc:new Uint32Array(exc)});
+    } else if(m.t==="setplanes"){
+      PLANES=new Int16Array(m.sab); EXC=m.exc; postMessage({t:"ready"});
+    } else if(m.t==="step"){
+      let n;
+      if(PLANES){
+        // 17 transforms instead of 33: the plane's own transform is already done
+        const N=1<<24, mem=E.memory.buffer;
+        const Hv=new Uint32Array(mem,E.h_ptr(),N), Tv=new Uint32Array(mem,E.t_ptr(),N);
+        E.pass_begin(m.whi2);
+        for(let p=0;p<16;p++){
+          const off=p*N;
+          for(let i=0;i<N;i++) Tv[i]=Math.imul(Hv[i],PLANES[off+i]);
+          for(let k=0;k<EXC.length;k+=3)                    // patch the >int16 values
+            if(EXC[k]===p) Tv[EXC[k+1]]=Math.imul(Hv[EXC[k+1]],EXC[k+2]);
+          E.fwht_t(); E.extract_t(p>>3,p&7);
+        }
+        n=E.pass_finish();
+      } else n=E.attack_pass(m.whi2);
+      const M=new Uint32Array(E.memory.buffer), p=E.cand_ptr()>>>2;
+      const hits=[]; for(let i=0;i<n;i++) hits.push(M[p+i]);
+      postMessage({t:"done",whi2:m.whi2,hits});
+    } else if(m.t==="brute"){
+      const M=new Uint32Array(E.memory.buffer);
+      const hit=E.brute_range(m.baseLo,m.baseHi,m.plo,m.phi,m.kcl,m.kch,m.start,m.count);
+      const o=E.out_ptr()>>>2;
+      postMessage({t:"brute",hit,k0:M[o],k1:M[o+1],start:m.start,count:m.count});
+    }
+  }catch(e){ postMessage({t:"err",msg:String(e&&e.stack||e)}); }
+};`;
+
+function makeWorker(){
+  const url=URL.createObjectURL(new Blob([WORKER_SRC],{type:"application/javascript"}));
+  const w=new Worker(url); w._url=url; return w;
+}
+function killPool(){ POOL.forEach(w=>{try{w.terminate();URL.revokeObjectURL(w._url);}catch(_){}}); POOL=[]; }
+
+function rlog(html){ $("#rout").innerHTML=html; }
+function rprog(f){ const p=$("#rprog"); p.style.display=f===null?"none":"block";
+  if(f!==null) p.firstElementChild.style.width=(f*100).toFixed(1)+"%"; }
+
+async function attack16(){
+  ABORT=false;
+  const luck=$("#luck").checked;
+  const nw=+$("#cores").value;
+  const B=await bruteMod(), M=new Uint32Array(B.memory.buffer);
+
+  // this side plays the oracle: it owns the key and answers queries
+  if(!RK) newKey();
+  const [k0,k1]=RK;
+  const w2lo=ror32(k0,2), w2hi=ror32(k1,2);
+  const trueWhi2=(w2hi>>>8)&0xff;
+  const baseLo=Math.random()*4294967295>>>0, baseHi=Math.random()*4294967295>>>0;
+
+  B.build_set16(baseLo,baseHi,k0,k1);
+  const ctlo=M.slice(B.slo_ptr()>>>2,(B.slo_ptr()>>>2)+65536);
+  const cthi=M.slice(B.shi_ptr()>>>2,(B.shi_ptr()>>>2)+65536);
+  // one known pair, reused from the set itself: no extra query
+  const plo=(baseLo&0xffff00ff)>>>0, phi=(baseHi&0xffff00ff)>>>0;
+  B.enc1(plo,phi,k0,k1);
+  const o=B.out_ptr()>>>2, kcl=M[o], kch=M[o+1];
+  // the target to decrypt, as the challenge server would hand it over
+  const flo=Math.random()*4294967295>>>0, fhi=Math.random()*4294967295>>>0;
+  B.enc1(flo,fhi,k0,k1); const tlo=M[o], thi=M[o+1];
+
+  const todo = luck ? [trueWhi2] : [...Array(256).keys()];
+  const tSetup0=performance.now();
+  let t0=0, done=0, found=null;
+
+  rlog("cipher          <em>16 rounds — the real thing</em>\n"+
+       "integral set    saturate bytes 2,6 → <em>65,536</em> chosen plaintexts\n"+
+       (luck?"outer sweep     <em>skipped</em> (🤞 luck: starting at the correct W2_hi2)\n"
+            :"outer sweep     all <em>256</em> values of W2_hi2\n")+
+       "workers         "+Math.max(1,Math.min(nw,todo.length))+" for the sweep, "+nw+" for the brute force\n\nstarting…");
+
+  // --- spin up the pool ---
+  let useWorkers=true;
+  try{ const probe=makeWorker(); probe.terminate(); URL.revokeObjectURL(probe._url); }
+  catch(e){ useWorkers=false; }
+  if(!useWorkers){
+    rlog("This browser will not let the page start Web Workers (usually a Content\n"+
+         "Security Policy on blob: workers), so the sweep cannot be parallelised here.\n"+
+         "Run it from a local copy or GitHub Pages, or use a toy cipher above.");
+    return;
+  }
+
+  // retained planes need one shared copy; without isolation that would be 512 MB per worker
+  let sab=null, exc=null;
+  if(USE_PLANES){
+    try{
+      sab=new SharedArrayBuffer(16*(1<<24)*2);
+      rlog($("#rout").innerHTML+"\n\nbuilding the 16 shared transform planes (one-off)…");
+      const bw=makeWorker();
+      await new Promise((res,rej)=>{
+        bw.onmessage=e=>{ if(e.data.t==="ready") bw.postMessage({t:"buildplanes",sab});
+                          else if(e.data.t==="planes"){ exc=e.data.exc; res(); }
+                          else if(e.data.t==="err") rej(new Error(e.data.msg)); };
+        bw.onerror=e=>rej(new Error(e.message||"builder failed"));
+        bw.postMessage({t:"init",wasm:HEAVY_B64,sb0:SBOX0,sb1:SBOX1,ctlo,cthi});
+      });
+      bw.terminate(); URL.revokeObjectURL(bw._url);
+    }catch(e){ sab=null; exc=null;
+      rlog($("#rout").innerHTML+"\n\ncould not allocate the shared planes ("+e.message+
+           ") — falling back to 33 transforms per step."); }
+  }
+  const nWorkers=Math.max(1,Math.min(nw,todo.length));
+  POOL=[]; for(let i=0;i<nWorkers;i++) POOL.push(makeWorker());
+  await Promise.all(POOL.map(w=>new Promise((res,rej)=>{
+    w.onmessage=e=>{ if(e.data.t==="ready") res(); else if(e.data.t==="err") rej(new Error(e.data.msg)); };
+    w.onerror=e=>rej(new Error(e.message||"worker failed"));
+    w.postMessage({t:"init",wasm:HEAVY_B64,sb0:SBOX0,sb1:SBOX1,ctlo,cthi});
+  })));
+  if(sab) await Promise.all(POOL.map(w=>new Promise((res,rej)=>{
+    w.onmessage=e=>{ if(e.data.t==="ready") res(); else if(e.data.t==="err") rej(new Error(e.data.msg)); };
+    w.postMessage({t:"setplanes",sab,exc});
+  })));
+
+  // --- sweep --- (clock starts here, so one-off setup is not charged to the steps)
+  const setupS=(performance.now()-tSetup0)/1000;
+  if(sab) rlog($("#rout").innerHTML+"\nplanes ready in "+fmtDur(setupS)+
+    " — 17 transforms per step instead of 33");
+  t0=performance.now();
+  const queue=todo.slice();
+  await new Promise(resolve=>{
+    let live=0;
+    const feed=w=>{
+      if(ABORT||found!==null){ if(--live<=0) resolve(); return; }
+      const v=queue.shift();
+      if(v===undefined){ if(--live<=0) resolve(); return; }
+      w.postMessage({t:"step",whi2:v});
+    };
+    POOL.forEach(w=>{
+      live++;
+      w.onmessage=e=>{
+        const d=e.data;
+        if(d.t==="err"){ rlog("worker error: "+d.msg); ABORT=true; feed(w); return; }
+        if(d.t!=="done") return;
+        done++;
+        if(d.hits.length) found=d.hits[0];
+        const el=(performance.now()-t0)/1000;
+        // observed throughput already includes contention, so do not divide by worker count
+        const left=(todo.length-done)*el/done;
+        rprog(done/todo.length);
+        $("#rstat").textContent=done+"/"+todo.length+" · "+fmtDur(el)+
+          (found===null&&done<todo.length?" · ~"+fmtDur(left)+" left":"");
+        feed(w);
+      };
+      feed(w);
+    });
+  });
+
+  if(ABORT){ killPool(); rlog("Stopped."); rprog(null); $("#rstat").textContent="stopped"; return; }
+  const tSweep=(performance.now()-t0)/1000;
+  if(found===null){
+    killPool(); rprog(null);
+    rlog("Swept "+done+" value(s) of W2_hi2 in "+fmtDur(tSweep)+" and found nothing.\n"+
+         (luck?"That should not happen with 🤞 luck on — please tell me."
+              :"With luck off this means the sweep was cut short."));
+    return;
+  }
+
+  const whi2=(found>>>24)&0xff, wlo2=(found>>>16)&0xff, whi0=(found>>>8)&0xff, wlo0=found&0xff;
+  rlog("cipher          <em>16 rounds — the real thing</em>\n"+
+    "integral set    saturate bytes 2,6 → <em>65,536</em> chosen plaintexts\n"+
+    "outer sweep     "+done+" of "+todo.length+" W2_hi2 value(s) in <em>"+fmtDur(tSweep)+"</em>"+
+      " ("+fmtDur(tSweep/done)+" per step)\n"+
+    "                "+(sab?"17":"33")+" transforms per step"+
+      (sab?", planes shared via SharedArrayBuffer":", planes rebuilt each step")+"\n"+
+    (sab?"setup           "+fmtDur(setupS)+" to build the 16 shared planes (one-off)\n":"")+"\n"+
+    "recovered       W2_hi2=<em>"+hex(whi2,2)+"</em> W2_lo2=<em>"+hex(wlo2,2)+
+      "</em> W2_hi0=<em>"+hex(whi0,2)+"</em> W2_lo0=<em>"+hex(wlo0,2)+"</em>\n"+
+    "                4 of 8 W2 bytes — now brute the other 4 against one known pair\n\n"+
+    "brute force     2^32 candidates, "+Math.max(1,nw)+" shards…");
+
+  // --- final 2^32 search: the heavy tables are done with, so swap in cheap workers ---
+  killPool();
+  const nb=Math.max(1,nw);
+  POOL=[]; for(let i=0;i<nb;i++) POOL.push(makeWorker());
+  await Promise.all(POOL.map(w=>new Promise((res,rej)=>{
+    w.onmessage=e=>{ if(e.data.t==="ready") res(); else if(e.data.t==="err") rej(new Error(e.data.msg)); };
+    w.onerror=e=>rej(new Error(e.message||"worker failed"));
+    w.postMessage({t:"init",wasm:BRUTE_B64,sb0:SBOX0,sb1:SBOX1});
+  })));
+  const t1=performance.now();
+  const bLo=((wlo0<<24)|(wlo2<<8))>>>0, bHi=((whi0<<24)|(whi2<<8))>>>0;
+  const SHARD=1<<24;
+  let next=0, key=null;
+  await new Promise(resolve=>{
+    let live=0;
+    const feed=w=>{
+      if(ABORT||key){ if(--live<=0) resolve(); return; }
+      if(next>=4294967296){ if(--live<=0) resolve(); return; }
+      const start=next; next+=SHARD;
+      w.postMessage({t:"brute",baseLo:bLo,baseHi:bHi,plo,phi,kcl,kch,start:start>>>0,count:SHARD});
+    };
+    POOL.forEach(w=>{
+      live++;
+      w.onmessage=e=>{
+        const d=e.data; if(d.t!=="brute") return;
+        if(d.hit) key=[d.k0>>>0,d.k1>>>0];
+        rprog(Math.min(1,next/4294967296));
+        $("#rstat").textContent="brute "+(100*Math.min(1,next/4294967296)).toFixed(0)+"% · "+
+          fmtDur((performance.now()-t1)/1000);
+        feed(w);
+      };
+      feed(w);
+    });
+  });
+  killPool(); rprog(null);
+  const tB=(performance.now()-t1)/1000;
+
+  if(!key){ rlog($("#rout").innerHTML+"\n<em>brute force found nothing</em> — unexpected, please tell me."); return; }
+  B.dec1(tlo,thi,key[0],key[1]);
+  const M2=new Uint32Array(B.memory.buffer), oo=B.out_ptr()>>>2;
+  const gl=M2[oo]>>>0, gh=M2[oo+1]>>>0;
+  const ok=(gl===flo&&gh===fhi)&&(key[0]===k0&&key[1]===k1);
+  rlog($("#rout").innerHTML.replace(/brute force.*$/s,
+    "brute force     2^32 candidates in <em>"+fmtDur(tB)+"</em> across "+Math.max(1,nw)+" shard(s)\n\n"+
+    "key             <em>"+hex(key[0],8)+hex(key[1],8)+"</em>   (actual "+hex(k0,8)+hex(k1,8)+")\n"+
+    "target          "+hex(tlo,8)+hex(thi,8)+"\n"+
+    "decrypted       <em>"+hex(gl,8)+hex(gh,8)+"</em>   (actual "+hex(flo,8)+hex(fhi,8)+")\n\n"+
+    "total           <em>"+fmtDur(tSweep+tB)+"</em>, 65,536 queries\n"+
+    "result          "+(ok?"<span class='ok'>✓ KEY RECOVERED — TARGET DECRYPTED</span>"
+                          :"<em>MISMATCH — please tell me</em>")));
+  $("#rstat").textContent="done in "+fmtDur(tSweep+tB);
+}
+
+
+/* ---------- cross-origin isolation via the service worker ----------
+   SharedArrayBuffer needs an isolated document, which needs COOP+COEP. A static
+   host cannot send those, so sw.js re-emits them and we reload once so the
+   navigation goes through it. Everything works without this; it just runs the
+   sweep at 33 transforms per step instead of 17. */
+(function bootstrapIsolation(){
+  if(self.crossOriginIsolated) return;                       // already isolated
+  if(!("serviceWorker" in navigator)) return;
+  if(location.protocol==="file:") return;                    // no SW from the filesystem
+  const KEY="sphinx-coi-tries";
+  const tries=+(sessionStorage.getItem(KEY)||0);
+  navigator.serviceWorker.register("sw.js").then(async ()=>{
+    await navigator.serviceWorker.ready;
+    if(!self.crossOriginIsolated && tries<2){                // reload at most twice, never loop
+      sessionStorage.setItem(KEY,String(tries+1));
+      location.reload();
+    }
+  }).catch(e=>console.warn("service worker not available:",e));
+})();
+
+/* ---------- boot ---------- */
+WebAssembly.instantiate(b64ToBytes(WASM_B64),{}).then(({instance})=>{
+  E=instance.exports; M32=new Uint32Array(E.memory.buffer); M8=new Uint8Array(E.memory.buffer);
+  doEnc(); buildCells(); buildSteps(); SI=0; renderStep(false);
+  $("#avahex").value=$("#ptx").value; buildBitPanel(); doAva();
+  doTrail(); doAB(); doIntegral(); newKey();
+  $("#runsw").onclick=doSweep;
+  $("#bnext").onclick=()=>step(1); $("#bprev").onclick=()=>step(-1);
+  $("#bplay").onclick=togglePlay;
+  $("#brst").onclick=()=>{if(PLAY){clearInterval(PLAY);PLAY=null;$("#bplay").textContent="▶ play";}
+    settle();SI=0;renderStep(false);};
+  $("#zdb").innerHTML="verified live: <b>"+E.zero_diff_bytes(1)+
+    "</b> of 65,280 cases produce even one zero byte.";
+  ["#ptx","#kx"].forEach(s=>$(s).addEventListener("input",()=>{
+    doEnc();buildSteps();SI=Math.min(SI,STEPS.length-1);renderStep(false);
+    $("#avahex").value=$("#ptx").value;doAva();doTrail();doAB();doIntegral();}));
+  $("#avahex").addEventListener("input",()=>{$("#ptx").value=$("#avahex").value;
+    doEnc();buildSteps();SI=Math.min(SI,STEPS.length-1);renderStep(false);doAva();doTrail();doAB();doIntegral();});
+  $("#avarand").onclick=()=>{
+    let h=""; for(let i=0;i<16;i++) h+="0123456789abcdef"[(Math.random()*16)|0];
+    $("#avahex").value=h; $("#ptx").value=h;
+    doEnc();buildSteps();SI=Math.min(SI,STEPS.length-1);renderStep(false);doAva();doTrail();doAB();doIntegral();};
+  ["#bp","#dv"].forEach(s=>$(s).addEventListener("input",()=>{doTrail();doAB();}));
+  ["#s1","#s2"].forEach(s=>$(s).addEventListener("change",doIntegral));
+  $("#runm").onclick=doMeasure;
+
+  // the heavy kernel expects the S-boxes to be supplied; lab.wasm already has them
+  SBOX0=M32.slice(E.sb0_ptr()>>>2,(E.sb0_ptr()>>>2)+256);
+  SBOX1=M32.slice(E.sb1_ptr()>>>2,(E.sb1_ptr()>>>2)+256);
+
+  // core selector
+  const hc=navigator.hardwareConcurrency||4;
+  const sel=$("#cores");
+  for(const n of [...new Set([1,2,4,8,16,hc])].filter(n=>n>=1&&n<=Math.max(hc,16)).sort((a,b)=>a-b))
+    sel.insertAdjacentHTML("beforeend","<option value='"+n+"'"+(n===Math.min(hc,8)?" selected":"")+">"+
+      n+(n===hc?" (all)":"")+"</option>");
+
+  function isoLine(){
+    return ISOLATED
+      ? "<span class='ok'>cross-origin isolated</span> — shared transform planes on, "+
+        "<em>17</em> transforms per step\n\n"
+      : "<em>not cross-origin isolated</em> — <em>33</em> transforms per step. Serve this over "+
+        "http(s) with\nsw.js alongside it and reload; the page will pick up "+
+        "SharedArrayBuffer and halve the sweep.\n\n";
+  }
+  let armed=false;
+  function syncRecoveryUI(){
+    const real=$("#rr").value==="16";
+    $("#luckwrap").style.display=real?"":"none";
+    $("#corewrap").style.display=real?"":"none";
+    $("#lucknote").style.display=real?"":"none";
+    armed=false; $("#runr").textContent="Recover the key";
+    if(real&&!$("#luck").checked){
+      const nw=+sel.value;
+      // both phases stop the moment they hit, so the mean is about half the worst case,
+      // and both parallelise (measured 3.35x on four workers for the transform)
+      // measured: 1.81x on 2 workers, 3.38x on 4, i.e. very close to nw^0.87
+      const par=Math.pow(nw,0.87);
+      const sweep=256*(STEP_MS/1000)/par, brute=4294967296/(BRUTE_KPS*nw);
+      const worst=sweep+brute;
+      $("#rout").innerHTML=isoLine()+"🤞 <em>luck is off</em>, so this sweeps all <em>256</em> values of "+
+        "W2_hi2 — the real attack.\n\nOn "+nw+" core"+(nw>1?"s":"")+": expect about <em>"+
+        fmtDur(worst/2)+"</em>, worst case <em>"+fmtDur(worst)+"</em>\n"+
+        "(it stops the moment it finds the key, so on average it gets there halfway).\n"+
+        (nw===1?"On a single core that is the better part of an hour.\n":"")+
+        "\nEach sweep worker holds ~200 MB of tables, so "+nw+" of them need about <em>"+
+        (nw*0.2).toFixed(1)+" GB</em>. The transform is memory-bandwidth-bound, so extra\n"+
+        "cores help but not linearly — measured 1.81x on two and 3.38x on four.\n\n"
+        "Press again to run it anyway, or tick 🤞 luck to skip the outer sweep (~"+
+        fmtDur(STEP_MS/1000+4294967296/(BRUTE_KPS*nw)/2)+").";
+      armed=false;
+    }else if(real){
+      $("#rout").innerHTML=isoLine()+"🤞 <em>luck is on</em>: the outer sweep is skipped by starting at the "+
+        "correct W2_hi2.\nEverything else is the real attack — one 2^24 Walsh–Hadamard "+
+        "correlation over\n65,536 chosen plaintexts, then 2^32 brute force for the last four bytes.\n\n"+
+        "Expect about <em>"+fmtDur(STEP_MS/1000+4294967296/(BRUTE_KPS*(+sel.value))/2)+"</em>. "+
+        "Press <em>Recover the key</em>.";
+    }else{
+      $("#rout").innerHTML="Press <em>Recover the key</em>. A fresh random key is generated and never shown to the attack.";
+    }
+  }
+  ["#rr","#luck","#cores"].forEach(q=>$(q).addEventListener("change",syncRecoveryUI));
+  syncRecoveryUI();
+
+  $("#runr").onclick=async()=>{
+    if($("#rr").value!=="16"){ doRecover(); return; }
+    if(!$("#luck").checked && !armed){ armed=true; $("#runr").textContent="Yes, run it anyway"; return; }
+    armed=false; $("#runr").textContent="Recover the key";
+    $("#runr").disabled=true; $("#stopr").style.display="";
+    try{ await attack16(); }
+    catch(e){ rlog("attack failed: "+(e&&e.stack||e)); killPool(); rprog(null); }
+    $("#runr").disabled=false; $("#stopr").style.display="none";
+  };
+  $("#stopr").onclick=()=>{ ABORT=true; $("#rstat").textContent="stopping…"; };
+  $("#newk").onclick=()=>{newKey();syncRecoveryUI();
+    $("#rout").innerHTML="New random key generated. Press <em>Recover the key</em>.";};
+
+  doMeasure();
+}).catch(err=>{
+  document.querySelectorAll(".out").forEach(n=>n.textContent="WebAssembly failed to start: "+err);
+});
+</script>

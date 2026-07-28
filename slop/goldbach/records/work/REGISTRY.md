@@ -54,3 +54,13 @@
   (PARI primecert ~1.7h) verified independently in pure Python (7,036s);
   APR-CL isprime(P,2)=1 (7,409s); PARI full-scan crosscheck of all 89,841
   primes p <= q: 0 violations (27.4 min). Search: 443 tested t (E was ~1,800).
+
+## Session close (2026-07-28)
+
+Ratcheting stopped on user request. Final certified ladder:
+- Game 1: g(N) = 1,157,341 > 1,113,137 (2,480-digit N) — SOLVED.
+- T(100,000) upper bound: 179-digit N, g = 101,149 (rounds 199→193→186→179).
+- R(10^199/10^200) lower bound: g = 119,419 (199-digit N).
+In-flight round-4 (~172-digit) and round-2 (q>122,000) searches terminated
+without result; their covers (cover_t100k_d.json, cover_r200_c1.json) and
+search positions are in the logs for anyone resuming later.
