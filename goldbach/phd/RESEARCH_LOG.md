@@ -143,6 +143,30 @@ Forward programme (in priority order):
 Toy CRT decoder: ~zero compute, 2–4 sessions; measures practical-vs-Johnson gap.
 WP7 probes: ~zero compute, ~5 bounded probes × 1–2 sessions; only unbounded-upside route.
 
+### 2026-07-28 — toy CRT decoder + WP7 probes both executed (post-merge follow-ups)
+- **Toy CRT decoder (delegated; goldbach/phd/toy_crt/)**: Howgrave-Graham/GSS lattice
+  decoder implemented (FLINT LLL, cross-validated pure-Python fallback), 61-position
+  pool, B=10^12, A_J=87.38, 390 decodes. Verdict: practical LLL does NOT penetrate
+  below the Johnson radius — the empirical threshold is A ≈ 1.028·A_J at ℓ=30,
+  approaching A_J from above like 1+c/ℓ (ℓ=45 post-hoc: cutoff ≈1.02, one failure at
+  1.0041·A_J). Below threshold the failure is TOTAL: reduced bases yield zero integer
+  roots, and across all 390 decodes no non-planted solution was ever found despite
+  ~10^7 valid alternatives existing at ρ=0.7 — solution abundance buys nothing.
+  Empirics track finite-dimension determinant bounds to ~1%: the radius is tight in
+  practice for this family, closing the last "maybe practical reduction beats the
+  proof" hope from the WP3 memo.
+- **WP7 probes (wp7_probes.md)**: all five terminated at predeclared gates — P1
+  prime-powers strictly dominated (zero new kills); P2 value-set identities 26×
+  dominated on average, 2–3× at the margin, with a provable Q^(1/2) offset ceiling;
+  P3 exponent families reduce to covering (search-throughput note kept); P4 norm
+  forms are covering in Galois clothing; P5 hidden bias empirically ≤0.1 nats from
+  1.2e9 banked candidates. Output: 3 simultaneous conditions any real mechanism must
+  meet (≫√Q offsets, o(ln r) entropy each, invisible to bulk density stats).
+- **Programme position, final**: sub-100 T(100,000) has exactly one live route
+  (Regime-I brute force, ~5×10^4 GPU-years) and three precisely-stated mathematical
+  problems that would change that. RQ7 chapter complete; 140d rung (~$1k) remains
+  the cheap constructive next step.
+
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
   implementation ECPP validation, adversarial mutation tests); two later external
