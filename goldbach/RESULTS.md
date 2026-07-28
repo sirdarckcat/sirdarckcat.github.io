@@ -19,8 +19,8 @@ digits off the 195-digit record below (10^45× smaller). Evidence
 q < 104 527 have N − q composite — parity (1), congruence divisor from
 the cover (9 097), trial divisor < 10^5 (433), strong base-2
 Miller–Rabin witness (446, unconditional). 104 527 is prime and
-N − 104 527 is a BPSW probable prime; ECPP certificate pending (no
-PARI/GP in this container; run `primecert(N - 104527)`).
+N − 104 527 is ECPP-certified prime (`complement_cert.gp`,
+validated by `primecertisvalid`, see `check_cert.log`).
 
 This rung was unreachable by the CPU pipeline (failure exponent
 E = 24.91 at 150 digits vs 17.5 at 195 — e^7.4 ≈ 1 600× more search
@@ -61,9 +61,9 @@ even integer whose least Goldbach summand exceeds 100 000, beating the
 machine-checkable): all 9 614 prime offsets q < 100 297 have N − q
 composite — parity (1), congruence divisor from the cover (8 903),
 trial divisor < 10^5 (312), strong base-2 Miller–Rabin witness (398,
-unconditional). 100 297 is prime and N − 100 297 is a BPSW probable
-prime; ECPP certificate pending (no PARI/GP in this container; run
-`primecert(N - 100297)`).
+unconditional). 100 297 is prime and N − 100 297 is ECPP-certified
+prime (`complement_cert.gp`, validated by `primecertisvalid`, see
+`check_cert.log`).
 
 Why this was reachable (see IDEAS.md for the measured ledger): the old
 197-digit record came from a *dual-game* cover built at Q = 105 668; a
@@ -103,10 +103,8 @@ Evidence (`evidence.json`, fully machine-checkable): all 10 642 prime
 offsets q < 112 249 have N − q composite — parity (1), congruence
 divisor from the cover (9 830), trial divisor < 10^5 (409), strong
 base-2 Miller–Rabin witness (402, unconditional). 112 249 is prime and
-N − 112 249 is a BPSW probable prime; the ECPP certificate is pending
-(no PARI/GP in this session's container — run
-`primecert(N - 112249)` to complete the positive side as with the
-earlier records).
+N − 112 249 is ECPP-certified prime (`complement_cert.gp`,
+validated by `primecertisvalid`, see `check_cert.log`).
 
 ## The 1M-desert-below-200-digits question (2026-07-22): measured — the
 ## frontier is ~1,250 digits, and 199 digits is short by a factor e^170
