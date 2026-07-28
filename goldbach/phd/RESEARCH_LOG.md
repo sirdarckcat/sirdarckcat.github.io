@@ -143,6 +143,21 @@ Forward programme (in priority order):
 Toy CRT decoder: ~zero compute, 2–4 sessions; measures practical-vs-Johnson gap.
 WP7 probes: ~zero compute, ~5 bounded probes × 1–2 sessions; only unbounded-upside route.
 
+### 2026-07-28 — master reconciliation: FRONTIER.md + SoK §7 (PRs #27/#28)
+- Merged parallel sessions' work. FRONTIER.md independently measures the sub-100
+  wall: realizable E = 43.66 vs our 44.1 (agreement to 0.4 nats — two independent
+  implementations of the costing now concur), and its set-valued-conditioning study
+  (gain saturates at H^0.35, worth 1–2.8 nats) plus enumerability theorem ("classic
+  cover = unique freely-enumerable design") confirm our density-1.026 subset-sum
+  barrier from the constructive side.
+- CORRECTION to our memo: sub-100 cost is ~9×10^5 GPU-years, not 5×10^4 — a units
+  slip (divided by test rate instead of candidate rate). Costed-menu table row was
+  already correct ($9.4B at D=100); memo prose fixed. FRONTIER's fleet band also
+  supersedes our Colab wall-clock estimates (140d ≈ 13 days, not ~2 months).
+- SoK §7 lists 10 open angles; #2 (prime-first construction), #9 (NP-hardness of
+  the existence problem) and #10 (Grover: sub-100 at ~e^22 quantum queries) are
+  genuinely complementary to our WP3/WP7 program and noted in the memo.
+
 ### 2026-07-28 — toy CRT decoder + WP7 probes both executed (post-merge follow-ups)
 - **Toy CRT decoder (delegated; goldbach/phd/toy_crt/)**: Howgrave-Graham/GSS lattice
   decoder implemented (FLINT LLL, cross-validated pure-Python fallback), 61-position
