@@ -123,10 +123,14 @@ ever been overturned.
    representative of an oversized cover is modular subset-sum with
    per-position choices at density ≈ 1.026 — precisely the regime where
    both lattice reduction and Wagner's k-tree fail (best known attacks
-   ≈ 2⁹³⁸ here), and the GSS CRT-decoding shortcut is provably short of
-   the required radius by ~5× (pool-size/entropy trade-off barrier).
-   Status: blocked pending list-recovery beyond the Johnson radius or a
-   density-1 subset-sum algorithm — both independent open problems.
+   ≈ 2⁹³⁸ here), and the GSS CRT-decoding shortcut falls short of the
+   required radius at every pool size (independently re-verified three
+   ways: WP3's coding-theory bound, FRONTIER.md's enumerability
+   analysis, and `verify_barrier.py`'s same-mass Legendre coupling, PR
+   #31 — best case 28% short at useless parameters, ≥5–11× at relevant
+   ones, gap growing as √(L·P)). Status: blocked pending list-recovery
+   beyond the Johnson radius or a density-1 subset-sum algorithm — both
+   independent open problems.
 4. **The gap to truth** — calibrating the Granville–van de Lune–te
    Riele law against the exhaustive data (g ≤ 9,781 up to 4×10¹⁸ gives
    C ≈ 1.4 in g_max(X) ≈ C·ln²X·ln ln X) puts the true T(10⁵) near
