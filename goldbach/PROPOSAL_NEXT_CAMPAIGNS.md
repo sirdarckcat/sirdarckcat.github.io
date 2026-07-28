@@ -26,9 +26,9 @@ Target: even N ≤ ~142 digits with g(N) > 100,000.
   t ≤ 10^12 (ln ≈ 27.6), modulus budget ≈ 299 nats (130 digits),
   base primes to ~310, expected residual k ≈ 740–770 after a hard anneal
   (24 h × 4 cores, multi-seed, pool to 40,000).
-  Then p₁·k ≈ 24.5–25.5 → E[t] ≈ 4×10¹⁰–1.2×10¹¹ — one to two
-  fleet-weeks at round-1 throughput. 145 digits is the conservative
-  fallback (E ≈ 10¹⁰).
+  Then p₁·k ≈ 23–25 (φ between 0.60 and the plateau) → E[t] ≈
+  1–7×10¹⁰ — days to one fleet-week at round-1 throughput, two at the
+  unlucky tail. 145 digits is the conservative fallback (E ≈ 4×10⁹).
 - Deliverable per hit: `spec*.json` (cover, N0, M) + banked k, then the
   full dual certification (below).
 
@@ -38,8 +38,8 @@ Target: N < 10^200 with g(N) > 135,000 (current: 119,419).
 
 - The 10^200 cap makes this *range-bound*, not compute-bound: keep the
   modulus at ≈ 434 nats so t-range ≈ 3×10¹¹, cover primes to
-  Q = 135,000–140,000 (π ≈ 12,700), anneal to k ≈ 950 → p₁·k ≈ 24
-  → E[t] ≈ 3×10¹⁰, E[hits in range] ≈ 10. A few fleet-days.
+  Q = 135,000–140,000 (π ≈ 12,700), anneal to k ≈ 950 → p₁·k ≈ 22
+  → E[t] ≈ 3–5×10⁹, E[hits in range] ≈ 60. Fleet-hours to a day.
 - Any hit q > 119,419 is bankable en route (first uncovered PRP
   complement often overshoots Q by thousands).
 

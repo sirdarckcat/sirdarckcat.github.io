@@ -27,18 +27,19 @@ interval of that length needs numbers of ~18,000 digits (and still has
 no proven endpoints). The sparse-cover advantage is ~7× in digits today
 and widens with the target.
 
-## 2. The cost model (validated across 8 certified records)
+## 2. The cost model (12 certified records; hit statistics from the n=7 fully-logged searches)
 
 Let L = ln N, let the cover use moduli set R with residual count k, and
 let p₁ ≈ e^γ·ln(max contiguous prime)·(1/L) be the per-residual
 probability that a complement is prime. Then:
 
 - **Search exponent**: E[t to success] ≈ e^{p₁k}. This single number
-  decided every campaign. Observed hits landed at 0.25×–7× of E
-  (n=8; the exponential clock is merciless about variance — plan for 3×).
+  decided every campaign. On a consistent consumed-t basis the n=7
+  fully-logged hits landed at 0.25×–3.0× of E (median 0.5×; the
+  exponential clock is merciless about variance — plan for 3×).
 - **Digit budget split**: ln N = (modulus nats) + (search nats). Search
   nats are nearly free if you have throughput (ln t ≈ 25 for a GPU
-  fleet vs ≈ 18 for 4 CPU cores) — this is why the GPU record jumped
+  fleet vs ≈ 20 demonstrated on 4 CPU cores) — this is why the GPU record jumped
   29 digits in one step: it moved ~7 nats of cost from the modulus to
   the scan.
 - **Cover quality**: random residues leave k₀ ≈ 0.74·π(Q)/ln y;
@@ -61,14 +62,17 @@ probability that a complement is prime. Then:
 - **1,020-digit g=100,747** (paper): full covers work but overpay ~7×;
   established ECPP-certified partitions as the proof standard.
 - **199-digit g=110,917 / N < N\***: first partial-cover record here;
-  validated the e^{p₁k} model (hit at 99.9% of a range sized E[hits]≈4
-  — the 7× outlier that taught us to respect variance).
+  validated the e^{p₁k} model the hard way: hit at 99.9% of the range,
+  3.0× the selection-adjusted expectation — the outlier that taught us
+  to respect variance.
 - **193 → 186 → 179-digit ladder**: the digit-walk works; each ~7-digit
   rung cost ~2.5× the previous search — measured, not theorized.
 - **2,480-digit g=1,157,341** (Game 1): at huge L the exponent
   collapses (p₁k ≈ 7.7 → hit #443); big-g records are *search-trivial,
   certification-bound*. Beat the 1,113,137 prime-gap benchmark with a
   number 7× shorter than the gap's own endpoints.
+- **2,692-digit g=1,134,871** (GPU megagap): independent confirmation
+  of the certification-bound regime by the second pipeline.
 - **150-digit g=104,527** (GPU): throughput converts directly into
   digits (e^{25} affordable ⇒ −29 digits); also proved the
   git-checkpointed fleet protocol across ~10 preemptions.
@@ -100,9 +104,11 @@ reconstruction from published data; every p < q composited by proper
 divisor or failed strong-PRP (both re-derived, never trusted from
 logs); ECPP re-verified by an independent implementation; APR-CL as a
 second algorithm; a PARI full scan as a third code path; SHA-256
-manifests. Cost: minutes per record. Records that skip any leg have
-been wrong twice in this repo's history; records that pass all legs
-have never been overturned.
+manifests. Cost: minutes per record. Twice in this repo's history a
+check that skipped one of these legs returned a false PASS (the
+vacuous scan, the junk certificate) and was caught by the remaining
+legs before anything was recorded; no record that passed all legs has
+ever been overturned.
 
 ## 5. Open problems (ranked by expected digits-per-effort)
 
@@ -176,9 +182,10 @@ nearly coincide.
   reach the truth. Verdict: **~25% of the true maximum** (≈ 400–500k
   of ≈ 1.8M) is the realistic ceiling; the remaining factor ~4 is
   again search-entropy-protected. This is the game where algorithms
-  matter most per unit compute — and where our 119,419 is already
-  within ~7% of *today's* theoretical ceiling, i.e. the cheap gains
-  are gone.
+  matter most per unit compute. Our 119,419 stands at ~70% of today's
+  ~170k ceiling; Campaign B's 135k target consumes most of the
+  remaining headroom, after which every gain awaits better covers or
+  more compute.
 
 ### Game 1 — largest g, N unbounded  (now: 1,157,341)
 
