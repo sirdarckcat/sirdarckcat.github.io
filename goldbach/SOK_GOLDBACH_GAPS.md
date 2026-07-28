@@ -239,7 +239,93 @@ nearly coincide.
 | R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
 | Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
 
-## 7. One-paragraph takeaway
+
+## 7. Unexplored research angles
+
+Everything above optimizes one fixed paradigm: pick residues, scan a
+progression, certify the survivor. These are the angles no session has
+touched — each changes the *problem shape*, not the constants.
+
+1. **Singular-series engineering (correlation-aware covers).** The
+   E ≈ e^{p₁k} model treats the k residual complements as independent
+   coins, and every cover so far minimized their *count*. But the
+   events "N−q_i prime" are correlated through N's residues at primes
+   outside the cover: if the residual offsets occupy many classes mod a
+   small prime s ∉ cover ("inadmissible tuple"), then for *every* t
+   some complement is divisible by s — free kills that rotate with t.
+   Designing the residual set for maximal inadmissibility (minimal
+   k-tuple singular series) provably raises the all-composite
+   probability at fixed k; nobody has ever optimized for it. Concrete
+   first step: rescore existing covers by exact local factors
+   ∏_s(1−ω(s)/s)/(1−1/s)^k and re-anneal with that objective — a
+   possible free e^{1–3} on every future campaign.
+2. **Two-sided construction: pick the provable prime first.** All
+   sessions search over N and pay ECPP for whichever N−q falls out.
+   Invert it: fix the complement family P = k·2ⁿ+1 (Proth form —
+   certifiable in *minutes* at 10⁵ digits by Proth's theorem) and
+   search k so that N = P + q satisfies the cover congruences
+   (P ≡ b_r − q mod r is just a congruence on k once n is fixed, since
+   2ⁿ mod r is computable). This deletes Game 1's certification wall —
+   the only wall it has — and would let the g-ladder run to Proth-search
+   scale (~10⁵–10⁶ digits, g ~ 10⁸⁺) with today's tools. The open
+   questions are the Proth-prime density inside the CRT-constrained k
+   progression and whether q-side and n-side constraints can be tuned
+   jointly. Nothing in the repo has tried any of it.
+3. **Matching lower bounds (make the walls theorems).** Every barrier
+   in §6 is a first-moment heuristic. There is no theorem of the form
+   "any even N < B has g(N) ≤ f(B)" beyond trivialities — not even
+   conditionally. A GRH-conditional explicit bound (via explicit-formula
+   control of primes in the progressions N−q) or a large-sieve bound on
+   how many residue classes a small N can effectively occupy would turn
+   THE WALL from forecast into mathematics, and would be the first
+   *impossibility* result in this problem family.
+4. **Optimality certificates for covers.** We do not know how far
+   k = 741 is from optimal — the annealer's plateau is evidence of
+   nothing. The set-cover LP has a dual; solving the relaxation and
+   publishing dual prices would certify "no cover under this budget
+   beats k*" and either validate or kill §5.1's projected 5–8 digits.
+   Pure computation, never run.
+5. **Aggregate compositeness certificates.** The verification cost is
+   linear in k because each residual gets its own witness. Is there a
+   *sublinear certificate* that all k complements are composite — a
+   batch object (resultant/product-tree/gcd-style) verifiable faster
+   than k strong-PRP tests? Even a factor-5 compression changes the
+   verifier economics at Game-1 scale; and a proof that no sublinear
+   certificate exists would itself be a nice certificate-complexity
+   result. Completely open, apparently unstudied.
+6. **Neighboring games nobody is playing.** The machinery transfers
+   verbatim to: S(q) — the *smallest* desert with g(N) exactly a chosen
+   prime (posed by GLvdtR, no constructive records exist); double
+   deserts (g₁ and g₂ both forced large — first two summands); Lemoine
+   deserts (odd N = p + 2q, force min p large); odd-Goldbach three-prime
+   deserts. All are virgin record categories where the existing pipeline
+   would set the first-ever certified marks essentially for free.
+7. **Science from the exhaust.** The searches have already PRP-tested
+   ~10⁸ complements of 150–2,480-digit numbers with full logs — the
+   largest empirical sample of prime density in sparse structured sets
+   at these heights ever produced. Testing Hardy–Littlewood k-tuple
+   corrections against it (fail-position statistics vs the singular
+   series) is a free empirical paper and would either validate or
+   recalibrate the p₁ model all forecasts rest on.
+8. **Formal verification of the verifier.** The soundness argument in
+   §4 is process-based (audits, dual stacks). The checker is ~200 lines
+   of elementary arithmetic — well within reach of a Lean/Coq proof
+   that "exit 0 ⇒ g(N) = q". That would close the last trust gap and
+   make these the first machine-*proof*-carrying records in the genre.
+9. **Complexity-theoretic placement.** Is deciding "∃ even N < B with
+   g(N) > Q" (with a primality oracle) NP-hard? WP3 reduces the
+   *natural attack* to density-1 subset-sum, which is evidence about
+   algorithms, not the problem. A hardness proof or a surprising
+   algorithm either way would locate this entire game on the complexity
+   map — currently it floats.
+10. **Quantum accounting.** Grover halves the search exponent
+    (e^{p₁k} → e^{p₁k/2}): sub-100-digit T(10⁵) drops from ≈5×10⁴
+    GPU-years to ~amplitude-search over e^{22} — trivial *if*
+    fault-tolerant hardware at that width ever exists; quantum walks
+    also shave the density-1 subset-sum exponents. Worth one honest
+    table row so future readers know which walls are classical-only.
+
+## 8. One-paragraph takeaway
 
 A large least Goldbach summand is bought with three currencies —
 modulus digits, search throughput, and certification compute — trading
