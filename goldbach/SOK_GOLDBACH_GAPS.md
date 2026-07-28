@@ -114,15 +114,106 @@ have never been overturned.
 3. **Small-CRT-representative / lattice methods** — never attempted;
    the only known route that could break the "modulus digits are the
    floor" barrier.
-4. **The gap to truth** — heuristically T(10⁵) lives near 10²⁵; our
-   constructive 150 digits is ~6× the *logarithm* of the likely truth.
-   Closing that is not an engineering problem; it is the
-   Granville–van de Lune–te Riele regime, and nothing here touches it.
+4. **The gap to truth** — calibrating the Granville–van de Lune–te
+   Riele law against the exhaustive data (g ≤ 9,781 up to 4×10¹⁸ gives
+   C ≈ 1.4 in g_max(X) ≈ C·ln²X·ln ln X) puts the true T(10⁵) near
+   **10⁵³**; our constructive 150 digits is ~2.9× the logarithm of the
+   likely truth. See §6, THE WALL, for how much of that gap is closable.
 5. **Game-1 ceiling** — g > 10⁷ needs ~30k-digit moduli and ECPP far
    beyond practice; APR-CL-free certification ideas (Pocklington-
    friendly N−q by construction?) are the only visible door.
 
-## 6. One-paragraph takeaway
+
+## 6. THE WALL — predicted limits, per game
+
+Calibration used throughout: the exhaustive record (g ≤ 9,781 for all
+even N ≤ 4×10¹⁸) fixes the constant in the GLvdtR law at C ≈ 1.4
+(g_max(X) ≈ C·ln²X·ln ln X); the measured cost identity for our
+constructions is p₁·k ≈ 1.32·φ·π(Q)/ln N with cover-quality factor
+φ ≈ 0.60 today (GRASP/SA), where ln(compute) = ln C is the affordable
+search exponent (≈ 25 for today's fleet, ≈ 35 for a "heroic"
+nation-scale scan, ≈ 45 as a generous ceiling for anything classical).
+A useful collapse: the modulus budget cancels out of the exponent, so
+every threshold game obeys
+
+    digits(N) ≳ 0.57·φ·π(Q) / ln(compute)      (compute-bound wall)
+    digits(N) ≳ sqrt(c·π(Q)) / 2.3, c∈[0.8,1.3] (absolute floor)
+
+and at the absolute floor the "construction" has degenerated into
+nature's own ensemble scan — which is why the floor and the truth
+nearly coincide.
+
+### Game T(100,000) — smallest N with g > 10⁵  (now: 150 digits)
+
+- **Actual maximum (truth)**: T(10⁵) ≈ 10⁵³ (±5 in the exponent from
+  the unknown constant and residue-luck tails). Not computable by any
+  imaginable exhaustive verification — it would require ~10⁵² scans.
+- **Best our current algorithms can do**: ~132 digits with today's
+  fleet (ln C ≈ 25); ~95 digits if someone burns absurd compute
+  (ln C ≈ 35). Each digit below 150 costs ×1.3–1.5 in scan time — the
+  ladder gets exponentially steep but has no cliff until ~130.
+- **Best likely-discoverable algorithms**: cover quality is a linear
+  divisor of the wall — exact/ILP covers reaching φ ≈ 0.45 give
+  ~91 digits at today's compute, ~60–65 digits at ln C ≈ 40. The
+  absolute floor for *any* cover-and-scan method is 38–49 digits
+  (c ∈ [0.8, 1.32]), essentially the truth (~53 digits). Verdict: the
+  truth is approachable in *order of magnitude* but the last factor ~2
+  in digits is protected by an e^{100}-scale search — permanently out
+  of reach. Prediction: the record stalls in the **90–130 digit** band
+  for the foreseeable future.
+
+### Game R(10^200) — largest g with N < 10²⁰⁰  (now: 119,419)
+
+- **Actual maximum (truth)**: R(10²⁰⁰) ≈ C·(460.5)²·ln(460.5) ≈
+  **1.8 million** (same ±: order 10⁶, not 10⁵). Unverifiable exactly,
+  but this game's truth is *much* closer to reach than T's.
+- **Best our current algorithms can do**: the 10²⁰⁰ cap makes the game
+  range-bound: π(Q) ≤ ln N·ln C/(1.32·φ). Today: Q ≈ 170,000.
+  Heroic compute: Q ≈ 250,000.
+- **Best likely-discoverable algorithms**: φ → 0.45 plus ln C ≈ 45
+  gives Q ≈ 450,000; fully saturating the range (scan everything below
+  10²⁰⁰ coprime to a cover — impossible, e^{450} candidates) would
+  reach the truth. Verdict: **~25% of the true maximum** (≈ 400–500k
+  of ≈ 1.8M) is the realistic ceiling; the remaining factor ~4 is
+  again search-entropy-protected. This is the game where algorithms
+  matter most per unit compute — and where our 119,419 is already
+  within ~7% of *today's* theoretical ceiling, i.e. the cheap gains
+  are gone.
+
+### Game 1 — largest g, N unbounded  (now: 1,157,341)
+
+- **Actual maximum (truth)**: none. g(N) is unbounded (proved
+  unconditionally in the 2025 paper via covering systems + Dirichlet).
+  This game has no mathematical wall at all.
+- **Best our current algorithms can do**: the search is nearly free at
+  large N (our hit came at attempt #443); the binding constraint is
+  *certifying* N−q. With ECPP practical to ~4,000 digits in days:
+  **g ≈ 2.5 million**. That is Campaign C's territory and little more.
+- **Best likely-discoverable algorithms**: the wall moves in lockstep
+  with primality-proving technology and nothing else. fastECPP-class
+  distributed certification (~50,000-digit proofs, months on a
+  cluster): g ≈ 5×10⁷. A future certification breakthrough to
+  10⁶-digit proofs: g ≈ 1.5×10⁹. A *construction* breakthrough —
+  arranging N−q to have Pocklington-friendly form (N−1-style factored
+  structure) while satisfying the cover congruences — would blow the
+  wall off entirely, since such proofs scale to millions of digits
+  today; nobody knows how to intersect the two constraint systems, and
+  we flag it as the single most valuable open trick in this problem
+  family. Verdict: Game 1's record is an index of certification
+  technology, not of number theory: expect it to track the largest
+  general-form proven primes at a fixed ratio (g ≈ π-count of ~2·10⁻⁴
+  × certifiable digits²... in practice: whatever can be ECPP'd, times
+  ~600 in q per 1,000 digits).
+
+### Summary table
+
+| game | truth | current algos, today's compute | current algos, heroic compute | likely-future algorithms | protected by |
+|---|---|---|---|---|---|
+| T(10⁵) smallest N | ~10⁵³ (53 digits) | ~132 digits | ~95 digits | ~60–90 digits; floor 38–49 | search entropy e^{L} |
+| R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
+| Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
+
+## 7. One-paragraph takeaway
 
 A large least Goldbach summand is bought with three currencies —
 modulus digits, search throughput, and certification compute — trading
@@ -131,7 +222,9 @@ at exchange rates that are now measured, not guessed: ~2.5× search per
 everything. Full covers were the gold standard and are now obsolete;
 partial covers plus brute progression scanning, checkpointed in git and
 certified twice by independent code, are the entire present frontier.
-The truth (T(10⁵) ≈ 10²⁵?) remains ~120 digits below anything any of
-these methods can reach — a fact worth stating in every future README
+The truth (T(10⁵) ≈ 10⁵³) sits a factor ~3 below our records in log
+scale, and §6's wall analysis says roughly half of that gap will fall
+to compute and cover quality while the last factor ~2 is
+entropy-protected forever — a fact worth stating in every future README
 so the records stay honest about what they are: upper bounds,
-manufactured, and falling.
+manufactured, and falling toward a floor they will never touch.
