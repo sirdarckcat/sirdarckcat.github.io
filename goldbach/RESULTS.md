@@ -1,5 +1,71 @@
 # Goldbach Desert Records
 
+## Prior-art check (2026-07-27)
+
+A web literature search for published constructions of even integers
+with large least Goldbach summands found none beyond the incumbents
+this repo already cites and supersedes. For context: in *observed*
+(exhaustive-verification) data the minimal summand stays tiny — the
+largest known naturally occurring value is g = 9 781 near the
+4·10^18 verification frontier (Oliveira e Silva, Herzog & Pardi,
+Math. Comp. 2014; Herkommer's tables reach g = 8 443 at
+2n ≈ 1.2·10^17), and a 2025 arXiv study of minimal primes in
+generalised Goldbach partitions (arXiv:2510.21870) is observational
+up to 10^9 only. The only constructive incumbents we are aware of
+remain the source paper's 199-digit N with g = 105 667 and 237-digit
+N with g = 109 621 (both re-verified in this repo before we started).
+The records below are therefore "smallest/largest known to us"; if a
+competing constructive literature exists it did not surface in the
+search.
+
+In-repo note: a parallel effort in `slop/goldbach/records/` (merged
+from another working branch) holds a certified T(100k) bound of 179
+digits (g = 101 149) and R(10^200) g = 119 419. The 150-digit record
+below supersedes the 179-digit T bound; the slop R value g = 119 419
+at 199 digits supersedes this directory's g = 112 249.
+
+## New record (2026-07-26): T(100 000) at 150 digits — the GPU rung,
+## 45 digits below our own 195-digit record
+
+**N** (150 digits, `records/threshold_150digit_g104527/record.json`,
+N = N0 + 62 147 038 260·M over a 68-modulus cover with M of 140 digits):
+
+```
+82666896361422214889140173486824909338317018059813
+51031435344058125034274739390508125558021767403422
+36249163597526688699521722930930329320505713336368
+```
+
+**g(N) = 104 527 > 100 000** with N ≈ 8.27·10^149 — the smallest known
+even integer whose least Goldbach summand exceeds 100 000, taking 45
+digits off the 195-digit record below (10^45× smaller). Evidence
+(`evidence.json`, fully machine-checkable): all 9 977 prime offsets
+q < 104 527 have N − q composite — parity (1), congruence divisor from
+the cover (9 097), trial divisor < 10^5 (433), strong base-2
+Miller–Rabin witness (446, unconditional). 104 527 is prime and
+N − 104 527 is ECPP-certified prime (`complement_cert.gp`,
+validated by `primecertisvalid`, see `check_cert.log`).
+
+This rung was unreachable by the CPU pipeline (failure exponent
+E = 24.91 at 150 digits vs 17.5 at 195 — e^7.4 ≈ 1 600× more search
+per hit) and is the first result from the CUDA engine
+(`gpu/engine150.py`: bit-matrix sieve + Montgomery CIOS base-2 Fermat
+waves, validated bit-for-bit against Python; ~2.5M tests/s on a T4,
+~8.5M tests/s on an A100 — ~430× the 4-core CPU pipeline). The k-range
+[0, 7.5·10^10) was sharded across a rotating two-session Colab fleet
+driven by `gpu/fleet.py` (safe_k checkpointing in git survived ~10
+session culls and several container rollbacks with zero coverage
+loss). The hit landed at k = 6.21·10^10, 63.8% into the round —
+cumulative expectation ~0.63·0.64 ≈ 0.40 at the exact density
+e^-24.91, within the central mass of the Poisson draw. The engine
+found it after ~1.9·10^9 Fermat tests on this shard alone.
+
+ROUND COMPLETE (2026-07-27): the full k-round [0, 7.5·10^10) has now
+been scanned end to end (~2.1·10^12 Fermat tests across the fleet) —
+exactly one hit, the record above. One draw against a Poisson mean of
+0.63 is an unremarkable outcome; the density model stays unfalsified.
+The next rung is 140 digits (E ≈ 28, ~22× this round's search).
+
 ## New record (2026-07-25): T(100 000) at 195 digits — 100× below the
 ## previous smallest desert past 100 000
 
@@ -19,9 +85,9 @@ even integer whose least Goldbach summand exceeds 100 000, beating the
 machine-checkable): all 9 614 prime offsets q < 100 297 have N − q
 composite — parity (1), congruence divisor from the cover (8 903),
 trial divisor < 10^5 (312), strong base-2 Miller–Rabin witness (398,
-unconditional). 100 297 is prime and N − 100 297 is a BPSW probable
-prime; ECPP certificate pending (no PARI/GP in this container; run
-`primecert(N - 100297)`).
+unconditional). 100 297 is prime and N − 100 297 is ECPP-certified
+prime (`complement_cert.gp`, validated by `primecertisvalid`, see
+`check_cert.log`).
 
 Why this was reachable (see IDEAS.md for the measured ledger): the old
 197-digit record came from a *dual-game* cover built at Q = 105 668; a
@@ -61,10 +127,8 @@ Evidence (`evidence.json`, fully machine-checkable): all 10 642 prime
 offsets q < 112 249 have N − q composite — parity (1), congruence
 divisor from the cover (9 830), trial divisor < 10^5 (409), strong
 base-2 Miller–Rabin witness (402, unconditional). 112 249 is prime and
-N − 112 249 is a BPSW probable prime; the ECPP certificate is pending
-(no PARI/GP in this session's container — run
-`primecert(N - 112249)` to complete the positive side as with the
-earlier records).
+N − 112 249 is ECPP-certified prime (`complement_cert.gp`,
+validated by `primecertisvalid`, see `check_cert.log`).
 
 ## The 1M-desert-below-200-digits question (2026-07-22): measured — the
 ## frontier is ~1,250 digits, and 199 digits is short by a factor e^170
