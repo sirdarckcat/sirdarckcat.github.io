@@ -132,3 +132,34 @@ python3 entropy_frontier.py 100 --classic       # k=1 baseline
 python3 frontier_table.py --digits 100,120,150  # boundary bisection
 python3 realizable_frontier.py --digits 100,140 # enumerability-constrained
 ```
+
+## Independent verification of the WP3 decoding barrier (2026-07-28)
+
+The parallel PhD track (`phd/wp3_small_representative_memo.md`) reaches
+the same verdict from the coding-theory side: oversized covers (mass
+A > ln B) would make sub-100 easy, but placing their CRT representative
+below the bound is a modular subset-sum with per-position choices at
+density ~1.026 — the regime where neither lattice reduction nor Wagner
+k-trees work. Its v1 claimed a polynomial-time CRT-decoding escape and
+retracted it, having compared the decoding radius and the existence
+bound at *different* agreement sizes.
+
+`verify_barrier.py` re-derives both at the SAME cover mass A, using a
+Legendre transform for the design entropy rather than binomial counting:
+
+| pool R | L | pool mass | A_max (exists) | A_J (decodes) | ratio |
+|---|---|---|---|---|---|
+| 1 000 | 1 | 956 | 339 | 469 | 0.723 |
+| 60 000 | 1 | 59 816 | 570 | 3 711 | 0.154 |
+| 60 000 | 16 | 59 816 | 1 305 | 14 845 | 0.088 |
+| 10^6 | 16 | 998 483 | 1 697 | 60 651 | 0.028 |
+
+The window is closed at every pool size; the best case is 28% short and
+the gap widens with pool size and with L, since A_J grows like
+sqrt(L·P) while the existence bound grows only logarithmically. The
+computed radius at R = 60 000, L = 16 (14 845 nats) reproduces WP3's
+figure exactly, so both analyses are evaluating the same quantity.
+
+Two independent routes — enumerability of the admissible set (this file)
+and decodability of an oversized cover (WP3) — therefore close on the
+same conclusion, from opposite directions.
