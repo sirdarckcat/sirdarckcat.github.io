@@ -3,13 +3,47 @@
 Programme: *Extremal Least Goldbach Summands* (4-year proposal, record snapshot 2026-07-22).
 Student log, year 3 — project kickoff with delegated subagent execution.
 
-## Record board (updated 2026-07-25 after master merge)
+## Record board (updated 2026-07-28 — session close)
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session; verifier available |
-| Threshold T(100,000) (Game 2) | **186-digit** N (t100k round 2) | g = 109,357 | **re-verified PASS** (2026-07-25, standalone verifier) |
-| Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | **re-verified PASS** (2026-07-25, standalone verifier) |
+| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session |
+| Threshold T(100,000) (Game 2) | **179-digit** N (t100k round 3, ratchet session) | g = 101,149 | certified on master 2026-07-28 |
+| Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+
+### 2026-07-28 — CAMPAIGN 2 STOPPED at user request (session close)
+- Stopped at **2,132/2,400 batch-1 slices (5.6e8 elements), 0 hits** — survival
+  probability ≈ 0.22 under the validated model; a second consecutive unlucky-but-
+  in-model draw. Per-slice statistics matched the blueprint model throughout.
+- Master meanwhile certified T(100,000) = 179 digits (g=101,149; ratchet round 3)
+  and closed that session with a round-4 164-digit-modulus cover built but unstarted.
+- IMPORTANT: campaign 2 is NOT obsoleted by the 179d record — every attainable hit
+  is ≤ 175 digits (N ≤ N0 + 1.5e6·M ≈ 1.2e174), which would still beat 179 by 4+
+  digits. It is stopped, not falsified. To resume: re-run
+  `python3 goldbach/phd/campaign2/run_campaign2.py --chunk-seconds 590` in chunked
+  turns — the committed search.log checkpoint makes resumption lossless (268 slices
+  remain in batch 1; specs_reserve.json holds 712 more variants).
+
+## Programme close-out summary (2026-07-22 → 2026-07-28)
+- **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
+  implementation ECPP validation, adversarial mutation tests); two later external
+  records re-verified with the standalone verifier.
+- **O2 achieved**: density model E = |U|·boost/ln N validated to ~0.1 across
+  3 covers and ~1.2e9 scanned progression elements — the model is exact; both
+  campaign misses were 0.22-0.30-probability draws, not model error.
+- **O3/WP2 progress**: cover frontier mapped at two Q values; AlphaEvolve move-set
+  audited, reward-hacking failure diagnosed (unconstrained −D fitness), E-capped
+  variant built and benchmarked (blueprint within ~1 digit of frontier at E≈20);
+  PR #20 blueprint audited (valid cover, inflated claims, unusable shipped kmax)
+  and re-parameterized into a viable campaign.
+- **O4**: no new certified record from this session's own campaigns (two honest
+  negative results, fully logged); parallel sessions ratcheted all three games.
+- **O6 achieved**: restart-safe chunked-compute methodology (slice checkpoints in
+  git, idempotent resume, ~85% duty cycle through ~15 container restarts/rollbacks),
+  sieve-inverse cache + survivor-ordered testing adopted and verified
+  result-preserving; all artifacts, logs, and decisions committed to this branch.
+
+### 2026-07-28 — compute turns (campaign 2, final stretch before stop)
 
 Superseded (this project's kickoff incumbents, all audited PASS 2026-07-22):
 height 1,134,871 @ 2,692d; dual N₁₉₇ (197d, g=107,719).
