@@ -3,7 +3,8 @@
 *Systematization of knowledge from every certified record in this repo:
 the covering-systems paper (`slop/goldbach/paper.tex`), the CPU-session
 records (`slop/goldbach/records/`, PRs #21–#23), and the GPU-session
-records (`goldbach/records/`, PR #24). 2026-07-29.*
+records (`goldbach/records/`, PR #24), incorporating the PhD-track
+theory results (`goldbach/phd/`, PR #26). 2026-07-29, rev 2.*
 
 For even N, g(N) = min{p prime : N−p prime}. Nature keeps g tiny —
 g ≤ 9,781 for all even N ≤ 4×10¹⁸ — so every large value below was
@@ -117,9 +118,15 @@ ever been overturned.
    on T(10⁵) at zero search cost.
 2. **Throughput** — wider Montgomery kernels (Game-1 widths) and more
    fleet; each 10× is worth ~+2.3 nats of exponent ≈ 4 digits.
-3. **Small-CRT-representative / lattice methods** — never attempted;
-   the only known route that could break the "modulus digits are the
-   floor" barrier.
+3. **Small-CRT-representative / lattice methods** — now analysed in
+   depth (`phd/wp3_small_representative_memo.md`): finding a small
+   representative of an oversized cover is modular subset-sum with
+   per-position choices at density ≈ 1.026 — precisely the regime where
+   both lattice reduction and Wagner's k-tree fail (best known attacks
+   ≈ 2⁹³⁸ here), and the GSS CRT-decoding shortcut is provably short of
+   the required radius by ~5× (pool-size/entropy trade-off barrier).
+   Status: blocked pending list-recovery beyond the Johnson radius or a
+   density-1 subset-sum algorithm — both independent open problems.
 4. **The gap to truth** — calibrating the Granville–van de Lune–te
    Riele law against the exhaustive data (g ≤ 9,781 up to 4×10¹⁸ gives
    C ≈ 1.4 in g_max(X) ≈ C·ln²X·ln ln X) puts the true T(10⁵) near
@@ -128,6 +135,13 @@ ever been overturned.
 5. **Game-1 ceiling** — g > 10⁷ needs ~30k-digit moduli and ECPP far
    beyond practice; APR-CL-free certification ideas (Pocklington-
    friendly N−q by construction?) are the only visible door.
+6. **Algebraic compositeness mechanisms** (WP7 of the PhD track) —
+   every wall in this document assumes compositeness is bought with
+   congruence divisors at ln r nats per class. A mechanism that forces
+   many N−q composite for algebraic reasons (norm forms, cyclotomic
+   identities, Sierpiński/Riesel-style exponent families) escapes the
+   entropy accounting entirely; it is the one identified route to which
+   §6's barriers do not apply, and it is untested.
 
 
 ## 6. THE WALL — predicted limits, per game
@@ -158,15 +172,20 @@ nearly coincide.
   fleet (ln C ≈ 25); ~95 digits if someone burns absurd compute
   (ln C ≈ 35). Each digit below 150 costs ×1.3–1.5 in scan time — the
   ladder gets exponentially steep but has no cliff until ~130.
-- **Best likely-discoverable algorithms**: cover quality is a linear
-  divisor of the wall — exact/ILP covers reaching φ ≈ 0.45 give
-  ~91 digits at today's compute, ~60–65 digits at ln C ≈ 40. The
-  absolute floor for *any* cover-and-scan method is 38–49 digits
-  (c ∈ [0.8, 1.32]), essentially the truth (~53 digits). Verdict: the
-  truth is approachable in *order of magnitude* but the last factor ~2
-  in digits is protected by an e^{100}-scale search — permanently out
-  of reach. Prediction: the record stalls in the **90–130 digit** band
-  for the foreseeable future.
+- **Best likely-discoverable algorithms**: my uncapped identity gave
+  ~60–90 digits, but the WP3 memo's cap-aware costing
+  (`phd/wp3_small_representative_memo.md`) supersedes it for this game:
+  once the target digits themselves cap the modulus, the honest optimum
+  at 100 digits is E ≈ 44 → **sub-100 costs ≈ 5×10⁴ GPU-years**, and
+  the realistic org-scale ceiling is **~120–125 digits** (~10² GPU-years).
+  Below that, oversized covers would make the search trivial (E ≈ 10)
+  but finding their small CRT representative is density-≈1 modular
+  subset-sum — blocked (see §5.3). The absolute floor for any
+  cover-and-scan method remains 38–49 digits, essentially the truth
+  (~53 digits), but it is entropy-protected on *two* independent axes
+  now. Prediction: the record stalls in the **120–135 digit** band
+  unless the algebraic route (§5.6) or a subset-sum/list-recovery
+  breakthrough lands.
 
 ### Game R(10^200) — largest g with N < 10²⁰⁰  (now: 119,419)
 
@@ -216,7 +235,7 @@ nearly coincide.
 
 | game | truth | current algos, today's compute | current algos, heroic compute | likely-future algorithms | protected by |
 |---|---|---|---|---|---|
-| T(10⁵) smallest N | ~10⁵³ (53 digits) | ~132 digits | ~95 digits | ~60–90 digits; floor 38–49 | search entropy e^{L} |
+| T(10⁵) smallest N | ~10⁵³ (53 digits) | ~132 digits | ~120–125 digits (5×10⁴ GPU-yr for sub-100) | 120–135 digits stall; floor 38–49 | search entropy + density-1 subset-sum |
 | R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
 | Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
 
@@ -230,8 +249,8 @@ everything. Full covers were the gold standard and are now obsolete;
 partial covers plus brute progression scanning, checkpointed in git and
 certified twice by independent code, are the entire present frontier.
 The truth (T(10⁵) ≈ 10⁵³) sits a factor ~3 below our records in log
-scale, and §6's wall analysis says roughly half of that gap will fall
-to compute and cover quality while the last factor ~2 is
-entropy-protected forever — a fact worth stating in every future README
+scale, and the combined §6 + WP3 analysis says only ~10–20% of that
+log-gap will fall to compute and cover quality, with everything below
+~120 digits protected by two independent entropy barriers — a fact worth stating in every future README
 so the records stay honest about what they are: upper bounds,
 manufactured, and falling toward a floor they will never touch.
