@@ -1,5 +1,23 @@
 # Goldbach Desert Records
 
+## Prior-art check (2026-07-27)
+
+A web literature search for published constructions of even integers
+with large least Goldbach summands found none beyond the incumbents
+this repo already cites and supersedes. For context: in *observed*
+(exhaustive-verification) data the minimal summand stays tiny — the
+largest known naturally occurring value is g = 9 781 near the
+4·10^18 verification frontier (Oliveira e Silva, Herzog & Pardi,
+Math. Comp. 2014; Herkommer's tables reach g = 8 443 at
+2n ≈ 1.2·10^17), and a 2025 arXiv study of minimal primes in
+generalised Goldbach partitions (arXiv:2510.21870) is observational
+up to 10^9 only. The only constructive incumbents we are aware of
+remain the source paper's 199-digit N with g = 105 667 and 237-digit
+N with g = 109 621 (both re-verified in this repo before we started).
+The records below are therefore "smallest/largest known to us"; if a
+competing constructive literature exists it did not surface in the
+search.
+
 ## New record (2026-07-26): T(100 000) at 150 digits — the GPU rung,
 ## 45 digits below our own 195-digit record
 
