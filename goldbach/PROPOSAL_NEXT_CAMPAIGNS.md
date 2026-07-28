@@ -31,6 +31,12 @@ Target: even N ≤ ~142 digits with g(N) > 100,000.
   unlucky tail. 145 digits is the conservative fallback (E ≈ 4×10⁹).
 - Deliverable per hit: `spec*.json` (cover, N0, M) + banked k, then the
   full dual certification (below).
+- Design rules from campaign2's negative result (2,132/2,400 variant-specs,
+  0 hits — the 27% geometric tail, stopped on budget): (i) size the scan
+  budget to ≥3×E *before* starting, with stopping rules written down;
+  (ii) at fleet scale prefer one deep spec over many shallow variants —
+  breadth-first capped campaign2's best possible outcome at ~175 digits,
+  spending record-quality to buy hit probability it didn't collect.
 
 ## Campaign B — R(10^200) above 135,000
 
@@ -53,6 +59,33 @@ Target: N < 10^200 with g(N) > 135,000 (current: 119,419).
 - The real cost is certification: ECPP at ~3,300 digits (est. 6–12 h
   PARI) and the pure-Python re-verification (~6 h). One-time, acceptable.
 - Rung ladder: 1.5M → 2M, banking each certified rung.
+
+## Where the ladder ends (per WP3)
+
+Campaign A is not open-ended: the cap-aware costing in
+`phd/wp3_small_representative_memo.md` puts the rungs after ~142 at
+~135 (≈10 fleet-weeks), ~127–130 (≈10² GPU-years, org-scale), and a hard
+practical wall at **120–125 digits**; sub-100 is ≈5×10⁴ GPU-years and
+everything below is blocked by the density-≈1 subset-sum barrier. Plan
+to *stop* the T-ladder at the first rung whose E exceeds the committed
+fleet by 3×, and redirect into Campaign D.
+
+## Campaign D (research, no fleet) — routes around the barrier
+
+- **WP7 algebraic mechanisms** (highest value, untested): certify many
+  N−q composite by algebraic structure (norm forms, cyclotomic
+  identities, Sierpiński/Riesel-style exponent families) instead of
+  congruence divisors — the one identified route that escapes the
+  entropy accounting entirely. First deliverable: a toy N-family where
+  even one nontrivial algebraic factor family shrinks a cover.
+- **Two well-posed theory targets** (from WP3, of independent interest):
+  CRT list-recovery beyond the Johnson radius for structured
+  solution-abundant instances; modular subset-sum with per-position
+  choices at density ≈ 1 when ~2⁸² solutions exist.
+- **Pocklington-friendly N−q by construction** (Game 1's wall-remover):
+  intersect the cover congruences with an N−q whose factored part
+  exceeds (N−q)^{1/3}; any progress converts Game 1's ceiling from
+  ECPP-bound (~4k digits) to essentially unbounded.
 
 ## Shared protocol (what made both sessions' results trustworthy)
 
@@ -79,7 +112,8 @@ Target: N < 10^200 with g(N) > 135,000 (current: 119,419).
   idle-freeze issue is handled by the git-checkpoint protocol, but an
   always-on runner would roughly halve calendar time.
 - Risks: Campaign A's E is within 2× of round 1's proven scan volume
-  (low risk); Campaign C's ECPP size is the only untested step — mitigate
+  (low risk, but the measured hit spread is 0.25–3.0×E and campaign2
+  landed in the no-hit tail — commit the 3×E budget up front); Campaign C's ECPP size is the only untested step — mitigate
   by certifying a throwaway ~3,300-digit PRP first before burning fleet
   time.
 
