@@ -18,6 +18,12 @@ The records below are therefore "smallest/largest known to us"; if a
 competing constructive literature exists it did not surface in the
 search.
 
+In-repo note: a parallel effort in `slop/goldbach/records/` (merged
+from another working branch) holds a certified T(100k) bound of 179
+digits (g = 101 149) and R(10^200) g = 119 419. The 150-digit record
+below supersedes the 179-digit T bound; the slop R value g = 119 419
+at 199 digits supersedes this directory's g = 112 249.
+
 ## New record (2026-07-26): T(100 000) at 150 digits — the GPU rung,
 ## 45 digits below our own 195-digit record
 
