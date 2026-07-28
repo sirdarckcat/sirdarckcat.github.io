@@ -129,6 +129,20 @@ Forward programme (in priority order):
    no-go (e.g., equivalence to average-case-hard lattice problems) — the
    "conventional model cannot reach sub-100 without solving X" barrier theorem.
 
+### 2026-07-28 — costed menu for follow-up work (validated: model reproduces the
+150d record at "6 days on 2 Colab GPUs" — the actual campaign duration)
+| rung | E | candidates | A100-yr | spot-$ | 2-GPU-Colab wall |
+|---|---|---|---|---|---|
+| 140d | 28.1 | 1.6e12 | 0.10 | ~$1k | ~2 months |
+| 135d | 29.7 | 7.7e12 | 0.49 | ~$5k | ~10 months |
+| 130d | 31.2 | 3.6e13 | 2.3 | ~$24k | — |
+| 125d | 32.9 | 1.9e14 | 12 | ~$125k | — |
+| 120d | 34.7 | 1.2e15 | 73 | ~$770k | — |
+| 100d | 44.1 | 1.4e19 | 8.9e5 | ~$9.4B | — |
+(Expected values; ×1.6 for 80% confidence. Throughput engineering shifts all rows.)
+Toy CRT decoder: ~zero compute, 2–4 sessions; measures practical-vs-Johnson gap.
+WP7 probes: ~zero compute, ~5 bounded probes × 1–2 sessions; only unbounded-upside route.
+
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
   implementation ECPP validation, adversarial mutation tests); two later external
