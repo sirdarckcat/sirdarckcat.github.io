@@ -24,6 +24,29 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   turns — the committed search.log checkpoint makes resumption lossless (268 slices
   remain in batch 1; specs_reserve.json holds 712 more variants).
 
+### 2026-07-28 — post-mortem: evaluation of the winning 179d record (t100k round 3)
+- Verified PASS here (standalone verifier). Construction: Q=99,991 cover, 80 classes,
+  M=169.4 digits, |U|=728, boost 10.79 — statistically the SAME frontier point as our
+  168d blueprint (167.9d, 754 res). The covers are equivalent; the outcome difference
+  was search strategy and engineering, not mathematics.
+- **Depth vs breadth**: they scanned ONE progression to t=758,850,385 (~7.6e8
+  elements; hit after surviving λ≈2.5, P≈8% — unlucky too, but a single deep
+  progression has unbounded runway, so bad luck costs digits (N grows only
+  logarithmically with t) instead of terminating the campaign. Our 400×1.5e6
+  breadth-first design capped every hit at ≤175 digits (better record if hit) but
+  hard-exhausted at 6.3e8 elements when the dice ran cold. Ratcheting
+  (199→193→186→179, banking a certified record each round) dominates our
+  grand-slam-per-campaign design under fixed compute.
+- **Selective testing**: their tsearch2 ranks each window's t by surviving-complement
+  count and Fermat-tests only the most promising fraction — sacrificing a slice of
+  hit density for a multiple of throughput. We adopted the ordering but kept
+  exhaustive testing (result-preserving); their result argues the aggressive skip
+  is net-positive for time-to-record.
+- Left for a future session: round-4 covers (cover_t100k_d ~172d target,
+  cover_r200_c1 q>122k) with search positions in their logs; our campaign 2
+  checkpoint (≤175d attainable, 268+4272 slices remaining) — the two approaches
+  could be merged (their engine, our smaller-N spec set).
+
 ## Programme close-out summary (2026-07-22 → 2026-07-28)
 - **O1 achieved**: both kickoff incumbents independently audited PASS (dual-
   implementation ECPP validation, adversarial mutation tests); two later external
