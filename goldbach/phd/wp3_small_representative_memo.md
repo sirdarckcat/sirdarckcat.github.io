@@ -118,10 +118,11 @@ are worthless; couple the parameters first. The published table in v1
 
 ## 7. Where this leaves the programme
 
-1. **Regime I is the only currently viable route to sub-100** and it is
-   merely expensive: ~5×10^4 GPU-years, i.e. ~10^4 A100s for a few years, or
-   a 10–100× algorithmic speedup away from a large-but-fundable campaign.
-   Realistic near-term target: 120–125 digits (~10^2 GPU-years).
+1. **Regime I is the only currently viable route to sub-100** and it is out
+   of reach: ~9×10^5 GPU-years (corrected; see §3), ~7 orders of magnitude
+   beyond plausible compute — FRONTIER.md concurs independently. Realistic
+   near-term targets: 140 digits (~13 fleet-days) to 130 (~5 fleet-months);
+   120–125 digits (~10^2 GPU-years) is the institutional-scale edge.
 2. **Two well-posed open problems** now sit under the record, either of which
    would collapse it: (i) CRT list-recovery beyond the Johnson radius for
    *structured, solution-abundant* instances; (ii) modular subset-sum with
