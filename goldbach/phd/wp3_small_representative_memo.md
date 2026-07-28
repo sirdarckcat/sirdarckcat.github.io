@@ -1,104 +1,132 @@
-# WP3 memo — The sub-100 problem as CRT-code list recovery
+# WP3 memo — Sub-100 Goldbach deserts: reduction to modular subset-sum at density ≈ 1
 
-Status: working memo, 2026-07-28. Claims marked [V] are verified computations
-in this repo; claims marked [R] are recalled literature bounds requiring
-verification before anything is built on them.
+Status: v2, 2026-07-28. **v1 of this memo claimed an "open window" for a
+polynomial-time CRT-decoding attack. That claim was WRONG and is retracted
+below** — the error is documented in §6 because it is instructive. All
+computations here are reproducible from this repo; the one literature bound
+is now verified against the source rather than recalled.
 
-## 1. Problem
+## 1. The target
 
 Find even N < B = 10^100 with g(N) > 100,000: every prime q < 10^5 must have
-N − q composite. In the covering paradigm, congruences N ≡ a_r (mod r) force
-r | N − q for all q ≡ a_r (mod r); residual (uncovered) primes must lose an
-independent primality lottery with failure exponent E = |U|·boost/ln N.
+N − q composite. Covering paradigm: impose N ≡ a_r (mod r) so that r | N − q
+for all q ≡ a_r (mod r); the uncovered ("residual") primes must all fail an
+independent primality lottery with exponent E = |U|·boost/ln N, where
+boost = 2·Π_{r ∈ cover} r/(r−1).
 
-[V] Brute frontier (validated density model, this repo): E ≈ 52 at 100
-digits → e^52 ≈ 5×10^22 candidates ≈ 3×10^8 A100-years. Compute is dead;
-the paradigm's constraint digits(N) ≥ digits(M) is what must break.
+**Sub-100 deserts exist in abundance.** With no cover, E_random ≈ 110, so the
+density of qualifying N near 10^100 is ≈ e^−110 and the expected count below
+10^100 is ≈ 10^100·e^−110 ≈ **10^52**. Nothing in this memo is an existence
+obstruction; the entire difficulty is constructive.
 
-## 2. Two no-go results for natural reductions
+## 2. Verified literature bound (replaces v1's recalled form)
 
-**2a. Fixed-subset modular knapsack is entropy-starved.** [V]
-Fix moduli S (|S| = n), allowed near-optimal residue sets A_r; residue swaps
-shift the CRT representative by known vectors δ_r — a modular subset-sum
-with window target [0, B). Effective density
-d_eff = Σ lb|A_r| / lb(M/B) ≈ 0.22–0.33 for coverage-viable |A_r| ≤ 8.
-No lattice attack can find what doesn't exist: the fixed-subset instance has
-no solutions. The essential entropy (~500 bits) is in the *choice of S*,
-making the real problem bilinear (subset × residues), outside standard
-knapsack/CVP formulations.
+Guruswami–Sahai–Sudan, *"Soft-decision" decoding of Chinese Remainder Codes*,
+FOCS 2000, Theorem 3: for a CRT code with moduli p_i, message bound K, any
+non-negative integers ℓ and z_i, one finds in time poly(n, log N, ℓ, Σz_i) all
+codewords m with
 
-**2b. Incremental CRT growth (beam) collapses to entropy conservation.** [V]
-Toy at Q=10^4, T=10^25 (this memo's experiment): growing an oversized cover
-while keeping the representative < T yields rep 414 digits below the modulus
-mass — but E *worsens* (34.3 vs 20.5 conventional), because:
-- forced (t=0) congruences are exactly E-neutral: coverage rate 1/r cancels
-  boost growth r/(r−1) (Mertens neutrality);
-- once mass exceeds T, t_max = ⌊(T−N0)/M⌋ hits 0 within ~1 modulus, so
-  sequential growth accesses only O(1) positions of genuine choice beyond the
-  conventional budget. Good final systems have prefix-valid representatives,
-  but reaching them sequentially requires the beam to have already guessed a
-  lucky N0 during the free phase — which is the original exhaustive search.
-Conclusion: solutions exist (first-moment surplus ~2^145 at the right design
-point) but both naive access paths reduce to exhaustive search. This is the
-RQ4 "entropy conservation" phenomenon, now with a concrete mechanism.
+  Σ_i a_i z_i log p_i > log(ℓ+1) + (ℓ/2)·log(K/2)
+                        + (1/(ℓ+1))·Σ_i C(z_i+1, 2)·log p_i,
 
-## 3. The right formalization: list recovery of Chinese Remainder codes
+(a_i = 1 iff m ≡ r_i mod p_i). Optimising z, ℓ under uniform weights, with
+L allowed classes per position (each (i,a) pair paying the cost term), the
+agreement-mass radius is
 
-Positions = primes r in a pool P; the "received data" at position r is the
-set A_r of top-ℓ coverage residue classes (computable from the target prime
-set alone); a "codeword" is any integer N < B via its residues. We seek N < B
-whose residues agree with A_r on a position subset of large total mass
-Σ ln r ≈ the cover mass. This is exactly **list recovery of CRT codes**
-(Goldreich–Ron–Sudan; Boneh, "Finding smooth integers using CRT decoding";
-Guruswami–Sahai–Sudan soft-decision CRT decoding) [R].
+  **A > sqrt(L · ln B · P)**,  P = Σ_{pool} ln p_i.
 
-- [R] GSS-type lattice decoders run in polynomial time when weighted
-  agreement mass A exceeds a Johnson-type radius ≈ sqrt(ℓ · ln B · P),
-  P = total pool mass in nats.
-- [V] Naive parameters (pool < 5,000, agreement ~150 positions) sit in the
-  gap: solutions exist below the decodable radius. This *is* the classical
-  existence-vs-decoding gap of list decoding, instantiated for Goldbach
-  deserts. "Close the CRT list-recovery gap" = "construct sub-100 deserts".
+[V] Numerically confirmed against the exact finite-ℓ optimum: ratio
+1.001–1.004 across pools 5·10^3–10^5 and L ∈ {1,2}. My recalled amplitude was
+correct; the error in v1 was elsewhere.
 
-**The scaling discovery** [V, contingent on the [R] bound]: existence grows
-linearly in pool mass P (freedom ≈ 1.5 bits/position) while the decoding
-radius grows as sqrt(P). The two curves cross:
+## 3. The two regimes, honestly costed
 
-| pool R | positions | radius (nats) | existence cap (nats) | window |
-|---|---|---|---|---|
-| 5,000 | 668 | 1,504 | 925 | closed |
-| 30,000 | 3,244 | 3,701 | 3,603 | closed (near) |
-| 60,000 | 6,056 | 5,248 | 6,527 | **OPEN** |
-| 100,000 | 9,591 | 6,775 | 10,202 | **OPEN** |
+Let A = cover mass (nats), lnB = 230.
 
-At R ≈ 60k–100k with ℓ = 2, a design point exists where (a) solutions exist
-by counting and (b) the recalled decoder radius reaches them. The implied
-agreement mass (~2,300–2,900 digits of cover) leaves |U| ~ 100–200 residuals
-→ E ≈ 6–12 at 10^100: a trivially searchable tail. The whole e^52 wall would
-collapse into one (enormous but polynomial) lattice computation.
+**Regime I — A ≤ lnB (modulus fits under the bound).** The CRT progression
+N = N₀ + kM itself supplies e^(lnB − A) candidates; cost = e^E.
+[V] Optimum at Q = 10^5, B = 10^100: **44 moduli, M = 10^79, |U| = 1060,
+boost 9.6, E = 44.1 → 1.4×10^19 candidates ≈ 5×10^4 GPU-years** (at the
+record session's 8.5M tests/s). That is 2×10^8 times the 150-digit record's
+E = 24.9 — a wall, but a *finite* one: an org-scale fleet reaches ~120–125
+digits, and sub-100 sits ~10^4 GPU-years beyond that.
+(v1 of the forward memo said 3×10^8 GPU-years for D=100; that extrapolation
+was too pessimistic because it assumed the cover keeps growing past the
+usable mass. 5×10^4 GPU-years is the correct figure.)
 
-## 4. Honest caveats
+**Regime II — A > lnB (oversized cover).** Coverage is then excellent —
+[V] all 9,592 primes q < 10^5 are covered by 355 moduli of mass 1,019 digits,
+and 420 moduli with L = 16 gives |U| = 165, **E = 10.2: only ~27,000
+candidates**. Solutions exist: the design space (which moduli, which classes)
+carries ~2,698 nats of entropy against ln(M/B) = 2,630 nats, leaving a
+surplus of ~+57 nats ⇒ ~e^57 valid (design, N) pairs below 10^100.
+But the *density* of designs whose CRT representative lands below B is
+**e^−2630**. Enumeration is out by ~1,100 orders of magnitude.
 
-1. The sqrt(ℓ·lnB·P) radius is recalled, not verified; the exact GSS/Boneh
-   amplitude form and its list-recovery (ℓ>1) generalization must be pulled
-   from the papers. A factor of 2 in the bound moves the window by 4× in P.
-2. Existence is a first-moment estimate; second-moment/concentration needed.
-3. Decoder practicality: dimension ~#positions (thousands) with multi-
-   thousand-bit entries. Polynomial ≠ practical; but toy scale (Q=10^4,
-   pool ~10^3, dim ~10^2) is fully runnable with fplll/flatter.
-4. Even on success the decoded N must clear the E ≈ 6–12 residual lottery →
-   need poly-many decoder outputs (weight re-randomization).
+Regime II is where sub-100 becomes easy *if and only if* small
+representatives can be found directly. That is the whole problem.
 
-## 5. Programme
+## 4. What the small-representative problem actually is
 
-1. Pull GRS/Boneh/GSS and verify the exact soft-decision radius; redo §3
-   arithmetic with the true constants. (Desk work, days.)
-2. Toy decoder at Q=10^4: pool primes < 1,500, B = 10^25, ℓ = 2; implement
-   the Coppersmith/GSS lattice; measure how close practical BKZ gets to the
-   theoretical radius. Predeclared success gate: decode agreement mass ≥ 1.2×
-   the conventional-cover mass at equal B.
-3. If the constants hold: scale ladder, and the sub-100 attempt becomes a
-   lattice-reduction campaign (new WP: LLL/BKZ engineering, not sieving).
-4. If the window closes under true constants: the memo's §2 no-gos plus the
-   quantified gap constitute the RQ7 barrier result — "sub-100 constructions
-   require decoding CRT codes beyond radius X" — publishable either way.
+CRT reconstruction is additive: N ≡ Σ_{r∈S} a_r·(M/r)·((M/r)^{-1} mod r)
+(mod M). So "find a design whose representative is < B" is exactly
+
+  **minimise |Σ_r c_r mod M| over c_r ∈ C_r (|C_r| = L), target window [0,B)**
+
+— an inhomogeneous **modular subset-sum with per-position choices**, with
+[V] density d = (design entropy)/(ln(M/B)) = 2698/2630 ≈ **1.026**.
+
+This is the worst possible density. Low-density instances (d < 0.94) fall to
+lattice reduction (Lagarias–Odlyzko / Coster et al.); very high density
+instances fall to birthday/k-tree methods (Wagner). Density ≈ 1 is the
+regime where neither works and where subset-sum's presumed hardness is
+concentrated. Concretely: the solution set is ~2^82 inside a design space of
+~2^3893; meet-in-the-middle gives 2^1897, Wagner's k-tree with our list sizes
+(16^40 per group) still needs 2^938 — both astronomically short.
+
+## 5. Why the CRT-decoder shortcut fails (the retraction)
+
+The decoder would bypass §4 entirely — but its radius is out of reach:
+[V] at pool < 60,000, L = 16, radius = 14,845 nats vs our cover mass 2,860
+nats — **short by 5.2×** (radius scales as sqrt(L·lnB·P), and P is the mass
+of the *whole pool*, which must be far larger than the cover to supply
+subset entropy). Shrinking the pool to lower the radius destroys the subset
+entropy that makes solutions exist. That trade-off is the barrier:
+
+  decodable ⇒ pool small ⇒ subset entropy small ⇒ no representative exists;
+  representative exists ⇒ pool large ⇒ radius ≫ cover mass ⇒ not decodable.
+
+**Barrier statement (heuristic, first-moment).** For CRT-cover constructions
+of even N < B with g(N) > Q, no parameter choice simultaneously satisfies
+(a) A < lnB + lnC(n,s) + s·lnL [representatives exist] and
+(b) A > sqrt(L·lnB·P) [GSS-decodable]. Sub-100 via oversized covers therefore
+requires list-recovery of CRT codes **beyond the Johnson-type radius** — an
+open problem in coding theory — or a subset-sum algorithm at density ≈ 1.
+
+## 6. The v1 error, recorded
+
+v1 compared a decoding radius computed at agreement size s against an
+existence bound *maximised over a different s* (≈ 2n/3). Requiring both
+conditions at the **same** s closes the window at every pool size. Lesson for
+the thesis: feasibility windows built from two separately-optimised bounds
+are worthless; couple the parameters first. The published table in v1
+("OPEN at R ≥ 60,000") is withdrawn.
+
+## 7. Where this leaves the programme
+
+1. **Regime I is the only currently viable route to sub-100** and it is
+   merely expensive: ~5×10^4 GPU-years, i.e. ~10^4 A100s for a few years, or
+   a 10–100× algorithmic speedup away from a large-but-fundable campaign.
+   Realistic near-term target: 120–125 digits (~10^2 GPU-years).
+2. **Two well-posed open problems** now sit under the record, either of which
+   would collapse it: (i) CRT list-recovery beyond the Johnson radius for
+   *structured, solution-abundant* instances; (ii) modular subset-sum with
+   choices at density ≈ 1 where 2^82 solutions exist. Both are of independent
+   interest — which is the right way for a thesis to end up.
+3. **WP7 (algebraic mechanisms) is now the highest-value untested route**:
+   every analysis here assumes compositeness is certified by *congruence
+   divisors*. A mechanism certifying many N − q composite for algebraic
+   reasons (norm forms, cyclotomic identities, Sierpiński/Riesel-style
+   exponent families) escapes the entropy accounting entirely, because it
+   does not spend ln r nats per excluded offset. That is the one place where
+   the barrier of §5 does not apply.

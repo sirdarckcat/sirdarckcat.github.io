@@ -65,7 +65,26 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 - Standing record board after reconciliation: T(100k)=150d/g=104,527 (GPU session),
   R: g=119,419 @199d (slop session), Height: g=1,157,341 @2,480d.
 
-### 2026-07-28 — FORWARD MEMO: the road to sub-100 digits (WP3/WP7 synthesis)
+### 2026-07-28 — RETRACTION + corrected sub-100 analysis (see wp3_small_representative_memo.md v2)
+- Literature search done: GSS FOCS'00 Thm 3 obtained and verified; the recalled
+  radius sqrt(L·lnB·P) is CORRECT (numerically within 0.4% of the exact finite-ℓ
+  optimum). The error was mine elsewhere: v1 compared the decoding radius at
+  agreement size s against an existence bound maximised over a DIFFERENT s.
+  Coupling them closes the window at every pool size. **"Open window" retracted.**
+- Corrected costs: conventional sub-100 optimum is 44 moduli, M=10^79, |U|=1060,
+  **E = 44.1 → 1.4e19 candidates ≈ 5e4 GPU-years** (not 3e8 — earlier extrapolation
+  was too pessimistic). Sub-100 is expensive, not impossible: ~10^4 A100s for a
+  few years, and 120–125 digits is ~10^2 GPU-years (fundable now).
+- Oversized covers would make it trivial (420 moduli, |U|=165, **E = 10.2**, ~2.7e4
+  candidates) but their small representatives have design-space density e^-2630.
+  Finding one = modular subset-sum with choices at **density 1.026** — the hardest
+  known regime (lattice attacks need <0.94; Wagner k-tree needs 2^938 here).
+- Net: the record now rests on two well-posed open problems (CRT list-recovery
+  beyond the Johnson radius; density-1 subset-sum with 2^82 planted solutions),
+  and WP7 algebraic mechanisms become the highest-value untested route — they are
+  the only family that escapes the ln r-nats-per-offset entropy accounting.
+
+### 2026-07-28 — (superseded by the entry above) FORWARD MEMO: the road to sub-100 digits
 Brute-force frontier (validated model, Q≈10^5, dE/dD ≈ −0.10..−0.19/digit):
 | D | E | candidates e^E | A100-years @8.5M tests/s |
 |---|---|---|---|
