@@ -4,7 +4,7 @@
 the covering-systems paper (`slop/goldbach/paper.tex`), the CPU-session
 records (`slop/goldbach/records/`, PRs #21–#23), and the GPU-session
 records (`goldbach/records/`, PR #24), incorporating the PhD-track
-theory results (`goldbach/phd/`, PR #26). 2026-07-29, rev 2.*
+theory results (`goldbach/phd/`, PRs #26/#28/#29). 2026-07-29, rev 3.*
 
 For even N, g(N) = min{p prime : N−p prime}. Nature keeps g tiny —
 g ≤ 9,781 for all even N ≤ 4×10¹⁸ — so every large value below was
@@ -135,13 +135,17 @@ ever been overturned.
 5. **Game-1 ceiling** — g > 10⁷ needs ~30k-digit moduli and ECPP far
    beyond practice; APR-CL-free certification ideas (Pocklington-
    friendly N−q by construction?) are the only visible door.
-6. **Algebraic compositeness mechanisms** (WP7 of the PhD track) —
-   every wall in this document assumes compositeness is bought with
-   congruence divisors at ln r nats per class. A mechanism that forces
-   many N−q composite for algebraic reasons (norm forms, cyclotomic
-   identities, Sierpiński/Riesel-style exponent families) escapes the
-   entropy accounting entirely; it is the one identified route to which
-   §6's barriers do not apply, and it is untested.
+6. **Algebraic compositeness mechanisms** (WP7) — now **tested and
+   negative** (`phd/wp7_probes.md`): five probes (prime powers,
+   polynomial value-set identities, Sierpiński–Riesel families, norm
+   forms, residual-bias loophole) all terminated at predeclared gates;
+   polynomial identities carry a provable O(√Q) offset ceiling, and the
+   residual-bias loophole is empirically bounded to ≤0.1 nats by
+   1.2×10⁹ banked candidates. What survives is a sharp 3-condition
+   requirement (≫√Q offsets, o(ln r) nats/offset, invisible at current
+   Ê scales) that any future mechanism must meet — no known structure
+   does. Set-valued conditioning (FRONTIER.md) was also tried and does
+   not move the exponent.
 
 
 ## 6. THE WALL — predicted limits, per game
@@ -176,8 +180,13 @@ nearly coincide.
   ~60–90 digits, but the WP3 memo's cap-aware costing
   (`phd/wp3_small_representative_memo.md`) supersedes it for this game:
   once the target digits themselves cap the modulus, the honest optimum
-  at 100 digits is E ≈ 44 → **sub-100 costs ≈ 5×10⁴ GPU-years**, and
-  the realistic org-scale ceiling is **~120–125 digits** (~10² GPU-years).
+  at 100 digits is E ≈ 44 (two independent studies: 44.1 memo, 43.66
+  FRONTIER.md) → **sub-100 costs ≈ 2–9×10⁵ GPU-years** (a v2 figure of
+  5×10⁴ divided by the test rate instead of the ~17-tests candidate
+  rate; units error corrected 2026-07-28) — ~7 orders of magnitude
+  beyond plausible compute. Measured frontier band: **140 digits ≈ 13
+  fleet-days, 130 ≈ 5 fleet-months**, 120–125 the institutional-scale
+  edge (~10² GPU-years).
   Below that, oversized covers would make the search trivial (E ≈ 10)
   but finding their small CRT representative is density-≈1 modular
   subset-sum — blocked (see §5.3). The absolute floor for any
@@ -235,7 +244,7 @@ nearly coincide.
 
 | game | truth | current algos, today's compute | current algos, heroic compute | likely-future algorithms | protected by |
 |---|---|---|---|---|---|
-| T(10⁵) smallest N | ~10⁵³ (53 digits) | ~132 digits | ~120–125 digits (5×10⁴ GPU-yr for sub-100) | 120–135 digits stall; floor 38–49 | search entropy + density-1 subset-sum |
+| T(10⁵) smallest N | ~10⁵³ (53 digits) | ~140 (days) / ~130 (months) | ~120–125 digits (sub-100 ≈ 2–9×10⁵ GPU-yr) | 120–135 digits stall; floor 38–49 | search entropy + density-1 subset-sum + WP7 3-condition test |
 | R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
 | Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
 
@@ -257,8 +266,11 @@ touched — each changes the *problem shape*, not the constants.
    k-tuple singular series) provably raises the all-composite
    probability at fixed k; nobody has ever optimized for it. Concrete
    first step: rescore existing covers by exact local factors
-   ∏_s(1−ω(s)/s)/(1−1/s)^k and re-anneal with that objective — a
-   possible free e^{1–3} on every future campaign.
+   ∏_s(1−ω(s)/s)/(1−1/s)^k and re-anneal with that objective. (WP7's
+   P5 measurement — |Ê−E| ≤ 0.1 on *existing, non-designed* covers —
+   bounds the accidental version of this effect; the deliberate-design
+   version remains open but should now be expected to yield a modest
+   constant, not orders of magnitude.)
 2. **Two-sided construction: pick the provable prime first.** All
    sessions search over N and pay ECPP for whichever N−q falls out.
    Invert it: fix the complement family P = k·2ⁿ+1 (Proth form —
@@ -270,7 +282,10 @@ touched — each changes the *problem shape*, not the constants.
    scale (~10⁵–10⁶ digits, g ~ 10⁸⁺) with today's tools. The open
    questions are the Proth-prime density inside the CRT-constrained k
    progression and whether q-side and n-side constraints can be tuned
-   jointly. Nothing in the repo has tried any of it.
+   jointly. WP7's P3 examined Sierpiński–Riesel forms only as a
+   *compositeness* mechanism (terminated) and explicitly noted the
+   shared-sieve throughput benefit; the certification-side use proposed
+   here — Proth primality as the partition proof — remains untouched.
 3. **Matching lower bounds (make the walls theorems).** Every barrier
    in §6 is a first-moment heuristic. There is no theorem of the form
    "any even N < B has g(N) ≤ f(B)" beyond trivialities — not even
