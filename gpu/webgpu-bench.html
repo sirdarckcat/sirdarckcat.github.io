@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WebGPU FWHT benchmark — sphinx attack kernel</title>
+<style>
+*{box-sizing:border-box}
+:root{color-scheme:dark light}
+body{margin:0;background:#10151b;color:#dde3ea;
+  font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:26px}
+.wrap{max-width:980px;margin:0 auto}
+h1{font:700 24px/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:-.02em;margin:0 0 6px}
+p{color:#8a96a3;margin:0 0 14px}
+button{font:600 13px ui-monospace,Menlo,Consolas,monospace;background:#e89b3c;color:#10151b;
+  border:0;border-radius:6px;padding:9px 15px;cursor:pointer;margin-right:8px}
+button.g{background:transparent;color:#dde3ea;border:1px solid #2a333d}
+button:disabled{opacity:.5;cursor:default}
+#log{width:100%;height:56vh;min-height:320px;margin-top:14px;background:#0b1015;color:#c9d3dd;
+  border:1px solid #2a333d;border-radius:8px;padding:13px;
+  font:12.5px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre;overflow:auto;resize:vertical}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px}
+#st{font:12px ui-monospace,monospace;color:#e89b3c}
+</style>
+</head>
+<body><div class="wrap">
+<h1>WebGPU FWHT benchmark</h1>
+<p>Measures a 2<sup>24</sup>-point uint32 Walsh–Hadamard transform — the inner loop of the
+sphinx key-recovery attack — on the GPU, and compares it against a WebAssembly CPU baseline on
+this same machine. Everything, including any WebGPU validation errors, lands in the box below.</p>
+<p style="color:#e89b3c;font-size:13.5px">Runs automatically, then press <b>Copy all output</b>.
+Served as a top-level HTTPS page, so if this still reports no usable adapter, the cause is the
+device or its driver rather than the page context — the log says which and what to check.</p>
+<div class="row">
+  <button id="run">Run benchmark</button>
+  <button id="copy" class="g">Copy all output</button>
+  <span id="st">idle</span>
+</div>
+<textarea id="log" readonly spellcheck="false"></textarea>
+</div>
+
+<script>
+const WASM_B64="AGFzbQEAAAABDgNgAAF/YAF/AGABfwF/AwYFAAABAQIEBQFwAQEBBQQBAIAKBgkBfwFBgIiEIAsHLAYGbWVtb3J5AgADYnVmAAABbgABBHNlZWQAAgNydW4AAwhjaGVja3N1bQAECo8EBQgAQYCIgIAACwcAQYCAgAgLbwEBfyAAQQEgAEEBSxshAUGAgIBgIQADQCAAQYCIgKAAaiABQQ10IAFzIgFBEXYgAXMiAUEFdCABcyIBNgIAIABBhIiAoABqIAFBDXQgAXMiAUERdiABcyIBQQV0IAFzIgE2AgAgAEEIaiIADQALC7cCAw5/AnsBfwJAIABFDQBBASAAdCEBQQEhAgNAIAJBA3QhAyACQXxxIQQgAkEBdCEFIAJBAnQiBkGAiICAAGohB0EAIQggAkEESSEJQYCIgIAAIQogAiELA0ACQCAIIAggAmpPDQAgCCEMAkAgCQ0AIAggBGohDCAKIQAgBCENA0AgACAAIAZqIg79AAIAIg8gAP0AAwAiEP2uAf0LAwAgDiAQIA/9sQH9CwIAIABBEGohACANQXxqIg0NAAsgAiAERg0BCyAMQQJ0IQADQCAAQYCIgIAAaiINIAcgAGoiDigCACIRIA0oAgAiDWo2AgAgDiANIBFrNgIAIABBBGohACALIAxBAWoiDEcNAAsLIAogA2ohCiALIAVqIQsgCCAFaiIIIAFJDQALIAUhAiAFIAFJDQALCwtTAQR/QcW78oh4IQFBgIiAgAAhAkEBIQMDQCACKAIAIAFzQQV3QbHz3fF5bCIBQQ92IAFzIQEgAkEEaiECIAMgAHYhBCADQQFqIQMgBEUNAAsgAQsASARuYW1lAA0MZndiZW5jaC53YXNtAR4FAANidWYBAW4CBHNlZWQDA3J1bgQIY2hlY2tzdW0HEgEAD19fc3RhY2tfcG9pbnRlcgA4CXByb2R1Y2VycwEMcHJvY2Vzc2VkLWJ5AQxVYnVudHUgY2xhbmcRMTguMS4zICgxdWJ1bnR1MSkANQ90YXJnZXRfZmVhdHVyZXMDKw9tdXRhYmxlLWdsb2JhbHMrCHNpZ24tZXh0KwdzaW1kMTI4";
+const LOGN=24, N=1<<LOGN;
+const L=[];
+const el=()=>document.getElementById("log");
+function log(s=""){ L.push(s); el().value=L.join("\n"); el().scrollTop=el().scrollHeight; }
+function setSt(s){ document.getElementById("st").textContent=s; }
+
+// ---- catch everything ----
+addEventListener("error",e=>log("!! window error: "+(e.message||e.error)+" @"+e.filename+":"+e.lineno));
+addEventListener("unhandledrejection",e=>log("!! unhandled rejection: "+(e.reason&&e.reason.message||e.reason)));
+const _ce=console.error; console.error=(...a)=>{log("!! console.error: "+a.join(" "));_ce(...a);};
+const _cw=console.warn;  console.warn =(...a)=>{log("~  console.warn: "+a.join(" "));_cw(...a);};
+
+document.getElementById("copy").onclick=async()=>{
+  el().select();
+  try{ await navigator.clipboard.writeText(el().value); setSt("copied to clipboard"); }
+  catch(_){ document.execCommand("copy"); setSt("copied (fallback)"); }
+};
+
+function b64(s){const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+const ms=x=>x.toFixed(1)+" ms";
+const med=a=>{const b=[...a].sort((x,y)=>x-y);return b[b.length>>1];};
+// one 2^24 FWHT touches 24 passes x 2^24 elements x 4B, read+write
+const GB_NAIVE=24*N*4*2/1e9;
+
+/* ================= WGSL ================= */
+// one dispatch per butterfly stage: simple, obviously correct, 24 global passes
+const SH_NAIVE=`
+@group(0) @binding(0) var<storage, read_write> data: array<u32>;
+@group(0) @binding(1) var<uniform> P: vec4<u32>;      // P.x = stage bit
+@compute @workgroup_size(256)
+fn main(@builtin(global_invocation_id) g: vec3<u32>,
+        @builtin(num_workgroups) nw: vec3<u32>) {
+  let t = g.x + g.y * 256u * nw.x;                    // 2D grid -> linear butterfly index
+  if (t >= ${N >> 1}u) { return; }
+  let b = P.x;
+  let j = ((t >> b) << (b + 1u)) | (t & ((1u << b) - 1u));
+  let p = j | (1u << b);
+  let x = data[j];
+  let y = data[p];
+  data[j] = x + y;                                    // u32 wraps mod 2^32 in WGSL
+  data[p] = x - y;
+}`;
+
+// eight stages per dispatch, held in workgroup memory: 3 global passes instead of 24
+const SH_BLOCK=`
+@group(0) @binding(0) var<storage, read_write> data: array<u32>;
+@group(0) @binding(1) var<uniform> P: vec4<u32>;      // P.x = shift s (0, 8, 16)
+var<workgroup> tile: array<u32, 256>;
+@compute @workgroup_size(256)
+fn main(@builtin(workgroup_id) wg: vec3<u32>,
+        @builtin(local_invocation_id) l: vec3<u32>,
+        @builtin(num_workgroups) nw: vec3<u32>) {
+  let s = P.x;
+  let k = l.x;
+  let w = wg.x + wg.y * nw.x;                         // which group of 256 strided elements
+  let base = (w & ((1u << s) - 1u)) | ((w >> s) << (s + 8u));
+  let idx = base + (k << s);
+  tile[k] = data[idx];
+  workgroupBarrier();
+  var h = 1u;
+  for (var i = 0u; i < 8u; i = i + 1u) {
+    if ((k & h) == 0u) {                              // barrier stays in uniform control flow
+      let x = tile[k];
+      let y = tile[k + h];
+      tile[k] = x + y;
+      tile[k + h] = x - y;
+    }
+    workgroupBarrier();
+    h = h << 1u;
+  }
+  data[idx] = tile[k];
+}`;
+
+/* ================= CPU baseline ================= */
+// same xorshift32 the wasm and the GPU upload use, so all three see identical input
+function seedJS(a,n,s){ let x=(s||1)>>>0;
+  for(let i=0;i<n;i++){ x^=x<<13; x>>>=0; x^=x>>>17; x^=x<<5; x>>>=0; a[i]=x; } }
+function fwhtJS(a,n){
+  for(let h=1;h<n;h<<=1)
+    for(let i=0;i<n;i+=h<<1)
+      for(let j=i;j<i+h;j++){ const x=a[j],y=a[j+h]; a[j]=(x+y)>>>0; a[j+h]=(x-y)>>>0; }
+}
+function sumJS(a,n){ let s=0x811c9dc5>>>0;
+  for(let i=0;i<n;i++){ s=(s^a[i])>>>0; s=((s<<5)|(s>>>27))>>>0;
+    s=Math.imul(s,2654435761)>>>0; s=(s^(s>>>15))>>>0; }
+  return s>>>0; }
+
+let cpu={};
+async function cpuBaseline(){
+  log("--- CPU baseline (single thread) ---");
+  const noWasm=/[?&]nowasm=1/.test(location.search);
+  let E=null;
+  try{ if(noWasm) throw new Error("forced by ?nowasm=1"); 
+       E=(await WebAssembly.instantiate(b64(WASM_B64),{})).instance.exports; }
+  catch(e){
+    log("~  WebAssembly unavailable here: "+String(e).split("\n")[0]);
+    log("~  falling back to a plain JavaScript transform. It is slower than wasm,");
+    log("~  so treat any GPU speedup below as a LOWER bound on the real one.");
+  }
+  const t=[]; let sum=0;
+  if(E){
+    log("  engine: WebAssembly (wasm32 + simd128)");
+    for(let i=0;i<3;i++){ E.seed(12345);
+      const a=performance.now(); E.run(LOGN); t.push(performance.now()-a);
+      sum=E.checksum(LOGN)>>>0; }
+  }else{
+    log("  engine: JavaScript (Uint32Array)");
+    const a=new Uint32Array(N);
+    for(let i=0;i<3;i++){ seedJS(a,N,12345);
+      const b=performance.now(); fwhtJS(a,N); t.push(performance.now()-b);
+      sum=sumJS(a,N); }
+  }
+  cpu={ms:med(t),sum:sum>>>0,engine:E?"wasm":"js"};
+  log("  runs: "+t.map(x=>ms(x)).join(", "));
+  log("  median: "+ms(cpu.ms)+"   effective bandwidth: "+(GB_NAIVE/(cpu.ms/1000)).toFixed(1)+" GB/s");
+  log("  checksum: 0x"+cpu.sum.toString(16).padStart(8,"0"));
+  return cpu;
+}
+
+/* ================= GPU ================= */
+async function gpuBench(){
+  log("");
+  log("--- WebGPU ---");
+  const ua=navigator.userAgent;
+  const isWV=/\bwv\b/.test(ua)||/Version\/4\.0/.test(ua);
+  if(!navigator.gpu){
+    log("  navigator.gpu is UNDEFINED — this context has no WebGPU at all.");
+    if(isWV){
+      log("");
+      log("  The user-agent says this is an ANDROID WEBVIEW (in-app browser), not Chrome.");
+      log("  WebGPU is not exposed in WebView, and the host app's CSP also blocked");
+      log("  WebAssembly. Nothing here can measure the GPU.");
+      log("");
+      log("  To get a real number: save this file and open it in Chrome itself");
+      log("  (chrome://flags -> 'Unsafe WebGPU Support' if needed), or on a desktop");
+      log("  with Chrome/Edge 113+. Desktop is the more useful data point anyway,");
+      log("  since that is where the 58-minute sweep would actually run.");
+    }else{
+      log("  Needs Chrome/Edge 113+, Safari 18+, or a recent Firefox with WebGPU enabled.");
+    }
+    return;
+  }
+  log("  navigator.gpu present. secureContext="+isSecureContext);
+
+  // context facts that decide whether an adapter is even obtainable
+  log("  in iframe: "+(window.self!==window.top)+"   crossOriginIsolated: "+
+      (typeof crossOriginIsolated!=="undefined"?crossOriginIsolated:"n/a"));
+  try{
+    const f=navigator.gpu.wgslLanguageFeatures;
+    log("  wgslLanguageFeatures: "+(f?("size="+f.size):"n/a"));
+  }catch(e){ log("  wgslLanguageFeatures: threw "+e); }
+  try{ log("  preferredCanvasFormat: "+navigator.gpu.getPreferredCanvasFormat()); }
+  catch(e){ log("  preferredCanvasFormat: threw "+e); }
+
+  // try every adapter configuration before concluding there is none
+  let adapter=null;
+  const tries=[["default (no options)",undefined],
+               ["high-performance",{powerPreference:"high-performance"}],
+               ["low-power",{powerPreference:"low-power"}],
+               ["forceFallbackAdapter",{forceFallbackAdapter:true}]];
+  log("  requestAdapter attempts:");
+  for(const [label,opt] of tries){
+    try{
+      const a=await navigator.gpu.requestAdapter(opt);
+      log("    "+label.padEnd(22)+" -> "+(a?"ADAPTER OK":"null"));
+      if(a&&!adapter) adapter=a;
+    }catch(e){ log("    "+label.padEnd(22)+" -> threw: "+e); }
+  }
+  if(!adapter){
+    log("");
+    log("  Every configuration returned null: WebGPU is present but no adapter is");
+    log("  available in this context. The usual causes, in order of likelihood:");
+    log("");
+    log("   1. Android GPU/driver not yet allowlisted. Chrome ships WebGPU on Android");
+    log("      but gates it per driver. Open chrome://gpu and read the WebGPU line —");
+    log("      it will say why. chrome://flags/#enable-unsafe-webgpu often overrides it.");
+    log("   2. This page is in an iframe"+(window.self!==window.top?" (IT IS — see above)":"")+
+        ". Try opening the URL as its own tab.");
+    log("   3. Hardware acceleration disabled, or a headless/software-only setup.");
+    log("");
+    log("  Desktop Chrome/Edge is the more useful measurement anyway: that is where");
+    log("  the 58-minute sweep would actually run.");
+    return;
+  }
+
+  const lim=adapter.limits;
+  log("  adapter limits:");
+  for(const k of ["maxStorageBufferBindingSize","maxBufferSize","maxComputeWorkgroupStorageSize",
+                  "maxComputeInvocationsPerWorkgroup","maxComputeWorkgroupsPerDimension"])
+    log("    "+k.padEnd(34)+" = "+lim[k]);
+  try{
+    const info=adapter.info||(adapter.requestAdapterInfo?await adapter.requestAdapterInfo():null);
+    if(info) log("  adapter info: vendor="+(info.vendor||"?")+" arch="+(info.architecture||"?")+
+                 " device="+(info.device||"?")+" desc="+(info.description||"?"));
+  }catch(_){ log("  adapter info unavailable"); }
+
+  const need=N*4;
+  log("  buffer needed: "+(need/1048576)+" MiB");
+  if(lim.maxStorageBufferBindingSize<need||lim.maxBufferSize<need){
+    log("  ** this device reports limits below "+(need/1048576)+" MiB:");
+    log("       maxStorageBufferBindingSize = "+lim.maxStorageBufferBindingSize);
+    log("       maxBufferSize               = "+lim.maxBufferSize);
+    log("     The shaders here are fixed at N = 2^"+LOGN+". Rather than run scaled");
+    log("     index arithmetic I have not tested, I am stopping. Tell me these two");
+    log("     numbers and I will build a variant sized for this device.");
+    return;
+  }
+
+  let dev;
+  try{
+    dev=await adapter.requestDevice({requiredLimits:{
+      maxStorageBufferBindingSize:Math.max(need,lim.maxStorageBufferBindingSize),
+      maxBufferSize:Math.max(need,lim.maxBufferSize)}});
+  }catch(e){
+    log("  raised-limit device refused ("+e+"); retrying with defaults");
+    try{ dev=await adapter.requestDevice(); }catch(e2){ log("!! requestDevice failed: "+e2); return; }
+  }
+  dev.addEventListener("uncapturederror",ev=>log("!! uncaptured GPU error: "+ev.error.message));
+  dev.lost.then(i=>log("!! device lost: "+i.reason+" — "+i.message));
+
+  const data=dev.createBuffer({size:need,
+    usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST|GPUBufferUsage.COPY_SRC});
+  const unif=dev.createBuffer({size:16,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+  const stage=dev.createBuffer({size:need,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+
+  // the same xorshift seed the CPU used, so checksums are comparable
+  const host=new Uint32Array(N);
+  {let x=12345>>>0; for(let i=0;i<N;i++){x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;host[i]=x;}}
+
+  async function build(code,label){
+    dev.pushErrorScope("validation");
+    const mod=dev.createShaderModule({code});
+    const info=await mod.getCompilationInfo?.();
+    if(info&&info.messages.length) for(const m of info.messages)
+      log("  ["+label+"] shader "+m.type+" "+m.lineNum+":"+m.linePos+" "+m.message);
+    const pipe=await dev.createComputePipelineAsync({layout:"auto",compute:{module:mod,entryPoint:"main"}});
+    const err=await dev.popErrorScope();
+    if(err){ log("!! ["+label+"] pipeline validation: "+err.message); return null; }
+    const bg=dev.createBindGroup({layout:pipe.getBindGroupLayout(0),
+      entries:[{binding:0,resource:{buffer:data}},{binding:1,resource:{buffer:unif}}]});
+    return {pipe,bg};
+  }
+
+  function dispatch2D(count){                 // stay under maxComputeWorkgroupsPerDimension
+    const cap=Math.min(1024,lim.maxComputeWorkgroupsPerDimension);
+    return count<=cap?[count,1]:[cap,Math.ceil(count/cap)];
+  }
+
+  async function runVariant(label,code,stages,wgPerStage,cmpCPU=true){
+    const P=await build(code,label);
+    if(!P) return null;
+    const [gx,gy]=dispatch2D(wgPerStage);
+    const times=[];
+    let sum=null;
+    for(let it=0;it<4;it++){
+      dev.queue.writeBuffer(data,0,host);
+      await dev.queue.onSubmittedWorkDone();
+      dev.pushErrorScope("validation");
+      const t0=performance.now();
+      for(let s=0;s<stages.length;s++){
+        dev.queue.writeBuffer(unif,0,new Uint32Array([stages[s],0,0,0]));
+        const enc=dev.createCommandEncoder();
+        const pass=enc.beginComputePass();
+        pass.setPipeline(P.pipe); pass.setBindGroup(0,P.bg);
+        pass.dispatchWorkgroups(gx,gy); pass.end();
+        dev.queue.submit([enc.finish()]);
+      }
+      await dev.queue.onSubmittedWorkDone();
+      const dt=performance.now()-t0;
+      const err=await dev.popErrorScope();
+      if(err){ log("!! ["+label+"] submit validation: "+err.message); return null; }
+      times.push(dt);
+      if(it===0){
+        const enc=dev.createCommandEncoder();
+        enc.copyBufferToBuffer(data,0,stage,0,need);
+        dev.queue.submit([enc.finish()]);
+        await stage.mapAsync(GPUMapMode.READ);
+        const got=new Uint32Array(stage.getMappedRange().slice(0));
+        stage.unmap();
+        let s=0x811c9dc5>>>0;
+        for(let i=0;i<N;i++){ s=(s^got[i])>>>0; s=((s<<5)|(s>>>27))>>>0;
+          s=Math.imul(s,2654435761)>>>0; s=(s^(s>>>15))>>>0; }
+        sum=s>>>0;
+      }
+    }
+    const m=med(times);
+    log("  ["+label+"]  runs: "+times.map(x=>ms(x)).join(", "));
+    log("  ["+label+"]  median "+ms(m)+"   "+(GB_NAIVE/(m/1000)).toFixed(0)+
+        " GB/s effective (vs 24-pass traffic)");
+    log("  ["+label+"]  checksum 0x"+sum.toString(16).padStart(8,"0")+
+        (cmpCPU&&cpu.sum!==undefined
+          ? (sum===cpu.sum?"   ✓ MATCHES CPU — transform is correct"
+                          :"   ✗ DOES NOT MATCH CPU — result is WRONG, ignore its timing")
+          : "   (different operation; not compared)"));
+    return {label,ms:m,ok:cmpCPU?(sum===cpu.sum):true};
+  }
+
+  const stagesNaive=[...Array(LOGN).keys()];
+  const r1=await runVariant("naive 24 dispatches",SH_NAIVE,stagesNaive,N>>1>>8);
+  const r2=await runVariant("blocked 3 dispatches",SH_BLOCK,[0,8,16],N>>8);
+
+  // a plain linear pass, for projecting the non-transform work
+  log("");
+  const SH_MUL=`
+@group(0) @binding(0) var<storage, read_write> data: array<u32>;
+@group(0) @binding(1) var<uniform> P: vec4<u32>;
+@compute @workgroup_size(256)
+fn main(@builtin(global_invocation_id) g: vec3<u32>, @builtin(num_workgroups) nw: vec3<u32>){
+  let i = g.x + g.y * 256u * nw.x;
+  if (i >= ${N}u) { return; }
+  data[i] = data[i] * 2654435761u + P.x;
+}`;
+  const rm=await runVariant("linear pass (multiply)",SH_MUL,[1],N>>8,false);
+
+  // ---- projection ----
+  log("");
+  log("--- projection for the real attack ---");
+  const best=[r1,r2].filter(r=>r&&r.ok).sort((a,b)=>a.ms-b.ms)[0];
+  if(!best){ log("  no variant produced a correct result; not projecting."); }
+  else{
+    const lin=rm?rm.ms:0;
+    // one W2_hi2 step: 33 transforms, plus ~50 linear passes (build each bit-plane,
+    // pointwise multiply, extract the parity bit) -- approximate but grounded
+    const NT=33, NL=50;
+    const step=(NT*best.ms+NL*lin)/1000;
+    log("  fastest correct variant: "+best.label+" at "+ms(best.ms)+" per transform");
+    log("  one linear pass: "+(rm?ms(lin):"n/a"));
+    log("  one attack step (~"+NT+" transforms + ~"+NL+" linear passes): "+step.toFixed(2)+" s");
+    log("  full 256-step sweep: "+(256*step/60).toFixed(1)+" min");
+    log("");
+    log("  measured CPU here: "+ms(cpu.ms)+" per transform  ->  ~"+
+        (256*NT*cpu.ms/1000/60).toFixed(0)+" min for the sweep, 1 core (transforms only)");
+    log("  GPU speedup on the transform: "+(cpu.ms/best.ms).toFixed(1)+"x");
+  }
+}
+
+async function main(){
+  document.getElementById("run").disabled=true;
+  L.length=0;
+  log("sphinx / WebGPU FWHT benchmark");
+  log("N = 2^"+LOGN+" = "+N+" uint32  ("+(N*4/1048576)+" MiB per buffer)");
+  log("ua: "+navigator.userAgent);
+  log("hardwareConcurrency: "+navigator.hardwareConcurrency);
+  log("");
+  try{
+    await cpuBaseline();
+    await gpuBench();
+  }catch(e){ log("!! fatal: "+(e&&e.stack||e)); }
+  log("");
+  log("--- end of report ---");
+  setSt("done — press Copy all output");
+  document.getElementById("run").disabled=false;
+}
+document.getElementById("run").onclick=main;
+main();
+</script>
+</body></html>
