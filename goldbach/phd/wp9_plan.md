@@ -145,7 +145,10 @@ a new research programme, which is the outcome we would pay the most for.
   ENTIRE v < d quadrant via the k_max formula (all O(1) ≤ 13 certified
   offsets vs 18,000 needed; measured α̂=0.761 vs 0.750 for (2,2,3)) —
   within-grammar Lemma 1 now [P] modulo standard value
-  equidistribution. REMAINING MATH: Prop 10.2(ii) — torus-action ⇒
-  norm-structure classification for the out-of-grammar dense frontier
-  (v ≥ d); this is the 1–2 month item.
+  equidistribution. LATER SAME DAY: §11 (isolation + orbit accounting)
+  closes the dense frontier v ≥ d with NO classification theorem —
+  symmetry conserves either the value (one offset/orbit) or a factor
+  (planted divisor: enumerable ⇒ sieve-equivalent), and prescribed-value
+  solving is the extraction horn. Lemma 1: [P at draft rigor]
+  everywhere; remaining work is write-up rigor, not new mathematics.
 - Phase 6 (H2 note): DONE — wp9/h2_open_problem.md, posting-ready.

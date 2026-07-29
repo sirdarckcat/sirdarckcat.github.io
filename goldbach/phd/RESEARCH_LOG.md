@@ -36,6 +36,12 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   within-grammar Lemma 1 now [P] modulo value equidistribution. H2 note
   posting-ready; AlphaEvolve scorer harness ready (blocked on access).
   Remaining math: torus-action ⇒ norm-structure classification (v ≥ d).
+- §11 (same day, continued): the classification item DISSOLVED — local
+  isolation (all ellipsoid extents < 1 at 10^200) + orbit conservation
+  (symmetry preserves value or factor; mixed words miss the window by
+  10^190) close the dense frontier outright. Lemma 1 [P at draft rigor]
+  on L and beyond; Door 3's mathematical core is COMPLETE at draft
+  level. Next: Door 1 gate D1.0/D1.1 (does anything beat 867?).
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
