@@ -561,3 +561,45 @@ Scorer note: the sampled ExpFamily estimator is *conservative* on price
 and correct on the verdict; §13's table figure of 2.20 should be quoted as
 "1.10–2.20 depending on the modulus range, against a 0.041 bar", and the
 budget-feasible ceiling of 419 offsets is the number that matters.
+
+## 13c. The remaining families closed the same way (2026-07-29)
+
+Following §13b's method, the other branches of L close by argument rather
+than by search — and by a *ceiling* rather than a budget, which is
+stronger (price is irrelevant).
+
+**PolyImage and Cyclotomic (univariate identity families).** The offsets
+certified by a degree-d form are its values below Q, of which there are at
+most Q^{1/d}. At Q = 122,000: 349 (d=2), 50 (d=3), 19 (d=4), 7 (d=6). So
+
+  **every degree ≥ 2 family certifies at most √Q = 349 < CEIL = 1048
+  offsets, at any price**, and degree 1 is ordinary covering.
+
+Cyclotomic is inside this bound because φ(n) ≥ 2 for every n ≥ 3 ([V] min
+φ over 3 ≤ n ≤ 500 is 2). This is §9's Prop 9.1 specialised to one
+variable, and it retires two of the four families outright.
+
+**Compose (depth 2) is infeasible, not merely expensive.** The scorer
+treats a composition's parts as independent and *sums* their certified
+offsets — generous, and Compose still peaked at 695 effective offsets. But
+the generosity hides a stronger fact: two nontrivial family constraints on
+the *same* N are contradictory at scale. Requiring N = m² − c₁ and
+N = m'² − c₂ forces (m−m')(m+m') = c₁ − c₂, so m ≤ |c₁ − c₂|; producing
+N ~ 10²⁰⁰ needs m ~ 10¹⁰⁰ and hence |c₁ − c₂| ~ 10¹⁰⁰. [V] For ordinary
+shifts the solution sets are tiny (c = 398, 4686 → 5 solutions, largest
+m = 1073; adjacent shifts → m = 1). The intersection is empty at record
+scale.
+
+So the only composition that survives is *family + congruence* — i.e.
+covering plus one capped degree-≥2 family, bounded by 349 + covering,
+still under CEIL. Depth-2 composition therefore cannot exceed the best
+single family, which is the additivity the §8 audit measured empirically
+(no super-additive interaction in 60 samples) now explained structurally.
+
+**Status of L after §13b–§13c.** Every family has a closure of its own
+kind: Congruence = the baseline itself; PolyImage, Cyclotomic = value-set
+ceiling 349 < 1048 (price-independent); ExpFamily = supply-limited,
+optimal purchase 1151 nats vs a 460-nat budget, ceiling 419 offsets;
+MultiPoly = §9–§11 (cluster bound k_max ≤ 13, isolation, orbit
+accounting); NormForm = reduces to MultiPoly; Compose = empty
+intersection at scale. Nothing in the grammar is left to search.
