@@ -315,13 +315,13 @@ def cmd_step(n):
                   json.dumps(g["passes"][:2])[:600], flush=True)
             state({"halted_pass": p.get("name")})
             return 3
-        evals.append({
-            "program": p.get("name"),
-            "evaluation": {"scores": {"scores": scores_of(g)}},
-            "lockToken": p.get("lockToken")})
-    r = api(exp + ":submitProgramsEvaluations", "POST",
-            {"evaluationSubmissions": evals})
-    print("submitted %d evaluation(s) ->" % len(evals), json.dumps(r)[:200])
+        api(exp + ":submitProgramsEvaluations", "POST",
+            {"evaluationSubmissions": [{
+                "program": p.get("name"),
+                "evaluation": {"scores": {"scores": scores_of(g)}},
+                "lockToken": p.get("lockToken")}]})
+        evals.append(p.get("name"))
+    print("submitted %d evaluation(s)" % len(evals), flush=True)
     return 0
 
 
