@@ -18,11 +18,21 @@
    "spec": "spec200.json",
    "range": [
     82000000000,
-    327058424910
+    206000000000
    ],
    "safe_k": 85187671040
+  },
+  "gba200b": {
+   "gpu": "A100",
+   "engine": "engine.py",
+   "spec": "spec200.json",
+   "range": [
+    206000000000,
+    327058424910
+   ],
+   "safe_k": 206000000000
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~1.5-3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-29T06:09Z"
+ "updated": "2026-07-29T06:20Z"
 }
