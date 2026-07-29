@@ -265,3 +265,56 @@ Extrapolated to B = 10^200: ≥ 10^100 operations per certified offset.
 The balanced-representation principle now has numbers; formalizing the
 θ ≥ 1/2 lower bound for L's multivariate families is the remaining
 mathematical core of Lemma 1.
+
+## 9. Lemma 1(c) for products of two quadratic forms — proof draft (2026-07-29)
+
+Let A, B be positive-definite integral binary quadratic forms and
+G = A·B (the certificate-bearing quartic case: G(u,v) = N − q exhibits
+the factorization). Window width W ~ Q = X^{o(1)} at height X = B.
+
+**Prop 9.1 (value density) [P].** Area{G ≤ t} = c_G·t^{1/2}, so the
+number of parameter points with G ∈ [t, t+W], averaged over window
+position, is Θ(W·t^{−1/2}); and the number of representations of any
+single integer m is O(m^ε) (each representation induces a divisor
+splitting m = A(u,v)·B(u,v), and r_A, r_B = O(m^ε) classically). This
+is the measured θ = 1/2 (§8): work per certified offset in black-box
+enumeration ~ X^{1/2}.
+
+**Prop 9.2 (cluster bound — the adversarial-window case) [P,
+first-moment].** The scheme chooses N, hence the window; can it center
+the window on a CLUSTER of G-values? Distinct G-values below X number
+~c·X^{1/2}; a first-moment count of k-clusters within a width-Q window
+gives E[#k-clusters] ≈ X^{1/2}·(Q·X^{−1/2})^{k−1} = Q^{k−1}X^{−(k−2)/2}.
+At X = 10^200, Q = 2×10^5: k = 2 clusters exist in abundance (~Q of
+them), but k = 3 already has expected count Q²·X^{−1/2} ≈ 10^{−89}.
+**Conclusion: a same-variable quartic-product scheme certifies at most
+2 offsets per candidate below 10^200** (whp over any construction
+ensemble; up to the O(m^ε) multiplicity of Prop 9.1) — versus the
+~18,000 required. Lemma 1(c) holds for this subfamily UNCONDITIONALLY
+on average — not because enumeration is hard, but because the
+certificates almost never exist: δ_eff = Θ(X^{−1/2}) is an existence
+statement, with the enumeration wall (§8 measurements) as its
+algorithmic shadow.
+
+**Prop 9.3 (disjoint-variable products) [P, economics].** If A(u) and
+B(u′) use disjoint variables, the certificate is m = d₁·d₂ with
+d₁ ∈ Im(A), d₂ ∈ Im(B) freely chosen. Enumerable small d₁ ≤ T:
+the certified offsets are exactly q ≡ N (mod d₁) — a CONGRUENCE
+certificate, already inside the covering accounting (and Im(A)
+membership adds nothing: the divisor does the work). Genuinely
+non-congruence mass needs d₁ > Q, where each d₁ certifies < 1 expected
+offset and the construction must spend ln d₁ > ln Q ≈ 11.7 nats to
+plant it — the large-prime endgame, dominated (tier-0 T1: covering
+endgame ≈ 1.0 nats/offset). So disjoint-variable products reduce to
+covering economics entirely.
+
+**Status after §9.** Lemma 1 is now [P] for: congruence classes (a),
+univariate identities (b), same-variable quadratic products (9.2),
+disjoint-variable products (9.3), with (9.2) the strongest form —
+existence-based, needing no hardness hypothesis. Remaining [C]: degree
+> 2 factors, > 3 variables with shared support, and non-polynomial
+planted families (the L grammar's outer edge); the general
+balanced-representation principle stays a conjecture with §8's
+measurements as evidence. The theorem's overall status upgrades from
+"conditional sketch" to "proved on the swept grammar, conjectural at
+the grammar's boundary".

@@ -11,6 +11,26 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
+- User directive: work Door 3 first (AlphaEvolve access offered for the
+  generative tier). Delivered so far, all in `phd/wp9/`:
+  **theorem draft v0.1** (scheme/certificate formalism, three lemmas with
+  proof-status marks, schema language L, falsification protocol);
+  **tier-0 calibration** — engine reproduces every WP7 hand number exactly
+  (m²−c: c=398/113 kills; the 5.8-vs-10.5 nats/residual discrepancy
+  reconciled as B=10^100 vs 10^200 context), and surfaced two refinements:
+  covering endgame ≈ 1.0 nats/offset at Q=122k (2.5 was context-bound), and
+  budget binds at 122k vs boost–kills equilibrium at 200k;
+  **exhaustive tier: 13,661 schema instances, 0 passes** (16 first-run
+  passes audited away as a baseline-family filter leak — semantics
+  hardened); near-miss board topped by ExpFamily at 3.1–4.2 nats/residual
+  kill (3× covering endgame, as WP7-P3 predicted);
+  **Lemma 2 rigorous draft** (deterministic shared-divisor proposition +
+  explicit H1 + the 1.2e9-candidate empirical bound);
+  **enumeration wall measured**: quartic-product certificates cost
+  height^0.50–0.74 work per certified offset (theory ½) → ~10^100
+  ops/offset at B=10^200 — Lemma 1(c)'s first data.
+
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
   hard results produced for it: (1) **rung ladder** E(Q) at 199d computed to
