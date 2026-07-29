@@ -66,6 +66,60 @@ none exists; the evolve loop's job is to prove us wrong.
    (fitness ≥ 0.25), rerun with the full offset range and s ≤ 10^5
    (flag `--deep`, to be added when the generative tier goes live).
 
+## AlphaEvolve integration facts (from the Cloud API reference, 2026-07-29)
+
+AlphaEvolve is served by the **Discovery Engine API v1alpha**, not a
+standalone service. Relevant surface:
+
+    POST /v1alpha/{parent}/alphaEvolveExperiments        create
+    POST /v1alpha/{name}:start                          start
+    POST /v1alpha/{parent}:acquirePrograms              pull candidates
+    POST /v1alpha/{parent}:submitProgramsEvaluations    push scores
+    GET  /v1alpha/{parent}/alphaEvolvePrograms          list
+
+parent = projects/{p}/locations/{l}/collections/{c}/engines/{e}/sessions/{s}
+
+Prerequisites (all on the account owner's side): active **Gemini
+Enterprise** license (Standard/Plus/Frontline), **Discovery Engine API**
+enabled, IAM role **Discovery Engine User**, and Application Default
+Credentials — the docs specify
+`gcloud auth application-default login --project=<PROJECT_ID>`.
+There is a CLI (`ae experiment list`, `ae results best <exp> --top 5`).
+Platform limits that constrain our candidate format: ≤50 files per
+program, ≲4–5k LOC total, <200k tokens of context, concurrency 1–30,
+30-minute client-side execution timeout.
+
+**Auth note for future sessions.** A clickable "login link" that returns
+a pasteable code is NOT obtainable: Google deprecated the out-of-band
+redirect, and the gcloud public client's registered redirects are
+`http://localhost:PORT/` loopbacks that a remote browser cannot reach
+into this container (attempting `https://sdk.cloud.google.com/authcode.html`
+yields `Error 400: redirect_uri_mismatch`). The credential must be minted
+on a machine with a browser and injected as an environment variable —
+either the whole ADC JSON (`type: authorized_user`, carrying the refresh
+token) or a service-account key.
+
+## THREAT-MODEL CHANGE: AlphaEvolve candidates are CODE, not JSON
+
+The protocol above hands us *programs* to run, whereas §"Anti-reward-hack"
+above assumed proposals are inert JSON. Executing evolved code that also
+reports its own fitness would void every guarantee in this file (a
+candidate could monkeypatch sympy, mutate the residual set, or simply
+print a winning number). Required architecture, therefore:
+
+1. A candidate program's ONLY contract is to write schema JSON to stdout
+   (one schema per line, in the L grammar). It never computes kills,
+   never imports the scorer, never reads the residual set.
+2. We run candidates in a locked-down subprocess (no network, temp cwd,
+   CPU/memory/wall limits, output size cap), harvest the emitted schemas,
+   and grade them with `scorer.py` in a FRESH interpreter.
+3. The fitness submitted back via `submitProgramsEvaluations` is the
+   scorer's number for the best schema the program emitted — so the
+   evolutionary pressure is on *inventing certificate schemas*, which is
+   the actual research question, and never on manipulating measurement.
+4. A program that emits nothing parseable scores 0. Grammar extensions
+   remain a human action (see the grammar-extension rule above).
+
 ## Suggested evolve-loop shape
 
 Population over the grammar's parameter space (ints, small tuples,
