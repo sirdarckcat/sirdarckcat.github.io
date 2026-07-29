@@ -484,3 +484,40 @@ a candidate report its own fitness) and it is the strongest available
 evidence that the protocol works: a wrong evaluator was caught within
 minutes by an adversary optimising against it, before any claim was
 made. The run continues under the corrected accounting.
+
+## 13. Generative tier — per-family empirical ceiling (running, 21 candidates)
+
+Under the corrected budget-aware accounting (§12), the best any evolved
+candidate has achieved in each family. `eff_offs` is the budget-capped
+certified-offset count; the bar is covering's **average** 0.041
+nats/offset, and PASS additionally requires eff_offs > 1048.
+
+| family | best fitness | eff_offs | nats/offset | vs the bar |
+|---|---|---|---|---|
+| ExpFamily (j·aⁿ+c) | 0.092 | 209 | 2.20 | 53× too expensive |
+| Compose (2-deep) | 0.076 | 695 | 8.86 | 215× |
+| Cyclotomic (Φ_n) | 0.039 | 348 | 8.71 | 211× |
+| PolyImage (a·mᵏ−c) | 0.001 | 56 | 46.1 | 1118× |
+
+(The 0.4597 row still shown by the status board is the pre-fix score of
+the same ExpFamily point; its corrected value is 0.092.)
+
+Two structural facts are visible in the table and neither is an artifact
+of search effort. First, **no family clears both filter halves at once**:
+the ones that reach appreciable coverage (Compose 695, Cyclotomic 348) do
+so only by paying 8–9 nats per offset, while the cheapest family
+(ExpFamily 2.20) cannot afford more than 209 offsets out of the 460-nat
+budget. That is the coverage-versus-cost trade the closure argument
+predicts, now measured rather than asserted. Second, the ordering matches
+Lemma 1's case analysis exactly: univariate value-set families are worst
+(PolyImage, ceiling-limited), order-condition families are cheapest per
+offset but strictly O(1) offsets per condition (ExpFamily), and
+composition buys coverage additively while paying additively — no
+super-additive interaction has appeared in ~10⁴ hand-enumerated plus 21
+evolved candidates.
+
+Evolution's behaviour is itself evidence: given a free hand and a
+frontier-seeking objective, it converged on the same family the
+exhaustive tier had already identified as the closest near-miss, tuned it
+to the edge of what order conditions allow, and then stalled 53× short of
+the bar. The remaining gap is not a search problem.
