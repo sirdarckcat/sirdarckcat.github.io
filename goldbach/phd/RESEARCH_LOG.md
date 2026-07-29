@@ -11,6 +11,24 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
+- Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
+  hard results produced for it: (1) **rung ladder** E(Q) at 199d computed to
+  Q=200,000 — E=37.69, e^E=2.4e16 ≈ 950 fleet-years, geometric rung spacing
+  makes climbing cost ~4% more than jumping; (2) **packing probe** — c1 is a
+  local optimum (ascent+kicks gain 0 at 122k, −0.8 nats at 200k); (3)
+  **boost-vs-kills equilibrium** — cover size is set by dE=0, not by the lnB
+  budget (adding r=461 nets +0.00 nats), explaining the flat frontier; (4)
+  **SoK §7.4 LP certificate executed and VACUOUS** — fractional coverage is
+  100.00% at both Q (kill-mass 1.86·π), so the entire game exponent is an
+  integrality/rounding gap: naive 15.6% → greedy 7.56% → fractional 0;
+  1% absolute ≈ 2.7 nats ≈ 15× compute. Headline recommendations: quantum
+  crossover computed and negative (E*≈41–55 ≥ all reachable targets);
+  GPU port of skip-frac (O1, ~2–3×); Erdős–Rankin/FGKMT rounding-gap
+  programme (P2) as the central open problem; Operation Staircase ladder
+  140k→150k→165k→175k→200k with priced closers for the final e^5.5 wall
+  (volunteer swarm / ASIC / mathematics).
+
 ### 2026-07-29 — CAMPAIGN 3 STOPPED at user request (duplicative with another worker)
 - Stopped at **380/17,200 slices (3.98e8 raw candidates, hit-mass λ=0.077,
   survival 0.926)** — a clean in-model early stop; per-slice p̂/Ê/hit% steady
