@@ -49,6 +49,12 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   22 exact-LNS windows (CP-SAT, incumbent-floored): 867 never beaten,
   always matched; optimality proofs did not close within caps — gate
   OPEN, next: per-window LP certificates + provable small windows.
+- Door 1 turn 2: LP certification added — **17 of 18 new windows
+  CERTIFIED optimal at the incumbent** (floor(LP) = incumbent coverage;
+  sizes 7 and 12, incl. tight-set at 120s caps). 40 windows total, 867
+  never beaten. The one uncertified window contains small moduli (LP
+  gap 16 — the global LP vacuousness in miniature). Turn 3: size 14-16
+  at 300s + random-restart basin probe, then gate verdict.
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new

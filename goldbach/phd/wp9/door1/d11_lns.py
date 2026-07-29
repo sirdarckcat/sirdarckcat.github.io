@@ -14,6 +14,8 @@ import time
 
 import numpy as np
 from ortools.sat.python import cp_model
+from scipy import sparse
+from scipy.optimize import linprog
 from sympy import primerange
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +45,34 @@ def stability_order(assign, cc):
         gaps.append((int(cur - hist.max()), r))
     gaps.sort()
     return [r for _, r in gaps]
+
+
+def lp_cert(assign, W, free):
+    """LP relaxation of the window subproblem. Returns the fractional
+    optimum; floor(LP) == incumbent coverage certifies optimality."""
+    offs, tot = {}, 0
+    for r in W:
+        offs[r] = tot
+        tot += r
+    nf = len(free)
+    rows, cols, vals = [], [], []
+    for r in W:
+        rows.extend(range(nf))
+        cols.extend(offs[r] + RES[r][free])
+        vals.extend([-1.0] * nf)
+    rows.extend(range(nf))
+    cols.extend(range(tot, tot + nf))
+    vals.extend([1.0] * nf)
+    for i, r in enumerate(W):
+        rows.extend([nf + i] * r)
+        cols.extend(range(offs[r], offs[r] + r))
+        vals.extend([1.0] * r)
+    A = sparse.csr_matrix((vals, (rows, cols)), shape=(nf + len(W), tot + nf))
+    b = np.concatenate([np.zeros(nf), np.ones(len(W))])
+    c = np.zeros(tot + nf)
+    c[tot:] = -1.0
+    res = linprog(c, A_ub=A, b_ub=b, bounds=(0, 1), method='highs')
+    return -res.fun if res.status == 0 else float('inf')
 
 
 def solve_window(assign, W, time_cap):
@@ -118,6 +148,18 @@ def main():
         na, nu, opt = solve_window(assign, W, cap)
         u2, cc2 = ucount(na)
         tag = 'OPT' if opt else 'feas'
+        # LP certificate for the window subproblem
+        ccf = np.zeros(len(P), dtype=np.int16)
+        for r in moduli:
+            if r not in W:
+                ccf += (RES[r] == assign[r])
+        free = np.nonzero(ccf == 0)[0]
+        inc_cov = sum(1 for j in free
+                      if any(RES[r][j] == assign[r] for r in W))
+        lp = lp_cert(assign, W, free)
+        cert = int(lp) == inc_cov and u2 >= u
+        if cert:
+            tag += '+LPcert'
         if u2 < u:
             print(f"  win{w} [{tag}] IMPROVED: {u} -> {u2} "
                   f"(window {sorted(W)[:5]}...)", flush=True)
@@ -126,7 +168,8 @@ def main():
             json.dump({str(r): a for r, a in assign.items()},
                       open(BEST, 'w'))
         else:
-            print(f"  win{w} [{tag}] no gain (window best {u2})", flush=True)
+            print(f"  win{w} [{tag}] no gain (best {u2}, "
+                  f"LP={lp:.2f} vs inc {inc_cov})", flush=True)
     print(f"final |U|={u} after {nwin} windows in {time.time()-t0:.0f}s",
           flush=True)
     json.dump({str(r): a for r, a in assign.items()}, open(BEST, 'w'))
