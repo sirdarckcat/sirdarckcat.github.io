@@ -435,3 +435,52 @@ solving = extraction horn). Combined with §9–§10:
 > for Lemma 1 is write-up rigor (Taylor-regime uniformity in 11.1;
 > the word-combinatorics in 11.2(iii) for non-abelian Γ), not new
 > mathematics.
+
+## 12. Generative tier, session 1 — the evaluator was wrong, and evolution found it
+
+AlphaEvolve access granted 2026-07-29; experiment
+`15926813306184238842` (project sdcpocs, engine goldbach_1784979910032),
+client-evaluated loop per harness.md. Within ~10 candidates the search
+had pushed the reported fitness 0.2725 -> 0.3351 -> 0.4597, entirely
+inside ExpFamily (j·aⁿ+c order conditions), by driving the mean
+per-offset cost 3.71 -> 3.01 -> 2.20 nats. It was not finding new
+mathematics: **it was exploiting a hole in my scorer**, exactly the
+failure mode harness.md §5 predicted for this family.
+
+**The hole.** ExpFamily reported ~10,416 certifiable offsets while
+charging ln(ord) nats *per offset*, and the bill was levied only against
+the 867 residual primes. So a design was credited with bulk coverage
+costing 10,416 x 2.20 = 22,900 nats of design entropy while the entire
+construction has only ln B = 460 nats to spend — a 50x overdraft.
+
+**The fix (scorer.py, committed).** (i) per-offset mechanisms are now
+charged for every offset they claim; (ii) `row()` enforces the budget:
+if total cost exceeds ln B, only the affordable fraction lnB/cost of the
+claimed offsets counts, and the row is labelled BUDGET-CAPPED.
+Re-graded: seed 0.2725 -> 0.0323, best evolved 0.4597 -> 0.0465, with
+effective coverage 124-148 offsets instead of 10,416.
+
+**What this sharpens in the theorem.** The budget constraint makes the
+two filter conditions self-consistent and yields a cleaner bar. Since
+eff_offsets = min(count, lnB/cost) must exceed CEIL = 3 sqrt(Q) = 1048,
+
+  **cost_per_offset < lnB / CEIL = 0.44 nats**,
+
+and the honest comparison is not covering's *marginal* endgame
+(~1.01 nats/offset, tier-0 T1) but covering's **average**:
+437 nats / 10,607 certified offsets = **0.041 nats/offset**. That is the
+real economic moat — a bulk mechanism must be ~25x cheaper per offset
+than covering's endgame and comparable to its average. ExpFamily, the
+best non-covering family known, sits ~50-90x above it. Lemma 1's
+accounting should be restated in these terms: covering wins not at the
+margin but on average, because ln r nats buys ~pi(Q)/(r-1) offsets at
+once whereas every known algebraic mechanism buys O(1) offsets per unit
+of entropy.
+
+**Methodological note for the thesis.** The generative tier's first
+contribution was to break the referee, not the theorem. That is the
+designed behaviour of the audit protocol (never trust a PASS; never let
+a candidate report its own fitness) and it is the strongest available
+evidence that the protocol works: a wrong evaluator was caught within
+minutes by an adversary optimising against it, before any claim was
+made. The run continues under the corrected accounting.

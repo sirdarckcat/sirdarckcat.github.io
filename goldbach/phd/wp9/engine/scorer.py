@@ -63,15 +63,31 @@ def setup():
 
 
 def row(family, params, killable, res, cost, reason, baseline=False):
+    """Score a schema.  The design-entropy BUDGET is enforced here: a family
+    whose total certificate cost exceeds ln B cannot be bought outright, only
+    the affordable fraction of it, so the certified-offset count is scaled by
+    lnB/cost.  Without this a per-offset mechanism could advertise thousands
+    of certifiable offsets while charging more nats each than the whole
+    construction has to spend (the hole the generative tier found on
+    2026-07-29: ExpFamily claiming 10,416 offsets at 2.2 nats = 22,900 nats
+    against a 460-nat budget)."""
     nprk = cost / res if res else float('inf')
+    afford = 1.0 if cost <= LNB else LNB / cost
+    eff_killable = killable * afford
+    eff_res = res * afford
     if baseline:
         verdict, fitness = 'BASELINE', 0.0
     else:
-        verdict = 'PASS' if (killable > CEIL and nprk < BENCH) else 'REJECT'
-        fitness = min(1.0, killable / CEIL) * \
+        verdict = 'PASS' if (eff_killable > CEIL and nprk < BENCH) else 'REJECT'
+        fitness = min(1.0, eff_killable / CEIL) * \
             (min(1.0, BENCH / nprk) if res else 0.0)
-    return dict(family=family, params=params, killable=int(killable),
-                residual_kills=int(res), design_cost=round(cost, 2),
+    if afford < 1.0:
+        reason += (" | BUDGET-CAPPED: total cost %.0f nats > lnB %.0f, so at "
+                   "most %.0f of %.0f offsets are affordable"
+                   % (cost, LNB, eff_killable, killable))
+    return dict(family=family, params=params, killable=int(eff_killable),
+                claimed_killable=int(killable),
+                residual_kills=int(eff_res), design_cost=round(cost, 2),
                 nats_per_residual_kill=None if not res else round(nprk, 3),
                 verdict=verdict, fitness=round(float(fitness), 4),
                 reason=reason)
@@ -125,11 +141,15 @@ def ev_expfamily(p):
         return row('ExpFamily', p, 0, 0, 0.0, 'no certifying s in sample')
     frac = len(costs) / len(qs)
     mean_c = sum(costs) / len(costs)
-    res_est = frac * len(_residual)
-    return row('ExpFamily', p, frac * Q / math.log(Q), res_est,
-               mean_c * res_est,
-               f'per-offset cost ~ln(ord)={mean_c:.2f}; one offset per '
-               f'order-condition (wp7-P3)')
+    k_est = frac * Q / math.log(Q)          # offsets this family can certify
+    # Each order-condition certifies ONE offset and costs ln(ord) nats, so the
+    # design must pay mean_c for EVERY offset it claims -- charging only the
+    # 867 residuals understated the bill by 12x and let a per-offset mechanism
+    # advertise bulk coverage it cannot afford (audit, 2026-07-29).
+    return row('ExpFamily', p, k_est, k_est, mean_c * k_est,
+               f'per-offset cost ~ln(ord)={mean_c:.2f} charged per certified '
+               f'offset (wp7-P3: one offset per order-condition); '
+               f'residual-only kills would be {frac * len(_residual):.0f}')
 
 
 def ev_multipoly_bin(p):
