@@ -378,3 +378,60 @@ families (v ≥ d), where the two-horn access argument is quantified but
 the symmetry classification is a sketch.** Any grammar extension to
 v ≥ 4 must ship with Prop 10.2 hardened first — noted in harness.md's
 grammar-extension rule.
+
+## 11. The dense frontier closed: isolation + orbit accounting (2026-07-29)
+
+The v ≥ d case (window-dense values) was left in §10 as a dichotomy
+needing a symmetry classification. It does not: two elementary
+propositions close it, and the feared "structured access" reduces to
+horns the theorem already has.
+
+**Prop 11.1 (local isolation) [P].** Let u₀ solve G(u₀) ∈ window at
+height X, G = A·B homogeneous of degree d. Any δ ∈ Z^v with
+G(u₀+δ) in a width-2Q window around G(u₀), within the Taylor regime,
+satisfies |∇G(u₀)·δ| ≲ Q and |δᵀH(u₀)δ| ≲ Q. The solution set of
+these is an ellipsoid slab with principal extents Q·X^{−(d−1)/d}
+(gradient direction) and Q^{1/2}·X^{−(d−2)/(2d)} (Hessian directions)
+— at X = 10^200, Q = 2×10^5, d = 4: 10^{−145} and 10^{−47}. Every
+extent < 1/2, so the only lattice point is δ = 0: **window solutions
+are pairwise isolated; there is no local navigation between certified
+offsets.** Dense existence is non-constructive by geometry, not by
+hardness.
+
+**Prop 11.2 (orbit accounting — symmetry cannot multiply offsets)
+[P-shaped].** Let Γ ⊆ GL_v(Z) be any infinite group of structured
+moves available to the scheme. Three exhaustive cases:
+(i) Γ ⊆ Aut(G): navigation conserves the value m — one offset per
+    orbit, harmless.
+(ii) Γ ⊆ Aut(A) (wlog): navigation conserves the FACTOR a₀ = A(u₀).
+    Every certified value reachable from u₀ carries the planted
+    divisor a₀. If base points are enumerable (a₀ ≤ T, poly range),
+    the certificate exhibits a divisor ≤ T — sieve-equivalent (§8
+    rule). If a₀ ~ X^{1/2} (balanced), base points with B-value
+    landing in the width-(Q/a₀) target are a sliver (rel. width
+    Q/X ≈ 10^{−195}): Prop 11.1's regime again.
+(iii) Mixed words (generators from Aut(A) and Aut(B) alternating):
+    reachable (log A, log B) pairs form a coarse 2-generator log
+    lattice with steps ~2 log λ ≥ Θ(1); pairs with both coordinates
+    ≤ log X number ~(log X)² ≈ 2×10^5, versus a target window of
+    relative width 10^{−195} in log A + log B — expected hits
+    ~10^{−190}. No alternating-orbit access.
+Any remaining access route must solve G(u) = m for PRESCRIBED m — but
+a product-form representation IS a nontrivial factorization of m, so
+a prescribed-value solver factors the scheme's own rough complements:
+that is the theorem's existing EXTRACTION horn (factoring-equivalent),
+not a new hypothesis.
+
+**Consequence.** Lemma 1(c) now closes the dense frontier v ≥ d with
+no symmetry classification: certified-offset counts are bounded by
+(enumerable-small-divisor slice = covering/sieve economics) +
+(isolated-sliver slice = X^{(d−1)/d}/W access cost) + (prescribed-value
+solving = extraction horn). Combined with §9–§10:
+
+> **Lemma 1 status: [P at draft rigor] on all of L AND its v ≥ d
+> extension, modulo (a) standard value-equidistribution inputs,
+> (b) H1, and (c) the extraction/factoring horn.** The "1–2 month
+> classification item" (wp9_plan phase 5) is dissolved — what remains
+> for Lemma 1 is write-up rigor (Taylor-regime uniformity in 11.1;
+> the word-combinatorics in 11.2(iii) for non-abelian Γ), not new
+> mathematics.
