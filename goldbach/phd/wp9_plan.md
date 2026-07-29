@@ -107,3 +107,26 @@ restricted-L proof: 1–2 months, the chapter's core. (4) The H2 open
 problem posted publicly. Door 3 certifying "no fourth door" is what
 makes Door 1's investment safe; Door 1's results feed every rung of the
 ladder immediately.
+
+## Door 3 costing (added on request, 2026-07-29)
+
+| component | researcher attention | compute / cash | calendar |
+|---|---|---|---|
+| WP9 statement + Lemma 2 write-up | 2–3 sessions | ~0 (reuses banked campaign data) | ~1 week |
+| DSL + compiler (schema → enumerator, certificate, entropy cost) | the careful part: 1–2 weeks | ~0 | 1–2 weeks |
+| Exhaustive tier (~10^4 schemas) | supervision only | 10–30 CPU-h + ~$50–200 of agent tokens | 2–3 days, delegated |
+| Generative tier (~10^3 LLM-proposed schemas + audits) | audit passes only | ~$100–500 of agent tokens | 1 week, delegated |
+| Lemma 1 (entropy accounting, multivariable case) | THE cost: 1–2 months part-time | ~0 | 1–2 months |
+| H2 open-problem note + posting | 1 day | 0 | 1 day |
+
+Total: ≲ $1k cash-equivalent, < 100 CPU-hours, ~6–10 part-time weeks of
+attention run alongside Door 1 and the ladder. Cheapest door by 2–3
+orders of magnitude (Door 2 is $10^5–10^6-scale; the fleet burns more
+CPU per day than the whole engine needs in total). The real currency is
+researcher attention, and most of Lemma 1's cost is already owed to the
+thesis anyway (WP7 → theorem is the natural chapter); the marginal cost
+of Door 3 over "write the thesis properly" is roughly the engine:
+~2 weeks + a few hundred dollars of tokens. Abort structure: if Lemma 1
+resists, scope shrinks to restricted-L theorem + conjecture (cost capped,
+still a chapter); if the engine finds a pass, cost explodes joyfully into
+a new research programme, which is the outcome we would pay the most for.
