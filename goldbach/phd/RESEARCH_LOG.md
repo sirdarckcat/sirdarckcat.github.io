@@ -72,6 +72,18 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   estimator, 1RSB/SP needed. Running verdict: 867 is at/near the
   quenched optimum; annealed 758 likely a clustering gap. Door-1 prize
   revised to 0–2.6 nats. Verdict: d11_gate_verdict.md addendum.
+- **AlphaEvolve access LIVE** (owner-granted, verified 2026-07-29): project
+  sdcpocs, engine goldbach_1784979910032, Discovery Engine v1alpha. Read
+  path fully working — 7 prior experiments found (5 COMPLETED, 2 PAUSED),
+  including the "Super Hard Constrained Multi-Objective Goldbach Cover
+  Step-Heuristic" run whose 100 programs and scores corroborate the earlier
+  file-based review (best neg_est_digits −193.6 at E 17.56). Coordinates,
+  API gotchas (relative resource names; broken `cryptography` needing
+  --ignore-installed), and the WP9 build order are in
+  wp9/engine/alphaevolve_access.md. Confirms the loop is CLIENT-evaluated
+  (acquirePrograms → local grading → submitProgramsEvaluations), so the
+  harness's anti-reward-hack property holds. Not yet started: a real
+  experiment (spends the owner's quota — awaiting go-ahead).
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
