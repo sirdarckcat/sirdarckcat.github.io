@@ -174,3 +174,12 @@ harness. Two contributions, neither of them a falsification:
 Phase 5 (Lemma 1) is therefore complete at draft rigor across the whole
 grammar; what remains conjectural is H1, H2, the o(1) terms, and
 out-of-grammar mechanisms.
+
+### Phase status final (2026-07-29)
+Phases 1-6 COMPLETE at draft rigor. Phase 4 (generative tier) converged:
+41 candidates, 4 families, zero passes, best fitness 0.0919; the search
+rediscovered the exhaustive tier's near-miss family and stalled 53x short
+of the bar. Verdict written as closure-memo sec 14. Remaining work is
+write-up rigor plus the two named conditionals (H1, H2); the experiment
+can be left to finish its 100-program budget or paused via
+POST {experiment}:pause -- nothing further depends on it.

@@ -97,6 +97,18 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   PolyImage/Cyclotomic cap at sqrt(Q)=349 offsets at ANY price, Compose
   is empty at scale ((m-m')(m+m')=c1-c2 forces m <= |c1-c2| while record
   scale needs m ~ 1e100). Memo secs 12, 13, 13b, 13c.
+- **DOOR 3 COMPLETE** (draft rigor). Generative tier converged at 41
+  candidates / 4 families / zero passes (best 0.0919). Verdict in memo
+  sec 14: closure theorem holds across the grammar with every family
+  closed by a proof of its own kind; conjectural remainder is H1, H2, the
+  o(1) terms, and out-of-grammar mechanisms. Methodological headline: the
+  adversary broke the REFEREE first (50x accounting error), the audit
+  protocol caught it pre-claim, and fixing it strengthened the theorem —
+  adversarial search is best reported as referee-hardening, not as failed
+  refutation. Programme consequence: the covering monopoly is now a
+  result, so records are governed by Door 1 (rounding gap, 0-2.6 nats,
+  resistant to LP-certified windows / BP / 44-modulus exact blocks) and
+  Door 2 (throughput).
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new

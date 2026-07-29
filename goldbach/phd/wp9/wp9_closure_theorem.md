@@ -603,3 +603,61 @@ optimal purchase 1151 nats vs a 460-nat budget, ceiling 419 offsets;
 MultiPoly = §9–§11 (cluster bound k_max ≤ 13, isolation, orbit
 accounting); NormForm = reduces to MultiPoly; Compose = empty
 intersection at scale. Nothing in the grammar is left to search.
+
+## 14. Verdict (2026-07-29): the theorem stands on the grammar
+
+**Search effort.** 13,661 hand-enumerated schema instances (§8) plus 41
+LLM-evolved candidate programs emitting ~40 graded schema sets (§12–§13c),
+across every family of L. **Zero passes.** Best budget-aware fitness
+0.0919 — an ExpFamily point (a=3, j=2, c=3) certifying 209 affordable
+offsets at 2.197 nats each, against a requirement of >1048 offsets at
+<0.44, and covering's actual 0.041.
+
+**Per-family closure status.**
+
+| family | closure | kind |
+|---|---|---|
+| Congruence(d,a) | is the covering baseline; composite d dominated by its prime factor (P1) | proved |
+| PolyImage(k≥2) | value set ≤ Q^{1/k} ⇒ ≤ 349 offsets at any price | proved, price-free |
+| Cyclotomic(Φ_n) | φ(n) ≥ 2 ⇒ same √Q ceiling | proved, price-free |
+| ExpFamily(j·aⁿ+c) | supply-limited: cheapest-first purchase needs 1151 nats vs lnB=460; ceiling 419 offsets | proved, quantitative |
+| MultiPoly (v<d) | k_max cluster bound ≤ 13 certified offsets | proved (first moment) |
+| MultiPoly (v≥d) | isolation (§11.1) + orbit conservation (§11.2); else extraction horn | proved at draft rigor |
+| NormForm | reduces to MultiPoly | proved |
+| Compose (depth 2) | two family constraints intersect in an O(1) set ⇒ empty at 10²⁰⁰ | proved |
+
+**What remains conjectural.** (i) **H1**, Hardy–Littlewood independence of
+shifted-prime primality conditional on divisor data — standard but
+unproved; the 1.2×10⁹-candidate calibration (|Ê−E| ≤ 0.1) is its
+empirical support. (ii) **H2**, no compositeness test cheaper than one
+modexp on rough inputs — posted as an open problem (h2_open_problem.md);
+a positive answer breaks the *cost floor*, not the covering monopoly.
+(iii) The **o(1) terms** in Lemma 1's amortised accounting, and the
+value-equidistribution inputs to §10's cluster counting. (iv)
+**Out-of-grammar mechanisms**: L is a concrete language, deliberately
+finite; the theorem is a statement about it plus the two structural
+horns (planted ⇒ entropy accounting, extracted ⇒ factoring). A mechanism
+outside L — certifying compositeness by something that is neither a
+planted divisor identity nor per-instance divisor discovery — is not
+excluded, and nobody knows of one.
+
+**Methodological finding, which is the part worth generalising.** The
+adversarial search's first act was to break the *referee*, not the
+theorem: it found a 50× accounting error in my evaluator (per-offset costs
+billed against 867 residuals instead of all claimed offsets) and rode it
+from fitness 0.27 to 0.46 in ten candidates. The audit protocol caught it
+before any claim was made, because (a) candidates could only emit data,
+never fitness, (b) grading ran in a fresh trusted interpreter, and (c) a
+PASS required hand audit by construction. Correcting the referee then
+*strengthened* the result: it produced the budget constraint, the
+0.041-nats/offset average as the true bar, and the supply-side purchase
+argument that closes ExpFamily quantitatively. **Adversarial search
+against a formal claim is most valuable as a referee-hardening device,
+and should be reported that way rather than as a failed refutation.**
+
+Door 3 is complete at draft rigor: the Divisor-Paradigm Closure Theorem
+holds across the swept grammar, with named conditionals and one honest
+frontier (out-of-grammar mechanisms + H2). What the programme should do
+with that: the covering monopoly is now a *result*, so record progress is
+governed by Door 1 (rounding gap, currently 0–2.6 nats and resistant) and
+Door 2 (throughput), exactly as wp8 §6 argued.
