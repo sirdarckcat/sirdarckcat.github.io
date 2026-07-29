@@ -30,9 +30,9 @@
     206000000000,
     327058424910
    ],
-   "safe_k": 207912602624
+   "safe_k": 208136997888
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~1.5-3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-29T14:14Z"
+ "updated": "2026-07-29T13:57Z"
 }
