@@ -152,3 +152,25 @@ a new research programme, which is the outcome we would pay the most for.
   solving is the extraction horn. Lemma 1: [P at draft rigor]
   everywhere; remaining work is write-up rigor, not new mathematics.
 - Phase 6 (H2 note): DONE — wp9/h2_open_problem.md, posting-ready.
+
+## Door 3 phase 4 (generative tier) — outcome (2026-07-29)
+
+AlphaEvolve experiment 15926813306184238842 ran under the client-evaluated
+harness. Two contributions, neither of them a falsification:
+
+1. It broke the referee first: within ~10 candidates it exploited an
+   accounting hole (per-offset costs billed only against the 867
+   residuals), reaching an apparent 0.46 fitness. Hardened -- per-offset
+   mechanisms now pay for every offset claimed and coverage is capped at
+   lnB/cost -- which re-scored it to 0.046 and sharpened the theorem's
+   economics (the bar is covering's AVERAGE 0.041 nats/offset, not its
+   1.01-nat margin). See closure memo sec 12.
+2. It then stalled, and the stall is now proved rather than observed:
+   sec 13b closes ExpFamily quantitatively (optimal purchase 1151 nats vs
+   a 460-nat budget; ceiling 419 offsets) and sec 13c closes PolyImage /
+   Cyclotomic by the sqrt(Q)=349 value-set ceiling and Compose by empty
+   intersection at scale. Every branch of L now has a closure.
+
+Phase 5 (Lemma 1) is therefore complete at draft rigor across the whole
+grammar; what remains conjectural is H1, H2, the o(1) terms, and
+out-of-grammar mechanisms.

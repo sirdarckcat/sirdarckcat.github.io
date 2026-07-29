@@ -42,6 +42,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PHD = os.path.dirname(os.path.dirname(HERE))
 Q = 122000
 LNB = 200 * math.log(10)
+# The two filter constants. BENCH is covering's MARGINAL endgame cost
+# (tier-0 T1 measured 0.87-1.31 nats/offset over the last six moduli); it
+# tests "is this mechanism worth adding at the margin?". CEIL = 3*sqrt(Q)
+# tests "is it a BULK mechanism?" -- deliberately just above the sqrt(Q)
+# value-set ceiling that caps every degree>=2 identity family (sec 13c).
+# Because row() also enforces the design-entropy budget, clearing CEIL
+# implicitly demands cost < lnB/CEIL = 0.44 nats/offset, and the honest
+# reference point for a bulk mechanism is covering's AVERAGE, 437 nats /
+# 10,607 offsets = 0.041 nats/offset (sec 12). These constants are the
+# authoritative definition; the memo quotes them.
 BENCH = 1.01
 CEIL = 3 * math.sqrt(Q)
 

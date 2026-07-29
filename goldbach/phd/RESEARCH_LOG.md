@@ -84,6 +84,19 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   (acquirePrograms → local grading → submitProgramsEvaluations), so the
   harness's anti-reward-hack property holds. Not yet started: a real
   experiment (spends the owner's quota — awaiting go-ahead).
+- **Generative tier ran** (owner approved): experiment
+  15926813306184238842, ~36 candidates, ~617k output tokens. It found a
+  hole in MY EVALUATOR before it found anything about the theorem —
+  per-offset costs were billed only against the 867 residuals, so
+  ExpFamily could advertise 10,416 offsets costing 22,900 nats against a
+  460-nat budget (apparent fitness 0.46). Hardened; re-scored 0.046. The
+  correction sharpened the economics: the bar for a bulk mechanism is
+  covering's AVERAGE 0.041 nats/offset, not its 1.01-nat marginal
+  endgame. Then the closures went from empirical to costed: ExpFamily
+  needs 1151 nats to reach 1048 offsets (2.5x budget; ceiling 419),
+  PolyImage/Cyclotomic cap at sqrt(Q)=349 offsets at ANY price, Compose
+  is empty at scale ((m-m')(m+m')=c1-c2 forces m <= |c1-c2| while record
+  scale needs m ~ 1e100). Memo secs 12, 13, 13b, 13c.
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new

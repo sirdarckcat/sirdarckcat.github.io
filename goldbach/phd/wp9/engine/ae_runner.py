@@ -276,13 +276,21 @@ def cmd_status():
     print("state:", d.get("state"), "| stats:", json.dumps(d.get("stats"))[:300])
     if os.path.exists(FINDINGS):
         rows = [json.loads(l) for l in open(FINDINGS)]
-        rows.sort(key=lambda r: -r["fitness"])
-        print("graded candidates: %d | best fitness %.4f" %
-              (len(rows), rows[0]["fitness"] if rows else 0.0))
-        for r in rows[:5]:
-            print("   fitness %.4f killable=%s nats=%s :: %s" %
+        # Rows logged before the 2026-07-29 budget-accounting fix used the old
+        # (unbudgeted) scorer, so their fitness is not comparable. Detect them
+        # by the absence of the budget cap: claimed coverage without a cap.
+        live = [r for r in rows if (r.get("killable") or 0) <= 2000]
+        stale = len(rows) - len(live)
+        live.sort(key=lambda r: -r["fitness"])
+        print("graded candidates: %d (%d pre-fix rows hidden) | best fitness %.4f"
+              % (len(rows), stale, live[0]["fitness"] if live else 0.0))
+        for r in live[:5]:
+            b = r.get("best") or {}
+            print("   fitness %.4f eff_offsets=%s nats/offset=%s  %s %s" %
                   (r["fitness"], r.get("killable"), r.get("nats"),
-                   json.dumps(r.get("best", {}).get("params"))[:80]))
+                   b.get("family", "?"), json.dumps(b.get("params"))[:60]))
+        print("   bar to beat: covering's average 0.041 nats/offset, "
+              "and >%d effective offsets" % 1048)
     return 0
 
 
