@@ -218,3 +218,67 @@ rather than a vibe.
 - Campaign 3 assets (Q=122,000, 40 variants, 380/17,200 slices banked)
   remain valid as a spare rung-0; the fleet's Q=140,009 supersedes its
   purpose while it runs.
+
+## 6. WP8b — after pushback: the three doors (v2, same day)
+
+User verdict on §1–§4: incremental. Correct response is not more ideas but
+a **closure argument**: every attack generated this session reduces to one
+of three irreducible doors, and each door has one maximal (leap) form.
+
+**The closure (why idea-space is small).** (i) *Divisor information is
+fully harvested*: any k-side congruence trick (mini-covers on k, planted
+kills) selects a sub-progression the sieve already identifies — zero new
+information. (ii) *Correlation ⇒ common divisor ⇒ covering* (little
+lemma: a | N−q₁ and a | N−q₂ ⇒ a | q₁−q₂ ≤ Q), and P5 empirically bounds
+everything else at ≤0.1 nats; so residual PRP events are irreducibly
+independent. (iii) *Planted-vs-extracted dichotomy for compositeness
+certificates*: a mechanism either plants the divisor at design time —
+then it pays the WP7 ln(r)-per-offset accounting (P1–P4 closed; checked
+today: two-variable quadratic forms give window-dense offset families
+(~9,300 of 18,000 at Q=200k!) but the enumeration of representations
+dies at Cornacchia-mod-composite (factoring-hard) and representation ≠
+compositeness — primes are form values too) — or it extracts divisor
+information from given m, which is factoring-equivalent; and
+certificate-free detection is already done by the cheapest known object
+(one Fermat modexp). Formalizing (iii) over a schema language is a
+thesis-grade completeness theorem; its falsification arm is the only
+paradigm-escape left, and it is precisely "find a sub-modexp composite
+detector," a clean open problem in algorithmic number theory.
+
+**Door 1 — the rounding gap (mathematics). Measured today:** random
+assignments over the full e^{435.7} design space have |U| ~ (μ=1377,
+σ=21.0) at Q=122k [μ=2160, σ=24.1 at 200k]; σ is *below* the independence
+prediction (34.8, 43.6) — negative correlations thin the deep tail. The
+annealed (first-moment) threshold: u* ≈ 758 (Gaussian, measured σ) vs 867
+achieved at 122k; u* ≈ 1448 vs 1569 at 200k. Greedy already sits at z=24.3
+of the 29.5 available σ. **Honest prize: ~2.6–2.9 nats (14–19×) to the
+random-ensemble threshold**, with two upside unknowns: non-uniform
+ensembles (FGKMT-style banded assignments live outside the ensemble
+measured) and whether the threshold is algorithmically reachable
+(clustering). Tools in order: LP-solution randomized rounding + repair,
+large-neighborhood search with exact CP-SAT sub-solves, parallel
+tempering with cluster moves, Moser–Tardos resampling — plus posting the
+instance as a public optimization challenge (Al Zimmermann-style), which
+is how problems of exactly this shape get 30 world-class heuristicists
+for free. Compounds every rung; no hardware.
+
+**Door 2 — the ticket rate (compute), stated at its maximum.** The search
+is progress-free, stateless per ticket, verification is milliseconds:
+the best-shaped exascale volunteer workload that exists. Folding@home
+peaked ≈ 2.4 exaFLOPS ≈ 2×10⁵ × our fleet: **g > 200,000 in ~2 days at
+that scale; 1% of it ≈ 7 months, before Door 1 and the engine ×10.**
+GIMPS/PrimeGrid built this sport's neighbors on exactly this door; ASIC
+(≈e^6/rack) is its capital-intensive twin.
+
+**Door 3 — the paradigm (mechanisms).** Closed modulo the dichotomy
+above; the leap deliverable flips from "find a mechanism" to "prove the
+Closure Theorem + run the automated schema search as its falsification
+arm" (AlphaEvolve-style enumeration over identity schemas, auto-filtered
+by the WP7 triple). Unbounded payoff if the theorem is false; a real
+theorem if true. Either outcome is new mathematics.
+
+Everything else tried this session — window-dual, Pell/Cornacchia
+enumeration, k-side covers, analytic steering, learned policies, quantum
+— lands provably inside a door or dies to the closure. The programme's
+strongest possible statement is: *three doors, one maximal bet each, and
+a theorem that there is no fourth.*
