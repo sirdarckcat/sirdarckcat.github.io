@@ -11,6 +11,16 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-07-29 — CAMPAIGN 3 STOPPED at user request (duplicative with another worker)
+- Stopped at **380/17,200 slices (3.98e8 raw candidates, hit-mass λ=0.077,
+  survival 0.926)** — a clean in-model early stop; per-slice p̂/Ê/hit% steady
+  throughout (p̂≈0.054, Ê≈21.08, hit%≈27.6, ~16.3k k/s). Checkpoint is
+  committed; `run_campaign3.py --chunk-seconds 560` resumes losslessly.
+  If any session resumes or runs a parallel budget-game campaign, coordinate
+  variant/k-space assignment first — independent workers should scan
+  DISJOINT variants (they compose losslessly; duplicated k-ranges are pure
+  waste). Wakeup chain deleted. Next: strategy reflection memo (wp8).
+
 ### 2026-07-28 — CAMPAIGN 3 LAUNCH: budget game, target g > 119,419 under 10^199
 - Target switched by user directive: largest g(N) below 200 digits. Cover: the
   ratchet session's unstarted round-2 leftover c1 (Q=122,000, 88 classes,
