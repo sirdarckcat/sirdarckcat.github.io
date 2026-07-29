@@ -42,6 +42,13 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   10^190) close the dense frontier outright. Lemma 1 [P at draft rigor]
   on L and beyond; Door 3's mathematical core is COMPLETE at draft
   level. Next: Door 1 gate D1.0/D1.1 (does anything beat 867?).
+- Door 1 turn 1 (same day): D1.0 diagnostics — 19/88 moduli tight
+  (gap ≤ 1) at the greedy point; random-start ascents land 90–110 primes
+  WORSE (greedy's adaptivity ≈ 2.4 nats); backbone overlap 2.4% = chance
+  (fully degenerate landscape — no crossover structure). D1.1 gate after
+  22 exact-LNS windows (CP-SAT, incumbent-floored): 867 never beaten,
+  always matched; optimality proofs did not close within caps — gate
+  OPEN, next: per-window LP certificates + provable small windows.
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
