@@ -130,3 +130,22 @@ of Door 3 over "write the thesis properly" is roughly the engine:
 resists, scope shrinks to restricted-L theorem + conjecture (cost capped,
 still a chapter); if the engine finds a pass, cost explodes joyfully into
 a new research programme, which is the outcome we would pay the most for.
+
+## Phase status (2026-07-29, end of first Door-3 work day)
+
+- Phase 1 (statement + Lemma 2): DONE — wp9/wp9_closure_theorem.md §1–§7.
+- Phase 2 (DSL + filter + tier-0): DONE — engine/tier0.py, all WP7
+  numbers reproduced exactly; two calibration refinements banked.
+- Phase 3 (exhaustive tier): DONE — 13,661 instances, 0 passes;
+  near-miss board = ExpFamily at 3.1–4.2 nats/residual kill.
+- Phase 4 (generative tier): READY, BLOCKED on AlphaEvolve access —
+  engine/scorer.py + engine/harness.md specify the full contract.
+- Phase 5 (Lemma 1): §9 proves the (2,2,2) quartic-product case
+  unconditionally-on-average (cluster bound k_max=2); §10 closes the
+  ENTIRE v < d quadrant via the k_max formula (all O(1) ≤ 13 certified
+  offsets vs 18,000 needed; measured α̂=0.761 vs 0.750 for (2,2,3)) —
+  within-grammar Lemma 1 now [P] modulo standard value
+  equidistribution. REMAINING MATH: Prop 10.2(ii) — torus-action ⇒
+  norm-structure classification for the out-of-grammar dense frontier
+  (v ≥ d); this is the 1–2 month item.
+- Phase 6 (H2 note): DONE — wp9/h2_open_problem.md, posting-ready.

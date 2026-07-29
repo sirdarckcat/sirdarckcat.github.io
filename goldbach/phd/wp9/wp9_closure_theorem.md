@@ -318,3 +318,63 @@ balanced-representation principle stays a conjecture with §8's
 measurements as evidence. The theorem's overall status upgrades from
 "conditional sketch" to "proved on the swept grammar, conjectural at
 the grammar's boundary".
+
+## 10. Lemma 1(c) at the outer edge: the (d₁, d₂, v) landscape (2026-07-29)
+
+Factors of degrees d₁, d₂ ≥ 2 (degree-1 factors are sieve-equivalent,
+§8) in v shared variables; d = d₁+d₂; value-set density exponent
+α = min(1, v/d) (measured for (2,2,3): α̂ = 0.761 vs 0.750 predicted,
+windows of width 10⁴ at heights 10⁶–10¹⁰; engine log in git).
+
+**Prop 10.1 (cluster ceiling — closes every v < d combo)** [P modulo
+standard equidistribution of form values]. The first-moment count of
+k-clusters of G-values in width-Q windows below X is
+X^α·(X^{α−1}Q)^{k−1}, so clusters exist only up to
+
+  k_max(α) = 1 + ⌊α·lnX / ((1−α)·lnX − lnQ)⌋   (finite iff α < 1 − lnQ/lnX).
+
+At X = 10^200, Q = 2×10^5 (threshold α* = 0.9735): every v < d combo
+has α ≤ (d−1)/d ≤ 0.9 < α*, hence k_max = O(1):
+
+| combo | α | k_max | | combo | α | k_max |
+|---|---|---|---|---|---|---|
+| (2,2,2) | 0.500 | 2 | | (2,2,3) | 0.750 | 4 |
+| (2,3,3) | 0.600 | 2 | | (2,3,4) | 0.800 | 5 |
+| (2,4,4),(3,3,4) | 0.667 | 3 | | (2,4,5),(3,3,5) | 0.833 | 6 |
+| (3,4,5) | 0.714 | 3 | | any v<d | ≤0.9 | ≤ 13 |
+
+A scheme needs ~π(Q) ≈ 18,000 certified offsets per candidate; k_max ≤ 13
+means every shared-variable identity family with v < d certifies O(1)
+offsets — **negligible at any price**. This subsumes §9's k=3 argument
+(the (2,2,2) row) and closes the entire v < d quadrant, including all
+combos expressible in the current grammar (v ≤ 3 admits no v ≥ d case
+with both degrees ≥ 2). **Within-grammar, Lemma 1(c) is now closed by
+first-moment counting alone.**
+
+**Prop 10.2 (the dense frontier v ≥ d — out of grammar, two horns)**
+[C, quantified + structural sketch]. For v ≥ d the value set is
+window-dense (α = 1) and existence no longer obstructs; the closure
+must come from access:
+(i) *Finite-symmetry pairs*: solutions in the window shell form a
+    codimension-1 sliver; directed (fiber) enumeration costs
+    ~X^{(d−1)/d}/W trials per certified offset (10^{145} at d=4,
+    B=10^200, W=Q) — the §8-measured wall generalizes; no orbit
+    machinery exists because Aut(A, B) is generically finite.
+(ii) *Infinite-symmetry pairs*: a torus action preserving both factors
+    forces norm-form structure (the pair is equivalent to relative
+    norms through a subfield); then certified factorizations come from
+    element factorizations α = β·γ, the parameterization splits into
+    independent (β, γ) — the DISJOINT-variable case — and Prop 9.3
+    applies: small-norm slice = congruence covering, balanced slice =
+    sliver. Unit orbits move representations of the SAME m, never
+    multiply distinct certified offsets.
+Classifying (ii) rigorously (torus action ⇒ norm structure) is the one
+remaining piece of mathematics in Lemma 1; it is a recognizable
+algebraic-groups statement, not a heuristic.
+
+**Lemma 1 status after §10: [P] on the entire grammar L (v ≤ 3) modulo
+standard value-equidistribution; [C] only for out-of-grammar dense
+families (v ≥ d), where the two-horn access argument is quantified but
+the symmetry classification is a sketch.** Any grammar extension to
+v ≥ 4 must ship with Prop 10.2 hardened first — noted in harness.md's
+grammar-extension rule.

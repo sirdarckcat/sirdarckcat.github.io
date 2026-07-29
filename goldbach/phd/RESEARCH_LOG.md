@@ -30,6 +30,12 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   **enumeration wall measured**: quartic-product certificates cost
   height^0.50–0.74 work per certified offset (theory ½) → ~10^100
   ops/offset at B=10^200 — Lemma 1(c)'s first data.
+- Later same day: §9–§10 land the mathematics — k_max cluster formula
+  closes EVERY shared-variable identity family with v < d (all certify
+  ≤13 offsets vs ~18,000 needed; α̂=0.761 measured vs 0.750 predicted);
+  within-grammar Lemma 1 now [P] modulo value equidistribution. H2 note
+  posting-ready; AlphaEvolve scorer harness ready (blocked on access).
+  Remaining math: torus-action ⇒ norm-structure classification (v ≥ d).
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
