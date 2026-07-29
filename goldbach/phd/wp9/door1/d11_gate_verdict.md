@@ -92,3 +92,26 @@ not different search); basin-hopping tempering (brute global moves);
 blocking. The Door-1 prize estimate should be revised down from
 "2.6 nats to the annealed threshold" to "0–2.6 nats, with the
 clustering gap plausibly eating most of it."
+
+
+# D1.3 addendum — exact endgame block (2026-07-29)
+
+D1.1 could only close windows of 10–15 moduli. D1.3's distinctive claim
+was that greedy's myopia lives in the ENDGAME (the largest moduli, where
+each class kills 5–7 primes and overlap waste is greatest), so the whole
+large band should be solved simultaneously rather than in windows.
+
+Result: solving the **30 largest moduli (281–683) together**, and then the
+**44 largest (199–683) together** — half the cover in one exact
+subproblem — leaves |U| = 867, unchanged. Neither closed an optimality
+proof inside the time caps (160 s / 260 s), so this is "no improvement
+found at half-cover scale" rather than a certificate; but combined with
+D1.1's LP-certified windows and D1.2's BP-decimation landing at 874, the
+c1 assignment has now resisted every exact and global method tried.
+
+Standing Door-1 conclusion, unchanged and now better supported: 867 is at
+or very near the quenched optimum for this moduli set. The genuinely
+untried lever is a different ENSEMBLE (banded construction with a
+second-moment-controlled middle band, i.e. importing the Erdős–Rankin/
+FGKMT rounding technology rather than searching harder), not a stronger
+search over the same one.
