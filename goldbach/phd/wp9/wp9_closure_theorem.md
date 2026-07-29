@@ -521,3 +521,43 @@ frontier-seeking objective, it converged on the same family the
 exhaustive tier had already identified as the closest near-miss, tuned it
 to the edge of what order conditions allow, and then stalled 53× short of
 the bar. The remaining gap is not a search problem.
+
+## 13b. ExpFamily closed quantitatively (2026-07-29)
+
+The mandate asked whether the 2.197 nats/offset floor the generative tier
+kept hitting is a sampling artifact of the scorer (40 moduli from
+[500,3000), 25 sampled offsets). **Partly yes — and fixing it strengthens
+the closure rather than weakening it.**
+
+**The single-s floor is lower than measured.** Exhaustively, over all
+primes s < 10^5: min ln ord_s(a) = ln 5 = 1.609 (a=7, s=2801), and
+ln 3 = 1.099 at small s. The scorer's 2.197 = ln 9 was the minimum inside
+its sampled window, so the quoted per-offset figure was ~1.4x too
+pessimistic. There is also a structural lower bound worth recording:
+s | a^d − 1 forces a^d > s, so **cost = ln d > ln(log_a s)** — a cheap
+certificate requires a small modulus, and small moduli are exactly where
+ordinary covering is cheapest.
+
+**But the binding constraint is supply, not price.** A given s certifies
+only those offsets whose target (q−c)j^-1 lands in the order-d subgroup
+⟨a⟩ mod s — a fraction d/s of them, i.e. ~π(Q)·d/s offsets. So cheap
+certificates are also *scarce*: s=2801, d=5 supplies only ~20 offsets.
+Solving the resulting purchase problem exactly (sort all s < 10^5 by
+ln ord, buy offsets cheapest-first until CEIL = 1048 is reached):
+
+  reaching 1048 certified offsets costs **1151 nats** for every base
+  a ∈ {2,3,5,7} — **2.5× over the entire ln B = 460 budget**; and the
+  most that any budget-feasible ExpFamily design can certify is
+  **419 offsets**, against the 1048 needed and the ~18,000 that a real
+  cover supplies.
+
+That is a quantitative, non-sampled closure of the strongest non-covering
+family in the grammar: not "we searched and found nothing better", but
+"the optimal purchase plan is 2.5× over budget and stops at 419 offsets".
+Combined with §9–§11 (identity families) and §8 (all other families),
+every branch of L now has either a proof or a costed impossibility.
+
+Scorer note: the sampled ExpFamily estimator is *conservative* on price
+and correct on the verdict; §13's table figure of 2.20 should be quoted as
+"1.10–2.20 depending on the modulus range, against a 0.041 bar", and the
+budget-feasible ceiling of 419 offsets is the number that matters.
