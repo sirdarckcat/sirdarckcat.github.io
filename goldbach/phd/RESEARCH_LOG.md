@@ -55,6 +55,15 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   never beaten. The one uncertified window contains small moduli (LP
   gap 16 — the global LP vacuousness in miniature). Turn 3: size 14-16
   at 300s + random-restart basin probe, then gate verdict.
+- Door 1 turn 3 — **GATE VERDICT: 867 survives, certified.** 41 exact
+  windows (7–15, up to 300s), 21/22 LP-certified window-optimal; basin
+  probe: a random-ascent solution at 968 is ALSO window-optimal (0/101
+  gap recovered in 20 windows) — the landscape is a field of distant
+  locally-exact basins; greedy's adaptive construction sits ~100 primes
+  deeper than typical. Local exactness is exhausted; remaining Door-1
+  upside = global moves (basin-hopping tempering, SP-decimation) and
+  banded constructions (D1.2/D1.3). Full verdict:
+  wp9/door1/d11_gate_verdict.md. D1.1 chain stopped.
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
