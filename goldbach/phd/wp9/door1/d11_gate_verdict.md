@@ -57,3 +57,38 @@ wins (sequential adaptivity) while adding exactness where greedy is
 myopic. Expected value honestly restated after this gate: the
 858-to-758 annealed prize is real but unreachable by local methods;
 global methods carry an unknown but nonzero share of it.
+
+---
+
+# D1.2 verdict addendum (BP/SP-decimation, 2026-07-29)
+
+Method validated: sequential sum-product BP tracks exact E[U] to 0.7%
+(soft regime) and BP-guided decimation finds the toy instance's EXACT
+optimum (54; greedy-style 55+). On the real instance (d12_bp.py):
+
+- **Decimation: 874 (β=1.5), 887 (β=2.5), 922 (β=3.5)** — best is 7
+  primes above greedy's 867; higher β over-polarizes early freezes.
+- **LNS polish of the 874 solution: stays 874** — window-optimal in
+  its own basin. Third independent locally-exact basin (867 / 874 /
+  968), all mutually unreachable by exact windows.
+- **Naive RS/Bethe is not a threshold estimator here**: as β grows the
+  Bethe E[|U|] slides toward the fractional fantasy (35 at β=4 vs LP 0,
+  annealed 758, achieved 867) — mean-field shares the LP's blindness
+  to integrality. A real quenched threshold needs 1RSB/SP with
+  complexity (Σ) bookkeeping — noted as the remaining theory item.
+
+**Door-1 running verdict after D1.1 + D1.2:** greedy's 867 has now
+survived (i) 41 exact windows, 21/22 LP-certified; (ii) an
+independent, structurally different global construction (BP
+decimation) landing at 874 — closer than anything else known but not
+below; (iii) basin isolation confirmed three ways. The evidence
+increasingly reads: **867 is at or very near the quenched optimum for
+this moduli set at Q=122,000**, and the annealed 758 likely reflects
+an annealed–quenched (clustering) gap rather than reachable headroom.
+Remaining unexhausted routes, in descending expected value: D1.3
+banded construction with exact b-matching endgame (different ENSEMBLE,
+not different search); basin-hopping tempering (brute global moves);
+1RSB/SP for the honest threshold number. Each is bounded work; none is
+blocking. The Door-1 prize estimate should be revised down from
+"2.6 nats to the annealed threshold" to "0–2.6 nats, with the
+clustering gap plausibly eating most of it."

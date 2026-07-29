@@ -64,6 +64,14 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   upside = global moves (basin-hopping tempering, SP-decimation) and
   banded constructions (D1.2/D1.3). Full verdict:
   wp9/door1/d11_gate_verdict.md. D1.1 chain stopped.
+- Door 1 D1.2 (BP/SP): BP validated (toy exact-optimum found by
+  decimation; soft-regime E[U] to 0.7%). Real instance: decimation 874
+  / 887 / 922 across β; LNS polish of 874 stalls at 874 — a THIRD
+  isolated locally-exact basin (867/874/968). Naive Bethe slides to the
+  fractional fantasy at low T (35 at β=4): RS invalid as threshold
+  estimator, 1RSB/SP needed. Running verdict: 867 is at/near the
+  quenched optimum; annealed 758 likely a clustering gap. Door-1 prize
+  revised to 0–2.6 nats. Verdict: d11_gate_verdict.md addendum.
 
 ### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
 - Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
