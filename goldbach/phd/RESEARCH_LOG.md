@@ -11,6 +11,165 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
+- User directive: work Door 3 first (AlphaEvolve access offered for the
+  generative tier). Delivered so far, all in `phd/wp9/`:
+  **theorem draft v0.1** (scheme/certificate formalism, three lemmas with
+  proof-status marks, schema language L, falsification protocol);
+  **tier-0 calibration** — engine reproduces every WP7 hand number exactly
+  (m²−c: c=398/113 kills; the 5.8-vs-10.5 nats/residual discrepancy
+  reconciled as B=10^100 vs 10^200 context), and surfaced two refinements:
+  covering endgame ≈ 1.0 nats/offset at Q=122k (2.5 was context-bound), and
+  budget binds at 122k vs boost–kills equilibrium at 200k;
+  **exhaustive tier: 13,661 schema instances, 0 passes** (16 first-run
+  passes audited away as a baseline-family filter leak — semantics
+  hardened); near-miss board topped by ExpFamily at 3.1–4.2 nats/residual
+  kill (3× covering endgame, as WP7-P3 predicted);
+  **Lemma 2 rigorous draft** (deterministic shared-divisor proposition +
+  explicit H1 + the 1.2e9-candidate empirical bound);
+  **enumeration wall measured**: quartic-product certificates cost
+  height^0.50–0.74 work per certified offset (theory ½) → ~10^100
+  ops/offset at B=10^200 — Lemma 1(c)'s first data.
+- Later same day: §9–§10 land the mathematics — k_max cluster formula
+  closes EVERY shared-variable identity family with v < d (all certify
+  ≤13 offsets vs ~18,000 needed; α̂=0.761 measured vs 0.750 predicted);
+  within-grammar Lemma 1 now [P] modulo value equidistribution. H2 note
+  posting-ready; AlphaEvolve scorer harness ready (blocked on access).
+  Remaining math: torus-action ⇒ norm-structure classification (v ≥ d).
+- §11 (same day, continued): the classification item DISSOLVED — local
+  isolation (all ellipsoid extents < 1 at 10^200) + orbit conservation
+  (symmetry preserves value or factor; mixed words miss the window by
+  10^190) close the dense frontier outright. Lemma 1 [P at draft rigor]
+  on L and beyond; Door 3's mathematical core is COMPLETE at draft
+  level. Next: Door 1 gate D1.0/D1.1 (does anything beat 867?).
+- Door 1 turn 1 (same day): D1.0 diagnostics — 19/88 moduli tight
+  (gap ≤ 1) at the greedy point; random-start ascents land 90–110 primes
+  WORSE (greedy's adaptivity ≈ 2.4 nats); backbone overlap 2.4% = chance
+  (fully degenerate landscape — no crossover structure). D1.1 gate after
+  22 exact-LNS windows (CP-SAT, incumbent-floored): 867 never beaten,
+  always matched; optimality proofs did not close within caps — gate
+  OPEN, next: per-window LP certificates + provable small windows.
+- Door 1 turn 2: LP certification added — **17 of 18 new windows
+  CERTIFIED optimal at the incumbent** (floor(LP) = incumbent coverage;
+  sizes 7 and 12, incl. tight-set at 120s caps). 40 windows total, 867
+  never beaten. The one uncertified window contains small moduli (LP
+  gap 16 — the global LP vacuousness in miniature). Turn 3: size 14-16
+  at 300s + random-restart basin probe, then gate verdict.
+- Door 1 turn 3 — **GATE VERDICT: 867 survives, certified.** 41 exact
+  windows (7–15, up to 300s), 21/22 LP-certified window-optimal; basin
+  probe: a random-ascent solution at 968 is ALSO window-optimal (0/101
+  gap recovered in 20 windows) — the landscape is a field of distant
+  locally-exact basins; greedy's adaptive construction sits ~100 primes
+  deeper than typical. Local exactness is exhausted; remaining Door-1
+  upside = global moves (basin-hopping tempering, SP-decimation) and
+  banded constructions (D1.2/D1.3). Full verdict:
+  wp9/door1/d11_gate_verdict.md. D1.1 chain stopped.
+- Door 1 D1.2 (BP/SP): BP validated (toy exact-optimum found by
+  decimation; soft-regime E[U] to 0.7%). Real instance: decimation 874
+  / 887 / 922 across β; LNS polish of 874 stalls at 874 — a THIRD
+  isolated locally-exact basin (867/874/968). Naive Bethe slides to the
+  fractional fantasy at low T (35 at β=4): RS invalid as threshold
+  estimator, 1RSB/SP needed. Running verdict: 867 is at/near the
+  quenched optimum; annealed 758 likely a clustering gap. Door-1 prize
+  revised to 0–2.6 nats. Verdict: d11_gate_verdict.md addendum.
+- **AlphaEvolve access LIVE** (owner-granted, verified 2026-07-29): project
+  sdcpocs, engine goldbach_1784979910032, Discovery Engine v1alpha. Read
+  path fully working — 7 prior experiments found (5 COMPLETED, 2 PAUSED),
+  including the "Super Hard Constrained Multi-Objective Goldbach Cover
+  Step-Heuristic" run whose 100 programs and scores corroborate the earlier
+  file-based review (best neg_est_digits −193.6 at E 17.56). Coordinates,
+  API gotchas (relative resource names; broken `cryptography` needing
+  --ignore-installed), and the WP9 build order are in
+  wp9/engine/alphaevolve_access.md. Confirms the loop is CLIENT-evaluated
+  (acquirePrograms → local grading → submitProgramsEvaluations), so the
+  harness's anti-reward-hack property holds. Not yet started: a real
+  experiment (spends the owner's quota — awaiting go-ahead).
+- **Generative tier ran** (owner approved): experiment
+  15926813306184238842, ~36 candidates, ~617k output tokens. It found a
+  hole in MY EVALUATOR before it found anything about the theorem —
+  per-offset costs were billed only against the 867 residuals, so
+  ExpFamily could advertise 10,416 offsets costing 22,900 nats against a
+  460-nat budget (apparent fitness 0.46). Hardened; re-scored 0.046. The
+  correction sharpened the economics: the bar for a bulk mechanism is
+  covering's AVERAGE 0.041 nats/offset, not its 1.01-nat marginal
+  endgame. Then the closures went from empirical to costed: ExpFamily
+  needs 1151 nats to reach 1048 offsets (2.5x budget; ceiling 419),
+  PolyImage/Cyclotomic cap at sqrt(Q)=349 offsets at ANY price, Compose
+  is empty at scale ((m-m')(m+m')=c1-c2 forces m <= |c1-c2| while record
+  scale needs m ~ 1e100). Memo secs 12, 13, 13b, 13c.
+- **DOOR 3 COMPLETE** (draft rigor). Generative tier converged at 41
+  candidates / 4 families / zero passes (best 0.0919). Verdict in memo
+  sec 14: closure theorem holds across the grammar with every family
+  closed by a proof of its own kind; conjectural remainder is H1, H2, the
+  o(1) terms, and out-of-grammar mechanisms. Methodological headline: the
+  adversary broke the REFEREE first (50x accounting error), the audit
+  protocol caught it pre-claim, and fixing it strengthened the theorem —
+  adversarial search is best reported as referee-hardening, not as failed
+  refutation. Programme consequence: the covering monopoly is now a
+  result, so records are governed by Door 1 (rounding gap, 0-2.6 nats,
+  resistant to LP-certified windows / BP / 44-modulus exact blocks) and
+  Door 2 (throughput).
+
+### 2026-07-29 — WP8: strategy reflection (3 crazy / 3 small / 3 professor / path to 200k)
+- Full memo: `phd/wp8_beyond_covering.md` (scripts in `phd/wp8/`). Four new
+  hard results produced for it: (1) **rung ladder** E(Q) at 199d computed to
+  Q=200,000 — E=37.69, e^E=2.4e16 ≈ 950 fleet-years, geometric rung spacing
+  makes climbing cost ~4% more than jumping; (2) **packing probe** — c1 is a
+  local optimum (ascent+kicks gain 0 at 122k, −0.8 nats at 200k); (3)
+  **boost-vs-kills equilibrium** — cover size is set by dE=0, not by the lnB
+  budget (adding r=461 nets +0.00 nats), explaining the flat frontier; (4)
+  **SoK §7.4 LP certificate executed and VACUOUS** — fractional coverage is
+  100.00% at both Q (kill-mass 1.86·π), so the entire game exponent is an
+  integrality/rounding gap: naive 15.6% → greedy 7.56% → fractional 0;
+  1% absolute ≈ 2.7 nats ≈ 15× compute. Headline recommendations: quantum
+  crossover computed and negative (E*≈41–55 ≥ all reachable targets);
+  GPU port of skip-frac (O1, ~2–3×); Erdős–Rankin/FGKMT rounding-gap
+  programme (P2) as the central open problem; Operation Staircase ladder
+  140k→150k→165k→175k→200k with priced closers for the final e^5.5 wall
+  (volunteer swarm / ASIC / mathematics).
+
+### 2026-07-29 — CAMPAIGN 3 STOPPED at user request (duplicative with another worker)
+- Stopped at **380/17,200 slices (3.98e8 raw candidates, hit-mass λ=0.077,
+  survival 0.926)** — a clean in-model early stop; per-slice p̂/Ê/hit% steady
+  throughout (p̂≈0.054, Ê≈21.08, hit%≈27.6, ~16.3k k/s). Checkpoint is
+  committed; `run_campaign3.py --chunk-seconds 560` resumes losslessly.
+  If any session resumes or runs a parallel budget-game campaign, coordinate
+  variant/k-space assignment first — independent workers should scan
+  DISJOINT variants (they compose losslessly; duplicated k-ranges are pure
+  waste). Wakeup chain deleted. Next: strategy reflection memo (wp8).
+
+### 2026-07-28 — CAMPAIGN 3 LAUNCH: budget game, target g > 119,419 under 10^199
+- Target switched by user directive: largest g(N) below 200 digits. Cover: the
+  ratchet session's unstarted round-2 leftover c1 (Q=122,000, 88 classes,
+  M=191d, |U|=867, boost 11.01), independently re-verified here (CRT ✓,
+  uncovered ≡ residual ✓); a fresh greedy re-derivation at 199d matched its E
+  to 3 decimals — the frontier is flat at this Q, no better cover exists in
+  this family. **Any hit gives g(N) ≥ 122,011 > 119,419 with N < 10^199.**
+- 40 residue-swap variants (shared M ⇒ shared sieve-inverse cache), kmax
+  4.5e8 each under the 199d ceiling ⇒ 1.8e10 raw candidates in the pool.
+- **Engine: the 179d winner's selective-testing lesson, adopted exactly.**
+  New `--skip-frac f` in search.py tests only the emptiest (1−f) of each
+  block in survivor-count order; the sacrificed hit mass is computed exactly
+  from the survivor histogram (w = (1−p̂)^a) and logged per-slice as hit%.
+  p̂ stays unbiased, so Ê model validation continues to work under skipping.
+- Calibration at 199d (131k-k slices): baseline 1,772 k/s (p̂=0.063,
+  alive/k=337, Ê=21.24±0.06 — 0.4 nats above theory's 20.83; watching).
+  Selected **f=0.92, sieve-B=1e6: 14,957 raw k/s with 29.6% hit mass kept ⇒
+  ~3× net discovery rate**. Two mechanisms: test cost per candidate is
+  ≈1/p̂ Fermat tests regardless of survivor count (every k dies at its first
+  PRP pass), so skipping full k's is nearly pure profit; and once tests stop
+  dominating, the per-block sieve-residue cost (∝ π(B)·|U|) makes the small
+  sieve win. Measured hit% matched the Gaussian survivor-histogram model
+  to ±0.4pp at every f tried.
+- Plan: e^21.25 ≈ 1.7e9 equivalent candidates ⇒ expected first hit ≈ 3.5–4.5
+  wall-days at ~85% duty. Pool capacity 1.8e10 × 0.296 ⇒ E[hits] ≈ 3.1,
+  P(≥1) ≈ 96%; if exhausted hitless, mint more residue-swap variants (free)
+  and continue. On hit: stop_on_success, then the standard certification
+  pipeline (verify_record.py witnesses + PARI ECPP + independent checker).
+- Driver: phd/campaign3/run_campaign3.py — chunked (≤560s/chunk), slices of
+  1.048e6 k checkpointed in git-tracked search.log (rollback-safe),
+  idempotent resume, lazy round materialization, exit 3 on hit.
+
 ### 2026-07-28 — CAMPAIGN 2 STOPPED at user request (session close)
 - Stopped at **2,132/2,400 batch-1 slices (5.6e8 elements), 0 hits** — survival
   probability ≈ 0.22 under the validated model; a second consecutive unlucky-but-

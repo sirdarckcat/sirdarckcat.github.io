@@ -95,8 +95,20 @@ def run_block(k0):
     aliveT = np.ascontiguousarray(alive.T)
     # test emptiest k first: success prob is (1-p)^a, so hits concentrate
     # in the low-survivor tail (measured ~1.8x faster discovery at 200d)
-    order = np.argsort(aliveT.sum(axis=1), kind="stable") \
+    counts = aliveT.sum(axis=1)
+    order = np.argsort(counts, kind="stable") \
         if G.get("sort_tests") else range(L)
+    skip = G.get("skip_frac", 0.0)
+    hm_kept = hm_all = 1.0
+    if skip > 0.0:
+        # test only the emptiest (1-skip) fraction; the sacrificed hit mass
+        # is accounted exactly from the survivor histogram: hit(k) ~ (1-p)^a
+        p = G.get("p_est", 0.06)
+        w = (1.0 - p) ** counts.astype(np.float64)
+        keep = int(math.ceil(L * (1.0 - skip)))
+        order = np.argsort(counts, kind="stable")[:keep]
+        hm_kept = float(w[order].sum())
+        hm_all = float(w.sum())
     for j in order:
         j = int(j)                     # np.int64 k would break JSON output
         col = aliveT[j]
@@ -113,7 +125,7 @@ def run_block(k0):
                 break
         if ok:
             successes.append(k0 + j)
-    return successes, tests, prps, alive_total
+    return successes, tests, prps, alive_total, hm_kept, hm_all
 
 
 def verify_success(spec, k):
@@ -147,6 +159,8 @@ def search_spec(spec, args, out):
     t0 = time.time()
     init_spec(spec, args.sieve_b, args.block)
     G["sort_tests"] = getattr(args, "sort_tests", False)
+    G["skip_frac"] = getattr(args, "skip_frac", 0.0)
+    G["p_est"] = getattr(args, "p_est", 0.06)
     kmax = spec.get("kmax", args.kmax)
     kstart = spec.get("kstart", 0)
     ceiling = spec.get("ceiling_digits")
@@ -155,12 +169,15 @@ def search_spec(spec, args, out):
         kmax = min(kmax, kcap + 1)
     blocks = list(range(kstart, kmax, args.block))
     tests = prps = alive = 0
+    hm_kept = hm_all = 0.0
     found = []
     with Pool(args.procs) as pool:
-        for bs, bt, bp, ba in pool.imap(run_block, blocks):
+        for bs, bt, bp, ba, bhk, bha in pool.imap(run_block, blocks):
             tests += bt
             prps += bp
             alive += ba
+            hm_kept += bhk
+            hm_all += bha
             for k in bs:
                 res = verify_success(spec, k)
                 if res:
@@ -179,10 +196,11 @@ def search_spec(spec, args, out):
     kdone = len(blocks) * args.block
     phat = prps / tests if tests else 0.0
     e_hat = (alive / kdone) * phat if kdone else 0.0
+    hshare = hm_kept / hm_all if hm_all else 1.0
     print(f"[{spec['name']}] k=[{kstart},{kmax}) {dt:.0f}s "
           f"({kdone/dt:.0f} k/s) tests={tests} prp={prps} "
           f"p^={phat:.4f} alive/k={alive/max(kdone,1):.1f} E^={e_hat:.2f} "
-          f"found={len(found)}", flush=True)
+          f"hit%={100*hshare:.1f} found={len(found)}", flush=True)
     return found
 
 
@@ -196,6 +214,12 @@ def main():
     ap.add_argument("--sort-tests", action="store_true",
                     help="Fermat-test each block's k in ascending-survivor "
                          "order (faster first-hit discovery)")
+    ap.add_argument("--skip-frac", type=float, default=0.0,
+                    help="skip the fullest fraction f of each block's k; "
+                         "the sacrificed hit mass is accounted exactly and "
+                         "reported as hit%% in the summary line")
+    ap.add_argument("--p-est", type=float, default=0.06,
+                    help="PRP pass probability used for hit-mass weights")
     ap.add_argument("--out", default="found.jsonl")
     args = ap.parse_args()
     with open(args.out, "a") as out:
