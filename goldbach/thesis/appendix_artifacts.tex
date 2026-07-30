@@ -1,0 +1,127 @@
+\chapter{Artifact map and verification runbook}
+\label{app:artifacts}
+
+Everything in this thesis is re-checkable from the artifact repository
+(the \path{goldbach/} and \path{slop/goldbach/} trees). This appendix
+maps claims to artifacts and gives the one-command verification for
+each record. Environment as tested: Python~3.11 with \texttt{gmpy2},
+\texttt{numpy}, \texttt{sympy} (and \texttt{python-flint} for the
+lattice study), PARI/GP~2.15.4~\cite{PARI}; the \path{slop} verifier
+runs on the Python standard library alone.
+
+\section{Records and their verifiers}
+
+Each record directory contains \path{record.json} (construction data:
+cover pairs, $\N_0$, $M$, $k$, the decimal $\N$), the evidence file
+(per-offset witnesses), the ECPP certificate(s) (\path{*.gp}), the
+validation log, and a SHA-256 manifest.
+
+In the table, G-\path{records/} abbreviates \path{goldbach/records/}
+and S-\path{records/} abbreviates \path{slop/goldbach/records/}; the
+GPU/goldbach-pipeline records verify with
+\path{goldbach/verify_record.py} (the mega-desert with
+\path{goldbach/verify_megagap.py}), the CPU/slop-pipeline records with
+the stdlib-only \path{slop/goldbach/records/verify_record.py}.
+
+\begin{center}\footnotesize
+\begin{tabular}{lll}
+\toprule
+record & directory & stack\\
+\midrule
+$\g=104\,527$, 150d (T) & G-\path{records/threshold_150digit_g104527} & G\\
+$\g=100\,297$, 195d & G-\path{records/threshold_195digit_g100297} & G\\
+$\g=107\,719$, 197d & G-\path{records/dual_197digit_g107719} & G\\
+$\g=112\,249$, 200d & G-\path{records/budget_1e200_200digit_g112249} & G\\
+$\g=1\,134\,871$, 2692d & G-\path{records/megagap_2692digit_g1134871} & G (megagap)\\
+$\g=1\,157\,341$, 2480d (H) & S-\path{records/g1} & S\\
+$\g=110\,917$, 199d & S-\path{records/g23} & S\\
+$\g=102\,337$, 193d & S-\path{records/t100k} (round 1) & S\\
+$\g=109\,357$, 186d & S-\path{records/t100k} (round 2) & S\\
+$\g=101\,149$, 179d & S-\path{records/t100k} (round 3) & S\\
+$\g=119\,419$, 199d (R) & S-\path{records/r200} & S\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Typical invocations:
+\begin{verbatim}
+python3 goldbach/verify_record.py \
+    goldbach/records/threshold_150digit_g104527/record.json /tmp/ev.json
+python3 goldbach/verify_megagap.py       # full megagap re-check + manifest
+python3 slop/goldbach/records/verify_record.py \
+    slop/goldbach/records/g1/record_g1.json
+\end{verbatim}
+The verifiers reconstruct $\N$ by CRT, re-derive every witness below
+$\g$ (asserting the scanned count against an independent $\pi(\g)$),
+re-verify the ECPP chain from scratch including the binding of its top
+integer to $\N-\g$, and check the record inequalities; exit code $0$
+means all legs pass. ECPP certificates additionally validate under
+PARI's \texttt{primecertisvalid}, and the independent projective
+checker is \path{goldbach/ecpp_check.py}
+(\path{slop/.../g23/ecpp_verify.py} for the CPU-session records, which
+also carry APR-CL logs and \path{crosscheck_*.gp} full-scan scripts).
+
+\section{Search, cover, and analysis tools}
+
+Paths below are relative to \path{goldbach/}.
+
+\begin{center}\footnotesize
+\begin{tabular}{p{0.40\textwidth}p{0.50\textwidth}}
+\toprule
+tool & role (chapter)\\
+\midrule
+\path{cover.py}, \path{anneal.py} & greedy weighted covers; SA refinement (\ref{ch:records})\\
+\path{gen_variants.py} & residue-swap variant catalogs (\ref{ch:records})\\
+\path{search.py} & sieved progression scan; \texttt{--sort-tests}, \texttt{--skip-frac} (\ref{ch:records})\\
+\path{gpu/engine150.py}, \path{gpu/fleet.py} & CUDA engine and fleet driver (\ref{ch:records})\\
+\path{verify_record.py}, \path{package_record.py} & witness generation; record packaging (\ref{ch:records})\\
+\path{joint.py} & joint representative/coverage optimizer, $k$-list meet-in-the-middle (\ref{ch:limits})\\
+\path{exp1m.py} & million-desert frontier and wall (\ref{ch:costmodel})\\
+\path{entropy_frontier.py}, \path{realizable_frontier.py}, \path{frontier_table.py} & set-valued conditioning study (\ref{ch:limits})\\
+\path{verify_barrier.py} & existence-vs-decoding coupling table (\ref{ch:limits})\\
+\path{phd/toy_crt/decoder.py} & LLL vs Johnson radius study (\ref{ch:limits})\\
+\path{phd/wp8/lp_bound.py}, \path{phd/wp8/pack_probe.py} & LP vacuousness; packing probe (\ref{ch:closure})\\
+\path{phd/wp9/engine/} & closure-theorem engine: \path{tier0.py}, \path{exhaustive.py}, \path{scorer.py}, harness docs (\ref{ch:closure})\\
+\path{phd/wp9/door1/} & rounding-gap instance, CP-SAT LNS, BP/SP, verdicts (\ref{ch:closure})\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Constructions referenced in Chapter~\ref{ch:limits} are committed
+under \path{goldbach/constructions/}: \path{m211_x196.json},
+\path{m219_x197.json}, \path{m221_x197.json},
+\path{wall_1M_199d.json}, and \path{blueprint_1M_1250d.json}, each
+re-verified end to end by its generator.
+
+\section{Research notes underlying each chapter}
+
+The narrative documents merged from the research sessions, kept as
+primary sources (paths again relative to \path{goldbach/}):
+\path{RESULTS.md} (record announcements and statistics),
+\path{SOK_GOLDBACH_GAPS.md} (systematization, walls),
+\path{FRONTIER.md} (set-valued conditioning and sub-100 wall),
+\path{IDEAS.md} and \path{IDEAS100.md} (the idea ledgers with
+kill-status), \path{PROPOSAL_NEXT_CAMPAIGNS.md} (the staircase),
+\path{phd/RESEARCH_LOG.md} (the dated log of campaigns, audits, and
+merges), the memo \path{phd/wp3_small_representative_memo.md}
+(subset-sum barrier, including the v1 retraction),
+\path{phd/wp7_probes.md} (the five probes),
+\path{phd/wp8_beyond_covering.md} (doors; rung ladder; LP result),
+\path{phd/wp9/wp9_closure_theorem.md} (the theorem memo, \S1--14),
+\path{phd/wp9/h2_open_problem.md} (H2, posting-ready), and
+\path{phd/wp9/door1/} (landscape diagnostics and gate verdicts).
+Campaign drivers and their committed checkpoint logs live under
+\path{phd/campaign*/} and, for the CPU session,
+\path{slop/goldbach/records/work/}.
+
+\section{Independence disclosure}
+
+Two verification stacks were developed in separate sessions with no
+shared code: the \path{goldbach} stack (\path{verify_record.py} +
+\path{ecpp_check.py} + PARI) and the \path{slop} stack
+(stdlib-only \path{verify_record.py} + \path{ecpp_verify.py} + APR-CL
++ PARI full scan). Every headline record has passed both. The
+adversarial audit transcript (planted corruptions, all detected) and
+the two false-PASS incidents with their root causes are recorded in
+\path{goldbach/SOK_GOLDBACH_GAPS.md} \S4 and
+\path{goldbach/phd/RESEARCH_LOG.md}.

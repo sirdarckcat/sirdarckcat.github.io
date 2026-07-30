@@ -1,0 +1,331 @@
+\documentclass[11pt,oneside]{report}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+% let \path break at underscores and dots too, not just slashes
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\_\do\.}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{barrier}[theorem]{Barrier}
+\newtheorem{openproblem}[theorem]{Open Problem}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\N}{N}
+\newcommand{\g}{\mathfrak{g}}
+\newcommand{\Ee}{E}
+
+% Each chapter of this thesis is written to stand alone as a paper;
+% the chapterabstract environment carries the per-chapter abstract.
+\newenvironment{chapterabstract}%
+  {\begin{quotation}\small\itshape\noindent}%
+  {\end{quotation}\vspace{0.5em}}
+
+\begin{document}
+
+% ---------------------------------------------------------------- title page
+\begin{titlepage}
+\centering
+\vspace*{4em}
+{\Huge\bfseries Cute Goldbach Gaps\par}
+\vspace{1.5em}
+{\Large Extremal Least Goldbach Summands:\\ Constructions, Costs, and Closure\par}
+\vspace{4em}
+{\large A thesis on the engineering of Goldbach deserts\par}
+\vspace{6em}
+{\large Anonymous\par}
+\vspace{1em}
+{\large July 2026\par}
+\vfill
+\begin{minipage}{0.8\textwidth}\small\centering
+Every integer, congruence system, primality certificate, verifier, and
+search log referenced in this thesis is committed to the accompanying
+artifact repository and can be re-checked from scratch on a laptop.
+Nothing rests on a log we could not regenerate.
+\end{minipage}
+\vspace*{3em}
+\end{titlepage}
+
+% ---------------------------------------------------------------- abstract
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+For an even integer $\N$, the \emph{least Goldbach summand} is
+$\g(\N)=\min\{p\ \text{prime}:\N-p\ \text{prime}\}$ --- the quantity $p(n)$ of
+the minimal Goldbach partition studied by Granville, van de Lune and te
+Riele. Nature keeps it tiny: exhaustive verification gives
+$\g(\N)\le9\,781$ for every even $\N\le4\cdot10^{18}$. This thesis is about
+the opposite, extremal and constructive question: \emph{how large can
+$\g(\N)$ be forced to be, and at what cost in the size of $\N$?}
+
+Three record games organise the answer. The \emph{height game} maximises
+$\g(\N)$ with no size limit; the \emph{threshold game} minimises $\N$
+subject to $\g(\N)>Q$; the \emph{budget game} maximises $\g(\N)$ subject
+to $\N<X$. After proving unconditionally that $\g$ is unbounded and
+transferring the Ford--Green--Konyagin--Maynard--Tao long-gap machinery
+into an explicit lower bound
+$\g(\N)\gg\log\N\,\log_2\N\,\log_4\N/\log_3\N$ along even integers with
+exhibited partitions, the thesis develops the partial-cover search
+paradigm --- congruence covers of the prime offsets, Chinese-remainder
+progressions, and probable-prime scanning --- into a measured, predictive
+science with a validated cost model, and uses it to set every record it
+then studies. The certified board: $\g(\N)=1\,157\,341$ at $2\,480$
+digits for the height game, exceeding the longest prime gap ever
+certified while using integers seven times shorter than that gap's own
+endpoints; a $150$-digit $\N$ with $\g(\N)=104\,527$ for the threshold
+game $T(100\,000)$, forty-nine digits below the first-generation record;
+and $\g(\N)=119\,419$ below $10^{199}$ for the budget game. A companion
+construction of $2\,692$ digits carries a Goldbach desert $126.5$ times
+longer than its fully-certified local prime gap, separating the two
+phenomena experimentally.
+
+The second half of the thesis asks why the records stop where they do,
+and answers with mathematics rather than fatigue. The search exponent is
+governed by a density model validated to $\pm0.1$ nats across
+$1.2\cdot10^9$ scanned candidates; the digit frontier at fixed threshold
+is an explicit, measured curve; and beneath both lie provable barriers.
+Compressing constructions below $\sim$100 digits reduces to modular
+subset-sum with per-position choices at density $\approx1.026$ ---
+the regime where lattice reduction and Wagner-style list merging both
+fail --- and to Chinese-remainder list decoding beyond the Johnson
+radius, which practical lattice reduction does not penetrate even on
+solution-abundant instances (measured). A closure theorem for
+compositeness-certificate schemes then shows, across a concrete grammar
+of algebraic mechanisms swept by $13\,661$ hand-enumerated and $41$
+LLM-evolved instances, that congruence covering is the unique
+economical mechanism: every alternative family in the grammar is closed
+by a proof of its own kind, and the game's whole exponent is an
+integrality gap that survives exact optimization over half the cover at
+once. What remains open is named precisely: a rounding-gap programme
+importing the Erd\H{o}s--Rankin covering technology constructively, a
+sub-modexp compositeness-detection question posed to complexity theory,
+two coding-theoretic problems, and a two-sided construction that would
+uncap the height game by making the partition's primality certificate
+free. The thesis closes with the walls each game will hit under any
+plausible compute, and the records' honest epitaph: upper bounds,
+manufactured, falling toward a floor they will never touch.
+
+% ---------------------------------------------------------------- preface
+\chapter*{Preface: how to read this thesis}
+\addcontentsline{toc}{chapter}{Preface}
+
+Each chapter is written to stand alone as a paper, with its own abstract,
+and the chapters are ordered as the research was: construction first,
+measurement second, impossibility last.
+
+\begin{itemize}
+\item \textbf{Chapter~\ref{ch:intro}} defines the least Goldbach summand,
+  the empirical background, and the three record games, and states the
+  final record board.
+\item \textbf{Chapter~\ref{ch:foundations}} is the foundations paper:
+  factorial and Wilson obstructions, primorial deserts, unconditional
+  unboundedness, prime-offset congruence covers, and the transfer of the
+  large-prime-gap lower bounds. It subsumes, updates, and supersedes the
+  July 2026 manuscript \emph{Cute Goldbach Gaps}, whose first-generation
+  records ($\g=109\,621$ at $237$ digits, $\g=105\,667$ at $199$ digits)
+  are the baseline everything later improves.
+\item \textbf{Chapter~\ref{ch:costmodel}} builds the quantitative theory
+  of partial-cover search: the density model, its five-scale validation,
+  the digit--compute exchange rate, the frontier curves, and the
+  statistical discipline that kept negative results honest.
+\item \textbf{Chapter~\ref{ch:records}} is the records paper: two
+  independent pipelines, the search engine and its measured
+  optimizations, the certification standard, and the certified ladder
+  from $199$ digits down to $150$.
+\item \textbf{Chapter~\ref{ch:gaps}} compares Goldbach deserts with
+  ordinary prime gaps and reports the height-game records, including the
+  desert that is $126.5$ times longer than its own certified prime gap.
+\item \textbf{Chapter~\ref{ch:limits}} proves the compression barriers:
+  why the threshold record cannot be pushed below $\sim$100 digits by
+  any known technique, with the failed attacks measured rather than
+  presumed.
+\item \textbf{Chapter~\ref{ch:closure}} states and proves (at draft
+  rigor, on a concrete grammar) the Divisor-Paradigm Closure Theorem:
+  within a language of planted compositeness certificates, nothing beats
+  covering --- and reports the adversarial falsification engine that
+  tried to break it, including the accounting hole it found in our own
+  referee first.
+\item \textbf{Chapter~\ref{ch:conclusions}} collects what is proved,
+  what is measured, what is conjectured, and the open problems, ranked.
+\item \textbf{Appendix~\ref{app:artifacts}} maps every claim to its
+  machine-checkable artifact and gives the verification runbook.
+\end{itemize}
+
+Three writing conventions, kept throughout. First, notation is explained
+in words at first use --- the intended reader is a mathematically literate
+non-specialist, and no step should require outside references to follow.
+Second, every record claim separates three obligations: \emph{(a)} no
+small prime is a summand, \emph{(b)} a Goldbach partition exists,
+\emph{(c)} the least summand equals the stated value; witnesses for (a)
+are unconditional, and (b) always means an exhibited partition with a
+certified prime complement, never an appeal to a conjecture. Third,
+negative results --- campaigns that found nothing, attacks that failed,
+one retracted claim --- are reported with the same care as the records,
+because the thesis's second half is built out of them.
+
+The research was carried out in 2026 across several cooperating
+sessions --- cover optimization and certification on 4-core CPU
+containers, a GPU search fleet on ephemeral cloud notebooks, and
+delegated agent sessions for audits and sweeps --- whose merged artifact
+history is preserved in the repository. Where a result was produced by
+one pipeline and re-verified by the other, the text says so, because that
+independence is load-bearing for trust.
+
+\tableofcontents
+
+\input{ch1_introduction}
+\input{ch2_foundations}
+\input{ch3_costmodel}
+\input{ch4_records}
+\input{ch5_primegaps}
+\input{ch6_limits}
+\input{ch7_closure}
+\input{ch8_conclusions}
+
+\appendix
+\input{appendix_artifacts}
+
+% ---------------------------------------------------------------- bibliography
+\begin{thebibliography}{99}
+
+\bibitem{OeS} T.~Oliveira e Silva, S.~Herzog, S.~Pardi, \emph{Empirical
+verification of the even Goldbach conjecture and computation of prime
+gaps up to $4\cdot10^{18}$}, Math.\ Comp.\ \textbf{83} (2014), 2033--2060.
+
+\bibitem{Richstein} J.~Richstein, \emph{Verifying the Goldbach conjecture
+up to $4\cdot10^{14}$}, Math.\ Comp.\ \textbf{70} (2001), 1745--1749.
+
+\bibitem{HL} G.~H.~Hardy, J.~E.~Littlewood, \emph{Some problems of
+`Partitio Numerorum' III}, Acta Math.\ \textbf{44} (1923), 1--70.
+
+\bibitem{GLvdtR} A.~Granville, J.~van de Lune, H.~J.~J.~te Riele,
+\emph{Checking the Goldbach conjecture on a vector computer}, in: Number
+Theory and Applications (R.~A.~Mollin, ed.), NATO ASI Ser.~C
+\textbf{265}, Kluwer, Dordrecht, 1989, 423--433.
+
+\bibitem{OEIS} N.~J.~A.~Sloane (ed.), \emph{The On-Line Encyclopedia of
+Integer Sequences}, sequences A020481 (least Goldbach summand) and
+A025018/A025019 (records), \url{https://oeis.org}.
+
+\bibitem{JB} Zs.~Juh\'asz, M.~Bartalos, \emph{Predicting the size ranking
+of minimal primes in the generalised Goldbach partitions},
+arXiv:2510.21870 (2025).
+
+\bibitem{Dirichlet} P.~G.~L.~Dirichlet, \emph{Beweis des Satzes, dass
+jede unbegrenzte arithmetische Progression\dots\ unendlich viele
+Primzahlen enth\"alt}, Abh.\ K.\ Preuss.\ Akad.\ Wiss.\ (1837), 45--81.
+
+\bibitem{Linnik} U.~V.~Linnik, \emph{On the least prime in an arithmetic
+progression I, II}, Mat.\ Sbornik \textbf{15(57)} (1944), 139--178,
+347--368.
+
+\bibitem{Rankin} R.~A.~Rankin, \emph{The difference between consecutive
+prime numbers}, J.\ London Math.\ Soc.\ \textbf{13} (1938), 242--247.
+
+\bibitem{Erdos1950} P.~Erd\H{o}s, \emph{On integers of the form $2^k+p$
+and some related problems}, Summa Brasil.\ Math.\ \textbf{2} (1950),
+113--123.
+
+\bibitem{FGKT} K.~Ford, B.~Green, S.~Konyagin, T.~Tao, \emph{Large gaps
+between consecutive prime numbers}, Ann.\ of Math.\ \textbf{183} (2016),
+935--974.
+
+\bibitem{Maynard} J.~Maynard, \emph{Large gaps between primes}, Ann.\ of
+Math.\ \textbf{183} (2016), 915--933.
+
+\bibitem{FGKMT} K.~Ford, B.~Green, S.~Konyagin, J.~Maynard, T.~Tao,
+\emph{Long gaps between primes}, J.\ Amer.\ Math.\ Soc.\ \textbf{31}
+(2018), 65--105.
+
+\bibitem{GapList} The Prime Gap List project (successor of T.~R.~Nicely's
+tables), \emph{Tables of first known occurrence prime gaps},
+\url{https://primegap-list-project.github.io/}.
+
+\bibitem{PSW} C.~Pomerance, J.~L.~Selfridge, S.~S.~Wagstaff~Jr., \emph{The
+pseudoprimes to $25\cdot10^9$}, Math.\ Comp.\ \textbf{35} (1980),
+1003--1026.
+
+\bibitem{BW} R.~Baillie, S.~S.~Wagstaff~Jr., \emph{Lucas pseudoprimes},
+Math.\ Comp.\ \textbf{35} (1980), 1391--1417.
+
+\bibitem{GoldwasserKilian} S.~Goldwasser, J.~Kilian, \emph{Almost all
+primes can be quickly certified}, Proc.\ 18th ACM Symposium on Theory of
+Computing (1986), 316--329.
+
+\bibitem{AtkinMorain} A.~O.~L.~Atkin, F.~Morain, \emph{Elliptic curves
+and primality proving}, Math.\ Comp.\ \textbf{61} (1993), 29--68.
+
+\bibitem{APRCL} L.~M.~Adleman, C.~Pomerance, R.~S.~Rumely, \emph{On
+distinguishing prime numbers from composite numbers}, Ann.\ of Math.\
+\textbf{117} (1983), 173--206; H.~Cohen, A.~K.~Lenstra, \emph{Primality
+testing and Jacobi sums}, Math.\ Comp.\ \textbf{42} (1984), 297--330.
+
+\bibitem{Pocklington} H.~C.~Pocklington, \emph{The determination of the
+prime or composite nature of large numbers by Fermat's theorem}, Proc.\
+Cambridge Philos.\ Soc.\ \textbf{18} (1914), 29--30.
+
+\bibitem{Proth} F.~Proth, \emph{Th\'eor\`emes sur les nombres premiers},
+C.\ R.\ Acad.\ Sci.\ Paris \textbf{87} (1878), 926.
+
+\bibitem{PARI} The PARI Group, \emph{PARI/GP version 2.15.4},
+\url{https://pari.math.u-bordeaux.fr}.
+
+\bibitem{GSS} V.~Guruswami, A.~Sahai, M.~Sudan, \emph{``Soft-decision''
+decoding of Chinese Remainder codes}, Proc.\ 41st IEEE Symposium on
+Foundations of Computer Science (FOCS 2000), 159--168.
+
+\bibitem{HG} N.~Howgrave-Graham, \emph{Approximate integer common
+divisors}, Cryptography and Lattices (CaLC 2001), Lecture Notes in
+Comput.\ Sci.\ \textbf{2146}, Springer, 51--66.
+
+\bibitem{LO} J.~C.~Lagarias, A.~M.~Odlyzko, \emph{Solving low-density
+subset sum problems}, J.\ Assoc.\ Comput.\ Mach.\ \textbf{32} (1985),
+229--246.
+
+\bibitem{CJLOSS} M.~J.~Coster, A.~Joux, B.~A.~LaMacchia, A.~M.~Odlyzko,
+C.-P.~Schnorr, J.~Stern, \emph{Improved low-density subset sum
+algorithms}, Comput.\ Complexity \textbf{2} (1992), 111--128.
+
+\bibitem{Wagner} D.~Wagner, \emph{A generalized birthday problem},
+Advances in Cryptology --- CRYPTO 2002, Lecture Notes in Comput.\ Sci.\
+\textbf{2442}, Springer, 288--304.
+
+\bibitem{Bernstein} D.~J.~Bernstein, \emph{Fast multiplication and its
+applications}, in: Algorithmic Number Theory (J.~P.~Buhler,
+P.~Stevenhagen, eds.), MSRI Publications \textbf{44}, Cambridge
+University Press, 2008, 325--384.
+
+\bibitem{Grover} L.~K.~Grover, \emph{A fast quantum mechanical algorithm
+for database search}, Proc.\ 28th ACM Symposium on Theory of Computing
+(1996), 212--219.
+
+\bibitem{GE} C.~Gidney, M.~Eker\aa, \emph{How to factor 2048 bit RSA
+integers in 8 hours using 20 million noisy qubits}, Quantum \textbf{5}
+(2021), 433.
+
+\bibitem{GranvilleCramer} A.~Granville, \emph{Harald Cram\'er and the
+distribution of prime numbers}, Scand.\ Actuar.\ J.\ \textbf{1995:1},
+12--28.
+
+\bibitem{MPZ} M.~M\'ezard, G.~Parisi, R.~Zecchina, \emph{Analytic and
+algorithmic solution of random satisfiability problems}, Science
+\textbf{297} (2002), 812--815.
+
+\bibitem{MT} R.~A.~Moser, G.~Tardos, \emph{A constructive proof of the
+general Lov\'asz local lemma}, J.\ Assoc.\ Comput.\ Mach.\ \textbf{57}
+(2010), Article 11.
+
+\bibitem{ORtools} L.~Perron, F.~Didier, Google OR-Tools
+CP-SAT solver, \url{https://developers.google.com/optimization}.
+
+\end{thebibliography}
+
+\end{document}

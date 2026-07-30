@@ -1,0 +1,200 @@
+\chapter{Goldbach deserts are not prime gaps: the height game}
+\label{ch:gaps}
+
+\begin{chapterabstract}
+A prime gap of length $Q$ just below $\N$ forces $\g(\N)>Q$, so the
+height game could in principle free-ride on the prime-gap records. This
+chapter shows it should not: blocking only the \emph{prime} offsets is
+strictly cheaper than blocking an interval, and the separation is now
+certified, not heuristic. Two constructions --- $\g=1\,157\,341$ at
+$2\,480$ digits and $\g=1\,134\,871$ at $2\,692$ digits, from
+independent pipelines --- exceed the longest prime gap ever certified
+with proven endpoints ($1\,113\,106$, between primes of $18\,662$
+digits) using integers roughly seven times shorter than that gap's own
+endpoints. The second construction additionally carries a fully
+certified \emph{local} prime gap of just $8\,970$: its Goldbach desert
+is $126.5$ times longer than the prime-free interval it sits in, so the
+desert owes essentially nothing to an ordinary gap. At these heights the
+search is nearly free ($\Ee\approx6.6$) and the binding constraint
+becomes the primality certificate for the partition --- making the
+height record an index of primality-proving technology rather than of
+number-theoretic difficulty --- and we close with the one construction
+idea that would remove that wall too.
+\end{chapterabstract}
+
+\section{The transfer, and its one-way sign}\label{sec:transfer5}
+
+Proposition~\ref{prop:transfer} sends prime gaps to Goldbach deserts:
+if $[\N-Q,\N-2]$ is prime-free then $\g(\N)>Q$ (given any partition at
+all). The converse direction is where the money is, and it fails
+constructively: a desert needs $\N-q$ composite only for the
+$\pi(Q)$ \emph{primes} $q<Q$, a set of density $1/\ln Q$ inside the
+interval the gap must clear entirely. Three certified exhibits measure
+the separation.
+
+\paragraph{Exhibit 1: a desert that is a gap in disguise.} The
+primorial $m_{43}=13\,082\,761\,331\,670\,030$ of
+Remark~\ref{rem:concrete} has $\g(m_{43})=89$, and the nearest prime
+below it is $m_{43}-89$ itself: this small desert coincides with an
+ordinary prime-free interval. At toy scale the two phenomena are
+entangled.
+
+\paragraph{Exhibit 2: a desert 57 times its gap.} The first-generation
+$237$-digit record ($\g=109\,621$) already separates them: the
+committed verifier proves the interval $[\N-1926,\,\N-2]$ prime-free
+while $\N-1927$ is a probable prime ($1927$ is composite, so it is no
+summand). Ordinary gap information therefore certifies only
+$\g>1\,926$; the actual value is $57\times$ larger, entirely on the
+back of composite offsets that the desert may ignore.
+
+\paragraph{Exhibit 3: the certified ratio.} The $2\,692$-digit
+construction below carries \emph{both} numbers as certificates: desert
+$1\,134\,871$, local prime gap $8\,970$. Ratio: $126.5$.
+
+\section{Benchmarks from the gap world}\label{sec:benchmarks}
+
+The longest prime gap known with \emph{proven} endpoints has length
+$1\,113\,106$ and sits between primes of $18\,662$ digits; the longest
+known with probable-prime endpoints has length
+$16\,045\,848$~\cite{GapList}. Two framing facts. First, certifying a
+gap is brutally expensive at scale: the endpoints need primality
+proofs, and every interior integer a compositeness witness ---
+which is why the proven-endpoint record lags the PRP record by an order
+of magnitude. Second, gap \emph{merit} (length divided by $\ln$ of the
+endpoint) measures how anomalous a gap is: the largest merit ever
+observed is $\approx42$, and Cram\'er--Granville-type
+heuristics~\cite{GranvilleCramer} cap plausible merits near a few
+hundred. Hiding a million-length desert inside a genuine prime gap at
+$200$ digits would need merit $\approx2\,180$ --- fantasy. Deserts at
+practical sizes \emph{must} come from covering primes, not intervals;
+this chapter's constructions are that statement in certified form.
+
+The challenge the height game set itself: beat $1\,113\,106$ ---
+a desert longer than any interval ever proven prime-free --- with
+integers small enough to certify on a lab box. (The challenge benchmark
+was set at $1\,113\,137$, marginally above the record gap; both
+constructions clear both numbers.)
+
+\section{The 2\,480-digit record: $\g=1\,157\,341$}\label{sec:g1}
+
+The CPU pipeline's height construction uses $759$ odd congruence
+classes plus parity ($M\approx10^{2474.6}$), leaving $|U|=2\,844$
+residual primes below the target $Q=1\,113\,137$, and scans the
+progression $\N=\N_0+tM$. At $2\,480$ digits the exponent is tiny ---
+$p_1|U|\approx7.7$, expected $\approx$$2.2\cdot10^3$ progression
+elements, $\approx1\,800$ \emph{tested} elements under selective
+testing --- and the hit arrived at $t=14\,544$, the $443$rd tested
+candidate. Certification is where the effort lives:
+
+\begin{itemize}
+\item every one of the $89\,840$ primes $p<\g$ proven a non-summand:
+$86\,714$ by covering divisor, $3\,126$ by failed strong
+probable-prime test, all re-derived by the standalone verifier;
+\item $\g=1\,157\,341$ prime by trial division; the complement
+$\N-\g$ (a $2\,480$-digit integer) proven prime by a $245$-step ECPP
+certificate ($\approx$1.7 hours to generate), re-verified from scratch
+by the independent pure-Python checker ($7\,036$ s), \emph{plus}
+APR-CL as an algorithmically distinct second proof ($7\,409$ s);
+\item an independent PARI full scan of all $89\,841$ primes
+$p\le\g$: zero violations ($27.4$ minutes).
+\end{itemize}
+
+Result: $\g(\N)=1\,157\,341$, exceeding the certified-gap record by
+$4\%$ with an integer $7.5\times$ fewer digits than that gap's
+endpoints. The desert record and the gap record are now formally
+decoupled: ours needed no interval at all.
+
+\section{The 2\,692-digit mega-desert, and its certified local gap}\label{sec:megagap}
+
+The GPU-session pipeline independently built a second height
+construction --- $813$ odd congruences plus parity, $2\,692$ digits,
+found at $k=14$ with measured $\hat\Ee=6.56$ against predicted $6.6$
+--- with
+\[
+\g(\N)=1\,134\,871,
+\]
+proven by $88\,239$ offset witnesses (parity $1$, congruence divisor
+$85\,476$, trial divisor $895$, strong base-2 $1\,867$) and an
+ECPP-certified complement, the $253$-step certificate re-verified by
+the independent checker with its binding to $\N-\g$ asserted.
+
+What makes this construction scientifically distinctive is the
+\emph{extra} pair of certificates: the nearest primes around $\N$ are
+pinned at $\N-7\,329$ and $\N+1\,641$ --- each carrying its own
+validated ECPP certificate, with every interior integer deterministically
+composite --- so the ordinary prime gap containing $\N$ has length
+exactly $8\,970$, fully certified. The desert-to-gap ratio,
+\[
+\frac{\g(\N)}{\text{local prime gap}}
+=\frac{1\,134\,871}{8\,970}=126.5,
+\]
+is the thesis's cleanest single number for the claim that Goldbach
+deserts are not prime gaps: $99.2\%$ of this desert's length lies
+\emph{outside} any prime-free interval, bought by covering prime
+offsets alone. In digit terms the separation reads: a $2\,692$-digit
+integer carries a $1.13$-million desert, while an interval of that
+length free of primes is only known (unproven!) around integers of
+$\sim$$18\,000$ digits --- the sparse-cover advantage is about
+$7\times$ in digits today and widens with the target.
+
+\section{The economics of height: certification is the wall}\label{sec:certwall}
+
+The cost model explains why the height game is played at thousands of
+digits. $\Ee=|U|\cdot\mathrm{boost}/\ln\N$ \emph{falls} as $\N$ grows
+--- doubling the digits roughly halves the exponent at fixed cover
+strength --- so unlike the digit-frugal bounded games, the height game
+optimises at whatever size makes the search trivial:
+$\Ee\approx6.6$ at $2\,700$ digits means hits arrive by the dozen. What
+does not get cheaper is proving the partition:
+
+\begin{itemize}
+\item ECPP generation and validation are minutes at $200$ digits,
+$\approx$2 hours (plus 2 hours of independent re-verification, plus
+2 hours of APR-CL) at $2\,480$--$2\,692$ digits, and scale roughly
+quartically in the digit count;
+\item at $\sim$4\,000 digits, days; far beyond that, the certificate
+--- not the desert --- is the record's binding constraint with present
+tools.
+\end{itemize}
+
+The height record is therefore an index of primality-proving
+technology. Extrapolating with the cover economics: present ECPP
+practice supports $\g\approx2.5$ million (the next committed rung);
+distributed fastECPP-class certification ($\sim$$50\,000$-digit
+proofs) would support $\g\approx5\cdot10^7$; a certification
+breakthrough to $10^6$-digit general-form proofs would carry
+$\g$ toward $10^9$. The desert machinery itself is already there: even
+the absolute-gap milestone --- beating the $16\,045\,848$ PRP-endpoint
+gap, i.e.\ covering $\pi(1.6\cdot10^7)\approx1.03$ million prime
+offsets with a $\sim$$20\,000$-digit modulus --- is a throughput
+problem ($\sim$$0.2$ s per modular exponentiation at that width; a
+distributed campaign $10^2$--$10^3\times$ one lab box), not a
+conceptual one. The certificate is the only wall.
+
+\section{Removing the wall: pick the provable prime first}\label{sec:twosided}
+
+Every construction in this thesis searches over $\N$ and pays ECPP for
+whichever complement $\N-\g$ falls out --- a random $2\,700$-digit
+prime with no exploitable structure. Invert the design: \emph{fix the
+complement first}, inside a family whose primality is cheap to
+certify, and search the other side.
+
+Concretely, take Proth-form candidates $P=j\cdot2^n+1$ with
+$j<2^n$: Proth's theorem~\cite{Proth} certifies such a $P$ prime with a
+\emph{single} modular exponentiation once a quadratic non-residue
+witness is found --- minutes at $10^5$ digits, where general-form ECPP
+is hopeless. For fixed $n$, the cover congruences
+$\N\equiv a_r\pmod r$ with $\N=P+s$ ($s$ the intended least summand)
+translate to congruences on $j$, since $2^n\bmod r$ is computable; the
+search over $j$ is again a CRT progression, now on the \emph{certifiable}
+side. A hit hands over the partition $\N=s+P$ with $P$'s certificate
+essentially free, deleting the height game's only wall
+(Pocklington-style variants~\cite{Pocklington} offer the same trade
+with partially factored $P-1$). The open questions are the density of
+Proth primes inside the cover-constrained $j$-progression and whether
+the $n$-side and $s$-side constraints can be tuned jointly; nobody has
+run the construction, and we flag it as the single most valuable open
+trick in this problem family --- it would let the $\g$-ladder run to
+Proth-search scale ($10^5$--$10^6$ digits, $\g\sim10^8$ and beyond)
+with today's tools. Chapter~\ref{ch:conclusions} files it among the
+open problems with its neighbours.

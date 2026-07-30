@@ -1,0 +1,293 @@
+\chapter{Introduction: the least Goldbach summand and the three games}
+\label{ch:intro}
+
+\begin{chapterabstract}
+We define the least Goldbach summand $\g(\N)$, survey what is known about
+it empirically and conjecturally, and set up the three record games ---
+height, threshold, and budget --- that organise this thesis. We state the
+final certified record board, summarise the contributions chapter by
+chapter, and fix the standard of evidence that every record claim in the
+thesis must meet.
+\end{chapterabstract}
+
+\section{Goldbach partitions, and the most lopsided one}
+
+Goldbach's conjecture asserts that every even integer $\N>2$ is a sum of
+two primes; it has been verified for all $\N\le4\cdot10^{18}$~\cite{OeS}.
+Heuristically one expects not just one representation but many. The
+Hardy--Littlewood circle method --- which estimates such counts by
+treating the primes as a random set of the appropriate density and then
+correcting for divisibility constraints --- predicts~\cite{HL} the
+following asymptotic. Define
+\[
+r(\N)=\#\{p\le\N:\ p\text{ and }\N-p\text{ are prime}\},
+\]
+which counts the two orders separately except on the diagonal. Then
+\begin{equation}\label{eq:HL}
+r(\N)\;\sim\;2\,\Pi_2\,\frac{\N}{(\log \N)^2}\prod_{\substack{p\mid \N\\ p>2}}\frac{p-1}{p-2},
+\qquad
+\Pi_2=\prod_{p>2}\Bigl(1-\tfrac{1}{(p-1)^2}\Bigr).
+\end{equation}
+Reading this from left to right: $\N/(\log \N)^2$ is the naive guess,
+since a number near $\N$ is prime with probability about $1/\log \N$ (the
+prime number theorem) and there are $\N$ choices for $p$; the constant
+$\Pi_2\approx0.6601$ --- an infinite product over all odd primes --- is
+the standard correction (the twin-prime constant) that accounts for
+primes not being truly random modulo small numbers; and the last factor,
+a product over the odd primes \emph{dividing} $\N$, inflates the count
+when $\N$ is highly composite. The point for us is the heuristic
+conclusion: $r(\N)\to\infty$, so a typical large even integer has many
+Goldbach partitions. The interesting question is then not merely whether
+a representation exists, but how lopsided the most lopsided one must be.
+
+\begin{definition}\label{def:g}
+For an even integer $\N\ge4$ admitting a Goldbach representation, the
+\emph{least Goldbach summand} is
+\[
+\g(\N)\;=\;\min\{\,p\ \text{prime}:\N-p\ \text{is prime}\,\}.
+\]
+\end{definition}
+
+This is exactly the quantity $p(n)$ attached to the \emph{minimal
+Goldbach partition} $\N=p+q$ (with $p$ minimal) by Granville, van de Lune
+and te Riele~\cite{GLvdtR}, who conjectured that it never grows faster
+than a fixed multiple of $(\log\N)^2\log\log\N$:
+\begin{equation}\label{eq:GLR}
+\g(\N)\;=\;O\bigl((\log \N)^2\log\log \N\bigr).
+\end{equation}
+The notation $f=O(g)$ means $|f|\le C\,g$ for some constant $C$ and all
+large $\N$; \eqref{eq:GLR} is a \emph{conjectural} ceiling, not a
+theorem, and one thing this thesis does is locate it between provable
+bounds and measured constructive frontiers.
+
+Empirically $\g$ is tiny and grows very slowly: its record values are
+catalogued in the OEIS~\cite{OEIS} (sequence A020481, with records
+A025018 and A025019). Exhaustive verification has produced a slowly
+climbing ladder --- among its rungs, $\g=1093$ first at
+$\N=60{,}119{,}912$; $\g(\N)\le5569$ for all even
+$\N\le4\cdot10^{14}$~\cite{Richstein}; Herkommer's tables reach
+$\g=8443$ near $1.2\cdot10^{17}$; and the exhaustive-search record is
+$\g=9781$, first attained at $\N=3{,}325{,}581{,}707{,}333{,}960{,}528$,
+with $\g(\N)\le9781$ for \emph{all} even $\N\le4\cdot10^{18}$~\cite{OeS}.
+(We reconfirmed the first and last of these deterministically, both being
+below $2^{64}$.) For recent statistical work on the minimal prime in
+generalised $(m_1,m_2)$-partitions $n=m_1p+m_2q$, see
+Juh\'asz--Bartalos~\cite{JB}, observational up to $10^9$. Strikingly,
+all natural records occur at integers of at most $19$ digits. A
+literature search conducted for this thesis (July 2026) found no
+published \emph{constructive} records beyond the first-generation
+constructions of Chapter~\ref{ch:foundations}; every large value of
+$\g$ reported below was manufactured, and to our knowledge this thesis's
+records are the largest and smallest of their kinds that are explicitly
+reported and independently verifiable anywhere. Our question is:
+
+\begin{quote}\itshape
+How large can $\g(\N)$ be forced to be, and at what cost in the size of
+$\N$?
+\end{quote}
+
+\section{The three record games}
+
+There are three natural record questions, and they reward different
+constructions. The first is the unbounded \emph{height game}: exhibit as
+large a value of $\g(\N)$ as possible, with no limit on the size of
+$\N$. An ordinary prime gap is one way to play it, but a strictly
+wasteful one: a gap must block every integer offset, while a Goldbach
+desert needs to block only \emph{prime} offsets. Chapter~\ref{ch:gaps}
+turns that remark into a measured separation.
+
+For comparisons in which size matters, we use two finite games.
+
+\begin{definition}[Threshold and budget games]\label{def:games}
+For $Q\ge2$ and $X\ge4$, define
+\[
+T(Q)=\min\{\,\N:\ \N\text{ even, admitting a Goldbach partition, and }\g(\N)>Q\,\},
+\]
+\[
+R(X)=\max\{\,\g(\N):\ \N\text{ even, admitting a Goldbach partition, and }\N<X\,\}.
+\]
+The \emph{threshold game} fixes $Q$ and tries to lower the certified
+upper bound on $T(Q)$; the \emph{budget game} fixes $X$ and tries to
+raise the certified lower bound on $R(X)$. A companion classical
+quantity is $S(q)$, the least even $\N$ with $\g(\N)=q$~\cite{GLvdtR};
+the threshold function packages many such questions at once, since
+$T(Q)=\min_{q>Q,\,q\ \mathrm{prime}}S(q)$.
+\end{definition}
+
+The games can share an incumbent and then separate: a smaller integer
+just over the threshold improves $T$ but not $R$; a higher summand
+anywhere under the ceiling improves $R$ but not $T$. Both happened
+repeatedly in the record history of Chapter~\ref{ch:records}, which is
+why the two games are kept distinct throughout.
+
+Throughout the thesis, ``digits'' means decimal digits, and a
+\emph{nat} is the natural unit of log-scale accounting: a quantity
+grows by one nat when it is multiplied by $e\approx2.718$, so one
+decimal digit equals $\ln10\approx2.303$ nats. Search costs, size
+budgets, and probabilities all live on this one scale, which is what
+makes the economics of Chapters~\ref{ch:costmodel}--\ref{ch:closure}
+possible to state as exchange rates.
+
+\section{The record board}
+
+Table~\ref{tab:board} states the final certified records of this
+thesis. Each is an explicit even integer with an exhibited Goldbach
+partition; the negative side (no smaller prime is a summand) is proved
+by unconditional witnesses --- proper divisors or failed strong
+probable-prime tests --- and the positive side by an elliptic-curve
+primality certificate for the partition's large prime, independently
+re-verified. Chapter~\ref{ch:records} describes the constructions and
+the verification standard; Appendix~\ref{app:artifacts} maps every row
+to its machine-checkable artifact.
+
+\begin{table}[h]
+\centering\small
+\caption{The certified record board of this thesis (July 2026), against
+the first-generation records of the source paper and the natural
+(exhaustive-verification) frontier.}\label{tab:board}
+\begin{tabular}{llrr}
+\toprule
+Game & Incumbent & digits of $\N$ & $\g(\N)$\\
+\midrule
+natural (all $\N\le4\cdot10^{18}$) & exhaustive scan record~\cite{OeS} & 19 & $9\,781$\\
+\midrule
+Height & first generation & 237 & $109\,621$\\
+Height & \textbf{this thesis} & 2\,480 & $\mathbf{1\,157\,341}$\\
+\midrule
+Threshold $T(100\,000)$ & first generation & 199 & $105\,667$\\
+Threshold $T(100\,000)$ & \textbf{this thesis} & \textbf{150} & $104\,527$\\
+\midrule
+Budget $R(10^{199})$ & first generation & 199 & $105\,667$\\
+Budget $R(10^{199})$ & \textbf{this thesis} & 199 & $\mathbf{119\,419}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three reading notes on the board. First, the height record
+$\g=1\,157\,341$ exceeds the length of the longest prime gap ever
+certified with proven endpoints ($1\,113\,106$, between primes of
+$18\,662$ digits~\cite{GapList}), achieved at $2\,480$ digits --- the
+construction is not a prime gap in disguise, and
+Chapter~\ref{ch:gaps} certifies just how far from one it is. Second,
+the threshold record improved from $199$ to $150$ digits in six
+certified rungs across two independent pipelines; the ladder, its cost
+per rung, and why it stalls near $120$--$135$ digits are the subjects of
+Chapters~\ref{ch:records} and~\ref{ch:limits}. Third, the budget-game
+value $119\,419$ is attained by a $199$-digit integer and therefore
+bounds both $R(10^{199})$ and $R(10^{200})$; a separate $200$-digit
+construction with $\g=112\,249$ once led the sub-$10^{200}$ game and is
+now dominated. No optimality is asserted anywhere: every row is a
+best-known construction, an upper bound for $T$ and a lower bound for
+$R$, and Chapter~\ref{ch:limits} estimates how far from the truth each
+one sits (spoiler: very far, provably hard to close).
+
+\section{Contributions}
+
+\begin{enumerate}
+\item \textbf{Foundations and unconditional results}
+  (Chapter~\ref{ch:foundations}). Elementary constructions (factorial
+  neighbourhoods with Wilson obstructions; primorial deserts) upgraded,
+  via Dirichlet's theorem applied twice, to \emph{unconditional}
+  unboundedness of $\g$ with explicit partitions; the covering-certificate
+  formalism for prime-offset congruence covers, complete and partial; and
+  the transfer of the Ford--Green--Konyagin--Maynard--Tao long-gap
+  covering~\cite{FGKT,Maynard,FGKMT} into the lower bound
+  $\g(\N)\gg\log\N\,\log_2\N\,\log_4\N/\log_3\N$ along even integers
+  with exhibited partitions.
+\item \textbf{A validated cost model} (Chapter~\ref{ch:costmodel}). The
+  expected search cost of a partial-cover construction is $e^{\Ee}$ with
+  $\Ee=|U|\cdot\mathrm{boost}/\ln\N$; the model is calibrated to
+  $\pm0.1$ nats across five scales and $1.2\cdot10^9$ scanned
+  candidates, and it converts record planning from vibes into
+  arithmetic: frontier curves $\Ee(D)$ and $\Ee(Q)$, a digit--compute
+  exchange rate, two binding regimes, and the boost-versus-kills
+  equilibrium that sets cover size.
+\item \textbf{The certified records} (Chapters~\ref{ch:records}
+  and~\ref{ch:gaps}). Eleven new certified constructions across three games,
+  including the $150$-digit threshold record (the first GPU-scale rung),
+  the $199$-digit budget record $\g=119\,419$, and two height-game
+  constructions ($\g=1\,157\,341$ at $2\,480$ digits;
+  $\g=1\,134\,871$ at $2\,692$ digits) that beat the certified
+  prime-gap record --- the latter with a fully certified local prime gap
+  $126.5$ times shorter than its desert. Plus the engineering that made
+  them affordable (measured: sorted testing $1.8\times$, selective
+  testing $3\times$ net, a $430\times$ GPU engine) and a verification
+  standard that survived adversarial audit.
+\item \textbf{Compression barriers} (Chapter~\ref{ch:limits}).
+  Joint modulus/representative optimization is capped exactly by search
+  entropy (measured to half a digit of its ceiling); set-valued
+  conditioning buys $1$--$2.8$ nats, not orders of magnitude, and the
+  classic cover is the unique freely-enumerable design; oversized covers
+  reduce sub-$100$-digit records to modular subset-sum with choices at
+  density $\approx1.026$ and to CRT list decoding beyond the Johnson
+  radius --- and practical lattice reduction measurably fails to
+  penetrate that radius even on solution-abundant instances. Sub-$100$
+  digits is costed at $\sim$$9\cdot10^5$ GPU-years by the only viable
+  route.
+\item \textbf{The closure theorem} (Chapter~\ref{ch:closure}). Within a
+  concrete grammar of planted compositeness-certificate mechanisms,
+  congruence covering is optimal: every family is closed by a proof of
+  its own kind (value-set ceilings, cluster bounds, isolation, orbit
+  accounting, a supply-side purchase argument), swept by $13\,661$
+  enumerated and $41$ adversarially evolved instances with zero passes.
+  The game's exponent is precisely an integrality gap: the fractional
+  cover is perfect, greedy loses $7.6\%$, and exact optimization over
+  windows up to half the cover certifies the greedy point locally
+  optimal. Two named conditionals (Hardy--Littlewood independence; no
+  sub-modexp compositeness detection) and the out-of-grammar frontier
+  are stated as open problems.
+\item \textbf{Methodology} (throughout; collected in
+  Chapter~\ref{ch:conclusions}). Restart-safe chunked compute with
+  git-committed checkpoints; dual-implementation certification; honest
+  negative results with in-model statistics; and the referee-hardening
+  use of adversarial search --- the falsification engine's first
+  discovery was a $50\times$ accounting error in our own evaluator, and
+  catching it strengthened the theorem it was built to attack.
+\end{enumerate}
+
+\section{Standard of evidence}
+
+Every record claim in this thesis separates and discharges three
+obligations:
+\begin{itemize}
+\item[\emph{(a)}] \emph{No small prime is a summand.} For every prime
+  $q<\g(\N)$, the complement $\N-q$ is proved composite by an
+  unconditional witness: parity, an explicit divisor (from the
+  congruence system or trial division), or a failed strong base-2
+  probable-prime test --- a failed test is a rigorous compositeness
+  proof, since pseudoprimes can only err in the other direction.
+\item[\emph{(b)}] \emph{A Goldbach partition exists.} The partition
+  $\N=\g+(\N-\g)$ is exhibited, with $\g$ proven prime directly (it is
+  always below $2^{64}$) and $\N-\g$ proven prime by an
+  Atkin--Morain/Goldwasser--Kilian elliptic-curve certificate
+  \cite{GoldwasserKilian,AtkinMorain}, re-validated by an independent
+  implementation, and for the CPU-pipeline records additionally by the
+  APR-CL algorithm~\cite{APRCL} and a separate full scan.
+\item[\emph{(c)}] \emph{The least summand equals the stated value},
+  which is the conjunction of (a) and (b).
+\end{itemize}
+The witnesses are re-derived from the published construction data by
+standalone verifiers --- never trusted from search logs --- and the whole
+package is hash-manifested. Chapter~\ref{ch:records} reports the audit
+history of this standard, including the two occasions a weaker check
+returned a false PASS and was caught by the remaining legs.
+
+\section{Notation}
+
+$\log_k$ is the $k$-fold iterated logarithm (so $\log_2\N=\log\log\N$,
+and each extra $\log$ grows \emph{extremely} slowly);
+$\theta(x)=\sum_{p\le x}\log p$ is Chebyshev's function;
+$\pi(x)$ counts primes up to $x$; $\gamma\approx0.5772$ is Euler's
+constant; $f\gg g$ means $f\ge c\,g$ for some constant $c>0$ and all
+large arguments (the reverse of $f=O(g)$); ``BPSW'' denotes the
+Baillie--PSW probable-prime test~\cite{PSW,BW}, ``SPRP'' a strong
+probable-prime test to a stated base, and ``PRP'' a probable prime;
+``ECPP'' is elliptic-curve primality proving. An integer is
+\emph{$y$-rough} when it has no prime factor $\le y$. $D$ denotes a
+size budget in decimal digits and $B=10^{D}$ the corresponding bound;
+$Q$ a threshold on the least summand; $M$ a Chinese-remainder modulus;
+$U$ a residual (uncovered) set of prime offsets; and $\Ee$ the search
+exponent of Chapter~\ref{ch:costmodel}. Named integers recur across
+chapters: $\N_{199}$, $\N_{237}$ (the first-generation records of
+Chapter~\ref{ch:foundations}), $\N_{150}$ (the threshold record), and
+so on, always with their digit count as subscript.

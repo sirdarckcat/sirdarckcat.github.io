@@ -1,0 +1,406 @@
+\chapter{The cost model: what a desert costs, and how predictably}
+\label{ch:costmodel}
+
+\begin{chapterabstract}
+A partial-cover construction is a lottery: each progression element
+survives only if every residual complement happens to be composite. This
+chapter turns that lottery into a measured science. The success density
+is $e^{-\Ee}$ with $\Ee=|U|\cdot\mathrm{boost}/\ln\N$; we derive the
+model, refine it with the exact survivor-count distribution, and
+validate it to $\pm0.1$ nats across five scales and $1.2\cdot10^9$
+scanned candidates --- the dice are exactly as loaded as predicted, every
+time. On top of the model we build the economics: the digit-budget
+identity that splits $\ln\N$ into modulus nats and search nats, the
+digit--compute exchange rate, the two binding regimes of the bounded
+games, the boost-versus-kills equilibrium that sets cover size, and the
+frontier curves $\Ee(D)$ and $\Ee(Q)$ that price every record before it
+is attempted. Two consequences frame the rest of the thesis: a
+million-desert below $200$ digits exists in abundance heuristically yet
+costs $10^{85}$ primality tests to exhibit by covers --- a
+construction-versus-existence gap of fifty-nine orders of magnitude
+beyond cosmological --- and the calibrated truth for $T(100\,000)$ sits
+near $10^{53}$, a floor our $150$-digit record approaches only in
+logarithm.
+\end{chapterabstract}
+
+\section{The lottery}\label{sec:lottery}
+
+Fix a partial cover: odd prime moduli $\mathcal R$ with residues
+$a_r$, parity, the modulus $M=2\prod_{r\in\mathcal R}r$, and the
+residual set $U$ of uncovered odd primes below the target $Q$. Every
+candidate is $\N=\N_0+kM$, and $k$ wins exactly when all $|U|$
+residual complements $\N-q$ ($q\in U$) are composite
+(Proposition~\ref{prop:partial}). Losing tickets are cheap to recognise:
+scan the residual complements and stop at the first probable prime.
+Winning tickets are certified as in Chapter~\ref{ch:intro}.
+
+Two structural facts make the lottery analysable. First, for residual
+$q$ the complement $\N-q$ is automatically coprime to $2$ and to every
+cover modulus: $q\not\equiv a_r=\N\bmod r$ means $r\nmid\N-q$. The cover
+therefore pre-sieves its own residuals --- the roughness bonus of
+Remark~\ref{rem:rough} in its useful form. Second, the residual
+complements at a given $k$ are distinct integers of size $\approx\N$
+whose only shared structure is exactly that coprimality (a fact made
+precise, and load-bearing, in Chapter~\ref{ch:closure}).
+
+\section{The density model}\label{sec:density}
+
+A random integer near $\N$ is prime with probability about $1/\ln\N$.
+Conditioning on coprimality to a set $S$ of primes divides the candidate
+space by $\prod_{p\in S}(1-1/p)$, so the conditional primality
+probability for one residual complement is
+\[
+p_1\;=\;\frac{\mathrm{boost}}{\ln\N},
+\qquad
+\mathrm{boost}\;=\;2\prod_{r\in\mathcal R}\frac{r}{r-1},
+\]
+the factor $2$ from oddness. When the cover contains every prime up to
+$r_{\max}$, Mertens' theorem gives
+$\mathrm{boost}\approx2e^{\gamma}\ln r_{\max}$; real covers skip some
+primes and the product is computed exactly. Treating the $|U|$ residual
+primality events as independent (the whole content of that assumption is
+examined in Chapter~\ref{ch:closure}; empirically it holds to
+$\le0.1$ nats), the probability that a candidate wins is
+\[
+\prod_{q\in U}(1-p_1)\;\approx\;e^{-|U|\,p_1}\;=\;e^{-\Ee},
+\qquad
+\boxed{\;\Ee\;=\;\frac{|U|\cdot\mathrm{boost}}{\ln\N}\;}
+\]
+and the expected number of progression elements to the first hit is
+$e^{\Ee}$. The exponent $\Ee$ is the single number that decided every
+campaign in this thesis: it is the negative log of the per-candidate
+success density, measured in nats.
+
+\paragraph{The exact refinement.} In practice the search engine sieves
+each block of $k$ by all primes up to a depth $B_{\mathrm{sieve}}$
+(beyond the cover moduli), so at each $k$ only $a_k\le|U|$ complements
+remain \emph{alive}, and a surviving complement is prime with the deeper
+conditional probability $\hat p$. The exact per-$k$ density is
+$(1-\hat p)^{a_k}$, and the honest exponent is
+\[
+\Ee_{\mathrm{exact}}\;=\;-\ln\;\mathbb E_k\bigl[(1-\hat p)^{a_k}\bigr],
+\]
+the expectation over the sieve's survivor-count distribution (measured
+mean $\approx316$, standard deviation $\approx14$ for a typical
+$|U|=750$ cover at $199$ digits, with $\hat p\approx0.059$). Because the
+average of an exponential exceeds the exponential of the average, the
+fluctuation in $a_k$ is worth a small bonus, $e^{\hat
+p^2\sigma_a^2/2}\approx0.2$--$0.3$ nats; the naive formula undercounts
+by exactly that much, and the measured densities below confirm the
+exact form. The same survivor counts drive the search-order
+optimizations of Chapter~\ref{ch:records}.
+
+\section{Validation: five scales, \texorpdfstring{$1.2\cdot10^9$}{1.2e9} candidates}\label{sec:validation}
+
+The model was validated before it was trusted, at every scale it was
+later used, by comparing the predicted exponent against
+$\hat\Ee=-\ln(\text{measured survival rate})$ on fully logged scans.
+
+\begin{table}[h]
+\centering\small
+\caption{Density-model validation. ``Predicted'' is
+$\Ee$ (exact form where computed); ``measured'' is $\hat\Ee$ from the
+logged scan. The two toy deserts are small constructions built to be
+exhaustively scannable.}\label{tab:validation}
+\begin{tabular}{lrrr}
+\toprule
+construction & digits of $\N$ & predicted $\Ee$ & measured $\hat\Ee$\\
+\midrule
+toy desert & 26 & 12.53 & 12.51\\
+toy desert & 62 & 13.52 & 13.57\\
+dual-game record cover & 197 & 18.20 & 18.2\\
+threshold record cover & 195 & 17.51 & 17.4\\
+GPU threshold cover & 150 & 24.91 & (one hit at $\lambda=0.63$)\\
+mega-desert cover & 2\,692 & 6.60 & 6.56\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across three fully instrumented campaign covers the running discrepancy
+$|\hat\Ee-\Ee|$ stayed below $0.1$ nats over $1.2\cdot10^9$ scanned
+progression elements, with per-slice survivor rates within $\pm2\%$ of
+prediction across more than $500$ logged slices. The $150$-digit row
+deserves its asterisk explained: that campaign scanned its entire
+$k$-round $[0,7.5\cdot10^{10})$ end to end ($\sim2.1\cdot10^{12}$
+Fermat tests) and collected exactly one hit against a Poisson mean of
+$0.63$ --- an unremarkable draw, and the model stayed unfalsified at the
+largest scale ever pushed. This validation is what licenses every
+forecast in the thesis: when we say a rung costs $e^{27.3}$ candidates,
+that number has survived contact with $10^9$-scale reality repeatedly.
+
+We flag the honest converse: the validation also \emph{bounds} every
+dream of beating the lottery. Any exploitable correlation between
+residual complements, any hidden compositeness bias in constructed $\N$,
+would show up as $\hat\Ee<\Ee$; over $1.2\cdot10^9$ candidates nothing
+beyond $0.1$ nats ever did. Chapter~\ref{ch:closure} explains why not.
+
+\section{The digit-budget identity and the exchange rate}\label{sec:budget}
+
+Take logarithms of $\N\approx kM$:
+\[
+\underbrace{\ln\N}_{\text{record size (nats)}}
+\;=\;
+\underbrace{\ln M}_{\text{modulus nats}}
+\;+\;
+\underbrace{\ln k}_{\text{search nats}}.
+\]
+Modulus nats are spent at design time on congruences (each modulus $r$
+costs $\ln r$ and kills a residue class of offsets); search nats are
+spent at run time scanning the progression ($\ln k^*\approx\Ee$ at the
+expected hit). The two currencies buy the same digits, and the whole
+craft of the bounded games is arbitraging them:
+
+\begin{itemize}
+\item \textbf{Search nats cost only compute.} A 4-core CPU pipeline
+demonstrated $\ln k\approx20$; the GPU fleet of
+Chapter~\ref{ch:records} afforded $\ln k\approx25$. Throughput converts
+to record digits at the model's slope --- which is why the single
+largest threshold-game jump in this thesis ($179\to150$ digits) was
+purely an engineering event: the CUDA engine's $430\times$ throughput is
+$\ln430\approx6.1$ nats, precisely the exponent gap ($\Ee=24.9$ vs
+$\approx19$) between the two rungs.
+\item \textbf{The exchange rate is the frontier slope.} Near $200$
+digits, $d\Ee/dD\approx-0.10$ to $-0.19$ per digit (so $10\times$
+compute buys $12$--$23$ digits there); by $150$ digits the slope is
+$\approx-0.32$, and near $100$ digits $\approx-0.5$ ($10\times$ buys
+only $\sim5$). The certified ladder measured it directly: each
+$\sim7$-digit rung of the $199\to179$ descent cost $\approx2.5\times$
+the previous search.
+\item \textbf{Cover quality is the third currency.} At fixed $\ln M$,
+better residue choices shrink $|U|$; each $1\%$ of $|U|$ is worth
+$e^{0.01\cdot\Ee}$ of search. Chapter~\ref{ch:closure} shows the greedy
+covers are locally perfect and globally within an integrality gap worth
+at most a few nats --- the least solved, most valuable margin in the
+game.
+\end{itemize}
+
+\section{Two binding regimes, and the equilibrium that sizes covers}\label{sec:regimes}
+
+\paragraph{Compute-bound versus range-bound.} With no size cap, the only
+constraint is affordable search: pick the cover minimising
+$\ln M+\Ee$ and scan. Under a cap $\N<B$ (the bounded games), the
+progression only holds $k_{\max}=B/M$ candidates, and the binding
+constraint can flip from compute to \emph{range}. In the range-bound
+regime the optimum counterintuitively \emph{shrinks} the modulus below
+its unconstrained value: each nat removed from $\ln M$ buys a full nat
+of $k$-range while costing only $\approx0.2$ nats of exponent (the
+frontier slope in disguise). This was derived, then confirmed twice in
+campaign post-mortems: raw GPU throughput pointed at a $200$-digit
+budget target without re-optimising $M$ failed to beat a tuned CPU
+cover, and the tuned cover's own success confirmed the shrunken-modulus
+optimum.
+
+\paragraph{The boost-versus-kills equilibrium.} What stops a cover from
+growing forever? Adding a modulus $r$ with its best residue class kills
+some number of residuals ($\mathrm{kills}\approx|U|/(r-1)$ on random
+structure, less at the picked-over endgame), lowering $\Ee$ by
+$\mathrm{kills}\cdot\mathrm{boost}/\ln\N$; but it also multiplies the
+boost by $r/(r-1)$, \emph{raising} every surviving residual's primality
+odds and hence $\Ee$ by $|U|\cdot\mathrm{boost}/((r-1)\ln\N)$. The two
+cancel at
+\[
+\mathrm{kills}\;\approx\;\frac{|U|}{r-1},
+\]
+and past that point new moduli are net-zero or worse. Measured at
+$B=10^{200}$, $Q=122\,000$: adding $r=461$ to the standing $88$-modulus
+cover kills $3.5$ residuals ($-0.084$ nats) and boosts the survivors
+($+0.082$ nats) --- net $+0.00$. Two consequences. First, at large
+budgets the cover is \emph{not} budget-limited ($\ln M$ used $437$ of
+$\sim458$ available nats in that instance); it sits at the equilibrium,
+which is why leftover digit budget buys nothing and why the frontier is
+flat against re-derivation --- independent greedy runs at the same $Q$
+land within $10^{-3}$ nats of each other. Second, the binding constraint
+crosses over: at $Q=122\,000$ under $199$ digits the \emph{budget}
+binds, while at $Q=200\,000$ the \emph{equilibrium} binds. Both regimes
+were mapped before the campaigns that used them.
+
+\section{The frontier curves}\label{sec:frontiers}
+
+Everything above compresses into two curves, computed by building actual
+covers (lazy-greedy, digit-capped, annealed) and evaluating $\Ee$
+exactly.
+
+\begin{table}[h]
+\centering\small
+\caption{The digit frontier $\Ee(D)$ at fixed threshold $Q=100\,003$
+(greedy digit-capped covers). ``Candidates'' is the expected search
+$e^{\Ee}$.}\label{tab:ED}
+\begin{tabular}{rrrrr}
+\toprule
+$D$ (digits) & moduli & $|U|$ & $\Ee$ & candidates\\
+\midrule
+100 & 52 & 973 & 41.3 & $10^{17.9}$\\
+120 & 60 & 899 & 32.8 & $10^{14.2}$\\
+130 & 64 & 862 & 29.5 & $10^{12.8}$\\
+140 & 68 & 830 & 26.8 & $10^{11.6}$\\
+150 & 72 & 802 & 24.4 & $10^{10.6}$\\
+160 & 76 & 773 & 22.3 & $10^{9.7}$\\
+170 & 79 & 754 & 20.6 & $10^{8.9}$\\
+195 & 89 & 692 & 16.8 & $10^{7.3}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{The threshold frontier $\Ee(Q)$ at fixed budget $199$ digits
+(same $88$-modulus digit budget, greedy + coordinate ascent + kicks;
+boost $11.01$). The last column prices each rung against its
+predecessor.}\label{tab:EQ}
+\begin{tabular}{rrrrr}
+\toprule
+$Q$ & $|U|$ & $\Ee$ & candidates & $\times$ previous\\
+\midrule
+122\,000 & 867 & 20.83 & $1.1\cdot10^{9}$ & ---\\
+135\,000 & 1\,004 & 24.12 & $3.0\cdot10^{10}$ & $\times27$\\
+150\,000 & 1\,138 & 27.34 & $7.5\cdot10^{11}$ & $\times25$\\
+175\,000 & 1\,335 & 32.07 & $8.5\cdot10^{13}$ & $\times113$\\
+200\,000 & 1\,569 & 37.69 & $2.4\cdot10^{16}$ & $\times280$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two planning corollaries. Because rung spacing is geometric, climbing
+\emph{every} rung of a ladder costs only $\approx4\%$ more than jumping
+straight to the top --- and banks a certified record, plus a fresh
+calibration of $\hat\Ee$, at each step. And each curve exposes its
+regime: Table~\ref{tab:ED} is the compute-bound threshold game (digits
+fall as affordable $\Ee$ rises), Table~\ref{tab:EQ} the range-bound
+budget game (the target rises until the equilibrium chokes it).
+
+\section{Construction versus existence: the million-desert study}\label{sec:million}
+
+How far can the paradigm be pushed? As a stress test we priced the
+\emph{million desert}: an even $\N<10^{200}$ with $\g(\N)>10^6$, i.e.\
+all $78\,498$ primes $q\le10^6$ blocked at once. Note the conjectural
+ceiling \eqref{eq:GLR} evaluates to
+$(\ln\N)^2\ln\ln\N\approx1.3\cdot10^6$ exactly at $200$ digits: this
+target sits \emph{at} the extremal constant of the
+Granville--van de Lune--te Riele law, not beyond it. And existence is
+not the issue: for unstructured even $\N$ near $10^{200}$ the
+all-composite exponent is $\Ee_{\mathrm{random}}\approx445$, so the
+expected count of qualifying integers below $10^{200}$ is
+$10^{200}e^{-445}\approx10^{6.5}$ --- they exist in abundance,
+heuristically.
+
+Exhibiting one is another matter. The frontier $\Ee(D)$ at $Q=10^6$:
+
+\begin{table}[h]
+\centering\small
+\caption{The million-desert frontier (lazy-greedy digit-capped covers,
+$Q=10^6$).}\label{tab:million}
+\begin{tabular}{rrrrr}
+\toprule
+$D$ (digits) & moduli & $|U|$ & $\Ee$ & search cost $e^{\Ee}$\\
+\midrule
+199 & 91 & 8\,157 & 196.7 & $10^{85.4}$\\
+300 & 127 & 7\,311 & 124.3 & $10^{54.0}$\\
+400 & 161 & 6\,728 & 89.3 & $10^{38.8}$\\
+600 & 226 & 5\,865 & 54.9 & $10^{23.8}$\\
+800 & 288 & 5\,241 & 38.2 & $10^{16.6}$\\
+1000 & 347 & 4\,741 & 28.4 & $10^{12.3}$\\
+1300 & 435 & 4\,100 & 19.6 & $10^{8.5}$\\
+1600 & 519 & 3\,588 & 14.2 & $10^{6.2}$\\
+2400 & 736 & 2\,492 & 6.9 & $10^{3.0}$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $2400$-digit row reproduces the regime of the certified mega-desert
+of Chapter~\ref{ch:gaps} ($\Ee\ 6.9$ vs its measured $6.56$) --- the
+ladder is consistent end to end. Reading off feasibility: a
+record-scale search ($1.4\cdot10^8$ candidates) needs
+$\sim$$1\,470$ digits; a heavy single box ($10^9$) $\sim$$1\,250$; a
+distributed fleet ($7\cdot10^{10}$) $\sim$$1\,120$; and a cosmological
+budget ($10^{12}$ tests per second for the age of the universe,
+$\Ee\le68$) still needs $\sim$$520$ digits. A verified $1\,250$-digit
+blueprint ($420$ moduli, $|U|=4\,205$, $\Ee=20.74$, about $235$
+core-days) is committed in the artifact repository as the realistic
+version of this target.
+
+At $199$ digits the wall is structural. The best $199$-digit system
+found --- $91$ moduli, residue-annealed --- leaves $|U|=8\,146$ and
+$\Ee=196.4$; annealing recovers only $\sim0.3\%$ of $\Ee$. Structural in
+the sieve sense, not the counting sense: the $91$ best classes hold
+$148\,290$ slots for $78\,497$ targets, a $1.89\times$ supply, so a
+union bound alone forbids nothing --- but prime residue classes overlap
+like independent sieves, coverage stalls near $90\%$, and $60\,000$
+anneal moves reclaim $11$ residuals out of $8\,157$. Joint optimization
+of representative and coverage (Chapter~\ref{ch:limits}) moves
+$\Ee$ from $196$ to $\approx194$. So: about $10^{6.5}$ million-deserts
+exist below $10^{200}$, and the cheapest known path to \emph{point at
+one} costs $10^{85}$ primality tests --- a construction-versus-existence
+gap of fifty-nine orders of magnitude beyond a cosmological compute
+budget. That gap, in miniature, is also the story of the sub-$100$-digit
+threshold game (Chapter~\ref{ch:limits}); the million-desert study is
+the thesis's cleanest exhibit that \emph{knowing something exists and
+being able to exhibit it are different sciences}.
+
+\section{Poisson discipline: negative results without excuses}\label{sec:poisson}
+
+The lottery is memoryless: conditioned on no hit so far, the expected
+remaining wait is unchanged. That single fact, taken seriously, is most
+of campaign discipline.
+
+\begin{itemize}
+\item \textbf{Spread.} Over the $n=7$ fully-logged searches that ended
+in hits, first hits landed at $0.25\times$--$3.0\times$ the expected
+$e^{\Ee}$ (median $0.5\times$) on a consistent consumed-candidates
+basis. The exponential clock is merciless about variance: plan budgets
+at $3\times\Ee$, in writing, before starting.
+\item \textbf{Misses are data.} Campaign 1 of the PhD track retired
+hitless at $3.18\cdot10^8$ elements --- survival probability $0.30$
+under the calibrated model, an unlucky but ordinary draw; per-slice
+$\hat p$ and survivor counts matched prediction throughout, ruling out
+implementation error. Campaign 2 stopped at $5.6\cdot10^8$ elements
+($P\approx0.22$). The model was never adjusted after the fact to
+absorb a miss; it never needed to be.
+\item \textbf{The tail teaches.} The first-generation-beating
+$199$-digit dual record (Chapter~\ref{ch:records}) hit at $99.9\%$ of
+its committed range, $3.0\times$ the selection-adjusted expectation ---
+the outlier that taught the $3\times$ rule.
+\item \textbf{Ratchet, don't grand-slam.} Under fixed compute, a ladder
+of certified rungs dominates a single deep campaign: geometric rung
+spacing makes the total cost $\approx1.04\times$ the top rung
+(\S\ref{sec:frontiers}), each rung banks a record and a calibration,
+and optimal stopping becomes arithmetic. The thesis learned this the
+expensive way --- a breadth-first 400-variant campaign capped its best
+possible outcome and exhausted hitless while a rival single-progression
+depth-first design (unbounded runway, bad luck costs digits rather than
+termination) banked the record. Both post-mortems are in
+Chapter~\ref{ch:records}.
+\end{itemize}
+
+\section{Calibrating the truth: how far are the records from $T(Q)$ itself?}\label{sec:truth}
+
+The exhaustive data fix the constant in the conjectural
+law~\eqref{eq:GLR}: $\g\le9\,781$ for all even $\N\le4\cdot10^{18}$
+gives $C\approx1.4$ in
+$\g_{\max}(X)\approx C\,\ln^2\!X\,\ln\ln X$. Inverting at
+$Q=10^5$ puts the \emph{true} $T(100\,000)$ near $10^{53}$ ---
+plus-or-minus a few in the exponent from the unknown constant and
+residue-luck tails --- i.e.\ a $53$-digit integer, unreachable by any
+imaginable exhaustive verification (it would take $\sim10^{52}$ scans)
+and, Chapter~\ref{ch:limits} will argue, essentially unreachable by
+construction too. Our $150$-digit record is thus about $2.9\times$ the
+truth \emph{in logarithm}. For the budget game the truth is closer:
+$R(10^{200})\approx C\cdot(460.5)^2\ln(460.5)\approx1.8$ million,
+against a certified $119\,419$ --- and there the gap is
+compute-and-covers, not existence.
+
+For threshold games the model collapses to a useful pair of envelope
+identities (cover-quality factor $\varphi\approx0.60$ for current
+optimizers; $\ln\mathcal C$ the affordable search exponent):
+\begin{align*}
+\mathrm{digits}(\N)\;&\gtrsim\;\frac{0.57\,\varphi\,\pi(Q)}{\ln\mathcal C}
+&&\text{(compute-bound wall)},\\
+\mathrm{digits}(\N)\;&\gtrsim\;\frac{\sqrt{c\,\pi(Q)}}{2.3},\ c\in[0.8,1.3]
+&&\text{(absolute floor)},
+\end{align*}
+the floor being the regime where the ``construction'' has degenerated
+into nature's own ensemble scan --- which is why the floor
+($38$--$49$ digits at $Q=10^5$) and the truth ($\sim53$ digits) nearly
+coincide. Everything between the frontier tables and that floor is the
+subject of Chapters~\ref{ch:limits} and~\ref{ch:closure}: how much is
+buyable with compute, how much with better covers, and how much is
+provably out of reach.

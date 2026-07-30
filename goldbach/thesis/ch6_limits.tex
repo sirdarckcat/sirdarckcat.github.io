@@ -1,0 +1,360 @@
+\chapter{The limits of compression: why sub-100 digits is out of reach}
+\label{ch:limits}
+
+\begin{chapterabstract}
+The calibrated truth for $T(100\,000)$ sits near $10^{53}$; the
+certified record is $150$ digits. This chapter measures how much of
+that logarithmic factor of three is closable, and proves --- in the
+measured, adversarially tested sense this thesis uses --- that the
+answer is: not much. Four attacks on the size of $\N$ are developed to
+their ceilings. Joint optimization of the CRT representative buys
+exactly its search entropy ($24.3$ of a provable $24.9$ digits on the
+record cover) and cannot compete with progression scanning.
+Set-valued conditioning buys $1$--$2.8$ nats, its
+extreme-value promise collapsing to $H^{0.35}$, and the classic cover
+emerges as the \emph{unique} freely-enumerable design. Oversized covers
+would make sub-$100$ trivial ($\Ee=10.2$) but finding their small
+representatives is modular subset-sum with per-position choices at
+density $\approx1.026$ --- the hardest known regime, with the best
+generic attacks at $2^{938}$ here --- and the polynomial-time
+CRT-decoding escape is closed twice: by a coupling argument (with a
+retraction recorded of our own earlier claim to the contrary) and by
+experiment, practical lattice reduction failing to penetrate the
+Johnson radius even on solution-abundant instances. The only viable
+route to sub-$100$ digits is brute force at
+$\Ee=44.1$: about $9\cdot10^5$ GPU-years. The chapter closes with the
+walls of all three games and what protects each.
+\end{chapterabstract}
+
+\section{The question, and the two axes of attack}\label{sec:question}
+
+The threshold game is a compression problem: pack ``every prime below
+$10^5$ fails as a summand'' into as few digits as possible. The
+digit-budget identity (\S\ref{sec:budget}) says a construction spends
+$\ln\N=\ln M+\ln k$; the frontier (Table~\ref{tab:ED}) prices the
+paradigm's trade between them. Beating the frontier means one of two
+things: making the \emph{modulus} side cheaper (better covers, or
+moduli whose representative is smaller than it deserves to be), or
+making the \emph{search} side cheaper (conditioning that raises the
+success density). This chapter runs both axes to their measured ends;
+Chapter~\ref{ch:closure} then closes the third axis --- replacing
+congruences altogether --- with a theorem.
+
+\section{Attack 1: small representatives by construction}\label{sec:joint}
+
+A CRT system's least representative $x$ is what the record pays for; the
+modulus $M$ is what covers. Could a system with $M$ far \emph{above}
+the budget have $x$ far below it --- oversized coverage smuggled under
+the ceiling?
+
+\paragraph{No free small representatives.} Over $2\,000$ random
+top-residue reassignments of the $197$-digit record's cover, the
+deciles of $x/M$ sit at $(0.10,0.25,0.50,0.75,0.90)$ --- exactly
+uniform, with the sample minimum at the $1/\text{samples}$ order a
+uniform draw predicts. Residue choice carries no structural bias toward
+small representatives; only \emph{search entropy} --- enumerating many
+assignments and keeping the smallest --- buys them.
+
+\paragraph{Buying with entropy, at the exact exchange rate.} The tool
+is a multiple-choice modular meet-in-the-middle in the style of
+Wagner's $k$-tree~\cite{Wagner}: split a block of moduli into $2^d$
+lists, enumerate the top-$c$ residue classes of each, and merge with
+shrinking centered windows until the representative lands in a target
+interval. The entropy accounting predicts $2^d$ lists of size $L$
+cancel about $(d{+}1)\log_{10}L$ digits; measured on the record cover:
+a 2-list split cancelled $8.3$ digits at a cost of $+8$ residuals
+($46$ solutions found where entropy predicted $\approx43$); a 4-level
+tree cancelled $21.3$ digits ($52$ vs $\approx50$); the deepest run
+cancelled $24.3$ digits against its $24.9$-digit entropy ceiling ---
+within half a digit, at $\sim$25 minutes and 8\,GB. Three certified
+by-products (committed and re-verified end to end) put oversized moduli
+under the $10^{197}$ budget:
+
+\begin{table}[h]
+\centering\small
+\caption{Joint representative/coverage constructions: modulus far above
+the budget, representative under it. The $211$-digit system is a
+strictly better cover than the record's own ($|U|$ $738$ vs $752$).}
+\label{tab:joint}
+\begin{tabular}{lrrrrr}
+\toprule
+system & odd moduli & digits $M$ & digits $x$ & $|U|$ & $\Ee$ at $10^{197}$\\
+\midrule
+\texttt{m211\_x196} & 95 & 211 & 196 & 738 & 18.09\\
+\texttt{m219\_x197} & 98 & 219 & $<197$ & 784 & 19.33\\
+\texttt{m221\_x197} & 98 & 221 & $<197$ & 782 & 19.32\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Why this does not improve any record.} Extend the objective
+to expected hits, $\Phi=\Ee-\ln K(x,M;B)$, where
+$K=\max(0,\lfloor(B{-}1{-}x)/M\rfloor{+}1)$ counts progression elements
+under the budget. A sieved progression scan generates $\sim$$1\,850$
+candidates per second at $\Phi=18.20-\ln(1\,371\,832)=4.07$; $k$-list
+construction generates $0.1$--$100$ candidates per second of $K=1$
+each --- candidates $10^1$--$10^4\times$ more expensive with $\Ee$ no
+lower, $\Phi\ge18$. Joint optimization is the right tool exactly when
+the modulus \emph{must} exceed the budget, and there it caps at the
+search entropy. The cap is brutal at scale: compressing the
+$2\,480$-digit height cover to $197$ digits would need
+$\sim$$10^{2495}$ enumerated states --- matching the uniform-draw
+estimate $10^{197-2480}$ head-on. Attack 1 is closed by measurement:
+the exchange rate is exactly entropy, and entropy is unaffordable.
+
+\section{Attack 2: set-valued conditioning, and the enumerability theorem}\label{sec:setvalued}
+
+The classic cover pins $\N\bmod r$ to \emph{one} residue, paying
+$\ln r$ nats; conditioning it into a \emph{set} $A_r$ of $k_r$
+residues pays only $\ln(r/k_r)$. A Gaussian extreme-value argument
+promises coverage gains of order $\sqrt{2H\sum_rP_r}$ for $H$ nats
+spread thinly --- orders of magnitude, if attainable. It is not, and the
+reasons are structural.
+
+The exact model (survival as a product over independent
+$\N\bmod r$, reproducing the validated
+$\Ee=|U|\cdot\mathrm{boost}/\ln\N$ to $0.3\%$ at $k_r\equiv1$) gives,
+optimised by Lagrangian sweep over every prime modulus below $15\,000$:
+
+\begin{table}[h]
+\centering\small
+\caption{Set-valued conditioning at $Q=100\,003$: the entire
+achievable gain.}\label{tab:setvalued}
+\begin{tabular}{rrrr}
+\toprule
+$D$ (digits) & classic $\Ee$ & set-valued $\Ee$ & gain (nats)\\
+\midrule
+100 & 43.84 & 41.83 & 2.0\\
+120 & 34.25 & 32.67 & 1.6\\
+130 & 31.62 & 29.23 & 2.4\\
+140 & 29.36 & 26.53 & 2.8\\
+150 & 25.55 & 24.47 & 1.1\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The promised $\sqrt H$ law measures as $H^{0.35}$, for two reasons:
+\emph{overlap} (the nominal kill mass $\sum_rP_r\approx25\,000$ chases
+only $\pi(Q)=9\,591$ targets, so most extreme-value gain re-covers
+covered primes --- the product structure eats independent
+contributions) and \emph{Poisson discreteness} (large-modulus classes
+hold $0$ or $1$ targets; there is no excess over the mean left to
+collect).
+
+And even those nats are not real, because of \emph{enumerability}. The
+set-valued optima condition $\sim$200 moduli of product
+$\sim10^{450}$: representatives below $10^{100}$ exist, but finding
+which residue combination lands there is precisely Attack 1's problem
+again. Free enumeration requires the conditioned modulus $M_1\le B$, in
+which case the candidate pool is
+$\mathrm{pool}=(B/M_1)\cdot\prod_rk_r$, and optimising under that
+constraint the multiplicity term is nearly free but \emph{redundant}:
+at $140$ digits it contributes $e^{12.4}$ of pool for $0.15$ nats of
+$\Ee$, while plain $k$-room already prices candidates at $0.05$ nats of
+$\Ee$ per nat --- net gain $\approx0.2$ nats. The structural conclusion
+deserves italics: \emph{the classic cover is optimal not by luck but by
+construction --- it is the unique design whose admissible set is an
+arithmetic progression, i.e.\ free to enumerate; every relaxation that
+buys coverage destroys enumerability, and every relaxation that
+preserves enumerability buys almost nothing.}
+
+\section{Attack 3: oversized covers, and the subset-sum barrier}\label{sec:subsetsum}
+
+Suppose we ignore enumerability and aim directly at the dream: covers
+whose mass far exceeds the budget. At $B=10^{100}$, $Q=10^5$:
+\begin{itemize}
+\item \textbf{Regime I} (modulus under the bound): the honest optimum
+is $44$ moduli, $M=10^{79}$, $|U|=1\,060$, $\Ee=44.1$ ---
+$1.4\cdot10^{19}$ candidates.
+\item \textbf{Regime II} (oversized): $420$ moduli with $16$ allowed
+classes per position give $|U|=165$ and $\Ee=10.2$ --- about
+$27\,000$ candidates. Sub-$100$ would be a lunch-break computation.
+\end{itemize}
+Regime II's design space carries $\approx2\,698$ nats of entropy
+against $\ln(M/B)\approx2\,630$: about $e^{57}\approx2^{82}$ valid
+(design, $\N$) pairs \emph{exist} below $10^{100}$. But the density of
+designs whose representative lands under the bound is $e^{-2630}$, and
+finding one is exactly:
+
+\begin{quote}
+\emph{minimise $\bigl|\sum_r c_r \bmod M\bigr|$ over per-position
+choices $c_r\in C_r$, $|C_r|=L$, target window $[0,B)$}
+\end{quote}
+
+--- inhomogeneous modular subset-sum with choices, at density
+(design entropy)/$\ln(M/B)\approx\mathbf{1.026}$. This is the worst
+possible regime: low-density instances ($d<0.94$) fall to lattice
+reduction \cite{LO,CJLOSS}, very high densities to birthday/$k$-tree
+merging \cite{Wagner}, and density $\approx1$ is where subset-sum's
+presumed hardness concentrates. Concretely here: meet-in-the-middle
+$2^{1897}$; Wagner's $k$-tree with the available list sizes $2^{938}$;
+both astronomically short of $2^{82}$ planted solutions in a
+$2^{3893}$ space.
+
+\paragraph{The decoding escape, closed --- with a retraction.} One
+hope remains: treat the residues as a Chinese Remainder code and use
+Guruswami--Sahai--Sudan list decoding~\cite{GSS} (in Howgrave-Graham's
+lattice formulation~\cite{HG}) to \emph{decode} a small representative
+directly. The verified radius: agreement mass $A>\sqrt{L\ln B\cdot P}$
+suffices, $P$ the log-mass of the whole modulus pool (numerically
+confirmed against the exact finite-$\ell$ optimum to $0.4\%$). Version
+1 of our analysis claimed an open feasibility window for this attack.
+\textbf{That claim was wrong and is retracted}: it compared the
+decoding radius at one agreement size against an existence bound
+optimised over a \emph{different} size. Coupling the parameters closes
+the window at every pool size --- the barrier in one breath:
+\emph{decodable $\Rightarrow$ pool small $\Rightarrow$ subset entropy
+too small for a representative to exist; representative exists
+$\Rightarrow$ pool large $\Rightarrow$ radius far beyond the cover
+mass.} Re-derived independently (Legendre-transform design entropy,
+same-mass coupling):
+
+\begin{table}[h]
+\centering\small
+\caption{The decoding barrier: maximum cover mass for which
+representatives exist vs minimum mass the decoder needs, same pool and
+$L$. The window never opens; the best case is $28\%$ short.}
+\label{tab:barrier}
+\begin{tabular}{rrrrrr}
+\toprule
+pool $R$ & $L$ & pool mass $P$ & $A_{\max}$ (exists) & $A_J$ (decodes) & ratio\\
+\midrule
+$1\,000$ & 1 & 956 & 339 & 469 & 0.723\\
+$60\,000$ & 1 & $59\,816$ & 570 & $3\,711$ & 0.154\\
+$60\,000$ & 16 & $59\,816$ & $1\,305$ & $14\,845$ & 0.088\\
+$10^6$ & 16 & $998\,483$ & $1\,697$ & $60\,651$ & 0.028\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The gap widens with pool size and with $L$ ($A_J\sim\sqrt{LP}$ against
+a logarithmic existence bound). The retraction's lesson is recorded for
+the methodology chapter: \emph{feasibility windows built from two
+separately-optimised bounds are worthless; couple the parameters
+first.}
+
+\section{Attack 3, empirically: LLL versus the Johnson radius}\label{sec:toycrt}
+
+Proofs bound algorithms that exist; experiments bound hope. Could
+practical lattice reduction beat the proven radius on our
+\emph{structured, solution-abundant} instances? A controlled study at
+toy scale: $61$ positions (odd primes $<300$, $\ln M=276.3$), messages
+below $B=10^{12}$, Johnson radius $A_J=\sqrt{\ln B\ln M}=87.38$;
+planted instances revealing mass $\rho A_J$ of true residues; LLL
+(FLINT, $\delta=0.99$) on the Howgrave-Graham lattice at degrees
+$\ell\in\{12,20,30,45\}$; $390$ decodes total, predeclared protocol.
+
+Results. Recovery is $0\%$ at $\rho\le0.90$, $60\%$ at $\rho=1.00$,
+$100\%$ at $\rho\ge1.10$; measured against \emph{realized} agreement
+mass the transition is razor sharp: at $\ell=30$ every decode below
+$1.0271\,A_J$ failed and every one above $1.0278\,A_J$ succeeded ---
+threshold $\approx1.028\,A_J$, tightening to $\approx1.02\,A_J$ at
+$\ell=45$, tracking the finite-dimension determinant bound
+\[
+A_{\min}(\ell)=\min_z\frac{z(z{+}1)\ln M+\ell(\ell{+}1)\ln B}{2(\ell{+}1)z}
+\]
+to about $1\%$ below it (the usual Coppersmith-family grace) and
+converging to $A_J$ \emph{from above} like $1+c/\ell$. Below threshold
+the failure is total: the reduced bases yield integer-rootless
+polynomials --- not the planted message, and not one of the
+$10^2$--$10^7$ high-agreement alternatives that the first-moment count
+says exist at $\rho=0.7$--$1.0$. Across all $390$ decodes, every
+integer root ever extracted was the planted message itself.
+\emph{Solution abundance buys nothing.} The Johnson radius behaves as a
+hard practical barrier for this lattice family, closing the last
+``maybe practice beats the proof'' hope from the barrier analysis.
+
+\section{The sub-100 verdict, priced}\label{sec:sub100}
+
+With Attacks 1--3 closed, sub-$100$-digit $T(100\,000)$ has exactly one
+route: Regime-I brute force at $\Ee=44.1$. Two independent costings
+(this thesis's, and the parallel realizable-frontier study, which
+lands at $\Ee=43.66$ --- agreement to $0.4$ nats) put it at
+$1.4\cdot10^{19}$ candidates $\approx9\cdot10^5$ GPU-years at the
+record engine's measured rate --- roughly seven orders of magnitude
+beyond plausible compute, and the number to quote against anyone's
+``surely a bigger machine\dots''. The full menu, cap-aware (these
+$\Ee$ include the $k$-room overhead, hence sit about a nat above the
+raw frontier of Table~\ref{tab:ED}; the model reproduces the actual
+$150$-digit campaign --- two GPUs, six days --- as its calibration row):
+
+\begin{table}[h]
+\centering\small
+\caption{The descent below 150 digits, priced. Wall-clock rows from the
+measured fleet band ($7.9\cdot10^5$ candidates/s end to end); multiply
+by $\sim$1.6 for $80\%$ confidence.}\label{tab:menu}
+\begin{tabular}{rrrrl}
+\toprule
+$D$ & $\Ee$ & candidates & A100-years & fleet wall-clock\\
+\midrule
+150 & 25.5 & $10^{11.1}$ & 0.01 & $\sim$2 days (done: the record)\\
+140 & 28.1 & $1.6\cdot10^{12}$ & 0.10 & $\sim$13 days\\
+135 & 29.7 & $7.7\cdot10^{12}$ & 0.49 & $\sim$47 days\\
+130 & 31.2 & $3.6\cdot10^{13}$ & 2.3 & $\sim$5 months\\
+125 & 32.9 & $1.9\cdot10^{14}$ & 12 & ---\\
+120 & 34.7 & $1.2\cdot10^{15}$ & 73 & ---\\
+100 & 44.1 & $1.4\cdot10^{19}$ & $8.9\cdot10^5$ & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+So the fundable frontier is $130$--$140$ digits; $120$--$125$ is the
+institutional edge ($\sim$$10^2$ GPU-years); below that the record
+stalls on physics unless mathematics moves. Not impossibility ---
+about $10^{53}$ qualifying integers exist below $10^{100}$
+(\S\ref{sec:million}'s accounting at this scale: the unstructured
+exponent is $\approx110$ against $230$ nats of room) --- but
+constructive inaccessibility, protected on two independent axes:
+search entropy in Regime I, and density-$1$ subset-sum in Regime II.
+For completeness, the quantum row: Grover~\cite{Grover} halves the
+exponent, but with resource estimates in the
+Gidney--Eker\aa\ mold~\cite{GE} a fault-tolerant oracle call
+(reversible $660$-bit modular exponentiations, no early exit) costs
+$\sim$$10^5$--$10^6$ seconds against the classical
+$1.25\cdot10^{-6}$: the crossover sits at $\Ee^*\approx55$ for one
+machine, $\approx41$ for a thousand --- at or above every target we
+care about, with both sides infeasible at the crossover. The walls of
+this chapter are classical \emph{and} quantum walls at any constants
+that have been projected.
+
+Two well-posed problems would collapse the verdict, and are of
+independent interest: \emph{CRT list-recovery beyond the Johnson
+radius for structured, solution-abundant instances}, and
+\emph{modular subset-sum with per-position choices at density
+$\approx1$ when $2^{82}$ solutions exist}. They are filed in
+Chapter~\ref{ch:conclusions}.
+
+\section{The walls, per game}\label{sec:walls}
+
+Assembling this chapter with the calibrated truths of
+\S\ref{sec:truth} gives each game its forecast. The table uses
+$\ln\mathcal C\approx25$ for today's fleet, $\approx35$ for a
+nation-scale scan, $\approx45$ as a generous classical ceiling.
+
+\begin{table}[h]
+\centering\small
+\caption{THE WALL: predicted limits per game. ``Truth'' is the
+calibrated Granville--van de Lune--te Riele estimate; the middle
+columns are what the validated machinery reaches at stated compute;
+``protected by'' names the obstruction that survives everything this
+thesis threw at it.}\label{tab:walls}
+\begin{tabular}{p{0.16\textwidth}p{0.13\textwidth}p{0.17\textwidth}p{0.16\textwidth}p{0.25\textwidth}}
+\toprule
+game & truth & today / heroic & likely future & protected by\\
+\midrule
+$T(10^5)$, smallest $\N$ & $\sim10^{53}$ (53 digits) & $\sim$140d (days), $\sim$130d (months) / 120--125d & stall at 120--135d; floor 38--49d & search entropy; density-1 subset-sum; the closure triple (Ch.~\ref{ch:closure})\\
+$R(10^{200})$, largest $\g$ & $\sim$1.8M & $\sim$170k / $\sim$250k & $\sim$450k & range entropy under the cap\\
+Height, largest $\g$ & unbounded & $\sim$2.5M / $\sim5\cdot10^7$ (fastECPP) & $10^9+$; unbounded if two-sided construction lands & certification cost only\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The budget game is where algorithms matter most per unit compute (its
+truth is only $\sim$$15\times$ away); the threshold game is where they
+matter least (its truth is entropy-armoured from two sides); and the
+height game has no mathematical wall at all, only an engineering one.
+One axis remains unexamined by everything so far: perhaps congruence
+divisors are simply the wrong \emph{mechanism}, and some algebraic
+structure certifies compositeness wholesale without paying $\ln r$ per
+class. Closing that axis --- or being handed a revolution by failing to
+--- is the next chapter.

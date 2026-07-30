@@ -1,0 +1,203 @@
+\chapter{Conclusions, open problems, and the honest epitaph}
+\label{ch:conclusions}
+
+\begin{chapterabstract}
+We collect what the thesis established --- proved, measured, and
+conjectured, marked apart --- restate the economics in one paragraph,
+rank the open problems the work leaves behind, and record the
+methodological practices that kept a record-driven, heavily automated
+research programme honest.
+\end{chapterabstract}
+
+\section{What was established}\label{sec:established}
+
+\paragraph{Proved.} $\g$ is unbounded, with explicit partitions, by
+primorial obstruction plus Dirichlet (Theorem~\ref{thm:dirichlet});
+any prime-offset cover is realisable by an actual Goldbach number
+(Theorem~\ref{thm:coverdirichlet}); the maximal order of $\g$ is
+$\gg\log\N\,\log_2\N\,\log_4\N/\log_3\N$ along explicit-partition
+integers (Theorem~\ref{thm:lower}); shared divisors of two complements
+are supported below $Q$ (Proposition~\ref{prop:shared}); and, at draft
+rigor on the swept grammar, the Divisor-Paradigm Closure Theorem
+(Theorem~\ref{thm:closure}): value-set ceilings, the cluster bound
+$k_{\max}$, isolation and orbit accounting, the ExpFamily purchase
+bound, and Compose emptiness --- covering is the unique economical
+planted mechanism in $\mathcal L$.
+
+\paragraph{Certified.} The record board of Table~\ref{tab:board}, and
+behind it eleven new constructions (Table~\ref{tab:catalog} and the two
+height records) each carrying
+unconditional exclusion witnesses, a certified partition, dual-stack
+verification, and manifests: the height records $\g=1\,157\,341$
+($2\,480$ digits) and $\g=1\,134\,871$ ($2\,692$ digits, with its
+$8\,970$ local gap certified, ratio $126.5$); the threshold descent to
+$\N_{150}$ with $\g=104\,527$; the budget record $\g=119\,419$ under
+$10^{199}$.
+
+\paragraph{Measured.} The cost model $\Ee=|U|\cdot\mathrm{boost}/\ln\N$
+to $\pm0.1$ nats over $1.2\cdot10^9$ candidates at five scales; the
+frontier curves $\Ee(D)$, $\Ee(Q)$, and the million-desert wall
+($10^{85}$ tests at $199$ digits against $\sim10^{6.5}$ existing
+targets); the engine optimizations ($1.8\times$, $3\times$,
+$430\times$); the compression ceilings (entropy-exact $k$-list
+cancellation; $H^{0.35}$ conditioning saturation; the Johnson radius as
+a practical wall at $1.028\,A_J$); the assignment landscape (fractional
+coverage $100\%$; greedy at $z=24.3$; $867$ window-certified against
+exact solvers up to half the cover); and the adversarial-search ceiling
+per mechanism family (best corrected fitness $0.0919$, $53\times$ short).
+
+\paragraph{Conjectured, named.} H1 (Hardy--Littlewood independence,
+supported at $0.1$-nat resolution); H2
+(Open Problem~\ref{op:H2}); the $o(1)$ terms and equidistribution
+inputs of Lemma~1; out-of-grammar mechanisms; and the calibrated truths
+--- $T(10^5)\approx10^{53}$, $R(10^{200})\approx1.8$ million --- that
+give the records their scale bar.
+
+\section{The three currencies, one paragraph}\label{sec:currencies}
+
+A large least Goldbach summand is bought with three currencies ---
+modulus digits, search throughput, and certification compute --- trading
+at measured rates: about $2.5\times$ search per $7$ digits near
+$190$, a digit per percent of cover quality, exponent
+$e^{|U|\cdot\mathrm{boost}/\ln\N}$ for everything. Complete covers were
+the gold standard and are obsolete; partial covers plus brute
+progression scanning, checkpointed in git and certified twice by
+independent code, are the entire present frontier. The truth for
+$T(10^5)$ sits a factor $\sim$3 below the record in logarithm, and the
+combined barrier analysis says only $10$--$20\%$ of that log-gap will
+fall to compute and cover quality, with everything below
+$\sim$$120$ digits protected by two independent entropy walls and a
+closure theorem. The records are what they are: \emph{upper bounds,
+manufactured, falling toward a floor they will never touch} --- a
+sentence that belongs in every future README of this genre.
+
+\section{Open problems, ranked}\label{sec:open}
+
+Ranked by expected impact per unit effort, with the chapter that
+motivates each.
+
+\begin{enumerate}
+\item \textbf{The rounding-gap programme}
+(\S\ref{sec:door1}). Determine the achievable residual fraction for
+one-class-per-modulus covers of $\pi(Q)\approx10^4$ primes under
+budget $\theta(457)$ --- importing the Erd\H{o}s--Rankin/FGKMT layered
+covering constructively at finite scale. Every absolute percent is
+$\approx15\times$ compute; half the greedy-to-fractional gap is
+$\approx22\,000\times$. Includes: certify the quenched threshold
+(1RSB/survey propagation with complexity bookkeeping); lift-based
+bounds (Sherali--Adams on the small-moduli block) where the plain LP is
+provably vacuous; and the banded-ensemble construction with an exact
+matching endgame.
+\item \textbf{H2: sub-modexp compositeness detection}
+(Open Problem~\ref{op:H2}). Either direction is a result: a detector
+re-prices every prime-hunting search on earth; a lower bound in any
+realistic model finishes Lemma~3.
+\item \textbf{The two-sided construction} (\S\ref{sec:twosided}).
+Intersect cover congruences with a certifiable-by-construction
+complement family (Proth/Pocklington). Uncaps the height game ---
+the only game with no mathematical wall --- from ECPP practice to
+Proth-search scale. Key unknown: Proth-prime density inside
+CRT-constrained progressions.
+\item \textbf{CRT list-recovery beyond the Johnson radius}
+(\S\ref{sec:subsetsum}--\ref{sec:toycrt}), for structured,
+solution-abundant instances. The measured wall at $1.028\,A_J$ says
+practice needs \emph{new decoding}, not better reduction.
+\item \textbf{Modular subset-sum with choices at density
+$\approx1$} when $2^{82}$ solutions exist (\S\ref{sec:subsetsum}).
+Progress on either 4 or 5 collapses the sub-$100$ threshold verdict.
+\item \textbf{Aggregate compositeness certificates.} Verification is
+linear in the witness count; is there a sublinear batch certificate
+that all $k$ complements are composite (resultant/product-tree/gcd
+object verifiable faster than $k$ strong tests)? Even $5\times$
+changes height-game economics; an impossibility result would be a
+certificate-complexity theorem. Untouched.
+\item \textbf{Matching lower bounds.} There is no theorem of the form
+``every even $\N<B$ has $\g(\N)\le f(B)$'' beyond trivialities, even
+conditionally. A GRH-conditional explicit bound, or a large-sieve bound
+on how many residue classes a small $\N$ can occupy, would turn
+Chapter~\ref{ch:limits}'s walls from forecast into mathematics.
+\item \textbf{Complexity placement.} Is deciding
+$\exists\,\text{even }\N<B:\g(\N)>Q$ (primality oracle given) NP-hard?
+The reductions of Chapter~\ref{ch:limits} are evidence about
+\emph{attacks}, not the problem; either answer locates the game on the
+map.
+\item \textbf{Neighbouring games, all virgin.} $S(q)$ exactly (the
+smallest desert with prescribed least summand --- posed in 1989, no
+constructive records exist); double deserts (force the two smallest
+summands large); Lemoine deserts (odd $\N=p+2q$, force $\min p$);
+ternary Goldbach deserts. The pipeline sets first-ever certified marks
+in each essentially for free.
+\item \textbf{Science from the exhaust.} The campaigns banked
+$\sim$$10^9$ PRP tests of structured sparse sets at heights
+$10^{150}$--$10^{2700}$ with full logs --- the largest such sample ever
+produced. Testing Hardy--Littlewood $k$-tuple corrections against
+fail-position statistics is a free empirical paper and a recalibration
+of the $p_1$ model everything rests on.
+\item \textbf{Formal verification.} The standalone verifier is
+$\sim$200 lines of elementary arithmetic; a Lean/Coq proof of
+``exit 0 $\Rightarrow$ $\g(\N)=q$'' would make these the first
+machine-\emph{proof}-carrying records in the genre and close the last
+trust gap.
+\item \textbf{Correlation-aware covers.} Deliberately designing the
+residual set for inadmissibility (minimal singular series) provably
+raises the all-composite probability at fixed $|U|$; P5 bounds the
+\emph{accidental} version at $0.1$ nats, so expect a modest constant
+--- but nobody has optimised for it.
+\end{enumerate}
+
+For the engineering track, the costed roadmap (``Operation
+Staircase'') stands ready: rungs at $Q=140$k, $150$k, $165$k, $175$k,
+$200$k under $10^{200}$, each banked and dual-certified, with the final
+$e^{5.5}$ wall closed by any one of volunteer computing, an ASIC rack,
+or two nats of Problem 1 --- and a committed variant-ledger so parallel
+workers scan disjoint space. The $2.5$-million height rung awaits only
+its (priced, one-time) $3\,300$-digit certification.
+
+\section{Methodological legacy}\label{sec:method}
+
+Five practices earned permanent status, and are offered to any
+record-driven computational programme:
+
+\begin{enumerate}
+\item \textbf{Verification-first.} Witnesses re-derived from published
+data by standalone code, dual implementations for every certificate,
+counts asserted against independent totals, manifests over everything.
+The two false-PASS incidents (\S\ref{sec:certification}) were caught
+by redundancy, not luck; no five-leg record was ever overturned.
+\item \textbf{Adversarial audits, of ourselves first.} Planted
+corruptions against the verifier; a hostile review of a contributed
+blueprint before adoption; and the falsification engine's referee
+broken by its own adversary within ten candidates --- the fix
+strengthening the theorem it guarded. Never let a candidate report its
+own fitness; never trust a pass without hands.
+\item \textbf{Honest negatives, with statistics.} Hitless campaigns
+reported with survival probabilities and per-slice model agreement;
+one retraction (\S\ref{sec:subsetsum}) documented with its root cause
+--- two bounds optimised at different parameters --- as a lesson, not
+buried.
+\item \textbf{Compute that survives its substrate.} Slices as
+transactions, checkpoints in version control committed before results,
+harvest-first workers: $\sim$25 container losses across the programme,
+zero coverage lost.
+\item \textbf{Models before campaigns.} No search was launched without
+a validated density forecast, a $3\times$ budget, and written stopping
+rules; every hit and every miss then updated the calibration. The
+model never needed post-hoc adjustment --- which is the sentence that
+makes all the others cheap.
+\end{enumerate}
+
+\section{Coda}\label{sec:coda}
+
+The moral is a trade-off, not a paradox --- and by now it is a measured
+one. Nature keeps the least Goldbach summand microscopically small, and
+believes (\ref{eq:GLR}) it never grows much faster than
+$(\log\N)^2\log\log\N$. Against that backdrop, deserts can be
+manufactured: with fully static certificates at a thousand digits, or
+with controlled search at a hundred and fifty, or past every certified
+prime gap at twenty-five hundred --- each purchase itemised in a
+currency whose exchange rates this thesis measured, and whose
+counterfeits --- shortcuts through lattices, conditioning, or algebra
+--- it priced honestly at infinity. What remains between the records
+and the truth is now a short, explicit list of mathematical problems
+rather than a fog. That list is the thesis's real deliverable: cute
+gaps, and precisely posed ways to make them cuter.

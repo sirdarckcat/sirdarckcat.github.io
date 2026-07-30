@@ -1,0 +1,358 @@
+\chapter{Engineering the records: two pipelines, one ladder}
+\label{ch:records}
+
+\begin{chapterabstract}
+This is the records paper. Two independent pipelines --- a 4-core CPU
+stack for cover optimization, search, and certification, and a GPU
+fleet on ephemeral cloud notebooks for raw scanning --- drove the
+bounded-game records from the first-generation $199$ digits down to
+$150$ for the threshold game $T(100\,000)$, and up to
+$\g=119\,419$ under $10^{199}$ for the budget game. We describe the
+cover optimizer, the search engine and its three measured optimizations
+(survivor-ordered testing, $1.8\times$; selective testing, $3\times$
+net; sieve-depth tuning), the checkpoint discipline that survived
+roughly ten container losses without losing a byte of coverage, and the
+five-leg certification standard that survived an adversarial audit ---
+including the two occasions a weaker check returned a false PASS and was
+caught. Every certified construction is tabulated with its cover
+parameters and search cost; the negative campaigns are reported with the
+same care, because their statistics are the model validation of
+Chapter~\ref{ch:costmodel} in action.
+\end{chapterabstract}
+
+\section{Two pipelines}\label{sec:pipelines}
+
+The records were produced by two deliberately independent stacks,
+developed in parallel sessions against the same artifact repository.
+
+\begin{itemize}
+\item \textbf{The CPU pipeline} runs on 4-core Linux containers:
+weighted-set-cover construction with GRASP and simulated annealing,
+CRT progression search with a numpy block presieve and gmpy2
+strong-probable-prime tests (about $6\cdot10^3$ candidates per second
+end to end), and the full certification stack --- PARI/GP ECPP
+\cite{PARI,AtkinMorain}, an independent pure-Python certificate
+checker, APR-CL~\cite{APRCL} as a second algorithm, and a separate
+full-scan crosscheck.
+\item \textbf{The GPU pipeline} is a CUDA engine on rotating cloud
+notebook sessions: a bit-matrix sieve and Montgomery-CIOS base-2 Fermat
+waves, validated bit-for-bit against the Python implementation, at
+$2.5$ million tests per second on a T4 and $8.5$ million on an A100 ---
+about $430\times$ the 4-core pipeline. A fleet driver shards the
+$k$-range across sessions and checkpoints progress in git.
+\end{itemize}
+
+The division of labour follows the currencies of
+\S\ref{sec:budget}: covers and certificates are latency-tolerant and
+optimization-heavy (CPU); the scan is embarrassingly parallel
+modular exponentiation (GPU). A shared JSON spec schema (cover pairs,
+$\N_0$, $M$, $k$-ranges) is the handoff interface, and every hit found
+by either pipeline is certified by both verification stacks before it is
+called a record.
+
+\section{Building covers}\label{sec:covers}
+
+The greedy pass of Chapter~\ref{ch:foundations} is the seed, upgraded
+three ways.
+
+\paragraph{Weighted set cover.} Choosing modulus $r$ costs $\ln r$ nats
+of modulus budget; a candidate pair $(r,a_r)$ is scored by newly covered
+offsets per nat. Lazy-greedy selection by this ratio, rather than raw
+coverage, is what turned the $1020$-digit complete cover into the
+$232$-digit partial cover of the first generation.
+
+\paragraph{Local refinement.} A coordinate-descent pass revisits each
+chosen modulus and re-picks its residue against the current uncovered
+set, to a fixpoint; GRASP-style randomized ruin-and-recreate with
+simulated-annealing acceptance explores further. The refined objective
+is $\ln M+\Ee$ --- modulus nats plus search nats, the two currencies on
+one scale. Two robust findings: annealing from multiple seeds reliably
+reproduces the greedy-plus-descent cover (zero improvement, a plateau
+that Chapter~\ref{ch:closure} explains and largely certifies), and the
+frontier is flat --- independent re-derivations at the same $Q$ and
+budget match $\Ee$ to three decimals.
+
+\paragraph{Variant catalogs.} A single progression under a size cap
+holds only $k_{\max}=B/M$ candidates. Residue-swap \emph{variants} ---
+same moduli, alternative residues of near-equal coverage --- give
+independent progressions at $\approx$zero design cost. The plateau
+implies many exactly-equal assignments exist: measured on the
+$Q=100\,003$ threshold cover, $26$ zero-penalty single swaps, $325$
+pairs, and roughly $2\,600$ triples, a catalog of $\sim3\,000$
+progressions at exactly the base $|U|$. Catalogs are what made the
+range-bound campaigns possible at all.
+
+\paragraph{An adversarial aside.} An external evolutionary-search
+service (AlphaEvolve) was pointed at the cover-step optimizer twice
+before this thesis's own closure work adopted it properly
+(Chapter~\ref{ch:closure}). The first run's fitness was unconstrained
+$-\mathrm{digits}(M)$ from an empty cover, and the evolved program
+duly collapsed to infeasible covers ($M$ of $50.7$ digits at
+$\Ee=111$) --- a textbook reward hack. With the $\Ee$-cap restored in
+the fitness, the evolved move-set improved our best $168$-digit
+blueprint by $0.9$ digits at equal wall time; under warm-start
+conditions its Metropolis engine lost to our deterministic best-residue
+proposals. Verdict: harness patterns adopted, engine not --- and the
+incident seeded the anti-reward-hack protocol that
+Chapter~\ref{ch:closure} builds on.
+
+\section{The scan engine, and three measured optimizations}\label{sec:engine}
+
+The inner loop is fixed by the mathematics: for each $k$, sieve the
+residual complements by small primes, then base-2 Fermat-test the
+survivors, abandoning $k$ at the first probable prime. A candidate
+costs about $1/\hat p\approx17$ modular exponentiations regardless of
+survivor count, because $k$ dies at its first PRP pass; winners are
+re-verified exhaustively with BPSW over \emph{all} primes below $Q$
+before being reported. Three optimizations, each measured before
+deployment:
+
+\begin{enumerate}
+\item \textbf{Sieve depth.} Deeper sieving cuts tests per $k$ like
+$1/\ln B_{\mathrm{sieve}}$ but costs linearly; the sweep found
+$B_{\mathrm{sieve}}=10^6$ optimal on CPU ($901$ vs $816$ candidates/s
+at the old $3\cdot10^6$ default), with the measured density invariant
+across depths, as it must be.
+\item \textbf{Survivor-ordered testing.} Success probability at $k$ is
+$(1-\hat p)^{a_k}$: hits concentrate exponentially in the low-$a_k$
+tail. Testing each block's $k$ in ascending survivor count, with
+stop-at-first-success, gave a measured $1.83\times$ conditional
+discovery gain at campaign scale ($12\times$ on a high-density toy;
+$53\%$ of toy hits in the bottom survivor-decile). The survivor count
+is a sufficient statistic for everything the sieve knows, a fact that
+returns with force in Chapter~\ref{ch:closure}.
+\item \textbf{Selective testing.} Since candidates are cheap to
+generate and expensive to test, skip the fullest ones entirely: with
+skip fraction $f=0.92$, raw throughput rose $9.2\times$
+($1\,772\to14\,957$ candidates/s) while retaining $29.6\%$ of the hit
+mass --- computed \emph{exactly} from the survivor histogram, so the
+density model stays unbiased under skipping --- for a net $3.0\times$
+discovery rate. The measured retained mass matched the histogram
+prediction to $\pm0.4$ percentage points at every $f$ tried.
+\end{enumerate}
+
+On GPU the same pipeline becomes a bit-matrix sieve feeding
+Montgomery-CIOS Fermat waves; porting optimizations 2--3 to the fleet
+was identified as the cheapest remaining nat in the programme.
+
+\section{Fleet discipline: compute that survives its container}\label{sec:fleet}
+
+Both pipelines ran on infrastructure that dies routinely: idle
+containers are reclaimed, cloud notebook sessions are culled, processes
+vanish mid-slice. The discipline that made multi-day campaigns possible
+on such substrate:
+
+\begin{itemize}
+\item \textbf{Slices as transactions.} The $k$-space is cut into slices
+(e.g.\ $262\,144$ values, $\sim$2 minutes each) interleaved round-robin
+across catalog variants; a slice either completes and is checkpointed,
+or is re-run. Interleaving makes the global scan breadth-first in $k$,
+which also biases the first hit toward small $k$ --- exactly the
+threshold game's preference.
+\item \textbf{Git as the checkpoint store.} Search logs with resume
+marks (\texttt{safe\_k}, per-slice records) are \emph{committed} before
+anything else happens. The GPU campaign survived roughly ten session
+culls and several container rollbacks with zero coverage loss; the CPU
+campaigns absorbed $\sim$15 restarts the same way. Detached processes
+and even harness-tracked background tasks measurably did not survive
+(duty cycle $12\%$); timeboxed foreground chunks with committed
+checkpoints ran at $\sim$85\%.
+\item \textbf{Verification at the edge.} Hits are re-verified on the
+worker before being reported, so a lost session cannot lose a record ---
+harvest first, then die.
+\end{itemize}
+
+\section{The certification standard}\label{sec:certification}
+
+Every record passes five legs, uniform across pipelines:
+\begin{enumerate}
+\item \textbf{Reconstruction}: $\N$ is rebuilt by CRT from the
+published congruences and search index and compared byte-for-byte
+against the published decimal.
+\item \textbf{Exclusion}: every prime $p<\g$ is re-proven a non-summand
+from scratch --- proper congruence or trial divisor, else a failed
+strong base-2 test --- with the \emph{count} of scanned primes asserted
+against an independently computed $\pi(\g)$.
+\item \textbf{Partition}: $\g$ is proven prime directly; $\N-\g$'s ECPP
+certificate is validated by PARI (\texttt{primecertisvalid}) and
+re-verified by an independent implementation
+(projective/affine elliptic-curve arithmetic with explicit gcd
+surfacing, exact $q>(n^{1/4}+1)^2$ bound checks, chain closed at
+$2^{64}$ by deterministic Miller--Rabin), including the binding of the
+certificate's top integer to $\N-\g$. CPU-pipeline records add APR-CL
+as an algorithmically distinct second proof and a PARI
+\texttt{ispseudoprime} full scan of every $p\le\g$ as a third code
+path.
+\item \textbf{Manifests}: SHA-256 hashes over all artifacts.
+\item \textbf{Audit}: an independent session re-ran the verifiers and
+mounted deliberate corruptions --- a flipped digit in $\N$, a deleted
+witness, a swapped certificate candidate, and a colluding
+expected-value edit --- each of which the stack detected loudly.
+\end{enumerate}
+
+The standard was not decorative. Twice in the programme's history a
+check that skipped a leg returned a false PASS and the remaining legs
+caught it: a multi-line GP loop that silently parsed to a vacuous scan
+(caught by the prime-count assertion), and a thread-stack overflow that
+left a 2-byte junk ``certificate'' (caught by type-checking plus the
+independent re-verification). The audit also found three
+false-\emph{reject} bugs and zero false-accept paths --- the right
+asymmetry, inherited from one-sided witnesses: strong-test failures and
+gcd-surfacing arithmetic can wrongly reject, but not wrongly accept. No
+record that passed all five legs has ever been overturned. Verification
+costs minutes per record; Appendix~\ref{app:artifacts} gives the exact
+commands.
+
+
+\section{The certified ladder}\label{sec:ladder}
+
+\begin{table}[t]
+\centering\small
+\caption{All certified bounded-game constructions of this thesis, in
+order of appearance. ``Odd congr.''\ excludes parity; $|U|$ is the
+residual count below the cover's target; the search index is $k$ (or
+$t$) in $\N=\N_0+kM$. Game column: T = improved the threshold record
+when found, R = improved a budget record, (T)/(R) = certified but
+superseded at merge time. Pipeline: C = CPU, G = GPU fleet,
+1 = first generation (Chapter~\ref{ch:foundations}).}\label{tab:catalog}
+\begin{tabular}{rrlrrrrl}
+\toprule
+digits & $\g(\N)$ & game & odd congr. & digits $M$ & $|U|$ & index $k$/$t$ & pipe\\
+\midrule
+1020 & $100\,747$ & baseline & 355 & 1020 & 0 & 0 & 1\\
+237 & $109\,621$ & height & 102 & 232 & 610 & $299\,948$ & 1\\
+199 & $105\,667$ & T,R & 89 & 193 & --- & $876\,554$ & 1\\
+\midrule
+199 & $110\,917$ & T,R & 88 & 191 & 729 & $299\,581\,384$ & C\\
+197 & $107\,719$ & T,(R) & 88 & 191 & 752 & $951\,928$ & C\\
+195 & $100\,297$ & (T) & 88 & 191 & 706 & $70\,186$ & C\\
+193 & $102\,337$ & T & 86 & 185 & 686 & $27\,994\,707$ & C\\
+186 & $109\,357$ & T & 83 & 177 & 709 & $82\,846\,821$ & C\\
+179 & $101\,149$ & T & 80 & 170 & 728 & $758\,850\,385$ & C\\
+150 & $104\,527$ & \textbf{T} & 68 & 140 & 827 & $62\,147\,038\,260$ & G\\
+\midrule
+200 & $112\,249$ & (R) & 89 & 195 & 765 & $56\,770$ & C\\
+199 & $119\,419$ & \textbf{R} & 88 & 190 & 806 & $145\,605\,823$ & C\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:catalog} is the full catalogue; the narrative below walks
+it. Parallel sessions occasionally produced overlapping rungs --- the
+$195$-digit record landed while a sibling session already held $186$
+digits --- and the merged board always kept the best; superseded rungs
+are retained as certified constructions because their statistics
+validate the model and their covers seed later variants.
+
+\paragraph{Two birds, one integer.} The first thesis records were
+\emph{dual-game}: a $199$-digit $\N$ with $\g=110\,917$, built to slip
+under the first-generation $\N_{199}$ (it does --- by $0.05\%$, which is
+what happens when a hit arrives at $99.9\%$ of the committed range,
+$3.0\times$ the selection-adjusted expectation; \S\ref{sec:poisson}'s
+cautionary tale), and a $197$-digit $\N$ with $\g=107\,719$, found
+after $1.4\cdot10^8$ elements across $165$ progressions at measured
+$\hat\Ee=18.2$ against predicted $18.20$.
+
+\paragraph{The threshold descent.} A pure threshold cover needs only
+$Q=100\,003$, not the dual game's $105\,668$: $8\%$ fewer targets,
+$|U|$ from $752$ to $\sim706$, three times less search
+(\S\ref{sec:frontiers}). Stacked with survivor-ordered testing and the
+sieve optimum, a two-catalog campaign ($1\,590$ progressions,
+$1.75\cdot10^8$ sieved elements, $\hat\Ee=17.4$ throughout) delivered a
+$195$-digit record with $\g=100\,297$ on a 4-core box in $\sim$30 hours
+of scan --- and, as the tail of the same catalogs, a second independent
+hit ($\g=101\,611$ at a larger $\N$), closing the campaign at 2 hits
+against a cumulative expectation of $2.1$. Meanwhile the sibling
+CPU session ratcheted $193\to186\to179$ digits, each rung costing
+$\approx2.5\times$ the previous search, exactly the frontier slope. The
+$179$-digit rung was a single progression scanned to
+$t=7.6\cdot10^8$ --- it survived $\lambda\approx2.5$ expected hits (an
+$8\%$ draw) before landing, the depth-first design whose unbounded
+runway converts bad luck into digits rather than termination.
+
+\paragraph{The GPU rung.} At $150$ digits the exponent is
+$\Ee=24.91$: about $e^{7.4}\approx1\,600\times$ more search per hit
+than at $195$. That rung was unreachable by the CPU pipeline and fell
+to the CUDA engine: the full round $[0,7.5\cdot10^{10})$ was sharded
+across a rotating two-session fleet, scanned end to end
+($\sim2.1\cdot10^{12}$ Fermat tests), and produced exactly one hit at
+$k=62\,147\,038\,260$ --- $63.8\%$ into the round, cumulative
+expectation $0.40$, a central Poisson draw. The record:
+\begin{center}
+\begin{minipage}{0.94\textwidth}\small\ttfamily
+8266689636142221488914017348682490933831701805981351031435344058125034\\
+2747393905081255580217674034223624916359752668869952172293093032932050\\
+5713336368
+\end{minipage}
+\end{center}
+$\N_{150}\approx8.27\cdot10^{149}$, $\g(\N_{150})=104\,527$: the
+smallest known even integer whose least Goldbach summand exceeds
+$100\,000$, $49$ digits below the first-generation record. Evidence:
+all $9\,977$ prime offsets below $104\,527$ excluded (parity $1$,
+congruence divisor $9\,097$, trial divisor $433$, strong base-2
+witness $446$), $104\,527$ prime, complement ECPP-certified.
+
+\paragraph{The budget climb.} Under a hard ceiling the game is
+range-bound (\S\ref{sec:regimes}): covers are re-tuned to leave
+$k$-room, catalogs supply the progressions, and every hit's
+\emph{first surviving offset} usually overshoots the cover target by
+thousands --- free upside. The $199$-digit budget record,
+\begin{center}
+\begin{minipage}{0.94\textwidth}\small\ttfamily
+2461381565223403757902559202409729839707029814556797195332164743319183\\
+6055009475885630448183435105080229622243237603782026136003397685621411\\
+00015486692952424689982503380965035816275690874367307430972
+\end{minipage}
+\end{center}
+has $\g=119\,419$ from a $Q=114\,000$ cover ($88$ odd congruences,
+$|U|=806$, $t=145\,605\,823$), bounding $R(10^{199})\ge119\,419$ (and
+a fortiori $R(10^{200})$). A parallel campaign at $Q=107\,720$
+produced a $200$-digit $\N$ with $\g=112\,249$ --- found in the $16\%$
+of sieve blocks that overshoot the $10^{199}$ ceiling, a fair draw at
+measured $\hat\Ee=18.4$ against predicted $18.3$, now dominated but
+kept: its statistics are part of the validation ledger.
+
+\section{Negative results, reported like records}\label{sec:negatives}
+
+Three campaigns ended without a hit, and one audit prevented a
+misallocated one; their numbers appear in the validation of
+\S\ref{sec:validation} and their lessons in the design rules above.
+
+\begin{itemize}
+\item \textbf{Campaign 1} ($Q=107\,720$, dual-game, $200$ variants):
+retired strictly obsolete at $1\,213$ of $2\,400$ slices when the
+master merge brought stronger records; $3.18\cdot10^8$ elements, zero
+hits, survival probability $0.30$ --- unlucky, ordinary, and fully
+on-model per-slice.
+\item \textbf{Campaign 2} ($Q=100\,003$, $400$ variants capped at
+$175$ digits): stopped at $5.6\cdot10^8$ elements, zero hits,
+$P\approx0.22$. Post-mortem against the winning $179$-digit
+single-progression design: breadth-first variant pools cap the best
+possible outcome and can exhaust; depth-first ratchets dominate under
+fixed compute. Adopted.
+\item \textbf{Campaign 3} ($Q=122\,000$, budget game): stopped early by
+coordination --- a sibling fleet was already attacking the same game at
+higher $Q$ --- at $380$ of $17\,200$ slices, hit-mass $\lambda=0.077$,
+in-model throughout. Independent workers must scan \emph{disjoint}
+variants; duplicated $k$-ranges are pure waste. A committed
+variant-ledger became protocol.
+\item \textbf{The blueprint audit.} An externally contributed
+$168$-digit campaign blueprint was audited before adoption: the cover
+was valid, but its claimed $\Ee$ was optimistic by a nat
+($19.84$ honest vs $20.85$ claimed), its expected hit was $176.5$
+digits (not $168$), and its shipped variants carried a ceiling that
+left $\sim$$10^3\times$ too few candidates to matter. Re-parameterized,
+it became Campaign 2. Moral: audit contributed specs with the same
+machinery as records --- the cost model prices claims, not intentions.
+\end{itemize}
+
+\section{Reproduction}\label{sec:reproduction}
+
+Every construction in Table~\ref{tab:catalog} is reconstructable as
+$\N=\N_0+kM$ from its committed record file, and every witness is
+re-derivable by the standalone verifiers --- nothing depends on the
+discovery path. Appendix~\ref{app:artifacts} lists the one-command
+verification for each record and the SHA-256 manifests. The next
+chapter takes the same machinery to the game with no size limit at all,
+where the opponent is no longer the search budget but the primality
+certificate.
