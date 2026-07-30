@@ -10,7 +10,7 @@
     0,
     82000000000
    ],
-   "safe_k": 3076521984
+   "safe_k": 3126853632
   },
   "gba200": {
    "gpu": "A100",
@@ -20,7 +20,7 @@
     82000000000,
     206000000000
    ],
-   "safe_k": 92645143552
+   "safe_k": 92812915712
   },
   "gba200b": {
    "gpu": "A100",
@@ -30,9 +30,9 @@
     206000000000,
     327058424910
    ],
-   "safe_k": 210787798016
+   "safe_k": 210959764480
   }
  },
  "note": "safe_k = highest k whose log was read with no CANDIDATE; anything beyond must be rescanned if the session dies. Sessions live ~1.5-3h; harvest + advance safe_k each check-in; commit this file each time. banked = candidates already verified+packaged; fleet ignores them.",
- "updated": "2026-07-30T02:17Z"
+ "updated": "2026-07-30T02:34Z"
 }
