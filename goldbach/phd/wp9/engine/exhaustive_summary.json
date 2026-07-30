@@ -1,0 +1,614 @@
+{
+ "generated_by": "exhaustive.py (deterministic; rerun to regenerate full rows)",
+ "total_instances": 13661,
+ "passes": 0,
+ "near_misses": 36,
+ "by_family": {
+  "Compose": {
+   "instances": 60,
+   "verdicts": {
+    "BASELINE": 60
+   },
+   "best_nats_per_residual_kill": null,
+   "max_killable": 5766
+  },
+  "Congruence-composite": {
+   "instances": 400,
+   "verdicts": {
+    "BASELINE": 400
+   },
+   "best_nats_per_residual_kill": null,
+   "max_killable": 5767
+  },
+  "Cyclotomic": {
+   "instances": 198,
+   "verdicts": {
+    "REJECT": 198
+   },
+   "best_nats_per_residual_kill": 7.95,
+   "max_killable": 348
+  },
+  "ExpFamily": {
+   "instances": 36,
+   "verdicts": {
+    "REJECT": 36
+   },
+   "best_nats_per_residual_kill": 3.09,
+   "max_killable": 10416
+  },
+  "MultiPoly-binquad": {
+   "instances": 324,
+   "verdicts": {
+    "REJECT": 324
+   },
+   "best_nats_per_residual_kill": null,
+   "max_killable": 0
+  },
+  "MultiPoly-quartic": {
+   "instances": 4,
+   "verdicts": {
+    "REJECT": 4
+   },
+   "best_nats_per_residual_kill": null,
+   "max_killable": 0
+  },
+  "NormForm": {
+   "instances": 60,
+   "verdicts": {
+    "REJECT": 60
+   },
+   "best_nats_per_residual_kill": null,
+   "max_killable": 0
+  },
+  "PolyImage": {
+   "instances": 12579,
+   "verdicts": {
+    "REJECT": 12579
+   },
+   "best_nats_per_residual_kill": 8.53,
+   "max_killable": 176
+  }
+ },
+ "near_miss_rows": [
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 1,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3195.35,
+   "nats_per_res_kill": 3.69,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=3.7; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 1,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3358.23,
+   "nats_per_res_kill": 3.87,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=3.9; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 1,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3214.01,
+   "nats_per_res_kill": 3.71,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=3.7; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 1,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 2679.93,
+   "nats_per_res_kill": 3.09,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=3.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 3,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4393.72,
+   "nats_per_res_kill": 5.07,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 3,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4616.0,
+   "nats_per_res_kill": 5.32,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 3,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4266.45,
+   "nats_per_res_kill": 4.92,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.9; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 3,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4308.83,
+   "nats_per_res_kill": 4.97,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.0; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 5,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3531.5,
+   "nats_per_res_kill": 4.07,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 5,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3873.65,
+   "nats_per_res_kill": 4.47,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.5; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 5,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3738.32,
+   "nats_per_res_kill": 4.31,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 2,
+    "j": 5,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3605.75,
+   "nats_per_res_kill": 4.16,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.2; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 1,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3709.87,
+   "nats_per_res_kill": 4.28,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 1,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4394.87,
+   "nats_per_res_kill": 5.07,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 1,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4146.2,
+   "nats_per_res_kill": 4.78,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.8; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 1,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3743.26,
+   "nats_per_res_kill": 4.32,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 3,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3709.87,
+   "nats_per_res_kill": 4.28,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 3,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4394.87,
+   "nats_per_res_kill": 5.07,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 3,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4146.2,
+   "nats_per_res_kill": 4.78,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.8; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 3,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3743.26,
+   "nats_per_res_kill": 4.32,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 5,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3685.85,
+   "nats_per_res_kill": 4.25,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 5,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4080.28,
+   "nats_per_res_kill": 4.71,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.7; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 5,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4209.3,
+   "nats_per_res_kill": 4.86,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.9; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 3,
+    "j": 5,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4619.27,
+   "nats_per_res_kill": 5.33,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.3; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 1,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3794.56,
+   "nats_per_res_kill": 4.38,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.4; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 1,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3829.7,
+   "nats_per_res_kill": 4.42,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.4; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 1,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3431.33,
+   "nats_per_res_kill": 3.96,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.0; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 1,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3605.75,
+   "nats_per_res_kill": 4.16,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.2; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 3,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4386.02,
+   "nats_per_res_kill": 5.06,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.1; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 3,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4796.38,
+   "nats_per_res_kill": 5.53,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.5; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 3,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4519.16,
+   "nats_per_res_kill": 5.21,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.2; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 3,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 4652.3,
+   "nats_per_res_kill": 5.37,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=5.4; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 5,
+    "c": -5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3794.56,
+   "nats_per_res_kill": 4.38,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.4; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 5,
+    "c": -1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3829.7,
+   "nats_per_res_kill": 4.42,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.4; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 5,
+    "c": 1
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3431.33,
+   "nats_per_res_kill": 3.96,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.0; one offset per condition (wp7-P3)"
+  },
+  {
+   "family": "ExpFamily",
+   "params": {
+    "a": 5,
+    "j": 5,
+    "c": 5
+   },
+   "killable": 10416,
+   "residual_kills": 867,
+   "cost": 3605.75,
+   "nats_per_res_kill": 4.16,
+   "verdict": "REJECT",
+   "near_miss": true,
+   "reason": "per-offset cost ~ln(ord)=4.2; one offset per condition (wp7-P3)"
+  }
+ ]
+}

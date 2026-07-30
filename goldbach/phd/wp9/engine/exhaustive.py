@@ -265,8 +265,33 @@ if __name__ == '__main__':
     sweep_compose()
     passes = [r for r in rows if r['verdict'] == 'PASS']
     nears = [r for r in rows if r['near_miss']]
+    # Full rows (3.3 MB) stay local and gitignored -- exhaustive.py is
+    # deterministic, so `python3 exhaustive.py` regenerates them. The
+    # committed artifact is the compact summary: per-family aggregates plus
+    # every near-miss row, which is what the exhaustion certificate needs.
     json.dump(rows, open(os.path.join(HERE, 'exhaustive_results.json'), 'w'),
               indent=0, default=str)
+    fam = {}
+    for r in rows:
+        f = fam.setdefault(r['family'], {'instances': 0, 'verdicts': {},
+                                         'best_nats_per_residual_kill': None,
+                                         'max_killable': 0})
+        f['instances'] += 1
+        f['verdicts'][r['verdict']] = f['verdicts'].get(r['verdict'], 0) + 1
+        n = r.get('nats_per_res_kill')
+        if n is not None and (f['best_nats_per_residual_kill'] is None
+                              or n < f['best_nats_per_residual_kill']):
+            f['best_nats_per_residual_kill'] = n
+        f['max_killable'] = max(f['max_killable'], r.get('killable') or 0)
+    json.dump({'generated_by': 'exhaustive.py (deterministic; rerun to '
+                               'regenerate full rows)',
+               'total_instances': len(rows),
+               'passes': sum(1 for r in rows if r['verdict'] == 'PASS'),
+               'near_misses': sum(1 for r in rows if r.get('near_miss')),
+               'by_family': dict(sorted(fam.items())),
+               'near_miss_rows': [r for r in rows if r.get('near_miss')][:60]},
+              open(os.path.join(HERE, 'exhaustive_summary.json'), 'w'),
+              indent=1, default=str)
     print(f"swept {len(rows)} schema instances in {time.time()-t0:.0f}s")
     print(f"PASSES: {len(passes)}")
     for r in passes:
