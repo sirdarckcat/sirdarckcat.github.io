@@ -1,0 +1,459 @@
+\chapter{A closure theorem for the covering paradigm}\label{ch:closure}
+
+Every record in this thesis, and every record we know of in this problem, is
+built the same way: choose $\N$ so that each small prime offset $q$ has
+$\N-q$ divisible by some small prime fixed in advance. Chapter~\ref{ch:barriers}
+showed that pushing this paradigm to sub-$100$ digits runs into two hard
+problems. The obvious next question is whether the paradigm itself can be
+escaped---whether some other mechanism could certify $\N-q$ composite more
+cheaply than a congruence.
+
+This chapter argues that it cannot, within a language precise enough to make the
+claim checkable. The result is not a theorem in the sense of a completed proof
+in a journal; it is a theorem in the sense of a stated claim, with a proof
+skeleton whose cases are individually established, two named conditionals, and
+an adversarial falsification campaign that failed to break it. We are explicit
+throughout about which is which.
+
+\section{The empirical precursor}\label{sec:wp7}
+
+Before formalising anything, we ran five bounded probes into candidate
+mechanisms, each with a predeclared quantitative gate. The metric is
+\emph{compression}: offsets certified per nat of design entropy, benchmarked
+against covering (which manages roughly $4\,400$ offsets per nat at $r=3$,
+falling to about $0.4$ per nat at $r\approx1\,200$).
+
+\begin{description}
+\item[P1. Prime-power moduli.] Upgrading a modulus $p$ to $p^{2}$ costs an extra
+$\log p$ nats and yields \emph{zero} new kills: the class $q\equiv a\pmod{p^{2}}$
+is a subset of the class mod $p$ that is already killed (at $p=7$ we count
+$227\subset1\,613$). Strictly dominated.
+
+\item[P2. Polynomial value-set identities.] Take $\N=m^{k}-c$, so that
+$\N-q=m^{k}-d^{k}$ is algebraically composite whenever $q=d^{k}-c$. The best
+case is $k=2$: $c=398$ kills $113$ offsets below $10^{5}$. But confining $\N$ to
+a $k$-th-power family surrenders $(1-1/k)\log B$ nats---$115$ nats at
+$B=10^{100}$---and the value set below $Q$ has at most $O(Q^{1/2})$ members. The
+mechanism cannot scale past a few hundred offsets \emph{at any price}.
+
+\item[P3. Sierpi\'nski--Riesel exponent families.] For $\N_n=k\cdot2^{n}+c$ the
+residue mod $p$ cycles with period $\mathrm{ord}_p(2)$. For any fixed candidate
+the induced constraint is one congruence class: ordinary covering, no entropy
+gain. (The exponent structure does correlate residues \emph{across} the family,
+which is a legitimate search-throughput trick---noted for the engine, not for
+the entropy budget.)
+
+\item[P4. Norm forms and splitting conditions.] ``$\N-q$ is a norm in $K$'' does
+not certify compositeness---rational primes with the right splitting behaviour
+are norms---and any usable splitting condition on $q$ is a congruence condition
+modulo discriminant-related moduli. Covering in Galois-theoretic clothing.
+
+\item[P5. Residual bias.] Could $\N$ be chosen so that residual complements are
+composite \emph{more often} than the boost predicts? The banked campaigns answer
+directly: across three covers and $1.2\times10^{9}$ candidates,
+$|\Ehat-E|\le0.1$. Any unexploited compositeness structure is worth at most
+$0.1$ nats.
+\end{description}
+
+All five terminated at their gates. That is suggestive but not conclusive: five
+probes is five probes. The rest of this chapter turns the suggestion into a
+claim with a proof structure, a formal language, and an adversary.
+
+\section{The formal setting}
+
+\begin{definition}[Construction scheme]\label{def:scheme}
+Fix a bound $B$ and target $Q$. A \emph{construction scheme} is a pair
+$(F,C)$:
+\begin{itemize}
+\item a \emph{candidate family} $F$: a parameter set $\Theta\subseteq\mathbb Z^{m}$
+with a poly-size description and an evaluation map
+$\N:\Theta\to2\mathbb Z\cap[1,B)$ computable in $\mathrm{poly}(\log B)$ time. Its
+\emph{design cost} is $\mathrm{cost}(F)=\log B-\log|\N(\Theta)|$, the nats of
+search freedom surrendered;
+\item a \emph{certificate map} $C$: on input $(\theta,q)$ with $q<Q$ prime, it
+outputs $\bot$ or a divisor witness $D(\theta,q)$ with
+$1<D<\N(\theta)-q$ and $D\mid\N(\theta)-q$, verifiable in $\mathrm{poly}(\log B)$
+time.
+\end{itemize}
+The certificate is \emph{planted} if the divisibility holds as an algebraic
+identity over the family (checkable symbolically), and \emph{extracted} if $C$
+discovers the divisor per instance. Write $K(\theta)$ for the certified offsets
+and $U(\theta)$ for the residual ones.
+\end{definition}
+
+The \emph{effective exponent} $E_{\text{eff}}(F,C)$ is the logarithm of the
+expected work, in candidates, to find a $\theta$ all of whose residual
+complements are composite. For the classical cover, $E_{\text{eff}}=E$ of
+\eqref{eq:E}, calibrated to $\pm0.1$ nats in \S\ref{sec:calibration}.
+
+\begin{theorem}[Divisor-Paradigm Closure; target statement]\label{thm:closure}
+Let $(F,C)$ be a construction scheme whose certificate map is planted and
+expressible in the schema language $L$ of \S\ref{sec:grammar}. Assume:
+\begin{itemize}
+\item[(H1)] Hardy--Littlewood-type heuristics for shifted primes: conditional on
+all divisibility data, the primality indicators of distinct complements are
+independent with the Mertens-adjusted rates;
+\item[(H2)] no compositeness test with constant soundness on random rough inputs
+runs in $o(\text{one modular exponentiation})$.
+\end{itemize}
+Then $E_{\text{eff}}(F,C)\ge E^{*}(Q,B)-o(1)$, where $E^{*}$ is the covering
+frontier. Moreover, extracted certificates on any window-dense family of targets
+are factoring-equivalent, and certificate-free detection is already performed at
+its known-optimal cost by the standard engine.
+\end{theorem}
+
+Informally: \emph{within $L$, nothing beats covering; outside planted-$L$, a
+scheme must either factor or test, and both are at known cost floors.}
+
+\section{The three lemmas}
+
+\subsection{Lemma 2 first: correlations are covering in disguise}
+
+We take the lemmas out of order because the second is the one that is actually
+proved, and it does a surprising amount of work.
+
+\begin{proposition}\label{prop:shared}
+Let $\N$ be even and $q_1\ne q_2$ odd primes below $Q$. If $d>1$ divides both
+$\N-q_1$ and $\N-q_2$, then $d\mid q_1-q_2$, and hence every prime factor of $d$
+is smaller than $Q$.
+\end{proposition}
+\begin{proof}
+Subtract: $d$ divides $(\N-q_1)-(\N-q_2)=q_2-q_1$, and $0<|q_1-q_2|<Q$.
+\end{proof}
+
+Trivial to prove, and yet it settles an entire class of speculative mechanisms.
+Any scheme that hopes to make the residual complements \emph{jointly} luckier---%
+choosing $\N$ so that its leftovers conspire to be composite together---must act
+through a divisor shared by two complements, and Proposition~\ref{prop:shared}
+says every such divisor is supported on primes below $Q$. But divisibility by
+small primes is exactly what the cover fixes and the sieve harvests. There is
+nothing left to exploit.
+
+\begin{lemma}[Correlation exhaustion]\label{lem:correlation}
+Let $\mathcal F_{<Q}$ be the information generated by the events
+$\{s\mid\N-q\}$ for primes $s,q<Q$. Then every two-complement divisor event is
+$\mathcal F_{<Q}$-measurable; conditional on $\mathcal F_{<Q}$ (and on the
+sieve's data up to its bound), (H1) makes the residual primality indicators
+independent, so the success probability factorises as $\prod_q(1-p_q)$ and
+$E_{\text{eff}}$ decomposes as design cost plus $\sum_q p_q$---which is the
+covering objective. Empirically, $|\Ehat-E|\le0.1$ over $1.2\times10^{9}$
+candidates bounds any violation.
+\end{lemma}
+
+\subsection{Lemma 1: entropy accounting for planted certificates}
+
+\begin{lemma}[Entropy accounting]\label{lem:entropy}
+Let $(F,C)$ be planted. For each mechanism define its \emph{certified sub-image
+density} $\delta_{\text{eff}}$: the density, within a generic window of width
+$Q$ at height $B$, of integers for which the scheme can exhibit its planted
+witness using poly-range parameters. Then the amortised design cost per
+certified offset is at least $\log(1/\delta_{\text{eff}})-O(\log\log B)$, and
+for every family in $L$ this is at least the covering cost.
+\end{lemma}
+
+The proof is by cases, and the cases are where the content is. We treat them in
+\S\ref{sec:cases} after fixing the language, because the arguments are
+family-specific and quantitative rather than uniform.
+
+\subsection{Lemma 3: the detector floor, as an open problem}
+
+Hypothesis (H2) deserves to be stated on its own, because it is the one
+genuinely open ingredient and it is interesting independently of Goldbach
+deserts.
+
+\begin{conjecture}[H2, sub-modexp compositeness detection]\label{conj:h2}
+Let $n$ be uniformly random among integers in $[X,2X]$ with no prime factor
+below $B_0=(\log X)^{O(1)}$. Does there exist a randomised algorithm deciding
+compositeness of $n$ with soundness $\ge2/3$ in time
+$o(M(\log X)\cdot\log X)$---asymptotically cheaper than one modular
+exponentiation?
+\end{conjecture}
+
+Known art: trial division and batch-gcd methods~\cite{Bernstein} certify exactly
+the small-divisor mass and have soundness $o(1)$ on rough inputs; Jacobi symbols
+are equidistributed on rough composites; Fermat, Euler, Miller--Rabin and
+Frobenius tests all cost $\Theta(M\log X)$. We are aware of no sub-modexp result
+in either direction, and no lower bound in any realistic model.
+
+The downstream consumer is quantified: a detector at cost $c$ and recall $\rho$
+improves throughput by $1/(c+(1-\rho))$, so $c=0.1$, $\rho=0.9$ is a $5\times$
+speedup on every search in this thesis---and, since record difficulty is
+logarithmic in compute, converts directly into records. The same primitive
+dominates GIMPS and PrimeGrid~\cite{PrimeGrid}, so a positive answer would be
+felt well beyond this problem.
+
+\section{The schema language \texorpdfstring{$L$}{L}}\label{sec:grammar}
+
+To make Theorem~\ref{thm:closure} checkable we fix a concrete grammar of
+certificate mechanisms. Each schema compiles to three things: an enumerator of
+the offsets it certifies, a symbolic divisor witness, and a design-cost term.
+\[
+\begin{array}{ll}
+L::= & \mathrm{Congruence}(d,a)\quad \N\equiv a\ (\mathrm{mod}\ d)\\
+   |\ & \mathrm{PolyImage}(f\in\mathbb Z[m],\deg\le4)\quad \N-q=A(m)B(m)\\
+   |\ & \mathrm{ExpFamily}(\N=j\cdot a^{n}+c)\quad\text{per-offset order conditions}\\
+   |\ & \mathrm{MultiPoly}(A,B\in\mathbb Z[u_1..u_v],\deg\le2,\ v\le3)\\
+   |\ & \mathrm{NormForm}(K,\ \mathrm{disc}\le10^{4})\quad \N-q=\mathrm{Norm}_K(\alpha)\\
+   |\ & \mathrm{Cyclotomic}(\Phi_n,\ n\le200)\\
+   |\ & \mathrm{Compose}(L,L)\quad\text{depth}\le2
+\end{array}
+\]
+Two exclusions are deliberate. Mechanisms whose certificate requires a
+primality decision to define membership are circular and excluded; and
+per-instance divisor discovery is \emph{extraction}, handled by the second horn
+of the theorem rather than by $L$.
+
+Two thresholds make ``beats covering'' precise. A schema must certify more than
+$\mathrm{CEIL}=3\sqrt{Q}\approx1\,048$ distinct prime offsets---placing it above
+the $\sqrt{Q}$ ceiling that limits identity families---and it must do so at a
+marginal cost below covering's. The right benchmark for the second condition is
+subtle and we got it wrong at first (\S\ref{sec:referee}); the correct one is
+covering's \emph{average}:
+\[
+\frac{437\ \text{nats}}{10\,607\ \text{offsets}}\;=\;0.041\ \text{nats per offset},
+\]
+not its marginal endgame cost of about $1.01$. Covering wins on average, not at
+the margin, because one modulus spends $\log r$ nats and certifies
+$\pi(Q)/(r-1)$ offsets \emph{at once}, whereas every known algebraic mechanism
+buys $O(1)$ offsets per unit of entropy. Together with the design-entropy budget
+$\log B\approx461$, the two conditions imply that a bulk mechanism needs
+$\mathrm{cost}<\log B/\mathrm{CEIL}=0.44$ nats per offset.
+
+\section{Closing the families}\label{sec:cases}
+
+\subsection{Univariate identity families: a ceiling, not a price}
+
+A degree-$d$ form takes at most $Q^{1/d}$ values below $Q$, so it can certify at
+most that many offsets \emph{regardless of budget}: $349$ at $d=2$, $50$ at
+$d=3$, $19$ at $d=4$, $7$ at $d=6$. Since $\mathrm{CEIL}=1\,048$, every
+$\mathrm{PolyImage}$ with $d\ge2$ is closed at any price, and $d=1$ is ordinary
+covering. Cyclotomic schemas fall inside the same bound because $\varphi(n)\ge2$
+for every $n\ge3$. This is the P2 probe generalised, and it retires two families
+outright.
+
+\subsection{ExpFamily: supply, not price}
+
+$\mathrm{ExpFamily}$ is the strongest non-covering family in the grammar and
+needs a quantitative argument. For $\N=j a^{n}+c$, a prime $s$ certifies the
+offset $q$ when $(q-c)j^{-1}$ lies in the subgroup $\langle a\rangle$ mod $s$,
+and the resulting condition confines the exponent $n$ to one class modulo
+$\mathrm{ord}_s(a)$: a cost of $\log\mathrm{ord}_s(a)$ nats \emph{per offset}.
+
+Two facts then close it. First, a structural floor: $s\mid a^{d}-1$ forces
+$a^{d}>s$, so $\mathrm{cost}=\log d>\log\log_a s$---cheap certificates require
+small moduli, which is exactly where covering is cheapest. Exhaustively over all
+$s<10^{5}$ the cheapest is $\log 5=1.609$ (at $a=7$, $s=2801$).
+
+Second---and this is the binding constraint---cheap certificates are
+\emph{scarce}. A modulus $s$ serves only the offsets landing in its order-$d$
+subgroup, a fraction $d/s$ of them, so it supplies about $\pi(Q)d/s$ offsets:
+$s=2801$ with $d=5$ supplies about twenty. Solving the resulting purchase
+problem exactly---sort every $s<10^{5}$ by $\log\mathrm{ord}$, buy offsets
+cheapest-first---gives, for every base $a\in\{2,3,5,7\}$:
+
+\begin{observation}[ExpFamily is over budget]\label{obs:expfamily}
+Reaching $1\,048$ certified offsets costs $1\,151$ nats, against a total design
+budget of $\log B\approx461$ nats: $2.5\times$ over. The most that any
+budget-feasible $\mathrm{ExpFamily}$ design can certify is $419$ offsets.
+\end{observation}
+
+\subsection{MultiPoly: clusters, isolation, and orbits}
+
+Multivariate identities are the interesting case, and the one where we initially
+expected the theorem to break. Products of two binary quadratic forms have
+\emph{window-dense} value sets---about $9\,300$ of the $17\,983$ prime offsets
+below $Q=200\,000$ are representable---which blows straight past the univariate
+$\sqrt Q$ ceiling. If those representations could be exhibited, the family would
+be a genuine threat.
+
+\paragraph{The cluster bound.} Let $G=A\cdot B$ be homogeneous of total degree
+$d$ in $v$ variables, with value-set density exponent $\alpha=\min(1,v/d)$
+(so the number of distinct values below $X$ is about $X^{\alpha}$). A
+first-moment count of $k$-element clusters of $G$-values inside a width-$Q$
+window below $X$ gives $X^{\alpha}(X^{\alpha-1}Q)^{k-1}$, hence clusters exist
+only up to
+\[
+k_{\max}(\alpha)\;=\;1+\Bigl\lfloor
+\frac{\alpha\log X}{(1-\alpha)\log X-\log Q}\Bigr\rfloor ,
+\]
+finite whenever $\alpha<1-\log Q/\log X$. At $X=10^{200}$, $Q=2\times10^{5}$
+that threshold is $\alpha^{*}=0.9735$, and every combination with $v<d$ has
+$\alpha\le(d-1)/d\le0.9$:
+
+\begin{table}[h]
+\centering\small
+\caption{Cluster ceilings. A scheme needs about $18\,000$ certified offsets per
+candidate; every shared-variable identity family with $v<d$ delivers $O(1)$.}
+\label{tab:kmax}
+\begin{tabular}{lrr@{\qquad}lrr}
+\toprule
+$(d_1,d_2,v)$ & $\alpha$ & $k_{\max}$ & $(d_1,d_2,v)$ & $\alpha$ & $k_{\max}$\\
+\midrule
+$(2,2,2)$ & $0.500$ & $2$ & $(2,2,3)$ & $0.750$ & $4$\\
+$(2,3,3)$ & $0.600$ & $2$ & $(2,3,4)$ & $0.800$ & $5$\\
+$(2,4,4),(3,3,4)$ & $0.667$ & $3$ & $(2,4,5),(3,3,5)$ & $0.833$ & $6$\\
+$(3,4,5)$ & $0.714$ & $3$ & any $v<d$ & $\le0.9$ & $\le13$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We checked the density exponent empirically for the one in-grammar case with
+$v\ge3$: for $(x^2+y^2+z^2)(x^2+2y^2+3z^2)$, counting distinct values in
+width-$10^{4}$ windows at heights $10^{6},10^{8},10^{10}$ gives
+$\hat\alpha=0.761$ against the predicted $0.750$.
+
+\paragraph{Above the threshold: isolation.} For $v\ge d$ the value set is
+window-dense and existence no longer obstructs, so the closure must come from
+\emph{access}. Around any known solution $u_0$, the lattice points $\delta$
+keeping $G(u_0+\delta)$ inside a width-$2Q$ window form an ellipsoidal slab with
+principal extents $Q X^{-(d-1)/d}$ along the gradient and
+$Q^{1/2}X^{-(d-2)/2d}$ along the Hessian directions. At $X=10^{200}$, $Q=2\times
+10^{5}$, $d=4$ these are $10^{-145}$ and $10^{-47}$: every extent is far below
+$1$, so the only lattice point is $\delta=0$. Window solutions are pairwise
+isolated; dense existence is non-constructive for geometric reasons, not
+complexity-theoretic ones.
+
+\paragraph{Symmetry cannot help.} One might hope an infinite symmetry group
+$\Gamma$ moves between solutions. Three exhaustive cases: if $\Gamma$ preserves
+$G$, navigation conserves the value---one offset per orbit. If $\Gamma$ preserves
+one factor, it conserves that factor's value, so the certificate always exhibits
+the same divisor; if that divisor is small enough to enumerate, the scheme is
+sieve-equivalent, and if it is balanced ($\approx X^{1/2}$), we are back to the
+isolated sliver. If $\Gamma$ mixes generators from both factors, the reachable
+$(\log A,\log B)$ pairs form a coarse lattice with about $(\log X)^{2}\approx
+2\times10^{5}$ points against a target window of relative width $10^{-195}$.
+Any remaining route must solve $G(u)=m$ for \emph{prescribed} $m$---but a
+product-form representation of $m$ \emph{is} a nontrivial factorisation of $m$,
+which is the theorem's extraction horn, not a new mechanism.
+
+\subsection{Compose: empty, not expensive}
+
+Finally, depth-2 composition. Our scorer treats a composition's parts as
+independent and \emph{sums} their certified offsets---generous---and Compose
+still peaked well below threshold. But the generosity conceals a stronger fact:
+two nontrivial family constraints on the same $\N$ are contradictory at record
+scale. Requiring $\N=m^{2}-c_1$ and $\N=m'^{2}-c_2$ forces
+$(m-m')(m+m')=c_1-c_2$, so $m\le|c_1-c_2|$, whereas $\N\sim10^{200}$ needs
+$m\sim10^{100}$. For ordinary shifts the solution sets are tiny---$c=398,4686$
+admits five solutions, the largest with $m=1073$. The intersection is empty at
+scale, so the only viable composition is family-plus-congruence: covering, plus
+one family capped at $349$.
+
+\section{The falsification engine}\label{sec:engine-falsify}
+
+A closure claim invites refutation, so we built the refuter ourselves. The
+engine compiles a schema to (enumerator, witness, cost), evaluates it against
+the live cover context, and applies the filter: a schema \emph{passes} if it
+certifies more than $\mathrm{CEIL}$ distinct offsets at below-benchmark cost,
+with the design budget enforced.
+
+\paragraph{Tier 0: calibration.} Before trusting the engine we required it to
+reproduce the hand-derived numbers of \S\ref{sec:wp7} from primitives. It does:
+the best $m^{2}-c$ family below $Q=10^{5}$ is $c=398$ with $113$ killable
+offsets, matching P2 exactly, and the apparent discrepancy in the
+nats-per-residual-kill figure resolved as a $B=10^{100}$ versus $B=10^{200}$
+context difference. Calibration also \emph{corrected} the record: covering's
+endgame is about $1.0$ nats per offset at $Q=122\,000$, not the $2.5$ quoted
+earlier from a different target.
+
+\paragraph{Tier 1: exhaustive.} We swept $13\,661$ schema instances across all
+seven families. \textbf{Zero passes.} The first run reported sixteen, which
+turned out to be a filter-semantics leak---congruence-containing schemas being
+scored against the escape criterion, when the covering paradigm cannot by
+definition escape itself. After hardening, the near-miss board is topped by
+$\mathrm{ExpFamily}$ at $3.1$--$4.2$ nats per residual kill, about $3\times$
+covering's endgame, exactly as P3 predicted.
+
+\paragraph{Tier 2: generative.} Finally we handed the problem to an adversary:
+an LLM-driven evolutionary search~\cite{AlphaEvolve} whose fitness function was
+our scorer. The contract was designed to be unfoolable: candidate programs may
+\emph{only} emit schema JSON, they run in a locked-down subprocess with no
+network, grading happens in a fresh interpreter with the trusted scorer, and a
+pass requires hand audit before it counts. A hostile candidate that simply
+prints $\texttt{fitness=1.0}$ verifiably scores $0$.
+
+Forty-one evolved candidates produced zero passes and explored only four
+families, converging on the same $\mathrm{ExpFamily}$ optimum the exhaustive
+tier had already flagged as the closest near-miss and then stalling about
+$53\times$ short of the bar.
+
+\section{The referee broke before the theorem did}\label{sec:referee}
+
+The most instructive thing that happened in this chapter was a failure of ours,
+not of the theorem.
+
+Within about ten candidates the evolutionary search drove its reported fitness
+from $0.27$ to $0.46$, entirely inside $\mathrm{ExpFamily}$, by pushing the mean
+per-offset cost from $3.71$ down to $2.20$ nats. It looked like a genuine climb
+toward falsification. It was not: the search had found an accounting hole in our
+scorer. $\mathrm{ExpFamily}$ was credited with about $10\,416$ certifiable
+offsets while being charged $\log\mathrm{ord}$ nats \emph{per offset} with the
+bill levied only against the $867$ residual primes---so a design was credited
+with bulk coverage costing $10\,416\times2.20\approx22\,900$ nats of design
+entropy against a total budget of $461$. A $50\times$ overdraft.
+
+The audit protocol caught it before any claim was made, and the fix
+\emph{strengthened} the mathematics. Charging per-offset mechanisms for every
+offset they claim, and capping coverage at the affordable fraction
+$\log B/\mathrm{cost}$, produced three things we did not have before: the
+design-entropy budget constraint; the realisation that the honest benchmark is
+covering's average $0.041$ nats per offset rather than its marginal $1.01$; and
+the supply-side purchase argument of Observation~\ref{obs:expfamily}, which
+closes $\mathrm{ExpFamily}$ quantitatively rather than empirically.
+
+\begin{remark}[Methodological finding]\label{rem:referee}
+Adversarial search against a formal claim is most valuable as a
+\emph{referee-hardening} device, and should be reported that way rather than as
+a failed refutation. The properties that made this work are worth restating,
+because they are cheap and general: candidates emit data, never scores; grading
+runs in a separate trusted process; every quantity is re-derived from
+primitives; and a ``pass'' is a hand-audited event rather than an automatic
+conclusion. Under those conditions an adversary optimising against your
+evaluator is a free audit of your evaluator.
+\end{remark}
+
+\section{Verdict}
+
+\begin{table}[h]
+\centering\small
+\caption{Per-family closure status. $13\,661$ enumerated plus $41$ evolved
+schema instances produced zero passes; each family closes for its own
+reason.}\label{tab:closure}
+\begin{tabular}{lll}
+\toprule
+Family & Closure & Kind\\
+\midrule
+$\mathrm{Congruence}$ & is the covering baseline; composite $d$ dominated (P1) & proved\\
+$\mathrm{PolyImage}$ ($k\ge2$) & value set $\le Q^{1/k}$, i.e. $\le349$ offsets & proved, price-free\\
+$\mathrm{Cyclotomic}$ & $\varphi(n)\ge2$, same $\sqrt Q$ ceiling & proved, price-free\\
+$\mathrm{ExpFamily}$ & purchase plan $1\,151$ nats vs $461$; cap $419$ & proved, quantitative\\
+$\mathrm{MultiPoly}$ ($v<d$) & cluster bound $k_{\max}\le13$ & first moment\\
+$\mathrm{MultiPoly}$ ($v\ge d$) & isolation + orbit conservation; else extraction & draft rigour\\
+$\mathrm{NormForm}$ & reduces to $\mathrm{MultiPoly}$ & proved\\
+$\mathrm{Compose}$ (depth 2) & intersection empty at $10^{200}$ & proved\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+What remains genuinely conjectural, stated plainly:
+\begin{enumerate}
+\item \textbf{(H1)}, Hardy--Littlewood independence---standard but unproved,
+supported here by the $1.2\times10^{9}$-candidate calibration.
+\item \textbf{(H2)}, the sub-modexp detection question of
+Conjecture~\ref{conj:h2}. A positive answer breaks the \emph{cost floor}, not
+the covering monopoly.
+\item The $o(1)$ terms in Lemma~\ref{lem:entropy}, and the
+value-equidistribution inputs to the cluster counting.
+\item \textbf{Mechanisms outside $L$.} The language is concrete and deliberately
+finite. A mechanism that certifies compositeness by something that is neither a
+planted divisor identity nor per-instance divisor discovery is not excluded by
+anything here. We know of none, and the two structural horns---planted implies
+entropy accounting, extracted implies factoring---suggest why, but this is the
+honest frontier of the result.
+\end{enumerate}
+
+The programme-level consequence is worth stating because it changes what should
+be worked on. If covering is not merely the best known paradigm but provably the
+only competitive one within $L$, then records are governed entirely by the two
+levers of Chapter~\ref{ch:frontier}: the rounding gap, and throughput. That is
+the subject of the final chapter.

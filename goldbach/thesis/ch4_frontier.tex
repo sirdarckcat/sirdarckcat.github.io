@@ -1,0 +1,279 @@
+\chapter{The frontier: where covering stops, and why}\label{ch:frontier}
+
+With a calibrated exponent in hand we can ask sharp questions. How small can a
+desert be made at a given target $Q$? How large can $\g$ be made under a given
+digit budget? And---the question this chapter is really about---is the answer
+determined by mathematics we could improve, or by a wall?
+
+The answer turns out to be surprisingly clean, and surprisingly unlike what we
+expected when we started. The difficulty of the whole subject is an
+\emph{integrality gap}: fractionally, the covering problem is trivial. All of
+the exponent, every last nat of it, is the price of rounding a fractional cover
+to an integral one.
+
+\section{The frontier, measured}
+
+Table~\ref{tab:frontier} gives the achievable exponent as a function of the
+digit budget, at fixed target $Q=10^{5}$: for each cap on the number of digits
+of $\N$, we build the best cover we can and report $|U|$ and $E$.
+
+\begin{table}[h]
+\centering\small
+\caption{Cover frontier at $Q\approx10^{5}$: the exponent achievable under a
+digit cap. Fewer digits force a smaller modulus, hence fewer moduli, hence a
+larger residual set \emph{and} a smaller $\log\N$ to divide by---the two effects
+compound, which is why the frontier steepens so sharply below $130$
+digits.}\label{tab:frontier}
+\begin{tabular}{rrrr}
+\toprule
+Digits of $\N$ & Moduli & $|U|$ & $E$\\
+\midrule
+$195$ & $89$ & $692$ & $16.8$\\
+$170$ & $79$ & $754$ & $20.6$\\
+$150$ & $72$ & $802$ & $24.4$\\
+$140$ & $68$ & $830$ & $26.8$\\
+$130$ & $64$ & $862$ & $29.5$\\
+$120$ & $60$ & $899$ & $32.8$\\
+$100$ & $52$ & $973$ & $41.3$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ladder} does the complementary experiment: fix the digit budget
+at $199$ and raise the target. This is the budget game's own ladder, and it is
+the table that governs Chapter~\ref{ch:outlook}'s planning.
+
+\begin{table}[h]
+\centering\small
+\caption{The rung ladder at $199$ digits: exponent and candidate count as the
+target $Q$ rises, using the best cover we can build at each target ($88$ moduli,
+$\mathrm{boost}\approx11$). Fleet-days assume the measured
+$7.9\times10^{5}$ candidates/s of a two-session GPU fleet.}\label{tab:ladder}
+\begin{tabular}{rrrrr}
+\toprule
+$Q$ & $|U|$ & $E$ & $e^{E}$ candidates & fleet time\\
+\midrule
+$122\,000$ & $867$ & $20.83$ & $1.1\cdot10^{9}$ & $23$ minutes\\
+$135\,000$ & $1\,004$ & $24.12$ & $3.0\cdot10^{10}$ & $11$ hours\\
+$150\,000$ & $1\,138$ & $27.34$ & $7.5\cdot10^{11}$ & $11$ days\\
+$175\,000$ & $1\,335$ & $32.07$ & $8.5\cdot10^{13}$ & $3.4$ years\\
+$200\,000$ & $1\,569$ & $37.69$ & $2.4\cdot10^{16}$ & $950$ years\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The spacing is geometric---each rung costs $25$ to $280$ times the last---which
+has a pleasant strategic consequence exploited in Chapter~\ref{ch:outlook}:
+climbing \emph{every} rung costs only about $4\%$ more than jumping straight to
+the top, and banks a certified record at each step.
+
+\section{Cover size is an equilibrium, not a budget}\label{sec:equilibrium}
+
+A natural mental model is that the cover is limited by the digit budget: use as
+many moduli as $\log M\le\log\N$ allows. That model is wrong at record scale,
+and correcting it explains why the frontier is so flat.
+
+Consider adding one more modulus $r=461$ to the $88$-modulus cover behind our
+budget-game work. It kills about $3.5$ residual offsets, worth
+$-3.5\times\mathrm{boost}/\log\N=-0.084$ nats. But it also multiplies
+$\mathrm{boost}$ by $461/460$, which raises the primality odds of every
+\emph{surviving} residual complement, worth $+0.082$ nats. The net effect is
+$+0.00$ nats: the cover is at a stationary point.
+
+\begin{observation}[Boost--kills equilibrium]\label{obs:equilibrium}
+At $B=10^{200}$ the cover behind our budget-game work spends $\log M\approx437$
+of the $\approx461$ available nats, so the digit budget is not tight; the cover
+stops growing because $dE=0$, not because it has run out of room. Adding moduli
+past the equilibrium is neutral to slightly harmful.
+\end{observation}
+
+This is why leftover digit budget buys nothing, why the frontier in
+Table~\ref{tab:frontier} is smooth rather than kinked, and why---as we will
+see---only two things can actually move $E$: better rounding mathematics, or
+more compute.
+
+\section{The linear-programming relaxation is vacuous}\label{sec:lp}
+
+The covering problem is a set-cover: choose one residue class per modulus so as
+to cover as many prime offsets as possible. Set-cover problems come with a
+standard relaxation---allow fractional choices---whose optimum lower-bounds the
+integral one and whose dual prices certify optimality. A natural research
+programme, proposed in our own earlier planning documents, was to solve that
+relaxation and publish the duals as a certificate of how close greedy is to
+optimal.
+
+We solved it. The result kills the programme, and in doing so reframes the whole
+subject.
+
+\begin{proposition}[LP vacuousness]\label{prop:lp}
+Let $\mathcal R$ be the $88$ moduli $3,5,\dots,457$ used at record scale and let
+the universe be the odd primes below $Q$. In the relaxation where each modulus
+$r$ may distribute a unit of weight over its residue classes and a prime is
+covered to the extent that weight sits on its class, the optimum covers
+$100.00\%$ of the primes---at both $Q=122\,000$ and $Q=200\,000$.
+\end{proposition}
+\begin{proof}[Verification]
+Solved with HiGHS in about two seconds at each target. The reason is a mass
+count: modulus $r$ covers a $1/(r-1)$ fraction of the odd primes in expectation,
+and $\sum_{r\in\mathcal R}1/(r-1)\approx1.86$. With $186\%$ of the required
+covering mass available, a fractional assignment can spread it to leave nothing
+uncovered.
+\end{proof}
+
+So the LP dual certifies nothing whatsoever about integral covers, and the
+$\S7.4$-style ``optimality certificate'' programme is dead as posed. What
+replaces it is a much better statement:
+
+\begin{corollary}[The exponent is a rounding gap]\label{cor:rounding}
+Every nat of the failure exponent is the cost of integrality. Concretely, at
+$Q=122\,000$:
+\[
+\underbrace{15.6\%}_{\text{naive rounding}}\;\longrightarrow\;
+\underbrace{7.56\%}_{\text{adaptive greedy}}\;\longrightarrow\;
+\underbrace{0\%}_{\text{fractional optimum}}
+\]
+uncovered primes, where the first figure is $e^{-1.86}$, the density left by
+independent rounding at the available mass. Each absolute percentage point of
+residual removed is worth about $2.7$ nats---a factor of $15$ in compute.
+\end{corollary}
+
+Greedy therefore sits almost exactly halfway, in halvings, between doing nothing
+clever and perfection. The rest of this chapter asks whether the remaining half
+can be taken.
+
+\section{Attacking the rounding gap}\label{sec:door1}
+
+We fix a concrete benchmark: the $88$ moduli above, the $11\,474$ odd primes
+below $Q=122\,000$, and the greedy/coordinate-descent incumbent with
+$|U|=867$. One prime saved is worth $0.0240$ nats. The question is how much of
+the gap to $0$ is reachable.
+
+\subsection{How much is there to win?}
+
+Before optimising, it is worth knowing the size of the prize. Sampling the space
+of assignments uniformly (choosing each $a_r$ at random) gives
+$|U|$ with mean $\mu=1377$ and standard deviation $\sigma=21.0$. Two things are
+notable. First, $\sigma$ is \emph{below} the independence prediction of $34.8$:
+the choices are negatively correlated, so the deep tail is thinner than a naive
+model suggests. Second, the design space has entropy
+$\ln\prod_r(r-1)=435.7$ nats, so a first-moment (annealed) calculation puts the
+best assignment in the ensemble at roughly
+\[
+u^{*}\;\approx\;\mu-\sqrt{2\ln\Omega}\,\sigma\;\approx\;758 ,
+\]
+against greedy's $867$. Greedy already sits at $z=24.3$ of the $29.5$ standard
+deviations theoretically available. The honest prize is therefore about
+$2.6$ nats---a factor of $14$---and only if the annealed threshold is
+achievable, which for a clustered landscape it typically is not.
+
+\subsection{Exact local optimisation}
+
+We attacked the benchmark with large-neighbourhood search: freeze all but a
+window of $7$--$15$ moduli and re-solve that window \emph{exactly} with
+CP-SAT~\cite{CPSAT} over the primes left uncovered by the frozen part, then
+rotate windows. Windows were chosen three ways---by tightness (the moduli whose
+current class beats its best alternative by the smallest margin), randomly among
+tight moduli, and uniformly---and the incumbent was enforced as a hard floor so
+the solver could only match or improve.
+
+Across $41$ windows, with time caps up to $300$ seconds, the incumbent was
+matched every time and never beaten. To turn ``not beaten'' into ``provably
+optimal at this scale'' we added an LP certificate per window: solve the
+window's own relaxation, and if $\lfloor\mathrm{LP}\rfloor$ equals the
+incumbent's coverage then no integral assignment of that window can do better.
+This certified $21$ of $22$ windows where it was computed. The single exception
+was a window of the smallest moduli---where, exactly as
+Proposition~\ref{prop:lp} predicts, the LP is loose.
+
+We then went further and solved the \emph{entire large-modulus endgame} at once:
+first the $30$ largest moduli simultaneously, then the $44$ largest---half the
+cover in a single exact subproblem. Both leave $|U|=867$.
+
+\subsection{Global methods}
+
+Local exactness having failed, we tried methods that can cross basins.
+
+\emph{Belief propagation with decimation.} We wrote the assignment problem as a
+factor graph---one variable per modulus with domain $\mathbb{Z}/r$, one factor
+per prime contributing weight $e^{-\beta}$ when uncovered---and ran sum-product
+message passing, then repeatedly froze the most polarised modulus and re-ran
+(the standard decimation scheme~\cite{MezardMontanari}). Validation first: on a
+small instance where exhaustive enumeration is possible, BP tracks the exact
+$E[|U|]$ to $0.7\%$ in the soft regime, and BP-guided decimation finds the exact
+optimum. On the real instance it returns $874$ at $\beta=1.5$ (and worse at
+higher $\beta$, where early freezes over-commit).
+
+That is seven primes short of greedy, and it is the second-best construction we
+know for this instance---but it is not an improvement.
+
+\emph{Basin structure.} The most informative experiment was the cheapest. Take a
+solution produced by random-start coordinate ascent, which lands at
+$|U|\approx968$, and apply the same exact-window machinery to it: twenty
+windows recover \emph{none} of its $101$-prime gap to greedy. Independent ascent
+solutions agree with each other on only $2.4\%$ of their class choices---chance
+level---so there is no backbone to exploit, and crossover-style population
+methods have nothing to graft.
+
+\begin{observation}[The landscape]\label{obs:landscape}
+The assignment space is a field of mutually distant, locally-exact-stable
+basins spanning at least $|U|\in[867,980]$. Exact local search cannot move
+between them at all; what distinguishes greedy is not the neighbourhood it
+explores but the \emph{sequentially adaptive} way it constructs a solution,
+which lands it about $100$ primes deeper than a typical basin.
+\end{observation}
+
+\subsection{Verdict, and one methodological caution}
+
+The greedy plateau survived every method we brought: $41$ exact windows (mostly
+LP-certified), a half-cover exact block, BP decimation, and basin probing. We
+state the conclusion carefully, because the temptation to over-claim here is
+strong.
+
+\begin{observation}[Door-1 verdict]\label{obs:door1}
+At $Q=122\,000$ with these moduli, $|U|=867$ is at or very near the quenched
+optimum. The annealed estimate of $758$ is an \emph{ensemble-existence}
+heuristic, not a constructive promise, and the clustering visible in
+Observation~\ref{obs:landscape} is exactly the situation in which annealed and
+quenched optima diverge. The realistic prize is therefore $0$ to $2.6$ nats,
+probably nearer the bottom of that range.
+\end{observation}
+
+The caution concerns mean-field methods. Naive belief propagation, run to low
+temperature, predicts $E[|U|]\to35$ at $\beta=4$---heading for the fractional
+fantasy of Proposition~\ref{prop:lp} rather than the achievable $867$. The
+replica-symmetric approximation inherits precisely the LP's blindness to
+integrality. Anyone using message passing to estimate a threshold here needs the
+one-step replica-symmetry-breaking treatment with complexity bookkeeping; we
+flag this as the honest remaining theory item rather than quoting a number we do
+not trust.
+
+\section{What the frontier costs in money}
+
+Putting Table~\ref{tab:frontier} together with measured throughput gives the
+price list in Table~\ref{tab:menu}. It is worth stating in these terms because
+the strategic question in Chapter~\ref{ch:outlook} is precisely which of these
+rungs is worth buying.
+
+\begin{table}[h]
+\centering\small
+\caption{Cost of the threshold game at $Q=10^{5}$ by digit target, at
+$8.5\times10^{6}$ tests/s per A100 and cloud pricing current at the time of
+writing.}\label{tab:menu}
+\begin{tabular}{rrrr}
+\toprule
+Digits & $E$ & A100-years & approx.\ cost\\
+\midrule
+$140$ & $28.1$ & $0.10$ & \$1\,000\\
+$135$ & $29.7$ & $0.49$ & \$5\,000\\
+$130$ & $31.2$ & $2.3$ & \$24\,000\\
+$125$ & $32.9$ & $12$ & \$125\,000\\
+$120$ & $34.7$ & $73$ & \$770\,000\\
+$100$ & $44.1$ & $8.9\cdot10^{5}$ & \$9.4\,billion\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The table makes the shape of the problem vivid. The frontier is fundable down to
+about $130$ digits and institutional down to $120$; sub-$100$ is seven orders of
+magnitude beyond plausible compute. Whether that last wall can be attacked by
+mathematics rather than money is the subject of the next chapter.

@@ -1,0 +1,232 @@
+\chapter{Sub-100 digits: a reduction to two hard problems}\label{ch:barriers}
+
+Chapter~\ref{ch:frontier} priced the threshold game at $Q=10^{5}$ and found the
+$100$-digit rung seven orders of magnitude beyond plausible compute. This
+chapter asks whether that wall is real. The answer is that it is real
+\emph{within the paradigm}, and that stepping outside the paradigm leads
+directly to two well-known hard problems---which is a more useful outcome than
+either a proof or a construction, because it says exactly what would have to be
+broken.
+
+It is worth being clear at the outset that sub-$100$-digit deserts \emph{exist}
+in abundance. With no cover at all, the failure exponent at $B=10^{100}$ is
+$E_{\text{random}}\approx110$, so the density of qualifying integers is
+$e^{-110}$ and the expected count below $10^{100}$ is about
+$10^{100}\cdot e^{-110}\approx10^{52}$. Nothing here is an existence
+obstruction. The entire difficulty is constructive.
+
+\section{Two regimes}
+
+Write $A=\log M$ for the cover mass in nats and $\log B$ for the digit budget
+($\log B\approx230$ at $100$ digits). Covers split into two regimes according to
+whether their modulus fits under the budget.
+
+\paragraph{Regime I: $A\le\log B$.} The CRT progression itself supplies
+$e^{\log B-A}$ candidates, and the search costs $e^{E}$. Optimising at
+$Q=10^{5}$, $B=10^{100}$ gives a best cover of $44$ moduli with
+$M\approx10^{79}$, $|U|=1060$, $\mathrm{boost}=9.6$, hence
+\[
+E\;=\;44.1,\qquad e^{E}\approx1.4\times10^{19}\ \text{candidates}.
+\]
+At the record engine's measured throughput of about $5\times10^{5}$ candidates
+per second this is roughly $9\times10^{5}$ GPU-years.
+
+\begin{remark}[A units error, corrected]\label{rem:units}
+An earlier version of this calculation reported $5\times10^{4}$ GPU-years, an
+error of a factor of $18$: it divided the candidate count by the \emph{test}
+rate ($8.5\times10^{6}$ Fermat tests/s) rather than the \emph{candidate} rate,
+forgetting that a candidate costs about $17$ tests. The error was caught by
+cross-checking against an independent study of the same frontier, which measured
+a realisable $E=43.66$ at $100$ digits---within $0.4$ nats of the figure above,
+and irreconcilable with the faster cost. We record the correction here because
+the discipline that caught it (always cross-check a headline cost against an
+independently derived one) is worth more than the number.
+\end{remark}
+
+\paragraph{Regime II: $A>\log B$ (oversized covers).} If the modulus is allowed
+to exceed the budget, coverage becomes excellent. All $9\,592$ primes below
+$10^{5}$ can be covered by $355$ moduli of total mass $1\,019$ digits; allowing
+each modulus to use $L=16$ residue classes, $420$ moduli leave only $|U|=165$,
+giving
+\[
+E\;=\;10.2,\qquad e^{E}\approx27\,000\ \text{candidates}.
+\]
+Twenty-seven thousand candidates is nothing. If we could produce such a design
+\emph{together with} a representative below $10^{100}$, sub-$100$ would fall
+this afternoon.
+
+Solutions exist: the design space (which moduli, which classes) carries about
+$2\,698$ nats of entropy against $\log(M/B)=2\,630$ nats of ``distance to
+squeeze'', leaving a surplus of about $+57$ nats and hence roughly $e^{57}$
+valid (design, $\N$) pairs below $10^{100}$. But the \emph{density} of designs
+whose representative lands below $B$ is $e^{-2630}$. Enumeration is out by some
+$1\,100$ orders of magnitude.
+
+\begin{observation}
+Regime II is where sub-$100$ becomes easy \emph{if and only if} small
+representatives can be found directly. That is the whole problem.
+\end{observation}
+
+\section{The small-representative problem is modular subset-sum}
+
+CRT reconstruction is additive. Writing the standard idempotent basis,
+\[
+\N\;\equiv\;\sum_{r\in S}a_r\cdot\frac{M}{r}\cdot\Bigl(\bigl(\tfrac{M}{r}\bigr)^{-1}\bmod r\Bigr)
+\pmod M ,
+\]
+so ``find a design whose representative is below $B$'' is exactly:
+\begin{quote}\itshape
+minimise $\bigl|\sum_r c_r \bmod M\bigr|$ over choices $c_r\in C_r$ with
+$|C_r|=L$, targeting the window $[0,B)$.
+\end{quote}
+This is an inhomogeneous \emph{modular subset-sum problem with per-position
+choices}. Its density---the ratio of available design entropy to the window
+squeeze---is
+\[
+d\;=\;\frac{2\,698}{2\,630}\;\approx\;1.026 .
+\]
+
+That is the worst possible value. Low-density instances ($d<0.94$) fall to
+lattice reduction~\cite{LagariasOdlyzko,Coster}; very high density instances
+fall to birthday and $k$-tree methods~\cite{Wagner}. Density $\approx1$ is
+precisely the regime where neither works and where the presumed hardness of
+subset-sum is concentrated. Concretely, our solution set has size about
+$2^{82}$ inside a design space of about $2^{3893}$; meet-in-the-middle gives
+$2^{1897}$ and Wagner's $k$-tree with our list sizes still needs $2^{938}$.
+Both are astronomically short.
+
+\section{The decoding shortcut, and why it fails}
+
+There is one route that would bypass the subset-sum problem entirely. Finding a
+small integer consistent with many congruences is a decoding problem for the
+Chinese Remainder code, and CRT codes have list-decoding
+algorithms~\cite{GSS,Goldreich}. If the decoder's radius were large enough, we
+could simply ask it for a small $\N$ agreeing with a chosen cover.
+
+The relevant statement is Guruswami--Sahai--Sudan~\cite{GSS}, Theorem 3: for a
+CRT code with moduli $p_i$, message bound $K$, and any non-negative integers
+$\ell$ and $z_i$, one finds in time $\mathrm{poly}(n,\log N,\ell,\sum z_i)$ all
+codewords $m$ with
+\[
+\sum_i \alpha_i z_i\log p_i\;>\;\log(\ell+1)+\frac{\ell}{2}\log\frac{K}{2}
++\frac{1}{\ell+1}\sum_i\binom{z_i+1}{2}\log p_i ,
+\]
+where $\alpha_i=1$ exactly when $m\equiv r_i\pmod{p_i}$. Optimising $z$ and
+$\ell$ under uniform weights, with $L$ allowed classes per position, gives an
+agreement-mass radius
+\begin{equation}\label{eq:gss}
+A\;>\;\sqrt{L\cdot\log B\cdot P},\qquad P=\sum_{\text{pool}}\log p_i .
+\end{equation}
+We verified~\eqref{eq:gss} numerically against the exact finite-$\ell$ optimum:
+the ratio is $1.001$--$1.004$ across pools from $5\times10^{3}$ to $10^{5}$ and
+$L\in\{1,2\}$.
+
+Now the trap closes. The radius scales with the mass $P$ of the \emph{whole
+pool}, which must be far larger than the cover itself in order to supply the
+subset entropy that makes small representatives exist at all. Numerically, at
+pool bound $60\,000$ with $L=16$: the pool mass is $59\,816$ nats, the decoding
+radius is $14\,845$ nats, and our cover mass is $2\,860$ nats. The decoder needs
+agreement $5.2\times$ larger than anything we can supply. Shrinking the pool
+lowers the radius but destroys the entropy that makes solutions exist.
+
+\begin{theorem}[Barrier; heuristic, first-moment]\label{thm:barrier}
+For CRT-cover constructions of even $\N<B$ with $\g(\N)>Q$, no parameter choice
+simultaneously satisfies
+\begin{enumerate}
+\item[(a)] $A<\log B+\log\binom{n}{s}+s\log L$ \quad (representatives exist), and
+\item[(b)] $A>\sqrt{L\cdot\log B\cdot P}$ \quad (GSS-decodable).
+\end{enumerate}
+Hence sub-$100$ via oversized covers requires either list-recovery of CRT codes
+\emph{beyond} the Johnson-type radius---an open problem in coding theory---or a
+subset-sum algorithm at density $\approx1$.
+\end{theorem}
+
+\begin{table}[h]
+\centering\small
+\caption{The barrier, evaluated. ``Exists'' is the largest cover mass for which
+representatives below $B$ still exist; ``decodes'' is the GSS radius. The ratio
+never approaches $1$.}\label{tab:barrier}
+\begin{tabular}{rrrrrr}
+\toprule
+pool bound & $L$ & pool mass & $A$ exists & $A$ decodes & ratio\\
+\midrule
+$1\,000$ & $1$ & $956$ & $339$ & $469$ & $0.72$\\
+$60\,000$ & $1$ & $59\,816$ & $570$ & $3\,711$ & $0.15$\\
+$60\,000$ & $16$ & $59\,816$ & $1\,305$ & $14\,845$ & $0.09$\\
+$10^{6}$ & $16$ & $998\,483$ & $1\,697$ & $60\,651$ & $0.03$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A retracted claim, and what it teaches}\label{sec:retraction}
+
+An earlier version of this analysis reported an \emph{open window}: a range of
+pool sizes where, apparently, representatives existed and the decoder still
+worked. That claim was wrong and is withdrawn. The error is instructive enough
+to record.
+
+The two conditions of Theorem~\ref{thm:barrier} both depend on an agreement
+size $s$---how many positions the sought codeword matches. The retracted
+analysis computed the decoding radius at one value of $s$ and the existence
+bound at a \emph{different} value (the one maximising existence, near $2n/3$),
+and compared the two numbers. Requiring both conditions at the \emph{same} $s$
+closes the window at every pool size. The lesson generalises well beyond this
+problem: \emph{a feasibility window assembled from two separately optimised
+bounds is worthless; couple the parameters first, then optimise once.}
+
+We also had the barrier re-derived independently, by a route that shares no
+code with ours---a Legendre-transform treatment of the same optimisation---which
+reproduces the $14\,845$-nat radius and finds the gap closed at every pool size,
+with the best case still $28\%$ short. Independent confirmation matters
+especially when the first version of a result was wrong.
+
+\section{Does lattice reduction beat the radius in practice?}
+
+Decoding radii are worst-case statements. Our instances are highly structured
+and, as computed above, admit roughly $e^{57}$ solutions---so it is entirely
+reasonable to hope that lattice reduction succeeds far beyond the proved radius,
+as it often does elsewhere. We tested this directly rather than assuming either
+way.
+
+We built a small CRT-decoding testbed: plant a known small solution in a
+random instance at a controlled agreement mass, then run
+LLL~\cite{LLL} on the standard Howgrave-Graham-style lattice and record whether
+the planted solution (or any other) is recovered. Sweeping the agreement mass
+across the Johnson-type radius $A_J$ gives a sharp threshold:
+
+\begin{itemize}
+\item at $\ell=30$, recovery succeeds above $1.028\,A_J$ and fails below;
+\item at $\ell=45$ the threshold tightens to about $1.02\,A_J$, converging to
+the theoretical radius from above;
+\item below the threshold the failure is \emph{total}: across $390$ decodes we
+recovered zero non-planted roots, and no partial or near-solutions.
+\end{itemize}
+
+The last point is the one that matters. Solution abundance buys nothing: even
+with $10^{7}$ alternative solutions available in the instance, the lattice
+returns nothing at all below the radius. The Johnson-type radius behaves here
+like a genuine algorithmic boundary rather than a proof artifact, which is what
+makes Theorem~\ref{thm:barrier} a barrier and not merely a gap in our knowledge.
+
+\section{Where this leaves sub-100}
+
+\begin{enumerate}
+\item \textbf{Regime I is the only currently viable route}, and it is out of
+reach: $E=44.1$, about $9\times10^{5}$ GPU-years, seven orders of magnitude
+beyond plausible compute. The fundable frontier is $130$--$140$ digits
+(Table~\ref{tab:menu}).
+
+\item \textbf{Two well-posed open problems now sit under the record}, either of
+which would collapse it: (i) list-recovery of CRT codes beyond the Johnson-type
+radius for structured, solution-abundant instances; (ii) modular subset-sum with
+per-position choices at density $\approx1$ where $2^{82}$ solutions exist. Both
+are of independent interest, which is the right way for a chapter like this to
+end.
+
+\item \textbf{The one place the barrier does not apply} is a construction that
+certifies compositeness by something other than a congruence divisor. Every
+argument in this chapter accounts entropy in units of $\log r$ per excluded
+offset; a mechanism that escapes that accounting escapes the barrier. Whether
+any such mechanism exists is the subject of Chapter~\ref{ch:closure}, and the
+answer, within a precisely defined language, is no.
+\end{enumerate}

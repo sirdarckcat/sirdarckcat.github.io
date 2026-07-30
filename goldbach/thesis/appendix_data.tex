@@ -1,0 +1,138 @@
+\chapter{Data, code, and reproduction}\label{app:data}
+
+Every claim in this thesis that rests on computation is backed by an artifact in
+the repository, and the artifacts are organised so that verification never
+requires reproducing discovery. This appendix is the index.
+
+\section{Certified records}
+
+Each record directory contains the canonical decimal string of $\N$, the
+congruence cover, the reconstruction data $(\N_0,M,k)$, per-offset exclusion
+evidence, an Atkin--Morain ECPP certificate for the prime complement, and a
+SHA-256 manifest.
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Directory & Record & Verification\\
+\midrule
+\texttt{records/megagap\_2692digit\_g1134871/} & $2\,692$d, $\g=1\,134\,871$ & witnesses + ECPP\\
+\texttt{records/threshold\_150digit\_g104527/} & $150$d, $\g=104\,527$ & witnesses + ECPP, re-verified\\
+\texttt{records/threshold\_195digit\_g100297/} & $195$d, $\g=100\,297$ & witnesses + ECPP\\
+\texttt{records/dual\_197digit\_g107719/} & $197$d, $\g=107\,719$ & witnesses + ECPP\\
+\texttt{records/budget\_1e200\_200digit\_g112249/} & $200$d, $\g=112\,249$ & witnesses + ECPP\\
+\texttt{slop/goldbach/records/g1/} & $2\,480$d, $\g=1\,157\,341$ & witnesses + ECPP\\
+\texttt{slop/goldbach/records/r200/} & $199$d, $\g=119\,419$ & witnesses + ECPP, re-verified\\
+\texttt{slop/goldbach/records/t100k/} & ratchet $195\to179$d & witnesses + ECPP\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two independent verification paths exist: \texttt{verify\_record.py}
+re-derives every per-offset witness from the record file alone, and
+\texttt{ecpp\_verify.py} validates the elliptic-curve certificate chain
+step by step in projective coordinates without invoking the library that
+generated it.
+
+\section{Search engine and campaigns}
+
+\begin{description}
+\item[\texttt{goldbach/search.py}] The CRT-progression search engine: numpy
+presieve with cached modular inverses, survivor-ordered testing
+(\texttt{--sort-tests}), and selective testing with exact hit-mass accounting
+(\texttt{--skip-frac}, \texttt{--p-est}). Reports per-slice $\hat p$,
+survivors per candidate, $\Ehat$, and retained hit-mass share---the telemetry
+behind \S\ref{sec:calibration}.
+\item[\texttt{goldbach/cover.py}, \texttt{anneal.py}, \texttt{joint.py}]
+Cover construction: greedy weighted set cover, simulated annealing, and the
+joint representative/coverage optimiser.
+\item[\texttt{goldbach/gpu/}] The CUDA engine (bit-matrix sieve, Montgomery CIOS
+Fermat waves) and the multi-session fleet driver with git-committed resume
+marks.
+\item[\texttt{goldbach/phd/campaign\{,2,3\}/}] The three campaigns of
+Table~\ref{tab:campaigns}: specs, chunked drivers, and the committed
+\texttt{search.log} checkpoints. The logs are the primary evidence for the
+negative results, and they make each campaign resumable.
+\end{description}
+
+\section{Frontier and optimisation studies}
+
+\begin{description}
+\item[\texttt{goldbach/phd/wp8/pack\_probe.py}] Coordinate ascent with random
+restarts over class assignments; produces the rung ladder of
+Table~\ref{tab:ladder} and the local-optimality finding.
+\item[\texttt{goldbach/phd/wp8/lp\_bound.py}] The set-cover LP relaxation
+(HiGHS) behind Proposition~\ref{prop:lp}.
+\item[\texttt{goldbach/phd/wp9/door1/}] The Door-1 benchmark and attacks:
+\texttt{instance\_q122k.json} (sha256-pinned prime universe, the $|U|=867$
+incumbent), \texttt{d10\_diagnostics.py} (landscape statistics),
+\texttt{d11\_lns.py} (CP-SAT large-neighbourhood search with per-window LP
+certificates), \texttt{d11\_basin\_probe.py}, and \texttt{d12\_bp.py} (belief
+propagation with decimation, including the exhaustive-enumeration validation).
+\end{description}
+
+\section{Barrier and closure studies}
+
+\begin{description}
+\item[\texttt{goldbach/phd/wp3\_small\_representative\_memo.md}] The sub-$100$
+analysis of Chapter~\ref{ch:barriers}, including the retraction of
+\S\ref{sec:retraction} and the corrected costing of Remark~\ref{rem:units}.
+\item[\texttt{goldbach/phd/toy\_crt/}] The CRT-decoding testbed: planted
+instances, LLL decoding, and the threshold sweep across the Johnson-type radius.
+\item[\texttt{goldbach/phd/wp7\_probes.md}] The five mechanism probes of
+\S\ref{sec:wp7} with their predeclared gates.
+\item[\texttt{goldbach/phd/wp9/wp9\_closure\_theorem.md}] The closure theorem in
+full working form, with proof-status markers throughout.
+\item[\texttt{goldbach/phd/wp9/engine/}] The falsification engine:
+\texttt{tier0.py} (calibration against the hand-derived numbers),
+\texttt{exhaustive.py} (the $13\,661$-instance sweep) with
+\texttt{exhaustive\_summary.json} (per-family aggregates and every near-miss;
+the full rows are regenerable and deliberately not committed),
+\texttt{scorer.py} (the trusted evaluator, with the budget accounting of
+\S\ref{sec:referee}), \texttt{harness.md} (the anti-reward-hack protocol), and
+\texttt{ae\_runner.py} with \texttt{ae\_seed\_program.py} (the generative tier).
+\item[\texttt{goldbach/phd/wp9/h2\_open\_problem.md}] Conjecture~\ref{conj:h2},
+stated self-contained for posting.
+\end{description}
+
+\section{Reproducing the numerical claims}
+
+The claims of Chapters~\ref{ch:frontier}--\ref{ch:closure} are reproducible from
+the committed scripts, and all are cheap---seconds to minutes---because they are
+analyses rather than searches:
+
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+Claim & Command\\
+\midrule
+LP vacuousness (Prop.~\ref{prop:lp}) & \texttt{python3 phd/wp8/lp\_bound.py 122000 200000}\\
+Rung ladder (Table~\ref{tab:ladder}) & \texttt{python3 phd/wp8/pack\_probe.py}\\
+Door-1 diagnostics & \texttt{python3 phd/wp9/door1/d10\_diagnostics.py}\\
+Exact-window search & \texttt{python3 phd/wp9/door1/d11\_lns.py 15 7 3 30}\\
+BP validation + decimation & \texttt{python3 phd/wp9/door1/d12\_bp.py}\\
+Engine calibration (tier 0) & \texttt{python3 phd/wp9/engine/tier0.py}\\
+Exhaustive schema sweep & \texttt{python3 phd/wp9/engine/exhaustive.py}\\
+Single-schema score & \texttt{python3 phd/wp9/engine/scorer.py '\{...\}'}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Dependencies are \texttt{numpy}, \texttt{sympy}, \texttt{gmpy2},
+\texttt{scipy} (HiGHS), and \texttt{ortools} (CP-SAT); the record verifiers
+require only Python 3, deliberately, so that verification has no dependency on
+the discovery stack.
+
+\section{A note on provenance}
+
+The programme ran as several parallel efforts sharing one repository, and the
+records in Table~\ref{tab:records} were not all produced by the same effort. We
+have tried to be accurate about this throughout: where a record was produced
+elsewhere in the programme and re-verified here, the text says so, and the
+research log (\texttt{goldbach/phd/RESEARCH\_LOG.md}) records the day-by-day
+provenance including the campaigns that failed, the two retractions, and the
+coordination failure that stopped Campaign~3. The theoretical contributions of
+Chapters~\ref{ch:frontier}--\ref{ch:closure}---the LP vacuousness result, the
+Door-1 optimisation study, the sub-$100$ barrier analysis with its retraction,
+and the closure theorem with its falsification engine---were produced by the
+work reported here.

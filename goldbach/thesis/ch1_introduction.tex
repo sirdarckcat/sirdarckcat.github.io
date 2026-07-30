@@ -1,0 +1,239 @@
+\chapter{Introduction: three games and one exponent}\label{ch:intro}
+
+Goldbach's conjecture asserts that every even integer $\N>2$ is a sum of two
+primes; it has been verified for all $\N\le4\cdot10^{18}$~\cite{OeS}.
+Heuristically one expects not just one representation but many. The
+Hardy--Littlewood circle method---which estimates such counts by treating the
+primes as a random set of the appropriate density and then correcting for
+divisibility constraints---predicts~\cite{HL}
+\begin{equation}\label{eq:HL}
+r(\N)\;\sim\;2\,\Pi_2\,\frac{\N}{(\log \N)^2}\prod_{\substack{p\mid \N\\ p>2}}\frac{p-1}{p-2},
+\qquad
+\Pi_2=\prod_{p>2}\Bigl(1-\tfrac{1}{(p-1)^2}\Bigr),
+\end{equation}
+where $r(\N)=\#\{p\le\N:p\text{ and }\N-p\text{ both prime}\}$. Reading this
+from left to right: $\N/(\log\N)^2$ is the naive guess, since a number near
+$\N$ is prime with probability about $1/\log\N$ and there are $\N$ choices for
+$p$; the twin-prime constant $\Pi_2\approx0.6601$ corrects for the fact that
+primes are not truly random modulo small numbers; and the last factor inflates
+the count when $\N$ is highly composite. The conclusion is that a typical large
+even integer should have \emph{many} Goldbach partitions. So the interesting
+question is not whether a representation exists, but how lopsided the most
+lopsided one must be.
+
+\begin{definition}
+For an even integer $\N\ge4$ admitting a Goldbach representation, the
+\emph{least Goldbach summand} is
+\[
+\g(\N)\;=\;\min\{\,p\ \text{prime}:\N-p\ \text{is prime}\,\}.
+\]
+\end{definition}
+
+This is the quantity $p(n)$ of the \emph{minimal Goldbach partition} studied by
+Granville, van de Lune and te Riele~\cite{GLvdtR}, who conjectured a ceiling
+\begin{equation}\label{eq:GLR}
+\g(\N)\;=\;O\bigl((\log \N)^2\log\log \N\bigr).
+\end{equation}
+Empirically $\g$ is tiny and grows very slowly; its record values are
+catalogued in the OEIS~\cite{OEIS} (A020481, with records A025018/A025019).
+Exhaustive search gives a slowly climbing ladder: $\g=1093$ at
+$\N=60\,119\,912$; $\g(\N)\le5569$ for all even
+$\N\le4\cdot10^{14}$~\cite{Richstein}; and the current exhaustive record
+$\g=9781$, first attained at $\N=3\,325\,581\,707\,333\,960\,528$, with
+$\g(\N)\le9781$ for \emph{all} even $\N\le4\cdot10^{18}$~\cite{OeS}. Strikingly,
+these records occur at integers of at most $19$ digits.
+
+We ask the opposite, extremal and constructive question:
+\begin{quote}\itshape
+How large can $\g(\N)$ be forced to be, and at what cost in the size of $\N$?
+\end{quote}
+An even integer $\N$ for which $\g(\N)$ is large is a \emph{Goldbach desert}:
+a number all of whose small prime offsets are blocked. Constructing deserts is
+the subject of this thesis, and the reason the subject is interesting is that
+every construction turns out to be governed by a single number---an exponent
+that measures how much luck the construction still needs after all its
+cleverness is spent.
+
+\section{The three games}
+
+There are three natural record questions, and they reward different
+constructions. The first is the unbounded \emph{height game}: exhibit as large
+a value of $\g(\N)$ as possible, with no limit on the size of $\N$. An ordinary
+prime gap is one way to play, but it is a strictly stronger construction: a gap
+must block \emph{every} integer offset, while a desert needs to block only the
+\emph{prime} offsets. Prime-gap constructions are therefore a strict subclass of
+the constructions available here---a point we return to in
+\S\ref{sec:gaps} with a concrete two-orders-of-magnitude example.
+
+For comparisons in which size matters we use two finite games.
+
+\begin{definition}[Threshold and budget games]\label{def:games}
+For $Q\ge2$ and $X\ge4$, define
+\[
+T(Q)=\min\{\,\N \text{ even, Goldbach-representable}:\ \g(\N)>Q\,\},
+\qquad
+R(X)=\max\{\,\g(\N):\ \N<X\,\}.
+\]
+The \emph{threshold game} fixes $Q$ and tries to lower $T(Q)$; the
+\emph{budget game} fixes $X$ and tries to raise $R(X)$. ``Fewer than $200$
+decimal digits'' means the strict budget $\N<10^{199}$.
+\end{definition}
+
+\begin{remark}[A naming caution]
+The budget game has been written both as $R(10^{199})$ (``fewer than $200$
+digits'') and as $R(10^{200})$ (``at most $200$ digits'') in the literature
+this thesis builds on, and the two are genuinely different: our $200$-digit
+incumbent with $\g=112\,249$ satisfies $\N<10^{200}$ but exceeds $10^{199}$ by
+$3.4\%$, which is precisely why a $199$-digit integer with the smaller value
+$\g=119\,419$ is the record for the stricter budget. Throughout we state the
+bound explicitly with each record.
+\end{remark}
+
+\section{Certified incumbents}
+
+Table~\ref{tab:records} lists the programme's certified incumbents at the time
+of writing. Every entry has been verified twice: once by the pipeline that
+produced it and once by an independent verifier written against the record file
+rather than against the search code, including a re-derivation of every
+per-offset witness and an independent check of the elliptic-curve primality
+certificate.
+
+\begin{table}[h]
+\centering\small
+\caption{Certified incumbents. ``Witnesses'' counts prime offsets excluded by
+an explicit congruence divisor plus those excluded by a strong base-$2$
+compositeness witness; in every case the positive side is an exhibited prime
+complement with an ECPP certificate.}\label{tab:records}
+\begin{tabular}{lrrl}
+\toprule
+Game & Digits of $\N$ & $\g(\N)$ & Construction\\
+\midrule
+Height (unbounded) & $2\,480$ & $1\,157\,341$ & cover at $Q=1.16\cdot10^6$, $t=14\,544$\\
+Height, gap-dominating & $2\,692$ & $1\,134\,871$ & cover at $Q=1\,113\,138$, $k=14$\\
+Threshold $T(100\,000)$ & $150$ & $104\,527$ & cover at $Q=100\,003$, $k=6.21\cdot10^{10}$\\
+Budget $R(10^{199})$ & $199$ & $119\,419$ & cover at $Q\approx1.19\cdot10^5$, $t=1.46\cdot10^8$\\
+Budget $R(10^{200})$ & $200$ & $112\,249$ & cover at $Q=107\,720$, $k=56\,770$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of these deserve comment. The $2\,692$-digit entry is included because it
+settles the comparison with ordinary prime gaps in the strongest possible way:
+its $\g$ exceeds the largest \emph{certified} prime gap known
+($1\,113\,106$), and it does so with an integer roughly $6.9$ times shorter
+than the one realising that gap. Deserts really are cheaper than gaps, by a
+measurable factor.
+
+The $150$-digit threshold record is the endpoint of a \emph{ratchet}: the same
+covering machinery, re-tuned and re-run, produced a descending ladder
+$195\to179\to150$ digits at $Q\approx10^5$, banking a certified record at each
+rung. Chapter~\ref{ch:engineering} argues that this ratchet discipline, rather
+than any single clever cover, is the strategy that actually produces records
+under a fixed compute budget.
+
+\section{The exponent that governs everything}
+
+The technical spine of the thesis is a single quantity. A partial congruence
+cover fixes $\N$ inside an arithmetic progression $\N=\N_0+kM$ and disposes of
+most prime offsets for \emph{every} $k$; a residual set $U$ of offsets survives
+and must be knocked out by luck, one candidate $k$ at a time. Under the
+standard heuristic, the probability that a given candidate succeeds is
+$e^{-E}$ with
+\begin{equation}\label{eq:E}
+E\;=\;\frac{|U|\cdot\mathrm{boost}}{\log\N},
+\qquad
+\mathrm{boost}\;=\;2\prod_{r\in\mathcal R}\frac{r}{r-1},
+\end{equation}
+so that $e^{E}$ candidates must be examined per expected hit. We call $E$ the
+\emph{failure exponent}. It is the currency of the entire subject: every design
+decision---which moduli to use, which residues, how many offsets to leave
+residual, what digit budget to spend---is a trade in units of $E$, and every
+piece of engineering (faster tests, better sieving, selective testing, more
+hardware) buys a fixed number of nats of $E$ and no more.
+
+Equation~\eqref{eq:E} is a heuristic, so we test it rather than assume it.
+Across three independent covers and $1.2\times10^{9}$ scanned candidates, the
+measured exponent $\Ehat$ agrees with the predicted $E$ to within $0.1$ nats
+(Chapter~\ref{ch:engineering}). That agreement is what licenses the rest of the
+thesis: once the model is trusted, questions about feasibility become
+arithmetic.
+
+\section{What is new here}
+
+Chapters~\ref{ch:foundations} and~\ref{ch:engineering} are largely expository
+and engineering: they set out the classical constructions, the covering
+formulation, the calibrated cost model, and the search engine, and they report
+the certified records and---equally important---the campaigns that failed.
+The contributions begin in Chapter~\ref{ch:frontier}.
+
+\begin{enumerate}
+\item \textbf{The difficulty is an integrality gap} (\S\ref{sec:lp}). The
+natural linear-programming relaxation of the covering problem is
+\emph{vacuous}: fractionally, the available moduli cover $100.00\%$ of the
+prime offsets at every target we tested. Consequently the whole failure
+exponent is the price of \emph{rounding}: naive independent rounding leaves
+$15.6\%$ of offsets uncovered, adaptive greedy leaves $7.56\%$, and the
+fractional optimum leaves none. Every absolute percentage point recovered is
+worth about $2.7$ nats, i.e.\ a factor of $15$ in compute.
+
+\item \textbf{The rounding gap resists optimisation} (\S\ref{sec:door1}). We
+attack it with exact large-neighbourhood search (certified optimal by LP
+duality on $21$ of $22$ windows), with belief propagation and decimation, and
+with a simultaneous exact solve of half the cover at once. The greedy solution
+$|U|=867$ is never beaten. A random-restart probe shows why: the landscape is a
+field of mutually distant, locally-exact-stable basins, and the adaptive greedy
+construction lands about $100$ offsets deeper than a typical one.
+
+\item \textbf{Sub-$100$-digit deserts reduce to a hard problem}
+(Chapter~\ref{ch:barriers}). Oversized covers would make sub-$100$-digit
+deserts easy if their Chinese-remainder representatives could be made small;
+that requirement is exactly a modular subset-sum problem with per-position
+choices at density $\approx1.026$, the regime where neither lattice reduction
+nor birthday methods work. We also verify against the source that the relevant
+CRT list-decoding radius is a factor $5.2$ short of what the construction would
+need, and confirm experimentally that lattice methods do not penetrate the
+Johnson-type radius even when solutions are abundant.
+
+\item \textbf{A closure theorem} (Chapter~\ref{ch:closure}). Within a concrete
+language of certificate schemas, no construction beats covering. Every family
+closes for its own quantifiable reason---a $\sqrt{Q}$ value-set ceiling, a
+purchase plan running $2.5\times$ over the design-entropy budget, a cluster
+bound, lattice isolation, or an empty intersection at record scale---and the
+theorem is conditional on two named hypotheses, one of which we pose as an open
+problem.
+
+\item \textbf{A methodological finding} (\S\ref{sec:referee}). We stress-tested
+the closure theorem with an adversarial evolutionary search against a
+machine-checkable scorer. Its first success was against the \emph{referee}, not
+the theorem: it found a $50\times$ accounting error in our evaluator and
+exploited it within ten candidates. The audit protocol caught it before any
+claim was made, and repairing the referee strengthened the mathematics.
+\end{enumerate}
+
+\section{Notation and conventions}
+
+Throughout, $\log_k$ is the $k$-fold iterated logarithm (so
+$\log_2\N=\log\log\N$), and each extra $\log$ grows \emph{extremely} slowly;
+$\theta(x)=\sum_{p\le x}\log p$ is Chebyshev's function;
+$\gamma\approx0.5772$ is Euler's constant; $f\gg g$ means $f\ge cg$ for some
+$c>0$ and all large arguments; $\pi(x)$ is the prime-counting function; and
+``BPSW'' denotes the Baillie--PSW probable-prime test~\cite{PSW,BW}. All
+entropies, costs and exponents are measured in \emph{nats} (natural logarithm
+units), because the natural unit of a congruence modulo $r$ is $\log r$ and the
+natural unit of a search is $\log(\text{candidates})$.
+
+We are careful to separate three claims about any proposed record, and the
+reader should hold us to the distinction throughout:
+\begin{itemize}
+\item[(a)] no prime below the stated value is a Goldbach summand of $\N$;
+\item[(b)] $\N$ admits a Goldbach representation at all;
+\item[(c)] the least summand \emph{equals} the stated value.
+\end{itemize}
+A congruence or a failed probable-prime test settles (a) unconditionally---a
+prime can never fail such a test, so negative results are never in doubt. Claim
+(b) needs an exhibited prime complement, and (c) needs both together with a
+primality certificate for that complement. Where a statement is heuristic,
+conditional, or merely measured, we say so: results proved at the level of
+rigour of this thesis are marked as such, statements resting on standard but
+unproved analytic heuristics are flagged, and purely empirical claims are
+reported with the size of the experiment that supports them.

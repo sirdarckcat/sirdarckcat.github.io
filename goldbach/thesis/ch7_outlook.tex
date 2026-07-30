@@ -1,0 +1,252 @@
+\chapter{Outlook: three doors and a costed path}\label{ch:outlook}
+
+The preceding chapters were written in the order the work was done, which means
+they read as a narrowing. That narrowing is the result. This chapter states it
+positively: after Chapter~\ref{ch:closure}, everything that could possibly
+improve a Goldbach-desert record passes through one of exactly three doors, and
+each door has a maximal form, a price, and a verdict.
+
+\section{The closure argument}
+
+Why only three? Because the three ways to change $e^{E}$ are to change the
+mathematics that sets $E$, to change the rate at which candidates are examined,
+or to leave the paradigm in which $E$ is defined. Chapter~\ref{ch:frontier}
+showed the first is a rounding gap, Chapter~\ref{ch:engineering} measured the
+second, and Chapter~\ref{ch:closure} closed the third within a concrete
+language. Two auxiliary facts complete the argument, and both are worth stating
+because they eliminate whole families of otherwise-attractive ideas:
+
+\begin{itemize}
+\item \emph{Divisor information is fully harvested.} Any congruence cleverness
+applied to the search parameter $k$ merely re-labels sub-progressions that the
+sieve already scores. There is no free information on the $k$ side.
+\item \emph{Correlation is covering} (Proposition~\ref{prop:shared}), and
+beyond divisors the P5 measurement caps all remaining structure at $0.1$ nats.
+So ``luck-shaping'' schemes have no purchase.
+\end{itemize}
+
+\section{Door 1: the rounding gap (mathematics)}
+
+The exponent is entirely an integrality gap (Corollary~\ref{cor:rounding}), so
+better rounding is worth records. Measured prize: greedy's $|U|=867$ against an
+annealed ensemble threshold near $758$, i.e.\ $0$ to $2.6$ nats---a factor of up
+to $14$, compounding into \emph{every} future rung.
+
+Verdict from Chapter~\ref{ch:frontier}: resistant. Exact windows (LP-certified),
+half-cover exact blocks, and BP decimation all leave $867$ untouched, and the
+landscape is a field of isolated basins in which the annealed threshold is
+probably not achievable. What has \emph{not} been tried is a different
+\emph{ensemble} rather than a better search of the same one. Specifically:
+
+\begin{enumerate}
+\item \textbf{Banded construction with an exact endgame.} Solve the small moduli
+exactly, choose the middle band with second-moment control on pairwise overlaps,
+and finish the large moduli as an exact weighted matching against the
+currently-uncovered set. This imitates \emph{why} greedy wins---sequential
+adaptivity---while removing its myopia at the point where overlap waste is
+greatest.
+\item \textbf{Import Erd\H{o}s--Rankin technology constructively.} The
+FGKMT machinery~\cite{FGKMT} is, at bottom, a method for rounding a fractional
+cover of an interval with quantified loss; we used it in
+Theorem~\ref{thm:lower} for a lower bound but never as a construction. Its loss
+is $o(1)$ in an asymptotic regime that is not ours (their moduli reach $y/2$;
+ours stop at $457$), so the question ``what residual fraction is achievable at
+$\pi(Q)\approx10^{4}$ with a budget of $\theta(457)$?'' is genuinely open and
+thesis-sized.
+\item \textbf{One-step replica-symmetry-breaking.} Needed to get an honest
+quenched threshold; naive belief propagation demonstrably slides toward the
+fractional fantasy (\S\ref{sec:door1}).
+\item \textbf{Post the instance as a public optimisation challenge.} The
+benchmark is small, self-contained, and machine-checkable. Problems of exactly
+this shape attract strong heuristic solvers when posed publicly.
+\end{enumerate}
+
+\section{Door 2: throughput (compute)}
+
+Records are logarithmic in compute: each $10\times$ buys $2.3$ nats, which is
+about four digits on the threshold game. Door 2 is therefore unglamorous and
+completely reliable. Three forms, priced.
+
+\paragraph{Engineering already in hand.} Porting the selective-testing scheme of
+\S\ref{sec:engine} to the GPU fleet is worth $2$--$3\times$; batch
+remainder-tree sieving~\cite{Bernstein} to depth $10^{9}$--$10^{10}$ is worth
+perhaps $1.5\times$; replacing the fixed skip fraction with the exact marginal
+stopping rule adds $5$--$15\%$. None of this is research.
+
+\paragraph{Volunteer computing.} The search is a progress-free Poisson lottery
+with millisecond verification and no shared state---structurally the best-shaped
+volunteer workload that exists, and the exact shape on which
+PrimeGrid~\cite{PrimeGrid} and its relatives hold essentially every record in
+the neighbouring Sierpi\'nski--Riesel problems, which are themselves covering
+problems. For calibration: a peak-era Folding@home-scale network is roughly
+$2\times10^{5}$ times our two-GPU fleet, which would put $Q=200\,000$
+(Table~\ref{tab:ladder}) about \emph{two days} away; even $1\%$ of that scale
+delivers it in months.
+
+\paragraph{Silicon.} The workload is $95\%$ one instruction---a
+$660$-bit Montgomery modular exponentiation with a fixed base. A
+crypto-mining-style ASIC plausibly buys $10$--$100\times$ an A100 per die at
+much better energy per test, so a single rack is worth $e^{5.5}$ to $e^{8}$ over
+today's fleet; an FPGA farm is the no-NRE middle step. This is the
+capital-for-nats trade, and it is priced in the single-digit millions.
+
+\section{Door 3: the paradigm}
+
+Closed, within the language $L$ (Chapter~\ref{ch:closure}). The deliverable here
+has therefore flipped from \emph{find a mechanism} to \emph{finish the theorem
+and keep trying to break it}: complete the rigour of Lemma~\ref{lem:entropy},
+settle (H2) or publicise it, and keep the falsification engine running as new
+schema families are proposed. If the closure claim is ever refuted, the payoff
+is enormous and immediate---but the sensible planning assumption is that it will
+not be.
+
+\section{Do we need a quantum computer?}
+
+Grover search~\cite{Grover} halves the exponent: $e^{E}$ classical candidates
+become $e^{E/2}$ coherent oracle calls. Since $E=37.7$ at $Q=200\,000$ and
+$44.1$ for sub-$100$, this looks decisive. It is not, and the arithmetic is
+worth doing once so that it need not be revisited.
+
+One oracle call must evaluate the whole predicate reversibly: roughly $|U|$
+modular exponentiations of $660$-bit numbers with \emph{no early exit}, since
+the classical trick of stopping at the first passing complement is unavailable
+in superposition. At fault-tolerant resource-estimate
+scales~\cite{GidneyEkera} this is on the order of $10^{5}$--$10^{6}$ seconds per
+call. A classical candidate costs $1.25\times10^{-6}$ seconds on our fleet.
+Writing $C_q,W_q$ and $C_c,W_c$ for the per-operation costs and the widths
+(numbers of machines), quantum wins only when
+\[
+E\;>\;E^{*}\;=\;2\log\Bigl[\frac{C_q}{W_q}\cdot\frac{W_c}{C_c}\Bigr].
+\]
+
+\begin{table}[h]
+\centering\small
+\caption{The Grover crossover. Compare against $E=37.7$ ($Q=200\,000$) and
+$E=44.1$ (sub-$100$).}\label{tab:quantum}
+\begin{tabular}{lr}
+\toprule
+Assumption & $E^{*}$\\
+\midrule
+One fault-tolerant machine, $C_q=10^{6}$\,s & $\approx55$\\
+One thousand such machines & $\approx41$\\
+One thousand machines \emph{and} a $1000\times$ cheaper oracle & $\approx27$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+With any non-miraculous constants the crossover sits at or above the hardest
+targets we care about---and at the crossover both approaches are equally
+infeasible. The honest answer is therefore: \emph{no}. You would need thousands
+of much better quantum computers than anyone projects merely to \emph{tie} with
+GPUs on this problem. Quantum walks for subset-sum face the same arithmetic in
+Chapter~\ref{ch:barriers}'s setting. We park the idea with numbers attached
+rather than dismissing it, so that it can be revisited if $C_q$ ever approaches
+seconds.
+
+\section{Operation Staircase: a costed path to \texorpdfstring{$\g>200\,000$}{g > 200000}}
+
+Putting the doors together gives a concrete plan. Its shape is dictated by
+Table~\ref{tab:ladder}: rungs are geometrically spaced, so climbing all of them
+costs about $4\%$ more than jumping to the top, while banking a certified record
+and a fresh calibration at every step.
+
+\begin{enumerate}
+\item \textbf{Now.} $Q=140\,009$ ($E\approx25$) on the existing fleet: days.
+Bank it.
+\item \textbf{Plus one week.} Land the engine work (selective testing on GPU,
+marginal stopping rule): $2$--$3\times$. Then $Q=150\,000$ ($E=27.3$): about
+four fleet-days. Bank it.
+\item \textbf{Plus one month.} $Q\approx165\,000$ ($E\approx30$): two to three
+fleet-weeks with the upgraded engine. In parallel, Door 1's banded construction
+and the Erd\H{o}s--Rankin import run as theory work; any $\ge1$ nat result
+compounds into every later rung.
+\item \textbf{Plus one quarter.} $Q=175\,000$ ($E=32.1$): $1.4$ fleet-years raw,
+so two to four months with the engine work and modest fleet growth. Decision
+gate: if Door 1 has delivered $\ge2$ nats, stay in-house; otherwise open Door 2
+at scale.
+\item \textbf{The wall.} $Q=190\,000$--$200\,000$ ($E=35.4$--$37.7$) needs about
+$e^{5.5}$ beyond step 4. Three interchangeable closers: a few hundred swarm or
+volunteer GPUs for a quarter; an ASIC/FPGA rack; or four nats of Door-1
+mathematics plus a $10\times$ fleet. Any one suffices; any two make it
+comfortable.
+\end{enumerate}
+
+Expected profile: records at $140$k and $150$k within weeks, $165$k within a
+month or two, $175$k inside a quarter, and $200\,000$ in two to four
+quarters---with the long pole attackable by money, community, or mathematics,
+whichever the programme can actually raise. Throughout, every rung is
+dual-verified by the pipeline of \S\ref{sec:certification}, and parallel workers
+claim disjoint variant sets in a committed ledger. That last point is not
+bureaucratic: one of our own campaigns was stopped mid-flight for duplicating
+another effort's target, which is a pure waste that coordination prevents.
+
+\section{Open problems}
+
+We close with the problems this thesis leaves in a state where someone else can
+pick them up. The first two would change the subject; the rest would advance it.
+
+\begin{enumerate}
+\item \textbf{Sub-modexp compositeness detection} (Conjecture~\ref{conj:h2}).
+Is there a randomised test with constant soundness on rough inputs, cheaper than
+one modular exponentiation? Or a lower bound in any realistic model? A positive
+answer speeds up every prime-hunting project in existence; a negative one
+completes Lemma~\ref{lem:entropy}'s third leg.
+
+\item \textbf{The rounding gap for prime-residue covers.} Given $\pi(Q)\approx
+10^{4}$ prime offsets and moduli up to $457$, what residual fraction is
+achievable? Greedy gives $7.56\%$, the fractional optimum $0\%$, and the annealed
+ensemble threshold about $6.6\%$. Where is the quenched truth, and is it
+constructive?
+
+\item \textbf{CRT list-recovery beyond the Johnson radius} for structured,
+solution-abundant instances (Chapter~\ref{ch:barriers}). Our experiments say the
+radius is a sharp algorithmic boundary in practice; a proof or an algorithm
+would both be significant.
+
+\item \textbf{Modular subset-sum with per-position choices at density
+$\approx1$}, where $2^{82}$ solutions exist among $2^{3893}$ designs.
+
+\item \textbf{Mechanisms outside $L$}: certify $\N-q$ composite by something
+that is neither a planted divisor identity nor per-instance divisor discovery.
+This is the honest frontier of Chapter~\ref{ch:closure}'s claim.
+
+\item \textbf{The smallest prescribed desert.} $S(q)$, the least even $\N$ with
+$\g(\N)=q$~\cite{GLvdtR}, packages into $T(Q)=\min_{q>Q}S(q)$; no construction
+here determines an exact minimum, and exhaustive verification stops at
+$4\cdot10^{18}$ while our constructions start at $10^{150}$. The intervening
+$130$ orders of magnitude are entirely unexplored.
+
+\item \textbf{Closing the asymptotic sandwich.} Between
+$\log\N\log_2\N\log_4\N/\log_3\N$ (rigorous, Theorem~\ref{thm:lower}) and
+$(\log\N)^{2}\log\log\N$ (conjectural~\eqref{eq:GLR}) there is a factor of about
+$\log\N$. Does covering only prime offsets---rather than a whole
+interval---asymptotically beat the prime-gap scale?
+\end{enumerate}
+
+\section{A closing note on method}
+
+This thesis was produced with heavy delegation to automated agents: search
+campaigns, cover optimisation, literature checking, and an adversarial
+falsification engine. Three practices did more than any individual result to
+keep the output trustworthy, and we recommend them without reservation.
+
+First, \emph{calibrate before believing}. The failure exponent was checked
+against $1.2\times10^{9}$ candidates before it was used to make claims; the
+belief-propagation implementation was validated against exhaustive enumeration
+on a small instance before it was run on a large one. Both checks later caught
+real errors.
+
+Second, \emph{make negative results first-class}. Three campaigns produced no
+record. Reported with their survival probabilities they became measurements
+rather than embarrassments, and they now carry a substantial share of the
+model's empirical support.
+
+Third, \emph{let the adversary audit the referee}. The single most useful event
+in Chapter~\ref{ch:closure} was an evolutionary search discovering a $50\times$
+error in our own scorer. The audit protocol that caught it---candidates emit
+data, never scores; grading in a separate trusted process; every quantity
+re-derived from primitives; a ``pass'' is hand-audited---is cheap, general, and
+worth more than the theorem it was built to defend. We also retracted two claims
+in the course of this work (\S\ref{sec:retraction}, Remark~\ref{rem:units}) and
+recorded both in place rather than quietly deleting them, which is the same
+discipline pointed at ourselves.

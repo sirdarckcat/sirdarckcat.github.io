@@ -1,0 +1,192 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{observation}[theorem]{Observation}
+
+\newcommand{\N}{N}
+\newcommand{\g}{\mathfrak{g}}
+\newcommand{\Ehat}{\widehat{E}}
+
+\title{\bf Goldbach Deserts\\[4pt]
+\large Construction, Optimisation, and the Limits of Covering}
+\author{Anonymous}
+\date{July 2026}
+
+\begin{document}
+\frontmatter
+\maketitle
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+For an even integer $\N$, let $\g(\N)$ denote the least prime occurring in a
+Goldbach partition of $\N$. Empirically $\g$ is minuscule---it never exceeds
+$9781$ for any even $\N\le4\cdot10^{18}$---and the interesting question is
+therefore extremal and constructive: how large can $\g(\N)$ be \emph{forced}
+to be, and what must be paid in the size of $\N$? This thesis studies that
+question along three record games: the unbounded \emph{height} game, the
+\emph{threshold} game $T(Q)$ (minimise $\N$ subject to $\g(\N)>Q$), and the
+\emph{budget} game $R(X)$ (maximise $\g(\N)$ subject to $\N<X$).
+
+Chapters~\ref{ch:foundations} and~\ref{ch:engineering} develop the
+constructive theory. A congruence cover on the prime offsets, realised
+through the Chinese Remainder Theorem and completed by a progression search,
+produces certified integers far smaller than the classical primorial or
+complete-cover constructions. We give a cost model for such searches---a
+single \emph{failure exponent} $E=|U|\cdot\mathrm{boost}/\log\N$ whose
+exponential $e^{E}$ predicts the number of candidates that must be
+examined---and validate it against $1.2\times10^{9}$ scanned candidates, where
+the measured and predicted exponents agree to within $0.1$ nats. The
+programme's certified incumbents are a $2\,480$-digit integer with
+$\g(\N)=1\,157\,341$, a $150$-digit integer with $\g(\N)=104\,527$, and a
+$199$-digit integer with $\g(\N)=119\,419$.
+
+Chapters~\ref{ch:frontier}--\ref{ch:closure} ask where this stops, and this
+is where the thesis makes its main contributions. We show that the difficulty
+of the whole enterprise is an \emph{integrality gap}: the natural
+linear-programming relaxation of the covering problem is
+\emph{vacuous}---fractionally, the available moduli cover $100\%$ of the prime
+offsets---so the entire failure exponent is the price of rounding a fractional
+cover to an integral one. We then attack that gap with exact and global
+optimisation (large-neighbourhood search with certified windows, belief
+propagation with decimation, banded constructions) and find it immovable at
+the scales tested, with evidence that the greedy construction already sits at
+or near the quenched optimum.
+
+Finally we prove, at the level of rigour of a well-supported research
+programme rather than a finished theorem, a \emph{closure} result: within a
+concrete language of certificate schemas, no construction beats covering.
+Each family closes for a different and quantifiable reason---a value-set
+ceiling of $\sqrt{Q}$, a supply-limited purchase plan that runs $2.5\times$
+over the available design entropy, a cluster bound, a lattice-isolation
+argument, or an empty intersection at record scale. The theorem is
+conditional on two named hypotheses, one of which---the absence of a
+compositeness test cheaper than a single modular exponentiation---we isolate
+and pose as an open problem of independent interest.
+
+The closure theorem was stress-tested by an adversarial search
+(an LLM-driven evolutionary system) against a machine-checkable
+scorer. Its first success was not against the theorem but against our
+\emph{referee}: it found a $50\times$ accounting error in the evaluator and
+exploited it before any claim was published. The audit protocol caught it,
+and repairing the referee strengthened the mathematics. We record this as a
+methodological finding: adversarial search against a formal claim is most
+valuable as a referee-hardening device.
+
+\tableofcontents
+
+\mainmatter
+\input{ch1_introduction}
+\input{ch2_foundations}
+\input{ch3_engineering}
+\input{ch4_frontier}
+\input{ch5_barriers}
+\input{ch6_closure}
+\input{ch7_outlook}
+
+\appendix
+\input{appendix_data}
+
+\backmatter
+\begin{thebibliography}{99}
+\bibitem{OeS} T.~Oliveira e Silva, S.~Herzog, S.~Pardi, \emph{Empirical
+verification of the even Goldbach conjecture and computation of prime gaps up to
+$4\cdot10^{18}$}, Math. Comp. \textbf{83} (2014), 2033--2060.
+\bibitem{Richstein} J.~Richstein, \emph{Verifying the Goldbach conjecture up to
+$4\cdot10^{14}$}, Math. Comp. \textbf{70} (2001), 1745--1749.
+\bibitem{HL} G.~H.~Hardy, J.~E.~Littlewood, \emph{Some problems of `Partitio
+Numerorum' III}, Acta Math. \textbf{44} (1923), 1--70.
+\bibitem{GLvdtR} A.~Granville, J.~van de Lune, H.~J.~J.~te Riele, \emph{Checking
+the Goldbach conjecture on a vector computer}, in: Number Theory and Applications
+(R.~A.~Mollin, ed.), NATO ASI Ser.~C \textbf{265}, Kluwer, Dordrecht, 1989,
+423--433.
+\bibitem{OEIS} N.~J.~A.~Sloane (ed.), \emph{The On-Line Encyclopedia of Integer
+Sequences}, sequences A020481 (least Goldbach summand) and A025018/A025019
+(records), \url{https://oeis.org}.
+\bibitem{JB} Zs.~Juh\'asz, M.~Bartalos, \emph{Predicting the size ranking of
+minimal primes in the generalised Goldbach partitions}, arXiv:2510.21870 (2025).
+\bibitem{Dirichlet} P.~G.~L.~Dirichlet, \emph{Beweis des Satzes, dass jede
+unbegrenzte arithmetische Progression\dots\ unendlich viele Primzahlen
+enth\"alt}, Abh. K. Preuss. Akad. Wiss. (1837), 45--81.
+\bibitem{Linnik} U.~V.~Linnik, \emph{On the least prime in an arithmetic
+progression I, II}, Mat. Sbornik \textbf{15(57)} (1944), 139--178, 347--368.
+\bibitem{Rankin} R.~A.~Rankin, \emph{The difference between consecutive prime
+numbers}, J. London Math. Soc. \textbf{13} (1938), 242--247.
+\bibitem{Erdos1950} P.~Erd\H{o}s, \emph{On integers of the form $2^k+p$ and
+some related problems}, Summa Brasil. Math. \textbf{2} (1950), 113--123.
+\bibitem{FGKT} K.~Ford, B.~Green, S.~Konyagin, T.~Tao, \emph{Large gaps between
+consecutive prime numbers}, Ann. of Math. \textbf{183} (2016), 935--974.
+\bibitem{Maynard} J.~Maynard, \emph{Large gaps between primes}, Ann. of Math.
+\textbf{183} (2016), 915--933.
+\bibitem{FGKMT} K.~Ford, B.~Green, S.~Konyagin, J.~Maynard, T.~Tao, \emph{Long
+gaps between primes}, J. Amer. Math. Soc. \textbf{31} (2018), 65--105.
+\bibitem{PSW} C.~Pomerance, J.~L.~Selfridge, S.~S.~Wagstaff~Jr., \emph{The
+pseudoprimes to $25\cdot10^9$}, Math. Comp. \textbf{35} (1980), 1003--1026.
+\bibitem{BW} R.~Baillie, S.~S.~Wagstaff~Jr., \emph{Lucas pseudoprimes},
+Math. Comp. \textbf{35} (1980), 1391--1417.
+\bibitem{GoldwasserKilian} S.~Goldwasser, J.~Kilian, \emph{Almost all
+primes can be quickly certified}, Proc. 18th ACM Symposium on Theory of
+Computing (1986), 316--329.
+\bibitem{AtkinMorain} A.~O.~L.~Atkin, F.~Morain, \emph{Elliptic curves and
+primality proving}, Math. Comp. \textbf{61} (1993), 29--68.
+\bibitem{PARI} The PARI Group, \emph{PARI/GP version 2.17.2}, 2026,
+\url{https://pari.math.u-bordeaux.fr}.
+\bibitem{GSS} V.~Guruswami, A.~Sahai, M.~Sudan, \emph{``Soft-decision'' decoding
+of Chinese Remainder codes}, Proc. 41st IEEE Symposium on Foundations of
+Computer Science (2000), 159--168.
+\bibitem{Goldreich} O.~Goldreich, D.~Ron, M.~Sudan, \emph{Chinese remaindering
+with errors}, IEEE Trans. Inform. Theory \textbf{46} (2000), 1330--1338.
+\bibitem{LagariasOdlyzko} J.~C.~Lagarias, A.~M.~Odlyzko, \emph{Solving
+low-density subset sum problems}, J. ACM \textbf{32} (1985), 229--246.
+\bibitem{Coster} M.~J.~Coster, A.~Joux, B.~A.~LaMacchia, A.~M.~Odlyzko,
+C.~P.~Schnorr, J.~Stern, \emph{Improved low-density subset sum algorithms},
+Comput. Complexity \textbf{2} (1992), 111--128.
+\bibitem{Wagner} D.~Wagner, \emph{A generalized birthday problem}, Advances in
+Cryptology---CRYPTO 2002, LNCS \textbf{2442}, 288--304.
+\bibitem{LLL} A.~K.~Lenstra, H.~W.~Lenstra~Jr., L.~Lov\'asz, \emph{Factoring
+polynomials with rational coefficients}, Math. Ann. \textbf{261} (1982),
+515--534.
+\bibitem{Grover} L.~K.~Grover, \emph{A fast quantum mechanical algorithm for
+database search}, Proc. 28th ACM Symposium on Theory of Computing (1996),
+212--219.
+\bibitem{GidneyEkera} C.~Gidney, M.~Eker\aa, \emph{How to factor 2048 bit RSA
+integers in 8 hours using 20 million noisy qubits}, Quantum \textbf{5} (2021),
+433.
+\bibitem{Bernstein} D.~J.~Bernstein, \emph{How to find smooth parts of
+integers}, preprint, 2004, \url{https://cr.yp.to/factorization/smoothparts.pdf}.
+\bibitem{MoserTardos} R.~A.~Moser, G.~Tardos, \emph{A constructive proof of the
+general Lov\'asz Local Lemma}, J. ACM \textbf{57} (2010), article 11.
+\bibitem{MezardMontanari} M.~M\'ezard, A.~Montanari, \emph{Information, Physics,
+and Computation}, Oxford University Press, 2009.
+\bibitem{CPSAT} L.~Perron, F.~Didier, \emph{CP-SAT}, Google OR-Tools, 2024,
+\url{https://developers.google.com/optimization/cp/cp_solver}.
+\bibitem{Cornacchia} G.~Cornacchia, \emph{Su di un metodo per la risoluzione in
+numeri interi dell'equazione $\sum_{h=0}^{n}C_hx^{n-h}y^h=P$}, Giornale di
+Matematiche di Battaglini \textbf{46} (1908), 33--90.
+\bibitem{Zsygmondy} K.~Zsigmondy, \emph{Zur Theorie der Potenzreste},
+Monatshefte f\"ur Mathematik \textbf{3} (1892), 265--284.
+\bibitem{AlphaEvolve} Google DeepMind, \emph{AlphaEvolve: a coding agent for
+algorithmic discovery}, developer documentation, 2026,
+\url{https://docs.cloud.google.com/gemini/enterprise/docs/alphaevolve}.
+\bibitem{Sierpinski} W.~Sierpi\'nski, \emph{Sur un probl\`eme concernant les
+nombres $k\cdot2^n+1$}, Elem. Math. \textbf{15} (1960), 73--74.
+\bibitem{PrimeGrid} PrimeGrid, \emph{Distributed computing project},
+\url{https://www.primegrid.com}.
+\end{thebibliography}
+
+\end{document}

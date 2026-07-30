@@ -1,0 +1,350 @@
+\chapter{Foundations: factorials, primorials, covers}\label{ch:foundations}
+
+This chapter develops the constructive theory from the ground up. The
+progression is one of increasing efficiency: a factorial spends each small
+prime on a single residue class and buys deserts of size $\log\N/\log\log\N$; a
+primorial spends each small prime on exactly one offset and buys $\log\N$; a
+congruence cover reuses each prime across a whole residue class and buys
+$(\log\N)\log_2\N\log_4\N/\log_3\N$ unconditionally, which is the best known.
+Along the way we prove unboundedness of $\g$ unconditionally, and we settle the
+relationship with ordinary prime gaps.
+
+\section{Factorial neighbourhoods and Wilson obstructions}\label{sec:factorial}
+
+\begin{lemma}[Factorial composites]\label{lem:fact}
+For $n\ge2$ and $2\le k\le n$, the number $n!+k$ is composite. For $n\ge4$ and
+$2\le k\le n$, the number $n!-k$ is also composite.
+\end{lemma}
+\begin{proof}
+In both cases $k\mid n!$, so $k\mid(n!\pm k)$. For the plus side $n!+k>k$, so
+$n!+k$ is a proper multiple of $k$. For the minus side,
+$n!-k=k(n!/k-1)$ with $n!/k-1\ge2$ exactly when $n!\ge3k$, which holds for
+$n\ge4$; it fails only at $n=3$, $k=3$, where $3!-3=3$ is prime.
+\end{proof}
+
+\begin{lemma}[Wilson obstructions]\label{lem:wilson}
+Let $n\ge2$. \emph{(A)} If $n+1$ is prime, then $(n+1)\mid n!+1$. \emph{(B)} If
+$n+2$ is prime, then $(n+2)\mid n!-1$.
+\end{lemma}
+\noindent Recall \emph{Wilson's theorem}: $p>1$ is prime if and only if
+$(p-1)!\equiv-1\pmod p$. We use only the forward direction.
+\begin{proof}
+For (A) put $p=n+1$; then $n!=(p-1)!\equiv-1\pmod p$. For (B) put $p=n+2$; then
+$(p-1)!=(n+1)\,n!$ and $n+1\equiv-1\pmod p$, so $-n!\equiv-1$, i.e.
+$n!\equiv1\pmod p$.
+\end{proof}
+
+\begin{corollary}\label{cor:facprime}
+If $n!+1>n+1$ is prime, then $n+1$ is composite. In particular the factorial
+primes $n!+1$ with $n\ge3$ (for example $n=3,11,27,37,41,\dots$) occur only
+when $n+1$ is composite.
+\end{corollary}
+
+\subsection{The worked example \texorpdfstring{$\N=27!+28$}{N=27!+28}}
+
+Take $\N=27!+28$, even, with $29$ digits. Since $27!\equiv0\pmod r$ for every
+prime $r\le27$,
+\begin{equation}\label{eq:shift}
+\N-q\;=\;27!+(28-q)\;\equiv\;28-q\pmod r\qquad(r\le27\ \text{prime}),
+\end{equation}
+so $\N-q$ is killed by a small prime $r$ exactly when $r\mid(28-q)$: a shifted
+sieve eliminating the class $q\equiv28\pmod r$.
+
+\begin{proposition}\label{prop:71}
+For $\N=27!+28$ every prime $q$ with $2\le q\le67$ has $\N-q$ composite, while
+$\N-71$ is prime; hence $\g(\N)=71$.
+\end{proposition}
+\begin{proof}[Proof by explicit witnesses]
+Table~\ref{tab:witness} gives, for each prime $q\le71$, a factor of $\N-q$. For
+$q\le23$ the witness divides $28-q$ via~\eqref{eq:shift}. Two cases below the
+winner are notable: $q=29$ is killed by $29$ because $29=27+2$ is prime, so
+Lemma~\ref{lem:wilson}(B) gives $29\mid27!-1=\N-29$; and $q=59$ survives the
+sieve (as $59-28=31$ is $27$-rough) yet $41\mid27!-31=\N-59$. Finally $71-28=43$
+is $27$-rough and $27!-43$ is prime.
+\end{proof}
+
+\begin{table}[h]
+\centering\small
+\caption{Why every small prime fails as a summand of $\N=27!+28$.}\label{tab:witness}
+\begin{tabular}{rlc@{\qquad}rlc}
+\toprule
+$q$ & $\N-q$ & factor & $q$ & $\N-q$ & factor\\
+\midrule
+$2$&$27!+26$&$2$ & $31$&$27!-3$&$3$\\
+$3$&$27!+25$&$5$ & $37$&$27!-9$&$3$\\
+$5$&$27!+23$&$23$ & $41$&$27!-13$&$13$\\
+$7$&$27!+21$&$3$ & $43$&$27!-15$&$3$\\
+$11$&$27!+17$&$17$ & $47$&$27!-19$&$19$\\
+$13$&$27!+15$&$3$ & $53$&$27!-25$&$5$\\
+$17$&$27!+11$&$11$ & $59$&$27!-31$&$\mathbf{41}$ (generic)\\
+$19$&$27!+9$&$3$ & $61$&$27!-33$&$3$\\
+$23$&$27!+5$&$5$ & $67$&$27!-39$&$3$\\
+$29$&$27!-1$&$\mathbf{29}$ (Wilson) & $71$&$27!-43$&\textbf{prime}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+By~\eqref{eq:shift} a prime $q$ can even be \emph{tested} only if $q-28$ is
+$27$-rough, so the viable candidates $29,59,71,89,\dots$ are sparse and $71$ is
+merely the first with a prime complement. Heuristically the first viable offsets
+in this family lie on the scale of $n$, i.e.\ roughly $\log\N/\log\log\N$. The
+factorial is wasteful: it spends the prime $r$ on the single class
+$q\equiv28\pmod r$, most of whose members are composite anyway and so did not
+need killing.
+
+\section{Primorial deserts, made unconditional}\label{sec:primorial}
+
+\begin{lemma}[Primorial core]\label{lem:primcore}
+Let $P$ be prime, let $m_P=\prod_{p\le P}p$ be the primorial, and let $\N$ be a
+multiple of $m_P$ with $\N>2P$. Then $\N-q$ is composite for every prime
+$q\le P$.
+\end{lemma}
+\begin{proof}
+For a prime $q\le P$ we have $q\mid m_P\mid\N$, hence $q\mid\N-q$, and
+$\N-q>P\ge q$, so $\N-q$ is a proper multiple of $q$.
+\end{proof}
+
+Lemma~\ref{lem:primcore} gives only claim (a) of \S\ref{ch:intro}. Adding
+Dirichlet's theorem upgrades it to an actual Goldbach number, and hence to an
+unconditional unboundedness result.
+
+\begin{theorem}[Unconditional unboundedness]\label{thm:dirichlet}
+For every prime $P$ put $s=\mathrm{nextprime}(P)$. There are infinitely many
+primes $t\equiv-s\pmod{m_P}$, and for any such $t$ the even integer $\N=s+t$
+satisfies $m_P\mid\N$, has the explicit partition $\N=s+t$, and has
+$\g(\N)=\mathrm{nextprime}(P)>P$. Hence $\sup_\N\g(\N)=\infty$ unconditionally.
+Moreover the least such $t$ satisfies $\log\N\ll P$ by Linnik's
+theorem~\cite{Linnik}, so $\g(\N)\gg\log\N$.
+\end{theorem}
+\begin{proof}
+As $\gcd(s,m_P)=1$, Dirichlet~\cite{Dirichlet} gives infinitely many primes
+$t\equiv-s\pmod{m_P}$. Then $\N=s+t\equiv0\pmod{m_P}$ is even. By
+Lemma~\ref{lem:primcore} no prime $\le P$ is a summand; the only primes below
+$s$ are those $\le P$; and $\N-s=t$ is prime, so $\g(\N)=s$. Linnik bounds the
+least such prime by $t\ll m_P^{L}$ for an absolute $L$, and
+$\log m_P=\theta(P)\sim P$, so $\log\N\ll P\sim\g(\N)$.
+\end{proof}
+
+\begin{remark}[Concrete instances]\label{rem:concrete}
+For $P=13$: $m_{13}=30030$, $s=17$, and the least prime $t\equiv-17\pmod{30030}$
+is $t=30013$, giving $30030=17+30013$ with $\g=17$, all primality
+deterministic. A larger fully proven example is $m_{43}=13082761331670030$
+itself, whose minimal partition is $m_{43}=89+13082761331669941$ (both proven
+prime, being $<2^{64}$), so $\g(m_{43})=89$ unconditionally.
+\end{remark}
+
+\begin{remark}[The roughness bonus]\label{rem:rough}
+For $\N=m_P$, a prime $q>P$ makes $\N-q$ coprime to all primes $\le P$---%
+\emph{$P$-rough}---which improves its chance of being prime, since the small
+primes that catch most composites are already excluded. By Mertens' theorem
+($\prod_{p\le P}(1-1/p)\sim e^{-\gamma}/\log P$) this multiplies the heuristic
+probability by $\sim e^{\gamma}\log P$, and the expected least surviving summand
+lands near $P(1+e^{-\gamma})\approx1.56P$. This ``boost'' factor is not a
+curiosity: it reappears in \eqref{eq:E} as the exact multiplier that makes
+residual offsets harder to kill, and it is the reason a bigger cover is not
+automatically a better cover (Chapter~\ref{ch:frontier}). Either way the
+primorial pays a modulus $m_P\approx e^{P}$; the next section removes that
+waste.
+\end{remark}
+
+\section{Prime-offset congruence covers}\label{sec:covering}
+
+A primorial spends one prime per summand; a congruence cover reuses each prime
+on a whole residue class. The one structural constraint is parity: a sum of two
+odd primes is even, so $\N$ is kept even, the prime $2$ kills only $q=2$, and
+every odd prime below the target must be covered by odd sieving primes.
+
+The strategy is classical. Covering systems were introduced by
+Erd\H{o}s~\cite{Erdos1950} precisely to obstruct an additive representation---%
+his infinite progression of odd integers not of the form $2^k+p$ is the direct
+ancestor of this section, and of the Sierpi\'nski--Riesel tradition that grew
+from it~\cite{Sierpinski}. What changes here is only the target: the offsets to
+be blocked are the primes below $Q$ rather than the powers of two.
+
+\begin{proposition}[Covering certificate]\label{prop:cover}
+Let $Q\ge3$ and let $\{(r,a_r):r\in\mathcal R\}$ be a system of odd primes such
+that every odd prime $q<Q$ satisfies $q\equiv a_r\pmod r$ for some
+$r\in\mathcal R$. If $\N$ is even, $\N\equiv a_r\pmod r$ for all $r$, and
+$\N>Q+\max_{r}r$, then $\N-q$ is composite for every prime $q<Q$.
+\end{proposition}
+\begin{proof}
+For $q=2$, $\N-2$ is even and $>2$. For an odd prime $q<Q$ pick $r$ with
+$q\equiv a_r\equiv\N\pmod r$; then $r\mid\N-q$ and $\N-q>r$, so the divisor is
+proper.
+\end{proof}
+
+\begin{remark}
+The size hypothesis only has to make each divisor proper, for which
+$\N>Q+\max_r r$ suffices; the much stronger $\N>Q\prod_r r$ is unnecessary. A
+common solution exists modulo $M=2\prod_r r$ by the Chinese Remainder Theorem,
+and any large enough even representative qualifies.
+\end{remark}
+
+The covering is built greedily and deterministically.
+
+\medskip
+\noindent\fbox{\parbox{0.96\textwidth}{%
+\textbf{Algorithm (greedy covering of the odd primes below $Q$).}
+\begin{enumerate}\setlength\itemsep{1pt}
+\item Let $T=\{\text{odd primes }<Q\}$ and require $\N\equiv0\pmod2$.
+\item For $r=3,5,7,11,\dots$ in increasing order, while $T\ne\varnothing$: let
+$a_r$ be a residue mod $r$ containing the most elements of $T$ (smallest such
+residue on ties), require $\N\equiv a_r\pmod r$, and delete from $T$ every
+$q\equiv a_r\pmod r$.
+\item Recover $\N$ from the congruences by the Chinese Remainder Theorem.
+\end{enumerate}}}
+\medskip
+
+The resulting modulus is $M=2\prod_{r\in\mathcal R}r$. For our targets it is far
+smaller than the primorial $\prod_{p<Q}p$, because each sieving prime is reused
+across an entire residue class rather than assigned to one offset. Concretely,
+at $Q=10^5$ a complete greedy cover uses $356$ congruences and a $1\,020$-digit
+modulus, against a primorial of some $43\,000$ digits.
+
+\subsection{Partial covers and progression search}\label{sec:partial}
+
+A complete cover is convenient to verify but is not the cheapest way to make
+$\N$ small. Near the end of the greedy algorithm a new sieving prime may remove
+only one or two remaining offsets while still multiplying the modulus by $r$:
+an expensive way to buy a single compositeness proof. The alternative is to
+stop early. Let $U$ be the odd prime offsets below $Q$ left uncovered. CRT gives
+one residue $\N_0$ modulo $M=2\prod_{r\in\mathcal R}r$, so every candidate has
+the form
+\begin{equation}\label{eq:progression}
+\N=\N_0+kM ,
+\end{equation}
+and for each $q\in U$ we test $\N-q$ directly. A failed probable-prime test is a
+rigorous compositeness result: pseudoprimes create false positives, never false
+negatives. So a fast one-sided test is safe as a search filter, while the final
+surviving complement still needs a certificate.
+
+\begin{proposition}[Partial-cover certificate]\label{prop:partial}
+Let $U$ be the odd primes $q<Q$ not covered by the congruences of
+Proposition~\ref{prop:cover}, and let $\N$ be a sufficiently large even solution
+of those congruences. If $\N-q$ is composite for every $q\in U$, then no prime
+$q<Q$ is a Goldbach summand of $\N$.
+\end{proposition}
+\begin{proof}
+The congruences prove compositeness for every covered odd prime; parity handles
+$q=2$; the hypothesis handles $U$.
+\end{proof}
+
+This is the construction used for every record in this thesis. Its whole
+character is that it converts a proof obligation into a \emph{search}: the
+cover is a static prefilter, and the residual set is validated dynamically. How
+long that search takes is the subject of Chapter~\ref{ch:engineering}, and the
+answer is $e^{E}$ candidates with $E$ as in~\eqref{eq:E}.
+
+\subsection{Realising a covering unconditionally}
+
+Proposition~\ref{prop:cover} still gives only claim (a). The Dirichlet idea of
+\S\ref{sec:primorial}, applied twice, upgrades any covering to an actual
+Goldbach number.
+
+\begin{theorem}[Unconditional realisation]\label{thm:coverdirichlet}
+Let $\{(r,a_r):r\in\mathcal R\}$ cover the odd primes below $Q$, all $r$ odd
+primes. Then there are infinitely many even $\N>Q+\max_r r$ admitting an
+explicit partition $\N=s+t$ with $\N\equiv a_r\pmod r$ for all $r$, and every
+such $\N$ has $\g(\N)\ge Q$.
+\end{theorem}
+\begin{proof}
+For each $r$ choose $b_r\in\{1,\dots,r-1\}\setminus\{a_r\}$ and require
+$s\equiv1\pmod2$. CRT gives a reduced class $b$ modulo $2\prod_r r$; Dirichlet
+gives a prime $s$ in it. If $s<Q$ then $s$ is a covered odd prime, so
+$s\equiv a_r\pmod r$ for some $r$, contradicting $s\equiv b_r$. Hence $s\ge Q$.
+Now require $t\equiv a_r-s\pmod r$ for all $r$ and $t\equiv1\pmod2$; every
+$a_r-s$ is nonzero mod $r$, so this is again a reduced class, and Dirichlet
+gives infinitely many primes $t$. Keep those with $s+t>Q+\max_r r$ and set
+$\N=s+t$: it is even, satisfies the congruences, and has the explicit partition
+$\N=s+t$. Proposition~\ref{prop:cover} excludes every prime below $Q$.
+\end{proof}
+
+\begin{remark}[Quantitative form for initial-segment covers]\label{rem:size}
+When the covering has one modulus for every prime $p\le x$, the two residue
+classes above are reduced modulo $M=2\prod_{p\le x}p$, and Linnik's
+theorem~\cite{Linnik} supplies $s,t\ll M^L$. Hence
+$\log\N\ll\log M=\theta(x)\ll x$. This bound is asserted only for
+initial-segment covers, not for arbitrary sparse finite ones.
+\end{remark}
+
+\section{Transfer from large prime gaps}\label{sec:gaps}
+
+\begin{proposition}\label{prop:transfer}
+If $[\N-Q,\N-2]$ contains no prime, then no prime $q\le Q$ is a Goldbach
+summand of $\N$; hence if $\N$ is Goldbach-representable, $\g(\N)>Q$.
+\end{proposition}
+\begin{proof}
+Every prime $q\in[2,Q]$ has $\N-q\in[\N-Q,\N-2]$, hence composite.
+\end{proof}
+
+So a prime gap of length $\ge Q$ just below $\N$ forces $\g(\N)>Q$: prime gaps
+transfer to least Goldbach summands. The transfer is strictly one-directional,
+because forcing $\g(\N)>Q$ requires $\N-q$ composite only for \emph{prime}
+offsets, a far sparser target than a whole interval.
+
+The asymmetry is quantitative, and we can measure it on our own records. For the
+$2\,692$-digit desert of Table~\ref{tab:records}, the certified value is
+$\g=1\,134\,871$, which exceeds the largest certified prime gap known
+($1\,113\,106$) while the integer realising it is about $6.9$ times shorter in
+digits. Conversely, for the $237$-digit height construction of the earlier
+draft of this work, the interval $[\N-1926,\N-2]$ is prime-free while
+$\N-1927$ passes BPSW: ordinary gap information gives only $\g(\N)>1926$,
+whereas the certified value is $109\,621$. The construction gains two orders of
+magnitude precisely by ignoring composite offsets. Deserts are a relaxation of
+gaps, and the relaxation is worth roughly a factor of $7$ in the size of the
+integer and two orders of magnitude in what a given integer certifies.
+
+Writing $G(X)$ for the largest gap between consecutive primes below $X$,
+Ford--Green--Konyagin--Tao and Maynard~\cite{FGKT,Maynard}, sharpened
+in~\cite{FGKMT}, give
+\[
+G(X)\;\gg\;\frac{\log X\,\log_2 X\,\log_4 X}{\log_3 X},
+\]
+improving Rankin~\cite{Rankin}. Feeding the covering that underlies these bounds
+into Theorem~\ref{thm:coverdirichlet} makes the transfer unconditional.
+
+\begin{theorem}\label{thm:lower}
+There are infinitely many even integers $\N$, each with an explicit Goldbach
+representation, such that
+\[
+\g(\N)\;\gg\;\frac{\log \N\,\log_2 \N\,\log_4 \N}{\log_3 \N}.
+\]
+\end{theorem}
+\begin{proof}
+The Erd\H{o}s--Rankin method in the form of~\cite{FGKMT} supplies, for large
+$x$, residue classes $a_p\pmod p$---one for each prime $p\le x$---whose union
+contains every integer of $[1,y]$ with
+$y=\lfloor c\,x\log x\log_3x/\log_2x\rfloor$.
+
+\emph{Normalisation.} If $a_2$ is odd, replace every $a_p$ by $a_p-1$; the
+shifted system covers $[0,y-1]$. So we may assume $2\mid a_2$, whence no odd
+integer of $[1,y-1]$ is covered by the class modulo $2$, and every odd prime
+$q<Q:=y-1$ satisfies $q\equiv a_r\pmod r$ for some \emph{odd} prime $r\le x$.
+Those pairs form a covering in the sense of Proposition~\ref{prop:cover}; it
+covers far more than needed (all odd integers below $Q$), and self-covering
+($r=q$, $a_r=0$) is harmless.
+
+\emph{Realisation.} Theorem~\ref{thm:coverdirichlet} yields infinitely many even
+$\N$ with an explicit partition and $\g(\N)\ge Q$, and by Remark~\ref{rem:size}
+we may take $\log\N\ll\theta(x)\ll x$.
+
+\emph{Conclusion.} Let $C$ satisfy $\log\N\le Cx$. For large $u$ the map
+$u\mapsto u\log u\log_3u/\log_2u$ is increasing, and each iterated logarithm of
+$\log\N/C$ is $(1+o(1))$ times the corresponding one of $\log\N$; hence
+$\g(\N)\ge Q\gg\log\N\,\log_2\N\,\log_4\N/\log_3\N$. Selecting one realisation
+for each large $x$ gives infinitely many distinct values.
+\end{proof}
+
+Together with the Granville--van de Lune--te Riele conjecture~\eqref{eq:GLR},
+this brackets the maximal order of $\g$:
+\[
+\underbrace{\frac{\log \N\,\log_2 \N\,\log_4 \N}{\log_3 \N}}_{\text{rigorous}}
+\;\ll\;\max_{\N'\le \N}\g(\N')
+\;\lesssim\;
+\underbrace{(\log \N)^2\log\log \N}_{\text{conjectural}} .
+\]
+The gap between these is a genuine open problem, and nothing in this thesis
+closes it. What the remaining chapters do instead is settle a different and---%
+we would argue---more tractable question: within the constructive paradigm that
+produces every known record, what is the exact cost of a desert, and is there
+any cheaper paradigm?

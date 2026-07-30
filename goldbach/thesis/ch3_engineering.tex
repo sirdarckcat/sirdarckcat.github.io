@@ -1,0 +1,230 @@
+\chapter{The cost of a desert: a calibrated model and an engine}\label{ch:engineering}
+
+Chapter~\ref{ch:foundations} reduced desert construction to a search: fix a
+partial cover, walk the progression $\N=\N_0+kM$, and test the residual offsets.
+This chapter answers the obvious next question---how long does that take?---and
+then reports what happened when we ran it. The answer is a single exponent, and
+the exponent is accurate enough that most of the rest of this thesis can proceed
+by arithmetic rather than by experiment.
+
+\section{The failure exponent}
+
+Fix a partial cover with modulus $M=2\prod_{r\in\mathcal R}r$ and residual set
+$U$ of prime offsets below $Q$. For a candidate $\N=\N_0+kM$, the covered
+offsets are composite by construction; the candidate succeeds precisely when
+\emph{every} residual complement $\N-q$, $q\in U$, is also composite.
+
+Two effects set the probability. First, each complement is a number of size
+about $\N$, so by the prime number theorem it is prime with probability about
+$1/\log\N$. Second---and this is the roughness bonus of
+Remark~\ref{rem:rough}---the cover has already forced $\N\equiv a_r$, so each
+complement $\N-q$ avoids divisibility by every $r\in\mathcal R$ (for the
+offsets that were \emph{not} killed by $r$), which raises its chance of being
+prime. Mertens' theorem turns that into a multiplicative correction. Writing
+\begin{equation}\label{eq:boost}
+\mathrm{boost}\;=\;2\prod_{r\in\mathcal R}\frac{r}{r-1},
+\end{equation}
+the probability that one residual complement is prime is
+$\approx\mathrm{boost}/\log\N$, and, treating the $|U|$ residual complements as
+independent, the probability that a candidate survives all of them is
+\[
+\Bigl(1-\frac{\mathrm{boost}}{\log\N}\Bigr)^{|U|}\;\approx\;e^{-E},
+\qquad
+E\;=\;\frac{|U|\cdot \mathrm{boost}}{\log\N}.
+\]
+Thus $e^{E}$ candidates must be scanned per expected success. The independence
+step is a heuristic---it is the Hardy--Littlewood picture applied to a fixed
+arithmetic progression---and Chapter~\ref{ch:closure} shows that it is in a
+precise sense the \emph{only} heuristic in play, because any correlation between
+two complements is forced to act through small shared divisors, which the cover
+already controls.
+
+The formula explains the shape of the whole subject. Three levers move $E$:
+\begin{itemize}
+\item \textbf{More moduli} shrink $|U|$ but inflate $\mathrm{boost}$ and
+$\log M$. The balance between these is not obvious, and \S\ref{sec:equilibrium}
+shows it is an equilibrium rather than a budget constraint.
+\item \textbf{A bigger $\N$} increases $\log\N$ and so lowers $E$ directly. This
+is why the height game is easy and the budget game is hard: digits are the
+cheapest resource in the problem.
+\item \textbf{A higher target $Q$} raises $|U|$ roughly in proportion to
+$\pi(Q)$, which is why record values of $\g$ get expensive fast.
+\end{itemize}
+
+\section{Calibration: does the model hold?}\label{sec:calibration}
+
+A cost model that has never been checked is a wish. We therefore instrumented
+every search to report, per slice of the progression, the measured pass rate
+$\hat p$ of the probable-prime tests, the mean number of surviving offsets per
+candidate, and the implied exponent
+\[
+\Ehat\;=\;\frac{(\text{mean survivors per candidate})\times\hat p}{1},
+\]
+which is the empirical analogue of $E$.
+
+Across three independent covers and roughly $1.2\times10^{9}$ scanned
+candidates, we find
+\[
+|\Ehat-E|\;\le\;0.1\ \text{nats},
+\]
+with per-slice values stable to within a couple of percent over hundreds of
+slices. Two consequences matter. The obvious one is that projections in later
+chapters can be made by arithmetic. The subtler one is a genuine bound on
+hidden structure: if some unexploited arithmetic correlation made constructed
+$\N$ systematically luckier than the model predicts, it would show up as a
+persistent gap between $\Ehat$ and $E$. At $1.2\times10^{9}$ candidates, any
+such effect is worth at most $0.1$ nats, a factor of $1.11$. We use this as a
+quantitative constraint in Chapter~\ref{ch:closure}, where it rules out an
+entire class of would-be mechanisms.
+
+\section{The engine}\label{sec:engine}
+
+The search is embarrassingly parallel and utterly dominated by one primitive: a
+base-$2$ Fermat test on a number of the size of $\N$. Everything else is
+bookkeeping designed to reduce the number of such tests.
+
+\paragraph{Sieving.} For each residual offset $q$ and each small prime
+$s\nmid M$, the candidates $k$ for which $s\mid\N-q$ form an arithmetic
+progression in $k$, computable from one modular inverse. Marking those
+progressions removes most $(k,q)$ pairs before any expensive test. The optimal
+sieve bound is empirical: at $199$ digits we measure $B=10^{6}$ to beat
+$B=3\cdot10^{6}$ ($901$ versus $816$ thousand candidates per second), because
+beyond that the sieve costs more than the tests it saves.
+
+\paragraph{Amortisation across variants.} A cover admits many
+\emph{residue-swap variants}: reassigning some $a_r$ produces a different
+progression with the same modulus $M$ and the same $|U|$, hence the same $E$.
+These are free additional lottery tickets. Because they share $M$, they also
+share every modular inverse in the sieve, so caching that table across variants
+gave a measured $+47\%$ in throughput.
+
+\paragraph{Survivor-ordered testing.} Within a block, candidates differ in how
+many residual offsets survived the sieve. A candidate with $a$ survivors
+succeeds with probability $(1-p)^{a}$, so hits concentrate sharply in the
+low-survivor tail. Testing candidates in ascending order of $a$ is
+result-preserving and measurably accelerates \emph{discovery} (a factor of
+$1.83$ in expected time-to-first-hit at record scale).
+
+\paragraph{Selective testing.} The natural next step is to \emph{skip} the
+crowded candidates entirely. We implemented this with exact accounting: the
+engine computes the survivor histogram, weights each candidate by
+$(1-\hat p)^{a}$, and reports the fraction of total hit mass retained. This
+keeps the model honest---$\hat p$ remains unbiased, so calibration still
+works---while allowing a principled speed/coverage trade. At $199$ digits,
+skipping the fullest $92\%$ of each block took the raw scan rate from
+$1\,772$ to about $16\,300$ thousand candidates per second while retaining
+$27.6\%$ of the hit mass: a net discovery rate about $3\times$ better.
+
+The reason this works is worth stating, because it is not obvious. Each
+candidate dies at its \emph{first} passing complement, so the expected number of
+Fermat tests per candidate is about $1/\hat p\approx17$ regardless of how many
+survivors it has. Testing cost is therefore nearly flat in $a$, while success
+probability decays geometrically in $a$---so discarding high-$a$ candidates is
+almost pure profit.
+
+\paragraph{Hardware.} The same algorithm on GPU is a different animal. A CUDA
+implementation using a bit-matrix sieve and Montgomery CIOS Fermat waves,
+validated bit-for-bit against the reference implementation, sustains about
+$2.5\times10^{6}$ tests/s on a T4 and $8.5\times10^{6}$ on an A100, versus
+roughly $6\times10^{3}$ on four CPU cores. That ratio, about $430$, is
+$\log 430\approx6.1$ nats---and the E-gap between the rungs the two platforms
+can reach is likewise about $6$. The record frontier is logarithmic in compute,
+and this is the cleanest illustration of it in our data: covers and strategy
+were already saturated at CPU scale, and the GPU rung was bought purely with
+throughput.
+
+\section{Search strategy: depth, breadth, and the ratchet}\label{sec:ratchet}
+
+Given a fixed compute budget, how should it be spent? We ran the experiment
+both ways and the answer was unambiguous.
+
+\emph{Breadth-first} designs scan many residue-swap variants shallowly. Because
+the attainable $\N$ stays close to $\N_0$, every hit is small---good for the
+threshold game---but the design has a hard ceiling: when the variant pool is
+exhausted, the campaign ends with nothing.
+
+\emph{Depth-first} designs scan one progression far. The runway is unbounded, and
+because $\N$ grows only logarithmically with $k$, bad luck costs digits rather
+than terminating the campaign. Our $150$-digit threshold record was found at
+$k=6.21\times10^{10}$ of a full $[0,7.5\times10^{10})$ scan---at $63.8\%$
+depth, a central draw against a cumulative expectation of $0.40$.
+
+The synthesis is what we call the \textbf{ratchet}: design a cover, run it until
+a hit, \emph{bank a certified record}, then re-tune the cover for the next rung
+and repeat. At $Q\approx10^{5}$ this produced the descending ladder
+$195\to179\to150$ digits, each rung a certified record in its own right. Under a
+fixed budget the ratchet dominates a single grand-slam campaign for a structural
+reason: it converts a lottery with one payout into a sequence of lotteries each
+of which pays, and each rung also re-calibrates $\Ehat$ before more compute is
+committed to the next.
+
+\section{Results, including the ones that failed}\label{sec:campaigns}
+
+Table~\ref{tab:records} listed the successes. Honesty requires the rest of the
+distribution, so Table~\ref{tab:campaigns} reports the campaigns that produced
+no record. In each case we give the survival probability---the model's own
+prediction of how likely it was to see nothing, given the compute actually
+spent---so the reader can judge whether the failure indicts the model or merely
+the dice.
+
+\begin{table}[h]
+\centering\small
+\caption{Campaigns that produced no record. ``Survival'' is $e^{-\lambda}$ where
+$\lambda$ is the cumulative expected number of hits over the compute actually
+spent; a value near $1$ means the campaign never had a real chance, a small
+value means it was unlucky.}\label{tab:campaigns}
+\begin{tabular}{lrrrl}
+\toprule
+Campaign & Target & Candidates & Survival & Outcome\\
+\midrule
+E10 (budget game, $Q=107\,720$) & $\g>107\,719$ & $2.4\cdot10^{8}$ & $0.17$ & unlucky, in-model\\
+Campaign 2 ($Q=99\,991$, 168d cover) & $T(10^5)$ ladder & $5.6\cdot10^{8}$ & $0.22$ & unlucky, in-model\\
+Campaign 3 ($Q=122\,000$) & $\g>119\,419$ & $4.0\cdot10^{8}$ & $0.93$ & stopped early\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of these were genuinely unlucky: a $0.17$ survival means the campaign had a
+$83\%$ chance of producing a record and did not. That is a one-in-six outcome,
+not a broken model, and in both cases the per-slice statistics tracked the
+prediction throughout---which is precisely the discipline that lets us say so
+with a straight face rather than reaching for an explanation. The third was
+stopped by hand after $2.3\%$ of its budget when we learned that a parallel
+effort was attacking the same target; its checkpoint is committed and it remains
+resumable.
+
+The methodological point is that a calibrated model turns a negative result into
+information. Without $E$, three failed campaigns would be an embarrassment or an
+excuse. With $E$, they are three consistent measurements of the same exponent,
+and they are part of the $1.2\times10^{9}$-candidate calibration that
+\S\ref{sec:calibration} rests on.
+
+\section{Certification}\label{sec:certification}
+
+Every record in this thesis is packaged so that its verification is independent
+of its discovery. The pipeline is deliberately dull:
+
+\begin{enumerate}
+\item \textbf{Reconstruct.} From the committed cover and $(\N_0,M,k)$,
+recompute $\N$ and check it against the stored decimal string.
+\item \textbf{Exclude.} For every prime $q<\g$, produce a witness: either the
+modulus $r$ with $r\mid\N-q$ (checked by division) or a strong base-$2$
+compositeness witness (checked by modular exponentiation). Both are
+unconditional; a prime cannot fail either test.
+\item \textbf{Represent.} Verify that $\g$ is prime and that $\N-\g$ is prime,
+the latter by an Atkin--Morain ECPP certificate~\cite{GoldwasserKilian,AtkinMorain}
+generated by PARI/GP~\cite{PARI}.
+\item \textbf{Re-verify independently.} A second checker, written against the
+record file rather than the search code, re-derives every witness and validates
+the certificate chain step by step---including the projective
+elliptic-curve arithmetic---without calling the library that produced it.
+\item \textbf{Hash.} A SHA-256 manifest fixes the artifacts.
+\end{enumerate}
+
+Step 4 is not ceremony. Re-verifying the two incumbent records at the start of
+this programme is what established the baseline the rest of the work is measured
+against, and the independent checker has since caught discrepancies in
+intermediate artifacts that the primary pipeline reported as clean. Verification
+is also far cheaper than discovery: it depends only on the final cover, the
+finite residual check, and the certificate---never on reproducing the heuristic
+path that found them.
