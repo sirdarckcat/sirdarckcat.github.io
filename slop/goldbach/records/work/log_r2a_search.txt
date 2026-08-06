@@ -1,0 +1,5 @@
+[supervisor] round 1 starting at t=330000000
+[     30s] tested=3000 rate=99.7/s t~330126793
+[     30s] tested=6000 rate=198.2/s t~330106030
+[     30s] tested=9000 rate=297.3/s t~330088421
+[     30s] tested=12000 rate=393.6/s t~330076392
