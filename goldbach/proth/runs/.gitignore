@@ -7,3 +7,5 @@ colab_cpu_tests.jsonl
 colab_cpu_run.log
 # gold-cpu sieve kills, relayed to the A100 host by the watcher (committed at milestones).
 q16m_surv_cpu.kills.json
+# Live harvests of the 16M CPU fleet logs (committed at milestones).
+q16045849/fleet/
