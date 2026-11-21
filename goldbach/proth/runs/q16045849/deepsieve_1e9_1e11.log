@@ -1,0 +1,111 @@
+deep sieve: 18562 survivors (t < 32766), primes in [1e+09, 1e+11), 10 threads
+deepsieve: n=101600 T=32766 primes in [1e+09, 1e+11), 3175+3175 limbs, 10 threads, 5901 segments
+  64/5901 segments, up to ~2.057e+09, 50815312 primes, 1153 pairs, 49s
+  128/5901 segments, up to ~3.147e+09, 100352626 primes, 1814 pairs, 95s
+  192/5901 segments, up to ~4.188e+09, 149106195 primes, 2229 pairs, 139s
+  256/5901 segments, up to ~5.312e+09, 197297896 primes, 2551 pairs, 185s
+  320/5901 segments, up to ~6.352e+09, 245052107 primes, 2813 pairs, 228s
+  384/5901 segments, up to ~7.442e+09, 292447702 primes, 3028 pairs, 273s
+  19:32:11 flush: +1704 kills (checked 3154 pairs), 16858 survivors left, bad pairs 0
+  448/5901 segments, up to ~8.516e+09, 339543107 primes, 3232 pairs, 319s
+  512/5901 segments, up to ~9.59e+09, 386378087 primes, 3391 pairs, 361s
+  576/5901 segments, up to ~1.066e+10, 432984933 primes, 3546 pairs, 406s
+  640/5901 segments, up to ~1.172e+10, 479389206 primes, 3670 pairs, 449s
+  704/5901 segments, up to ~1.283e+10, 525610377 primes, 3802 pairs, 495s
+  768/5901 segments, up to ~1.388e+10, 571665396 primes, 3919 pairs, 538s
+  832/5901 segments, up to ~1.496e+10, 617568513 primes, 4009 pairs, 582s
+  19:37:11 flush: +439 kills (checked 904 pairs), 16419 survivors left, bad pairs 0
+  896/5901 segments, up to ~1.603e+10, 663330456 primes, 4122 pairs, 625s
+  960/5901 segments, up to ~1.712e+10, 708961406 primes, 4227 pairs, 669s
+  1024/5901 segments, up to ~1.818e+10, 754470202 primes, 4310 pairs, 711s
+  1088/5901 segments, up to ~1.925e+10, 799867295 primes, 4393 pairs, 756s
+  1152/5901 segments, up to ~2.033e+10, 845155473 primes, 4491 pairs, 800s
+  1216/5901 segments, up to ~2.138e+10, 890346162 primes, 4556 pairs, 842s
+  1280/5901 segments, up to ~2.247e+10, 935440408 primes, 4637 pairs, 885s
+  19:42:11 flush: +290 kills (checked 595 pairs), 16129 survivors left, bad pairs 0
+  1344/5901 segments, up to ~2.355e+10, 980443703 primes, 4686 pairs, 929s
+  1408/5901 segments, up to ~2.464e+10, 1025359795 primes, 4756 pairs, 972s
+  1472/5901 segments, up to ~2.57e+10, 1070193623 primes, 4812 pairs, 1017s
+  1536/5901 segments, up to ~2.682e+10, 1114952981 primes, 4859 pairs, 1059s
+  1600/5901 segments, up to ~2.784e+10, 1159635637 primes, 4905 pairs, 1102s
+  1664/5901 segments, up to ~2.89e+10, 1204246355 primes, 4959 pairs, 1144s
+  1728/5901 segments, up to ~2.999e+10, 1248787021 primes, 4997 pairs, 1187s
+  19:47:11 flush: +184 kills (checked 358 pairs), 15945 survivors left, bad pairs 0
+  1792/5901 segments, up to ~3.108e+10, 1293264169 primes, 5048 pairs, 1231s
+  1856/5901 segments, up to ~3.214e+10, 1337678062 primes, 5091 pairs, 1273s
+  1920/5901 segments, up to ~3.321e+10, 1382031021 primes, 5137 pairs, 1317s
+  1984/5901 segments, up to ~3.427e+10, 1426319137 primes, 5181 pairs, 1359s
+  2048/5901 segments, up to ~3.533e+10, 1470556197 primes, 5224 pairs, 1400s
+  2112/5901 segments, up to ~3.645e+10, 1514738103 primes, 5260 pairs, 1445s
+  2176/5901 segments, up to ~3.747e+10, 1558863878 primes, 5299 pairs, 1486s
+  19:52:11 flush: +129 kills (checked 296 pairs), 15816 survivors left, bad pairs 0
+  2240/5901 segments, up to ~3.858e+10, 1602939078 primes, 5334 pairs, 1530s
+  2304/5901 segments, up to ~3.969e+10, 1646960271 primes, 5367 pairs, 1572s
+  2368/5901 segments, up to ~4.073e+10, 1690936260 primes, 5401 pairs, 1614s
+  2432/5901 segments, up to ~4.18e+10, 1734863427 primes, 5439 pairs, 1656s
+  2496/5901 segments, up to ~4.289e+10, 1778744479 primes, 5483 pairs, 1699s
+  2560/5901 segments, up to ~4.397e+10, 1822581595 primes, 5520 pairs, 1742s
+  2624/5901 segments, up to ~4.506e+10, 1866376602 primes, 5557 pairs, 1784s
+  19:57:12 flush: +134 kills (checked 262 pairs), 15682 survivors left, bad pairs 0
+  2688/5901 segments, up to ~4.611e+10, 1910126596 primes, 5589 pairs, 1826s
+  2752/5901 segments, up to ~4.717e+10, 1953833101 primes, 5625 pairs, 1868s
+  2816/5901 segments, up to ~4.823e+10, 1997500762 primes, 5657 pairs, 1909s
+  2880/5901 segments, up to ~4.932e+10, 2041130597 primes, 5680 pairs, 1953s
+  2944/5901 segments, up to ~5.039e+10, 2084720603 primes, 5707 pairs, 1995s
+  3008/5901 segments, up to ~5.147e+10, 2128274509 primes, 5736 pairs, 2037s
+  3072/5901 segments, up to ~5.254e+10, 2171792345 primes, 5766 pairs, 2078s
+  20:02:12 flush: +99 kills (checked 212 pairs), 15583 survivors left, bad pairs 0
+  3136/5901 segments, up to ~5.361e+10, 2215274877 primes, 5792 pairs, 2121s
+  3200/5901 segments, up to ~5.474e+10, 2258719192 primes, 5820 pairs, 2163s
+  3264/5901 segments, up to ~5.576e+10, 2302130617 primes, 5841 pairs, 2205s
+  3328/5901 segments, up to ~5.685e+10, 2345507831 primes, 5865 pairs, 2247s
+  3392/5901 segments, up to ~5.787e+10, 2388850233 primes, 5894 pairs, 2289s
+  3456/5901 segments, up to ~5.898e+10, 2432158117 primes, 5919 pairs, 2332s
+  3520/5901 segments, up to ~6.007e+10, 2475439711 primes, 5952 pairs, 2374s
+  20:07:12 flush: +84 kills (checked 191 pairs), 15499 survivors left, bad pairs 0
+  3584/5901 segments, up to ~6.111e+10, 2518687874 primes, 5977 pairs, 2416s
+  3648/5901 segments, up to ~6.22e+10, 2561903474 primes, 5997 pairs, 2459s
+  3712/5901 segments, up to ~6.329e+10, 2605090205 primes, 6013 pairs, 2500s
+  3776/5901 segments, up to ~6.435e+10, 2648249982 primes, 6031 pairs, 2541s
+  3840/5901 segments, up to ~6.541e+10, 2691378022 primes, 6049 pairs, 2583s
+  3904/5901 segments, up to ~6.652e+10, 2734477543 primes, 6075 pairs, 2624s
+  3968/5901 segments, up to ~6.757e+10, 2777549507 primes, 6103 pairs, 2667s
+  20:12:12 flush: +75 kills (checked 143 pairs), 15424 survivors left, bad pairs 0
+  4032/5901 segments, up to ~6.863e+10, 2820595632 primes, 6116 pairs, 2707s
+  4096/5901 segments, up to ~6.972e+10, 2863618383 primes, 6138 pairs, 2748s
+  4160/5901 segments, up to ~7.079e+10, 2906606885 primes, 6155 pairs, 2792s
+  4224/5901 segments, up to ~7.183e+10, 2949573338 primes, 6176 pairs, 2832s
+  4288/5901 segments, up to ~7.299e+10, 2992511821 primes, 6198 pairs, 2874s
+  4352/5901 segments, up to ~7.401e+10, 3035424493 primes, 6218 pairs, 2917s
+  4416/5901 segments, up to ~7.509e+10, 3078316903 primes, 6232 pairs, 2958s
+  4480/5901 segments, up to ~7.615e+10, 3121183156 primes, 6255 pairs, 2998s
+  20:17:12 flush: +66 kills (checked 140 pairs), 15358 survivors left, bad pairs 0
+  4544/5901 segments, up to ~7.722e+10, 3164029238 primes, 6272 pairs, 3040s
+  4608/5901 segments, up to ~7.831e+10, 3206841659 primes, 6293 pairs, 3082s
+  4672/5901 segments, up to ~7.937e+10, 3249638970 primes, 6310 pairs, 3123s
+  4736/5901 segments, up to ~8.046e+10, 3292409259 primes, 6342 pairs, 3166s
+  4800/5901 segments, up to ~8.153e+10, 3335156870 primes, 6356 pairs, 3207s
+  4864/5901 segments, up to ~8.26e+10, 3377883428 primes, 6375 pairs, 3248s
+  4928/5901 segments, up to ~8.369e+10, 3420589296 primes, 6390 pairs, 3290s
+  20:22:12 flush: +62 kills (checked 141 pairs), 15296 survivors left, bad pairs 0
+  4992/5901 segments, up to ~8.475e+10, 3463270271 primes, 6403 pairs, 3331s
+  5056/5901 segments, up to ~8.583e+10, 3505930634 primes, 6415 pairs, 3372s
+  5120/5901 segments, up to ~8.687e+10, 3548568032 primes, 6430 pairs, 3413s
+  5184/5901 segments, up to ~8.797e+10, 3591186498 primes, 6444 pairs, 3454s
+  5248/5901 segments, up to ~8.903e+10, 3633786287 primes, 6457 pairs, 3496s
+  5312/5901 segments, up to ~9.012e+10, 3676361625 primes, 6469 pairs, 3538s
+  5376/5901 segments, up to ~9.119e+10, 3718919888 primes, 6481 pairs, 3578s
+  20:27:12 flush: +38 kills (checked 90 pairs), 15258 survivors left, bad pairs 0
+  5440/5901 segments, up to ~9.223e+10, 3761459390 primes, 6491 pairs, 3620s
+  5504/5901 segments, up to ~9.331e+10, 3803976702 primes, 6506 pairs, 3662s
+  5568/5901 segments, up to ~9.438e+10, 3846478286 primes, 6519 pairs, 3703s
+  5632/5901 segments, up to ~9.549e+10, 3888955701 primes, 6534 pairs, 3744s
+  5696/5901 segments, up to ~9.663e+10, 3931417019 primes, 6549 pairs, 3785s
+  5760/5901 segments, up to ~9.76e+10, 3973858120 primes, 6554 pairs, 3826s
+  5824/5901 segments, up to ~9.871e+10, 4016284150 primes, 6571 pairs, 3867s
+  20:32:12 flush: +42 kills (checked 100 pairs), 15216 survivors left, bad pairs 0
+  5888/5901 segments, up to ~9.978e+10, 4058687448 primes, 6586 pairs, 3909s
+  5901/5901 segments, up to ~1e+11, 4067207279 primes, 6588 pairs, 3915s
+done: 4067207279 primes, 6588 pairs, 3915s
+  20:32:28 final: +1 kills (checked 2 pairs), 15215 survivors left, bad pairs 0
+DONE: 18562 -> 15215 survivors after primes < 1e+11
