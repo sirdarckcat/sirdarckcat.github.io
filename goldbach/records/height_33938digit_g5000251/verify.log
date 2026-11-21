@@ -1,0 +1,4 @@
+[1] N has 33938 digits and lies in all 5342 classes (prime moduli up to 167107)
+[2] all 348526 primes q < g = 5000251 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 5^((P-1)/2) = -1 (mod P), F = 2^37584 (37584/112738 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [78.1s, gmpy2]
+ALL CHECKS PASSED: g(N) = 5000251 for this 33938-digit N

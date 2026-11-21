@@ -1,0 +1,14 @@
+t=5744: CPU proof in 81s: BLS (F = 2^37584 > P^(1/3), c1^2 - 4 c2 not a square)
+[1] N has 33938 digits and lies in all 5342 classes (prime moduli up to 167107)
+[2] all 348526 primes q < g = 5000251 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 5^((P-1)/2) = -1 (mod P), F = 2^37584 (37584/112738 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [78.1s, gmpy2]
+ALL CHECKS PASSED: g(N) = 5000251 for this 33938-digit N
+ 
+PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid
+PARI isprime(P) = 1
+primes q < g scanned: 348526   (pi(g-1) = 348526)
+complements N - q with no prime factor <= 167107: 0
+CROSSCHECK PASSED: g(N) = 5000251
+
+packaged /home/user/sirdarckcat.github.io/goldbach/proth/../records/height_33938digit_g5000251 in 2953s
+record: /home/user/sirdarckcat.github.io/goldbach/records/height_33938digit_g5000251
