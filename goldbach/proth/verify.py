@@ -31,11 +31,17 @@ import sys
 import time
 from math import isqrt
 
+if hasattr(sys, "set_int_max_str_digits"):      # N has > 4300 decimal digits
+    sys.set_int_max_str_digits(0)
+
 try:
+    import os
+    if os.environ.get("NO_GMPY2"):                  # force the pure-stdlib path
+        raise ImportError
     import gmpy2
     _powmod = lambda b, e, m: int(gmpy2.powmod(b, e, m))
     _backend = "gmpy2"
-except Exception:                                   # pragma: no cover
+except Exception:
     _powmod = pow
     _backend = "python int"
 

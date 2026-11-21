@@ -46,6 +46,9 @@ def main():
     os.makedirs(out, exist_ok=True)
     rec = json.load(open(src))
     shutil.copy(src, f"{out}/record.json")
+    tests = os.path.join(os.path.dirname(os.path.abspath(src)), "tests.jsonl")
+    if os.path.exists(tests):                      # search telemetry (one line per PRP test)
+        shutil.copy(tests, f"{out}/search_tests.jsonl")
     open(f"{out}/N.txt", "w").write(rec["N"] + "\n")
     rmax = max(r for r, _ in rec["cover"])
     open(f"{out}/crosscheck.gp", "w").write(GP % {"g": rec["g"], "rmax": rmax})
@@ -59,8 +62,10 @@ def main():
     if shutil.which("gp"):
         r = subprocess.run(["gp", "-q", "crosscheck.gp"], cwd=out,
                            capture_output=True, text=True, stdin=subprocess.DEVNULL)
-        open(f"{out}/crosscheck.log", "w").write(r.stdout + r.stderr)
-        print(r.stdout, r.stderr)
+        log = "".join(l for l in (r.stdout + r.stderr).splitlines(True)
+                      if "new stack size" not in l)
+        open(f"{out}/crosscheck.log", "w").write(log)
+        print(log)
         assert "CROSSCHECK PASSED" in r.stdout, "PARI cross-check failed"
     sums = []
     for f in sorted(os.listdir(out)):

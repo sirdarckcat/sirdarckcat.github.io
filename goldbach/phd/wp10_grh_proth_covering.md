@@ -239,3 +239,75 @@ machine-proof-carrying records in the genre. Status: see
 4. **KP/CHG variants**: Konyagin–Pomerance (F ≥ P^{3/10}) or
    Coppersmith–Howgrave-Graham (F ≥ P^{1/4+ε}) shrink N by 5–11%
    (16–32% compute) at the price of a more elaborate certificate.
+
+## Appendix — proposed patch for `slop/goldbach/paper.tex` (not applied)
+
+The paper's Theorem 9 and open question 3 are superseded by Theorem 1
+above. The paper is left untouched (its PDF was built elsewhere); this is
+the text I would substitute for Theorem 9 and its lead-in, plus two
+bibliography items. The sandwich display in §6 then reads
+`\log\N\,\log_2\N \ll \max \g \lesssim (\log\N)^2\log_2\N`, and open
+question 3 becomes: *is $\max_{\N'\le\N}\g(\N')/(\log\N\log_2\N)$ unbounded?*
+
+```latex
+\begin{theorem}[Covering the primes directly]\label{thm:primecover}
+Let $C_2=\prod_{p>2}\bigl(1-\tfrac1{(p-1)^2}\bigr)$ and
+$\kappa=e^{\gamma}/(2C_2)=1.3490\ldots$. For every $\varepsilon>0$ and all
+sufficiently large $x$ there are residues $a_r$, one for each odd prime
+$r\le x$, such that every odd prime $q<(\kappa-\varepsilon)\,x\log x$ has
+$q\equiv a_r\pmod r$ for some $r$. Consequently:
+\begin{enumerate}
+\item there are even $\N$ with $\log\N\le\theta(x)+\log2$ such that no prime
+below $(\kappa-\varepsilon)\log\N\,\log_2\N$ is a Goldbach summand of $\N$;
+\item there are infinitely many even $\N$ with an explicit Goldbach
+representation and
+$\g(\N)\ge(\kappa/L-\varepsilon)\log\N\,\log_2\N$, where $L$ is an
+admissible Linnik exponent for the smooth moduli $\prod_{r\le x}r$:
+$L=12/5$ unconditionally~\cite{Chang}, $L=2$ under GRH~\cite{LLS}.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Treat the odd primes $r\le x$ in increasing order, each time choosing for
+$a_r$ a class containing the most surviving targets. If $t$ targets survive,
+at most one of them equals $r$ and the remaining $t-1$ lie in the $r-1$
+non-zero classes, so some class contains at least $(t-1)/(r-1)$ of them and
+the number of survivors drops to at most $t\,\frac{r-2}{r-1}+\frac1{r-1}$.
+Since $\frac{r-2}{r-1}=\bigl(1-\frac1{(r-1)^2}\bigr)\bigl(1-\frac1r\bigr)$,
+Mertens' theorem gives, after all odd $r\le w$,
+\[
+t_w\ \le\ \pi(Q)\prod_{3\le r\le w}\frac{r-2}{r-1}+O(\log_2 w)
+\ =\ \bigl(2C_2e^{-\gamma}+o(1)\bigr)\frac{\pi(Q)}{\log w}.
+\]
+Each prime in $(w,x]$ removes at least one further survivor. With
+$w=x/\log x$ there are $(1+o(1))x/\log x$ of them and $\log w\sim\log x$, so
+all targets are covered once $\pi(Q)\le(\kappa-\varepsilon)x$, i.e.\ for
+$Q=(\kappa-\varepsilon)x\log x$. Part~(1) is
+Proposition~\ref{prop:cover} with $\N\in(M,2M]$, $M=2\prod_{3\le r\le x}r$;
+part~(2) is Theorem~\ref{thm:coverdirichlet} with $s$, $t$ the least primes
+in their classes modulo $M$.
+\end{proof}
+
+\begin{remark}
+(i) The transfer from large prime gaps~\cite{FGKMT} yields only
+$\log\N\,\log_2\N\,\log_4\N/\log_3\N$: in the Erd\H{o}s--Rankin scheme the
+primes in the middle range are spent on smooth composites, so only primes
+up to $x^{o(1)}$ thin the survivors, whereas with prime targets every prime
+up to $x/\log x$ does. (ii) Counting pairs $(p,\N)$ gives
+$\max_{\N\le X}\g(\N)\ge(\tfrac12+o(1))\log X\log_2X$ with the convention
+$\g=\infty$ when no representation exists~\cite{Shi}; under that convention
+part~(1) improves $\tfrac12$ to $\kappa$. (iii) In the other direction the
+linear sieve with the Bombieri--Vinogradov theorem shows that residues
+modulo the primes $r\le x$ can never cover all primes below $x^{4+\varepsilon}$
+($x^{2+\varepsilon}$ on the Elliott--Halberstam conjecture). The greedy
+coverings of Table~\ref{tab:results} reach $Q\approx0.72\,x(\log x)^2$.
+\end{remark}
+
+\bibitem{Chang} M.-C.~Chang, \emph{Short character sums for composite
+moduli}, J. Anal. Math. \textbf{123} (2014), 1--33.
+\bibitem{LLS} Y.~Lamzouri, X.~Li, K.~Soundararajan, \emph{Conditional bounds
+for the least quadratic non-residue and related problems}, Math. Comp.
+\textbf{84} (2015), 2391--2412.
+\bibitem{Shi} W.~Shi, \emph{Matrix $B$: exact prime counting, algebraic row
+correspondences, and semiprime distributions}, arXiv:2605.21529v6 (2026),
+Theorem~6.22.
+```
