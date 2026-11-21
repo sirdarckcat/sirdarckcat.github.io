@@ -61,6 +61,26 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   to the GPU's ~570 tests/h. A third pgrep self-match (`os.popen` →
   `sh -c`) would have blocked the joins; it was caught in the first status
   cycle and fixed with the `[.]` pattern trick.
+- **Third incident (the replacement A100 vanished).** Between 21:33Z and
+  21:47Z the A100 runtime dropped out of Colab's assignment list, with no
+  error or notice. The CLI then pruned it as stale. Its loss was costly
+  because the A100 watcher had hung since ~20:36Z on a `colab exec` to
+  gold-cpu that never returned; the CLI's own `--timeout` did not fire.
+  So the 10⁷ log had last been harvested at 2,048 tests. About three
+  batches (~1,500 tests) and a partial fourth were lost, ~1.4 h of GPU
+  time with the restart.
+  - Correctness is unaffected: the search re-runs those survivors in the
+    same order.
+  - A new A100 passed the v3 known-answer check and resumed at 21:56Z.
+  - Fixes: every Colab call now has a hard `timeout`; each watcher loop
+    writes a heartbeat that the alarm checks; the 16M fleet's master list
+    and kill lists are kept locally, not on the GPU host.
+  - A seventh runtime was then refused with six active, so the six slots
+    are the GPU and five CPU runtimes. The orphan is gone.
+- **16M sieve to 3·10¹¹.** gold-cpu's [10¹¹, 3·10¹¹) pass (7.7·10⁹ primes,
+  2.5 h on 8 threads) found 767 kills, all re-verified locally (p prime,
+  p | P_t). 636 are new against the 10¹¹ list, which goes 15,215 → 14,579.
+  gold-cpu then joins the fleet as slice 5.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.
