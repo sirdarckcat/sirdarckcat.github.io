@@ -11,6 +11,24 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-11-21 — WP10: a claimed RH/GRH proof (alpo.ge/remark.pdf) assessed: no lever moves
+- User asked whether the announcement inspires frontier progress. The
+  analysis assumes the claim is true. The Lean archive was not checked,
+  and the verdict does not depend on it. Memo:
+  `wp10_grh_remark.md`. Numbers: `wp10/grh_reach.py` (6 s).
+- RH/GRH are √x-quality statements and every bottleneck here is
+  x^{o(1)}-scale. The RH prime-window is 10^72.4 too coarse for the
+  150-digit desert. GRH on the scanned progression is 10^65.6 short and
+  bites only at N ≈ 280 digits. The sieve level GRH gives is the one
+  Bombieri–Vinogradov already gives, and there the Door-1 floors are
+  vacuous (−0.46·π(Q)). H1 and H2 are untouched. Miller-under-GRH
+  certification costs 5.8 core-days at 2,480 digits against ECPP's ~2 h,
+  with no certificate.
+- Paper constants only: the Linnik step L ≤ 5 becomes 2 + o(1). SoK §7.3's
+  GRH sub-angle is closed. The one transferable idea is methodological:
+  proof-carrying records (SoK §7.8). The board is unchanged; Doors 1 and 2
+  remain the only levers.
+
 ### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
 - User directive: work Door 3 first (AlphaEvolve access offered for the
   generative tier). Delivered so far, all in `phd/wp9/`:

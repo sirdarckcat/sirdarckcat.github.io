@@ -298,6 +298,14 @@ touched — each changes the *problem shape*, not the constants.
    how many residue classes a small N can effectively occupy would turn
    THE WALL from forecast into mathematics, and would be the first
    *impossibility* result in this problem family.
+   *Status 2026-11-21 (`phd/wp10_grh_remark.md`): both sub-routes are
+   measured dead at record scale, even granting a proof of GRH. GRH's
+   √x error term exceeds the main term on the record progressions by
+   10^65.6 (150 d) and 10^95.9 (200 d). At GRH's sieve level, which
+   Bombieri–Vinogradov already gives, every linear-sieve floor is
+   vacuous. Only level-Q input, beyond Elliott–Halberstam, certifies even
+   ~140–280 residuals, against the ~830–870 achieved. A theorem here
+   needs Hardy–Littlewood-strength input, i.e. H1 itself.*
 4. **Optimality certificates for covers.** We do not know how far
    k = 741 is from optimal — the annealer's plateau is evidence of
    nothing. The set-cover LP has a dual; solving the relaxation and
