@@ -172,6 +172,15 @@ rigorous shadow of the construction-versus-existence gap measured in
 RESULTS.md and FRONTIER.md. Note GRH does not improve Theorem 2:
 Bombieri–Vinogradov already is GRH on average.
 
+*Caveat (added after the cross-review, `proth/CROSS_REVIEW.md`).* Theorem 2
+is asymptotic and is **vacuous at record parameters**: with moduli up to
+x = 613–79,139 and Q ≤ 2·10⁶, x⁴ is far above Q. The independent
+session on branch `ccr-8ffe9d7a-4ni11u` ran the same sieve at finite size
+(`phd/wp10/grh_reach.py` §B there) and finds the floor negative at level
+Q^{1/2} (−0.46·π(Q)) and positive only at level Q, beyond
+Elliott–Halberstam. Both statements are the same fact: the linear sieve
+constrains covers only when every modulus is below Q^{1/4}.
+
 **Genuine Goldbach numbers.** Theorem 1 controls small summands; to make N a
 sum of two primes take s an uncovered prime and t the least prime
 ≡ N − s (mod x#). Then g(N) ≥ C(x) and ln N ≤ L·θ(x)(1+o(1)), where L is a
@@ -186,6 +195,13 @@ Linnik exponent for the modulus x#:
 | Goldbach's conjecture for N itself | 1 | 1.349 |
 
 ## 3. The GRH ledger — where it enters, item by item
+
+(An independent assessment on branch `ccr-8ffe9d7a-4ni11u`,
+`phd/wp10_grh_remark.md`, reaches the same verdict and quantifies it at
+record scale: the RH prime-window is 10^72.4 too coarse for the
+150-digit desert and GRH's error term is 10^65.6 above the main term on
+the scanned progression. The table below is the complementary view —
+which constants and exponents move.)
 
 | # | place | without GRH | with GRH | verdict |
 |---|---|---|---|---|

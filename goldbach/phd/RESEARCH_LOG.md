@@ -11,6 +11,28 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
+### 2026-11-21 — cross-review against branch `ccr-8ffe9d7a-4ni11u`
+- A second session did the same exercise separately and converged on the
+  same construction (BLS-form complement, complete cover, n = 12,475) and
+  the same g = 1,200,109, for a different N. Full review:
+  `proth/CROSS_REVIEW.md`.
+- **Cross-verification, all PASS**: their stdlib verifier on both records
+  here (via `proth/interop.py`), this branch's verifier and PARI's N−1
+  proof on theirs. Three records, two independently written checkers,
+  plus PARI.
+- **The two unlucky waits were one event.** Their search ran over exactly
+  the odd-t half of this branch's progression (re-sieving reproduces their
+  3,472 tests); 1,341 integers were tested by both. Jointly: 2 primes
+  where 6.42 were expected, p = 0.046 — not two independent 1–2% tails.
+  Pooled over all probes and searches: 112 primes vs 114.7 expected.
+- **Adopted from them**: verifier mutation test (11/11 rejected).
+  **Corrected here**: Theorem 2 of WP10 is vacuous at record scale (their
+  finite-size sieve computation shows it); caveat added.
+- **For them**: the board is at 2,000,269; the paper's Theorem 14 is
+  superseded, not merely re-constanted; lazy covers and a 10⁹ sieve are
+  ~35% less search; PARI gives a second proof where they have BPSW.
+- Trial merge: conflicts only in the SoK and this log. Not merged.
+
 ### 2026-11-21 — WP10: review "with the GRH announcement for inspiration"
 - User directive: look over the Goldbach-gaps work for improvements, reading
   `alpo.ge/remark.pdf` for inspiration. The PDF is not about Goldbach: it

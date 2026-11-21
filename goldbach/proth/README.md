@@ -79,6 +79,22 @@ validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
 scans every prime q < g checking that N − q shares a factor with the
 primorial of the largest cover modulus.
 
+## Independent replication
+
+A second session, working separately on branch `ccr-8ffe9d7a-4ni11u`,
+arrived at the same construction (same n, same complete cover) and
+certified g = 1,200,109 for a *different* 11,263-digit N. The two branches
+have been checked against each other (`CROSS_REVIEW.md`):
+
+- every record passes **both** independently written stdlib verifiers
+  (`interop.py` converts the formats) and PARI's own N−1 proof;
+- `tamper_test.py` (their practice, adopted here): 11/11 tampered
+  records are rejected by `verify.py`, each for the expected reason;
+- the two long waits at 1.2·10⁶ were the same stretch of one
+  progression — their candidates are exactly the odd-t half of the
+  progression searched here, 1,341 integers were tested twice, and
+  jointly it is one ~5% event (`overlap_check.py`).
+
 ## Why full covers win here (and lose everywhere else)
 
 REGISTRY.md row A2 marks complete covers "dominated": for Q = 10⁵ a full
@@ -181,5 +197,8 @@ this is a few-hundred-line development plus a data file generated from
 - `verify.py` — standalone verifier (stdlib only)
 - `package.py` — runs the verifier and the PARI cross-check, writes checksums
 - `pigeonhole_table.py` — rigorous worst-case coverage vs greedy (WP10 §2)
+- `tamper_test.py` — mutation test for `verify.py`
+- `interop.py`, `overlap_check.py`, `CROSS_REVIEW.md` — cross-check against
+  the independent pipeline on branch `ccr-8ffe9d7a-4ni11u`
 - `records/` — one directory per record: `record.json`, `N.txt`,
   `crosscheck.gp`, logs, `SHA256SUMS`

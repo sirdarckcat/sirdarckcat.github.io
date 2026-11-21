@@ -67,11 +67,12 @@ def verify(path, verbose=True):
     seen = set()
     for r, a in cover:
         assert 2 <= r < g and not comp[r], f"modulus {r} not a prime below g"
-        assert r not in seen and 0 <= a < r
+        assert r not in seen, f"modulus {r} repeated"
+        assert 0 <= a < r, f"residue {a} out of range mod {r}"
         seen.add(r)
         assert N % r == a, f"N is not {a} mod {r}"
         rmax = max(rmax, r)
-    assert (2, 0) in cover and N % 2 == 0
+    assert (2, 0) in cover and N % 2 == 0, "parity class (2, 0) missing or N odd"
     assert N - g > rmax, "divisors would not be proper"
     say(f"[1] N has {rec['digits']} digits and lies in all {len(cover)} classes "
         f"(prime moduli up to {rmax})")
