@@ -34,7 +34,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   proper packing of the sparse tail is the new Door-1-style problem.
 - **Theory** (WP10 §2): prime-covering function C(x) ≥ (e^γ/2C₂ − o(1))·x·ln x
   = 1.349·x·ln x by pigeonhole — stronger than the paper's FGKMT-transfer
-  Theorem 9 and than the counting constant ½ of arXiv:2605.21529 — and
+  Theorem 14 and than the counting constant ½ of arXiv:2605.21529 — and
   C(x) ≤ x^{4+ε} by the linear sieve + Bombieri–Vinogradov, the first
   impossibility statement in the family. Greedy data: 0.72·x·ln²x.
 - **Not done**: a Lean proof of the record. Toolchain installation was

@@ -53,29 +53,32 @@ m ≡ m₀ (mod M_c), M_c = ∏r, and the search runs over m = m₀ + t·M_c. Wi
 (Brillhart–Lehmer–Selfridge N−1 test; with 2ⁿ > P^{1/2} it is literally
 Proth's theorem). No cover freedom is spent: all residues stay greedy-optimal.
 
-Consequences, all measured in `goldbach/proth/` (see its README):
+Consequences (records and timings in `goldbach/proth/README.md`; the first
+certified record is g = 1,200,109 at 11,263 digits):
 
 - **ECPP disappears from the pipeline.** The 2,480-digit record needed a
   245-step ECPP certificate (~1.7 h to build, ~2 h to re-verify, +2 h
-  APR-CL). The new certificates are one `powmod`.
+  APR-CL). The new certificate is one `powmod` (5.7 s with GMP, 102 s
+  with plain Python integers).
 - **Full covers become the optimal design.** With certification free the
   only cost is PRP tests, and a cover with *no residual primes at all*
   needs just one prime in a progression (~ln P/(e^γ ln B) tests) instead of
   a lottery of e^E candidates. REGISTRY.md row A2 ("complete cover —
-  dominated") flips: measured against the megagap-style partial cover at
-  the same target, the full cover is ~4–8× cheaper once the complement is
-  BLS-form, and leaving 200–500 residuals to luck is worth < 10%.
+  dominated") flips: costed with the measured modexp timings, at
+  g ≈ 1.2·10⁶ the full cover is ~4× cheaper than a megagap-style partial
+  cover with a BLS-form complement, and leaving 200–500 residuals to luck
+  would save < 10%.
 - **The proof of a record is now tiny and has no probabilistic residue.**
   Every prime q < g has an explicit divisor r | N − q from the cover; the
   partition is one N−1 test. The stdlib verifier is ~100 lines.
 - **The ladder is PRP-bound, not ECPP-bound** — see the table in
-  `goldbach/proth/README.md`: g > 10⁷ is a few thousand 67k-digit PRP
-  tests; the "absolute gap" milestone g > 16,045,848 (longer than the
-  largest known prime gap of any kind) is ~6,000 tests at 100k digits.
-  Both were classed as "ECPP far beyond practice".
+  `goldbach/proth/README.md`: g > 10⁷ is a few thousand PRP tests at
+  ~61,000 digits; the "absolute gap" milestone g > 16,045,848 (longer than
+  the largest known prime gap of any kind) is ~6,000 tests at ~91,000
+  digits. Both were classed as "ECPP far beyond practice".
 
 What it costs: digits. N is ≈ 1.5× the full-cover modulus, which itself is
-~2.7× a megagap-style partial modulus. This is the height game, where
+~2.5–2.8× a megagap-style partial modulus. This is the height game, where
 digits are free; the bounded games T(100,000) and R(10²⁰⁰) are untouched.
 
 ## 2. Result B — the prime-covering function: a new constant, and a ceiling [P]
@@ -83,7 +86,7 @@ digits are free; the bounded games T(100,000) and R(10²⁰⁰) are untouched.
 Let **C(x)** be the largest Q such that residues a_r (odd primes r ≤ x) can
 be chosen with every odd prime q < Q in some class q ≡ a_r (mod r). Any even
 N in all those classes with N > Q + x has no Goldbach summand below C(x)
-(Prop. 6 of the paper), and such N exist in (x#, 2·x#], so ln N ≤ θ(x)+ln 2.
+(Proposition 10 of the paper), and such N exist in (x#, 2·x#], so ln N ≤ θ(x)+ln 2.
 C(x) is the Jacobsthal problem with the targets restricted to primes.
 
 **Theorem 1 (lower bound).** C(x) ≥ (e^γ/(2C₂) − o(1))·x·ln x, where
@@ -106,13 +109,15 @@ everything as soon as (2C₂e^{−γ}+o(1))·π(Q)/ln x ≤ (1+o(1))·x/ln x, i.
 So there are explicit even N with **no prime below
 (1.349 − o(1))·ln N·ln ln N** as a Goldbach summand. Three comparisons:
 
-- *The paper's Theorem 9* (`slop/goldbach/paper.tex`) transfers the
+- *The paper's Theorem 14* (`slop/goldbach/paper.tex`) transfers the
   Ford–Green–Konyagin–Maynard–Tao prime-gap bound and gets
   ln N·ln₂N·ln₄N/ln₃N — **weaker** than Theorem 1 by a factor ln₃N/ln₄N → ∞,
   from far heavier machinery. Its open question 3 ("Sparser than gaps: does
   the restriction to prime offsets let g exceed the maximal-prime-gap
-  rate?") is hereby answered at the level of *provable* bounds: yes. The
-  reason is structural: in the Erdős–Rankin scheme the middle primes are
+  rate?") has the answer yes at the level of *provable* bounds (the
+  counting bound in the next item already shows it; Theorem 1 shows it
+  constructively). Whether g exceeds the *true* maximal gap is untouched.
+  The reason is structural: in the Erdős–Rankin scheme the middle primes are
   spent killing smooth composites, so only primes ≤ z = x^{o(1)} thin the
   survivors (factor 1/ln z); with prime targets there are no composites to
   kill and *every* prime up to x/ln x thins (factor 1/ln x).
@@ -183,9 +188,9 @@ Linnik exponent for the modulus x#:
 
 | # | place | without GRH | with GRH | verdict |
 |---|---|---|---|---|
-| 1 | realisation of a cover as a Goldbach number (paper Thm 7) | ln N ≤ 2.4·ln M (smooth-modulus Linnik) | ln N ≤ 2·ln M + 2 ln ln M, explicit for all M > 3 | constant 0.56 → 0.67 |
+| 1 | realisation of a cover as a Goldbach number (paper Thm 12) | ln N ≤ 2.4·ln M (smooth-modulus Linnik) | ln N ≤ 2·ln M + 2 ln ln M, explicit for all M > 3 | constant 0.56 → 0.67 |
 | 2 | *existence* of an N−1-certifiable complement in the cover progression (§1) | needs a Linnik exponent < 3 for D = 2ⁿM_c; Chang's 12/5 applies (D is smooth) ⇒ N < M_c^{12+o(1)} | P ≤ (φ(D) ln D)² < 2^{3n} once 2ⁿ ≥ 16·M_c²·ln²M_c ⇒ N < M_c^{6+o(1)} | exponent 12 → 6; in practice 1.5 [V] |
-| 3 | primality proof of N − g by Miller's test (deterministic on GRH; witnesses below 2 ln²P, Bach) | — | π(2 ln²P) ≈ 6.7·10⁷ strong tests at 11,264 digits ≈ 12 core-years here | **not competitive**: BLS is 1 test (5.8 s), ECPP ~1 core-month |
+| 3 | primality proof of N − g by Miller's test (deterministic on GRH; witnesses below 2 ln²P, Bach) | — | π(2 ln²P) ≈ 6.7·10⁷ strong tests at 11,263 digits ≈ 12 core-years here | **not competitive**: BLS is 1 test (5.7 s); ECPP would be of the order of a core-month (extrapolated) |
 | 4 | ceiling Theorem 2 | level ½ (Bombieri–Vinogradov) | level ½ | no change (needs EH) |
 | 5 | density model E = \|U\|·boost/ln N (WP9's H1) | heuristic | still heuristic: GRH gives π(X; M, a) only for M < X^{1/2−ε}; the records live at M ≈ X^{0.95}, and joint primality of the residual complements is a k-tuple statement | no change |
 | 6 | Goldbach itself / "g(N) exists" | open | still open; exceptional set X^{1/2+ε} (Hardy–Littlewood) | realisation constant ½, same as #1 |
@@ -225,26 +230,29 @@ machine-proof-carrying records in the genre. Status: see
 ## 5. Ranked next steps
 
 1. **Run the ladder** (PRP-bound, embarrassingly parallel, resumable):
-   g > 3·10⁶ (≈4 h on this 4-core box), 5·10⁶ (≈15 h), 10⁷ (≈4.5 days),
-   16,045,891 (≈17 days) — all with GMP; a gwnum-class PRP engine or the
+   g > 3·10⁶ (≈2.7 h on this 4-core box), 5·10⁶ (≈11 h), 10⁷ (≈3–4 days),
+   16,045,848 (≈2 weeks) — all with GMP; a gwnum-class PRP engine or the
    repo's GPU fleet cuts each by 10× or more.
-2. **Shrink full covers.** Greedy sits at 0.72·x·ln²x; its tail is
-   wasteful (at Q = 1.2M the last 300 targets cost 138 one-kill moduli).
-   This is Door 1 in a sparse regime where exact packing (rainbow matching
-   of pairs/triples) is tractable; each 10% of digits is ~30–35% of
-   compute.
+2. **Shrink full covers.** The paper's greedy sits at 0.72·x·ln²x and its
+   tail is wasteful (at Q = 1.2M the last 300 targets cost 138 one-kill
+   moduli). A weighted lazy greedy over a 3× prime pool already recovers
+   ~10% (6,787 vs 7,503 digits; `proth/desert.py`). What is left is
+   Door 1 in a sparse regime, where the objects are pairs, triples and
+   quadruples of targets sharing a class and the question is a rainbow
+   hypergraph matching — far more tractable than the dense 88-modulus
+   instance of WP9. Each 10% of digits is ~30–35% of compute.
 3. **Theorem with f(x) → ∞** in C(x) ≥ f(x)·x·ln x (FGKMT step for prime
    targets) — a real paper-level result; and patch `paper.tex`
-   (Theorem 9, the sandwich display, open question 3) with Theorem 1.
+   (Theorem 14, the sandwich display, open question 3) with Theorem 1.
 4. **KP/CHG variants**: Konyagin–Pomerance (F ≥ P^{3/10}) or
    Coppersmith–Howgrave-Graham (F ≥ P^{1/4+ε}) shrink N by 5–11%
    (16–32% compute) at the price of a more elaborate certificate.
 
 ## Appendix — proposed patch for `slop/goldbach/paper.tex` (not applied)
 
-The paper's Theorem 9 and open question 3 are superseded by Theorem 1
+The paper's Theorem 14 and open question 3 are superseded by Theorem 1
 above. The paper is left untouched (its PDF was built elsewhere); this is
-the text I would substitute for Theorem 9 and its lead-in, plus two
+the text I would substitute for Theorem 14 and its lead-in, plus three
 bibliography items. The sandwich display in §6 then reads
 `\log\N\,\log_2\N \ll \max \g \lesssim (\log\N)^2\log_2\N`, and open
 question 3 becomes: *is $\max_{\N'\le\N}\g(\N')/(\log\N\log_2\N)$ unbounded?*

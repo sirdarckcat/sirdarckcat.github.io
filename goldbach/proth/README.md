@@ -64,8 +64,11 @@ g = 1,157,341 (2,480 digits), each resting on a ~250-step ECPP certificate
 Verify any record (Python standard library only; gmpy2 is used for the
 single modular exponentiation if present):
 
-    python3 verify.py records/<dir>/record.json
-    cd records/<dir> && gp -q crosscheck.gp      # independent PARI/GP path
+    python3 verify.py records/<dir>/record.json             # 6 s with gmpy2
+    NO_GMPY2=1 python3 verify.py records/<dir>/record.json  # 102 s, plain Python ints
+    cd records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
+
+(timings for the 11,263-digit record on one core).
 
 `crosscheck.gp` does not use the cover classes: it lets PARI build and
 validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
@@ -105,12 +108,20 @@ greedy); test counts are expectations at sieve depth 10⁹.
 | 10,000,000 | ≈ 40,600 | ≈ 61,000 | ≈ 3,800 | ≈ 3–4 days |
 | 16,045,848 | ≈ 60,800 | ≈ 91,000 | ≈ 5,700 | ≈ 12–14 days |
 
-Everything above 2·10⁶ was classed "ECPP far beyond practice" in SoK §6.
-The 16,045,848 line is the largest known prime gap of any kind (endpoints
-are 385,713-digit *probable* primes): a certified Goldbach desert longer
-than that is ~6,000 PRP tests at 100k digits — a week or two here, hours on
-a gwnum-class PRP engine or the repo's GPU fleet. The search is
-embarrassingly parallel and resumable (`tests.jsonl` is the checkpoint).
+The last two rows are estimates (lazy covers taken ~9% below the exact
+fixed-order sizes, 44,599 and 66,816 digits). SoK §6 put the ECPP-bound
+ceiling of this game at g ≈ 2.5·10⁶ and classed g > 10⁷ as "ECPP far
+beyond practice". The 16,045,848 line is the largest known prime gap of
+any kind (its endpoints are 385,713-digit *probable* primes): a certified
+Goldbach desert longer than that is ≈ 5,700 PRP tests at ≈ 91,000 digits —
+about two weeks here, hours on a gwnum-class PRP engine or the repo's GPU
+fleet. The search is embarrassingly parallel and resumable
+(`tests.jsonl` is the checkpoint).
+
+Known constant factors not taken: a Montgomery reduction specialised to
+P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; ~25%), and the
+Konyagin–Pomerance (F ≥ P^{3/10}) or Coppersmith–Howgrave-Graham
+(F ≥ P^{1/4+ε}) forms of the N−1 test, which shorten N by 5–11%.
 
 ## Covers
 
