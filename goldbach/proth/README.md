@@ -56,6 +56,7 @@ ln P / (e^γ ln B) tests are expected.
 
 | g(N) | digits of N | cover | PRP tests | proof of the partition | directory |
 |---|---|---|---|---|---|
+| **10,000,141** | 61,329 | 9,095 classes (moduli ≤ 306,239, lazy greedy), complete below g | 3,072 GPU (Colab A100s); the hit is the 2,718th survivor of the 10¹¹-sieved list (expected ~3,130) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^67914 > P^(1/3) | `../records/height_61329digit_g10000141` |
 | **5,000,251** | 33,938 | 5,342 classes (moduli ≤ 167,107, lazy greedy), complete below g | 68 CPU + 3,072 GPU (Colab A100); the hit is the 3,080th survivor (expected ~2,118) | one `powmod` (5^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^37584 > P^(1/3) | `../records/height_33938digit_g5000251` |
 | **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `../records/height_15595digit_g2000269` |
 | **1,200,109** | 11,263 | 2,005 classes (moduli ≤ 17,431, paper's greedy), complete below g | 2,647 (expected ~700; a 2% unlucky draw) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^12477 > P^(1/3) | `../records/height_11263digit_g1200109` |
@@ -140,7 +141,7 @@ greedy); test counts are expectations at sieve depth 10⁹.
 | 2,000,000 (done; lazy cover) | 10,392 | 15,595 | 973 expected (648 used) | 51 min expected (37 min used) |
 | 3,000,000 | 14,617 | 21,936 | 1,369 | ~2.7 h |
 | 5,000,000 (done; GPU) | 22,620 | 33,938 | 2,118 expected (3,080 used) | ~11 h expected; done in 44 min of A100 time |
-| 10,000,000 | 40,881 | 61,331 | 3,827 | ~3.4 days |
+| 10,000,000 (done; GPU) | 40,881 | 61,329 | 3,827 expected (2,718th survivor at sieve depth 10¹¹, where ~3,130 are expected) | ~3.4 days expected; done in ~2 h of A100 time |
 | 16,045,848 (g would be 16,046,137) | 61,162 | 91,753 | 5,725 | ~13 days |
 
 Rows not marked done are costed, not run: cover sizes are exact (the
@@ -171,7 +172,7 @@ Every engine version was checked against gmpy2 before use:
 - the 2·10⁶ spec gives F/T/F at t = 1305..1307;
 - the eight known primes of the 1.2·10⁶ progression pass and their 16
   neighbours fail (`gpu_validate*.py`);
-- v3 (the default from the 16M rung on) is also bit-for-bit equal to v2
+- v3 (the default since the middle of the 10⁷ rung) is also bit-for-bit equal to v2
   after each of 40–64 squarings at the 5·10⁶, 10⁷ and 16M sizes.
 
 Throughput on one A100, per test:
@@ -179,7 +180,7 @@ Throughput on one A100, per test:
 | rung | s/test | vs one GMP core |
 |---|---|---|
 | 5·10⁶ | 0.82–0.92 | ~100× |
-| 10⁷ | 2.7 | |
+| 10⁷ | 2.76 (v2), 2.35 (v3) | ~130× |
 | 16M | ~6.3 expected with v3 (v1 measured 7.8; v2 ~7) | |
 
 The sieve is deepened while the search runs, which removes ~18% of the
@@ -194,7 +195,7 @@ expected tests at 10¹¹ and ~25% at 10¹²:
 
 For the 16,045,849 rung a CPU fleet runs beside the GPU:
 - `cpu_search.py` runs on Colab CPU runtimes, each 8 vCPUs at ~29 tests/h
-  (the account allows 7 runtimes in all). Machine j takes the survivors
+  (the account allowed 6–7 runtimes at once). Machine j takes the survivors
   with t ≡ j (mod 8), top-down, while the GPU climbs from t = 0.
 - Each machine re-reads the relayed survivors and kill lists, and proves
   any pass itself with `desert.bls_prove`.

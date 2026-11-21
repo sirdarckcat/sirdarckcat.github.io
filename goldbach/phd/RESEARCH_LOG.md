@@ -7,11 +7,11 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **33,938-digit** N (records/height_33938digit_g5000251) | g = **5,000,251** | **new 2026-11-21 (evening)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py and PARI. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **61,329-digit** N (records/height_61329digit_g10000141) | g = **10,000,141** | **new 2026-11-21 (night)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py (PARI and the bls/ stack running). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
-### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251
+### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251 and 10,000,141
 
 Authorized by the user ("colab the fuck out of this problem"). One A100
 runtime (the account allows one GPU at a time), its 12 vCPUs, and a second
@@ -33,6 +33,16 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   2.8× faster on 3 threads. The second stack passes too: `bls/xverify.py` and
   `verify_bls_record.py` (via `interop.py to-bls`), in pure-Python ints,
   46 min each. Their logs are in the record directory.
+- **g = 10,000,141 at 61,329 digits.** 3,072 GPU tests (512 with v2 at
+  2.76 s, the rest with v3 at 2.35 s), ~2 h of A100 time in all. The hit
+  t = 6063 is the 2,718th survivor of the 10¹¹-sieved list (expected
+  ~3,130; p ≈ 0.42 of waiting that long).
+  - The total includes 113 tests on candidates that the live deep sieve
+    removed later.
+  - The hit was re-proved on the CPU (BLS, 306 s) and passes `verify.py`:
+    9,095 cover classes and all 664,584 primes below g.
+  - g is the first prime above 10⁷ that the cover (built for the odd
+    primes below 10⁷) misses; the five primes in between are covered.
 - **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
   (10⁷ rung) and toward 10¹² (16M rung) while the GPU runs. That is ~18%
   and ~25% fewer expected tests. It repurposes the 16M CPU helper's

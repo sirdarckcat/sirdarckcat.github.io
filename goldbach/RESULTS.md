@@ -1,5 +1,33 @@
 # Goldbach Desert Records
 
+## New height record (2026-11-21, night): g(N) = 10,000,141, GPU-screened
+
+**g(N) = 10,000,141** for a 61,329-digit N
+(`records/height_61329digit_g10000141/`):
+- **Cover.** All 664,584 primes below g lie in a class of a complete
+  9,095-class cover (prime moduli ≤ 306,239). g itself is the first prime
+  above 10⁷ that the cover misses.
+- **Proof.** N − g = m·2^67914 + 1 (m odd) is proved prime by
+  11^((P−1)/2) ≡ −1 (mod P) with 2^67914 > P^(1/3) (P has 203,731 bits).
+- **Search.** 3,072 GPU screens on Colab A100s, 2.35 s per test with
+  engine v3 (2.76 s with v2), ~2 h of GPU time in all.
+  - The survivors were deep-sieved from 10⁹ to 10¹¹ while the search ran.
+  - The hit is the 2,718th survivor of the 10¹¹ list (expected ~3,130).
+  - The total includes 113 tests on candidates the deeper sieve removed
+    later, and the rest of the hit's batch.
+  - Another ~1.4 h of GPU work was lost when a runtime vanished; those
+    candidates were re-run.
+- **Verification.** No GPU result is trusted. The hit was re-proved on the
+  CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s).
+  The PARI cross-check and the independent `bls/` stack
+  (`xverify.py`, `verify_bls_record.py`) were still running when this was
+  written; their logs go in the record directory.
+
+This doubles the evening's 5·10⁶ record, which is described next. The cost
+model had put this rung at ~3.4 days on 4 cores. The 16,045,849 rung now
+has the GPU, with a CPU fleet beside it (`proth/README.md`, "GPU
+screening").
+
 ## New height record (2026-11-21, evening): g(N) = 5,000,251, GPU-screened
 
 **g(N) = 5,000,251** for a 33,938-digit N
@@ -20,8 +48,7 @@
 
 This is 2.5× the record set earlier the same day, which is described next.
 The 4-core cost model had put this rung at ~11 h; it took 44 min of GPU
-time. The 10⁷ and 16,045,849 rungs are queued on the same GPU
-(`proth/README.md`, "GPU screening").
+time.
 
 ## New height records (2026-11-21): g(N) = 2,000,269 and 1,200,109, proved without ECPP
 
