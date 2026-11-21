@@ -245,14 +245,47 @@ class BatchScreen:
         U[:, 0] += 1.0
         return self._norm(U, L + 1, L)
 
+    def mont_sq2(self, x, f):
+        """Same result as mont_sq with about half the carry work.
+
+        W = irfft(X^2 + FFT(m) FFT(P)) gives the raw coefficients of T + mP.
+        That sum is an exact multiple of R, so its low half contributes the
+        integer c = sum_{i<L} w_i 2^(15(i-L)) to the high half, and c can be
+        read exactly from the top four low coefficients: the remaining tail
+        is below 2^-28 while c is an integer. Then U = normalise(w_L + c,
+        w_(L+1), ...) and T and mP are never normalised in full.
+        """
+        L, N = self.L, self.N
+        X = cp.fft.rfft(x * f[:, None], n=N, axis=1)
+        X2 = X * X
+        TL = self._norm(cp.fft.irfft(X2, n=N, axis=1), L, L)
+        M = cp.fft.irfft(cp.fft.rfft(TL, n=N, axis=1) * self.FPinv,
+                         n=N, axis=1)
+        m = self._norm(M, L, L)
+        W = cp.fft.irfft(X2 + cp.fft.rfft(m, n=N, axis=1) * self.FP,
+                         n=N, axis=1)
+        lo = cp.rint(W[:, L - 4:L])                     # positions L-4 .. L-1
+        c = cp.rint(lo[:, 3] * 2.0 ** -15 + lo[:, 2] * 2.0 ** -30
+                    + lo[:, 1] * 2.0 ** -45 + lo[:, 0] * 2.0 ** -60)
+        H = W[:, L:2 * L].copy()        # raw high half; _norm rounds + checks
+        H[:, 0] += c                    # c is an integer: rint(w + c) = rint(w) + c
+        return self._norm(H, L, L)
+
+    # v2 is the default from the 1e7 rung on. It was validated exactly
+    # (gpu_validate_v2.py): residues equal gmpy2's at 120/3k/20k bits, the
+    # 2e6 spec gives F/T/F, and the eight known 1.2e6 primes pass while
+    # their 16 neighbours fail. It is 1.11-1.12x faster (gpu_bench_v2.py).
+    use_v2 = True
+
     def run(self, progress=None, check_every=4096):
         """Return (list of residues 2^((P-1)/2) mod P, max rounding error)."""
         x = cp.asarray(to_limbs(self.x0, self.L))
         f = cp.ones(self.B, dtype=cp.float64)
         K = self.K0 + self.n - 1
         zero = cp.zeros(self.B, dtype=cp.float64)
+        sq = self.mont_sq2 if self.use_v2 else self.mont_sq
         for k in range(K):
-            x = self.mont_sq(x, f)
+            x = sq(x, f)
             f = 1.0 + (self.mbits[k].astype(cp.float64) if k < self.K0
                        else zero)
             if check_every and (k + 1) % check_every == 0:
