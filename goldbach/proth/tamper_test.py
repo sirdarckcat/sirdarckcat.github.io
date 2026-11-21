@@ -3,9 +3,10 @@
     python3 tamper_test.py ../records/<dir>/record.json
 
 The untouched record must pass; each mutation below must fail, and for the
-stated reason.  (The practice is taken from the independent BLS session on
-branch ccr-8ffe9d7a-4ni11u, whose verifier ships with the same kind of
-test; the cases marked * are theirs, the rest are additions.)
+stated reason.  (The practice is taken from the independent session behind
+goldbach/bls/, which reported such a test for its own verifier in WP11 but
+did not commit the harness; the cases marked * are its six, the rest are
+additions.)
 """
 import contextlib
 import copy

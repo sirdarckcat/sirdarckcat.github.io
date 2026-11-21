@@ -1,13 +1,23 @@
 # WP11 — Game 1 without ECPP: certified Goldbach deserts by construction
 
-> **Cross-review note (2026-11-21).** Branch `ccr-2ce9e63a-hn0fuw` found
-> this construction independently and first, and set the current
-> incumbent, g = 2,000,269. Its lazy cover makes this memo's §4 ladder
-> ~30% pessimistic. See `crossreview_2ce9e63a.md` for:
-> - the verification matrix, in which every record passes both
->   verifiers and PARI;
-> - the theorem review;
-> - the merge plan.
+> **After the merge (2026-11-21).** A second session found this
+> construction independently the same morning (`../proth/`, WP12), set
+> the current incumbent g = 2,000,269, and the two branches were merged.
+> What that changes for a reader of this memo:
+> - **Pipeline.** New work uses `proth/desert.py` (lazy cover ~9% shorter,
+>   sieve to 10⁹). This memo's own code — `bls_search.py`, `full_cover.py`,
+>   `density_probe.py`, `ladder.py` — was retired at the merge and is in
+>   the history at commit `6c66bcd`. Every number in §2–§4 was produced by
+>   that code (the record search by `bls_search.py` at `647efbf`); the §4
+>   ladder is therefore ~30% pessimistic next to `proth/README.md`.
+> - **Verification.** `bls/verify_bls_record.py` and `bls/xverify.py` stay
+>   as the independent second stack; all three records pass both stacks
+>   and PARI.
+> - **§3, "a ~1%-tail draw".** This search and the other session's were
+>   one progression (joint p = 0.046); see WP12 §6 for that and for the
+>   out-of-sample probe.
+> - Reviews: `crossreview_2ce9e63a.md` (by this memo's author) and
+>   `crossreview_8ffe9d7a.md`; decisions: `merge_2026-11-21.md`.
 
 Status: 2026-11-21. Prompted by the user's challenge after WP10: if
 frontier-level research is now possible, find a non-brute-force way to

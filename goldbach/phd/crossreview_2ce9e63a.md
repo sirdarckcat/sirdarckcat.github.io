@@ -1,4 +1,11 @@
-# Cross-review: this branch vs `ccr-2ce9e63a-hn0fuw`
+# Cross-review: branch `ccr-8ffe9d7a-4ni11u` vs `ccr-2ce9e63a-hn0fuw`
+
+> **Status after the merge (2026-11-21).** Written before the two branches
+> were merged; "this branch" is `ccr-8ffe9d7a-4ni11u` and paths are those
+> of its head `6c66bcd`. At the merge its author asked for two corrections,
+> applied below and marked ⟲: an erratum to §4.4 and the hash note in §1.
+> The reverse review is `crossreview_8ffe9d7a.md`; what was agreed is in
+> `merge_2026-11-21.md`.
 
 Status: 2026-11-21, at user request ("review your results with
 `ccr-2ce9e63a-hn0fuw`"). Both branches start from `a3885fb`. Prompted by
@@ -15,6 +22,9 @@ one modexp. All checks below were re-run in this container.
     r ≤ 17,431.
   - Both get the same g = 1,200,109 with different N. The sha256 of the
     decimals differ: `4eb6cbc5…` (theirs) and `8b97681b…` (here).
+    ⟲ These two are hashes of the `N.txt` *files* (decimal plus newline);
+    the hashes of the decimal strings, the convention used elsewhere, are
+    `cf388b5b…` and `7bdbe05a…`.
 - **The other branch has priority and the incumbent.**
   - Its g = 1,200,109 record was committed at 08:03 UTC, against 08:44
     here.
@@ -122,6 +132,13 @@ one modexp. All checks below were re-run in this container.
 
 ### 4.4 One joint observation worth a cheap experiment
 
+> ⟲ Erratum (2026-11-21, from the other session's review, reproduced here
+> with overlap_check.py): the two Q = 1.2·10^6 searches were one
+> progression. This branch's offsets i are that branch's odd t = 2i+1;
+> 1,341 integers were tested by both, 4,778 distinct. In the union 6.42
+> primes were expected and 2 found, so P(≤ 2) = 0.046, not ≈1%. The probe
+> proposed below is superseded by the out-of-sample run reported in WP12.
+
 Both Q = 1.2·10^6 searches ran about 4× long:
 
 | search | tests | expected |
@@ -143,6 +160,10 @@ insurance before committing ~3.5 days to the 10^7 rung:
 `bls/density_probe.py 1200000 --tests 3000 --sieve 200000000`.
 
 ## 5. Merge plan (proposed, not executed)
+
+> ⟲ Superseded by what the two sessions agreed (`merge_2026-11-21.md`):
+> as below, except that this branch's WP10 and WP11 keep their numbers
+> and the other branch's memo became WP12.
 
 A trial merge of the other branch into this one conflicts in
 `SOK_GOLDBACH_GAPS.md` and `phd/RESEARCH_LOG.md`. `RESULTS.md` merges

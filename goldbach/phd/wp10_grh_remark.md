@@ -47,6 +47,17 @@ conditionals (H1, H2) are not statements about zeros at all.
 | Closure theorem conditionals | — | **H1** (Hardy–Littlewood independence of shifted primes given the divisor data) is a k-tuple statement. Even full Grand RH does not imply twin primes, so H1 is untouched. **H2** is algorithmic and also untouched. §10's value-equidistribution inputs concern windows of relative width Q/X ≈ 10^−195, while √x-quality input (the best that GRH/ERH-type statements give) needs relative width ≫ X^−1/2. Untouched |
 | Paper theorems (`slop/goldbach/paper.tex`) | the least prime in a progression mod m is ≪ (φ(m) log m)² (Bach–Sorenson; explicit form by Lamzouri–Li–Soundararajan) | **constants only**. Theorem `thm:dirichlet`'s g(N) ≥ (1/L − o(1)) ln N with Linnik's L ≤ 5 (Xylouris) becomes (1/2 − o(1)) ln N. `thm:lower` and `thm:coverdirichlet` gain the same factor L/2 in the implied constant. These bounds are of order ln N, while the records sit at g ≈ 303·ln N (150 digits) |
 
+> **Erratum to the row "Paper theorems" (2026-11-21, at the merge; from
+> the other session's review, `crossreview_8ffe9d7a.md` §5.2).** For the
+> paper's moduli, which are primorial-type and hence smooth, the
+> unconditional Linnik exponent is 12/5 (Chang 2014, Cor. 11; [L], a
+> literature citation not re-checked by either session), not 5. GRH's
+> gain in those constants is therefore ×1.2, not ×2.5. And `thm:lower`
+> (Theorem 14, the FGKMT transfer) does not merely gain a constant: it
+> is superseded in *rate* by results that need no GRH — the counting
+> bound of Shi (arXiv:2605.21529v6, Thm 6.22) and the covering bound
+> C(x) ≥ (1.349 − o(1))·x·ln x (WP12 §2, Theorem 1).
+
 **SoK §7.3 sub-angle closed.** The "GRH-conditional explicit bound"
 route is dead at record scale, however GRH's status is resolved: rows
 1–4 show it falls 65–97 orders of magnitude short. A theorem of the

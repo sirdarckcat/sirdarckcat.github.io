@@ -6,8 +6,9 @@
 Per rung: digits of the lazy cover (desert.lazy_full_cover), size of
 P = N - g (1.5x the cover plus slack), expected tests ln P / (e^gamma ln B)
 at sieve depth B, and time from a power law fitted to measured single-core
-GMP modexps.  The independent session's bls/ladder.py does the same for the
-paper's fixed-order covers; this one is ~9% shorter in digits.
+GMP modexps.  The independent session's bls/ladder.py (retired at the merge,
+in the history at 6c66bcd) did the same for the paper's fixed-order covers;
+these are ~9% shorter in digits.
 """
 import math
 import os

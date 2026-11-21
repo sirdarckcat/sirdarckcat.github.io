@@ -70,6 +70,7 @@ single modular exponentiation if present):
 
     python3 verify.py ../records/<dir>/record.json             # 6 s with gmpy2
     NO_GMPY2=1 python3 verify.py ../records/<dir>/record.json  # 102 s, plain Python ints
+    python3 ../bls/xverify.py ../records/<dir>/record.json     # second stack, ~90 s
     cd ../records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
 
 (timings for the 11,263-digit record on one core; the 15,595-digit record takes 12 s, 270 s and ~8.5 min).
@@ -79,21 +80,32 @@ validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
 scans every prime q < g checking that N − q shares a factor with the
 primorial of the largest cover modulus.
 
-## Independent replication
+## Independent replication, and the verification stack
 
-A second session, working separately on branch `ccr-8ffe9d7a-4ni11u`,
-arrived at the same construction (same n, same complete cover) and
-certified g = 1,200,109 for a *different* 11,263-digit N. The two branches
-have been checked against each other (`../phd/crossreview_8ffe9d7a.md`):
+A second session, working separately, arrived at the same construction the
+same morning (same n, same complete cover; memo `../phd/wp11_bls_game1.md`)
+and certified g = 1,200,109 for a *different* 11,263-digit N
+(`../records/bls_game1_11263digit_g1200109`). The two branches reviewed
+each other (`../phd/crossreview_*.md`) and were merged
+(`../phd/merge_2026-11-21.md`). What that leaves:
 
-- every record passes **both** independently written stdlib verifiers
-  (`interop.py` converts the formats) and PARI's own N−1 proof;
-- `tamper_test.py` (their practice, adopted here): 11/11 tampered
-  records are rejected by `verify.py`, each for the expected reason;
-- the two long waits at 1.2·10⁶ were the same stretch of one
-  progression — their candidates are exactly the odd-t half of the
-  progression searched here, 1,341 integers were tested twice, and
-  jointly it is one ~5% event (`overlap_check.py`).
+- **Three independently written legs, and every record passes all of
+  them**: `verify.py` here; `../bls/verify_bls_record.py` and
+  `../bls/xverify.py` (the other session's; `interop.py` exports a record
+  into their format, in which N is rebuilt from the congruences by CRT);
+  and PARI's own N−1 proof with a brute-force scan (`crosscheck.gp` in
+  each record directory).
+- `tamper_test.py`: 11/11 tampered records are rejected by `verify.py`,
+  each for the expected reason.
+- The two long waits at 1.2·10⁶ were one stretch of one progression: the
+  other search ran over exactly the odd-t half of the candidates searched
+  here, 1,341 integers were tested twice, and jointly it is one ~5% event
+  (`overlap_check.py`). The candidates neither session had tested were
+  then probed exhaustively with `probe.py`; the result is in
+  `../phd/wp12_prime_covering_grh_ledger.md` §6.
+
+Hashes quoted in prose anywhere in the repo are sha256 of the decimal
+string of N; the `SHA256SUMS` / `MANIFEST.sha256` files hash the files.
 
 ## Why full covers win here (and lose everywhere else)
 

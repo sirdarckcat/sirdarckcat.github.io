@@ -164,4 +164,7 @@ coherent union would be:
 
 Not done here: the request was a review, and merging would put their
 commits on this branch. ⟲ Subsequently agreed with the other session and
-carried out: see `merge_2026-11-21.md`.
+carried out: see `merge_2026-11-21.md`. One difference from the list
+above: their `density_probe.py` and `ladder.py` were retired with the
+rest of their search code, in favour of `proth/probe.py` and
+`proth/ladder.py`; `grh_reach.py` and both of their verifiers are kept.

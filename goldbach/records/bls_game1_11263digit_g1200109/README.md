@@ -1,10 +1,13 @@
 # g(N) = 1,200,109 — independent second certificate, no ECPP
 
-> Same g as the first certificate, on branch `ccr-2ce9e63a-hn0fuw`
-> (found 41 min earlier, different N). That branch's g = 2,000,269 is
-> the Game-1 incumbent. All three records were cross-verified; see
-> `goldbach/phd/crossreview_2ce9e63a.md`. Also verified by PARI here:
-> its N−1 certificate, `isprime`, and a scan of all q < g.
+> Same g as `../height_11263digit_g1200109/` (found 41 min earlier by a
+> separate session; different N, independent code). The Game-1 incumbent
+> is `../height_15595digit_g2000269/`, g = 2,000,269. All three records
+> pass both verification stacks and PARI: `goldbach/phd/crossreview_*.md`.
+> Provenance: found by `goldbach/bls/bls_search.py` at commit `647efbf`
+> (retired at the merge of 2026-11-21, in the history at `6c66bcd`); the
+> search ran over the odd-index half of the progression that
+> `goldbach/proth/desert.py` searched for the first certificate.
 
 N has 11,263 digits; the decimal is in `N.txt`, and `record.json` holds N,
 the cover and the certificate. g(N) = 1,200,109 is proved by:

@@ -11,8 +11,8 @@
 > and `crossreview_2ce9e63a.md`.
 
 Status: 2026-11-21. Trigger: `https://alpo.ge/remark.pdf` (4 pages, dated
-2026-11-20), read on request "for inspiration". Companion code and records:
-`goldbach/proth/`. Everything conjectural is marked [C], proved here [P],
+2026-11-20), read on request "for inspiration". Companion code: `goldbach/proth/`; records:
+`goldbach/records/height_*`. Everything conjectural is marked [C], proved here [P],
 measured [V], and cited-but-not-rechecked [L].
 
 ## 0. What the PDF is (and is not)
@@ -50,7 +50,9 @@ construction breakthrough — arranging N−q to have Pocklington-friendly form
 while satisfying the cover congruences — would blow the wall off entirely …
 nobody knows how to intersect the two constraint systems, and we flag it as
 the single most valuable open trick in this problem family."* SoK §7.2
-sketches the Proth variant as an untouched angle.
+sketches the Proth variant as an untouched angle. (The other session
+reached the same construction separately; its derivation is WP11,
+`wp11_bls_game1.md`.)
 
 The two constraint systems intersect trivially. Write the complement as
 
@@ -184,9 +186,8 @@ Bombieri–Vinogradov already is GRH on average.
 
 *Caveat (added after the cross-review, `crossreview_8ffe9d7a.md`).* Theorem 2
 is asymptotic and is **vacuous at record parameters**: with moduli up to
-x = 613–79,139 and Q ≤ 2·10⁶, x⁴ is far above Q. The independent
-session on branch `ccr-8ffe9d7a-4ni11u` ran the same sieve at finite size
-(`phd/wp10/grh_reach.py` §B there) and finds the floor negative at level
+x = 613–79,139 and Q ≤ 2·10⁶, x⁴ is far above Q. The other session
+ran the same sieve at finite size (WP10; `wp10/grh_reach.py` §B) and finds the floor negative at level
 Q^{1/2} (−0.46·π(Q)) and positive only at level Q, beyond
 Elliott–Halberstam. Both statements are the same fact: the linear sieve
 constrains covers only when every modulus is below Q^{1/4}.
@@ -206,9 +207,8 @@ Linnik exponent for the modulus x#:
 
 ## 3. The GRH ledger — where it enters, item by item
 
-(An independent assessment on branch `ccr-8ffe9d7a-4ni11u`,
-`phd/wp10_grh_remark.md`, reaches the same verdict and quantifies it at
-record scale: the RH prime-window is 10^72.4 too coarse for the
+(WP10, `wp10_grh_remark.md`, the other session's independent assessment,
+reaches the same verdict and quantifies it at record scale: the RH prime-window is 10^72.4 too coarse for the
 150-digit desert and GRH's error term is 10^65.6 above the main term on
 the scanned progression. The table below is the complementary view —
 which constants and exponents move.)
@@ -274,6 +274,42 @@ machine-proof-carrying records in the genre. Status: see
 4. **KP/CHG variants**: Konyagin–Pomerance (F ≥ P^{3/10}) or
    Coppersmith–Howgrave-Graham (F ≥ P^{1/4+ε}) shrink N by 5–11%
    (16–32% compute) at the price of a more elaborate certificate.
+
+## 6. The 1.2·10⁶ progression: one unlucky stretch seen twice, then probed out of sample [V]
+
+Both sessions' first searches at Q = 1.2·10⁶ ran long: 2,647 tests against
+~703 expected here (p = 0.024) and 3,472 against 762 in the other session
+(p = 0.011). Every ladder estimate rests on the density model
+"one prime per ln P / (e^γ ln B) sieve survivors", so two independent
+waits of that size (2 primes in 6,119 tests against ~8.3 expected,
+P(≤ 2) ≈ 1%) would have been a real warning.
+
+**They were not independent** (`proth/overlap_check.py`):
+
+- Same cover, same g = 1,200,109 and same n = 12,475 give the same
+  arithmetic progression. In `desert.py`'s indexing the candidates are
+  P_t = 1 + 2ⁿ(m₀ + t·M_c) with m₀ even; the other session's extra
+  condition "2ⁿ divides P − 1 exactly" keeps precisely the odd t. Its hit,
+  offset i = 6,781, is t = 13,563 = 2i + 1. Re-sieving the odd t ≤ 13,563
+  to its depth 2·10⁸ gives 3,472 survivors — its logged test count.
+- 1,341 integers were tested by both sessions; 4,778 distinct integers in
+  all. The prime found here, t = 5,568, has 2^12477 | P − 1, so the
+  exact-division rule skipped it, which is why the other N is 2.44×
+  larger.
+- In the union of the two ranges 6.42 primes were expected and 2 were
+  found: P(≤ 2 | 6.42) = **0.046**. One mildly unlucky stretch.
+
+Pooled with the exhaustive probes (54 primes vs 48.7 expected and 8 vs
+9.3 in the other session; 46 vs 48.6 here), the other session's shakedown
+(122 tests vs 123) and the 2·10⁶ search (648 vs 973), the count is 112
+primes observed against 114.7 expected.
+
+**Out-of-sample probe** (`proth/probe.py`). To test the same progression
+on fresh numbers, every sieve survivor (to 10⁹) with t ≤ 16,383 that
+neither session had tested — 2,547 even t > 5,568 and 698 odd t > 13,563,
+3,245 candidates, 4.62 primes expected — is tested exhaustively, with no
+early stop. *Running at the time of this commit; the count is added in
+the next one.*
 
 ## Appendix — proposed patch for `slop/goldbach/paper.tex` (not applied)
 

@@ -1,6 +1,6 @@
-"""Record-format adapters between this directory and the independent BLS
-pipeline on branch ccr-8ffe9d7a-4ni11u (goldbach/bls/), so that each side's
-verifier can check the other side's records.
+"""Record-format adapters between this directory and the independent second
+verification stack in goldbach/bls/, so that each stack's verifier can check
+every record.
 
     python3 interop.py to-bls   ../records/<dir>/record.json  out.json
     python3 interop.py from-bls <their record.json>        out.json

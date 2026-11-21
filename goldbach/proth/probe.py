@@ -6,8 +6,8 @@ density model  1 prime per  ln P / (e^gamma ln B)  tests.
 
 `--exclude` is a JSON list of offsets t already tested elsewhere, so the
 probe can be made out-of-sample.  Resumable: results append to out.jsonl.
-(The independent session's bls/density_probe.py measures the same thing on
-its own progression; this is the version for desert.py specs.)
+(Successor of the independent session's bls/density_probe.py, which measured
+the same thing on its own progression and is in the history at 6c66bcd.)
 """
 import json
 import math

@@ -1,9 +1,9 @@
 """Do two searches at the same threshold overlap?  (phd/crossreview_8ffe9d7a.md, section 3)
 
     python3 overlap_check.py ../records/height_11263digit_g1200109/record.json \
-            <record.json of the goldbach/bls branch>  [their sieve bound, default 2e8]
+            ../records/bls_game1_11263digit_g1200109/record.json  [their sieve bound, default 2e8]
 
-Rebuilds this branch's progression P_t = 1 + 2^n (m0 + t*Mc) for the
+Rebuilds desert.py's progression P_t = 1 + 2^n (m0 + t*Mc) for the
 record's threshold (paper's greedy cover), locates the other record in it,
 re-derives the other search's test count from its sieve depth, and gives
 the joint likelihood of the two waiting times under the density model.
@@ -32,7 +32,7 @@ def main(mine_path, theirs_path, their_sieve=200_000_000):
     assert r == 0, "their complement is not in this progression"
     t_theirs, t_mine = int(q), mine["t"]
     par = t_theirs % 2
-    print(f"their hit is t = {t_theirs} (offset i = {theirs['i']}); this branch's is t = {t_mine}")
+    print(f"their hit is t = {t_theirs} (offset i = {theirs['i']}); desert.py's is t = {t_mine}")
     surv = desert.sieve_candidates(spec, 1 << 14, int(their_sieve), os.cpu_count())
     theirs_tested = [int(t) for t in surv if t % 2 == par and t <= t_theirs]
     print(f"t of their parity up to their hit surviving a sieve to {int(their_sieve):.0e}: "

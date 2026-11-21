@@ -402,7 +402,8 @@ touched — each changes the *problem shape*, not the constants.
    of elementary arithmetic — well within reach of a Lean/Coq proof
    that "exit 0 ⇒ g(N) = q". That would close the last trust gap and
    make these the first machine-*proof*-carrying records in the genre.
-   ↳ 2026-11-21: much closer. For the `proth/` records the whole proof
+   ↳ 2026-11-21: much closer. For the N−1-certified records
+   (`records/height_*`, `records/bls_game1_*`) the whole proof
    is one lemma (the N−1 criterion), a decidable cover check, one modexp
    and one square-root comparison — no ECPP, no witness list — so the
    target can be the theorem `IsLeast {p | p.Prime ∧ (N − p).Prime} g`
