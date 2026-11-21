@@ -42,9 +42,40 @@ Verified by `proth/verify.py` (stdlib only) and independently by PARI/GP
 (`crosscheck.gp`: PARI's own N−1 certificate, `isprime`, and a brute-force
 scan of all 92,942 primes that does not use the cover). Method, cost
 model and the ladder to g > 16,045,848 (longer than the largest known
-prime gap of any kind): `proth/README.md`. Theory that came out of the
-same review — a new constant for covering the primes and a sieve ceiling
-for covering certificates — is in `phd/wp12_prime_covering_grh_ledger.md`.
+prime gap of any kind): `proth/README.md`; the same construction as
+derived by the second session: `phd/wp11_bls_game1.md`. What a proof of
+GRH would and would not change here: `phd/wp10_grh_remark.md`. Theory
+that came out of the review — a new constant for covering the primes and
+a sieve ceiling for covering certificates — is in
+`phd/wp12_prime_covering_grh_ledger.md`.
+
+### g(N) = 1,200,109 a second time — an independent certificate
+
+A second session, working separately, found the same construction the
+same morning and certified g = 1,200,109 for a **different** 11,263-digit
+N (`records/bls_game1_11263digit_g1200109/`). Its code shares nothing with
+`proth/`: its own cover builder, CRT, sieve and search (`goldbach/bls/` at
+commit `6c66bcd`; that search code was retired at the merge in favour of
+`proth/desert.py`) and its own stdlib verifier
+(`bls/verify_bls_record.py`, which rebuilds N from the congruences by
+product-tree CRT). Its complement has P − 1 = 2^12475·R with R odd; the
+first record's has 2^12477 | P − 1.
+
+The two certificates come from one progression: same cover, same g, same
+n, and the second search ran over exactly the odd-index half of the first
+one's candidates (`proth/overlap_check.py`; 1,341 integers were tested by
+both). Each search alone looked like a 1–2% unlucky wait (3,472 tests
+against 762 expected there, 2,647 against ~700 here); jointly it is one
+~5% event. The candidates neither session had tested were then probed
+exhaustively: `phd/wp12_prime_covering_grh_ledger.md` §6.
+
+Every record passes every verifier: `proth/verify.py`,
+`bls/verify_bls_record.py` (through `proth/interop.py` for the two
+`height_*` records), `bls/xverify.py`, and PARI's own N−1 certificate with
+a brute-force scan (`crosscheck.gp` in each record directory). The reviews
+the two sessions wrote of each other are `phd/crossreview_8ffe9d7a.md` and
+`phd/crossreview_2ce9e63a.md`; what was agreed at the merge is in
+`phd/merge_2026-11-21.md`.
 
 ## Prior-art check (2026-07-27)
 

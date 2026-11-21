@@ -7,11 +7,32 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **15,595-digit** N (goldbach/records/height_15595digit_g2000269) | g = 2,000,269 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Same day: g = 1,200,109 @ 11,263d. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **15,595-digit** N (records/height_15595digit_g2000269) | g = **2,000,269** | **new 2026-11-21**; N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
-### 2026-11-21 — cross-review against branch `ccr-8ffe9d7a-4ni11u`
+### 2026-11-21 — the two branches merged (`ccr-2ce9e63a-hn0fuw` ← `ccr-8ffe9d7a-4ni11u`)
+- Two sessions started from the same commit, both prompted by the same
+  PDF, and worked separately. Both concluded that a proof of GRH moves no record, both
+  found the same N−1 construction for Game 1, and both certified
+  g = 1,200,109 (two different N). Each then reviewed the other, and the
+  merge was agreed by message between the sessions at the user's request.
+  Decisions, path map and errata: `merge_2026-11-21.md`.
+- **Layout.** One build-and-search pipeline (`proth/desert.py`). One
+  verification stack with three independently written legs
+  (`proth/verify.py`, `bls/verify_bls_record.py` + `bls/xverify.py`, and
+  PARI's own N−1 proof via `crosscheck.gp` in each record directory). All
+  three records in `records/`. Memos: WP10 and WP11 are the
+  `ccr-8ffe9d7a` session's, WP12 the `ccr-2ce9e63a` session's.
+- **Errata folded in.** The two long searches at 1.2·10⁶ were one
+  progression (joint p = 0.046, not ≈1%); the paper's Theorem 14 is
+  superseded in rate, and GRH's Linnik gain on the paper's smooth moduli
+  is ×1.2, not ×2.5; one mutation-test harness had never been committed.
+- **Out-of-sample probe of the 1.2·10⁶ progression**: WP12 §6.
+- The entries below are kept as each session wrote them, labelled by
+  branch.
+
+### 2026-11-21 — cross-review of `ccr-8ffe9d7a-4ni11u` (by the `ccr-2ce9e63a` session)
 - A second session did the same exercise separately and converged on the
   same construction (BLS-form complement, complete cover, n = 12,475) and
   the same g = 1,200,109, for a different N. Full review:
@@ -31,9 +52,27 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 - **For them**: the board is at 2,000,269; the paper's Theorem 14 is
   superseded, not merely re-constanted; lazy covers and a 10⁹ sieve are
   ~35% less search; PARI gives a second proof where they have BPSW.
-- Trial merge: conflicts only in the SoK and this log. Not merged.
+- Trial merge: conflicts only in the SoK and this log. (Merged later the
+  same day; see the entry above.)
 
-### 2026-11-21 — WP12 (numbered WP10 on its branch): review "with the GRH announcement for inspiration"
+### 2026-11-21 — cross-review of `ccr-2ce9e63a-hn0fuw` (by the `ccr-8ffe9d7a` session)
+- The other session found the WP11 construction independently and first
+  (08:03 against 08:44 UTC). It then certified g = 2,000,269 with a lazy
+  cover ~10% shorter, and proved two covering theorems:
+  - C(x) ≥ 1.349·x·ln x, which beats the paper's Theorem 14 and Shi's ½;
+  - C(x) ≤ x^(4+ε).
+- **Verification.** All three records pass both branches' verifiers and
+  PARI, re-run here. Their theorems were re-derived; their Shi citation
+  was verified verbatim against the v6 PDF.
+- **Corrections here.** "New record" and "first without ECPP" are
+  relabelled "independent second certificate"; WP11's ladder is ~30%
+  pessimistic next to the lazy cover.
+- **Open item (corrected at the merge, at this session's request).** The
+  two Q = 1.2·10^6 searches were not independent (one progression); joint
+  P(≤ 2) = 0.046; out-of-sample probe in WP12. A merge plan is in
+  `crossreview_2ce9e63a.md` (carried out; see the entry above).
+
+### 2026-11-21 — WP12 (`ccr-2ce9e63a` session; numbered WP10 on its branch): review "with the GRH announcement for inspiration"
 - User directive: look over the Goldbach-gaps work for improvements, reading
   `alpo.ge/remark.pdf` for inspiration. The PDF is not about Goldbach: it
   announces a proof of RH/GRH found with Claude and formalized in Lean
@@ -64,6 +103,52 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 - **Not done**: a Lean proof of the record. Toolchain installation was
   refused by the session's permission policy; nothing unchecked was
   committed. Paper patch drafted (WP12 appendix) but `paper.tex` untouched.
+
+### 2026-11-21 — WP11 (`ccr-8ffe9d7a` session): Game 1's certification wall removed; g = 1,200,109 (independent second certificate; see the cross-reviews above)
+- **Prompt.** The user pushed back after WP10: if frontier research is
+  possible, find a non-brute-force way to move faster. Answer: for the T
+  and R games the brute force is the cheap part (≈0.03 nats of luck per
+  residual against ≥ ln Q ≈ 11.5 nats to plant a divisor). Game 1's wall,
+  though, was an artifact of proving whatever prime the search produced.
+- **The trick (SoK §6/§7.2, flagged as open).** The cover modulus is odd,
+  so N ≡ g+1+2^n (mod 2^(n+1)) is free by CRT. Then 2^n exactly divides
+  P − 1 for P = N − g, and with 2^(3n) > P the BLS theorem proves P prime
+  from one modexp. The price is ×1.5 digits. With full covers (no
+  residuals), the certificate is the congruences plus one modexp. The
+  proof is re-derived in `wp11_bls_game1.md` §1.
+- **Validation.**
+  - `bls/full_cover.py` reproduces the paper's Table rows for Q = 10^5,
+    10^6 and 10^7 exactly.
+  - The independent stdlib verifier rejects 6/6 tampered records. It had
+    one bug at record scale (Python's 4,300-digit int-to-string cap),
+    now fixed.
+  - The density model was measured at z = +0.76 and −0.43; the sieve was
+    audited.
+- **Record.** 11,263 digits, g = 1,200,109, found after 3,472 tests on 4
+  cores in 76 min. That was a ~1%-tail draw against 762 expected. It was
+  verified three ways: the stdlib proof checker (87 s), GMP BPSW, and a
+  GMP recheck of the congruences.
+- **Ladder on this box (GMP).** 5M ≈ 13 h, 10^7 ≈ 3.6 d, 16,045,849 ≈ 13 d
+  (longer than every known prime gap). GWNUM or the GPU fleet should be
+  5–10× faster. The T(10^5) and R(10^200) frontiers are unchanged.
+
+### 2026-11-21 — WP10 (`ccr-8ffe9d7a` session): a claimed RH/GRH proof (alpo.ge/remark.pdf) assessed: no lever moves
+- User asked whether the announcement inspires frontier progress. The
+  analysis assumes the claim is true. The Lean archive was not checked,
+  and the verdict does not depend on it. Memo:
+  `wp10_grh_remark.md`. Numbers: `wp10/grh_reach.py` (6 s).
+- RH/GRH are √x-quality statements and every bottleneck here is
+  x^{o(1)}-scale. The RH prime-window is 10^72.4 too coarse for the
+  150-digit desert. GRH on the scanned progression is 10^65.6 short and
+  bites only at N ≈ 280 digits. The sieve level GRH gives is the one
+  Bombieri–Vinogradov already gives, and there the Door-1 floors are
+  vacuous (−0.46·π(Q)). H1 and H2 are untouched. Miller-under-GRH
+  certification costs 5.8 core-days at 2,480 digits against ECPP's ~2 h,
+  with no certificate.
+- Paper constants only: the Linnik step L ≤ 5 becomes 2 + o(1). SoK §7.3's
+  GRH sub-angle is closed. The one transferable idea is methodological:
+  proof-carrying records (SoK §7.8). The board is unchanged; Doors 1 and 2
+  remain the only levers.
 
 ### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
 - User directive: work Door 3 first (AlphaEvolve access offered for the

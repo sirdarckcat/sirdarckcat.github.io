@@ -1,0 +1,3 @@
+BPSW(N-g): True
+N even: True | g prime: True | P = 1 + 2^n * odd: True
+cover congruences failing under GMP: 0

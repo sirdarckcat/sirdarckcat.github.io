@@ -18,15 +18,18 @@ we now know that we did not know at the start.
 >    congruences on m, so the "Pocklington-friendly form" and the cover
 >    intersect by CRT; the partition proof becomes one modular
 >    exponentiation. With certification free, *complete* covers are the
->    optimal design for this game. Records: g = 1,200,109 at 11,263 digits
->    and g = 2,000,269 at 15,595 digits, no ECPP, no residual witnesses.
->    `proth/README.md`.
+>    optimal design for this game. Two sessions found this independently
+>    and cross-verified each other. Records: g = 2,000,269 at 15,595
+>    digits, and g = 1,200,109 at 11,263 digits certified twice; no ECPP,
+>    no residual witnesses. `proth/README.md`, `phd/wp11_bls_game1.md`.
 > 2. *There is now a lower-bound theorem and an impossibility theorem for
 >    covering certificates* (§7.3): residues modulo the primes ≤ x can cover
 >    all primes below (1.349 − o(1))·x·ln x and never those below x^{4+ε}.
 >    The first beats the paper's FGKMT-transfer bound and the counting
 >    constant ½ of arXiv:2605.21529. `phd/wp12_prime_covering_grh_ledger.md`.
-> 3. *GRH would move constants, not walls* — the full ledger is in WP12 §3.
+> 3. *GRH would move constants, not walls*: quantified at record scale in
+>    WP10 (`phd/wp10_grh_remark.md`), with the ledger of which constants
+>    and exponents do move in WP12 §3.
 
 ## 1. Taxonomy of constructions (weakest → strongest)
 
@@ -37,7 +40,7 @@ we now know that we did not know at the start.
 | **Full covering system** (paper, 2025) | every prime p<Q hit by a class p ≡ N (mod r) | Q=10⁵ at 1,020 digits; Q=10⁸ at 327,455 digits (no partition) | first real records; pays for *certainty* it doesn't need |
 | **Partial cover + progression search** (all 2026 records) | cover most primes; PRP-test the k residuals per candidate N = N₀+tM | Q=10⁵ at **150 digits**; g=1,157,341 at 2,480 digits | the frontier; everything below is about its economics |
 | Prime-gap transfer | park all N−p inside a known gap | needs a *fully verified* gap > 1.1M: endpoints are ~18k-digit PRPs | blocked (resource-strength); dominated by covers — a Goldbach gap needs only the sparse set {N−p} composite, not an interval |
-| ↳ **Full cover + N−1-form complement** (2026-11-21) | every prime < g hit by a class; N − g = m·2ⁿ+1 proved prime by one modexp | g=2,000,269 at 15,595 digits (648 PRP tests, 37 min on 4 cores), zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
+| ↳ **Full cover + N−1-form complement** (WP11, WP12; 2026-11-21) | every prime < g hit by a class; N − g = 1 + 2ⁿ·R proved prime by one modexp (BLS) | g=**2,000,269** at 15,595 digits (648 PRP tests, 37 min on 4 cores); g=1,200,109 at 11,263 digits certified twice by independent code; zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
 
 The last row is the theoretical point the whole project demonstrates:
 **Goldbach gaps are strictly cheaper than prime gaps.** A 2,480-digit N
@@ -243,7 +246,7 @@ nearly coincide.
   remaining headroom, after which every gain awaits better covers or
   more compute.
 
-### Game 1 — largest g, N unbounded  (was 1,157,341; now 2,000,269 — see the ↳ item below)
+### Game 1 — largest g, N unbounded  (now: 2,000,269, N−1-certified; was 1,157,341 — see the ↳ item below)
 
 - **Actual maximum (truth)**: none. g(N) is unbounded (proved
   unconditionally in the 2025 paper via covering systems + Dirichlet).
@@ -267,18 +270,22 @@ nearly coincide.
   general-form proven primes at a fixed ratio (g ≈ π-count of ~2·10⁻⁴
   × certifiable digits²... in practice: whatever can be ECPP'd, times
   ~600 in q per 1,000 digits).
-- ↳ **2026-11-21 — the construction breakthrough was one line.** Put
-  N − g = m·2ⁿ + 1: the cover congruences become congruences on m
-  (2ⁿ is a unit mod each odd modulus), CRT intersects the two systems,
-  and 2ⁿ > (N−g)^{1/3} makes the N−1 test a one-modexp proof. Records
-  g = 1,200,109 at 11,263 digits and g = 2,000,269 at 15,595 digits
-  (`proth/`). The wall is now
-  PRP throughput: with GMP on 4 cores, g > 2·10⁶ ≈ 1 h (done), 5·10⁶ ≈ 11 h,
-  10⁷ ≈ 3–4 days, 16,045,848 (the largest known prime gap of any kind)
-  ≈ 2 weeks; a gwnum-class engine or the GPU fleet is 10×+ faster. The
-  verdict above is replaced by: Game 1's record is an index of how many
-  ~10⁵-digit PRP tests one is willing to run, and of how short a
-  complete cover of the primes below g can be made.
+- ↳ **2026-11-21 — the construction breakthrough was one line, and it was
+  found twice.** Put N − g = 1 + 2ⁿ·R. The cover modulus is odd, so the
+  cover congruences become congruences on R (2ⁿ is a unit mod each odd
+  modulus); CRT intersects the two systems, and 2ⁿ > (N−g)^{1/3} makes
+  the Brillhart–Lehmer–Selfridge N−1 test a one-modexp proof, at ×1.5
+  digits. Two sessions reached this separately on the same day
+  (`proth/` with WP12, `bls/` with WP11) and verified each other's
+  records (`phd/crossreview_*.md`). Records: g = 2,000,269 at 15,595
+  digits (the incumbent), and g = 1,200,109 at 11,263 digits certified
+  twice, for two different N, by independent code. The wall is now PRP
+  throughput: with GMP on 4 cores, g > 5·10⁶ ≈ 11 h, 10⁷ ≈ 3.4 days,
+  16,045,848 (the largest known prime gap of any kind) ≈ 13 days; the
+  GPU fleet, or a few dozen cores of gwnum-class FFT code, bring the top
+  rungs down to hours. The verdict above is replaced by: Game 1's record
+  is an index of how many ~10⁵-digit PRP tests one is willing to run,
+  and of how short a complete cover of the primes below g can be made.
 
 ### Summary table
 
@@ -286,8 +293,7 @@ nearly coincide.
 |---|---|---|---|---|---|
 | T(10⁵) smallest N | ~10⁵³ (53 digits) | ~140 (days) / ~130 (months) | ~120–125 digits (sub-100 ≈ 2–9×10⁵ GPU-yr) | 120–135 digits stall; floor 38–49 | search entropy + density-1 subset-sum + WP7 3-condition test |
 | R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
-| Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
-| ↳ Game 1 after 2026-11-21 (N−1-form complement, complete cover) | unbounded | ~5·10⁶ (overnight, 4 cores, GMP); 1.6·10⁷ in ~2 weeks | ~10⁸ (complete cover = 327,455 digits; ~3·10⁴ PRP tests at ~half a million digits) | shorter complete covers; KP/CHG N−1 variants | PRP throughput + length of complete covers |
+| Game 1 largest g | unbounded | ~5·10⁶ overnight, 10⁷ in days (N−1-form complement, WP11/WP12; was ~2.5M via ECPP) | ~10⁸ (cluster: ~491k-digit N, ~3·10⁴ PRP tests) | shorter complete covers; KP/CHG forms of the N−1 test; unbounded in principle | PRP throughput + length of complete covers |
 
 
 ## 7. Unexplored research angles
@@ -327,15 +333,18 @@ touched — each changes the *problem shape*, not the constants.
    *compositeness* mechanism (terminated) and explicitly noted the
    shared-sieve throughput benefit; the certification-side use proposed
    here — Proth primality as the partition proof — remains untouched.
-   ↳ 2026-11-21: **executed** (`proth/`), and the sketch was right. Both
-   open questions have plain answers: the prime density in the
-   CRT-constrained progression is the ordinary one (N − g is coprime to
-   every cover prime because g is uncovered; measured 46 primes vs 48.6
-   predicted on a calibration run), and no joint tuning is needed — the
-   n-side costs nothing on the q-side. Two refinements over the sketch:
-   2ⁿ > P^{1/3} suffices (BLS), so N is 1.5× the cover modulus rather
-   than 2×; and with certification free a *complete* cover beats
-   partial cover + luck, so the record needs no residual witnesses.
+   ↳ 2026-11-21: **executed**, twice and independently (`proth/` and
+   `bls/`; WP12, WP11), and the sketch was right. Both open questions
+   have plain answers. The prime density in the CRT-constrained
+   progression is the ordinary one, e^γ·ln B / ln P per sieve survivor
+   (N − g is coprime to every cover prime because g is uncovered;
+   exhaustive probes: 54 primes vs 48.7 predicted, 8 vs 9.3, 46 vs 48.6,
+   and the out-of-sample probe of WP12 §6). And no joint tuning is
+   needed: the n-side costs nothing on the q-side. Two refinements over
+   the sketch: 2ⁿ > P^{1/3} suffices (BLS), so N is 1.5× the cover
+   modulus rather than Proth's 2×; and with certification free a
+   *complete* cover beats partial cover + luck, so the records need no
+   residual witnesses.
 3. **Matching lower bounds (make the walls theorems).** Every barrier
    in §6 is a first-moment heuristic. There is no theorem of the form
    "any even N < B has g(N) ≤ f(B)" beyond trivialities — not even
@@ -344,15 +353,22 @@ touched — each changes the *problem shape*, not the constants.
    how many residue classes a small N can effectively occupy would turn
    THE WALL from forecast into mathematics, and would be the first
    *impossibility* result in this problem family.
-   ↳ 2026-11-21: a first one exists, for *certificates* rather than for
-   g itself (WP12 §2, Theorem 2): by the linear sieve and
-   Bombieri–Vinogradov, for any even N some prime q < x^{4+ε} has N − q
-   free of prime factors ≤ x — divisors of size ≤ x cannot certify a
-   desert longer than x^{4+ε} (x^{2+ε} on Elliott–Halberstam). GRH does
-   not improve it (B–V already is GRH on average), and GRH gives nothing
-   toward a bound on g(N) itself: that needs correlations of primes,
-   beyond the parity barrier. The matching constructive side is
-   Theorem 1: (1.349 − o(1))·x·ln x is always coverable.
+   ↳ 2026-11-21, two complementary answers. (i) *At record scale the
+   GRH route is measured dead* (`phd/wp10_grh_remark.md`), even granting
+   a proof of GRH: its √x error term exceeds the main term on the record
+   progressions by 10^65.6 (150 d) and 10^95.9 (200 d); at GRH's sieve
+   level, which Bombieri–Vinogradov already gives, every linear-sieve
+   floor is vacuous; only level-Q input, beyond Elliott–Halberstam,
+   certifies even ~140–280 residuals against the ~830–870 achieved. A
+   theorem about g(N) itself needs Hardy–Littlewood-strength input, i.e.
+   H1. (ii) *A first impossibility theorem does exist — for certificates
+   rather than for g, and only asymptotically* (WP12 §2, Theorem 2): by
+   the same sieve, for any even N some prime q < x^{4+ε} has N − q free
+   of prime factors ≤ x, so divisors of size ≤ x cannot certify a desert
+   longer than x^{4+ε} (x^{2+ε} on Elliott–Halberstam). At record
+   parameters it is vacuous, which is (i) again. The matching
+   constructive side is Theorem 1: (1.349 − o(1))·x·ln x is always
+   coverable.
 4. **Optimality certificates for covers.** We do not know how far
    k = 741 is from optimal — the annealer's plateau is evidence of
    nothing. The set-cover LP has a dual; solving the relaxation and

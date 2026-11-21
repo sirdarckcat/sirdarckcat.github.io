@@ -1,0 +1,5 @@
+PASS  g(N) = 1,200,109
+  N: 11,263 digits, sha256(decimal) 7bdbe05a894a81e2...
+  92,942 primes q < g: q=2 by parity, 92,941 odd q by 2,004 cover congruences
+  P = N - g (11,263 digits) prime by BLS, F = 2^12475, base 7; modexp 86.8s (python int)
+  total 86.9s
