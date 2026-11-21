@@ -5,3 +5,4 @@ wrote /home/user/sirdarckcat.github.io/goldbach/proth/runs/q10000000/spec.json
 real	2m6.003s
 user	2m5.445s
 sys	0m0.096s
+  sieve 0/250 chunks, alive 32622/32768, 21s
