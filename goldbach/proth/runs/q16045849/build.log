@@ -1,0 +1,9 @@
+full cover of odd primes < 16045849 (lazy): 13093 odd moduli, r_max = 459089, prod r = 61161.9 digits
+g = 16046137  n = 101600  base = 7  P ~ 304796 bits ~ 91752 digits
+wrote /home/user/sirdarckcat.github.io/goldbach/proth/runs/q16045849/spec.json
+
+real	5m0.973s
+user	4m59.478s
+sys	0m0.156s
+  sieve 0/250 chunks, alive 32612/32768, 31s
+  sieve 50/250 chunks, alive 20159/32768, 119s
