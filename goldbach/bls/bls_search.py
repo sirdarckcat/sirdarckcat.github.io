@@ -111,6 +111,8 @@ def main():
     ap.add_argument("--offsets", type=int, default=300_000)
     ap.add_argument("--sieve", type=int, default=100_000_000)
     ap.add_argument("--workers", type=int, default=os.cpu_count())
+    ap.add_argument("--skip", type=int, default=0,
+                    help="skip the first SKIP sieve survivors (resume)")
     ap.add_argument("--log")
     a = ap.parse_args()
 
@@ -142,7 +144,9 @@ def main():
         f"cover+CRT {time.time() - t_start:.1f}s")
 
     alive = sieve_offsets(P0, L, I, r_max, a.sieve, log)
-    cand = np.nonzero(alive)[0].tolist()
+    cand = np.nonzero(alive)[0].tolist()[a.skip:]
+    if a.skip:
+        log(f"resuming: skipped the first {a.skip:,} survivors")
     lnP = float(gmpy2.log(P0 + L))
     exp_tests = lnP / (math.exp(0.5772156649) * math.log(a.sieve))
     log(f"expected BLS tests ~ {exp_tests:.0f} (lnP / e^gamma ln S)")
@@ -179,7 +183,8 @@ def main():
         "congruences": len(cover) + 1, "r_max": r_max,
         "two_adic": [n + 1, int(g + 1 + (1 << n))],
         "cover": cover, "N": N.digits(),
-        "search": {"tests": k, "minutes": round((time.time() - t0) / 60, 2),
+        "search": {"tests": k + a.skip,
+                   "minutes": round((time.time() - t0) / 60, 2),
                    "expected_tests": round(exp_tests), "sieve": a.sieve,
                    "workers": a.workers},
     }
