@@ -521,6 +521,35 @@ predicted density e^−18.2. The measured density model (calibrated at
 | T(100 000) upper bound | 5.83·10^198 (199 digits) | **6.94·10^196 (197 digits)** |
 | R(10^199) lower bound | 105 667 | **107 719** |
 
+## Closeness: every record scored against the size of its N (2026-11-21)
+
+The height game has no ceiling, so its records measure compute, not how
+remarkable the number is. `closeness.py` scores each record by
+g(N) ÷ ceiling(N), where ceiling(N) = 1.4·ln²N·ln ln N is the largest g a
+number of that size is expected to have (conjectural; the constant is
+fitted to the exhaustive data up to 4·10^18, SOK §6). The literal bound
+g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
+
+| record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
+|---|---|---|---|---|---|---|
+| exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | ~100% (it fixes the constant) | 132 | 19 |
+| `threshold_150digit_g104527` | 104,527 | 150 | ~975,000 | 10.7% | 91 | 54 |
+| `budget_1e200_200digit_g112249` | 112,249 | 200 | ~1.8M | 6.2% | 70 | 56 |
+| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~4.7·10^8 | 0.24% | 35 | 161 |
+| `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~1.9·10^10 | 0.011% | 8.7 | 209 |
+| `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~9.6·10^10 | 0.005% | 9.3 | 319 |
+
+Two readings. (1) A random even number with as many digits as the 5M
+record already has g near 540,000 (Hardy–Littlewood mean; measured on
+random numbers at 300 and 1,000 digits, see the script's docstring), so
+that record is about 9 times ordinary for its size. (2) Closeness falls
+roughly like 1/ln N for every covering construction, because covers give
+g proportional to ln N while the ceiling grows like ln²N. A single
+closeness leaderboard is therefore won at the smallest sizes, where
+exhaustive search already holds ~100%. The non-arbitrary races are the
+fixed-target ones: for a given g, the smallest N (the T game; the last
+column is the target), and for a given size, the largest g (the R game).
+
 ## Reproduction
 
 ```
