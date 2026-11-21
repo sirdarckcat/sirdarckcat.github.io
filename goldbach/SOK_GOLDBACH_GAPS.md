@@ -19,9 +19,10 @@ we now know that we did not know at the start.
 >    intersect by CRT; the partition proof becomes one modular
 >    exponentiation. With certification free, *complete* covers are the
 >    optimal design for this game. Two sessions found this independently
->    and cross-verified each other. Records: g = 2,000,269 at 15,595
->    digits, and g = 1,200,109 at 11,263 digits certified twice; no ECPP,
->    no residual witnesses. `proth/README.md`, `phd/wp11_bls_game1.md`.
+>    and cross-verified each other. Records: g = 5,000,251 at 33,938
+>    digits (GPU-screened on a Colab A100, proved on the CPU), g =
+>    2,000,269 at 15,595 digits, and g = 1,200,109 at 11,263 digits
+>    certified twice; no ECPP, no residual witnesses. `proth/README.md`, `phd/wp11_bls_game1.md`.
 > 2. *There is now a lower-bound theorem and an impossibility theorem for
 >    covering certificates* (§7.3): residues modulo the primes ≤ x can cover
 >    all primes below (1.349 − o(1))·x·ln x and never those below x^{4+ε}.
@@ -40,7 +41,7 @@ we now know that we did not know at the start.
 | **Full covering system** (paper, 2025) | every prime p<Q hit by a class p ≡ N (mod r) | Q=10⁵ at 1,020 digits; Q=10⁸ at 327,455 digits (no partition) | first real records; pays for *certainty* it doesn't need |
 | **Partial cover + progression search** (all 2026 records) | cover most primes; PRP-test the k residuals per candidate N = N₀+tM | Q=10⁵ at **150 digits**; g=1,157,341 at 2,480 digits | the frontier; everything below is about its economics |
 | Prime-gap transfer | park all N−p inside a known gap | needs a *fully verified* gap > 1.1M: endpoints are ~18k-digit PRPs | blocked (resource-strength); dominated by covers — a Goldbach gap needs only the sparse set {N−p} composite, not an interval |
-| ↳ **Full cover + N−1-form complement** (WP11, WP12; 2026-11-21) | every prime < g hit by a class; N − g = 1 + 2ⁿ·R proved prime by one modexp (BLS) | g=**2,000,269** at 15,595 digits (648 PRP tests, 37 min on 4 cores); g=1,200,109 at 11,263 digits certified twice by independent code; zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
+| ↳ **Full cover + N−1-form complement** (WP11, WP12; 2026-11-21) | every prime < g hit by a class; N − g = 1 + 2ⁿ·R proved prime by one modexp (BLS) | g=**5,000,251** at 33,938 digits (3,140 PRP tests, 44 min on one A100); g=2,000,269 at 15,595 digits (648 tests, 37 min on 4 cores); g=1,200,109 at 11,263 digits certified twice by independent code; zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
 
 The last row is the theoretical point the whole project demonstrates:
 **Goldbach gaps are strictly cheaper than prime gaps.** A 2,480-digit N
@@ -246,7 +247,7 @@ nearly coincide.
   remaining headroom, after which every gain awaits better covers or
   more compute.
 
-### Game 1 — largest g, N unbounded  (now: 2,000,269, N−1-certified; was 1,157,341 — see the ↳ item below)
+### Game 1 — largest g, N unbounded  (now: 5,000,251, N−1-certified; was 1,157,341 — see the ↳ item below)
 
 - **Actual maximum (truth)**: none. g(N) is unbounded (proved
   unconditionally in the 2025 paper via covering systems + Dirichlet).
@@ -283,7 +284,10 @@ nearly coincide.
   throughput: with GMP on 4 cores, g > 5·10⁶ ≈ 11 h, 10⁷ ≈ 3.4 days,
   16,045,848 (the largest known prime gap of any kind) ≈ 13 days; the
   GPU fleet, or a few dozen cores of gwnum-class FFT code, bring the top
-  rungs down to hours. The verdict above is replaced by: Game 1's record
+  rungs down to hours. (Measured the same evening: g = 5,000,251 at
+  33,938 digits after 44 min on one Colab A100, every GPU pass re-proved
+  on the CPU; the 10⁷ and 16,045,849 rungs are queued behind it.)
+  The verdict above is replaced by: Game 1's record
   is an index of how many ~10⁵-digit PRP tests one is willing to run,
   and of how short a complete cover of the primes below g can be made.
 

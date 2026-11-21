@@ -7,9 +7,43 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **15,595-digit** N (records/height_15595digit_g2000269) | g = **2,000,269** | **new 2026-11-21**; N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **33,938-digit** N (records/height_33938digit_g5000251) | g = **5,000,251** | **new 2026-11-21 (evening)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py and PARI. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+
+### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251
+
+Authorized by the user ("colab the fuck out of this problem"). One A100
+runtime (the account allows one GPU at a time), its 12 vCPUs, and a second
+8-vCPU CPU runtime. The split with the other session: it runs g > 3·10⁶ on
+its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
+
+- **Engine.** `proth/gpu_screen.py` is a CuPy batched Montgomery engine
+  (15-bit limbs in float64, cuFFT).
+  - v1 failed validation on structured operands: Mont(1) = R mod P has
+    long 0x7FFF limb runs. An exact carry-lookahead kernel fixed it.
+  - v2 merges an inverse FFT (1.11×). v3 drops the copies (1.12×, bit-for-bit
+    equal to v2).
+  - Every version is validated against gmpy2 and the known primes before
+    use. GPU passes are re-proved on the CPU.
+- **g = 5,000,251 at 33,938 digits.** 68 CPU and 3,072 GPU tests (0.85 s
+  each). The hit is the 3,080th survivor, against ~2,118 expected
+  (p ≈ 0.23 of waiting that long). It passes the CPU BLS proof, `verify.py`
+  and the PARI cross-check, which is now a `parforprime`: identical logs,
+  2.8× faster on 3 threads.
+- **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
+  (10⁷ rung) and toward 10¹² (16M rung) while the GPU runs. That is ~18%
+  and ~25% fewer expected tests. It repurposes the 16M CPU helper's
+  cores: PRP tests on CPU would have covered ~8% of that rung in the same
+  time.
+- **Incident.** My batch-boundary restart script for the 10⁷ rung read
+  the line count of a log that did not exist yet, fell through, and killed
+  the first 10⁷ batch at 76%. That lost ~17 min of GPU time. The intended
+  end state (a reloading search) was reached anyway. Lesson: guard every
+  wait on a file's existence.
+- **Not available.** A second GPU (TooManyAssignments) and a TPU host
+  (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
+  is not a constraint.
 
 ### 2026-11-21 — the two branches merged (`ccr-2ce9e63a-hn0fuw` ← `ccr-8ffe9d7a-4ni11u`)
 - Two sessions started from the same commit, both prompted by the same

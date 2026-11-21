@@ -50,13 +50,17 @@ def kill_files(surv_path):
 
 
 def load_kills(files):
-    ks = set()
-    for p in files:
+    """Union of the kill lists; returns (kills, files seen). A list that cannot
+    be read is recorded with mtime None, so the next scan retries it."""
+    ks, seen = set(), {}
+    for p, mt in files.items():
         try:
             ks.update(int(t) for t, _ in json.load(open(p)))
+            seen[p] = mt
         except (OSError, ValueError, TypeError) as e:
-            print(f"kill list {p} unreadable ({e}); skipped", flush=True)
-    return ks
+            print(f"kill list {p} unreadable ({e}); will retry", flush=True)
+            seen[p] = None
+    return ks, seen
 
 
 def main():
@@ -74,8 +78,7 @@ def main():
         print("a hit is already recorded; nothing to do", flush=True)
         return
     tested = set(done)
-    kfiles = kill_files(surv_path)
-    kills = load_kills(kfiles)
+    kills, kfiles = load_kills(kill_files(surv_path))
     todo = [t for t in surv if t not in tested and t not in kills]
     print(f"{len(surv)} survivors, {len(kills)} sieve kills listed, {len(done)} already "
           f"tested, {len(todo)} to go; batch {batch}", flush=True)
@@ -114,7 +117,7 @@ def main():
         try:
             kf = kill_files(surv_path)
             if kf != kfiles:
-                kfiles, kills = kf, load_kills(kf)
+                kills, kfiles = load_kills(kf)
                 print(f"kill lists changed: {len(kills)} kills from {len(kf)} files", flush=True)
         except OSError as e:
             print(f"kill list scan failed ({e}); keeping the current kills", flush=True)

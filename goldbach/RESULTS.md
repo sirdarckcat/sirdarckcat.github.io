@@ -1,5 +1,27 @@
 # Goldbach Desert Records
 
+## New height record (2026-11-21, evening): g(N) = 5,000,251, GPU-screened
+
+**g(N) = 5,000,251** for a 33,938-digit N
+(`records/height_33938digit_g5000251/`):
+- **Cover.** All 348,526 primes below g lie in a class of a complete
+  5,342-class cover (moduli ≤ 167,107).
+- **Proof.** N − g = m·2^37583 + 1 (here 2^37584 | P − 1) is proved prime
+  by 5^((P−1)/2) ≡ −1 (mod P) with 2^37584 > P^(1/3).
+- **Search.** It ran on a Colab A100: 68 CPU tests, then 3,072 GPU screens
+  of 2^((P−1)/2) mod P (`proth/gpu_screen.py`, 0.82–0.92 s per
+  112,738-bit test, ~100× one GMP core). The hit was the 3,080th sieve
+  survivor (expected ~2,118).
+- **Verification.** No GPU result is trusted. The hit was re-proved on the
+  CPU (81 s), and it passes `verify.py` and the PARI cross-check: PARI's
+  own N−1 certificate, `isprime`, and a brute-force gcd scan of all
+  348,526 complements.
+
+This is 2.5× the record set earlier the same day, which is described next.
+The 4-core cost model had put this rung at ~11 h; it took 44 min of GPU
+time. The 10⁷ and 16,045,849 rungs are queued on the same GPU
+(`proth/README.md`, "GPU screening").
+
 ## New height records (2026-11-21): g(N) = 2,000,269 and 1,200,109, proved without ECPP
 
 **g(N) = 2,000,269** for a 15,595-digit N
