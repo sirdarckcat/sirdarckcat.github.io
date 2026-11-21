@@ -2,3 +2,6 @@
 # They are committed explicitly with git add -f at milestones, e.g. a finished rung.
 gpu_tests.jsonl
 gpu_hits.jsonl
+# Live harvest of the Colab-CPU helper's desert.py log for the 16M rung.
+colab_cpu_tests.jsonl
+colab_cpu_run.log
