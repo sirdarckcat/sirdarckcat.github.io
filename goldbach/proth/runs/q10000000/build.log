@@ -1,0 +1,7 @@
+full cover of odd primes < 10000000 (lazy): 9094 odd moduli, r_max = 306239, prod r = 40880.9 digits
+g = 10000141  n = 67914  base = 11  P ~ 203738 bits ~ 61331 digits
+wrote /home/user/sirdarckcat.github.io/goldbach/proth/runs/q10000000/spec.json
+
+real	2m6.003s
+user	2m5.445s
+sys	0m0.096s
