@@ -23,6 +23,12 @@ python3 goldbach/bls/ladder.py                                # cost ladder
 - `density_probe.py`: exhaustive prime count over sieve survivors, compared
   with the cost model (z = +0.76 at Q = 10^5, −0.43 at 3·10^5).
 - `testvec_q1e5.json`: verifier test vector.
+- `xverify.py`: format-agnostic independent checker. It reads only N, g,
+  the cover and the base, so it also verifies the `goldbach/proth`
+  records of branch `ccr-2ce9e63a-hn0fuw`.
 
-The first record, g = 1,200,109, is in
-`../records/bls_game1_11263digit_g1200109/`.
+This directory's certificate for g = 1,200,109 is in
+`../records/bls_game1_11263digit_g1200109/`. It is an independent second
+certificate. The same construction was found first on branch
+`ccr-2ce9e63a-hn0fuw` (`goldbach/proth/`), which holds the Game-1
+incumbent, g = 2,000,269. See `../phd/crossreview_2ce9e63a.md`.

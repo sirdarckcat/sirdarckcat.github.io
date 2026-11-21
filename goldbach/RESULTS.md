@@ -24,15 +24,23 @@ digits (g = 101 149) and R(10^200) g = 119 419. The 150-digit record
 below supersedes the 179-digit T bound; the slop R value g = 119 419
 at 199 digits supersedes this directory's g = 112 249.
 
-## New record (2026-11-21): Game 1, g(N) = 1 200 109, certified with no ECPP
+## Independent second certificate (2026-11-21): Game 1, g(N) = 1 200 109, no ECPP
+
+> **Priority and incumbent.** Branch `ccr-2ce9e63a-hn0fuw` found the same
+> construction independently. It certified g = 1,200,109 at 08:03 UTC
+> (this branch: 08:44), with a different N, and has since certified
+> **g = 2,000,269** at 15,595 digits. That is the Game-1 incumbent. All
+> three records pass both branches' verifiers and PARI; see
+> `phd/crossreview_2ce9e63a.md`.
 
 **N** (11,263 digits, `records/bls_game1_11263digit_g1200109/`) has least
-Goldbach summand **g(N) = 1,200,109**. This is the largest proven value,
-beating 1,157,341 (2,480 digits, `slop/goldbach/records/g1`) and the
-megagap's 1,134,871.
+Goldbach summand **g(N) = 1,200,109**. This is an independent second
+certificate for that value: a different N, found by code that shares
+nothing with the other branch. Both exceed the earlier records, 1,157,341
+(2,480 digits, `slop/goldbach/records/g1`) and the megagap's 1,134,871.
 
-It is the first record whose proof needs **no ECPP, no APR-CL and no
-probable-prime step**:
+Like the other branch's records, its proof needs **no ECPP, no APR-CL and
+no probable-prime step**:
 
 - **Composite side: 2,004 congruences.** These are N ≡ a_r (mod r), one
   for every odd prime r ≤ 17,431, plus parity. Together they put every

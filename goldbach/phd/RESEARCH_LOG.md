@@ -7,11 +7,27 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **11,263-digit** N (records/bls_game1_11263digit_g1200109) | g = **1,200,109** | **BLS-certified, no ECPP** (WP11, 2026-11-21); stdlib verifier PASS. Previous: 2,480-digit g = 1,157,341 (slop g1) |
+| Height H (Game 1) | **15,595-digit** N (branch `ccr-2ce9e63a-hn0fuw`, `goldbach/proth/records/height_15595digit_g2000269`) | g = **2,000,269** | BLS-certified, no ECPP; re-verified here by `bls/xverify.py` and PARI (`phd/crossreview_2ce9e63a.md`). This branch holds an independent second certificate for g = 1,200,109 (records/bls_game1_11263digit_g1200109). Previous: 2,480-digit g = 1,157,341 (slop g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
-### 2026-11-21 — WP11: Game 1's certification wall removed; new record g = 1,200,109
+### 2026-11-21 — Cross-review with branch `ccr-2ce9e63a-hn0fuw`
+- The other session found the WP11 construction independently and first
+  (08:03 against 08:44 UTC). It then certified g = 2,000,269 with a lazy
+  cover ~10% shorter, and proved two covering theorems:
+  - C(x) ≥ 1.349·x·ln x, which beats the paper's Theorem 14 and Shi's ½;
+  - C(x) ≤ x^(4+ε).
+- **Verification.** All three records pass both branches' verifiers and
+  PARI, re-run here. Their theorems were re-derived; their Shi citation
+  was verified verbatim against the v6 PDF.
+- **Corrections here.** "New record" and "first without ECPP" are
+  relabelled "independent second certificate"; WP11's ladder is ~30%
+  pessimistic next to the lazy cover.
+- **Open item.** Both Q = 1.2·10^6 searches ran ~4× long (P ≈ 1%
+  jointly; same residue class); a 1.5 h density probe on that class is
+  proposed. A merge plan is in `crossreview_2ce9e63a.md` (not executed).
+
+### 2026-11-21 — WP11: Game 1's certification wall removed; g = 1,200,109 (independent second certificate; see the cross-review above)
 - **Prompt.** The user pushed back after WP10: if frontier research is
   possible, find a non-brute-force way to move faster. Answer: for the T
   and R games the brute force is the cheap part (≈0.03 nats of luck per
