@@ -1,0 +1,6 @@
+t=6063: CPU proof in 306s: BLS (F = 2^67914 > P^(1/3), c1^2 - 4 c2 not a square)
+[1] N has 61329 digits and lies in all 9095 classes (prime moduli up to 306239)
+[2] all 664584 primes q < g = 10000141 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 11^((P-1)/2) = -1 (mod P), F = 2^67914 (67914/203731 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [291.9s, gmpy2]
+ALL CHECKS PASSED: g(N) = 10000141 for this 61329-digit N
+ 
