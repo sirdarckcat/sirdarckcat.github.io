@@ -3,13 +3,41 @@
 Programme: *Extremal Least Goldbach Summands* (4-year proposal, record snapshot 2026-07-22).
 Student log, year 3 — project kickoff with delegated subagent execution.
 
-## Record board (updated 2026-07-28 — session close)
+## Record board (updated 2026-11-21)
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session |
+| Height H (Game 1) | **11,263-digit** N (records/bls_game1_11263digit_g1200109) | g = **1,200,109** | **BLS-certified, no ECPP** (WP11, 2026-11-21); stdlib verifier PASS. Previous: 2,480-digit g = 1,157,341 (slop g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+
+### 2026-11-21 — WP11: Game 1's certification wall removed; new record g = 1,200,109
+- **Prompt.** The user pushed back after WP10: if frontier research is
+  possible, find a non-brute-force way to move faster. Answer: for the T
+  and R games the brute force is the cheap part (≈0.03 nats of luck per
+  residual against ≥ ln Q ≈ 11.5 nats to plant a divisor). Game 1's wall,
+  though, was an artifact of proving whatever prime the search produced.
+- **The trick (SoK §6/§7.2, flagged as open).** The cover modulus is odd,
+  so N ≡ g+1+2^n (mod 2^(n+1)) is free by CRT. Then 2^n exactly divides
+  P − 1 for P = N − g, and with 2^(3n) > P the BLS theorem proves P prime
+  from one modexp. The price is ×1.5 digits. With full covers (no
+  residuals), the certificate is the congruences plus one modexp. The
+  proof is re-derived in `wp11_bls_game1.md` §1.
+- **Validation.**
+  - `bls/full_cover.py` reproduces the paper's Table rows for Q = 10^5,
+    10^6 and 10^7 exactly.
+  - The independent stdlib verifier rejects 6/6 tampered records. It had
+    one bug at record scale (Python's 4,300-digit int-to-string cap),
+    now fixed.
+  - The density model was measured at z = +0.76 and −0.43; the sieve was
+    audited.
+- **Record.** 11,263 digits, g = 1,200,109, found after 3,472 tests on 4
+  cores in 76 min. That was a ~1%-tail draw against 762 expected. It was
+  verified three ways: the stdlib proof checker (87 s), GMP BPSW, and a
+  GMP recheck of the congruences.
+- **Ladder on this box (GMP).** 5M ≈ 13 h, 10^7 ≈ 3.6 d, 16,045,849 ≈ 13 d
+  (longer than every known prime gap). GWNUM or the GPU fleet should be
+  5–10× faster. The T(10^5) and R(10^200) frontiers are unchanged.
 
 ### 2026-11-21 — WP10: a claimed RH/GRH proof (alpo.ge/remark.pdf) assessed: no lever moves
 - User asked whether the announcement inspires frontier progress. The

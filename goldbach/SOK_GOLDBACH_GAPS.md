@@ -19,6 +19,7 @@ we now know that we did not know at the start.
 | Primorial + Dirichlet | force p ∤ N−p for all small p | g=nextprime(P) at θ(P) digits (exponential) | proves unboundedness, unusable for records |
 | **Full covering system** (paper, 2025) | every prime p<Q hit by a class p ≡ N (mod r) | Q=10⁵ at 1,020 digits; Q=10⁸ at 327,455 digits (no partition) | first real records; pays for *certainty* it doesn't need |
 | **Partial cover + progression search** (all 2026 records) | cover most primes; PRP-test the k residuals per candidate N = N₀+tM | Q=10⁵ at **150 digits**; g=1,157,341 at 2,480 digits | the frontier; everything below is about its economics |
+| **Full cover + BLS-form complement** (WP11, 2026-11) | full cover, plus N ≡ g+1+2ⁿ (mod 2ⁿ⁺¹), so that BLS proves N−g prime from one modexp | g=**1,200,109** at 11,263 digits; 76 min on 4 cores; no ECPP | Game 1's frontier; the certification wall is removed |
 | Prime-gap transfer | park all N−p inside a known gap | needs a *fully verified* gap > 1.1M: endpoints are ~18k-digit PRPs | blocked (resource-strength); dominated by covers — a Goldbach gap needs only the sparse set {N−p} composite, not an interval |
 
 The last row is the theoretical point the whole project demonstrates:
@@ -219,7 +220,7 @@ nearly coincide.
   remaining headroom, after which every gain awaits better covers or
   more compute.
 
-### Game 1 — largest g, N unbounded  (now: 1,157,341)
+### Game 1 — largest g, N unbounded  (now: 1,200,109, BLS-certified)
 
 - **Actual maximum (truth)**: none. g(N) is unbounded (proved
   unconditionally in the 2025 paper via covering systems + Dirichlet).
@@ -243,6 +244,14 @@ nearly coincide.
   general-form proven primes at a fixed ratio (g ≈ π-count of ~2·10⁻⁴
   × certifiable digits²... in practice: whatever can be ECPP'd, times
   ~600 in q per 1,000 digits).
+  *Status 2026-11-21 (`phd/wp11_bls_game1.md`): the construction
+  breakthrough is done. The two systems intersect by plain CRT: the cover
+  modulus is odd, so N ≡ g+1+2ⁿ (mod 2ⁿ⁺¹) is free, and BLS then proves
+  N − g prime from one modexp, at ×1.5 digits. Record g = 1,200,109
+  (11,263 digits). The wall is now modexp cost, not ECPP. Measured on a
+  4-core box: ≈ 13 h for 5·10⁶, 3.6 days for 10⁷, and 13 days for
+  16,045,849, which is longer than every known prime gap. Game 1 now
+  indexes FFT-modexp throughput, not primality-proving technology.*
 
 ### Summary table
 
@@ -250,7 +259,7 @@ nearly coincide.
 |---|---|---|---|---|---|
 | T(10⁵) smallest N | ~10⁵³ (53 digits) | ~140 (days) / ~130 (months) | ~120–125 digits (sub-100 ≈ 2–9×10⁵ GPU-yr) | 120–135 digits stall; floor 38–49 | search entropy + density-1 subset-sum + WP7 3-condition test |
 | R(10²⁰⁰) largest g | ~1.8M | ~170k | ~250k | ~450k | range entropy under the cap |
-| Game 1 largest g | unbounded | ~2.5M | ~5×10⁷ (fastECPP) | ~10⁹+; unbounded via Pocklington-form trick if found | certification cost only |
+| Game 1 largest g | unbounded | ~10⁷ in days (BLS, WP11; was ~2.5M via ECPP) | ~10⁸ (BLS, cluster) | unbounded: the Pocklington-form trick was found (WP11) | modexp throughput only |
 
 
 ## 7. Unexplored research angles
@@ -290,6 +299,11 @@ touched — each changes the *problem shape*, not the constants.
    *compositeness* mechanism (terminated) and explicitly noted the
    shared-sieve throughput benefit; the certification-side use proposed
    here — Proth primality as the partition proof — remains untouched.
+   *Status 2026-11-21: executed in WP11, using BLS (F = 2ⁿ ≥ P^(1/3),
+   ×1.5 digits) instead of Proth (k < 2ⁿ, ×2 digits). The density
+   question is answered: the primes in the progression follow
+   e^γ·ln S / ln P, measured at z = +0.76 and −0.43. First record:
+   g = 1,200,109.*
 3. **Matching lower bounds (make the walls theorems).** Every barrier
    in §6 is a first-moment heuristic. There is no theorem of the form
    "any even N < B has g(N) ≤ f(B)" beyond trivialities — not even

@@ -24,6 +24,46 @@ digits (g = 101 149) and R(10^200) g = 119 419. The 150-digit record
 below supersedes the 179-digit T bound; the slop R value g = 119 419
 at 199 digits supersedes this directory's g = 112 249.
 
+## New record (2026-11-21): Game 1, g(N) = 1 200 109, certified with no ECPP
+
+**N** (11,263 digits, `records/bls_game1_11263digit_g1200109/`) has least
+Goldbach summand **g(N) = 1,200,109**. This is the largest proven value,
+beating 1,157,341 (2,480 digits, `slop/goldbach/records/g1`) and the
+megagap's 1,134,871.
+
+It is the first record whose proof needs **no ECPP, no APR-CL and no
+probable-prime step**:
+
+- **Composite side: 2,004 congruences.** These are N ≡ a_r (mod r), one
+  for every odd prime r ≤ 17,431, plus parity. Together they put every
+  prime q < g in a class with r | N − q. This is the paper's full cover of
+  the odd primes below 1.2·10^6, reproduced exactly by
+  `bls/full_cover.py`.
+- **Prime side: one modexp.** P = N − g = 1 + 2^12475·R with R odd and
+  2^(3·12475) > P. Then 7^((P−1)/2) ≡ −1 (mod P), and the
+  Brillhart–Lehmer–Selfridge digit test passes, so P is prime.
+
+The independent stdlib verifier takes 87 s. The previous record's
+complement needed ~2 h of ECPP plus re-verification and APR-CL.
+
+How it works, from `phd/wp11_bls_game1.md`: the cover modulus is odd, so
+N mod 2^(n+1) is free. That makes N − g Pocklington-friendly by plain CRT,
+at the price of ~1.5× the cover's digits. This was the trick the SoK
+(§6, §7.2) and PROPOSAL_NEXT_CAMPAIGNS flagged as Game 1's wall-remover.
+
+Search: 3,472 BLS tests on 4 cores in 76 min, against 762 expected. That
+is a ~1%-tail draw; the density model was re-measured at z = +0.76 and
+−0.43. The measured ladder on this 4-core box (GMP):
+
+| rung | g | time |
+|---|---|---|
+| | 2·10^6 | ≈ 1.4 h |
+| | 5·10^6 | ≈ 13 h |
+| | 10^7 | ≈ 3.6 days |
+| longer than every known prime gap | 16,045,849 | ≈ 13 days |
+
+GWNUM-class FFT code or the GPU fleet should cut the top rungs by 5–10×.
+
 ## New record (2026-07-26): T(100 000) at 150 digits — the GPU rung,
 ## 45 digits below our own 195-digit record
 

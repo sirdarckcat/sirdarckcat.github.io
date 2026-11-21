@@ -50,7 +50,8 @@ modexp, which is the same cost as checking a Proth prime.
 |---|---|---|
 | `bls/full_cover.py` | increasing-order greedy full cover of the odd primes < Q, as in the paper | **reproduces the paper's Table tab:results exactly**: Q=10^5 → 356 congruences, r_max 2,393, 1,020 digits. Q=10^6 → 1,762 / 15,083 / 6,480. Q=10^7 → 9,853 / 102,983 / 44,599 (vs. 44,600: rounding) |
 | `bls/bls_search.py` | picks g = least uncovered prime ≥ Q; CRT with N ≡ g+1+2^n (mod 2^(n+1)); sieves P₀ + i·L by primes to S; runs parallel Euler tests with a non-residue base; applies the BLS square check | shakedown at Q=10^5: 122 tests against 123 predicted (ln P / (e^γ ln S)) |
-| `bls/verify_bls_record.py` | stdlib-only; product-tree CRT (a different algorithm from the search's loop); marks every class progression a_r + kr below g; Python-int modexp; shares no code with the search | **tamper test, 6/6 rejected for the right reason**: non-residue base replaced by a residue; neighbouring offset (composite P); one congruence dropped; class changed mod 3 or mod 17 (uncovered primes); stale N |
+| `bls/verify_bls_record.py` | stdlib-only; product-tree CRT (a different algorithm from the search's loop); marks every class progression a_r + kr below g; Python-int modexp; shares no code with the search | **tamper test, 6/6 rejected for the right reason**: non-residue base replaced by a residue; neighbouring offset (composite P); one congruence dropped; class changed mod 3 or mod 17 (uncovered primes); stale N. One bug was caught at record scale: Python 3.13's 4,300-digit cap on int-to-string conversion crashed the check, so the verifier lifts the cap |
+| `bls/density_probe.py` | exhaustive prime count over the first K sieve survivors, compared with the model | z = +0.76 and −0.43 (§3) |
 
 ## 3. Records
 
@@ -60,10 +61,30 @@ modexp, which is the same cost as checking a Proth prime.
   P, and all N − q for the first 2,000 odd q were checked composite by
   brute force. Committed as the verifier's test vector:
   `bls/testvec_q1e5.json`.
-- **Record attempt at Q = 1.2·10^6.** This gives g = 1,200,109, against
-  the Game-1 record of 1,157,341. It was still running at the time of
-  this commit, at 175 of ~762 expected tests. The result and its
-  verification logs land in the next commit.
+- **New Game-1 record: g(N) = 1,200,109**, beating 1,157,341. N has
+  11,263 digits. It needs 2,004 cover congruences (r ≤ 17,431) and
+  n = 12,475, and the hit came at offset i = 6,781 with BLS base 7. See
+  `records/bls_game1_11263digit_g1200109/`. Verification:
+  - the independent verifier passes in 87 s of pure-Python arithmetic;
+  - GMP BPSW agrees on P;
+  - the congruences recheck under GMP.
+
+  Certifying the previous record's complement took ~2 h of ECPP, plus
+  ~2 h of re-verification and ~2 h of APR-CL.
+- **The discovery took 3,472 tests against 762 predicted**, on 4 cores in
+  76 min. That is a ~1%-tail draw for an exponential wait. Because every
+  rung of §4 rests on the density model, the model was measured directly
+  (`bls/density_probe.py`, exhaustive tests, no early stop):
+
+  | Q | P digits | tests | primes | model | z |
+  |---|---|---|---|---|---|
+  | 10^5 | 1,536 | 6,000 | 54 | 48.7 | +0.76 |
+  | 3·10^5 | 3,670 | 2,400 | 8 | 9.3 | −0.43 |
+
+  The model holds, and the sieve was audited separately: survivors are
+  rough, kills are real, and P is coprime to M. Ladder costs are
+  expectations; per the SoK's variance rule, budget individual rungs at
+  ~3×.
 
 ## 4. The ladder (measured costs, `bls/ladder.py`)
 

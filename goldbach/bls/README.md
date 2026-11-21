@@ -20,3 +20,9 @@ python3 goldbach/bls/ladder.py                                # cost ladder
   product-tree CRT, class-progression marking and a Python-int modexp,
   with no gmpy2 or numpy.
 - `ladder.py`: measured-cost table for higher rungs.
+- `density_probe.py`: exhaustive prime count over sieve survivors, compared
+  with the cost model (z = +0.76 at Q = 10^5, −0.43 at 3·10^5).
+- `testvec_q1e5.json`: verifier test vector.
+
+The first record, g = 1,200,109, is in
+`../records/bls_game1_11263digit_g1200109/`.

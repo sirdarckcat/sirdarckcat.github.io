@@ -59,6 +59,8 @@ def crt_tree(pairs):
 
 def main(path):
     t0 = time.time()
+    if hasattr(sys, "set_int_max_str_digits"):  # Python >= 3.11 caps str<->int
+        sys.set_int_max_str_digits(0)
     rec = json.load(open(path))
     cover = [(int(r), int(a)) for r, a in rec["cover"]]
     g, n, i = int(rec["g"]), int(rec["n"]), int(rec["i"])
