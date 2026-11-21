@@ -3,13 +3,43 @@
 Programme: *Extremal Least Goldbach Summands* (4-year proposal, record snapshot 2026-07-22).
 Student log, year 3 — project kickoff with delegated subagent execution.
 
-## Record board (updated 2026-07-28 — session close)
+## Record board (updated 2026-11-21)
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session |
+| Height H (Game 1) | **11,263-digit** N (goldbach/proth/records/height_11263digit_g1200109) | g = 1,200,109 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+
+### 2026-11-21 — WP10: review "with the GRH announcement for inspiration"
+- User directive: look over the Goldbach-gaps work for improvements, reading
+  `alpo.ge/remark.pdf` for inspiration. The PDF is not about Goldbach: it
+  announces a proof of RH/GRH found with Claude and formalized in Lean
+  (not checked here). Full memo: `phd/wp10_grh_proth_covering.md`.
+- **GRH ledger** (WP10 §3): it moves constants, not walls. Realisation
+  constant 0.56 → 0.67; guaranteed N−1-certifiable realisation exponent
+  12 → 6 (practice: 1.5); Miller's deterministic test would cost ~12
+  core-years per 11k-digit complement, against one modexp for a
+  constructed one; the bounded games and the density model are untouched.
+- **Certification wall of Game 1 removed** (`goldbach/proth/`): complement
+  built as m·2ⁿ+1, cover congruences moved onto m by CRT, primality by the
+  BLS N−1 test. With certification free, complete covers beat partial
+  cover + luck by 4–8× here (REGISTRY A2 "dominated" flips for this game).
+  Record g = 1,200,109 at 11,263 digits; 2,647 PRP tests against ~700
+  expected (a 2% tail; sieve and density model re-validated at full and
+  at reduced scale before accepting that it was luck).
+- **Covers**: weighted lazy greedy over a 3× prime pool is ~10% shorter
+  than the paper's fixed-order greedy (the one-kill tail mostly goes);
+  a price-reweighted variant was tried and was worse. Remaining gap to a
+  proper packing of the sparse tail is the new Door-1-style problem.
+- **Theory** (WP10 §2): prime-covering function C(x) ≥ (e^γ/2C₂ − o(1))·x·ln x
+  = 1.349·x·ln x by pigeonhole — stronger than the paper's FGKMT-transfer
+  Theorem 9 and than the counting constant ½ of arXiv:2605.21529 — and
+  C(x) ≤ x^{4+ε} by the linear sieve + Bombieri–Vinogradov, the first
+  impossibility statement in the family. Greedy data: 0.72·x·ln²x.
+- **Not done**: a Lean proof of the record. Toolchain installation was
+  refused by the session's permission policy; nothing unchecked was
+  committed. Paper patch drafted (WP10 appendix) but `paper.tex` untouched.
 
 ### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
 - User directive: work Door 3 first (AlphaEvolve access offered for the

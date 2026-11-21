@@ -1,5 +1,39 @@
 # Goldbach Desert Records
 
+## New height record (2026-11-21): g(N) = 1,200,109, proved without ECPP
+
+**N** has 11,263 digits (`proth/records/height_11263digit_g1200109/`,
+full decimal in `N.txt`); its least Goldbach summand is
+**g(N) = 1,200,109**, above both earlier height records (1,157,341 at
+2,480 digits in `slop/goldbach/records/g1`, and 1,134,871 at 2,692 digits
+below). What changed is not the number but the proof:
+
+| | megagap record (July) | this record |
+|---|---|---|
+| primes q < g excluded by an explicit divisor | 85,476 + 895 of 88,239 | **all 92,942** |
+| excluded by a strong-pseudoprime witness | 1,867 | **0** |
+| primality of N − g | 253-step ECPP certificate | **one modular exponentiation** |
+| re-verifying the partition proof | replay a 253-step ECPP chain | replay one `powmod` (5.7 s) |
+| full re-verification incl. PARI cross-check | — | 134 s on one core |
+
+The complement is *constructed* as P = N − g = m·2^12475 + 1: every cover
+congruence N ≡ a_r (mod r) is a congruence on m, so the cover and the
+"Pocklington-friendly form" that the SoK called the most valuable open
+trick intersect by CRT. Then 7^((P−1)/2) ≡ −1 (mod P) with
+2^12477 > P^(1/3) proves P prime (Brillhart–Lehmer–Selfridge N−1 test).
+With certification free, a *complete* cover (no residual primes, hence no
+lottery) is the cheapest design; the search is for one prime in a
+progression (2,647 tests here against an expectation of ~700 — an
+unlucky 2% draw; the density model was re-checked and holds).
+
+Verified by `proth/verify.py` (stdlib only) and independently by PARI/GP
+(`crosscheck.gp`: PARI's own N−1 certificate, `isprime`, and a brute-force
+scan of all 92,942 primes that does not use the cover). Method, cost
+model and the ladder to g > 16,045,848 (longer than the largest known
+prime gap of any kind): `proth/README.md`. Theory that came out of the
+same review — a new constant for covering the primes and a sieve ceiling
+for covering certificates — is in `phd/wp10_grh_proth_covering.md`.
+
 ## Prior-art check (2026-07-27)
 
 A web literature search for published constructions of even integers
@@ -326,7 +360,11 @@ below.
 **Remaining open targets from the challenge**: the absolute-known-gap
 milestone g ≥ 16 045 849 (beating the largest PRP-endpoint gap) needs
 π(16M) ≈ 1.03M covered offsets → M ≈ 20 000 digits and ~0.2 s/modexp,
-i.e. a distributed campaign roughly 100–1000× this 4-core box. The
+i.e. a distributed campaign roughly 100–1000× this 4-core box.
+(Superseded 2026-11-21: with a full cover and an N−1-form complement the
+same milestone is ~6,000 PRP tests at ~91,000 digits and needs no ECPP —
+about two weeks on this box with GMP, hours on a gwnum-class engine; see
+`proth/README.md`.) The
 "1M-desert below 200 digits" bonus is beyond covering methods entirely:
 a ≤192-digit modulus leaves ≥20 000 residual primes below 1.1M, giving
 success density e^−400; note (log N)²·log log N ≈ 1.3×10⁶ at 200 digits,
