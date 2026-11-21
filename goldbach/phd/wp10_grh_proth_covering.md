@@ -54,7 +54,8 @@ m ≡ m₀ (mod M_c), M_c = ∏r, and the search runs over m = m₀ + t·M_c. Wi
 Proth's theorem). No cover freedom is spent: all residues stay greedy-optimal.
 
 Consequences (records and timings in `goldbach/proth/README.md`; the first
-certified record is g = 1,200,109 at 11,263 digits):
+certified records are g = 1,200,109 at 11,263 digits and g = 2,000,269
+at 15,595 digits):
 
 - **ECPP disappears from the pipeline.** The 2,480-digit record needed a
   245-step ECPP certificate (~1.7 h to build, ~2 h to re-verify, +2 h
@@ -72,9 +73,9 @@ certified record is g = 1,200,109 at 11,263 digits):
   Every prime q < g has an explicit divisor r | N − q from the cover; the
   partition is one N−1 test. The stdlib verifier is ~100 lines.
 - **The ladder is PRP-bound, not ECPP-bound** — see the table in
-  `goldbach/proth/README.md`: g > 10⁷ is a few thousand PRP tests at
-  ~61,000 digits; the "absolute gap" milestone g > 16,045,848 (longer than
-  the largest known prime gap of any kind) is ~6,000 tests at ~91,000
+  `goldbach/proth/README.md`: g > 10⁷ is ~3,800 PRP tests at
+  61,331 digits; the "absolute gap" milestone g > 16,045,848 (longer than
+  the largest known prime gap of any kind) is ~5,700 tests at 91,753
   digits. Both were classed as "ECPP far beyond practice".
 
 What it costs: digits. N is ≈ 1.5× the full-cover modulus, which itself is
@@ -230,8 +231,8 @@ machine-proof-carrying records in the genre. Status: see
 ## 5. Ranked next steps
 
 1. **Run the ladder** (PRP-bound, embarrassingly parallel, resumable):
-   g > 3·10⁶ (≈2.7 h on this 4-core box), 5·10⁶ (≈11 h), 10⁷ (≈3–4 days),
-   16,045,848 (≈2 weeks) — all with GMP; a gwnum-class PRP engine or the
+   g > 3·10⁶ (≈2.7 h on this 4-core box), 5·10⁶ (≈11 h), 10⁷ (≈3.4 days),
+   16,045,848 (≈13 days) — all with GMP; a gwnum-class PRP engine or the
    repo's GPU fleet cuts each by 10× or more.
 2. **Shrink full covers.** The paper's greedy sits at 0.72·x·ln²x and its
    tail is wasteful (at Q = 1.2M the last 300 targets cost 138 one-kill

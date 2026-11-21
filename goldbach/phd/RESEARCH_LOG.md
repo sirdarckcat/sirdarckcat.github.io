@@ -7,7 +7,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **11,263-digit** N (goldbach/proth/records/height_11263digit_g1200109) | g = 1,200,109 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **15,595-digit** N (goldbach/proth/records/height_15595digit_g2000269) | g = 2,000,269 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Same day: g = 1,200,109 @ 11,263d. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
@@ -27,7 +27,9 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   cover + luck by 4–8× here (REGISTRY A2 "dominated" flips for this game).
   Record g = 1,200,109 at 11,263 digits; 2,647 PRP tests against ~700
   expected (a 2% tail; sieve and density model re-validated at full and
-  at reduced scale before accepting that it was luck).
+  at reduced scale before accepting that it was luck). Then
+  g = 2,000,269 at 15,595 digits on the shorter lazy cover: 648 tests
+  against ~970 expected, 37 min on 4 cores — Campaign C's target.
 - **Covers**: weighted lazy greedy over a 3× prime pool is ~10% shorter
   than the paper's fixed-order greedy (the one-kill tail mostly goes);
   a price-reweighted variant was tried and was worse. Remaining gap to a

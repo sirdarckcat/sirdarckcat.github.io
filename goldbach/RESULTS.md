@@ -1,6 +1,18 @@
 # Goldbach Desert Records
 
-## New height record (2026-11-21): g(N) = 1,200,109, proved without ECPP
+## New height records (2026-11-21): g(N) = 2,000,269 and 1,200,109, proved without ECPP
+
+**g(N) = 2,000,269** for a 15,595-digit N
+(`proth/records/height_15595digit_g2000269/`): all 148,950 primes below g
+are excluded by an explicit divisor from a complete 2,670-class cover, and
+N − g = m·2^17273 + 1 is proved prime by 11^((P−1)/2) ≡ −1 (mod P) with
+2^17274 > P^(1/3). Found after 648 tests (expected ~970), 37 minutes on 4
+cores; verified by the stdlib verifier and by the PARI cross-check. This is
+Campaign C's target ("g > 2,000,000", budgeted at 6–12 h of ECPP plus
+re-verification) with no ECPP at all. The first record of the series,
+found earlier the same day, is described next; the method is the same.
+
+### g(N) = 1,200,109
 
 **N** has 11,263 digits (`proth/records/height_11263digit_g1200109/`,
 full decimal in `N.txt`); its least Goldbach summand is
@@ -51,6 +63,12 @@ N with g = 109 621 (both re-verified in this repo before we started).
 The records below are therefore "smallest/largest known to us"; if a
 competing constructive literature exists it did not surface in the
 search.
+
+Addendum (2026-11-21): a second search found no competing constructions
+either, but did find a theorem: W. Shi, arXiv:2605.21529v6, Thm 6.22
+proves max_{n≤X} p(n) ≥ (½+o(1))·ln X·ln ln X by counting, which already
+supersedes the paper's FGKMT-transfer bound; `phd/wp10_grh_proth_covering.md`
+improves the constant to 1.349 by an explicit covering.
 
 In-repo note: a parallel effort in `slop/goldbach/records/` (merged
 from another working branch) holds a certified T(100k) bound of 179
@@ -362,7 +380,7 @@ milestone g ≥ 16 045 849 (beating the largest PRP-endpoint gap) needs
 π(16M) ≈ 1.03M covered offsets → M ≈ 20 000 digits and ~0.2 s/modexp,
 i.e. a distributed campaign roughly 100–1000× this 4-core box.
 (Superseded 2026-11-21: with a full cover and an N−1-form complement the
-same milestone is ~6,000 PRP tests at ~91,000 digits and needs no ECPP —
+same milestone is ~5,700 PRP tests at 91,753 digits and needs no ECPP —
 about two weeks on this box with GMP, hours on a gwnum-class engine; see
 `proth/README.md`.) The
 "1M-desert below 200 digits" bonus is beyond covering methods entirely:

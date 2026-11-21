@@ -54,6 +54,7 @@ ln P / (e^γ ln B) tests are expected.
 
 | g(N) | digits of N | cover | PRP tests | proof of the partition | directory |
 |---|---|---|---|---|---|
+| **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `records/height_15595digit_g2000269` |
 | **1,200,109** | 11,263 | 2,005 classes (moduli ≤ 17,431, paper's greedy), complete below g | 2,647 (expected ~700; a 2% unlucky draw) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^12477 > P^(1/3) | `records/height_11263digit_g1200109` |
 
 Previous height records, for scale: g = 1,134,871 (2,692 digits) and
@@ -68,7 +69,7 @@ single modular exponentiation if present):
     NO_GMPY2=1 python3 verify.py records/<dir>/record.json  # 102 s, plain Python ints
     cd records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
 
-(timings for the 11,263-digit record on one core).
+(timings for the 11,263-digit record on one core; the 15,595-digit record takes 12 s, 270 s and ~8.5 min).
 
 `crosscheck.gp` does not use the cover classes: it lets PARI build and
 validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
@@ -102,24 +103,26 @@ greedy); test counts are expectations at sieve depth 10⁹.
 | target g > | cover digits | digits of N | tests | 4-core wall-clock (GMP) |
 |---|---|---|---|---|
 | 1,200,000 (done; paper's greedy cover) | 7,503 | 11,263 | 703 expected (2,647 used) | 17 min expected (64 min used) |
-| 2,000,000 (lazy cover) | 10,392 | 15,597 | 973 | ~50 min |
+| 2,000,000 (done; lazy cover) | 10,392 | 15,595 | 973 expected (648 used) | 51 min expected (37 min used) |
 | 3,000,000 | 14,617 | 21,936 | 1,369 | ~2.7 h |
 | 5,000,000 | 22,620 | 33,940 | 2,118 | ~11 h |
-| 10,000,000 | ≈ 40,600 | ≈ 61,000 | ≈ 3,800 | ≈ 3–4 days |
-| 16,045,848 | ≈ 60,800 | ≈ 91,000 | ≈ 5,700 | ≈ 12–14 days |
+| 10,000,000 | 40,881 | 61,331 | 3,827 | ~3.4 days |
+| 16,045,848 (g would be 16,046,137) | 61,162 | 91,753 | 5,725 | ~13 days |
 
-The last two rows are estimates (lazy covers taken ~9% below the exact
-fixed-order sizes, 44,599 and 66,816 digits). SoK §6 put the ECPP-bound
+Rows not marked done are costed, not run: cover sizes are exact (the
+covers were built), test counts are expectations, and timings extrapolate
+the measured `powmod` curve. SoK §6 put the ECPP-bound
 ceiling of this game at g ≈ 2.5·10⁶ and classed g > 10⁷ as "ECPP far
 beyond practice". The 16,045,848 line is the largest known prime gap of
 any kind (its endpoints are 385,713-digit *probable* primes): a certified
-Goldbach desert longer than that is ≈ 5,700 PRP tests at ≈ 91,000 digits —
+Goldbach desert longer than that is ~5,700 PRP tests at 91,753 digits —
 about two weeks here, hours on a gwnum-class PRP engine or the repo's GPU
 fleet. The search is embarrassingly parallel and resumable
 (`tests.jsonl` is the checkpoint).
 
 Known constant factors not taken: a Montgomery reduction specialised to
-P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; ~25%), and the
+P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; prototyped and
+checked against GMP, but only 17% faster at 52k bits), and the
 Konyagin–Pomerance (F ≥ P^{3/10}) or Coppersmith–Howgrave-Graham
 (F ≥ P^{1/4+ε}) forms of the N−1 test, which shorten N by 5–11%.
 

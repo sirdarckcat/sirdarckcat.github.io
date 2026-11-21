@@ -330,9 +330,8 @@ def search(spec, out_dir, procs=4, B=10 ** 9, T=16384):
         "n": spec["n"], "t": t, "base": spec["base"], "proof": how,
         "cover": spec["cover"],
         "m": str(m), "N": str(N),
-        "tests_run": len(done) + (len(todo) and 0) ,
+        "tests_run": sum(1 for _ in open(log_path)),
     }
-    rec["tests_run"] = sum(1 for _ in open(log_path))
     json.dump(rec, open(f"{out_dir}/record.json", "w"))
     print(f"HIT t={t}: N has {rec['digits']} digits, g(N) = {spec['g']}; {how}")
     return rec

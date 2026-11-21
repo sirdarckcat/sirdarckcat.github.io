@@ -18,8 +18,9 @@ we now know that we did not know at the start.
 >    congruences on m, so the "Pocklington-friendly form" and the cover
 >    intersect by CRT; the partition proof becomes one modular
 >    exponentiation. With certification free, *complete* covers are the
->    optimal design for this game. First record: g = 1,200,109 at 11,263
->    digits, no ECPP, no residual witnesses. `proth/README.md`.
+>    optimal design for this game. Records: g = 1,200,109 at 11,263 digits
+>    and g = 2,000,269 at 15,595 digits, no ECPP, no residual witnesses.
+>    `proth/README.md`.
 > 2. *There is now a lower-bound theorem and an impossibility theorem for
 >    covering certificates* (§7.3): residues modulo the primes ≤ x can cover
 >    all primes below (1.349 − o(1))·x·ln x and never those below x^{4+ε}.
@@ -36,7 +37,7 @@ we now know that we did not know at the start.
 | **Full covering system** (paper, 2025) | every prime p<Q hit by a class p ≡ N (mod r) | Q=10⁵ at 1,020 digits; Q=10⁸ at 327,455 digits (no partition) | first real records; pays for *certainty* it doesn't need |
 | **Partial cover + progression search** (all 2026 records) | cover most primes; PRP-test the k residuals per candidate N = N₀+tM | Q=10⁵ at **150 digits**; g=1,157,341 at 2,480 digits | the frontier; everything below is about its economics |
 | Prime-gap transfer | park all N−p inside a known gap | needs a *fully verified* gap > 1.1M: endpoints are ~18k-digit PRPs | blocked (resource-strength); dominated by covers — a Goldbach gap needs only the sparse set {N−p} composite, not an interval |
-| ↳ **Full cover + N−1-form complement** (2026-11-21) | every prime < g hit by a class; N − g = m·2ⁿ+1 proved prime by one modexp | g=1,200,109 at 11,263 digits; ~700 PRP tests expected, zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
+| ↳ **Full cover + N−1-form complement** (2026-11-21) | every prime < g hit by a class; N − g = m·2ⁿ+1 proved prime by one modexp | g=2,000,269 at 15,595 digits (648 PRP tests, 37 min on 4 cores), zero residuals, no ECPP | the height-game frontier; useless for the bounded games (it spends digits) |
 
 The last row is the theoretical point the whole project demonstrates:
 **Goldbach gaps are strictly cheaper than prime gaps.** A 2,480-digit N
@@ -160,7 +161,7 @@ ever been overturned.
    beyond practice; APR-CL-free certification ideas (Pocklington-
    friendly N−q by construction?) are the only visible door.
    ↳ 2026-11-21: **door opened** (`proth/`). g > 10⁷ is ~3,800 PRP tests
-   at ~61,000 digits with a complete cover; the open sub-problem is now
+   at 61,331 digits with a complete cover; the open sub-problem is now
    shrinking complete covers (greedy reaches Q ≈ 0.72·x·ln²x).
 6. **Algebraic compositeness mechanisms** (WP7) — now **tested and
    negative** (`phd/wp7_probes.md`): five probes (prime powers,
@@ -242,7 +243,7 @@ nearly coincide.
   remaining headroom, after which every gain awaits better covers or
   more compute.
 
-### Game 1 — largest g, N unbounded  (now: 1,157,341)
+### Game 1 — largest g, N unbounded  (was 1,157,341; now 2,000,269 — see the ↳ item below)
 
 - **Actual maximum (truth)**: none. g(N) is unbounded (proved
   unconditionally in the 2025 paper via covering systems + Dirichlet).
@@ -269,9 +270,10 @@ nearly coincide.
 - ↳ **2026-11-21 — the construction breakthrough was one line.** Put
   N − g = m·2ⁿ + 1: the cover congruences become congruences on m
   (2ⁿ is a unit mod each odd modulus), CRT intersects the two systems,
-  and 2ⁿ > (N−g)^{1/3} makes the N−1 test a one-modexp proof. Record
-  g = 1,200,109 at 11,263 digits (`proth/`). The wall is now
-  PRP throughput: with GMP on 4 cores, g > 2·10⁶ ≈ 1 h, 5·10⁶ ≈ 11 h,
+  and 2ⁿ > (N−g)^{1/3} makes the N−1 test a one-modexp proof. Records
+  g = 1,200,109 at 11,263 digits and g = 2,000,269 at 15,595 digits
+  (`proth/`). The wall is now
+  PRP throughput: with GMP on 4 cores, g > 2·10⁶ ≈ 1 h (done), 5·10⁶ ≈ 11 h,
   10⁷ ≈ 3–4 days, 16,045,848 (the largest known prime gap of any kind)
   ≈ 2 weeks; a gwnum-class engine or the GPU fleet is 10×+ faster. The
   verdict above is replaced by: Game 1's record is an index of how many
