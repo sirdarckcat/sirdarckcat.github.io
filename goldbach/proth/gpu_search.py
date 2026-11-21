@@ -12,7 +12,16 @@ result is appended to out_dir/tests.jsonl in desert.py's format, plus
 is written to out_dir/hits.jsonl, and the run stops after that batch. The
 proof is always redone on the CPU with desert.bls_prove before anything is
 called a record.
+
+The survivors file is re-read between batches whenever its mtime changes,
+so deep_sieve.py can keep deepening the sieve while the search runs (it
+rewrites the file atomically); the next batch is always the smallest
+untested t of the current list. Kill lists ([t, p] pairs, deep_sieve.py's
+.kills.json format) named <survivors without .json>*.kills.json are
+subtracted too, and re-read the same way: that is how a sieve run on
+another machine reaches this search.
 """
+import glob
 import json
 import os
 import sys
@@ -35,6 +44,21 @@ def load_done(paths):
     return done
 
 
+def kill_files(surv_path):
+    base = surv_path[:-5] if surv_path.endswith(".json") else surv_path
+    return {p: os.path.getmtime(p) for p in sorted(glob.glob(base + "*.kills.json"))}
+
+
+def load_kills(files):
+    ks = set()
+    for p in files:
+        try:
+            ks.update(int(t) for t, _ in json.load(open(p)))
+        except (OSError, ValueError, TypeError) as e:
+            print(f"kill list {p} unreadable ({e}); skipped", flush=True)
+    return ks
+
+
 def main():
     spec_path, surv_path, out_dir = sys.argv[1:4]
     opt = sys.argv[4:]
@@ -43,16 +67,20 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     log_path = f"{out_dir}/tests.jsonl"
     spec = json.load(open(spec_path))
+    surv_mtime = os.path.getmtime(surv_path)
     surv = sorted(int(t) for t in json.load(open(surv_path)))
     done = load_done([log_path] + extra)
     if any(done.values()):
         print("a hit is already recorded; nothing to do", flush=True)
         return
-    todo = [t for t in surv if t not in done]
-    print(f"{len(surv)} survivors, {len(done)} already tested, {len(todo)} to go; "
-          f"batch {batch}", flush=True)
-    for b0 in range(0, len(todo), batch):
-        ts = todo[b0:b0 + batch]
+    tested = set(done)
+    kfiles = kill_files(surv_path)
+    kills = load_kills(kfiles)
+    todo = [t for t in surv if t not in tested and t not in kills]
+    print(f"{len(surv)} survivors, {len(kills)} sieve kills listed, {len(done)} already "
+          f"tested, {len(todo)} to go; batch {batch}", flush=True)
+    while todo:
+        ts = todo[:batch]
         t0 = time.time()
 
         def progress(k, K, err):
@@ -74,6 +102,23 @@ def main():
                     fh.write(json.dumps({"t": t, "screen": "2^((P-1)/2)=1"}) + "\n")
             print(f"HIT {hits}", flush=True)
             return
+        tested.update(ts)
+        try:
+            mt = os.path.getmtime(surv_path)
+            if mt != surv_mtime:
+                new = sorted(int(t) for t in json.load(open(surv_path)))
+                surv, surv_mtime = new, mt
+                print(f"survivors file changed: now {len(surv)} survivors", flush=True)
+        except (OSError, ValueError) as e:
+            print(f"survivors reload failed ({e}); keeping the current list", flush=True)
+        try:
+            kf = kill_files(surv_path)
+            if kf != kfiles:
+                kfiles, kills = kf, load_kills(kf)
+                print(f"kill lists changed: {len(kills)} kills from {len(kf)} files", flush=True)
+        except OSError as e:
+            print(f"kill list scan failed ({e}); keeping the current kills", flush=True)
+        todo = [t for t in surv if t not in tested and t not in kills]
     print("NO HIT in survivors; extend T", flush=True)
 
 

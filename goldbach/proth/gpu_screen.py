@@ -26,8 +26,9 @@ import numpy as np
 
 try:
     import cupy as cp
+    import cupyx.scipy.fft as cfft
 except ImportError:          # host-only helpers stay importable for tests
-    cp = None
+    cp = cfft = None
 
 LIMB = 15
 MASK = (1 << LIMB) - 1
@@ -276,22 +277,95 @@ class BatchScreen:
     # 2e6 spec gives F/T/F, and the eight known 1.2e6 primes pass while
     # their 16 neighbours fail. It is 1.11-1.12x faster (gpu_bench_v2.py).
     use_v2 = True
+    # v3 (mont_sq3) is v2's arithmetic without the padding/output copies, and the
+    # default from the 16,045,849 rung on. gpu_validate_v3.py: its state is bit-for-bit
+    # v2's after every one of 40-64 squarings at the 5e6, 1e7 and 16M rung sizes
+    # (random f = 1/2 pattern); residues equal gmpy2's at 120/3k/20k bits; the 2e6 spec
+    # gives F/T/F and the eight known 1.2e6 primes pass while their 16 neighbours fail.
+    # 1.11-1.13x faster than v2 (measured on the A100 while it ran the 1e7 rung).
+    use_v3 = True
+
+    def _norm_into(self, src, src_stride, n_src, dst, dst_stride, n_dst):
+        """_norm, but reading rows of stride src_stride (src may be a column
+        view) and writing the first n_dst columns of a strided buffer."""
+        grid = ((n_dst + TILE - 1) // TILE, self.B)
+        self.kern(grid, (TILE,),
+                  (src, np.int64(src_stride), np.int32(n_src), dst,
+                   np.int64(dst_stride), np.int32(n_dst), self.maxerr,
+                   self.overflow, self.rowflag),
+                  shared_mem=2 * (TILE + HALO) * 8)
+        self.resolve((self.B,), (1024,),
+                     (dst, np.int64(dst_stride), np.int32(n_dst), self.rowflag))
+
+    def mont_sq3(self, f2):
+        """mont_sq2's arithmetic without its memory copies.
+
+        x lives in the first L columns of the zero-padded (B, N) buffer xbuf
+        (likewise TL in tbuf and m in mbuf), so no forward FFT pads; two of
+        the three C2R transforms run in place; the high half of W is
+        normalised straight from W into xbuf. The factor f (1 or 2) is
+        applied as f^2 to X*X: FFT(f x) = f FFT(x) and (fX)^2 = f^2 X^2
+        exactly for a power of two, so every value matches mont_sq2's.
+        """
+        L, N = self.L, self.N
+        X = cfft.rfft(self.xbuf, n=N, axis=1)
+        cp.multiply(X, X, out=X)
+        X *= f2[:, None]
+        T = cfft.irfft(X, n=N, axis=1)                 # X is still needed
+        self._norm_into(T, N, L, self.tbuf, N, L)
+        del T
+        R1 = cfft.rfft(self.tbuf, n=N, axis=1)
+        R1 *= self.FPinv
+        M = cfft.irfft(R1, n=N, axis=1, overwrite_x=True)
+        del R1
+        self._norm_into(M, N, L, self.mbuf, N, L)
+        del M
+        R2 = cfft.rfft(self.mbuf, n=N, axis=1)
+        R2 *= self.FP
+        R2 += X
+        del X
+        W = cfft.irfft(R2, n=N, axis=1, overwrite_x=True)
+        del R2
+        lo = cp.rint(W[:, L - 4:L])
+        c = cp.rint(lo[:, 3] * 2.0 ** -15 + lo[:, 2] * 2.0 ** -30
+                    + lo[:, 1] * 2.0 ** -45 + lo[:, 0] * 2.0 ** -60)
+        W[:, L] += c
+        self._norm_into(W[:, L:], N, L, self.xbuf, N, L)
 
     def run(self, progress=None, check_every=4096):
         """Return (list of residues 2^((P-1)/2) mod P, max rounding error)."""
-        x = cp.asarray(to_limbs(self.x0, self.L))
         f = cp.ones(self.B, dtype=cp.float64)
         K = self.K0 + self.n - 1
         zero = cp.zeros(self.B, dtype=cp.float64)
-        sq = self.mont_sq2 if self.use_v2 else self.mont_sq
-        for k in range(K):
-            x = sq(x, f)
-            f = 1.0 + (self.mbits[k].astype(cp.float64) if k < self.K0
-                       else zero)
-            if check_every and (k + 1) % check_every == 0:
-                self._check()
-                if progress:
-                    progress(k + 1, K, self.max_rounding_error())
+        if self.use_v3:
+            self.xbuf = cp.zeros((self.B, self.N), dtype=cp.float64)
+            self.tbuf = cp.zeros((self.B, self.N), dtype=cp.float64)
+            self.mbuf = cp.zeros((self.B, self.N), dtype=cp.float64)
+            self.xbuf[:, :self.L] = cp.asarray(to_limbs(self.x0, self.L))
+            f2 = cp.ones(self.B, dtype=cp.float64)
+            for k in range(K):
+                self.mont_sq3(f2)
+                if k < self.K0:
+                    mb = self.mbits[k].astype(cp.float64)
+                    f, f2 = 1.0 + mb, 1.0 + 3.0 * mb
+                else:
+                    f, f2 = zero + 1.0, zero + 1.0
+                if check_every and (k + 1) % check_every == 0:
+                    self._check()
+                    if progress:
+                        progress(k + 1, K, self.max_rounding_error())
+            x = self.xbuf[:, :self.L]
+        else:
+            x = cp.asarray(to_limbs(self.x0, self.L))
+            sq = self.mont_sq2 if self.use_v2 else self.mont_sq
+            for k in range(K):
+                x = sq(x, f)
+                f = 1.0 + (self.mbits[k].astype(cp.float64) if k < self.K0
+                           else zero)
+                if check_every and (k + 1) % check_every == 0:
+                    self._check()
+                    if progress:
+                        progress(k + 1, K, self.max_rounding_error())
         self._check()
         xs = cp.asnumpy(x)
         fs = cp.asnumpy(f)
