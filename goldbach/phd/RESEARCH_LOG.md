@@ -7,7 +7,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **15,595-digit** N (goldbach/proth/records/height_15595digit_g2000269) | g = 2,000,269 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Same day: g = 1,200,109 @ 11,263d. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **15,595-digit** N (goldbach/records/height_15595digit_g2000269) | g = 2,000,269 | **new 2026-11-21**; N−1 proof (no ECPP), complete cover; stdlib verifier + PARI cross-check PASS. Same day: g = 1,200,109 @ 11,263d. Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
@@ -15,7 +15,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 - A second session did the same exercise separately and converged on the
   same construction (BLS-form complement, complete cover, n = 12,475) and
   the same g = 1,200,109, for a different N. Full review:
-  `proth/CROSS_REVIEW.md`.
+  `phd/crossreview_8ffe9d7a.md`.
 - **Cross-verification, all PASS**: their stdlib verifier on both records
   here (via `proth/interop.py`), this branch's verifier and PARI's N−1
   proof on theirs. Three records, two independently written checkers,
@@ -26,19 +26,19 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   where 6.42 were expected, p = 0.046 — not two independent 1–2% tails.
   Pooled over all probes and searches: 112 primes vs 114.7 expected.
 - **Adopted from them**: verifier mutation test (11/11 rejected).
-  **Corrected here**: Theorem 2 of WP10 is vacuous at record scale (their
+  **Corrected here**: Theorem 2 of WP12 is vacuous at record scale (their
   finite-size sieve computation shows it); caveat added.
 - **For them**: the board is at 2,000,269; the paper's Theorem 14 is
   superseded, not merely re-constanted; lazy covers and a 10⁹ sieve are
   ~35% less search; PARI gives a second proof where they have BPSW.
 - Trial merge: conflicts only in the SoK and this log. Not merged.
 
-### 2026-11-21 — WP10: review "with the GRH announcement for inspiration"
+### 2026-11-21 — WP12 (numbered WP10 on its branch): review "with the GRH announcement for inspiration"
 - User directive: look over the Goldbach-gaps work for improvements, reading
   `alpo.ge/remark.pdf` for inspiration. The PDF is not about Goldbach: it
   announces a proof of RH/GRH found with Claude and formalized in Lean
-  (not checked here). Full memo: `phd/wp10_grh_proth_covering.md`.
-- **GRH ledger** (WP10 §3): it moves constants, not walls. Realisation
+  (not checked here). Full memo: `phd/wp12_prime_covering_grh_ledger.md`.
+- **GRH ledger** (WP12 §3): it moves constants, not walls. Realisation
   constant 0.56 → 0.67; guaranteed N−1-certifiable realisation exponent
   12 → 6 (practice: 1.5); Miller's deterministic test would cost ~12
   core-years per 11k-digit complement, against one modexp for a
@@ -56,14 +56,14 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   than the paper's fixed-order greedy (the one-kill tail mostly goes);
   a price-reweighted variant was tried and was worse. Remaining gap to a
   proper packing of the sparse tail is the new Door-1-style problem.
-- **Theory** (WP10 §2): prime-covering function C(x) ≥ (e^γ/2C₂ − o(1))·x·ln x
+- **Theory** (WP12 §2): prime-covering function C(x) ≥ (e^γ/2C₂ − o(1))·x·ln x
   = 1.349·x·ln x by pigeonhole — stronger than the paper's FGKMT-transfer
   Theorem 14 and than the counting constant ½ of arXiv:2605.21529 — and
   C(x) ≤ x^{4+ε} by the linear sieve + Bombieri–Vinogradov, the first
   impossibility statement in the family. Greedy data: 0.72·x·ln²x.
 - **Not done**: a Lean proof of the record. Toolchain installation was
   refused by the session's permission policy; nothing unchecked was
-  committed. Paper patch drafted (WP10 appendix) but `paper.tex` untouched.
+  committed. Paper patch drafted (WP12 appendix) but `paper.tex` untouched.
 
 ### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
 - User directive: work Door 3 first (AlphaEvolve access offered for the

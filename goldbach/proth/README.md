@@ -56,8 +56,8 @@ ln P / (e^γ ln B) tests are expected.
 
 | g(N) | digits of N | cover | PRP tests | proof of the partition | directory |
 |---|---|---|---|---|---|
-| **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `records/height_15595digit_g2000269` |
-| **1,200,109** | 11,263 | 2,005 classes (moduli ≤ 17,431, paper's greedy), complete below g | 2,647 (expected ~700; a 2% unlucky draw) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^12477 > P^(1/3) | `records/height_11263digit_g1200109` |
+| **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `../records/height_15595digit_g2000269` |
+| **1,200,109** | 11,263 | 2,005 classes (moduli ≤ 17,431, paper's greedy), complete below g | 2,647 (expected ~700; a 2% unlucky draw) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^12477 > P^(1/3) | `../records/height_11263digit_g1200109` |
 
 Previous height records, for scale: g = 1,134,871 (2,692 digits) and
 g = 1,157,341 (2,480 digits), each resting on a ~250-step ECPP certificate
@@ -68,9 +68,9 @@ residual primes.
 Verify any record (Python standard library only; gmpy2 is used for the
 single modular exponentiation if present):
 
-    python3 verify.py records/<dir>/record.json             # 6 s with gmpy2
-    NO_GMPY2=1 python3 verify.py records/<dir>/record.json  # 102 s, plain Python ints
-    cd records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
+    python3 verify.py ../records/<dir>/record.json             # 6 s with gmpy2
+    NO_GMPY2=1 python3 verify.py ../records/<dir>/record.json  # 102 s, plain Python ints
+    cd ../records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
 
 (timings for the 11,263-digit record on one core; the 15,595-digit record takes 12 s, 270 s and ~8.5 min).
 
@@ -84,7 +84,7 @@ primorial of the largest cover modulus.
 A second session, working separately on branch `ccr-8ffe9d7a-4ni11u`,
 arrived at the same construction (same n, same complete cover) and
 certified g = 1,200,109 for a *different* 11,263-digit N. The two branches
-have been checked against each other (`CROSS_REVIEW.md`):
+have been checked against each other (`../phd/crossreview_8ffe9d7a.md`):
 
 - every record passes **both** independently written stdlib verifiers
   (`interop.py` converts the formats) and PARI's own N−1 proof;
@@ -159,7 +159,7 @@ Konyagin–Pomerance (F ≥ P^{3/10}) or Coppersmith–Howgrave-Graham
   (Q = 1.2·10⁶: 6,787 vs 7,503 digits; Q = 2·10⁶: 10,392 vs 11,522).
 
 Greedy covers reach Q ≈ 0.72·x·ln²x with moduli up to x; what is provable
-and what is the ceiling are in `../phd/wp10_grh_proth_covering.md` §2
+and what is the ceiling are in `../phd/wp12_prime_covering_grh_ledger.md` §2
 (`pigeonhole_table.py` reproduces its table).
 
 ## What this does not do
@@ -196,9 +196,11 @@ this is a few-hundred-line development plus a data file generated from
 - `desert.py` — cover builders, CRT, sieve, parallel search (`build`, `search`)
 - `verify.py` — standalone verifier (stdlib only)
 - `package.py` — runs the verifier and the PARI cross-check, writes checksums
-- `pigeonhole_table.py` — rigorous worst-case coverage vs greedy (WP10 §2)
+- `pigeonhole_table.py` — rigorous worst-case coverage vs greedy (WP12 §2)
 - `tamper_test.py` — mutation test for `verify.py`
-- `interop.py`, `overlap_check.py`, `CROSS_REVIEW.md` — cross-check against
-  the independent pipeline on branch `ccr-8ffe9d7a-4ni11u`
+- `interop.py`, `overlap_check.py` — cross-check against the independent
+  pipeline (`../bls/`); the reviews are `../phd/crossreview_*.md`
+- `probe.py` — exhaustive prime count over sieve survivors vs the model
+- `ladder.py` — the cost ladder above, from lazy covers and measured timings
 - `records/` — one directory per record: `record.json`, `N.txt`,
   `crosscheck.gp`, logs, `SHA256SUMS`

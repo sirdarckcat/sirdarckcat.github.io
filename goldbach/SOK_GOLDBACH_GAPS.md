@@ -25,8 +25,8 @@ we now know that we did not know at the start.
 >    covering certificates* (§7.3): residues modulo the primes ≤ x can cover
 >    all primes below (1.349 − o(1))·x·ln x and never those below x^{4+ε}.
 >    The first beats the paper's FGKMT-transfer bound and the counting
->    constant ½ of arXiv:2605.21529. `phd/wp10_grh_proth_covering.md`.
-> 3. *GRH would move constants, not walls* — the full ledger is in WP10 §3.
+>    constant ½ of arXiv:2605.21529. `phd/wp12_prime_covering_grh_ledger.md`.
+> 3. *GRH would move constants, not walls* — the full ledger is in WP12 §3.
 
 ## 1. Taxonomy of constructions (weakest → strongest)
 
@@ -345,7 +345,7 @@ touched — each changes the *problem shape*, not the constants.
    THE WALL from forecast into mathematics, and would be the first
    *impossibility* result in this problem family.
    ↳ 2026-11-21: a first one exists, for *certificates* rather than for
-   g itself (WP10 §2, Theorem 2): by the linear sieve and
+   g itself (WP12 §2, Theorem 2): by the linear sieve and
    Bombieri–Vinogradov, for any even N some prime q < x^{4+ε} has N − q
    free of prime factors ≤ x — divisors of size ≤ x cannot certify a
    desert longer than x^{4+ε} (x^{2+ε} on Elliott–Halberstam). GRH does

@@ -1,6 +1,6 @@
 """Mutation test for verify.py: every tampered record must be REJECTED.
 
-    python3 tamper_test.py records/<dir>/record.json
+    python3 tamper_test.py ../records/<dir>/record.json
 
 The untouched record must pass; each mutation below must fail, and for the
 stated reason.  (The practice is taken from the independent BLS session on

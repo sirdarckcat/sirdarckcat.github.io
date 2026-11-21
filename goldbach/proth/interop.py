@@ -2,7 +2,7 @@
 pipeline on branch ccr-8ffe9d7a-4ni11u (goldbach/bls/), so that each side's
 verifier can check the other side's records.
 
-    python3 interop.py to-bls   records/<dir>/record.json  out.json
+    python3 interop.py to-bls   ../records/<dir>/record.json  out.json
     python3 interop.py from-bls <their record.json>        out.json
 
 The two pipelines build the same kind of object.  The only structural

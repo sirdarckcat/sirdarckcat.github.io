@@ -1,4 +1,15 @@
-# Cross-review: this branch against `ccr-8ffe9d7a-4ni11u`
+# Cross-review: branch `ccr-2ce9e63a-hn0fuw` against `ccr-8ffe9d7a-4ni11u`
+
+> **Status after the merge (2026-11-21).** Written before the two branches
+> were merged; "this branch" is `ccr-2ce9e63a-hn0fuw`, its memo is now
+> WP12 and its records are in `goldbach/records/`. The other session
+> checked this review and found three inaccuracies, corrected in place
+> and marked ⟲: (1) their mutation-test harness was never committed, only
+> its results; (2) this review read their head `98efe92`, and three items
+> it lists as open had already been fixed in their `6c66bcd`; (3) Chang's
+> exponent 12/5 is a literature citation not re-checked by either
+> session. Their own review is `crossreview_2ce9e63a.md`; what was agreed
+> is in `merge_2026-11-21.md`.
 
 2026-11-21. Requested by the user: review the results of this branch
 (`ccr-2ce9e63a-hn0fuw`, commits `e1e8d0f`…`63746e6`) against the branch
@@ -36,15 +47,17 @@ other. `interop.py` converts record formats in both directions.
 |---|---|---|---|
 | this branch, g = 1,200,109, 11,263 d (sha256 of decimal `cf388b5b…`) | PASS | **PASS**, 89 s (n := 12,477, i = 696; their CRT rebuild equals the stored N) | PASS |
 | this branch, g = 2,000,269, 15,595 d (`28604428…`) | PASS | **PASS**, 233 s (n := 17,274, i = 326) | PASS |
-| theirs, g = 1,200,109, 11,263 d (`7bdbe05a…`) | **PASS**, 5.5 s | PASS, 89 s (re-run here) | **PASS** (new leg: their branch has GMP BPSW, not a second proof) |
+| theirs, g = 1,200,109, 11,263 d (`7bdbe05a…`) | **PASS**, 5.5 s | PASS, 89 s (re-run here) | **PASS** (⟲ at `98efe92` their branch had GMP BPSW only; their `6c66bcd` added this same PARI leg) |
 | their Q = 10⁵ test vector, g = 100,069, 1,536 d | **PASS** | PASS (theirs) | — |
 
-Bold = a check that did not exist before this review. So all three
+Bold = a check that did not exist before this review. Hashes are of the
+decimal string of N (no newline); the `SHA256SUMS`/`MANIFEST` files hash
+the files. So all three
 records are now confirmed by two independently written proof checkers
 and by PARI's independent N−1 proof.
 
-Their verifier ships with a mutation test (6/6 tampered records
-rejected). This branch had none. `tamper_test.py` now applies their six
+⟲ Their memo reports a 6-case mutation test of their verifier (6/6
+rejected; the harness itself was not committed). This branch had none. `tamper_test.py` now applies their six
 cases plus five more to `verify.py`: **11/11 rejected for the expected
 reason, on both records** (base replaced by a residue; next N in the
 progression; a congruence dropped; class changed mod 3 and mod 17; a digit
@@ -93,8 +106,8 @@ number in this section from the two record files.)
 | 2-adic condition | 2ⁿ ∣ P − 1; proof uses the full power 2^v | 2ⁿ ∥ P − 1 exactly |
 | search order | first hit seen (`imap_unordered`) | smallest offset (`imap`), deterministic |
 | verifier | checks N lies in every class | **rebuilds N by product-tree CRT from the congruences** and compares |
-| second proof of the complement | PARI N−1 certificate + `isprime` + brute-force scan | GMP BPSW (a probable-prime test) |
-| verifier mutation test | adopted in this review (11 cases) | **yes (6 cases)** |
+| second proof of the complement | PARI N−1 certificate + `isprime` + brute-force scan | GMP BPSW at `98efe92`; ⟲ the same PARI leg since `6c66bcd` |
+| verifier mutation test | adopted in this review (11 cases, committed) | ⟲ **reported** (6 cases; harness not committed) |
 | density check | one probe (46 vs 48.6) | **two probes with z-scores** |
 | GRH assessment | constants ledger (Linnik exponents 5 → 12/5 → 2, guaranteed N−1-certifiable realisation 12 → 6, Miller cost) | **quantified at record scale** (`grh_reach.py`: RH window 10^72.4 short at 150 digits, GRH 10^65.6 short; Door-1 sieve floors −0.46·π(Q); positivity hierarchy 10^19 monomials) |
 | theory | **C(x) ≥ (1.349 − o(1))·x·ln x; C(x) ≤ x^{4+ε}; prior art arXiv:2605.21529; LaTeX patch for the paper** | — |
@@ -110,13 +123,16 @@ obtained without having planned it.
 1. **Theirs — record board.** RESULTS ("the largest proven value"), the
    SoK Game-1 heading and summary row, and the research-log board all
    say 1,200,109. Superseded by g = 2,000,269 on this branch.
+   ⟲ Already corrected by them in `6c66bcd` ("independent second
+   certificate", incumbent named).
 2. **Theirs — WP10, row "Paper theorems: constants only".** It says
    `thm:lower` gains only the Linnik factor. `thm:lower` (Theorem 14,
    the FGKMT transfer) is in fact *superseded* in rate — by the counting
    bound of arXiv:2605.21529 and by the elementary covering bound in this
    branch's WP10 §2. And for the paper's moduli (primorial-type, hence
-   smooth) the unconditional Linnik exponent is 12/5 (Chang), not 5, so
-   GRH's gain there is a factor 1.2, not 2.5.
+   smooth) the unconditional Linnik exponent is 12/5 (Chang; ⟲ a
+   literature citation, marked [L] in WP12 and not re-checked by either
+   session), not 5, so GRH's gain there is a factor 1.2, not 2.5.
 3. **This branch — Theorem 2 needed a caveat.** The ceiling
    C(x) ≤ x^{4+ε} is asymptotic and says nothing at record parameters
    (x = 613–79,139 against Q ≤ 2·10⁶). Their §B is the finite-size
@@ -147,4 +163,5 @@ coherent union would be:
 - the shared docs updated once, to 2,000,269.
 
 Not done here: the request was a review, and merging would put their
-commits on this branch.
+commits on this branch. ⟲ Subsequently agreed with the other session and
+carried out: see `merge_2026-11-21.md`.

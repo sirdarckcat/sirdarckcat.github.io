@@ -1,4 +1,14 @@
-# WP10 — After the GRH announcement: what it changes, what it does not, and two things it made us look at
+# WP12 — The prime-covering function, the GRH ledger of constants, and the N−1 construction
+
+> **Numbering.** This memo was written as "WP10" on branch
+> `ccr-2ce9e63a-hn0fuw`. An independent session wrote its own WP10
+> (`wp10_grh_remark.md`: the GRH assessment quantified at record scale) and
+> WP11 (`wp11_bls_game1.md`: the same N−1 construction, found separately)
+> the same morning. At the merge of 2026-11-21 those kept their numbers and
+> this became WP12. What is only here: §2 (covering bounds), §3 (which
+> constants GRH moves), §6 (the 1.2·10⁶ progression, probed out of sample)
+> and the paper patch. The two cross-reviews are `crossreview_8ffe9d7a.md`
+> and `crossreview_2ce9e63a.md`.
 
 Status: 2026-11-21. Trigger: `https://alpo.ge/remark.pdf` (4 pages, dated
 2026-11-20), read on request "for inspiration". Companion code and records:
@@ -172,7 +182,7 @@ rigorous shadow of the construction-versus-existence gap measured in
 RESULTS.md and FRONTIER.md. Note GRH does not improve Theorem 2:
 Bombieri–Vinogradov already is GRH on average.
 
-*Caveat (added after the cross-review, `proth/CROSS_REVIEW.md`).* Theorem 2
+*Caveat (added after the cross-review, `crossreview_8ffe9d7a.md`).* Theorem 2
 is asymptotic and is **vacuous at record parameters**: with moduli up to
 x = 613–79,139 and Q ≤ 2·10⁶, x⁴ is far above Q. The independent
 session on branch `ccr-8ffe9d7a-4ni11u` ran the same sieve at finite size
@@ -248,8 +258,8 @@ machine-proof-carrying records in the genre. Status: see
 
 1. **Run the ladder** (PRP-bound, embarrassingly parallel, resumable):
    g > 3·10⁶ (≈2.7 h on this 4-core box), 5·10⁶ (≈11 h), 10⁷ (≈3.4 days),
-   16,045,848 (≈13 days) — all with GMP; a gwnum-class PRP engine or the
-   repo's GPU fleet cuts each by 10× or more.
+   16,045,848 (≈13 days) — all with GMP; the GPU fleet, or a few dozen
+   cores of gwnum-class FFT code, bring the top rungs down to hours.
 2. **Shrink full covers.** The paper's greedy sits at 0.72·x·ln²x and its
    tail is wasteful (at Q = 1.2M the last 300 targets cost 138 one-kill
    moduli). A weighted lazy greedy over a 3× prime pool already recovers

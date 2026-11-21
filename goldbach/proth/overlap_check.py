@@ -1,6 +1,6 @@
-"""Do two searches at the same threshold overlap?  (CROSS_REVIEW.md, section 3)
+"""Do two searches at the same threshold overlap?  (phd/crossreview_8ffe9d7a.md, section 3)
 
-    python3 overlap_check.py records/height_11263digit_g1200109/record.json \
+    python3 overlap_check.py ../records/height_11263digit_g1200109/record.json \
             <record.json of the goldbach/bls branch>  [their sieve bound, default 2e8]
 
 Rebuilds this branch's progression P_t = 1 + 2^n (m0 + t*Mc) for the
