@@ -15,7 +15,8 @@
 - **Verification.** No GPU result is trusted. The hit was re-proved on the
   CPU (81 s), and it passes `verify.py` and the PARI cross-check: PARI's
   own N−1 certificate, `isprime`, and a brute-force gcd scan of all
-  348,526 complements.
+  348,526 complements. The independent `bls/` stack passes as well
+  (`xverify.py` and `verify_bls_record.py`, pure-Python ints, 46 min each).
 
 This is 2.5× the record set earlier the same day, which is described next.
 The 4-core cost model had put this rung at ~11 h; it took 44 min of GPU

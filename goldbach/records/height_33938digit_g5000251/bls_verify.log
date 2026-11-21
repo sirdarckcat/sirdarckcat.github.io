@@ -1,0 +1,10 @@
+# python3 proth/interop.py to-bls record.json out.json && python3 bls/verify_bls_record.py out.json  (second stack's own verifier, pure-Python ints)
+PASS  g(N) = 5,000,251
+  N: 33,938 digits, sha256(decimal) 082abb58d4da6125...
+  348,526 primes q < g: q=2 by parity, 348,525 odd q by 5,341 cover congruences
+  P = N - g (33,938 digits) prime by BLS, F = 2^37584, base 5; modexp 2739.1s (python int)
+  total 2739.8s
+
+real	45m39.882s
+user	45m1.789s
+sys	0m0.377s

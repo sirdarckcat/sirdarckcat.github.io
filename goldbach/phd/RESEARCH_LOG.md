@@ -30,7 +30,9 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   each). The hit is the 3,080th survivor, against ~2,118 expected
   (p ≈ 0.23 of waiting that long). It passes the CPU BLS proof, `verify.py`
   and the PARI cross-check, which is now a `parforprime`: identical logs,
-  2.8× faster on 3 threads.
+  2.8× faster on 3 threads. The second stack passes too: `bls/xverify.py` and
+  `verify_bls_record.py` (via `interop.py to-bls`), in pure-Python ints,
+  46 min each. Their logs are in the record directory.
 - **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
   (10⁷ rung) and toward 10¹² (16M rung) while the GPU runs. That is ~18%
   and ~25% fewer expected tests. It repurposes the 16M CPU helper's

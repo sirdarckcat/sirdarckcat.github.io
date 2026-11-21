@@ -1,0 +1,6 @@
+# python3 bls/xverify.py records/height_33938digit_g5000251/record.json  (second verification stack, pure-Python ints)
+PASS g(N) = 5,000,251: 33,938 digits, 348,526 primes < g covered by 5,341 odd congruences, F = 2^37584, base 5; modexp 2737s (python int)
+
+real	45m37.805s
+user	45m1.645s
+sys	0m0.459s
