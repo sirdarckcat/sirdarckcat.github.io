@@ -8,7 +8,9 @@ have Pocklington-friendly form while satisfying the cover congruences would
 blow the wall off entirely … nobody knows how to intersect the two
 constraint systems."*
 
-They intersect by one line of algebra.
+They intersect by one line of algebra. (SoK §7.2 had already sketched the
+Proth version as an untried angle; this directory carries it out, with
+two refinements: a cube-root N−1 test, and complete covers.)
 
 ## The construction
 
@@ -38,9 +40,9 @@ are m = m₀ + t·M_c, t = 0, 1, 2, …. Choose n with 2³ⁿ > P. Then:
    forces c₁ = x+y, c₂ = xy, so c₁² − 4c₂ = (x−y)² would be a perfect
    square — one integer square root rules it out
    (Brillhart–Lehmer–Selfridge 1975, Thm 5).
-3. The witness base b is fixed in advance: every small prime is a cover
-   modulus, so P mod b is the same for all candidates; pick a cover prime b
-   with ((a_b − g)/b) = −1. Then the search's probable-prime test *is* the
+3. The witness base b is fixed in advance: take b among the cover moduli,
+   so that P mod b is the same for all candidates, with ((a_b − g)/b) = −1
+   (P ≡ 1 mod 4, so this is the Jacobi symbol (b/P)). Then the search's probable-prime test *is* the
    primality proof.
 
 Hence **g(N) = g exactly, and the complete proof is a sieve check of the
@@ -59,8 +61,9 @@ ln P / (e^γ ln B) tests are expected.
 
 Previous height records, for scale: g = 1,134,871 (2,692 digits) and
 g = 1,157,341 (2,480 digits), each resting on a ~250-step ECPP certificate
-(~1.7 h to produce, ~2 h to re-verify independently, + APR-CL) and on
-~1,900–3,100 strong-pseudoprime witnesses for the residual primes.
+(for the latter: ~1.7 h to produce, ~2 h to re-verify independently, ~2 h
+of APR-CL) and on ~1,900–3,100 strong-pseudoprime witnesses for the
+residual primes.
 
 Verify any record (Python standard library only; gmpy2 is used for the
 single modular exponentiation if present):
