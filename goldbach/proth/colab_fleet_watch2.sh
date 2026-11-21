@@ -1,4 +1,4 @@
-# 16M fleet watcher (replaces fleet_watch.sh now that the first A100 is gone). The master list is
+# 16M fleet watcher v3: one retry before UNREACHABLE (replaces fleet_watch.sh now that the first A100 is gone). The master list is
 # local: the A100's 1e11 survivors + its kills + gold-cpu's [1e11, 3e11] kills (kept fresh by
 # watch_gpu.sh), merged into one fleet kill list and pushed to every member. Hard timeouts on
 # every Colab call; hb_fleet is touched each loop for the alarm.
@@ -29,6 +29,7 @@ PY
       c 300 upload -s $s $F/q16m_surv.fleet.kills.json /content/q16m_surv.fleet.kills.json.tmp > /dev/null
     fi
     st=$(c 150 exec -s $s -f $SP/colab/fleet_rename.py --timeout 60 | grep "^\[fleet\]")
+    if [ -z "$st" ]; then sleep 30; st=$(c 150 exec -s $s -f $SP/colab/fleet_rename.py --timeout 60 | grep "^\[fleet\]"); fi
     [ -z "$st" ] && st="[fleet] UNREACHABLE"
     status="$status
 $s $st"

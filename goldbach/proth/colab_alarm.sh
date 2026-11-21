@@ -9,7 +9,7 @@ while true; do
   a=$(tail -n +$((a0 + 1)) $SP/watch_gpu.log 2>/dev/null | strip | grep -E "$PAT")
   f=$(tail -n +$((f0 + 1)) $SP/watch_fleet2.log 2>/dev/null | strip | grep -E "$PAT")
   if [ -n "$a$f" ]; then echo "GPU: $a"; echo "FLEET: $f"; exit 0; fi
-  if ! pgrep -f "watch_gpu[.]sh" > /dev/null || ! pgrep -f "fleet_watch2[.]sh" > /dev/null; then echo "a watcher loop died"; exit 0; fi
+  if ! pgrep -f "watch_gpu[.]sh" > /dev/null || ! pgrep -f "fleet_watch3[.]sh" > /dev/null; then echo "a watcher loop died"; exit 0; fi
   now=$(date +%s)
   [ $((now - $(stat -c %Y $SP/hb_gpu))) -gt 1200 ] && { echo "GPU watcher stalled"; exit 0; }
   [ $((now - $(stat -c %Y $SP/hb_fleet))) -gt 3600 ] && { echo "fleet watcher stalled"; exit 0; }

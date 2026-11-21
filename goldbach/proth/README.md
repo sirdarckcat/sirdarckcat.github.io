@@ -181,7 +181,7 @@ Throughput on one A100, per test:
 |---|---|---|
 | 5·10⁶ | 0.82–0.92 | ~100× |
 | 10⁷ | 2.76 (v2), 2.35 (v3) | ~130× |
-| 16M | ~6.3 expected with v3 (v1 measured 7.8; v2 ~7) | |
+| 16M | 6.10 (v3; v1 measured 7.8, v2 ~7) | |
 
 The sieve is deepened while the search runs, which removes ~18% of the
 expected tests at 10¹¹ and ~25% at 10¹²:
