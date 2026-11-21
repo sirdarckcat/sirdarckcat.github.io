@@ -1,0 +1,4 @@
+# Live harvests of the Colab GPU logs (rewritten on every watcher poll).
+# They are committed explicitly with git add -f at milestones, e.g. a finished rung.
+gpu_tests.jsonl
+gpu_hits.jsonl
