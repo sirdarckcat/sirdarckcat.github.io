@@ -192,6 +192,16 @@ expected tests at 10¹¹ and ~25% at 10¹²:
 - `gpu_search.py` re-reads that file, and any `*.kills.json` lists,
   between batches.
 
+For the 16,045,849 rung a CPU fleet runs beside the GPU:
+- `cpu_search.py` runs on Colab CPU runtimes, each 8 vCPUs at ~29 tests/h
+  (the account allows 7 runtimes in all). Machine j takes the survivors
+  with t ≡ j (mod 8), top-down, while the GPU climbs from t = 0.
+- Each machine re-reads the relayed survivors and kill lists, and proves
+  any pass itself with `desert.bls_prove`.
+- The A100 host's CPUs join once their sieve range is done. PRP tests then
+  save more GPU time than sieving [3·10¹¹, 10¹²) would (~180 against
+  ~100 tests).
+
 Known constant factors not taken: a Montgomery reduction specialised to
 P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; prototyped and
 checked against GMP, but only 17% faster at 52k bits), and the

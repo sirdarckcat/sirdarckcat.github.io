@@ -52,6 +52,15 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   finished the job. All state was harvested and no H100 was available, so
   a fresh A100 took over after 10 min idle (engine re-validated on it,
   queue resumed from the logs). Cost: ~33 min of GPU time in all.
+- **CPU fleet for 16M.** Colab allows 7 active runtimes (one GPU). The six
+  CPU slots hold gold-cpu (sieving), four 8-vCPU runtimes running
+  `cpu_search.py` top-down on t mod 8 = 0..3 (~29 tests/h each), and one
+  orphan CPU runtime that a timed-out TPU request left behind. The CLI
+  cannot address the orphan. The A100 host's CPUs and gold-cpu join as
+  slices 4 and 5 when their sieve ranges finish, which together adds ~30%
+  to the GPU's ~570 tests/h. A third pgrep self-match (`os.popen` →
+  `sh -c`) would have blocked the joins; it was caught in the first status
+  cycle and fixed with the `[.]` pattern trick.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.
