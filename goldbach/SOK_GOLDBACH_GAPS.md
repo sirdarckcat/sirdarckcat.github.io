@@ -339,12 +339,12 @@ touched — each changes the *problem shape*, not the constants.
    progression is the ordinary one, e^γ·ln B / ln P per sieve survivor
    (N − g is coprime to every cover prime because g is uncovered;
    exhaustive probes: 54 primes vs 48.7 predicted, 8 vs 9.3, 46 vs 48.6,
-   and the out-of-sample probe of WP12 §6). And no joint tuning is
-   needed: the n-side costs nothing on the q-side. Two refinements over
-   the sketch: 2ⁿ > P^{1/3} suffices (BLS), so N is 1.5× the cover
-   modulus rather than Proth's 2×; and with certification free a
-   *complete* cover beats partial cover + luck, so the records need no
-   residual witnesses.
+   and 6 vs 4.62 in the out-of-sample probe of WP12 §6). And no joint
+   tuning is needed: the n-side costs nothing on the q-side. Two
+   refinements over the sketch: 2ⁿ > P^{1/3} suffices (BLS), so N is
+   1.5× the cover modulus rather than Proth's 2×; and with
+   certification free a *complete* cover beats partial cover + luck, so
+   the records need no residual witnesses.
 3. **Matching lower bounds (make the walls theorems).** Every barrier
    in §6 is a first-moment heuristic. There is no theorem of the form
    "any even N < B has g(N) ≤ f(B)" beyond trivialities — not even

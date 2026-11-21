@@ -4,7 +4,7 @@
 > separate session; different N, independent code). The Game-1 incumbent
 > is `../height_15595digit_g2000269/`, g = 2,000,269. All three records
 > pass both verification stacks and PARI: `goldbach/phd/crossreview_*.md`.
-> Provenance: found by `goldbach/bls/bls_search.py` at commit `647efbf`
+> Provenance: found by `goldbach/bls/bls_search.py` as committed at `4adaa4d`
 > (retired at the merge of 2026-11-21, in the history at `6c66bcd`); the
 > search ran over the odd-index half of the progression that
 > `goldbach/proth/desert.py` searched for the first certificate.

@@ -1,0 +1,104 @@
+{
+ "what": "Exhaustive out-of-sample density probe of the Q = 1.2e6 progression (phd/wp12_prime_covering_grh_ledger.md, section 6)",
+ "date": "2026-11-21",
+ "progression": "P_t = 1 + 2^n (m0 + t Mc), N_t = P_t + g; spec = desert.py build 1200000 spec.json --increasing",
+ "Q": 1200000,
+ "g": 1200109,
+ "n": 12475,
+ "base": 7,
+ "cover_classes": 2005,
+ "r_max": 17431,
+ "T": 16384,
+ "sieve_depth": 1000000000,
+ "survivors": 7739,
+ "model": {
+  "primes_per_survivor": 0.0014229804264759213,
+  "one_prime_per": 702.8,
+  "formula": "e^gamma ln(B) / ln(P)"
+ },
+ "previously_tested": {
+  "rule": "t <= 5568 (every survivor, search of this pipeline) or t odd and t <= 13563 (search of the bls/ session)",
+  "survivors": 4494,
+  "expected_primes": 6.42,
+  "primes_t": [
+   5568,
+   13563
+  ],
+  "note": "expected count 6.42 is from overlap_check.py (it allows for the other search's shallower sieve)"
+ },
+ "probed": {
+  "survivors": 3245,
+  "even_t_gt_5568": 2547,
+  "odd_t_gt_13563": 698,
+  "expected_primes": 4.62,
+  "primes_t": [
+   9736,
+   9970,
+   13340,
+   14787,
+   15048,
+   15135
+  ],
+  "z": 0.64,
+  "seconds_per_test_mean": 6.07
+ },
+ "whole_range": {
+  "expected_primes": 11.01,
+  "primes_found": 8
+ },
+ "primes": [
+  {
+   "t": 5568,
+   "v2_P_minus_1": 12477,
+   "sha256_N_decimal": "cf388b5b22a23ef3d87684d412a5ac5703acd0543e303754889786aeb5483b17",
+   "found_by": "search, this pipeline (records/height_11263digit_g1200109)"
+  },
+  {
+   "t": 9736,
+   "v2_P_minus_1": 12477,
+   "sha256_N_decimal": "8425db0a051f58fe984789fd58e9f929dd68fbb5807d481e781acaa9e148e102",
+   "found_by": "probe"
+  },
+  {
+   "t": 9970,
+   "v2_P_minus_1": 12476,
+   "sha256_N_decimal": "4e21328aadc34291f8f8af2956b7c94fb0f22cea536de0e1de10704e9391eb10",
+   "found_by": "probe"
+  },
+  {
+   "t": 13340,
+   "v2_P_minus_1": 12479,
+   "sha256_N_decimal": "74daec9deaeb223c48b8523177eeb35977269dc1a46b67904eaa291f9c98ca07",
+   "found_by": "probe"
+  },
+  {
+   "t": 13563,
+   "v2_P_minus_1": 12475,
+   "sha256_N_decimal": "7bdbe05a894a81e2157d25d30a544351826d423a06e3a1dfb44d17a5e832409b",
+   "found_by": "search, the bls/ session (records/bls_game1_11263digit_g1200109)"
+  },
+  {
+   "t": 14787,
+   "v2_P_minus_1": 12475,
+   "sha256_N_decimal": "cf6713c89a7180a9b8714fb9ccd9a5b3d11c4fc3d95403d4bebd7ae1dd0b59c6",
+   "found_by": "probe"
+  },
+  {
+   "t": 15048,
+   "v2_P_minus_1": 12477,
+   "sha256_N_decimal": "2df6db8295f63ebd25c4b1b43c83de616e0d8af678db00e8e6ec10a8e3b6f45e",
+   "found_by": "probe"
+  },
+  {
+   "t": 15135,
+   "v2_P_minus_1": 12475,
+   "sha256_N_decimal": "5cf1b90fb6286d7c4f7e4cfb213faddc251c9e14261537f45e3679ebb51be3f5",
+   "found_by": "probe"
+  }
+ ],
+ "reproduce": [
+  "python3 goldbach/proth/desert.py build 1200000 spec.json --increasing",
+  "python3 -c \"import json; json.dump(sorted(set(range(5569)) | set(range(1, 13564, 2))), open('tested.json', 'w'))\"",
+  "python3 goldbach/proth/probe.py spec.json probe.jsonl --exclude tested.json --T 16384 --sieve 1e9"
+ ]
+}

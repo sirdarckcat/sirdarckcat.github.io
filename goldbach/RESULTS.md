@@ -66,8 +66,10 @@ n, and the second search ran over exactly the odd-index half of the first
 one's candidates (`proth/overlap_check.py`; 1,341 integers were tested by
 both). Each search alone looked like a 1–2% unlucky wait (3,472 tests
 against 762 expected there, 2,647 against ~700 here); jointly it is one
-~5% event. The candidates neither session had tested were then probed
-exhaustively: `phd/wp12_prime_covering_grh_ledger.md` §6.
+~5% event. The 3,245 candidates neither session had tested were then
+probed exhaustively: 6 primes against 4.62 expected (z = +0.64), so the
+density model holds on fresh numbers
+(`phd/wp12_prime_covering_grh_ledger.md` §6).
 
 Every record passes every verifier: `proth/verify.py`,
 `bls/verify_bls_record.py` (through `proth/interop.py` for the two

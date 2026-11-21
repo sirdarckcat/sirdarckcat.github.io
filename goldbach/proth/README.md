@@ -101,8 +101,10 @@ each other (`../phd/crossreview_*.md`) and were merged
   other search ran over exactly the odd-t half of the candidates searched
   here, 1,341 integers were tested twice, and jointly it is one ~5% event
   (`overlap_check.py`). The candidates neither session had tested were
-  then probed exhaustively with `probe.py`; the result is in
-  `../phd/wp12_prime_covering_grh_ledger.md` §6.
+  then probed exhaustively with `probe.py`: 6 primes among 3,245
+  candidates against 4.62 expected, z = +0.64
+  (`probe_1200k_result.json`; `../phd/wp12_prime_covering_grh_ledger.md`
+  §6). The cost model holds on fresh numbers.
 
 Hashes quoted in prose anywhere in the repo are sha256 of the decimal
 string of N; the `SHA256SUMS` / `MANIFEST.sha256` files hash the files.
@@ -212,7 +214,8 @@ this is a few-hundred-line development plus a data file generated from
 - `tamper_test.py` — mutation test for `verify.py`
 - `interop.py`, `overlap_check.py` — cross-check against the independent
   pipeline (`../bls/`); the reviews are `../phd/crossreview_*.md`
-- `probe.py` — exhaustive prime count over sieve survivors vs the model
+- `probe.py` — exhaustive prime count over sieve survivors vs the model;
+  `probe_1200k_result.json` is its result on the 1.2·10⁶ progression
 - `ladder.py` — the cost ladder above, from lazy covers and measured timings
-- `records/` — one directory per record: `record.json`, `N.txt`,
-  `crosscheck.gp`, logs, `SHA256SUMS`
+- `../records/height_*` — one directory per record: `record.json`,
+  `N.txt`, `crosscheck.gp`, logs, `SHA256SUMS`

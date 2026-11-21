@@ -28,7 +28,15 @@ Student log, year 3 — project kickoff with delegated subagent execution.
   progression (joint p = 0.046, not ≈1%); the paper's Theorem 14 is
   superseded in rate, and GRH's Linnik gain on the paper's smooth moduli
   is ×1.2, not ×2.5; one mutation-test harness had never been committed.
-- **Out-of-sample probe of the 1.2·10⁶ progression**: WP12 §6.
+- **Out-of-sample probe of the 1.2·10⁶ progression** (WP12 §6): the 3,245
+  sieve survivors with t ≤ 16,383 that neither search had tested, done
+  exhaustively. 6 primes against 4.62 expected (z = +0.64); over the
+  whole range 8 against 11.0. The density model holds on fresh numbers;
+  the long waits were chance.
+- **Verified by both sessions after the merge**: every record passes
+  every leg in both containers. The other session's check of the merged
+  branch found four small misstatements of its work, all fixed
+  (`merge_2026-11-21.md`, errata 9–12).
 - The entries below are kept as each session wrote them, labelled by
   branch.
 

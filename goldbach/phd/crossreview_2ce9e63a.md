@@ -2,8 +2,9 @@
 
 > **Status after the merge (2026-11-21).** Written before the two branches
 > were merged; "this branch" is `ccr-8ffe9d7a-4ni11u` and paths are those
-> of its head `6c66bcd`. At the merge its author asked for two corrections,
-> applied below and marked ⟲: an erratum to §4.4 and the hash note in §1.
+> of its head `6c66bcd`. Three notes were added at the merge and are
+> marked ⟲: the two corrections its author asked for (an erratum to §4.4
+> and the hash note in §1) and a pointer on §5 to what was agreed.
 > The reverse review is `crossreview_8ffe9d7a.md`; what was agreed is in
 > `merge_2026-11-21.md`.
 

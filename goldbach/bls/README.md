@@ -39,7 +39,7 @@ mistaken for a failed reproduction (the successor uses a ~9% shorter lazy
 cover and sieves to 10⁹ instead of 2·10⁸, so it is cheaper by design):
 
 - `../records/bls_game1_11263digit_g1200109/search.log` and the record
-  itself: `bls_search.py` at `647efbf` (3,472 tests, 762 expected);
+  itself: `bls_search.py` at `4adaa4d` (3,472 tests, 762 expected);
 - `testvec_q1e5.json`: `bls_search.py` at `4adaa4d` (122 tests, 123 expected);
 - the density z-scores (+0.76 at Q = 10⁵, −0.43 at 3·10⁵) and the cost
   ladder in `../phd/wp11_bls_game1.md` §3–§4: `density_probe.py` and

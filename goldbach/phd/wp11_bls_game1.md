@@ -7,15 +7,19 @@
 > - **Pipeline.** New work uses `proth/desert.py` (lazy cover ~9% shorter,
 >   sieve to 10⁹). This memo's own code — `bls_search.py`, `full_cover.py`,
 >   `density_probe.py`, `ladder.py` — was retired at the merge and is in
->   the history at commit `6c66bcd`. Every number in §2–§4 was produced by
->   that code (the record search by `bls_search.py` at `647efbf`); the §4
->   ladder is therefore ~30% pessimistic next to `proth/README.md`.
+>   the history at commit `6c66bcd`. The cover, search, density-probe and
+>   ladder numbers in §2–§4 were produced by that code (the search by
+>   `bls_search.py` at `4adaa4d`). The verification numbers come from
+>   `bls/verify_bls_record.py` (kept), from an uncommitted tamper harness
+>   whose six cases are in `proth/tamper_test.py`, and from an inline GMP
+>   BPSW check. The §4 ladder is ~30% pessimistic next to
+>   `proth/README.md`.
 > - **Verification.** `bls/verify_bls_record.py` and `bls/xverify.py` stay
 >   as the independent second stack; all three records pass both stacks
 >   and PARI.
 > - **§3, "a ~1%-tail draw".** This search and the other session's were
 >   one progression (joint p = 0.046); see WP12 §6 for that and for the
->   out-of-sample probe.
+>   out-of-sample probe (6 primes against 4.62 expected).
 > - Reviews: `crossreview_2ce9e63a.md` (by this memo's author) and
 >   `crossreview_8ffe9d7a.md`; decisions: `merge_2026-11-21.md`.
 

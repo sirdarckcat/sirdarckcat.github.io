@@ -307,9 +307,27 @@ primes observed against 114.7 expected.
 **Out-of-sample probe** (`proth/probe.py`). To test the same progression
 on fresh numbers, every sieve survivor (to 10⁹) with t ≤ 16,383 that
 neither session had tested — 2,547 even t > 5,568 and 698 odd t > 13,563,
-3,245 candidates, 4.62 primes expected — is tested exhaustively, with no
-early stop. *Running at the time of this commit; the count is added in
-the next one.*
+3,245 candidates, 4.62 primes expected — was tested exhaustively, with
+no early stop.
+
+**Result: 6 primes against 4.62 expected (z = +0.64)**, at t = 9,736,
+9,970, 13,340, 14,787, 15,048 and 15,135. On numbers nobody had looked
+at, the progression is on-model. This is the unbiased test: the first
+stretch was examined because it had run long, whereas the probe set was
+fixed before any of it was tested.
+
+- Whole range t ≤ 16,383, all 7,739 survivors now tested: 8 primes
+  against 11.0 expected, P(≤ 8) = 0.23.
+- Pooled with the tally above: 118 observed against 119.3 expected.
+- Each of the six is proved prime by the same BLS test, and each N = P + g
+  lies in every cover class, so eight N with g(N) = 1,200,109 are now
+  known in this progression. `proth/probe_1200k_result.json` lists them
+  with hashes, and the three commands that reproduce the run (the spec
+  rebuilt by `desert.py build 1200000 spec.json --increasing` is
+  identical to the one used).
+
+The ladder's cost model stands: one prime per ln P / (e^γ ln B) sieve
+survivors, here one per 703.
 
 ## Appendix — proposed patch for `slop/goldbach/paper.tex` (not applied)
 
