@@ -1,5 +1,46 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-21, night): g(N) > 10,000 at 30 digits
+
+**g(N) = 10,459** for N = 194465365536282197945444045558 (30 digits,
+`records/threshold_30digit_g10459/`).
+
+- **Why this target.** Exhaustive search has g(N) ≤ 9,781 for every even
+  N ≤ 4·10^18 (Oliveira e Silva, Herzog & Pardi), so T(10,000), the
+  smallest N with g(N) > 10,000, lies above 4·10^18 and is not known. The
+  conjectural ceiling first reaches 10,000 near 10^19, so the true value
+  is expected not far above that. This N is the smallest known to us
+  whose g exceeds everything in the exhaustive range.
+- **Closeness.** g is 39.0% of the conjectural ceiling for a 30-digit
+  number (`closeness.py`). Our next best is the 150-digit record at 10.7%.
+- **Search.** N mod r is fixed for the 16 primes r ≤ 59 (greedy residues),
+  which leaves 177 primes below 10,007 uncovered. A scan of the 3.67·10^8
+  members N0 + k·M between 10^29 and 8.0·10^29 (53 minutes on 4 cores,
+  gmpy2) gave one member with g > 10,000, at k = 101,138,639.
+- **Proof.** `evidence.json` has a compositeness witness for N − q for each
+  of the 1,279 primes q < g: a cover prime (1,098), a prime below 10^5
+  (134), a failed strong base-2 test (46), or parity (q = 2). N − g is
+  proved prime by a PARI ECPP certificate (`complement_cert.gp`,
+  `primecertisvalid` = 1). `direct_check.gp` repeats the whole check in
+  PARI without the evidence file.
+
+The same cover-and-scan method at other sizes, each proved in PARI the same
+way. Scan effort differs from row to row, so read the closeness column as
+"what a few CPU-minutes to one CPU-hour buys", not as a limit.
+
+| digits | N | g | closeness | members scanned | on the frontier |
+|---|---|---|---|---|---|
+| 20 | 70009540006994447438 | 5,407 | 48.4% | 4.8·10^8 (the whole progression) | no: 9,781 is known at 19 digits |
+| 22 | 8314310102096915044292 | 6,073 | 43.4% | 2.9·10^7 | no: same reason |
+| 30 | 194465365536282197945444045558 | 10,459 | 39.0% | 3.7·10^8 | yes |
+| 40 | 8495171008612585955282488984129056734312 | 11,173 | 20.9% | 6.3·10^6 | yes |
+
+Just above the exhaustive range a cover plus a scan reaches about half the
+ceiling, and a smaller number with a larger g is already known. A point
+counts only when it is on the frontier: no smaller known N has a g at least
+as large. Such a point is at once a T record (smallest N for its g) and an
+R record (largest g below its N).
+
 ## New height record (2026-11-21, evening): g(N) = 5,000,251, GPU-screened
 
 **g(N) = 5,000,251** for a 33,938-digit N
@@ -533,6 +574,7 @@ g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | ~100% (it fixes the constant) | 132 | 19 |
+| `threshold_30digit_g10459` | 10,459 | 30 | ~26,800 | 39.0% | 73 | 19 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~975,000 | 10.7% | 91 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~1.8M | 6.2% | 70 | 56 |
 | `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~4.7·10^8 | 0.24% | 35 | 161 |

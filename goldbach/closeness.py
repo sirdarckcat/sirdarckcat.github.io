@@ -22,6 +22,11 @@ of L = ln N only:
 closeness = g / ceiling(N).  The trivial bound g <= N/2 is attained only by
 N = 4 and N = 6; it says nothing at any other size.
 
+frontier: a record is ON the frontier when no smaller N in the table has a g
+at least as large.  Such a record is at once the smallest known N for its g
+(threshold game T) and the largest known g below its N (budget game R);
+every other row names the smaller N that beats it.
+
 Python 3 standard library only.
 """
 import glob
@@ -76,16 +81,27 @@ def rows():
     return out
 
 
+def frontier(table):
+    """name -> "yes", or the name of a smaller N with g at least as large."""
+    out, best_g, best_name = {}, 0, None
+    for N, g, name in sorted((N, g, name) for name, N, g in table):
+        out[name] = "yes" if g > best_g else "no: " + best_name
+        if g > best_g:
+            best_g, best_name = g, name
+    return out
+
+
 def main():
-    table = []
-    for name, N, g in rows():
+    table, raw = [], rows()
+    front = frontier(raw)
+    for name, N, g in raw:
         L = ln_int(N)
         table.append((g / ceiling(L), name, g, len(str(N)), ceiling(L), g / typical(L), ideal_digits(g)))
     print(f"{'record':40s} {'g':>10s} {'digits':>7s} {'ceiling':>15s} {'closeness':>10s} "
-          f"{'x typical':>9s} {'ideal digits':>12s}")
+          f"{'x typical':>9s} {'ideal digits':>12s}  frontier")
     for score, name, g, digits, ceil, xt, ideal in sorted(table, reverse=True):
         print(f"{name:40s} {g:>10,d} {digits:>7,d} {ceil:>15,.0f} {100 * score:>9.4f}% "
-              f"{xt:>9.1f} {ideal:>12,.0f}")
+              f"{xt:>9.1f} {ideal:>12,.0f}  {front[name]}")
 
 
 if __name__ == "__main__":
