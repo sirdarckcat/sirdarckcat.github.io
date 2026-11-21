@@ -1,0 +1,22 @@
+Cross-verification by the second session (branch ccr-2ce9e63a-hn0fuw), 2026-11-21.
+Verifier code taken from commit 521f67c (before this record existed); record files from fbedb7f.
+sha256(N decimal, no newline) = 082abb58d4da61256e671d15e98f4b18a59e24167b142728c524edd7925f3823
+
+== proth/verify.py record.json ==
+[1] N has 33938 digits and lies in all 5342 classes (prime moduli up to 167107)
+[2] all 348526 primes q < g = 5000251 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 5^((P-1)/2) = -1 (mod P), F = 2^37584 (37584/112738 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [109.9s, gmpy2]
+ALL CHECKS PASSED: g(N) = 5000251 for this 33938-digit N
+verify exit 0
+
+== gp -q crosscheck.gp ==
+PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid
+PARI isprime(P) = 1
+primes q < g scanned: 348526   (pi(g-1) = 348526)
+complements N - q with no prime factor <= 167107: 0
+CROSSCHECK PASSED: g(N) = 5000251
+pari exit 0
+
+== proth/interop.py to-bls + bls/xverify.py ==
+PASS g(N) = 5,000,251: 33,938 digits, 348,526 primes < g covered by 5,341 odd congruences, F = 2^37584, base 5; modexp 2348s (python int)
+xverify exit 0
