@@ -43,6 +43,15 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   the first 10⁷ batch at 76%. That lost ~17 min of GPU time. The intended
   end state (a reloading search) was reached anyway. Lesson: guard every
   wait on a file's existence.
+- **Second incident (an H100 attempt).** An H100 has ~2.2× the A100's
+  memory bandwidth, and the engine is bandwidth-bound. The account allows
+  one GPU, so trying meant releasing the A100. My freeze script waited
+  for the 10⁷ deep sieve to finish but not for the batch boundary, and
+  stopped a batch at 98.5%. It also used `pkill -f` inside `sh -c`, which
+  matched its own shell, so the later kills never ran; a PID-based kill
+  finished the job. All state was harvested and no H100 was available, so
+  a fresh A100 took over after 10 min idle (engine re-validated on it,
+  queue resumed from the logs). Cost: ~33 min of GPU time in all.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.

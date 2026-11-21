@@ -1,0 +1,5 @@
+2026-11-21T17:47:04Z queue start
+2026-11-21T18:13:04Z 5e6 search exited
+2026-11-21T18:30:52Z old queue stopped at a batch boundary ( 1e7 tests logged)
+2026-11-21T18:30:52Z queue2 start (1e7 resumed, survivors reload on)
+2026-11-21T19:17:13Z frozen for a GPU swap
