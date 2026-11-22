@@ -378,6 +378,7 @@ static void dfs(tls_t *T, int i, const u64 *alive, int n, u128 n0) {
     for (int x = 0; x < r - 1; x++) {
         int a = ord[x];
         if (n - cnt[a] - later > Rhi) break;
+        if (have_one && a != (int)(one_n0 % r)) continue;     /* one=N0: the class of N0 mod this prime is the only branch */
         u64 next[NW];
         for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
         dfs(T, i + 1, next, n - cnt[a], n0 + (u128)a * Ebasis[i]);
@@ -400,6 +401,7 @@ static void collect(int i, const u64 *alive, int n, u128 n0) {
     for (int a = 1; a < r; a++) {
         int c = pcw(alive, cls[i][a]);
         if (n - c - later > Rhi) continue;
+        if (have_one && a != (int)(one_n0 % r)) continue;
         u64 next[NW];
         for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
         collect(i + 1, next, n - c, n0 + (u128)a * Ebasis[i]);
@@ -510,11 +512,14 @@ int main(int argc, char **argv) {
             if (done[id]) continue;
             u64 al[NW]; u128 n0 = 0;
             for (int w = 0; w < NW; w++) al[w] = all[w];
+            int unit_ok = 1;
             for (int j = 0, x = id; j < 7; j++) {
                 int a = 1 + x % UM[j]; x /= UM[j];
+                if (have_one && a != (int)(one_n0 % RS[j])) { unit_ok = 0; break; }
                 for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
                 n0 += (u128)a * Ebasis[j];
             }
+            if (!unit_ok) continue;
             int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
             /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
             int later = 0;
