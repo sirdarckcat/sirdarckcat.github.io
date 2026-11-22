@@ -55,3 +55,12 @@ nearly as cheap as designing for it.
 
 With the three primes 443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows
 (`E` = 20.24), but a vector then has only about 60 members: no gain in practice.
+
+## Brainstorm of 2026-11-22
+
+`brainstorm/` holds the measurements made to test the research session's 100 ideas for reaching
+10% of the ceiling (`Q = 213,070`): the cover there (1,634 rows, `E` = 39.53), an exhaustive
+check of the sampler on a small instance, mixed crystals, an explicit family below the claimed
+information floor, pair correlations, shifted candidates, and the design threshold that
+maximises the expected record. See `brainstorm/README.md`; the statements with a proof are in
+`goldbach/lean/GoldbachGaps/Cap/Brainstorm.lean`.

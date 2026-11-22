@@ -1,0 +1,8 @@
+one week         ln(members) 28.2: best design Q 151000, expected record 159112 (7.47% of 2,130,704), expected successes there 4.3; within 500 of the best for Q in [144000, 152000]
+      Q=122k: 155235 (2.1e+03 hits)  Q=130k: 156273 (3.6e+02 hits)  Q=140k: 158148 (48 hits)  Q=150k: 159095 (5.2 hits)  Q=160k: 149129 (0.67 hits)  Q=170k: 137331 (0.087 hits)  Q=180k: 134539 (0.011 hits)
+one month        ln(members) 29.7: best design Q 157000, expected record 166256 (7.80% of 2,130,704), expected successes there 5.4; within 500 of the best for Q in [154000, 159000]
+      Q=122k: 161168 (9.2e+03 hits)  Q=130k: 162238 (1.6e+03 hits)  Q=140k: 164150 (2.1e+02 hits)  Q=150k: 165213 (23 hits)  Q=160k: 165504 (2.9 hits)  Q=170k: 146742 (0.38 hits)  Q=180k: 136365 (0.049 hits)
+one year         ln(members) 32.2: best design Q 169000, expected record 178383 (8.37% of 2,130,704), expected successes there 5.6; within 500 of the best for Q in [165000, 171000]
+      Q=122k: 171198 (1.1e+05 hits)  Q=130k: 172322 (1.9e+04 hits)  Q=140k: 174298 (2.5e+03 hits)  Q=150k: 175420 (2.7e+02 hits)  Q=160k: 177091 (35 hits)  Q=170k: 178289 (4.5 hits)  Q=180k: 156441 (0.58 hits)
+100 fleet-years  ln(members) 36.8: best design Q 191000, expected record 200885 (9.43% of 2,130,704), expected successes there 6.1; within 500 of the best for Q in [187000, 192000]
+      Q=122k: 189786 (1.1e+07 hits)  Q=130k: 191011 (1.9e+06 hits)  Q=140k: 193105 (2.5e+05 hits)  Q=150k: 194336 (2.7e+04 hits)  Q=160k: 196110 (3.5e+03 hits)  Q=170k: 197783 (4.5e+02 hits)  Q=180k: 199365 (58 hits)

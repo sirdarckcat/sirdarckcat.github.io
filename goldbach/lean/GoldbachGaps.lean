@@ -26,6 +26,7 @@ import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
+import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -79,7 +80,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `max {g(N) : N ≤ X}`, with the structure of the rows that survive a layer
                `N ≡ 1 (mod p)`), `Selection` (with independent rows, the logged hit mass
                `Σ (1 - p)^(rows left)` over any selected set of members is exactly the
-               expected number of successes among them).
+               expected number of successes among them), `Brainstorm` (the statements with a
+               proof among the 100 ideas of 2026-11-22: a zero class covers one row; two
+               candidates that share a row value agree only on moduli of product below `g`;
+               a move that keeps known factors pays for them in modulus; one exponent serves
+               every row in a Fermat test; abandoning members never lowers the tests per
+               success; faulty arithmetic costs false alarms, not successes; powers are
+               sparse in a window; prescribed large divisors for 38 rows fix `N < 10^200`).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

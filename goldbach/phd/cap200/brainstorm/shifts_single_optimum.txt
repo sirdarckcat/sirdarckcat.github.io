@@ -1,0 +1,9 @@
+N itself: 1634 rows left of 19050, E = 39.53
+N +   30030: 2187 rows left (+34%), E = 52.91; 608 of them are row values of N (28%); new rows 1579, E of the new rows 38.20
+N +   60060: 2142 rows left (+31%), E = 51.82; 502 of them are row values of N (23%); new rows 1640, E of the new rows 39.68
+N +   90090: 2309 rows left (+41%), E = 55.87; 448 of them are row values of N (19%); new rows 1861, E of the new rows 45.03
+N +  -30030: 2386 rows left (+46%), E = 57.73; 671 of them are row values of N (28%); new rows 1715, E of the new rows 41.49
+N +  -60060: 2220 rows left (+36%), E = 53.71; 502 of them are row values of N (23%); new rows 1718, E of the new rows 41.57
+N +      30: 2669 rows left (+63%), E = 64.58; 593 of them are row values of N (22%); new rows 2076, E of the new rows 50.23
+N +     210: 2167 rows left (+33%), E = 52.43; 588 of them are row values of N (27%); new rows 1579, E of the new rows 38.20
+N +    2310: 2168 rows left (+33%), E = 52.45; 663 of them are row values of N (31%); new rows 1505, E of the new rows 36.41
