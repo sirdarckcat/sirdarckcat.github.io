@@ -97,8 +97,33 @@ typedef __m256i vd_t;
 #define vd_row(x, h) _mm256_slli_epi32(_mm256_cvtepu16_epi32((h) ? _mm256_extracti128_si256(x, 1) : _mm256_castsi256_si128(x)), 5)
 #define vd_add(a, b) _mm256_add_epi32(a, b)
 #endif
-#define NB 8                          /* score vectors per chunk, all kept in registers */
+#define NB 8                          /* score vectors per chunk, all kept in registers (a multiple of 4) */
 #define CK (NB * VB)                  /* members per chunk */
+_Static_assert(NB % 4 == 0, "NB must be a multiple of 4");
+/* How the NB window loads of a prime find their start in its periodic table (what is best depends on the cache and on the
+   load pipes, so all three are kept; -DSCORE_MODE=n):
+   0  the table is the period s plus an extension of CK bytes and the windows are phi + VB*b (one load a window; the 62
+      tables are 43.5 KB with AVX-512, 29.5 KB with AVX2, and the exact stage's traffic evicts part of them from L1);
+   1  tables of s + VB bytes and a u16 offset per (prime, block), advanced a chunk at a time with SIMD (tables 16 KB, two
+      loads a window);
+   2  as 1, with the NB offsets of a prime read as NB/4 words (1.25 loads a window, the rest is ALU work).
+   Measured on one Emerald Rapids core (48 KB L1, three load pipes), whole scanner, min of 5 interleaved runs: with AVX-512
+   1 is 10.7% faster than 0 and 2 is 10.2% faster (the 43.5 KB of tables do not fit beside the exact stage's traffic); with
+   AVX2 0 is the fastest, 1 and 2 are 8% slower (the 29.5 KB of tables fit, so the extra loads and ALU work are pure cost).
+   Zen 2 (32 KB L1, two load pipes) is in between and was NOT measured: a simulated 32 KB 8-way L1 gives the score loop's
+   misses 28.3% in mode 0 against 11.9% in mode 1, but mode 1 doubles the loads.  Time all three there: selftest_ab.sh does. */
+#ifndef SCORE_MODE
+#ifdef __AVX512BW__
+#define SCORE_MODE 1
+#else
+#define SCORE_MODE 0
+#endif
+#endif
+#if SCORE_MODE == 0
+#define EXT CK
+#else
+#define EXT VB
+#endif
 
 typedef uint64_t u64;
 typedef uint16_t u16;
@@ -278,7 +303,7 @@ static void scan_vector(tls_t *T) {
             ct[kap]++;
             mk[4 * kap + (j >> 6)] |= 1ull << (j & 63);
         }
-        for (int i = s; i < s + VB; i++) ct[i] = ct[i - s];
+        for (int i = s; i < s + EXT; i++) ct[i] = ct[i - s];
     }
     for (int w = 0; w < 4; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
     for (int j = 0; j < R; j++) T->rowq[j] = qs[T->rows[j]];
@@ -292,19 +317,31 @@ static void scan_vector(tls_t *T) {
     u16 phi[MAXS + 32] __attribute__((aligned(64)));
     memset(phi, 0, sizeof phi);
     for (int p = 0; p < ns; p++) phi[p] = (u16)(kc % SP[p]);
+#if SCORE_MODE != 0
     u16 offs[NOFF + 64] __attribute__((aligned(64)));
     memset(offs, 0, sizeof offs);
     for (int p = 0; p < ns; p++) for (int b = 0; b < NB; b++) offs[p * NB + b] = (u16)((kc + (u64)VB * b) % SP[p]);
     const int nflat = (ns * NB + VW - 1) / VW * VW;
+#endif
     const vb_t thv = vb_set1(th);
     const u64 smask = ((u64)1 << sample_bits) - 1;
     for (; kc <= kmax; kc += CK) {
         vb_t sc[NB];
         for (int b = 0; b < NB; b++) sc[b] = vb_zero();
         for (int p = 0; p < ns; p++) {
+#if SCORE_MODE == 0
+            const u8 *t = T->cbuf + coff[p] + phi[p];
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + VB * b));
+#elif SCORE_MODE == 1
             const u8 *t = T->cbuf + coff[p];
             const u16 *o = offs + p * NB;
             for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + o[b]));
+#else
+            const u8 *t = T->cbuf + coff[p];
+            u64 ow[NB / 4];
+            memcpy(ow, offs + p * NB, sizeof ow);
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + (u16)(ow[b >> 2] >> (16 * (b & 3)))));
+#endif
         }
         double lnN = log((double)((u128)n0 + (u128)kc * Mmod)), eps = eps_at(lnN), l1 = log1p(-eps);
         double odds2 = (eps / (1 - eps)) * (eps / (1 - eps));
@@ -340,10 +377,12 @@ static void scan_vector(tls_t *T) {
             m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
         if (T->qn >= 4 * FM_LANES) fermat_drain(T, FM_LANES);
+#if SCORE_MODE != 0
         for (int i = 0; i < nflat; i += VW) {             /* advance every window by CK, wrapping at the period (u16: min(x, x - s) picks x - s when x >= s) */
             vw_t x = vw_add(vw_loadu(offs + i), vw_loadu(DLT + i));
             vw_store(offs + i, vw_min(x, vw_sub(x, vw_loadu(SPB + i))));
         }
+#endif
         for (int p = 0; p < ns; p += VW) {
             vw_t x = vw_add(vw_loadu(phi + p), vw_loadu(CKMv + p));
             vw_store(phi + p, vw_min(x, vw_sub(x, vw_loadu(SPv + p))));
@@ -452,7 +491,7 @@ int main(int argc, char **argv) {
         prodL *= 1.0 - 1.0 / p;
         if (p <= RS[NR - 1]) continue;
         if (ns >= MAXS) { fprintf(stderr, "too many score primes\n"); return 2; }
-        SP[ns] = p; coff[ns] = ctot; ctot += p + VB; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
+        SP[ns] = p; coff[ns] = ctot; ctot += p + EXT; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
         minv[ns] = invmod(Mmod % p, p);
         qM[ns] = malloc(nq * sizeof(u16));
         for (int x = 0; x < nq; x++) qM[ns][x] = (u16)((u64)(qs[x] % p) * minv[ns] % p);

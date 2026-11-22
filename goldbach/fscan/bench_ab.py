@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""bench_ab.py REV_A REV_B [--rounds 5] [--slice 7/1500] [--cc "gcc -O3 -march=native -fopenmp"] [--cpu 2] [--cls 194]
+"""bench_ab.py REV [REV ...] [--rounds 5] [--slice 7/1500] [--cc "gcc -O3 -march=native -fopenmp"] [--cpu 2] [--cls 194]
 
-Interleaved timing of two revisions of goldbach/fscan on this machine.  A revision is a git revision (e383cbc,
-HEAD, origin/branch ...) or WORK for the files in the working tree.  Each is built from its own copy with a light
+Interleaved timing of two or more revisions of goldbach/fscan on this machine; the first is the reference for the
+percentages.  A revision is a git revision (e383cbc, HEAD, origin/branch ...) or WORK for the files in the working tree,
+optionally followed by extra compiler flags after an @:  WORK@-DSCORE_MODE=1  WORK@-DFM_GROUPS=3.  Each is built from its own copy with a light
 timer around scan_vector (TSC cycles a member, vector enumeration excluded) and a checksum over every kept member
 (k, n0, rows left), runs `rounds` times alternately on one thread pinned to one CPU, and the script prints the
 minimum and the median of each and whether all runs gave identical statistics and checksums.  The minimum is the
@@ -12,7 +13,7 @@ core.   Example:  python3 bench_ab.py e383cbc WORK
 import argparse, os, re, shlex, statistics, subprocess, sys, tempfile
 
 ap = argparse.ArgumentParser()
-ap.add_argument("a"); ap.add_argument("b")
+ap.add_argument("revs", nargs="+")
 ap.add_argument("--rounds", type=int, default=5); ap.add_argument("--slice", default="7/1500")
 ap.add_argument("--cc", default="gcc -O3 -march=native -fopenmp -Wno-unused-result -Wno-parentheses")
 ap.add_argument("--cpu", default="2"); ap.add_argument("--cls", type=int, default=194)
@@ -34,17 +35,18 @@ def timer_patch(s):
     assert old in s, "stats tail not found"
     return s.replace(old, '    { unsigned long long c = 0, h = 0; for (int t = 0; t < threads; t++) { c += TT[t]->ab_cyc; h += TT[t]->ab_hash; }\n      printf("AB cycles/member %.4f  hash %016llx\\n", (double)c / (double)total.members, h); }\n' + old, 1)
 
-def build(rev):
+def build(spec):
+    rev, _, extra = spec.partition("@")
     d = tempfile.mkdtemp(prefix="bench_ab_")
     for f in FILES:
         if rev == "WORK": src = open(os.path.join(here, f)).read()
         else: src = subprocess.run(["git", "-C", repo, "show", f"{rev}:{rel}/{f}"], capture_output=True, text=True, check=True).stdout
         open(os.path.join(d, f), "w").write(timer_patch(src) if f == "fscan.c" else src)
     exe = os.path.join(d, "fscan_ab")
-    subprocess.run(shlex.split(args.cc) + ["-o", exe, os.path.join(d, "fscan.c"), "-lm"], check=True)
+    subprocess.run(shlex.split(args.cc) + shlex.split(extra) + ["-o", exe, os.path.join(d, "fscan.c"), "-lm"], check=True)
     return exe
 
-exes = {args.a: build(args.a), args.b: build(args.b)}
+exes = {r: build(r) for r in args.revs}
 th = 99 + args.cls - 194
 cmd = lambda e: (["taskset", "-c", args.cpu] if subprocess.run(["which", "taskset"], capture_output=True).returncode == 0 else []) + \
     [e, "10007", "383", str(args.cls), str(args.cls), "4e18", "1e23", str(th), "113", f"rref={args.cls}", f"slice={args.slice}", "threads=1"]
@@ -55,12 +57,12 @@ for r in range(args.rounds):
         c = float(re.search(r"AB cycles/member ([\d.]+)", out).group(1)); h = re.search(r"hash (\w+)", out).group(1)
         st = re.search(r"vectors=(\d+) members=(\d+) selected=(\d+) kept=(\d+) tests=(\d+) prps=(\d+) found=(\d+)", out).groups()
         res[k].append(c); sig[k].add((h,) + st)
-        print(f"round {r+1}/{args.rounds} {k:>10s}: {c:.3f} cycles/member", flush=True)
+        print(f"round {r+1}/{args.rounds} {k:>24s}: {c:.3f} cycles/member", flush=True)
 print()
 base = None
 for k in exes:
     m = min(res[k]); base = base or m
-    print(f"{k:>10s}: min {m:6.3f}  median {statistics.median(res[k]):6.3f}  ({100 * (m / base - 1):+.1f}% vs {args.a}, TSC cycles per member, whole scan_vector)")
+    print(f"{k:>24s}: min {m:6.3f}  median {statistics.median(res[k]):6.3f}  ({100 * (m / base - 1):+.1f}% vs {args.revs[0]}, TSC cycles per member, whole scan_vector)")
 allsig = set().union(*sig.values())
 print("statistics and kept-member checksum IDENTICAL in all runs" if len(allsig) == 1 else f"MISMATCH between runs: {allsig}")
 sys.exit(0 if len(allsig) == 1 else 1)

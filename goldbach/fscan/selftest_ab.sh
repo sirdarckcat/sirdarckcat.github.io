@@ -1,13 +1,15 @@
 #!/bin/bash
 # selftest_ab.sh [OLDREV]   (default OLDREV = e383cbc)
-# Correctness and speed of THIS directory against an older revision, on this machine; about 6 minutes.
+# Correctness and speed of THIS directory against an older revision, on this machine; about 12 minutes.
 # Needs git, gcc with OpenMP, python3 with gmpy2 (pip install gmpy2).  It builds in a temporary directory and does not
 # touch your working tree.  Run it on a quiet machine, or pin it with:  CPU=3 ./selftest_ab.sh
 #   1. test_fermat.py and stress_fermat.py (the Fermat kernel against pow(2, n-1, n), 118,000 + 10,000 numbers)
 #   2. check_record.sh (the record N = 83668534093338795647672 must be reported, 111 rows proved composite)
 #   3. check_small.py (end-to-end against brute force)
 #   4. the Fermat kernel alone, old and new, 62/70/77-bit numbers (TSC cycles a number, min of 7 runs)
-#   5. the whole scanner, old and new, interleaved (bench_ab.py, TSC cycles a member)
+#   5. the whole scanner, interleaved, old revision, each later commit that changes code, the working tree (bench_ab.py,
+#      TSC cycles a member)
+#   6. the three score-table schemes (SCORE_MODE 0, 1, 2) of the working tree
 OLD=${1:-e383cbc}
 CPU=${CPU:-2}
 HERE=$(cd "$(dirname "$0")" && pwd)
@@ -37,8 +39,11 @@ for b in 62 70 77; do
     printf "   %2d-bit %s: %s\n" $b $k $best
   done
 done
-echo "== 5. the whole scanner, interleaved (class 194 slice)"
-python3 bench_ab.py $OLD WORK --cpu $CPU --rounds 5 | tail -4 || fail=1
+echo "== 5. the whole scanner, interleaved (class 194 slice), one line a commit that changes the code, then the working tree"
+REVS=$(git -C "$HERE" rev-list --reverse --abbrev-commit $OLD..HEAD -- fscan.c fermat26.h fermat52.h 2>/dev/null | tr '\n' ' ')
+python3 bench_ab.py $OLD $REVS WORK --cpu $CPU --rounds 5 | tail -$(( $(echo $REVS | wc -w) + 4 )) || fail=1
+echo "== 6. the score-table schemes of this working tree (SCORE_MODE 0 = periodic tables, 1 = offsets, 2 = packed offsets)"
+python3 bench_ab.py WORK@-DSCORE_MODE=0 WORK@-DSCORE_MODE=1 WORK@-DSCORE_MODE=2 --cpu $CPU --rounds 5 | tail -4 || fail=1
 [ $fail = 0 ] && echo "== ALL CHECKS PASSED" || echo "== SOMETHING FAILED (see above)"
 rm -rf $T
 exit $fail
