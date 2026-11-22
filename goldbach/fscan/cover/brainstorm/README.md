@@ -109,9 +109,17 @@ fleet's measured share of the successes in the emptiest 3% (15.6%).
 (Million full-weight members a second for one card, keep fraction re-optimised;
 production is at 4.64 by the same model, with B = 10^6 and 3% kept.)
 
-1. Keep 0.6% of the members instead of 3%, with larger batches: up to +0.2.
+1. Keep fewer members than 3% at the present bound: the model says 0.6% and
+   +23%; the fleet measured +4% at 1% (the mass kept was as predicted, the
+   batch was slower than the tests alone would make it). So between +0.04 and
+   +0.2.
 2. A deeper bound: +0.3 to +0.9 if a large-prime mark costs under 0.03 ns,
-   nothing above 0.05 ns.
+   nothing above 0.05 ns. The engine session estimates 0.005 to 0.01 ns on the
+   large cards with a bucketed layout (not yet measured); with its costs the
+   model gives 7.4 to 8.0 at 2^24, 8.2 to 9.1 at 2^26 and 8.7 to 9.8 at 2^28
+   against 4.64 today: 1.6 to 2 times, +0.5 to +0.7 nats, and 2^26 has 93% of
+   what 2^28 gives. It needs the pipeline to work per batch of 2^25 members
+   instead of per window of 2^19.
 3. One or two more moduli (89 or 90), now that vectors are free
    (`../covergen.c`): +0.1 each.
 
