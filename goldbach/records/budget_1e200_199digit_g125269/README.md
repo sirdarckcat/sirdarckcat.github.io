@@ -6,6 +6,8 @@ N = 9806519255397062824472765467682451908097625481983877655666179056517874786554
 - N − p is composite for every prime p < 125,269 (11,757 primes), and N − 125,269 is prime.
 - So the least prime p with N − p prime is g(N) = 125,269. The previous largest g known below 10^199
   (and below 10^200) was 119,419 (`../budget_1e200_199digit_g119419/`).
+  Eight minutes later the same campaign found g = 133,981 at a slightly larger N
+  (`../budget_1e200_199digit_g133981/`); both are on the frontier.
 - Closeness (`../../closeness.py`): 5.94% of the largest g expected at 199 digits, 77.5× a typical
   199-digit number.
 

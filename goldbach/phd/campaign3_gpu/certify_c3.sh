@@ -9,7 +9,7 @@
 #      the certificate again, and the claims g > 119,419 and digits <= 199;
 #   5. a direct gmpy2 check and a direct PARI check (ispseudoprime for p < g, isprime(N - g));
 #   6. MANIFEST.sha256.
-# Output: OUTROOT/budget_1e199_<digits>digit_g<g>/ (OUTROOT defaults to goldbach/records).
+# Output: OUTROOT/budget_1e200_<digits>digit_g<g>/ (OUTROOT defaults to goldbach/records).
 set -u
 R=/home/user/sirdarckcat.github.io
 G=$R/goldbach
@@ -33,7 +33,7 @@ assert N % 2 == 0
 D = len(str(N))
 json.dump(f, open(sys.argv[3] + "/found.json", "w"))
 json.dump([sp], open(sys.argv[3] + "/spec.json", "w"))
-open(sys.argv[3] + "/dir", "w").write(f"budget_1e199_{D}digit_g{f['g']}")
+open(sys.argv[3] + "/dir", "w").write(f"budget_1e200_{D}digit_g{f['g']}")
 print(f"[cert] {f['name']} k={f['k']} digits={D} g={f['g']} below 10^199: {N < 10**199}")
 EOF
 OUT=$OUTROOT/$(cat $W/dir)
