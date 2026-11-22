@@ -115,6 +115,12 @@ def main():
     good &= np.array_equal(gf3.N0M, n0m_b.astype(np.uint32))
     print(f"  with_N0 (N0 mod s on the GPU kernel): {'identical to the CPU feeder' if good else 'DIFFERENT'}")
     ok &= good
+    to_limbs = lambda x: np.frombuffer(int(x).to_bytes(84, "little"), dtype=np.uint32)
+    for N0x in (int(spec["N0"]), N0b, (1 << 640) + 5, 70000):
+        Ux = [q for q in spec["residual"] if q < N0x]
+        good = np.array_equal(gpu_sieve.cq_rows(N0x, Ux), np.stack([to_limbs(N0x - q) for q in Ux])) if Ux else True
+        ok &= good
+    print(f"  cq_rows equal to to_limbs(N0 - q) row by row: {ok}")
     print("ALL IDENTICAL" if ok else "FAILED")
     sys.exit(0 if ok else 1)
 
