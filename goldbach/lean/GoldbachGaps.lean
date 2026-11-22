@@ -28,6 +28,7 @@ import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
 import GoldbachGaps.Cap.Brainstorm
+import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -94,7 +95,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                a move that keeps known factors pays for them in modulus; one exponent serves
                every row in a Fermat test; abandoning members never lowers the tests per
                success; faulty arithmetic costs false alarms, not successes; powers are
-               sparse in a window; prescribed large divisors for 38 rows fix `N < 10^200`).
+               sparse in a window; prescribed large divisors for 38 rows fix `N < 10^200`),
+               `Tilt` (selection on a normal count of rows: weighting `N(μ, v)` by `e^{t x}`
+               gives `e^{μ t + v t²/2} N(μ + v t, v)`, so the members with at most
+               `μ - z √v` rows hold the fraction `Φ(λ - z)` of the successes,
+               `λ = -√v ln(1 - p)`).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
