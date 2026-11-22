@@ -83,6 +83,19 @@ Version 3 (22 Nov):
   index `../campaign3/variants850_index.json`, full list sha256 4c22a9d6b6e09be4faece7b734c504e0d8a45569a6bc8e1c601623e2beed95e5).
   They run for N < 10^200 with k in [2^31, 2^32), top first (`run_v3_camp850.sh`), because the kernel takes k as u32.
   E^ measured there is ≈ 20.3-20.4, against ≈ 20.8-21.0 for the 867-row family.
+- Kernel 3, `gpu_fermat3.py` (22 Nov 21:25Z, production on all GPUs, `--kernel 3`):
+  - a dedicated squaring (the products x_i·x_j for i < j once, doubled, plus the diagonal: 231 products instead of 441);
+  - lazy Montgomery reduction (no compare-and-subtract in the exponent loop: x < 4n before a squaring and < 2n after it, valid
+    because 16n < R = 2^672 for n < 2^665, i.e. N < 10^200);
+  - one REDC with a zero upper half at the end, then the comparison with 1.
+  - `test_fermat3.py`: 0 mismatches against gmpy2 on 80,000 candidates (k = 0..3 and up to 2^32 − 1 included, Q = 122,000 and
+    150,000 covers), and flags identical to `gpu_fermat.py`'s on 8.4M random candidates. `check_v3.py` with `SEARCH_GPU3_KERNEL=3`
+    passes everything.
+  - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
+    on the RTX PRO 6000, against 3.6 s before.
+  - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
+  gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,
   2^32 − 1 and random: 0 mismatches against pow(2, n − 1, n).
 - Order: E falls as N grows (p ∝ 1/ln N): E^ is ≈ 20.8 just below 10^199 and ≈ 21.05 at k ≈ 10^7, so the

@@ -20,6 +20,9 @@ Each member's survivors are tested in ascending residual order and it stops at i
 PRP. Tests are counted up to that PRP, so per slice the tests, PRPs, alive/k, hit% and successes
 equal search_gpu2.py's and search.run_block's for the same parameters (check_v3.py).
 
+--kernel 3 uses gpu_fermat3.py (dedicated squaring, lazy reduction; test_fermat3.py: identical flags to the
+default kernel on 8.4M candidates and 0 mismatches against gmpy2 on 80,000, 1.48x faster on an RTX PRO 6000).
+
 Successes are re-checked on the CPU with search.verify_success. Output is search.py's line per
 slice. A slice's seconds are its batch's time divided by the number of slices in the batch.
 
@@ -51,6 +54,8 @@ ap.add_argument("--goldbach", default=os.path.join(os.path.dirname(os.path.abspa
 ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one launch")
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
+ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3),
+                help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7))")
 args = ap.parse_args()
 sys.path.insert(0, args.goldbach)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -58,7 +63,8 @@ import search                      # noqa: E402  (init_spec, verify_success)
 from gmpy2 import mpz              # noqa: E402
 import cupy as cp                  # noqa: E402
 import cupyx                       # noqa: E402
-from gpu_fermat import kernel, to_limbs   # noqa: E402
+from gpu_fermat import kernel as kernel2, to_limbs   # noqa: E402
+from gpu_fermat3 import kernel as kernel3      # noqa: E402
 
 SIEVE_SRC = r'''
 extern "C" __global__ void sieve3(const int *U, const int *S, const int *inv, const int *n0m, const int *kmod,
@@ -127,7 +133,10 @@ class MultiTester:
             rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
         self.cq = cp.asarray(np.stack(rows))
         self.M = cp.asarray(to_limbs(M, limbs))
-        self.k = kernel(limbs)
+        if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
+            nmax = max(int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M for sp in specs)
+            assert nmax < 1 << (32 * limbs - 7), f"kernel 3 needs n < 2^{32 * limbs - 7}"
+        self.k = (kernel3 if args.kernel == 3 else kernel2)(limbs)
 
     def test(self, idx, kv, threads=128):
         T = int(idx.size)
