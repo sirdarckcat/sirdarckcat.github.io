@@ -44,9 +44,15 @@ below `10^200`, 22.18 with `k < 2^32`.
 | 135,000 | 967 | 23.40 | `specs_q135000_top128.json` (967, 968) |
 | 140,000 | 1,007 | 24.36 | `specs_q140000_top128.json` (1007, 1008; second run, the first gave 1011) |
 | 145,000 | 1,051 | 25.43 | `specs_q145000_top128.json` (1051, 1052) |
-| 150,000 | 1,098 | 26.57 | `specs_q150000_top128.json` (1098, 1099) |
+| 150,000 | 1,098 (second run, 5,000 sweeps: 1,095, `E` = 26.49, `dos_Q150000_m88_seed2.json`) | 26.57 | `specs_q150000_top128.json` (1098, 1099) |
+| 155,000 | 1,139 | 27.55 | none; `dos_Q155000_m88_seed1.json` |
+| 160,000 | 1,181 | 28.57 | `specs_q160000_top128.json` (all 1181); `pool_q160000_le1183.json` holds 3,827 vectors (294 with 1,181, 575 with 1,182, 2,958 with 1,183) |
+| 213,070 | 1,634 | 39.53 | none; `brainstorm/pool_Q213070_m88_seed11.json` |
 
 So `E` grows by about 0.21 nats per 1,000 in `Q` with re-optimised covers. The research
+session's bulk generator (`goldbach/fscan/cover/gen_vectors.sh` on `ccr-d4a17dd0-7uu03r`) has
+1,092 at 150,000, 1,138 at 155,000 and 1,185 at 160,000: better than the runs here at 150,000,
+equal at 155,000, four rows worse at 160,000. The research
 session's sampler (`goldbach/fscan/cover/` on `ccr-d4a17dd0-7uu03r`) reports 851, 921, 1,011,
 1,050 and 1,093 for 122,000, 130,000, 140,000, 145,000 and 150,000: the two agree to a few rows. Beyond the `Q` a cover
 was built for, a further prime is left with probability 0.12 (the random-class rate) and
