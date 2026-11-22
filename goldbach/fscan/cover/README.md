@@ -18,6 +18,7 @@ which says where the search has to stop.
 | `selection_check.py` | rows left per member by sieve depth and the hit mass of the emptiest members, on real members |
 | `deliver/` | spec files for eight targets, and the runs that produced them |
 | `meanfield.py`, `greedy_vs_model.py` | a closed-form prediction of the optimum and why it misses the level |
+| `closeness_cost.py` | the search exponent of a target closeness at each size of N |
 | `pt_*.txt` | the other runs behind the tables below |
 
 ## Method
@@ -116,6 +117,38 @@ The rows left are slightly less spread than a binomial (the model is 5 to
 probability is the same at every depth (2.0·10^-10), as it must be. The
 model column is Φ(Φ⁻¹(f) + δ·sd) with δ = −ln(1 − p); it is what the
 campaign table (tested fraction against test rate) is computed from.
+
+## What a given closeness costs at each size of N
+
+Closeness is g divided by the largest g expected below N (`closeness.py`).
+`closeness_cost.py` takes a size and a target fraction of that ceiling, finds
+the best cover with `ptcover`, and prints the search exponent
+(`closeness_cost.txt`):
+
+| digits | target | Q | rows | moduli | random | best cover | E (nats) | candidates per success |
+|---|---|---|---|---|---|---|---|---|
+| 23 | 50% | 8,094 | 1,017 | 13 (to 43) | 191 | 148 | 19.7 | 1.4e+09 |
+| 23 | 75% | 12,141 | 1,451 | 13 (to 43) | 273 | 222 | 29.6 | 5.0e+13 |
+| 23 | 90% | 14,569 | 1,707 | 13 (to 43) | 321 | 268 | 35.7 | 3.5e+16 |
+| 30 | 50% | 15,147 | 1,768 | 17 (to 61) | 309 | 238 | 26.2 | 9.9e+11 |
+| 30 | 75% | 22,720 | 2,537 | 17 (to 61) | 442 | 363 | 39.9 | 2.0e+18 |
+| 40 | 50% | 29,498 | 3,202 | 22 (to 83) | 521 | 413 | 36.5 | 3.5e+16 |
+| 50 | 50% | 49,125 | 5,049 | 26 (to 103) | 788 | 630 | 46.4 | 7.7e+20 |
+| 60 | 50% | 74,273 | 7,325 | 31 (to 131) | 1,095 | 891 | 57.1 | 3.8e+25 |
+| 100 | 50% | 232,674 | 20,649 | 48 (to 227) | 2,796 | 2,354 | 99.8 | 1.7e+44 |
+| 200 | 10% | 213,070 | 19,050 | 88 (to 461) | 2,283 | 1,626 | 38.9 | 1.3e+17 |
+| 200 | 50% | 1,065,352 | 83,213 | 88 (to 461) | 9,972 | 8,740 | 209.2 | 8.4e+91 |
+
+Reading. The exponent for a fixed fraction grows in proportion to the number
+of digits: 50% needs about 0.4·ln N nats, that is about N^0.4 candidates
+(1.4·10^9 at 23 digits, 3.5·10^16 at 40, 10^44 at 100, 10^92 at 200). The
+cover also gets relatively worse as the target grows on the same moduli
+(best/random is 0.62 at Q = 122,000, 0.71 at 213,000 and 0.88 at 1,065,000
+on the 88 moduli): with many more rows than classes the classes are too
+even to choose between. So a fleet that affords about 28 nats reaches 7 to
+7.5% of the ceiling at 200 digits, about 45% at 40 digits and about 85% at
+21 to 23 digits; the share is set by the size of N, not by the method. At
+200 digits, 10% is already 10^17 candidates and 50% is out of the question.
 
 ## What does not give the optimum: a formula, or a proof
 
