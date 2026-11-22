@@ -13,7 +13,9 @@ numbers of 20 to 80 digits.
 | `variants.py` | every near-optimal residue vector on a cover's primes |
 | `vscan.py` | driver that scans many such progressions in lockstep, smallest N first |
 | `selftest.py` | tests against gmpy2 and a brute-force reference (`selftest_q3001.json`) |
+| `pack.py` | turns the smallest success in a state file into a record directory (witnesses, ECPP certificate, direct PARI check, manifest) |
 | `q10007_e23.json` | the cover behind the 27-digit record (`cover.py 10007 23`, 13 primes r ≤ 43), the base of the list `variants.py` builds; the 25-digit record is in one of the list's progressions |
+| `seed_25digit.json` | `vscan.py` state to start from: how far each of that list's progressions had been scanned when the 25-digit record was found, and the record itself as the N to beat |
 
 A record never rests on this code. Each success is re-checked by
 `search.verify_success`, then proved by `package_record.py` (a witness per
@@ -93,7 +95,24 @@ python3 scan.py plan.json 3600                        # plan.json: see scan.py
 python3 variants.py q10007_e23.json 3 variants.json   # 18,208 vectors with <= 191 residual primes, about 10 s
 python3 vscan.py variants.json state.json 3600 188    # only vectors with <= 188 residual primes
 python3 vscan.py variants.json mine.json 3600 190 24 0/3   # one of three machines sharing the list
+python3 pack.py mine.json variants.json                # record directory for the smallest success in mine.json
 ```
+
+To look for an N below the 25-digit record without repeating what was
+scanned, start each machine from a copy of the seed. The 1,009 progressions
+with at most 189 residual primes are already past the record, so the work
+goes to the 17,199 with 190 or 191:
+
+```
+cp seed_25digit.json mine.json
+python3 vscan.py variants.json mine.json 3600 191 24 0/6   # machine 0 of 6; repeat until it prints "done"
+```
+
+Each machine stops by itself once all its progressions are past the
+smallest success in its own state file. A success on one machine is the
+smallest of the whole list only when every machine's lowest position is
+past it; adding it to the `found` list of the other state files makes them
+stop there too.
 
 `scan.py` compiles `tscan.c` on first use (`gcc -O3 -march=native -fopenmp`).
 Without AVX-512 the scanner still works, with a slower sieve and count.
