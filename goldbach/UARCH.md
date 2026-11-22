@@ -10,6 +10,7 @@ was written and verified on a CPU (the same source compiled as C++), then timed 
 | `sieve200/` | numpy sieve of `search.run_block` (campaign 3, 867-1,094 rows, 661-bit members) | 0.64 us a member at B=1e6 against 52 us (K=2^20, 867 rows); identical alive matrices, counts, tests, prps, successes; the feeder (counts, selection, CSR survivor rows) gives a GPU tester exactly what it needs | `test_sieve200.py`, `test_dropin.py`, `test_feeder.py` |
 | `fermat661/` | `gmpy2.powmod(2, n-1, n)` on 661-bit numbers | 10-11 us a test against 110-129 us on IFMA CPUs (13 limbs of 52 bits, 8 lanes); `search_c.py` uses it: a whole block 8.3 s -> 0.61 s | `test_fm13.py`, `test_dropin.py` |
 | `fermat661/cuda/` | `gpu_fermat.py`'s `fermat2` and `fermat3` | 22.9M tests/s on an RTX PRO 6000 against 13.1M (`fermat3`) and 8.9M (`fermat2`): 24 limbs of 28 bits, every product one 64-bit multiply-add, dedicated squaring, generated step with static indices, lazy reduction, start value 2^(672-c); ties `fermat3` on sm_80/89; redundant-limb steps (`_r`, `_s1r`: no carry chain after the doubling, limbs < 2^29) are correct and 70 instructions shorter but should not be faster: the step is bound by the IMAD.WIDE pipe (see FERMAT28.md, "Where the time goes") | `test_fermat28.py`, `test_step28.py` (CPU), `test_gpu_fermat28.py` (GPU) |
+| `fermat661/cuda/` (`fermat31`) | `fermat28` | 22 limbs of 31 bits: 737 IMAD.WIDE a step instead of 876 (groups of 4 products into 96-bit column sums); SASS says -15% multiplier-pipe cycles on sm_80 / 89 / 120; CPU-verified (6,076 exact steps, 6,000 exact residues, primes, pseudoprimes), **GPU timing pending** | `test_step31.py`, `test_fermat31.py` (CPU), `test_gpu_fermat31.py` (GPU) |
 | `sieve200/cuda/` | `search_gpu3.py`'s sieve3, `alive.sum`, `lexsort`, gather, `nonzero` | CPU-verified; GPU numbers pending | `test_gsieve.py`, `test_gpu_sieve_cpu.py` (CPU), `test_gpu_sieve.py` (GPU) |
 
 `sieve200/balance.py` answers "which sieve bound B": with a CPU feeder and a GPU tester of a few tens of million tests a second the best
@@ -32,6 +33,11 @@ B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` st
 * **Count the loop body, not the file.**  Moving a carry chain from the end of the step to after the loop leaves the static instruction count of the whole
   kernel unchanged (my first comparison said "identical"); the inner loop went from 1,169 to 1,099 PTX instructions.  LLVM's NVPTX output puts
   `// =>This Inner Loop Header` after a label, so a parser that tests `line.endswith(':')` finds no loops: strip the comments first.
+* **Compile for the real architecture and read the SASS** (`sieve200/cuda/sass.py`: NVRTC + nvdisasm, no GPU needed).  It showed that an explicit `mad.wide.u32` is two instructions a product on sm_80 / 89
+  and one on sm_120; that LLVM hoists a loop-invariant `(u64) n_j` and turns `(u64) m * n_j` into `mul.lo.s64`, which ptxas answers with a dead `IADD3` a product (576 a step in fermat28);
+  and that a micro-benchmark written in asm had its product hoisted out of the loop and measured nothing.  Check the SASS of a benchmark before running it.
+* **Find the busiest pipe before removing instructions**: the Fermat step is bound by the IMAD.WIDE pipe (about 4 cycles a warp instruction), so removing ALU instructions (redundant limbs) gains nothing and
+  removing multiplications (31-bit limbs) can; the model is in `fermat661/cuda/FERMAT28.md`.
 * **Mistakes that were caught by tests, not by reading**: a 10-plane vertical counter overflows above 1,023 rows (Q = 150,000 has 1,093);
   `fermat28`'s lazy reduction needs 16n < R, so n < 2^668 (669-bit inputs gave a wrong residue in 0.3% of cases, invisible in verdicts,
   which are 0 for almost every random number: the final residue 2^(1-n) mod n is what to compare).
