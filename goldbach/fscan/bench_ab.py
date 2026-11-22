@@ -21,7 +21,7 @@ args = ap.parse_args()
 here = os.path.dirname(os.path.abspath(__file__))
 repo = subprocess.run(["git", "-C", here, "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
 rel = os.path.relpath(here, repo)
-FILES = ["fscan.c", "fermat52.h", "fermat26.h"]
+FILES = ["fscan.c", "fermat52.h", "fermat26.h", "fm_common.h"]       # fm_common.h only exists from the revision that added it
 
 def timer_patch(s):
     s = s.replace("} tls_t;", "    unsigned long long ab_cyc, ab_hash;\n} tls_t;\n#include <x86intrin.h>", 1)
@@ -39,8 +39,14 @@ def build(spec):
     rev, _, extra = spec.partition("@")
     d = tempfile.mkdtemp(prefix="bench_ab_")
     for f in FILES:
-        if rev == "WORK": src = open(os.path.join(here, f)).read()
-        else: src = subprocess.run(["git", "-C", repo, "show", f"{rev}:{rel}/{f}"], capture_output=True, text=True, check=True).stdout
+        if rev == "WORK":
+            if not os.path.exists(os.path.join(here, f)): continue
+            src = open(os.path.join(here, f)).read()
+        else:
+            r = subprocess.run(["git", "-C", repo, "show", f"{rev}:{rel}/{f}"], capture_output=True, text=True)
+            if r.returncode != 0 and f == "fm_common.h": continue
+            if r.returncode != 0: raise SystemExit(f"cannot read {f} at {rev}: {r.stderr}")
+            src = r.stdout
         open(os.path.join(d, f), "w").write(timer_patch(src) if f == "fscan.c" else src)
     exe = os.path.join(d, "fscan_ab")
     subprocess.run(shlex.split(args.cc) + shlex.split(extra) + ["-o", exe, os.path.join(d, "fscan.c"), "-lm"], check=True)

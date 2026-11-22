@@ -16,7 +16,7 @@
  */
 #include <immintrin.h>
 #include <stdint.h>
-typedef unsigned __int128 u128;
+#include "fm_common.h"
 #define M52 ((1ull << 52) - 1)
 
 #ifndef FM_GROUPS
@@ -25,19 +25,16 @@ typedef unsigned __int128 u128;
 typedef struct { uint64_t a0[8], a1[8], n0[8], n1[8], ni[8], bh[8], bl[8]; } f52_lanes;
 
 static inline void f52_setup(f52_lanes *L, int i, u128 n, int t) {
-    uint64_t lo = (uint64_t)n;
-    uint64_t x = (3 * lo) ^ 2;                           /* inverse of n mod 2^64 by Newton */
-    x *= 2 - lo * x; x *= 2 - lo * x; x *= 2 - lo * x; x *= 2 - lo * x;
-    L->n0[i] = lo & M52; L->n1[i] = (uint64_t)(n >> 52); L->ni[i] = (0 - x) & M52;
-    u128 E = n + 103;
-    u128 c = (E + (((u128)1 << t) - 1)) >> t;            /* ceil(E / 2^t), 1 <= c <= 104 by the choice of t */
-    u128 B = (c << t) - E;                               /* 0 <= B < 2^t */
-    B <<= 128 - t;                                       /* first bit to use on top */
-    L->bh[i] = (uint64_t)(B >> 64); L->bl[i] = (uint64_t)B;
-    int e = 104 - (int)c;
-    u128 y = (u128)1 << e;
-    if (y >= 4 * n) y %= n;
-    L->a0[i] = (uint64_t)y & M52; L->a1[i] = (uint64_t)(y >> 52);
+    uint64_t lo = (uint64_t)n, hi = (uint64_t)(n >> 64);
+    L->n0[i] = lo & M52; L->n1[i] = (lo >> 52) | (hi << 12); L->ni[i] = fm_inv_neg(lo, 4) & M52;
+    int e = 104 - fm_exp_words(n, t, 104, &L->bh[i], &L->bl[i]);
+    if (e <= fm_bitlen(n)) {                             /* y = 2^e < 2n, no reduction: always for n of 71 bits or more (c >= 33), not always below */
+        L->a0[i] = e < 52 ? 1ull << e : 0; L->a1[i] = e < 52 ? 0 : 1ull << (e - 52);
+    } else {
+        u128 y = (u128)1 << e;
+        if (y >= 4 * n) y %= n;
+        L->a0[i] = (uint64_t)y & M52; L->a1[i] = (uint64_t)(y >> 52);
+    }
 }
 
 /* one Montgomery squaring with optional doubling (shift count b = 0 or 1 per lane).
@@ -114,8 +111,7 @@ static inline unsigned f52_test(const u128 *n, int cnt) {
     f52_lanes LL[FM_GROUPS];
     u128 mx = 0;
     for (int i = 0; i < cnt; i++) if (n[i] > mx) mx = n[i];
-    int b = 0; for (u128 x = mx; x; x >>= 1) b++;
-    int t = b - 6;
+    int t = fm_bitlen(mx) - 6;
     for (int i = 0; i < F52_LANES; i++) f52_setup(&LL[i >> 3], i & 7, i < cnt ? n[i] : n[0], t);
     return f52_run(LL, n, cnt, t);
 }

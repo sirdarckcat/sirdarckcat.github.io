@@ -228,8 +228,7 @@ static void fermat_drain(tls_t *T, int need) {
             if (n[i] > mx) mx = n[i];
             if (first < 0) first = i;
         }
-        int b = 0; for (u128 x = mx; x; x >>= 1) b++;
-        int t = b - 6;
+        int t = fm_bitlen(mx) - 6;
         fm_lanes_t LL[FM_GROUPS];
         for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i]) n[i] = n[first];

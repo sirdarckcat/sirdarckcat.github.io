@@ -25,7 +25,7 @@
  */
 #include <immintrin.h>
 #include <stdint.h>
-typedef unsigned __int128 u128;
+#include "fm_common.h"
 #define M26 ((1ull << 26) - 1)
 #define FM_W 4                         /* lanes per vector */
 #ifndef FM_GROUPS
@@ -42,30 +42,22 @@ typedef unsigned __int128 u128;
 
 typedef struct { uint64_t a[4][4], n[4][4], ni[4], bh[4], bl[4]; } fm_lanes_t __attribute__((aligned(32)));
 
-/* ---- shared setup helpers */
-static inline uint64_t fm_inv_neg(uint64_t lo, int iters) {          /* -lo^-1 mod 2^64, correct to 5 * 2^iters bits */
-    uint64_t x = (3 * lo) ^ 2;
-    for (int i = 0; i < iters; i++) x *= 2 - lo * x;
-    return 0 - x;
-}
-static inline void fm_exponent(fm_lanes_t *L, int i, u128 n, int t, int Rb, int *e) {
-    u128 E = n + (Rb - 1);
-    u128 c = (E + (((u128)1 << t) - 1)) >> t;            /* ceil(E / 2^t), 1 <= c <= Rb by the choice of t */
-    u128 B = (c << t) - E;                               /* 0 <= B < 2^t */
-    B <<= 128 - t;                                       /* first bit to use on top */
-    L->bh[i] = (uint64_t)(B >> 64); L->bl[i] = (uint64_t)B;
-    *e = Rb - (int)c;
-}
-
 /* ================================================================ 3 limbs of 30 bits */
 
 static inline void fm3_setup(fm_lanes_t *L, int i, u128 n, int t) {
-    L->ni[i] = fm_inv_neg((uint64_t)n, 3) & M3;          /* 3 Newton steps give 40 >= 30 bits */
-    for (int j = 0; j < 3; j++) L->n[j][i] = (uint64_t)(n >> (W3 * j)) & M3;
-    int e; fm_exponent(L, i, n, t, 3 * W3, &e);
-    u128 y = (u128)1 << e;
-    if (y >= 4 * n) y %= n;
-    for (int j = 0; j < 3; j++) L->a[j][i] = (uint64_t)(y >> (W3 * j)) & M3;
+    uint64_t lo = (uint64_t)n, hi = (uint64_t)(n >> 64);
+    L->ni[i] = fm_inv_neg(lo, 3) & M3;                   /* 3 Newton steps give 40 >= 30 bits */
+    L->n[0][i] = lo & M3; L->n[1][i] = (lo >> W3) & M3; L->n[2][i] = (lo >> (2 * W3)) | (hi << (64 - 2 * W3));   /* n2 = n >> 60 < 2^26 */
+    int e = 3 * W3 - fm_exp_words(n, t, 3 * W3, &L->bh[i], &L->bl[i]);
+    if (e <= fm_bitlen(n)) {                             /* y = 2^e < 2n: no reduction (always for the numbers of fscan) */
+        L->a[0][i] = e < W3 ? 1ull << e : 0;
+        L->a[1][i] = e >= W3 && e < 2 * W3 ? 1ull << (e - W3) : 0;
+        L->a[2][i] = e >= 2 * W3 ? 1ull << (e - 2 * W3) : 0;
+    } else {
+        u128 y = (u128)1 << e;
+        if (y >= 4 * n) y %= n;
+        for (int j = 0; j < 3; j++) L->a[j][i] = (uint64_t)(y >> (W3 * j)) & M3;
+    }
 }
 
 #define FM_MUL(x, y) _mm256_mul_epu32(x, y)
@@ -139,12 +131,17 @@ static inline unsigned fm3_run(fm_lanes_t *LL, const u128 *n, int cnt, int t) {
 /* ================================================================ 4 limbs of 26 bits (numbers of 87 to 100 bits) */
 
 static inline void fm4_setup(fm_lanes_t *L, int i, u128 n, int t) {
-    L->ni[i] = fm_inv_neg((uint64_t)n, 3) & M26;
-    for (int j = 0; j < 4; j++) L->n[j][i] = (uint64_t)(n >> (26 * j)) & M26;
-    int e; fm_exponent(L, i, n, t, 104, &e);
-    u128 y = (u128)1 << e;
-    if (y >= 4 * n) y %= n;
-    for (int j = 0; j < 4; j++) L->a[j][i] = (uint64_t)(y >> (26 * j)) & M26;
+    uint64_t lo = (uint64_t)n, hi = (uint64_t)(n >> 64);
+    L->ni[i] = fm_inv_neg(lo, 3) & M26;
+    L->n[0][i] = lo & M26; L->n[1][i] = (lo >> 26) & M26; L->n[2][i] = ((lo >> 52) | (hi << 12)) & M26; L->n[3][i] = (hi >> 14) & M26;
+    int e = 104 - fm_exp_words(n, t, 104, &L->bh[i], &L->bl[i]);
+    if (e <= fm_bitlen(n)) {
+        for (int j = 0; j < 4; j++) L->a[j][i] = e >= 26 * j && e < 26 * j + 26 ? 1ull << (e - 26 * j) : 0;
+    } else {
+        u128 y = (u128)1 << e;
+        if (y >= 4 * n) y %= n;
+        for (int j = 0; j < 4; j++) L->a[j][i] = (uint64_t)(y >> (26 * j)) & M26;
+    }
 }
 
 /* one reduction round: make column zi a multiple of 2^26 and carry it into the next column */
@@ -225,8 +222,7 @@ static inline unsigned fm_test(const u128 *n, int cnt) {
     fm_lanes_t LL[FM_GROUPS];
     u128 mx = 0;
     for (int i = 0; i < cnt; i++) if (n[i] > mx) mx = n[i];
-    int b = 0; for (u128 x = mx; x; x >>= 1) b++;
-    int t = b - 6;
+    int t = fm_bitlen(mx) - 6;
     for (int i = 0; i < FM_LANES; i++) fm_setup(&LL[i / FM_W], i % FM_W, i < cnt ? n[i] : n[0], t);
     return fm_run(LL, n, cnt, t);
 }

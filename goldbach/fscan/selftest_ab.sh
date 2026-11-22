@@ -24,13 +24,14 @@ echo "== 1. Fermat kernel against Python"
 $CC $FLAGS -Wall -o $T/tf test_fermat.c || exit 1
 python3 test_fermat.py 1 $T/tf 16 | tail -1 || fail=1
 python3 stress_fermat.py $T/tf 1 16 | sed 's/^.*: structured/structured/' || fail=1
+$CC -O2 -o $T/tfc test_fm_common.c && $T/tfc | tail -1 | grep -q " 0 mismatches" && echo "fm_common exponent words: 0 mismatches" || { echo "fm_common exponent words: FAILED"; fail=1; }
 echo "== 2. the record"
 $CC $FLAGS -fopenmp -Wno-unused-result -o $T/fscan fscan.c -lm || exit 1
 ./check_record.sh $T/fscan | tail -1 || fail=1
 echo "== 3. end to end against brute force (check_small.py)"
 FSCAN=$T/fscan python3 check_small.py 2>&1 | tail -2 | cut -c1-150 || fail=1
 echo "== 4. the Fermat kernel alone (TSC cycles a number, setup included, min of 7)"
-mkdir -p $T/old && for f in test_fermat.c fermat26.h fermat52.h; do git show $OLD:goldbach/fscan/$f > $T/old/$f || exit 1; done
+mkdir -p $T/old && for f in test_fermat.c fermat26.h fermat52.h fm_common.h; do git show $OLD:goldbach/fscan/$f > $T/old/$f 2>/dev/null || [ $f = fm_common.h ] || exit 1; done
 $CC $FLAGS -o $T/tf_old $T/old/test_fermat.c || exit 1
 for b in 62 70 77; do
   for k in old new; do
@@ -40,7 +41,7 @@ for b in 62 70 77; do
   done
 done
 echo "== 5. the whole scanner, interleaved (class 194 slice), one line a commit that changes the code, then the working tree"
-REVS=$(git -C "$HERE" rev-list --reverse --abbrev-commit $OLD..HEAD -- fscan.c fermat26.h fermat52.h 2>/dev/null | tr '\n' ' ')
+REVS=$(git -C "$HERE" rev-list --reverse --abbrev-commit $OLD..HEAD -- fscan.c fermat26.h fermat52.h fm_common.h 2>/dev/null | tr '\n' ' ')
 python3 bench_ab.py $OLD $REVS WORK --cpu $CPU --rounds 5 | tail -$(( $(echo $REVS | wc -w) + 4 )) || fail=1
 echo "== 6. the score-table schemes of this working tree (SCORE_MODE 0 = periodic tables, 1 = offsets, 2 = packed offsets)"
 python3 bench_ab.py WORK@-DSCORE_MODE=0 WORK@-DSCORE_MODE=1 WORK@-DSCORE_MODE=2 --cpu $CPU --rounds 5 | tail -4 || fail=1
