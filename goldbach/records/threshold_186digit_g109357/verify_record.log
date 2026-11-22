@@ -1,0 +1,16 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 8cd3a3cadf9a454e53d434fbc712590f68057a64912d490a5e1267e3ac5242d4
+[A] N reconstructed: 186 digits, t=82846821, 83 congruences OK
+[B] primes below q: 10394; residual (uncovered): 827
+    ... 500/827 residual complements proven composite
+[B] all 827 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 109357 prime (trial division); N - q proven prime by ECPP (24 steps, independently re-verified)
+[D] q = 109357 > 100000 OK
+[D] N < N_bound OK (186 vs 193 digits)
+[D] N has 186 <= 186 digits OK
+[PASS] g(N) = 109357 for the 186-digit N in t100k/record_t100k_r2.json
+
+real	0m1.238s
+user	0m1.207s
+sys	0m0.020s
+exit 0

@@ -1,0 +1,16 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 1b1113895290810334fbd5e7e190d2352c980ddc4dd6852582a3900d7b92ad65
+[A] N reconstructed: 199 digits, t=299581384, 88 congruences OK
+[B] primes below q: 10525; residual (uncovered): 795
+    ... 500/795 residual complements proven composite
+[B] all 795 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 110917 prime (trial division); N - q proven prime by ECPP (30 steps, independently re-verified)
+[D] q = 110917 > 105667 OK
+[D] N < N_bound OK (199 vs 199 digits)
+[D] N has 199 <= 199 digits OK
+[PASS] g(N) = 110917 for the 199-digit N in g23/record_g23.json
+
+real	0m1.429s
+user	0m1.401s
+sys	0m0.004s
+exit 0

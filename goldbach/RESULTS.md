@@ -110,7 +110,11 @@ has the congruence classes and a PARI ECPP certificate for N − g, and
 Checked here on 2026-11-22 with gmpy2, from N and g alone: for each of the
 six, N − p is composite for every prime p < g and N − g is a probable
 prime (`direct_check.log` in each directory; 89,840 primes for the
-2,480-digit one). The ECPP certificates were not re-verified today.
+2,480-digit one). The collection's own verifier, which also re-verifies
+the ECPP certificate, was re-run on the five records of up to 199 digits
+and passes (`verify_record.log` in each directory). For the 2,480-digit
+record that run did not finish within two hours and was not repeated, so
+its certificate was not re-verified today.
 
 ## The low end of the threshold game (2026-11-22, later that evening): g(N) = 10,399 at 23 digits
 
