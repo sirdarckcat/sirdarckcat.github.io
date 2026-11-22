@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """campaign3 on a GPU runtime: the variants in my_specs.json, k-major order, slices of 2^20 k as in
-run_campaign3.py, each batch run by search_gpu.py with full hit mass (--skip-frac 0). Slices already
+run_campaign3.py, each batch run by search_gpu2.py with full hit mass (--skip-frac 0). Slices already
 in search.log (this directory's, seeded with the committed campaign3 log lines of these variants)
 are skipped. Stops on a hit (found.jsonl non-empty) or when the variants are exhausted.
 
@@ -47,7 +47,7 @@ while True:
         break
     json.dump(batch, open(os.path.join(HERE, "current_slices.json"), "w"))
     with open(LOG, "a", buffering=1) as log:
-        rc = subprocess.call([sys.executable, os.path.join(HERE, "search_gpu.py"), os.path.join(HERE, "current_slices.json"),
+        rc = subprocess.call([sys.executable, os.path.join(HERE, "search_gpu2.py"), os.path.join(HERE, "current_slices.json"),
                               "--goldbach", HERE, "--out", FOUND], cwd=HERE, stdout=log, stderr=log)
     if rc != 0:
         print(f"C3GPU-FAILED rc={rc} at {batch[0]['name']}", flush=True)

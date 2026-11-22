@@ -9,8 +9,12 @@ tests on a GPU.
 |---|---|
 | `gpu_fermat.py` | CuPy kernel: 2^(n−1) mod n for a batch of n = (N0 − q_i) + k·M, n built on the GPU from 21 32-bit limbs; Montgomery squaring (CIOS), the base 2 as doublings |
 | `test_gpu_fermat.py` | the kernel against gmpy2 on campaign3 candidates, then its speed |
+| `search_gpu2.py` | the production version: the sieve on the GPU as well (one thread per residual and sieve prime, the same arithmetic as `search.run_block`), then the tests as in `search_gpu.py` |
 | `search_gpu.py` | `search.py` with the tests on the GPU: the same sieve (worker processes, `search.init_spec`), then GPU launches that test the next D complements of every open member in `search.run_block`'s order, stopping a member at its first PRP; prints `search.py`'s per-slice line |
 | `check_block.py` | `search_gpu.py` against `search.run_block` on whole blocks |
+| `check_sieve.py` | `search_gpu2.py`'s GPU sieve against the CPU sieve (identical alive matrices), then its tests and prps against `search.run_block` |
+| `check_small_gpu.py` | end to end where successes are frequent (Q = 3001): brute force with gmpy2, `search.run_block` and `search_gpu2.py` must find the same successes with the same tests and prps |
+| `search.log` | the GPU run's slice log (seeded with the committed campaign3 lines of its variants) |
 | `run_c3gpu.py` | driver: the variants in `my_specs.json`, k-major slices of 2^20 k, resumes from its own `search.log` |
 | `variant_split.json` | which of the 40 variants the GPU and the CPU machines scan (disjoint) |
 
@@ -20,7 +24,17 @@ Checks, on a Colab NVIDIA L4 (22 Nov):
   against 111 µs a test for gmpy2 on one core of the same runtime (~260 cores).
 - `search_gpu.py` equals `search.run_block` on 4 whole blocks: alive 50,897,453, tests 2,412,669,
   prps 131,072 on both (`BLOCKS MATCH`).
-- Production rate: ~49,000 k/s with full hit mass (`--skip-frac 0`), E^ ≈ 21.0 as on the CPU.
+- `search_gpu2.py`'s GPU sieve gives the same alive matrix as the CPU sieve at k0 = 4,030,464
+  and k0 = 299,991,040 (12,725,961 and 12,726,187 survivors), and the same tests and prps on the
+  4 blocks above.
+- End to end on the Q = 3001 self-test cover, k < 131,072: brute force finds 13 members whose 54
+  residual complements are all composite (all pass `verify_success`); `search.run_block` and
+  `search_gpu2.py` find the same 13, with 234,961 tests and 131,059 PRPs on both. The model's
+  k·exp(−E^) says 28.3 there; that approximation is poor at p^ = 0.56 and much closer at
+  campaign3's p^ = 0.054.
+- With `search_gpu2.py`: ~66,800 k/s (16 s a slice of 2^20 k). The GPU is at about half its test
+  rate; batching several blocks per launch should gain more.
+- First production version (`search_gpu.py`): ~49,000 k/s with full hit mass (`--skip-frac 0`), E^ ≈ 21.0 as on the CPU.
   `campaign3` on 4 CPU cores ran 16,000 k/s keeping 29.6% of the hit mass (skip-frac 0.92),
   ~4,700 k/s in effect, so one L4 is ~10 such machines. The CPU sieve (11 workers) is now the
   limit; the GPU is at ~40% of its test rate.
