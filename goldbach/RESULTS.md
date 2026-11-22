@@ -1,5 +1,30 @@
 # Goldbach Desert Records
 
+## The 200-digit budget game (2026-11-22, 23:08 UTC): g(N) = 146,191 below 10^200
+
+**g(N) = 146,191** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g146191/`). It is the largest g known
+below 10^200, 12,210 above the 133,981 of three hours earlier, whose 199-digit N stays on the frontier.
+
+- **Closeness.** 6.88% of the largest g expected at 200 digits, 90× a typical number of that size (133,981: 6.36%).
+- **How.** The first hit of the Q = 140,000 run. Every success there has g ≥ 140,009, so the move to that threshold made
+  any hit a record.
+  - Vector: the Lean session's `r200_q140k_c_v77` (1,008 residual primes on campaign 3's 88 moduli, checked here independently).
+  - Member: k = 3,101,585,871.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py` on an RTX PRO 6000 (Colab G4): the uarch session's GPU sieve and Fermat kernel 28,
+    skip-frac 0.97.
+  - Expectation: ~1.3 hits over the Q = 140,000 run on all GPUs.
+- **The engine since 21:00 UTC.** Per RTX PRO 6000 it went from 1.3M to 4.8-5.0M full-weight members/s:
+  - pooled tests: `search_gpu3.py`;
+  - kernel 3: dedicated squaring, lazy reduction;
+  - the uarch session's kernel 28: 28-bit limbs;
+  - its CPU feeder, then its all-GPU sieve.
+  `phd/campaign3_gpu/TALLY.md` tracks expected against found per cover. Since this hit the GPUs run Q = 150,000.
+- **Checked** the five usual ways (`certify_c3.sh`):
+  - 13,523 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 133,981, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
 ## The 200-digit budget game (2026-11-22, 20:31 and 20:38 UTC): g(N) = 133,981 below 10^199
 
 **g(N) = 133,981** for a 199-digit even N < 10^199
@@ -1095,6 +1120,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e200_200digit_g146191` | 146,191 | 200 | ~2.1M | 6.9% | 90 | 60 |
 | `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
 | `budget_1e200_199digit_g132103` | 132,103 | 199 | ~2.1M | 6.3% | 82 | 57 |
 | `budget_1e200_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |

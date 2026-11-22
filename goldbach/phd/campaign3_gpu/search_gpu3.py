@@ -20,6 +20,9 @@ Each member's survivors are tested in ascending residual order and it stops at i
 PRP. Tests are counted up to that PRP, so per slice the tests, PRPs, alive/k, hit% and successes
 equal search_gpu2.py's and search.run_block's for the same parameters (check_v3.py).
 
+--kernel 3 uses gpu_fermat3.py (dedicated squaring, lazy reduction; test_fermat3.py: identical flags to the
+default kernel on 8.4M candidates and 0 mismatches against gmpy2 on 80,000, 1.48x faster on an RTX PRO 6000).
+
 Successes are re-checked on the CPU with search.verify_success. Output is search.py's line per
 slice. A slice's seconds are its batch's time divided by the number of slices in the batch.
 
@@ -51,6 +54,9 @@ ap.add_argument("--goldbach", default=os.path.join(os.path.dirname(os.path.abspa
 ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one launch")
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
+ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
+                help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
+                     "28: the uarch session's gpu_fermat28.py (24 x 28-bit limbs, 'step_s1' with PTX mad.wide; n in [2^642, 2^668))")
 args = ap.parse_args()
 sys.path.insert(0, args.goldbach)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -58,7 +64,11 @@ import search                      # noqa: E402  (init_spec, verify_success)
 from gmpy2 import mpz              # noqa: E402
 import cupy as cp                  # noqa: E402
 import cupyx                       # noqa: E402
-from gpu_fermat import kernel, to_limbs   # noqa: E402
+from gpu_fermat import kernel as kernel2, to_limbs   # noqa: E402
+from gpu_fermat3 import kernel as kernel3      # noqa: E402
+if args.kernel == 28:
+    sys.path.insert(0, os.environ.get("FERMAT28_DIR", "/content/f28"))
+    import gpu_fermat28                       # noqa: E402
 
 SIEVE_SRC = r'''
 extern "C" __global__ void sieve3(const int *U, const int *S, const int *inv, const int *n0m, const int *kmod,
@@ -127,7 +137,17 @@ class MultiTester:
             rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
         self.cq = cp.asarray(np.stack(rows))
         self.M = cp.asarray(to_limbs(M, limbs))
-        self.k = kernel(limbs)
+        if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
+            nmax = max(int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M for sp in specs)
+            assert nmax < 1 << (32 * limbs - 7), f"kernel 3 needs n < 2^{32 * limbs - 7}"
+        if args.kernel == 28:                                  # fermat28 returns flag 2 outside [2^642, 2^668)
+            for sp in specs:
+                lo = int(sp["N0"]) - max(int(q) for q in sp["residual"]) + int(sp.get("kstart", 0)) * M
+                hi = int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M
+                assert lo >= 1 << 642 and hi < 1 << 668, f"kernel 28 needs 2^642 <= n < 2^668 ({sp['name']})"
+            self.k = gpu_fermat28.kernel(limbs, step_file="fermat28_step_s1.cuh", asm_mad=True)
+        else:
+            self.k = (kernel3 if args.kernel == 3 else kernel2)(limbs)
 
     def test(self, idx, kv, threads=128):
         T = int(idx.size)
@@ -159,9 +179,11 @@ def run_pool(tester, kv, cnt, cols):
         off = cp.arange(total) - (csum - take)[m_of]
         ip = (indptr[act] + pos[act])[m_of] + off
         flags = tester.test(cols[ip], kv[act][m_of].astype(cp.uint32))
+        if args.kernel == 28 and bool((flags > 1).any()):
+            raise RuntimeError("kernel 28 flagged an n outside its range")
         big = D + 1
         first = cp.full(int(act.size), big, dtype=cp.int32)          # scatter_min: no int64
-        cupyx.scatter_min(first, m_of, cp.where(flags.astype(cp.bool_), off, big).astype(cp.int32))
+        cupyx.scatter_min(first, m_of, cp.where(flags == 1, off, big).astype(cp.int32))
         hit = first < big
         tests_m[act] += cp.where(hit, first.astype(cp.int64) + 1, take)
         prp_m[act[hit]] = True
@@ -255,7 +277,7 @@ def run_batch(batch, out):
     tests = sum(s["tests"] for s in st)
     stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch {batch[0]['name']}..{batch[-1]['name']} "
              f"({len(batch)} slices) {dt*len(batch):.1f}s: tests {tests} counted, {gt[0]} computed "
-             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4f}, found {len(found)}")
+             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)}")
     return lines, found, stats
 
 

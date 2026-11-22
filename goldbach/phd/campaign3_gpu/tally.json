@@ -1,0 +1,397 @@
+{
+ "updated": "2026-11-22T23:13:00Z",
+ "rows": [
+  {
+   "dir": "/content/c150",
+   "Q": 150000,
+   "families": [
+    "pt_q150k"
+   ],
+   "slices": 10016,
+   "members": 10502537216,
+   "hit_mass_members": 1730994503.68,
+   "mean_E": 26.18637280351438,
+   "tests": 5890470779,
+   "prps": 315383808,
+   "expected_logged": 0.005051805000000004,
+   "slices_logged": 10016,
+   "expected_model": 9.740878893424454e-21,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "A100 (gold-a100)",
+   "family": "Q = 150,000, 1,093-1,094 rows (research cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c3g_g4",
+   "Q": 122000,
+   "families": [
+    "r200b_q122k"
+   ],
+   "slices": 10720,
+   "members": 11065238716,
+   "hit_mass_members": 1572991134.5349998,
+   "mean_E": 20.923348551845194,
+   "tests": 6187754004,
+   "prps": 332281359,
+   "expected_logged": 0.0,
+   "slices_logged": 0,
+   "expected_model": 1.016380917306663,
+   "slices_model": 10720,
+   "found": 1,
+   "g": [
+    125269
+   ],
+   "hits": [
+    {
+     "name": "r200b_q122k_v367@532676608",
+     "k": 533337309,
+     "g": 125269,
+     "digits": 199
+    }
+   ],
+   "gpu": "RTX PRO 6000 (gold-g4)",
+   "family": "Q = 122,000, 867-872 rows (v, w families), N < 10^199"
+  },
+  {
+   "dir": "/content/c850",
+   "Q": 122000,
+   "families": [
+    "r200_q122k_k850"
+   ],
+   "slices": 12992,
+   "members": 13623099392,
+   "hit_mass_members": 1912954945.536,
+   "mean_E": 20.40602524630542,
+   "tests": 7652384183,
+   "prps": 409092095,
+   "expected_logged": 1.383199999999996,
+   "slices_logged": 9184,
+   "expected_model": 0.6146544765812859,
+   "slices_model": 3808,
+   "found": 1,
+   "g": [
+    122827
+   ],
+   "hits": [
+    {
+     "name": "r200_q122k_k850_v440@4282384384",
+     "k": 4283345855,
+     "g": 122827,
+     "digits": 200
+    }
+   ],
+   "gpu": "RTX PRO 6000 (gold-g4)",
+   "family": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c140",
+   "Q": 140000,
+   "families": [
+    "pt_q140k",
+    "r200_q140k_c"
+   ],
+   "slices": 51104,
+   "members": 53586427904,
+   "hit_mass_members": 8382830346.24,
+   "mean_E": 24.175214073262364,
+   "tests": 30094510905,
+   "prps": 1609162752,
+   "expected_logged": 0.18711925000000004,
+   "slices_logged": 51104,
+   "expected_model": 1.4992483166401116e-19,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "RTX PRO 6000 (gold-g4)",
+   "family": "Q = 140,000, 1,011 rows (research cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c3g_g4",
+   "Q": 122000,
+   "families": [
+    "r200b_q122k"
+   ],
+   "slices": 8192,
+   "members": 8154704498,
+   "hit_mass_members": 1158284625.0649998,
+   "mean_E": 20.898816676745017,
+   "tests": 4559894685,
+   "prps": 244880094,
+   "expected_logged": 0.0,
+   "slices_logged": 0,
+   "expected_model": 0.766632607713056,
+   "slices_model": 8192,
+   "found": 2,
+   "g": [
+    133981,
+    132103
+   ],
+   "hits": [
+    {
+     "name": "r200b_q122k_w175@540016640",
+     "k": 541000854,
+     "g": 133981,
+     "digits": 199
+    },
+    {
+     "name": "r200b_q122k_v851@537919488",
+     "k": 538125153,
+     "g": 132103,
+     "digits": 199
+    }
+   ],
+   "gpu": "RTX PRO 6000 (gold-g4b)",
+   "family": "Q = 122,000, 867-872 rows (v, w families), N < 10^199"
+  },
+  {
+   "dir": "/content/c850",
+   "Q": 122000,
+   "families": [
+    "r200_q122k_k850"
+   ],
+   "slices": 12672,
+   "members": 13287555072,
+   "hit_mass_members": 1864966864.8960001,
+   "mean_E": 20.394711174242424,
+   "tests": 7463440306,
+   "prps": 399015934,
+   "expected_logged": 1.362499999999996,
+   "slices_logged": 8960,
+   "expected_model": 0.6065812447037107,
+   "slices_model": 3712,
+   "found": 2,
+   "g": [
+    126397,
+    125221
+   ],
+   "hits": [
+    {
+     "name": "r200_q122k_k850_v1760@4292870144",
+     "k": 4293795883,
+     "g": 126397,
+     "digits": 200
+    },
+    {
+     "name": "r200_q122k_k850_v1039@4281335808",
+     "k": 4282342609,
+     "g": 125221,
+     "digits": 200
+    }
+   ],
+   "gpu": "RTX PRO 6000 (gold-g4b)",
+   "family": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c140",
+   "Q": 140000,
+   "families": [
+    "pt_q140k",
+    "r200_q140k_c"
+   ],
+   "slices": 50720,
+   "members": 53183774720,
+   "hit_mass_members": 8319015059.456,
+   "mean_E": 24.178057768138803,
+   "tests": 29866139855,
+   "prps": 1597071360,
+   "expected_logged": 0.18513378999999974,
+   "slices_logged": 50720,
+   "expected_model": 1.32560656245298e-18,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "RTX PRO 6000 (gold-g4b)",
+   "family": "Q = 140,000, 1,011 rows (research cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c850",
+   "Q": 122000,
+   "families": [
+    "r200_q122k_k850"
+   ],
+   "slices": 3744,
+   "members": 3925868544,
+   "hit_mass_members": 551081213.952,
+   "mean_E": 20.3992922008547,
+   "tests": 2205112220,
+   "prps": 117891072,
+   "expected_logged": 0.5668000000000007,
+   "slices_logged": 3744,
+   "expected_model": 0.0,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "RTX PRO 6000 (gold-g4c)",
+   "family": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c150",
+   "Q": 150000,
+   "families": [
+    "pt_q150k"
+   ],
+   "slices": 50336,
+   "members": 52781121536,
+   "hit_mass_members": 8699048361.984,
+   "mean_E": 26.149016211061664,
+   "tests": 29645192095,
+   "prps": 1584979968,
+   "expected_logged": 0.025954908999999988,
+   "slices_logged": 50336,
+   "expected_model": 0.0,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "RTX PRO 6000 (gold-g4c)",
+   "family": "Q = 150,000, 1,093-1,094 rows (research cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c850",
+   "Q": 122000,
+   "families": [
+    "r200_q122k_k850"
+   ],
+   "slices": 3200,
+   "members": 3355443200,
+   "hit_mass_members": 470963716.096,
+   "mean_E": 20.39750625,
+   "tests": 1884707683,
+   "prps": 100761599,
+   "expected_logged": 0.35890000000000033,
+   "slices_logged": 2368,
+   "expected_model": 0.13578802704717496,
+   "slices_model": 832,
+   "found": 1,
+   "g": [
+    123259
+   ],
+   "hits": [
+    {
+     "name": "r200_q122k_k850_v2028@4291821568",
+     "k": 4292816657,
+     "g": 123259,
+     "digits": 200
+    }
+   ],
+   "gpu": "L4 (gold-gpu)",
+   "family": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c140",
+   "Q": 140000,
+   "families": [
+    "pt_q140k"
+   ],
+   "slices": 11104,
+   "members": 11643387904,
+   "hit_mass_members": 1821532749.8240001,
+   "mean_E": 24.185472802593658,
+   "tests": 6538648094,
+   "prps": 349642752,
+   "expected_logged": 0.03988137000000002,
+   "slices_logged": 11104,
+   "expected_model": 5.166900978251232e-19,
+   "slices_model": 0,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "L4 (gold-gpu)",
+   "family": "Q = 140,000, 1,011 rows (research cover), N < 10^200"
+  },
+  {
+   "dir": "/content/c3g (search_gpu2.py, full mass)",
+   "Q": 122000,
+   "slices": 180,
+   "members": 188743680,
+   "hit_mass_members": 188743680.0,
+   "mean_E": 21.017555555555553,
+   "tests": 3486570347,
+   "prps": 188743680,
+   "expected_logged": 0.0,
+   "slices_logged": 0,
+   "expected_model": 0.10977088751949561,
+   "slices_model": 180,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "L4 (gold-gpu)",
+   "family": "Q = 122,000, 867-869 rows, search_gpu2.py at full mass, N < 10^199"
+  },
+  {
+   "dir": "/content/c3g (search_gpu3.py, 867-row families)",
+   "Q": 122000,
+   "slices": 3136,
+   "members": 3208308156,
+   "hit_mass_members": 455541676.024,
+   "mean_E": 20.884487708134603,
+   "tests": 1793890059,
+   "prps": 96343248,
+   "expected_logged": 0.0,
+   "slices_logged": 0,
+   "expected_model": 0.30593718243567913,
+   "slices_model": 3136,
+   "found": 0,
+   "g": [],
+   "hits": [],
+   "gpu": "L4 (gold-gpu)",
+   "family": "Q = 122,000, 867-872 rows (v, w families), N < 10^199"
+  }
+ ],
+ "summary": [
+  {
+   "family": "Q = 150,000, 1,093-1,094 rows (research cover), N < 10^200",
+   "members": 63283658752.0,
+   "hit_mass_members": 10430042865.664,
+   "expected": 0.03100671399999999,
+   "found": 0,
+   "g": []
+  },
+  {
+   "family": "Q = 122,000, 867-872 rows (v, w families), N < 10^199",
+   "members": 22428251370.0,
+   "hit_mass_members": 3186817435.6239996,
+   "expected": 2.088950707455398,
+   "found": 3,
+   "g": [
+    133981,
+    132103,
+    125269
+   ]
+  },
+  {
+   "family": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200",
+   "members": 34191966208.0,
+   "hit_mass_members": 4799966740.48,
+   "expected": 5.028423748332164,
+   "found": 4,
+   "g": [
+    126397,
+    125221,
+    123259,
+    122827
+   ]
+  },
+  {
+   "family": "Q = 140,000, 1,011 rows (research cover), N < 10^200",
+   "members": 118413590528.0,
+   "hit_mass_members": 18523378155.52,
+   "expected": 0.41213440999999984,
+   "found": 0,
+   "g": []
+  },
+  {
+   "family": "Q = 122,000, 867-869 rows, search_gpu2.py at full mass, N < 10^199",
+   "members": 188743680.0,
+   "hit_mass_members": 188743680.0,
+   "expected": 0.10977088751949561,
+   "found": 0,
+   "g": []
+  }
+ ]
+}

@@ -9,7 +9,32 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 |---|---|---|---|
 | Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py, PARI (N−1 certificate, isprime and the full scan) and both bls/ verifiers here. Cross-verified by the second session (verify.py, bls/xverify.py, the PARI scan and certificate: all pass). Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
-| Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+| Budget R(10^199)/R(10^200) (Game 3) | **199-digit** N (records/budget_1e200_199digit_g133981) | g = **133,981** | **new 2026-11-22**; campaign3 on Colab GPUs (search_gpu3.py), certified by certify_c3.sh: witnesses, PARI primecert, ecpp_check.py, slop's stdlib verify_record.py, direct gmpy2 and PARI. Same night: g = 132,103 and 125,269 (both 199 digits, also frontier points). Previous: g = 119,419 (r200 round 1) |
+
+### 2026-11-22 (night) — Game 3 on Colab GPUs (`ccr-8ffe9d7a` session): g = 125,269, 132,103, 133,981 below 10^199
+
+- **Engine.** `search_gpu2.py` (GPU sieve plus GPU Fermat tests) ran 63-67k members/s on an L4. `prof_gpu2.py` showed why:
+  41% of the tests computed fell after a member's first PRP (93% at skip-frac 0.97), because a launch held one block's members.
+  `search_gpu3.py` pools a batch of 32 slices into one tester (all variants share M), which cuts the waste to 5-9%.
+  `check_v3.py` shows identical alive matrices and slice lines to `search_gpu2.py`, and Q = 3001 end to end against brute force.
+  Production uses skip-frac 0.97 (each block's emptiest 3%, ~14% of the hit mass) and the top of k first: E falls as N grows,
+  ≈ 0.25 nats between k ≈ 10^7 and the 199-digit ceiling.
+- **Hardware.** Colab G4 runtimes (NVIDIA RTX PRO 6000 Blackwell; the kernel does 8.9·10^6 tests/s against 2.3·10^6 on an
+  L4): three of them, plus the L4 and later an A100. One G4 does 9.3M members/s at f = 0.97, i.e. 1.32M members/s of full
+  hit mass, ~21x `search_gpu2.py` on the L4.
+- **Hits.** In the first 25 minutes with the 867-row campaign-3 families (Q = 122,000, N < 10^199): 125,269 (v367),
+  133,981 (w175), 132,103 (v851). All are certified and all are frontier points; 133,981 is the largest g known below 10^200
+  (closeness 6.36%).
+- **Lean 850-row cover** (Q = 122,000, N < 10^200; 3,000 residue-swap variants): four more hits, 122,827-126,397, none
+  above the record. The overshoot model, from the cover's own classes beyond Q (an uncovered prime there is killed with
+  probability 1 − 0.122, then N − q is prime with probability ≈ 0.024), gives a mean g − Q ≈ 3,300-3,450 and
+  P(g > 133,981) ≈ 0.034 per hit. So the two large hits were lucky draws, and larger Q is the lever.
+- **Tally** (`campaign3_gpu/TALLY.md`): over all covers, 7.26 expected against 7 found. The model is on target in aggregate.
+- **Since 21:08Z**: Q = 140,000 (research cover, 1,011 rows; E^ 24.04-24.18 measured) and Q = 150,000 (1,093-1,094 rows;
+  E^ 25.97-26.14). Both covers were checked here.
+- **Kernel 3** (`gpu_fermat3.py`, 21:25Z): dedicated squaring plus lazy Montgomery reduction (16n < 2^672). It matches gmpy2
+  and the proven kernel, and is 1.48x faster on the RTX PRO 6000 and 1.78x on the L4. Expected rate ≈ 8 hits a day at
+  Q = 140,000 on three GPUs.
 
 ### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251 and 10,000,141
 

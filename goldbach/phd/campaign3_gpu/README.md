@@ -83,6 +83,75 @@ Version 3 (22 Nov):
   index `../campaign3/variants850_index.json`, full list sha256 4c22a9d6b6e09be4faece7b734c504e0d8a45569a6bc8e1c601623e2beed95e5).
   They run for N < 10^200 with k in [2^31, 2^32), top first (`run_v3_camp850.sh`), because the kernel takes k as u32.
   E^ measured there is ≈ 20.3-20.4, against ≈ 20.8-21.0 for the 867-row family.
+- Kernel 3, `gpu_fermat3.py` (22 Nov 21:25Z, production on all GPUs, `--kernel 3`):
+  - a dedicated squaring (the products x_i·x_j for i < j once, doubled, plus the diagonal: 231 products instead of 441);
+  - lazy Montgomery reduction (no compare-and-subtract in the exponent loop: x < 4n before a squaring and < 2n after it, valid
+    because 16n < R = 2^672 for n < 2^665, i.e. N < 10^200);
+  - one REDC with a zero upper half at the end, then the comparison with 1.
+  - `test_fermat3.py`: 0 mismatches against gmpy2 on 80,000 candidates (k = 0..3 and up to 2^32 − 1 included, Q = 122,000 and
+    150,000 covers), and flags identical to `gpu_fermat.py`'s on 8.4M random candidates. `check_v3.py` with `SEARCH_GPU3_KERNEL=3`
+    passes everything.
+  - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
+    on the RTX PRO 6000, against 3.6 s before.
+  - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- CPU shares on the G4 hosts (22 Nov 22:40Z): the uarch session's `sieve200/search_c.py` (C sieve and AVX-512 IFMA Fermat tests)
+  under `../campaign3/run_campaign3_hi.py`, on Q = 150,000 vectors at k ≥ 2^32 (which the GPU kernels cannot reach).
+  - `cpu_share.sh` sets it up after `test_dropin.py` (ALL IDENTICAL) and `test_fm13.py` (ALL OK) pass on each host.
+  - `cpu_share4.sh` runs 4 drivers × 11 processes on quarters of the vectors, because the engine makes a process pool per slice.
+  - Per host: 1.8M members/s at hit% 30.9, i.e. 0.56M full-weight. The GPU batches still take 1.1 s.
+- `search_gpu5.py` (22 Nov 22:17-22:33Z, production on all five GPUs): the uarch session's all-GPU sieve (branch ccr-b8c25887-i6tn9f at
+  6e01704, goldbach/sieve200/cuda: `GpuFeeder`). It has one CTA per row with the window's bit map in shared memory, Barrett
+  reduction, a bit-sliced counter, selection by histogram (exactly np.argsort(counts, kind="stable")[:keep]), and the kept rows
+  read straight from the bit matrix. Windows are 2^19 members, L = 2^15.
+  - Its own test (`test_gpu_sieve.py`): identical to the CPU feeder on 3 windows on each of the RTX PRO 6000, the A100 and the L4.
+    `check_v5.sh`: slice lines identical to search_gpu3.py's on the 12 production slices (f = 0.97 and f = 0), and on 4 more on
+    the A100 and the L4 with kernel 3.
+  - Sieve + count + select + rows per member: RTX PRO 6000 2.7 ns (372M members/s), A100 16.6 ns, L4 24.4 ns. The old GPU
+    sieve was ~32 ns (RTX PRO 6000) to ~140 ns (L4).
+  - Production batch of 32 slices (33.5M members) at f = 0.97:
+
+    | GPU | before | search_gpu5.py | full-weight members/s |
+    |---|---|---|---|
+    | RTX PRO 6000, kernel 28 | 1.1 s (CPU feeder) | 1.1 s, host CPUs free | ~4.8-5.0M |
+    | A100, kernel 3 | 6.5 s | 3.5 s | 1.56M |
+    | L4, kernel 3 | 9.6 s | 6.1 s | 0.86M |
+
+  - f = 0.99 on an RTX PRO 6000: 0.5 s a batch but less than half the hit mass. That gives 1.56e-5 against 1.50e-5 expected hits
+    a second, i.e. +4%, for 2.2x the k-range, so production stays at f = 0.97 while vectors are the constraint.
+- `search_gpu4.py` (22 Nov 21:57Z, production on the three RTX PRO 6000s): the sieve, counts and selection run on the host's
+  CPUs with the uarch session's `sieve200.Feeder` (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/sieve200; C with AVX-512,
+  46 threads on the G4's 48 Zen 5 vCPUs), and the GPU only tests. The CPU prepares batch b+1 while the GPU tests batch b.
+  - `check_v4.sh`: slice lines identical to search_gpu3.py's (kernel 28) on the 12 production slices of `check_k28.sh`, at
+    f = 0.97 and f = 0.
+  - Feeder alone on a G4 host (1,011-row cover, B = 1e6): 0.59 µs a member on one thread at f = 0.97; 27M members/s on
+    24 threads; 35-42M on 48.
+  - Production: a batch of 32 slices takes 1.1 s, with the CPU side 1.03-1.13 s and the GPU side 1.09-1.14 s, i.e. ~30M members/s
+    per G4. That is against 2.2 s with search_gpu3.py and kernel 28, and 3.6 s at 21:00Z. The survivor rows travel to the GPU as
+    u16, per window, and are widened and offset there.
+- Q = 150,000 supply: 4,462 residue-swap variants of the research vectors pt_q150k_v0..v3 (`gen_variants.variants(base, 1500, pair_pool=80)` per base, |U| ≤ 1,097 kept; |U| 1,094-1,097 against the best 1,093). Each was checked independently
+  (congruences, M, residual list, ceiling 200), and N0 is distinct from the research 128. Index:
+  `../campaign3/variants_q150k_minted_index.json`; full list sha256 b864f9f8915b0fe196282d5bb617b96c3a4ad34a885762eee6e866fb99d436ac.
+- Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
+  (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
+  so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
+  2^(672−c) instead of 672 doublings. The variant used is "s1 asm".
+  - `test28_prod.py` on production-range candidates (k in [2^30, 2^32), n ≥ 2^662): 0 mismatches against gmpy2 on 40,000 for every
+    variant, flags identical to fermat2's on 2M.
+  - Speed (best variant):
+
+    | GPU | fermat2 | fermat3 | fermat28 |
+    |---|---|---|---|
+    | RTX PRO 6000 | 8.86M tests/s | 13.08M | 22.86M |
+    | A100 | 4.03M | 6.94M | 6.95M |
+    | L4 | 2.18M | 4.07M | 4.02M |
+
+    So the A100 and the L4 stay on kernel 3.
+  - `check_k28.sh`: search_gpu3.py with kernels 3 and 28 on 12 production slices below 2^30 gives identical slice lines at f = 0.97
+    and at f = 0.
+  - Production batch of 32 slices on an RTX PRO 6000: 2.2 s.
+  - search_gpu3.py asserts 2^642 ≤ n < 2^668 for kernel 28 (it flags 2 outside), and counts only flag == 1 as a PRP.
+- Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
+  gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,
   2^32 − 1 and random: 0 mismatches against pow(2, n − 1, n).
 - Order: E falls as N grows (p ∝ 1/ln N): E^ is ≈ 20.8 just below 10^199 and ≈ 21.05 at k ≈ 10^7, so the
