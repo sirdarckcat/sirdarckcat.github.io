@@ -32,13 +32,27 @@ matrix), `alive.sum(axis=0)`, `cp.lexsort`, `alive[:, order].T` and `cp.nonzero`
     fd = GpuFeeder.from_search_G(search.G, klog=18, llog=15, f=0.97, p_est=0.055)   # after search.init_spec(spec, B, block)
     w = fd.window(k0)       # w.k, w.cnt, w.offs, w.rows, w.block (device), w.alive_total, w.hm_all, w.hm_kept (numpy, per block)
 
+Options of `GpuFeeder` (all give identical output; `test_gpu_sieve.py` sweeps them and checks that):
+
+* `sieve_threads=1024`: the CTA size of the sieve kernel, separate from `nthreads` (select, rows, count, finalize: their time grows with the CTA size, keep 256).  On an A100 and an L4
+  the sieve kernel got 1.5-1.8x faster from 256 to 1024 threads (more warps hide its latency); on an RTX PRO 6000 keep 256.
+* `shoup=True` (default): the 32-bit setup.  The original kernel spends ~85 SASS instructions a prime on `q % s`, a 64-bit Barrett and the loop; the Shoup kernel (`s200g_prep`
+  builds `TAB[p] = {s, M^-1, floor(M^-1 2^32 / s), c0 = (N0 M^-1 + k0) mod s}` once a window, `s200g_sieve_sh` takes `q M^-1 mod s = q M^-1 - mulhi(q, invp) s` minus s if >= s, then
+  `(. - c0) mod s`) spends 35, 20 registers instead of 31 on sm_80 / 89 (`sass.py`).  Same bits (`test_gsieve.py`, also for q up to 2^32 - 1).  `shoup=False` is the original, for A/B.
+* `unroll=1` (default), 2 or 3: marks a trip of the Shoup kernel's loop (3 sends the out-of-range second mark to a dummy shared word, no branch).  Fewer instructions a mark only on paper (8, 8.5, 7.5):
+  a variant to time, not an expected win.
+* `window(k0, timings=True)`: `w.timings` in ms: prep, sieve, count, select, finalize, `wait1` (the GPU's idle gap while the host reads the survivor-row count and allocates), rows, `wait2`
+  (host time reading the statistics), `wall`, `host` = wall minus the GPU parts (launch and Python overhead).
+
 `fd.with_variant(n0m, U)` makes the feeder of another variant (same M: the tables of primes, M^-1 mod s and mu are shared).  The caller adds
 the variant's row offset to `w.rows` as it does for `nonzero`'s columns.  Run `python3 test_gpu_sieve.py spec.json --B 1000000` on the GPU host
 (needs gcc for the CPU feeder it compares with, cupy, gmpy2, numpy, goldbach/search.py).
 
 ## Tests on the CPU
 
-    python3 test_gsieve.py        # bits, counts, selection (nkeep from 1 to L), statistics and rows equal sieve200's / numpy's
+    python3 test_gsieve.py        # bits, counts, selection (nkeep from 1 to L), statistics and rows equal sieve200's / numpy's; the Shoup table, the Shoup kernel
+                              # (CTA sizes 32 / 96 / 160 / compiled, unroll 1 / 2 / 3, q up to 2^32 - 1)
+    python3 test_gpu_sieve_cpu.py # gpu_sieve.py's Python glue with the options, with cupy replaced by numpy + the emulation
 
 ## Looking at what a GPU would run, without a GPU
 

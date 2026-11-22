@@ -42,14 +42,20 @@ class _Fn:
         elif self.name == "s200g_n0m":
             limbs, nl, S, MU, nS, out = args
             L.cpu_n0m(P(limbs), int(nl), P(S), P(MU), int(nS), P(out))
+        elif self.name == "s200g_prep":
+            S, INV, INVP, N0M, k0, nS, tab = args
+            L.cpu_prep(P(S), P(INV), P(INVP), P(N0M), int(k0), int(nS), P(tab))
+        elif self.name == "s200g_sieve_sh":
+            U, tab, nS, bits = args
+            L.cpu_sieve_sh(int(grid[0]), P(U), P(tab), int(nS), P(bits), int(block[0]))          # the CTA size of this kernel is free
         else:
             raise KeyError(self.name)
 
 
 class _RawModule:
     def __init__(self, code=None):
-        klog, llog, nth = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KLOG", "LLOG", "NTHREADS"))
-        self.lib = test_gsieve.build(klog, llog, nth, 8192)
+        klog, llog, nth, unroll = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KLOG", "LLOG", "NTHREADS", "S200G_UNROLL"))
+        self.lib = test_gsieve.build(klog, llog, nth, 8192, unroll)
 
     def get_function(self, name):
         return _Fn(self.lib, name)
@@ -62,7 +68,11 @@ def install_fake_cupy():
     cp.RawModule = _RawModule
     class _Dev:
         def synchronize(self): pass
-    cp.cuda = types.SimpleNamespace(Device=lambda: _Dev())
+    class _Event:                                                   # timings=True needs events: the wall clock will do
+        def record(self): self.t = __import__("time").perf_counter()
+        def elapsed_time(self, other): return 1e3 * (other.t - self.t)
+        def synchronize(self): pass
+    cp.cuda = types.SimpleNamespace(Device=lambda: _Dev(), Event=_Event)
     sys.modules["cupy"] = cp
     return cp
 
@@ -82,10 +92,14 @@ def main():
     for B, klog, llog, f in ((20011, 13, 11, 0.9), (100003, 13, 12, 0.5), (5003, 12, 11, 0.0)):
         search.G.clear(); search._SIEVE_CACHE.clear()
         search.init_spec(spec, B, 1 << llog)
-        gf = gpu_sieve.GpuFeeder.from_search_G(search.G, klog=klog, llog=llog, f=f, nthreads=64)
+        opts = {(20011, 13, 11): dict(sieve_threads=96), (100003, 13, 12): dict(shoup=False), (5003, 12, 11): dict(sieve_threads=32, unroll=3)}[(B, klog, llog)]
+        gf = gpu_sieve.GpuFeeder.from_search_G(search.G, klog=klog, llog=llog, f=f, nthreads=64, **opts)
         cf = Feeder(int(spec["N0"]), int(spec["M"]), spec["residual"], B=B, L=1 << llog, logK=klog, f=f, exclude=cover)
         for k0 in (4096 * 5, 2 ** 31 + 8192, 4293885952 - 4293885952 % 8192):
-            w = gf.window(k0)
+            w = gf.window(k0, timings=(k0 == 4096 * 5))
+            if k0 == 4096 * 5:
+                tm = w.timings
+                assert set(tm) == {"prep", "sieve", "count", "select", "finalize", "wait1", "rows", "wait2", "wall", "host"} and all(v == v for v in tm.values()), tm
             cb = cf.window(k0)
             pos, good = 0, True
             for b, fb in enumerate(cb):
@@ -96,7 +110,7 @@ def main():
                 good &= abs(w.hm_kept[b] - fb.hm_kept) <= 1e-9 * max(fb.hm_kept, 1e-300)
                 pos += n
             good &= pos == len(w.k) and w.offs[-1] == len(w.rows)
-            print(f"  B={B} K=2^{klog} L=2^{llog} f={f} k0={k0}: {len(cb)} blocks, {pos} members: {'identical to the CPU feeder' if good else 'DIFFERENT'}", flush=True)
+            print(f"  B={B} K=2^{klog} L=2^{llog} f={f} k0={k0} {opts}: {len(cb)} blocks, {pos} members: {'identical to the CPU feeder' if good else 'DIFFERENT'}", flush=True)
             ok &= good
     # another variant of the same M: GpuFeeder.with_variant shares the prime tables
     N0b = int(spec["N0"]) + 987654321 * int(spec["M"]) // 7 + 12345

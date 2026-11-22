@@ -13,6 +13,9 @@
 static inline unsigned long long __umul64hi(unsigned long long a, unsigned long long b) { return (unsigned long long)(((unsigned __int128)a * b) >> 64); }
 static inline unsigned atomicAnd(unsigned *p, unsigned v) { return __atomic_fetch_and(p, v, __ATOMIC_RELAXED); }
 static inline unsigned atomicAdd(unsigned *p, unsigned v) { return __atomic_fetch_add(p, v, __ATOMIC_RELAXED); }
+static inline unsigned __funnelshift_l(unsigned lo, unsigned hi, unsigned s) { return (unsigned)((((unsigned long long)hi << 32) | lo) << (s & 31) >> 32); }
+struct uint4 { unsigned x, y, z, w; };
+static inline unsigned __umulhi(unsigned a, unsigned b) { return (unsigned)(((unsigned long long)a * b) >> 32); }
 struct dim_t { unsigned x; };
 static thread_local dim_t threadIdx;
 static dim_t blockIdx, blockDim;
@@ -96,4 +99,17 @@ static void fin_tramp(void *a) { fin_args *x = (fin_args *)a; s200g_finalize(x->
 extern "C" void cpu_finalize(const u32 *keys, int nsel, int nkeep, u64 k0, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
     fin_args a{keys, nsel, nkeep, k0, cnt, member, kout, offs, total};
     run_grid(1, NTHREADS, 0, fin_tramp, &a);
+}
+
+struct prep_args { const u32 *S, *INV, *INVP, *N0M; u64 k0; int nS; uint4 *TAB; };
+static void prep_tramp(void *a) { prep_args *x = (prep_args *)a; s200g_prep(x->S, x->INV, x->INVP, x->N0M, x->k0, x->nS, x->TAB); }
+extern "C" void cpu_prep(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TAB) {
+    prep_args a{S, INV, INVP, N0M, k0, nS, TAB};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, prep_tramp, &a);
+}
+struct sieve_sh_args { const u32 *U; const uint4 *TAB; int nS; u32 *bits; };
+static void sieve_sh_tramp(void *a) { sieve_sh_args *x = (sieve_sh_args *)a; s200g_sieve_sh(x->U, x->TAB, x->nS, x->bits); }
+extern "C" void cpu_sieve_sh(int nU, const u32 *U, const uint4 *TAB, int nS, u32 *bits, int threads) {
+    sieve_sh_args a{U, TAB, nS, bits};
+    run_grid(nU, threads, (size_t)KW * 4 + 4, sieve_sh_tramp, &a);      /* the CTA size of this kernel is free; one more word: the dummy of S200G_UNROLL 3 */
 }

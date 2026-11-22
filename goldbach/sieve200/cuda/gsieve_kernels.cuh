@@ -6,6 +6,10 @@
  *   s200g_sieve : one CTA per row r; the K-bit alive map of the row in shared memory; for every sieve prime s the first offset
  *                 j = ((q - N0) / M - k0) mod s with a Barrett reduction (mu = floor((2^64-1) / s)), then
  *                 atomicAnd clears j, j + s, ... < K.  bits[r][K/32] is written once.
+ *   s200g_prep + s200g_sieve_sh : the same sieve with a 32-bit setup (Shoup's modular multiplication by a constant): the table TAB[p] = {s, M^-1 mod s,
+ *                 floor(M^-1 2^32 / s), c0 = (N0 M^-1 + k0) mod s} is built once a window by s200g_prep, and the first offset of row q in prime s is
+ *                 ((q M^-1 mod s) - c0) mod s, where q M^-1 mod s = q M^-1 - mulhi(q, invp) s (in [0, 2s)) minus s if >= s: no q % s, no 64-bit Barrett,
+ *                 15 instructions instead of ~85, and one 16-byte load a prime.  Identical bits.  The CTA size of this kernel is free (blockDim.x).
  *   s200g_count : one thread per 32 members; the number of alive rows of each member by a carry-save adder tree over 16 rows
  *                 and a bit-sliced counter with 12 planes (up to 4095 rows); counts u16[K].
  *   s200g_select: one CTA per block of L members: histogram of the counts, the threshold count cth and `need` of the members
@@ -51,6 +55,64 @@ extern "C" __global__ void s200g_sieve(const u32 *U, const u32 *S, const u32 *IN
         u32 j = (u32)a + s - km;                                 /* (a - k0) mod s */
         if (j >= s) j -= s;
         for (; j < (1u << KLOG); j += s) atomicAnd(&bm[j >> 5], ~(1u << (j & 31)));
+    }
+    __syncthreads();
+    for (u32 i = threadIdx.x; i < KW; i += blockDim.x) bits[(size_t)r * KW + i] = bm[i];
+}
+
+#ifndef S200G_UNROLL
+#define S200G_UNROLL 1        /* 1: one mark a trip (default: the simplest, 8 instructions); 2: two with a guarded branch; 3: two, the second to a dummy word (needs 4 (KW + 1) bytes of shared memory) */
+#endif
+/* clear bit j of the row: ~(1 << (j & 31)) is a rotation of 0xFFFFFFFE, and a funnel shift uses its amount mod 32, so there is no explicit mask */
+#define S200G_CLEAR(j) atomicAnd(&bm[(j) >> 5], __funnelshift_l(0xFFFFFFFEu, 0xFFFFFFFEu, (j)))
+/* c0 = (N0 M^-1 + k0) mod s and the packed table of the Shoup sieve, one thread per prime.  INVP = floor(INV 2^32 / S) is fixed for a spec (the host computes it once). */
+extern "C" __global__ void s200g_prep(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TAB) {
+    const int p = blockIdx.x * blockDim.x + threadIdx.x;
+    if (p >= nS) return;
+    const u32 s = S[p], inv = INV[p], invp = INVP[p], n0 = N0M[p];     /* n0 = N0 mod s < s */
+    u32 r = n0 * inv - __umulhi(n0, invp) * s;                          /* N0 M^-1 mod s, in [0, 2s) before the subtraction */
+    if (r >= s) r -= s;
+    u32 c0 = r + (u32)(k0 % s);
+    if (c0 >= s) c0 -= s;
+    uint4 t;
+    t.x = s; t.y = inv; t.z = invp; t.w = c0;
+    TAB[p] = t;
+}
+
+extern "C" __global__ void s200g_sieve_sh(const u32 *U, const uint4 *TAB, int nS, u32 *bits) {
+    S200G_DYNSHARED(u32, bm);
+    const int r = blockIdx.x;
+    const u32 q = U[r];
+    for (u32 i = threadIdx.x; i < KW; i += blockDim.x) bm[i] = 0xFFFFFFFFu;
+    __syncthreads();
+    int p = threadIdx.x;
+    uint4 t_n;                                                          /* the next prime's four words are loaded before this prime's marks are made */
+    t_n.x = 1; t_n.y = 0; t_n.z = 0; t_n.w = 0;
+    if (p < nS) t_n = TAB[p];
+    for (; p < nS; p += blockDim.x) {
+        const uint4 t = t_n;
+        const int pn = p + blockDim.x;
+        if (pn < nS) t_n = TAB[pn];
+        const u32 s = t.x;
+        u32 a = q * t.y - __umulhi(q, t.z) * s;                         /* q M^-1 mod s, in [0, 2s) */
+        if (a >= s) a -= s;
+        u32 j = a + s - t.w;                                            /* (a - c0) mod s: a, c0 < s */
+        if (j >= s) j -= s;
+#if S200G_UNROLL >= 3                                                    /* two marks a trip, the second without a branch: out of range it goes to the dummy word KW */
+        for (; j < (1u << KLOG); j += 2u * s) {
+            S200G_CLEAR(j);
+            const u32 j2 = j + s;
+            atomicAnd(&bm[j2 < (1u << KLOG) ? (j2 >> 5) : KW], __funnelshift_l(0xFFFFFFFEu, 0xFFFFFFFEu, j2));
+        }
+#elif S200G_UNROLL >= 2                                                 /* two marks a trip: the loop's compare and branch are shared */
+        for (; j < (1u << KLOG); j += 2u * s) {
+            S200G_CLEAR(j);
+            const u32 j2 = j + s;
+            if (j2 < (1u << KLOG)) S200G_CLEAR(j2);
+        }
+#else
+        for (; j < (1u << KLOG); j += s) S200G_CLEAR(j);
+#endif
     }
     __syncthreads();
     for (u32 i = threadIdx.x; i < KW; i += blockDim.x) bits[(size_t)r * KW + i] = bm[i];
