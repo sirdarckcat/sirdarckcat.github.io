@@ -1,0 +1,3 @@
+gmpy2 2.3.2, 2026-11-22: N is even and has 179 digits; g = 101149 is prime;
+N - p is composite for all 9686 primes p < g (is_prime with 25 rounds returns False, which is definite);
+N - g is a probable prime (25 rounds; its proof is the ECPP certificate in the source package).
