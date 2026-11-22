@@ -37,8 +37,8 @@ def to_limbs(x, limbs=21):
     return np.frombuffer(int(x).to_bytes(4 * limbs, "little"), dtype=np.uint32)
 
 
-def _check_range(N0, M, U, kmax):
-    lo = int(N0) - max(int(q) for q in U)
+def _check_range(N0, M, U, kmax, kmin=0):
+    lo = int(N0) - max(int(q) for q in U) + int(kmin) * int(M)
     hi = int(N0) + int(kmax) * int(M)
     if not (1 << 641) <= lo or hi >= (1 << 668):
         raise ValueError(f"n spans {lo.bit_length()}..{hi.bit_length()} bits; fermat28 needs 642..668")
@@ -46,8 +46,8 @@ def _check_range(N0, M, U, kmax):
 
 class Tester:
     """Holds one spec's cq[i] = N0 - q_i and M on the GPU; test(idx, k) -> uint8 flags (on the GPU)."""
-    def __init__(self, N0, M, U, limbs=21, kmax=1 << 32, kopts=None):
-        _check_range(N0, M, U, kmax)
+    def __init__(self, N0, M, U, limbs=21, kmax=1 << 32, kopts=None, kmin=0):
+        _check_range(N0, M, U, kmax, kmin)
         self.L = limbs
         self.cq = cp.asarray(np.stack([to_limbs(int(N0) - int(q), limbs) for q in U]))
         self.M = cp.asarray(to_limbs(int(M), limbs))
@@ -65,14 +65,14 @@ class Tester:
 
 class MultiTester:
     """cq rows N0_v - q of every variant in the batch (shared M); test(idx, k) -> uint8 flags (as search_gpu3.MultiTester)."""
-    def __init__(self, specs, limbs=21, kmax=1 << 32, kopts=None):
+    def __init__(self, specs, limbs=21, kmax=1 << 32, kopts=None, kmin=0):
         M = int(specs[0]["M"])
         assert all(int(s["M"]) == M for s in specs), "a pool needs one M"
         rows, self.off = [], []
         for s in specs:
             N0 = int(s["N0"])
             assert N0 > max(s["residual"]), "N0 - q must be positive"
-            _check_range(N0, M, s["residual"], kmax)
+            _check_range(N0, M, s["residual"], kmax, kmin)
             self.off.append(len(rows))
             rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
         self.cq = cp.asarray(np.stack(rows))

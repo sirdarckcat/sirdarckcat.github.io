@@ -1,6 +1,6 @@
 """On a GPU: gpu_fermat28 against gmpy2 on campaign3 candidates, then its speed against gpu_fermat's (if importable).
 
-    python3 test_gpu_fermat28.py specs_variants.json [samples] [timing_batch]
+    python3 test_gpu_fermat28.py specs_variants.json [samples] [timing_batch] [klo]    # k in [klo, 2^32), klo = 2^30 by default
 
 Checks first (1) the kernel compiles and reports its registers and local memory, (2) mismatches against gmpy2 on random candidates
 including the smallest and largest k, (3) tests/s of gpu_fermat28 and of gpu_fermat on the same inputs for 64/128/256 threads.
@@ -26,6 +26,7 @@ except ImportError:
 specs = json.load(open(sys.argv[1]))
 S = int(sys.argv[2]) if len(sys.argv) > 2 else 40000
 TB = int(sys.argv[3]) if len(sys.argv) > 3 else 1 << 20
+KLO = int(sys.argv[4]) if len(sys.argv) > 4 else 1 << 30      # smallest k tested: n must be >= 2^642 (production: k in [2^30, 2^32))
 rng = np.random.default_rng(1)
 k28 = g28.kernel(21)
 print("fermat28 attributes:", {a: v for a, v in k28.attributes.items() if a in ("num_regs", "local_size_bytes", "shared_size_bytes", "max_threads_per_block")})
@@ -35,10 +36,10 @@ bad = 0
 for sp in specs[:2]:
     N0, M = mpz(sp["N0"]), mpz(sp["M"])
     U = sp["residual"] if isinstance(sp["residual"], list) else json.loads(sp["residual"])
-    T = g28.Tester(N0, M, U)
+    T = g28.Tester(N0, M, U, kmin=KLO)
     idx = rng.integers(0, len(U), S).astype(np.int32)
-    kv = rng.integers(0, 1 << 32, S, dtype=np.uint64).astype(np.uint32)
-    kv[:64] = [0, 1, 2, 3] * 16
+    kv = rng.integers(KLO, 1 << 32, S, dtype=np.uint64).astype(np.uint32)
+    kv[:64] = [KLO, KLO + 1, KLO + 2, KLO + 3] * 16
     kv[64:128] = (1 << 32) - 1 - np.arange(64)
     gpu = cp.asnumpy(T.test(idx, kv))
     ref = np.array([1 if gmpy2.powmod(2, (N0 - U[i] + int(k) * M) - 1, N0 - U[i] + int(k) * M) == 1 else 0
@@ -46,7 +47,7 @@ for sp in specs[:2]:
     mism = int((gpu != ref).sum()); bad += mism
     print(f"{sp['name']}: {S} candidates, {int(ref.sum())} base-2 PRPs, mismatches {mism}, flags 2: {int((gpu == 2).sum())}", flush=True)
 idx = cp.asarray(rng.integers(0, len(U), TB).astype(np.int32))
-kv = cp.asarray(rng.integers(0, 1 << 32, TB, dtype=np.uint64).astype(np.uint32))
+kv = cp.asarray(rng.integers(KLO, 1 << 32, TB, dtype=np.uint64).astype(np.uint32))
 def timeit(T, threads):
     T.test(idx[:1024], kv[:1024]); cp.cuda.Device().synchronize()
     best = 1e9
@@ -64,7 +65,7 @@ T33 = g33.Tester3(N0, M, U) if g33 else None
 ref_out = None
 for name, kopts in VARIANTS:
     try:
-        T28 = g28.Tester(N0, M, U, kopts=kopts)
+        T28 = g28.Tester(N0, M, U, kopts=kopts, kmin=KLO)
         a = g28.kernel(21, **kopts).attributes
     except Exception as e:                                  # a compile error: report it and go on
         print(f"{name}: FAILED to build: {str(e)[:300]}")
