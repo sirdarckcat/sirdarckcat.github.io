@@ -76,6 +76,17 @@
    "expected": 40.81,
    "p_row": 0.02392,
    "tail": 0.3531
+  },
+  {
+   "name": "r200_q140k_c_v77@3100639232",
+   "gpu": "gold-g4b",
+   "Q": 140000,
+   "g": 146191,
+   "digits": 200,
+   "rows_survived": 63,
+   "expected": 40.78,
+   "p_row": 0.02393,
+   "tail": 0.2174
   }
  ],
  "by_Q": {
@@ -84,6 +95,12 @@
    "rows_survived": 425,
    "expected": 285.1,
    "tail": 0.1079
+  },
+  "140000": {
+   "hits": 1,
+   "rows_survived": 63,
+   "expected": 40.8,
+   "tail": 0.2174
   }
  }
 }

@@ -1,6 +1,6 @@
 # campaign3 on the GPUs: expected against found
 
-Updated 2026-11-22 22:41 UTC. Regenerated from the runtimes' own logs:
+Updated 2026-11-22 23:13 UTC. Regenerated from the runtimes' own logs:
 - `tally_rt.py` runs on each runtime and reads its search.log, gpu3_stats.log and found.jsonl;
 - this page is written from those results.
 
@@ -72,5 +72,7 @@ with mean (1 − p)/p ≈ 41 and tail P(≥ u) = (1 − p)^u, and the sum over h
 | `r200_q122k_k850_v2028@4291821568` | 122,000 | 123,259 | 16 | 40.8 | 0.679 |
 | `r200_q122k_k850_v440@4282384384` | 122,000 | 122,827 | 9 | 40.8 | 0.804 |
 | `r200_q122k_k850_v1039@4281335808` | 122,000 | 125,221 | 43 | 40.8 | 0.353 |
+| `r200_q140k_c_v77@3100639232` | 140,000 | 146,191 | 63 | 40.8 | 0.217 |
 
 - Q = 122,000: 7 hits survived 425 rows against 285.1 expected, P(sum ≥ that) = 0.108.
+- Q = 140,000: 1 hits survived 63 rows against 40.8 expected, P(sum ≥ that) = 0.217.
