@@ -35,7 +35,7 @@ def build(march=None, force=False):
     if force or not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(SRC):
         flags = [] if march == "generic" else [f"-march={march}"]
         tmp = f"{out}.{os.getpid()}.tmp"
-        subprocess.check_call(["gcc", "-O3", *flags, "-shared", "-fPIC", "-o", tmp, SRC])
+        subprocess.check_call(["gcc", "-O3", *flags, "-shared", "-fPIC", "-o", tmp, SRC, "-lm"])
         os.replace(tmp, out)                      # atomic: another process may be building or loading the same file
     return out
 
@@ -64,6 +64,13 @@ def load(march=None):
         lib.s200_extract.restype = ctypes.c_long
         lib.s200_extract.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
                                      ctypes.c_void_p, ctypes.c_long, ctypes.c_void_p]
+        lib.s200_select.restype = ctypes.c_int
+        lib.s200_select.argtypes = [ctypes.c_void_p, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_double,
+                                    ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
+        lib.s200_csr.restype = ctypes.c_int64
+        lib.s200_csr.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint64, ctypes.c_uint32, ctypes.c_void_p,
+                                 ctypes.c_uint32, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p,
+                                 ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int64]
         lib.s200_extract_bitmaps.restype = None
         lib.s200_extract_bitmaps.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
                                              ctypes.c_void_p]
@@ -133,4 +140,66 @@ class Sieve200:
         js = np.ascontiguousarray(js, dtype=np.uint32)
         out = np.empty((len(js), (self.nU + 63) // 64), dtype=np.uint64)
         self.lib.s200_extract_bitmaps(self.ctx, bits.ctypes.data, js.ctypes.data, len(js), out.ctypes.data)
+        return out
+
+
+class FeedBlock:
+    """One block of L members after selection: the emptiest ones with their survivors (CSR) and the block's statistics."""
+    __slots__ = ("k0", "L", "k", "cnt", "offs", "rows", "alive_total", "hm_all", "hm_kept")
+
+    def __repr__(self):
+        return (f"FeedBlock(k0={self.k0}, L={self.L}, selected={len(self.k)}, rows={len(self.rows)}, alive_total={self.alive_total}, "
+                f"hm_kept/hm_all={self.hm_kept:.6g}/{self.hm_all:.6g})")
+
+
+class Feeder:
+    """Sieve + exact counts + selection + survivor lists, for feeding a Fermat tester (search.run_block's first half).
+
+    A call of window(k0) sieves the K members k0 .. k0+K-1 and cuts them into K/L blocks of L members; for each block it keeps the
+    ceil(L (1 - f)) members with the fewest alive rows (ties: smaller k first, as np.argsort(counts, kind="stable")[:keep]) and
+    returns them as a FeedBlock.  One Feeder per thread (it owns the buffers); the Sieve200 context can be shared: Feeder(sv=...).
+    """
+
+    def __init__(self, N0=None, M=None, U=None, B=1_000_000, L=1 << 15, logK=19, f=0.97, p_est=0.055, exclude=(), march=None, sv=None):
+        self.sv = sv or Sieve200(N0, M, U, B, logK=logK, exclude=exclude, march=march)
+        sv = self.sv
+        self.L = int(L)
+        assert self.L >= 64 and self.L & (self.L - 1) == 0 and sv.K % self.L == 0, "L must be a power of two dividing K"
+        self.f, self.p_est = float(f), float(p_est)
+        self.maxc = sv.nU
+        self.bits = np.empty((sv.nU, sv.words), dtype=np.uint64)
+        self.hist = np.empty(self.maxc + 2, dtype=np.uint32)
+        self.rank = np.empty(self.L, dtype=np.uint32)
+        self.sel = np.empty(self.L // 64, dtype=np.uint64)
+
+    def window(self, k0, f=None):
+        sv, L = self.sv, self.L
+        f = self.f if f is None else float(f)
+        nkeep = int(np.ceil(L * (1.0 - f)))
+        counts, _ = sv.block(k0, bits=self.bits)
+        out = []
+        order = np.empty(nkeep, dtype=np.uint32)
+        for b in range(sv.K // L):
+            cb = counts[b * L:(b + 1) * L]
+            ha, hk, at = ctypes.c_double(), ctypes.c_double(), ctypes.c_int64()
+            n = sv.lib.s200_select(cb.ctypes.data, L, nkeep, self.maxc, self.p_est, order.ctypes.data, ctypes.byref(ha),
+                                   ctypes.byref(hk), ctypes.byref(at), self.hist.ctypes.data)
+            if n < 0:
+                raise ValueError("count above the number of rows")
+            sel = order[:n]
+            offs = np.empty(n + 1, dtype=np.int64)
+            cursor = np.empty(n, dtype=np.int64)
+            cap = int(cb[sel].astype(np.int64).sum()) if n else 0
+            rows = np.empty(cap, dtype=np.uint16)
+            tot = sv.lib.s200_csr(sv.ctx, self.bits.ctypes.data, ctypes.c_uint64(b * L // 64), L, sel.ctypes.data, n,
+                                  cb.ctypes.data, self.rank.ctypes.data, self.sel.ctypes.data, cursor.ctypes.data,
+                                  offs.ctypes.data, rows.ctypes.data, cap)
+            assert tot == cap
+            fb = FeedBlock()
+            fb.k0, fb.L = k0 + b * L, L
+            fb.k = sel.astype(np.uint64) + np.uint64(k0 + b * L)
+            fb.cnt = cb[sel].copy()
+            fb.offs, fb.rows = offs, rows
+            fb.alive_total, fb.hm_all, fb.hm_kept = int(at.value), ha.value, hk.value
+            out.append(fb)
         return out

@@ -14,6 +14,9 @@ counts (rows alive per member, 16 bit, not saturating) and the survivor lists of
 | `test_sieve200.py` | alive matrix and counts against the definition (brute force) and against `search.py`'s numpy sieve |
 | `test_dropin.py` | `run_block` of both on the same blocks (six returned numbers equal), and the two command lines (log line and found file equal) |
 | `bench_sieve200.py` | microseconds per member against `B` and `K` |
+| `curves.py` | sieve cost against `B` and `K`, measured probability that a survivor is prime, hit mass of the emptiest 8% |
+| `Feeder` (`sieve200.py`), `s200_select`, `s200_csr` | **the feeder for a GPU Fermat tester**: sieve a window, exact `u16` counts, the emptiest fraction of every block, their survivor rows as CSR, the block statistics (below) |
+| `test_feeder.py`, `bench_feeder.py` | the feeder against numpy (argsort, alive matrix, hit mass, GPU session's reference numbers), and its speed |
 
 ## Use
 
@@ -40,3 +43,23 @@ come from a carry-save vertical counter over the rows.
     python3 test_dropin.py [--full]                               # about 70 s, --full: a whole campaign-3 block
 
 All pass for the AVX-512, AVX2 (`-march=haswell`) and plain C builds.
+
+
+## The feeder (`Feeder`)
+
+    fd = Feeder(N0, M, U, B=1_000_000, L=1 << 15, logK=19, f=0.97, p_est=0.055, exclude=cover_primes)
+    for fb in fd.window(k0):            # K = 2^logK members k0 .. k0 + K - 1, cut into K / L blocks of L members
+        fb.k          # u64[nsel]   k of the selected members: the ceil(L (1 - f)) emptiest, ascending count, ties ascending k
+        fb.cnt        # u16[nsel]   their survivor counts
+        fb.offs       # i64[nsel+1] CSR offsets into fb.rows
+        fb.rows       # u16[tot]    their alive rows (indices into U), ascending within a member
+        fb.alive_total, fb.hm_all, fb.hm_kept   # sum of counts over all L members; sum of (1-p_est)^count over all / over selected
+
+`np.argsort(counts, kind="stable")[:keep]` is the selection of `search.run_block`; the hit masses are summed over the histogram, so they
+agree with numpy's to 1e-12 relative, not bit for bit.  One `Feeder` per thread (it owns a K x rows bit matrix: 64 MB for 2^19 members
+and 1011 rows); the C calls release the GIL, so threads run in parallel; `Feeder(sv=other.sv)` shares the read-only sieve context.
+`L` is the selection block and may be any power of two dividing `K` (`2^15` reproduces `run_block`'s blocks exactly; `2^19` selects among
+more members for the same `f`).  Survivor rows of a member are tested in this order and the tests stop at the first probable prime.
+
+Reference numbers of the GPU session (850-row cover, k0 = 4,293,885,952, L = 32,768, B = 1e6, f = 0.97) are reproduced:
+alive total 12,459,413, counts sha256 704be04a..., 984 kept, first members j = 24236, 12679, 14788, 27793, 11914, hit mass 2.899909e-06 / 2.059896e-05.

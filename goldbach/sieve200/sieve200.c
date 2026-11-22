@@ -18,8 +18,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #if defined(__AVX512BW__) || defined(__AVX2__)
 #include <immintrin.h>
+#endif
+#if !defined(__BMI__)
+#define _andn_u64(a, b) (~(a) & (b))
 #endif
 #ifdef __AVX512BW__
 #define VBYTES 64
@@ -37,11 +41,12 @@ typedef unsigned __int128 u128;
 #ifndef SMALLP
 #define SMALLP 384          /* primes below this use the pattern sieve */
 #endif
+#define CHUNK 64            /* primes whose first marks are computed together */
 
 typedef struct S200 {
     int nU; u32 *U;
     u32 B; int logK; u64 K, words;
-    u32 nS; u32 *S, *Minv, *cS, *nmark; double *rinv;
+    u32 nS; u32 *S, *Minv, *cS, *nf; double *rinv;   /* nf = floor(K / s): marks of a row that are certainly inside the window */
     u32 nSmall; unsigned char **pat; u32 *inv8, *step;
 } S200;
 
@@ -83,7 +88,7 @@ static u32 inv_mod(u32 a, u32 s) {              /* a^-1 mod s, s prime, a != 0 *
 void s200_free(S200 *c) {
     if (!c) return;
     for (u32 p = 0; p < c->nSmall; p++) free(c->pat[p]);
-    free(c->pat); free(c->inv8); free(c->step); free(c->U); free(c->S); free(c->Minv); free(c->cS); free(c->nmark); free(c->rinv);
+    free(c->pat); free(c->inv8); free(c->step); free(c->U); free(c->S); free(c->Minv); free(c->cS); free(c->nf); free(c->rinv);
     free(c);
 }
 
@@ -102,7 +107,7 @@ S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 
     c->B = B; c->logK = logK; c->K = 1ull << logK; c->words = c->K / 64;
     char *comp = calloc((size_t)B + 1, 1);
     for (int i = 0; i < nExcl; i++) if (excl[i] < B) comp[excl[i]] = 2;     /* 2: left out, but still sieves its multiples */
-    u32 cap = 1024; c->S = malloc(4 * cap); c->Minv = malloc(4 * cap); c->cS = malloc(4 * cap); c->nmark = malloc(4 * cap); c->rinv = malloc(8 * cap);
+    u32 cap = 1024; c->S = malloc(4 * cap); c->Minv = malloc(4 * cap); c->cS = malloc(4 * cap); c->nf = malloc(4 * cap); c->rinv = malloc(8 * cap);
     for (u64 s = 2; s < B; s++) {                              /* the primes 3 <= s < B, as numpy's primerange(3, B) */
         if (comp[s] == 1) continue;
         for (u64 j = s * s; j < B; j += s) comp[j] = 1;
@@ -112,16 +117,22 @@ S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 
         if (c->nS == cap) {
             cap *= 2;
             c->S = realloc(c->S, 4 * cap); c->Minv = realloc(c->Minv, 4 * cap); c->cS = realloc(c->cS, 4 * cap);
-            c->nmark = realloc(c->nmark, 4 * cap); c->rinv = realloc(c->rinv, 8 * cap);
+            c->nf = realloc(c->nf, 4 * cap); c->rinv = realloc(c->rinv, 8 * cap);
         }
         u32 mi = inv_mod(mm, (u32)s), n0 = mod_big(N0, nN, (u32)s);
         u32 i = c->nS++;
         c->S[i] = (u32)s; c->Minv[i] = mi;
         c->cS[i] = (u32)(((u64)(s - n0) % s) * mi % s);       /* -N0/M mod s */
         c->rinv[i] = 1.0 / (double)s;
-        c->nmark[i] = (u32)((c->K - 1) / s + 1);              /* marks a row: positions j, j+s, ... below K, the last may fall beyond */
+        c->nf[i] = (u32)(c->K / s);                           /* positions j, j+s, .. j+(nf-1)s are below K for j < s; one more may be */
     }
     free(comp); free(N0); free(M);
+    {                                                           /* pad the per-prime arrays so that 64 primes can be read at a time */
+        u32 n = c->nS + CHUNK;
+        c->S = realloc(c->S, 4 * n); c->Minv = realloc(c->Minv, 4 * n); c->cS = realloc(c->cS, 4 * n);
+        c->nf = realloc(c->nf, 4 * n); c->rinv = realloc(c->rinv, 8 * n);
+        for (u32 i = c->nS; i < n; i++) { c->S[i] = 1; c->Minv[i] = 0; c->cS[i] = 0; c->nf[i] = 0; c->rinv[i] = 1.0; }
+    }
     while (c->nSmall < c->nS && c->S[c->nSmall] < SMALLP) c->nSmall++;
     c->pat = malloc(sizeof(*c->pat) * (c->nSmall + 1)); c->inv8 = malloc(4 * (c->nSmall + 1)); c->step = malloc(4 * (c->nSmall + 1));
     for (u32 p = 0; p < c->nSmall; p++) {
@@ -209,6 +220,35 @@ static void count_rows(const u64 *bits, int nU, u64 words, u16 *counts, u64 *pla
 
 /* ---------------------------------------------------------------- the sieve */
 
+/* jb[i] = (q Minv[p] + d[p]) mod S[p] for p = p0 .. p0 + 63: the first member offset (>= 0) of the row q that s = S[p] divides.
+   x < (q + 1) s stays below 2^50 (s_new checks q B < 2^50), the quotient is found with a double reciprocal and is off by at most one. */
+static inline void first_offsets(const S200 *c, const u64 *d, u32 p0, u64 q, u32 *jb) {
+#if defined(__AVX512F__) && defined(__AVX512DQ__)
+    const __m512i vq = _mm512_set1_epi64((long long)q), zero = _mm512_setzero_si512();
+    for (int v = 0; v < CHUNK / 8; v++) {
+        const u32 p = p0 + 8 * v;
+        const __m512i minv = _mm512_cvtepu32_epi64(_mm256_loadu_si256((const __m256i *)(c->Minv + p)));
+        const __m512i vs = _mm512_cvtepu32_epi64(_mm256_loadu_si256((const __m256i *)(c->S + p)));
+        const __m512i x = _mm512_add_epi64(_mm512_mul_epu32(vq, minv), _mm512_loadu_si512((const void *)(d + p)));
+        const __m512i qi = _mm512_cvttpd_epu64(_mm512_mul_pd(_mm512_cvtepu64_pd(x), _mm512_loadu_pd(c->rinv + p)));
+        __m512i j = _mm512_sub_epi64(x, _mm512_mul_epu32(qi, vs));              /* in (-s, 2s) */
+        j = _mm512_mask_add_epi64(j, _mm512_cmplt_epi64_mask(j, zero), j, vs);
+        j = _mm512_mask_sub_epi64(j, _mm512_cmpge_epu64_mask(j, vs), j, vs);
+        _mm256_storeu_si256((__m256i *)(jb + 8 * v), _mm512_cvtepi64_epi32(j));
+    }
+#else
+    for (int i = 0; i < CHUNK; i++) {
+        const u32 p = p0 + i;
+        const u64 s = c->S[p];
+        const u64 x = q * c->Minv[p] + d[p];
+        u64 j = x - (u64)((double)x * c->rinv[p]) * s;
+        if ((int64_t)j < 0) j += s;
+        if (j >= s) j -= s;
+        jb[i] = (u32)j;
+    }
+#endif
+}
+
 /* Sieves the members k0 .. k0 + K - 1.  bits: caller's buffer of s200_bits_bytes() bytes (row r at bits + r * K / 64 words),
    counts: K u16.  Either may be NULL: with bits NULL only the counts are returned (the rows still need the same memory, so
    the context's scratch is used: pass bits whenever the survivors are wanted).  Returns 0, or -1 on allocation failure. */
@@ -216,12 +256,13 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
     const u64 K = c->K, words = c->words, wmask = words - 1;
     int own = 0;
     if (!bits) { bits = aligned_alloc(64, s200_bits_bytes(c)); own = 1; if (!bits) return -1; }
-    u32 *d = malloc(4 * (size_t)c->nS);
+    u64 *d = aligned_alloc(64, ((8 * ((size_t)c->nS + CHUNK)) + 63) / 64 * 64);
     if (!d) { if (own) free(bits); return -1; }
     for (u32 p = 0; p < c->nS; p++) {
         u32 s = c->S[p];
         d[p] = (u32)((c->cS[p] + s - (u32)(k0 % s)) % s);      /* first member offset with s | N - q is (q * Minv + d) mod s */
     }
+    for (u32 p = c->nS; p < c->nS + CHUNK; p++) d[p] = 0;
     const u32 nSmall = c->nSmall, nS = c->nS;
     for (int r = 0; r < c->nU; r++) {
         u64 *row = bits + (size_t)r * words;
@@ -265,14 +306,22 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
             row[w] = acc;
         }
 #endif
-        for (u32 p = nSmall; p < nS; p++) {
-            u64 s = c->S[p];
-            u64 x = q * c->Minv[p] + d[p];
-            u64 j = x - (u64)((double)x * c->rinv[p]) * s;
-            if ((int64_t)j < 0) j += s;
-            if (j >= s) j -= s;
-            /* fixed trip count; positions >= K clear nothing (the shifted-in bit is 0) and hit a harmless word */
-            for (u32 i = c->nmark[p]; i; i--, j += s) row[(j >> 6) & wmask] &= ~((u64)(j < K) << (j & 63));
+        for (u32 p0 = nSmall; p0 < nS; p0 += CHUNK) {
+            u32 jb[CHUNK] __attribute__((aligned(64)));
+            first_offsets(c, d, p0, q, jb);                       /* the first offset j < s of 64 primes */
+            const u32 pe = nS - p0 < CHUNK ? nS - p0 : CHUNK;
+            for (u32 ci = 0; ci < pe; ci++) {
+                const u32 p = p0 + ci;
+                u64 j = jb[ci];
+                const u64 s = c->S[p];
+                /* nf marks that are certainly inside the window, with no mask: j + (nf - 1) s < s + K - s */
+                for (u32 i = c->nf[p]; i; i--, j += s) {
+                    const u64 w = j >> 6;
+                    row[w] = _andn_u64(1ull << (j & 63), row[w]);
+                }
+                /* and one more that is inside only sometimes; outside it clears nothing, in a harmless word */
+                row[(j >> 6) & wmask] &= ~((u64)(j < K) << (j & 63));
+            }
         }
     }
     free(d);
@@ -314,4 +363,71 @@ void s200_extract_bitmaps(const S200 *c, const u64 *bits, const u32 *js, int nj,
         for (int w = 0; w < nw; w++) o[w] = 0;
         for (int r = 0; r < c->nU; r++) o[r >> 6] |= ((bits[(size_t)r * words + wd] >> sh) & 1) << (r & 63);
     }
+}
+
+/* ---------------------------------------------------------------- the feeder: selection and survivor lists of a block */
+
+/* The nkeep emptiest members of a block of L members with counts counts[0..L): order[0..nkeep) = their indices, by ascending count,
+   ties by ascending index (np.argsort(counts, kind="stable")[:nkeep]).  Also: alive_total = sum of all counts, hm_all = sum over
+   all members of (1 - p_est)^count, hm_kept = the same over the selected (the hit mass of search.run_block).  hist: scratch of
+   maxc + 2 u32, maxc >= the largest count.  Returns nkeep, or -1 if a count exceeds maxc. */
+int s200_select(const u16 *counts, u32 L, u32 nkeep, u32 maxc, double p_est, u32 *order, double *hm_all, double *hm_kept,
+                int64_t *alive_total, u32 *hist) {
+    if (nkeep > L) nkeep = L;
+    memset(hist, 0, 4 * ((size_t)maxc + 2));
+    for (u32 i = 0; i < L; i++) { if (counts[i] > maxc) return -1; hist[counts[i]]++; }
+    int64_t at = 0;
+    double ha = 0, hk = 0;
+    u64 cum = 0;
+    u32 cth = maxc + 1, need = 0;
+    const double q = 1.0 - p_est;
+    for (u32 c = 0; c <= maxc; c++) {
+        const double w = pow(q, (double)c);
+        at += (int64_t)c * hist[c];
+        ha += hist[c] * w;
+        if (cth > maxc && cum + hist[c] >= nkeep) { cth = c; need = (u32)(nkeep - cum); hk += need * w; }
+        else if (cth > maxc) { cum += hist[c]; hk += hist[c] * w; }
+    }
+    *alive_total = at; *hm_all = ha; *hm_kept = hk;
+    if (nkeep == 0) return 0;
+    /* hist[c] -> the first position of class c in order (classes below cth are kept whole, class cth partly) */
+    u32 pos = 0;
+    for (u32 c = 0; c <= cth; c++) { u32 h = hist[c]; hist[c] = pos; pos += h; }
+    u32 taken = 0;
+    for (u32 i = 0; i < L; i++) {
+        const u32 c = counts[i];
+        if (c < cth) order[hist[c]++] = i;
+        else if (c == cth && taken < need) { order[hist[c]++] = i; taken++; }
+    }
+    return (int)nkeep;
+}
+
+/* The alive rows of the members order[0..nsel) of the block of L members that starts at word w0 of every row of bits:
+   member order[i]'s rows (ascending) go to rows_out[offs[i] .. offs[i+1]).  counts: the block's counts.  Scratch: rank (L u32),
+   sel (L / 64 u64), cursor (nsel i64).  Returns the total number of rows, or -1 if it exceeds cap. */
+int64_t s200_csr(const S200 *c, const u64 *bits, u64 w0, u32 L, const u32 *order, u32 nsel, const u16 *counts, u32 *rank,
+                 u64 *sel, int64_t *cursor, int64_t *offs, u16 *rows_out, int64_t cap) {
+    const u32 wb = L / 64;
+    memset(sel, 0, 8 * (size_t)wb);
+    offs[0] = 0;
+    for (u32 i = 0; i < nsel; i++) {
+        const u32 j = order[i];
+        sel[j >> 6] |= 1ull << (j & 63);
+        rank[j] = i;
+        offs[i + 1] = offs[i] + counts[j];
+        cursor[i] = offs[i];
+    }
+    if (offs[nsel] > cap) return -1;
+    for (int r = 0; r < c->nU; r++) {
+        const u64 *row = bits + (size_t)r * c->words + w0;
+        for (u32 w = 0; w < wb; w++) {
+            u64 v = row[w] & sel[w];
+            while (v) {
+                const u32 j = (w << 6) + (u32)__builtin_ctzll(v);
+                rows_out[cursor[rank[j]]++] = (u16)r;
+                v &= v - 1;
+            }
+        }
+    }
+    return offs[nsel];
 }
