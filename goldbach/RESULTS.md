@@ -1,5 +1,34 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22, evening): g(N) > 10,000 at 23 digits
+
+**g(N) = 10,159** for N = 83668534093338795647672 (23 digits,
+`records/threshold_23digit_g10159/`). It is 65 times smaller than the
+25-digit N and is now the smallest N known to us whose g exceeds everything
+in the exhaustive range (9,781).
+
+- **Closeness.** g is 63.3% of the largest g expected at that size (model
+  line); the 25-digit record has 53.8%.
+- **How.** A new scanner, `fscan`, written by a third session (branch
+  `ccr-d4a17dd0-7uu03r`, not merged here yet). It scores every member with
+  byte tables instead of sieving it, and runs the Fermat tests 12 or 16 at
+  a time with vector instructions; it reaches a small share of each
+  progression's successes but covers far more progressions. The session
+  with the Colab machines ran it on the progressions with 197 residual
+  primes below 10^23; the success came about 15 minutes after it started,
+  at k = 6,395,326 of one of them. Expected-versus-found counts for the
+  whole class are not in yet.
+- **Checked three times from N and g alone**: by the finding session
+  (gmpy2 and PARI), and here with gmpy2 and with PARI.
+- **Proof.** As for the other threshold records: `evidence.json` has a
+  compositeness witness for N − q for each of the 1,246 primes q < g,
+  N − g has a PARI ECPP certificate, and `direct_check.gp` repeats the
+  whole check in PARI.
+
+The 25-digit N stays on the frontier: its g = 10,357 is larger, and no
+smaller N with a g that large is known. Scans of other classes below 10^23
+are still running, so a smaller N may follow.
+
 ## The 100% line, computed instead of fitted (2026-11-22)
 
 Closeness divides g by the largest g a number of that size is expected to
@@ -919,6 +948,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
 | `threshold_27digit_g10111` | 10,111 | 27 | ~22,600 | 44.7% | 81 | 19 |
 | `threshold_30digit_g10459` | 10,459 | 30 | ~28,600 | 36.5% | 73 | 19 |
