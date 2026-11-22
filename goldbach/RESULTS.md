@@ -945,7 +945,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
-| `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 98 | 19 |
+| `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
 | `threshold_27digit_g10111` | 10,111 | 27 | ~22,600 | 44.7% | 81 | 19 |
 | `threshold_30digit_g10459` | 10,459 | 30 | ~28,600 | 36.5% | 73 | 19 |
