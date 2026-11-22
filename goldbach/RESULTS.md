@@ -1,5 +1,49 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22, 19:00 UTC): g(N) = 10,771 at 3.6·10^22
+
+**g(N) = 10,771** for N = 35505990484772441527442 (23 digits,
+`records/threshold_23digit_g10771/`). It is smaller than every N we had
+with g above the exhaustive range and its g is larger than all of theirs,
+including the 30-digit N (g = 10,459). So one number now holds the low end
+of the frontier alone: the next frontier point is the 40-digit N with
+g = 11,173.
+
+- **Closeness.** 69.7% of the largest g expected at that size.
+- **How.** The third success of the `fscan` run on the progressions with
+  197 residual primes (scanner at `e383cbc`, AVX2 build, one of the Colab
+  machines); member k = 2,713,952.
+- **Expected against found** for that class is still partial: the one
+  finished slice of six expected 0.13 successes and found 1; three
+  successes in the class so far. The full counts follow when the other
+  slices end.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,311 primes below g).
+
+## The records of the parallel collection, brought onto the scoreboard (2026-11-22)
+
+`slop/goldbach/records/` holds six certified records from an earlier
+parallel effort (July 2026) that this directory only mentioned in a note.
+Each now has a directory in `records/` (N, g, a pointer to the source
+package with its hash, and a fresh direct check), so `closeness.py` and the
+frontier see them. The proof files stay where they are: the source package
+has the congruence classes and a PARI ECPP certificate for N − g, and
+`slop/goldbach/records/verify_record.py` re-derives every witness.
+
+| record | g | digits of N | closeness | on the frontier | what it changes |
+|---|---|---|---|---|---|
+| `budget_1e200_199digit_g119419` | 119,419 | 199 | 5.7% | yes | the largest g known below 10^200; it supersedes our 112,249 at 200 digits |
+| `threshold_186digit_g109357` | 109,357 | 186 | 6.1% | yes | takes the 197-digit and 195-digit records off the frontier |
+| `height_2480digit_g1157341` | 1,157,341 | 2,480 | 0.25% | yes | takes the 2,692-digit record (g = 1,134,871) off the frontier |
+| `dual_199digit_g110917` | 110,917 | 199 | 5.3% | no | superseded by the 119,419 record |
+| `threshold_193digit_g102337` | 102,337 | 193 | 5.2% | no | superseded by the 186-digit record |
+| `threshold_179digit_g101149` | 101,149 | 179 | 6.1% | no | superseded by the 150-digit record (g = 104,527) |
+
+Checked here on 2026-11-22 with gmpy2, from N and g alone: for each of the
+six, N − p is composite for every prime p < g and N − g is a probable
+prime (`direct_check.log` in each directory; 89,840 primes for the
+2,480-digit one). The ECPP certificates were not re-verified today.
+
 ## The low end of the threshold game (2026-11-22, later that evening): g(N) = 10,399 at 23 digits
 
 **g(N) = 10,399** for N = 78209882584085138254532 (23 digits, 7.8·10^22,
@@ -963,6 +1007,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_23digit_g10771` | 10,771 | 23 | ~15,400 | 69.7% | 109 | 19 |
 | `threshold_23digit_g10399` | 10,399 | 23 | ~16,000 | 65.0% | 103 | 19 |
 | `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
@@ -971,7 +1016,10 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_46digit_g20551` | 20,551 | 46 | ~80,700 | 25.5% | 79 | 25 |
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
+| `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
+| `height_2480digit_g1157341` | 1,157,341 | 2,480 | ~4.7·10^8 | 0.25% | 39 | 151 |
 | `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.5·10^8 | 0.20% | 35 | 150 |
 | `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |
 | `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~1.1·10^11 | 0.0044% | 9.3 | 296 |

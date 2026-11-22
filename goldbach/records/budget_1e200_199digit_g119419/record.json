@@ -1,0 +1,9 @@
+{
+ "N": "2461381565223403757902559202409729839707029814556797195332164743319183605500947588563044818343510508022962224323760378202613600339768562141100015486692952424689982503380965035816275690874367307430972",
+ "g": 119419,
+ "digits": 199,
+ "note": "largest g known below 10^200 (and below 10^199)",
+ "source": "slop/goldbach/records/r200/record_r200_r1.json",
+ "source_sha256": "a163ca832447178edc257522f5aa3b9ab73491592753c55b85e046a70b767fcb",
+ "proof": "the source package holds the congruence classes, the progression index and a PARI ECPP certificate for N - g; slop/goldbach/records/verify_record.py re-derives every witness and re-verifies the certificate"
+}
