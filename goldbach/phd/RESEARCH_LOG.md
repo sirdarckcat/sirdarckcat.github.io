@@ -7,11 +7,11 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **33,938-digit** N (records/height_33938digit_g5000251) | g = **5,000,251** | **new 2026-11-21 (evening)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py and PARI. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **61,329-digit** N (records/height_61329digit_g10000141) | g = **10,000,141** | **new 2026-11-21 (night)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py (PARI and the bls/ stack running). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
-### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251
+### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251 and 10,000,141
 
 Authorized by the user ("colab the fuck out of this problem"). One A100
 runtime (the account allows one GPU at a time), its 12 vCPUs, and a second
@@ -33,6 +33,16 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   2.8× faster on 3 threads. The second stack passes too: `bls/xverify.py` and
   `verify_bls_record.py` (via `interop.py to-bls`), in pure-Python ints,
   46 min each. Their logs are in the record directory.
+- **g = 10,000,141 at 61,329 digits.** 3,072 GPU tests (512 with v2 at
+  2.76 s, the rest with v3 at 2.35 s), ~2 h of A100 time in all. The hit
+  t = 6063 is the 2,718th survivor of the 10¹¹-sieved list (expected
+  ~3,130; p ≈ 0.42 of waiting that long).
+  - The total includes 113 tests on candidates that the live deep sieve
+    removed later.
+  - The hit was re-proved on the CPU (BLS, 306 s) and passes `verify.py`:
+    9,095 cover classes and all 664,584 primes below g.
+  - g is the first prime above 10⁷ that the cover (built for the odd
+    primes below 10⁷) misses; the five primes in between are covered.
 - **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
   (10⁷ rung) and toward 10¹² (16M rung) while the GPU runs. That is ~18%
   and ~25% fewer expected tests. It repurposes the 16M CPU helper's
@@ -52,6 +62,35 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   finished the job. All state was harvested and no H100 was available, so
   a fresh A100 took over after 10 min idle (engine re-validated on it,
   queue resumed from the logs). Cost: ~33 min of GPU time in all.
+- **CPU fleet for 16M.** Colab allows 7 active runtimes (one GPU). The six
+  CPU slots hold gold-cpu (sieving), four 8-vCPU runtimes running
+  `cpu_search.py` top-down on t mod 8 = 0..3 (~29 tests/h each), and one
+  orphan CPU runtime that a timed-out TPU request left behind. The CLI
+  cannot address the orphan. The A100 host's CPUs and gold-cpu join as
+  slices 4 and 5 when their sieve ranges finish, which together adds ~30%
+  to the GPU's ~570 tests/h. A third pgrep self-match (`os.popen` →
+  `sh -c`) would have blocked the joins; it was caught in the first status
+  cycle and fixed with the `[.]` pattern trick.
+- **Third incident (the replacement A100 vanished).** Between 21:33Z and
+  21:47Z the A100 runtime dropped out of Colab's assignment list, with no
+  error or notice. The CLI then pruned it as stale. Its loss was costly
+  because the A100 watcher had hung since ~20:36Z on a `colab exec` to
+  gold-cpu that never returned; the CLI's own `--timeout` did not fire.
+  So the 10⁷ log had last been harvested at 2,048 tests. About three
+  batches (~1,500 tests) and a partial fourth were lost, ~1.4 h of GPU
+  time with the restart.
+  - Correctness is unaffected: the search re-runs those survivors in the
+    same order.
+  - A new A100 passed the v3 known-answer check and resumed at 21:56Z.
+  - Fixes: every Colab call now has a hard `timeout`; each watcher loop
+    writes a heartbeat that the alarm checks; the 16M fleet's master list
+    and kill lists are kept locally, not on the GPU host.
+  - A seventh runtime was then refused with six active, so the six slots
+    are the GPU and five CPU runtimes. The orphan is gone.
+- **16M sieve to 3·10¹¹.** gold-cpu's [10¹¹, 3·10¹¹) pass (7.7·10⁹ primes,
+  2.5 h on 8 threads) found 767 kills, all re-verified locally (p prime,
+  p | P_t). 636 are new against the 10¹¹ list, which goes 15,215 → 14,579.
+  gold-cpu then joins the fleet as slice 5.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.

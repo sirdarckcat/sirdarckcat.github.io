@@ -1,0 +1,31 @@
+Cross-verification by the second session (branch ccr-2ce9e63a-hn0fuw), 2026-11-21 23:06 to 2026-11-22 00:56 UTC.
+Verifier code taken from commit 521f67c (before this record existed); record files from c6ee8a7 (unchanged since 83e9aca).
+sha256(N decimal, no newline) = 776ef0de49bc1618bf51965293a5dacd643c5536db45bc001de8920818b9e577
+The three legs ran side by side on one 4-core machine: verify.py finished at 23:10, xverify at 23:57, PARI at 00:56.
+
+== proth/verify.py record.json ==
+[1] N has 61329 digits and lies in all 9095 classes (prime moduli up to 306239)
+[2] all 664584 primes q < g = 10000141 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 11^((P-1)/2) = -1 (mod P), F = 2^67914 (67914/203731 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [246.3s, gmpy2]
+ALL CHECKS PASSED: g(N) = 10000141 for this 61329-digit N
+verify exit 0
+
+== gp -q crosscheck.gp ==
+(PARI/GP 2.15.4, GMP kernel; crosscheck.gp is the record's own script, read before it was run.
+ Its scan of all primes q < g is a parforprime, here on 4 threads.)
+  ***   Warning: new stack size = 2000000000 (1907.349 Mbytes).
+PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid
+PARI isprime(P) = 1
+primes q < g scanned: 664584   (pi(g-1) = 664584)
+complements N - q with no prime factor <= 306239: 0
+CROSSCHECK PASSED: g(N) = 10000141
+pari exit 0
+
+== proth/interop.py to-bls + bls/xverify.py ==
+(bls/xverify.py unchanged, except that its one call pow(base, (P-1)/2, P) was answered by
+ crossverify_2ce9e63a_runner.py: square-and-multiply on Python ints, each step reduced with
+ divmod(), state checkpointed to disk.  CPython's 3-argument pow reduces by schoolbook division,
+ 68 ms per step at this size against 15 ms for divmod; it would have needed about 3.5 h.)
+modexp done: 203730 squarings, 3032s in all (python int, square-and-multiply, divmod reduction)
+PASS g(N) = 10,000,141: 61,329 digits, 664,584 primes < g covered by 9,094 odd congruences, F = 2^67914, base 11; modexp 3032s (python int)
+xverify exit 0
