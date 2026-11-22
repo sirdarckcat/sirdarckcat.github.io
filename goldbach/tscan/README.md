@@ -57,6 +57,9 @@ In successes per second that is about 35 times `search.py`.
 On the 46-digit job (Q = 20,011, 268 residual primes, 3 limbs) the same
 scanner does 10.8 million k per second at T = 88: it tests 1.09% of the k,
 which hold 27–28% of the successes.
+On the 63-digit job (Q = 30,011, 348 residual primes, 4 limbs) it does
+6.3 million k per second at T = 126: 0.86% of the k, 16–17% of the
+successes.
 
 ## Many progressions instead of one
 

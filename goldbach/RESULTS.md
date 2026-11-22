@@ -1,5 +1,45 @@
 # Goldbach Desert Records
 
+## The threshold game at 30,000 (2026-11-22): g(N) > 30,000 at 63 digits
+
+**g(N) = 30,139** for
+N = 563696031021545043161771326159246716394341421918582840246518722
+(63 digits, `records/threshold_63digit_g30139/`). It is the smallest N known
+to us with g above 30,000. The next N we know with a g that large is the
+150-digit one (g = 104,527).
+
+- **Closeness.** g is 20.7% of the conjectural ceiling for a 63-digit
+  number (`closeness.py`) and 77 times the g of a typical number of that
+  size. A perfect N for this g would have about 31 digits.
+- **Search.** N mod r is fixed for 32 primes r ≤ 149 (`cover.py 30011 22`;
+  131 and 139 are left free), which leaves 348 primes below 30,011
+  uncovered. `tscan/scan.py` scanned the members k < 7.03·10^9 of that one
+  progression in 19 minutes on 4 cores: 6.3 million k per second, testing
+  the 0.86% of the k with at most 126 complements left, which hold 16–17%
+  of the expected successes. The success is at k = 6,878,744,425. The model
+  put the expected number of successes up to k = 7.03·10^9 at 0.22, so this
+  one came early.
+- **Proof.** Built the same way as for the 25-digit record below.
+  `evidence.json` has a compositeness witness for N − q for each of the
+  3,260 primes q < g: a cover prime (2,911), a prime below 10^5 (224), a
+  failed strong base-2 test (124), or parity (q = 2). N − g is proved prime
+  by a PARI ECPP certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The low end of the frontier after today's three records (a point is on it
+when no smaller known N has a g at least as large):
+
+| digits of N | g | closeness | record |
+|---|---|---|---|
+| 19 | 9,781 | ~100% | exhaustive search ≤ 4·10^18 (not ours) |
+| 25 | 10,357 | 56.4% | `threshold_25digit_g10357` (today) |
+| 30 | 10,459 | 39.0% | `threshold_30digit_g10459` |
+| 40 | 11,173 | 20.9% | table in the 30-digit section |
+| 46 | 20,551 | 28.2% | `threshold_46digit_g20551` (today) |
+| 63 | 30,139 | 20.7% | `threshold_63digit_g30139` (today) |
+| 150 | 104,527 | 10.7% | `threshold_150digit_g104527` |
+
 ## The low end of the threshold game (2026-11-22, later): g(N) > 10,000 at 25 digits
 
 **g(N) = 10,357** for N = 5471513744131872011405456 (25 digits,
@@ -149,7 +189,8 @@ way. Scan effort differs from row to row, so read the closeness column as
 | 22 | 8314310102096915044292 | 6,073 | 43.4% | 2.9·10^7 | no: same reason |
 | 30 | 194465365536282197945444045558 | 10,459 | 39.0% | 3.7·10^8 | yes |
 | 40 | 8495171008612585955282488984129056734312 | 11,173 | 20.9% | 6.3·10^6 | yes |
-| 46 | 7687588743764734829791950727864816819276291322 | 20,551 | 28.2% | 4.1·10^9 (`tscan`, section at the top) | yes |
+| 46 | 7687588743764734829791950727864816819276291322 | 20,551 | 28.2% | 4.1·10^9 (`tscan`, own section above) | yes |
+| 63 | 563696031021545043161771326159246716394341421918582840246518722 | 30,139 | 20.7% | 7.0·10^9 (`tscan`, own section above) | yes |
 
 Just above the exhaustive range a cover plus a scan reaches about half the
 ceiling, and a smaller number with a larger g is already known. A point
@@ -727,6 +768,7 @@ g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
 | `threshold_27digit_g10111` | 10,111 | 27 | ~21,400 | 47.3% | 81 | 19 |
 | `threshold_30digit_g10459` | 10,459 | 30 | ~26,800 | 39.0% | 73 | 19 |
 | `threshold_46digit_g20551` | 20,551 | 46 | ~72,800 | 28.2% | 79 | 26 |
+| `threshold_63digit_g30139` | 30,139 | 63 | ~145,000 | 20.7% | 77 | 31 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~975,000 | 10.7% | 91 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~1.8M | 6.2% | 70 | 56 |
 | `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~4.7·10^8 | 0.24% | 35 | 161 |
