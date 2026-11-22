@@ -21,13 +21,15 @@ def source(step_file="fermat28_step.cuh"):
     return _HEAD + open(os.path.join(HERE, step_file)).read() + open(os.path.join(HERE, "fermat28_kernel.cuh")).read()
 
 
-def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False):
+def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
     """step_file: fermat28_step_s1.cuh / fermat28_step.cuh (2) / fermat28_step_s4.cuh = 1, 2 or 4 independent accumulators per
-    column.  asm_mad=True writes every product as PTX mad.wide.u32 instead of leaving the choice to the compiler."""
+    column.  asm_mad=True writes every product as PTX mad.wide.u32 instead of leaving the choice to the compiler.
+    maxreg: NVRTC --maxrregcount (try 96, 128, 160 if the kernel uses many registers and occupancy is low)."""
     assert limbs == 21, "fermat28 is built for 21 x u32 input limbs (n < 2^672)"
-    key = (step_file, asm_mad)
+    key = (step_file, asm_mad, maxreg)
     if key not in _K:
-        _K[key] = cp.RawKernel(source(step_file), "fermat28", options=("-DFM28_ASM=1",) if asm_mad else ())
+        opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ())
+        _K[key] = cp.RawKernel(source(step_file), "fermat28", options=opts)
     return _K[key]
 
 

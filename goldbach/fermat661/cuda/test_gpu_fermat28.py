@@ -57,7 +57,8 @@ def timeit(T, threads):
     return best, out
 VARIANTS = [("s2 plain", dict()), ("s2 asm", dict(asm_mad=True)), ("s1 plain", dict(step_file="fermat28_step_s1.cuh")),
             ("s1 asm", dict(step_file="fermat28_step_s1.cuh", asm_mad=True)), ("s4 plain", dict(step_file="fermat28_step_s4.cuh")),
-            ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True))]
+            ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True)),
+            ("s2 plain r128", dict(maxreg=128)), ("s2 asm r128", dict(asm_mad=True, maxreg=128)), ("s2 asm r96", dict(asm_mad=True, maxreg=96))]
 T32 = g32.Tester(N0, M, U) if g32 else None
 T33 = g33.Tester3(N0, M, U) if g33 else None
 ref_out = None
