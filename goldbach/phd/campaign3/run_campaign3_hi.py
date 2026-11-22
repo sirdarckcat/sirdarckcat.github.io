@@ -1,7 +1,7 @@
 """Campaign 3, CPU share at k >= 2^32: run_campaign3.py's chunked, restart-safe driver for the part of each vector's range
 that the GPUs cannot scan (their kernels take k as u32), k in [2^32, kcap], kcap = (10^200 - N0) // M, so N < 10^200.
 
-    python3 run_campaign3_hi.py SPECS.json [--chunk-seconds 3600] [--procs 4]
+    python3 run_campaign3_hi.py SPECS.json [--chunk-seconds 3600] [--procs 4] [--batch 4]   (slices per engine call)
 
 - Slices of 2^20 k as in run_campaign3.py, highest first (E falls as N grows), all vectors at one k0 before the next.
 - Engine: sieve200/search_c.py next to search.py if it exists (the uarch session's drop-in: same arguments, log line
@@ -17,7 +17,7 @@ import json, os, re, subprocess, sys, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 GOLDBACH = os.path.dirname(os.path.dirname(HERE))
 LOG, FOUND, SLICE_JSON = (os.path.join(HERE, f) for f in ("search.log", "found.jsonl", "current_slice.json"))
-SLICE, KLO, BATCH = 1 << 20, 1 << 32, 4
+SLICE, KLO = 1 << 20, 1 << 32
 
 
 def opt(name, default):
@@ -31,7 +31,7 @@ def main():
             if isinstance(s.get(f), str):
                 s[f] = json.loads(s[f])
         s["Q"] = int(s["Q"]); s["ceiling_digits"] = 200; s["stop_on_success"] = True
-    budget, procs = opt("--chunk-seconds", 3600.0), opt("--procs", 4)
+    budget, procs, BATCH = opt("--chunk-seconds", 3600.0), opt("--procs", 4), opt("--batch", 4)
     engine = os.path.join(GOLDBACH, "sieve200", "search_c.py")
     engine = engine if os.path.exists(engine) else os.path.join(GOLDBACH, "search.py")
     if os.path.exists(FOUND) and os.path.getsize(FOUND) > 0:

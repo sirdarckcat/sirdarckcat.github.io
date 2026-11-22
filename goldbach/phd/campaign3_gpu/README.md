@@ -94,6 +94,11 @@ Version 3 (22 Nov):
   - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
     on the RTX PRO 6000, against 3.6 s before.
   - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- CPU shares on the G4 hosts (22 Nov 22:40Z): the uarch session's `sieve200/search_c.py` (C sieve and AVX-512 IFMA Fermat tests)
+  under `../campaign3/run_campaign3_hi.py`, on Q = 150,000 vectors at k ≥ 2^32 (which the GPU kernels cannot reach).
+  - `cpu_share.sh` sets it up after `test_dropin.py` (ALL IDENTICAL) and `test_fm13.py` (ALL OK) pass on each host.
+  - `cpu_share4.sh` runs 4 drivers × 11 processes on quarters of the vectors, because the engine makes a process pool per slice.
+  - Per host: 1.8M members/s at hit% 30.9, i.e. 0.56M full-weight. The GPU batches still take 1.1 s.
 - `search_gpu5.py` (22 Nov 22:17-22:33Z, production on all five GPUs): the uarch session's all-GPU sieve (branch ccr-b8c25887-i6tn9f at
   6e01704, goldbach/sieve200/cuda: `GpuFeeder`). It has one CTA per row with the window's bit map in shared memory, Barrett
   reduction, a bit-sliced counter, selection by histogram (exactly np.argsort(counts, kind="stable")[:keep]), and the kept rows
