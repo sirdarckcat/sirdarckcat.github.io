@@ -104,7 +104,7 @@ def main():
             print(f"  SUCCESS {s['name']} k={k} N={res['N']} ({res['digits']} digits) g={res['g']}", flush=True)
         pos[s["name"]] = k0 + chunk
         calls += 1
-        if calls % 20 == 0 or ks:
+        if calls % 5 == 0 or ks:
             st["seconds"] += time.time() - t_start
             t_start = time.time()
             save()
