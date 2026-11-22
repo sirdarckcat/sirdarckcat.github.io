@@ -101,12 +101,28 @@ python3 pack.py mine.json variants.json                # record directory for th
 To look for an N below the 25-digit record without repeating what was
 scanned, start each machine from a copy of the seed. The 1,009 progressions
 with at most 189 residual primes are already past the record, so the work
-goes to the 17,199 with 190 or 191:
+goes to the ones with more:
 
 ```
+python3 variants.py q10007_e23.json 4 variants4.json   # 65,692 vectors with <= 192 residual primes, about 20 s
 cp seed_25digit.json mine.json
-python3 vscan.py variants.json mine.json 3600 191 24 0/6   # machine 0 of 6; repeat until it prints "done"
+python3 vscan.py variants4.json mine.json 3600 192 24 0/6   # machine 0 of 6; repeat until it prints "done"
 ```
+
+Which order finds the best N first. A success scores by how small its N
+is, and the lockstep order tests every progression at one height before
+any at the next, so the first success is the smallest N the whole list can
+give: nothing found later can beat it, and the run can stop there. Going
+class by class, or densest first, finds something sooner but the first
+find is then usually not the best (simulated on the measured densities,
+with 24 machine-hours: the first success is the final best in 100% of runs
+for lockstep, 18% class by class, 1% densest first). How many classes to
+include is the remaining choice: each extra class costs about 1.6 times
+the compute for an N about 2.4 times smaller at the same chance of a
+success. With 24 machine-hours, 190 to 192 is the best set (expected
+closeness of the result 61.5%, against 60.2% for 190 and 191 alone); with
+four times that, add 193 (`variants.py ... 5`). Progressions of one class
+need no ranking among themselves: their success densities agree within 3%.
 
 Each machine stops by itself once all its progressions are past the
 smallest success in its own state file. A success on one machine is the
