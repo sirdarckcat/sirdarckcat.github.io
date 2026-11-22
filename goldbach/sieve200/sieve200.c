@@ -42,11 +42,17 @@ typedef unsigned __int128 u128;
 #define SMALLP 384          /* primes below this use the pattern sieve */
 #endif
 #define CHUNK 64            /* primes whose first marks are computed together */
+#ifndef TILE_LOG
+#define TILE_LOG 17         /* the marks of the small primes are made one tile of 2^17 bits (16 KB) at a time, so the tile stays in L1 */
+#endif
+#ifndef TILE_PRIMES
+#define TILE_PRIMES 16384   /* primes below this are tiled (those with many marks in a tile) */
+#endif
 
 typedef struct S200 {
     int nU; u32 *U;
     u32 B; int logK; u64 K, words;
-    u32 nS; u32 *S, *Minv, *cS, *nf; double *rinv;   /* nf = floor(K / s): marks of a row that are certainly inside the window */
+    u32 nS; u32 *S, *Minv, *cS, *nf, *nt; double *rinv; u32 nP1; int logT;   /* nt = floor(T / s); primes below nP1 are tiled */   /* nf = floor(K / s): marks of a row that are certainly inside the window */
     u32 nSmall; unsigned char **pat; u32 *inv8, *step;
 } S200;
 
@@ -88,7 +94,7 @@ static u32 inv_mod(u32 a, u32 s) {              /* a^-1 mod s, s prime, a != 0 *
 void s200_free(S200 *c) {
     if (!c) return;
     for (u32 p = 0; p < c->nSmall; p++) free(c->pat[p]);
-    free(c->pat); free(c->inv8); free(c->step); free(c->U); free(c->S); free(c->Minv); free(c->cS); free(c->nf); free(c->rinv);
+    free(c->pat); free(c->inv8); free(c->step); free(c->U); free(c->S); free(c->Minv); free(c->cS); free(c->nf); free(c->nt); free(c->rinv);
     free(c);
 }
 
@@ -132,6 +138,11 @@ S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 
         c->S = realloc(c->S, 4 * n); c->Minv = realloc(c->Minv, 4 * n); c->cS = realloc(c->cS, 4 * n);
         c->nf = realloc(c->nf, 4 * n); c->rinv = realloc(c->rinv, 8 * n);
         for (u32 i = c->nS; i < n; i++) { c->S[i] = 1; c->Minv[i] = 0; c->cS[i] = 0; c->nf[i] = 0; c->rinv[i] = 1.0; }
+        c->nt = malloc(4 * (size_t)n);
+        c->logT = TILE_LOG < logK ? TILE_LOG : logK;
+        c->nP1 = 0;
+        for (u32 i = 0; i < n; i++) c->nt[i] = (u32)((1ull << c->logT) / c->S[i]);
+        while (c->nP1 < c->nS && c->S[c->nP1] < TILE_PRIMES) c->nP1++;
     }
     while (c->nSmall < c->nS && c->S[c->nSmall] < SMALLP) c->nSmall++;
     c->pat = malloc(sizeof(*c->pat) * (c->nSmall + 1)); c->inv8 = malloc(4 * (c->nSmall + 1)); c->step = malloc(4 * (c->nSmall + 1));
@@ -220,6 +231,33 @@ static void count_rows(const u64 *bits, int nU, u64 words, u16 *counts, u64 *pla
 
 /* ---------------------------------------------------------------- the sieve */
 
+/* j after clearing the n bits j, j + s, ... j + (n-1) s of row: the loop of the sieve, 7 instructions a mark with BMI2 (the
+   compiler's version has 9, with two register copies) */
+static inline u64 clear_marks(u64 *row, u64 j, const u64 s, u32 n) {
+#if defined(__x86_64__) && defined(__BMI2__) && defined(__BMI__) && !defined(S200_NO_ASM)
+    if (!n) return j;
+    u64 six = 6, one = 1, w, m, t;
+    __asm__("1:\n\t"
+            "shrx %[six], %[j], %[w]\n\t"
+            "shlx %[j], %[one], %[m]\n\t"
+            "andn (%[row],%[w],8), %[m], %[t]\n\t"
+            "mov %[t], (%[row],%[w],8)\n\t"
+            "add %[s], %[j]\n\t"
+            "dec %[n]\n\t"
+            "jnz 1b\n\t"
+            : [j] "+r"(j), [n] "+r"(n), [w] "=&r"(w), [m] "=&r"(m), [t] "=&r"(t)
+            : [row] "r"(row), [s] "r"(s), [six] "r"(six), [one] "r"(one)
+            : "memory", "cc");
+    return j;
+#else
+    for (; n; n--, j += s) {
+        const u64 w = j >> 6;
+        row[w] = _andn_u64(1ull << (j & 63), row[w]);
+    }
+    return j;
+#endif
+}
+
 /* jb[i] = (q Minv[p] + d[p]) mod S[p] for p = p0 .. p0 + 63: the first member offset (>= 0) of the row q that s = S[p] divides.
    x < (q + 1) s stays below 2^50 (s_new checks q B < 2^50), the quotient is found with a double reciprocal and is off by at most one. */
 static inline void first_offsets(const S200 *c, const u64 *d, u32 p0, u64 q, u32 *jb) {
@@ -263,7 +301,9 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
         d[p] = (u32)((c->cS[p] + s - (u32)(k0 % s)) % s);      /* first member offset with s | N - q is (q * Minv + d) mod s */
     }
     for (u32 p = c->nS; p < c->nS + CHUNK; p++) d[p] = 0;
-    const u32 nSmall = c->nSmall, nS = c->nS;
+    u32 *nxt = aligned_alloc(64, ((4 * ((size_t)c->nP1 + 2 * CHUNK)) + 63) / 64 * 64);   /* next mark of each tiled prime */
+    if (!nxt) { free(d); if (own) free(bits); return -1; }
+    const u32 nSmall = c->nSmall, nS = c->nS, nP1 = c->nP1;
     for (int r = 0; r < c->nU; r++) {
         u64 *row = bits + (size_t)r * words;
         const u64 q = c->U[r];
@@ -306,7 +346,24 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
             row[w] = acc;
         }
 #endif
-        for (u32 p0 = nSmall; p0 < nS; p0 += CHUNK) {
+        if (nP1 > nSmall) {                                       /* the small primes tile by tile: the tile stays in L1 */
+            const u32 n1 = nP1 - nSmall;
+            for (u32 p0 = nSmall; p0 < nP1; p0 += CHUNK) first_offsets(c, d, p0, q, nxt + (p0 - nSmall));
+            const u32 *S1 = c->S + nSmall, *nt1 = c->nt + nSmall;
+            const u32 ntiles = (u32)(K >> c->logT);
+            for (u32 tile = 0; tile < ntiles; tile++) {
+                const u64 hi = (u64)(tile + 1) << c->logT;
+                for (u32 i = 0; i < n1; i++) {
+                    u64 j = nxt[i];
+                    const u64 s = S1[i];
+                    j = clear_marks(row, j, s, nt1[i]);               /* T / s marks inside the tile: j in [lo, lo + s) */
+                    const u64 inside = j < hi;                         /* and one more, sometimes */
+                    row[(j >> 6) & wmask] &= ~(inside << (j & 63));
+                    nxt[i] = (u32)(j + (s & (0 - inside)));
+                }
+            }
+        }
+        for (u32 p0 = nP1; p0 < nS; p0 += CHUNK) {
             u32 jb[CHUNK] __attribute__((aligned(64)));
             first_offsets(c, d, p0, q, jb);                       /* the first offset j < s of 64 primes */
             const u32 pe = nS - p0 < CHUNK ? nS - p0 : CHUNK;
@@ -315,16 +372,13 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
                 u64 j = jb[ci];
                 const u64 s = c->S[p];
                 /* nf marks that are certainly inside the window, with no mask: j + (nf - 1) s < s + K - s */
-                for (u32 i = c->nf[p]; i; i--, j += s) {
-                    const u64 w = j >> 6;
-                    row[w] = _andn_u64(1ull << (j & 63), row[w]);
-                }
+                j = clear_marks(row, j, s, c->nf[p]);
                 /* and one more that is inside only sometimes; outside it clears nothing, in a harmless word */
                 row[(j >> 6) & wmask] &= ~((u64)(j < K) << (j & 63));
             }
         }
     }
-    free(d);
+    free(d); free(nxt);
     int rc = 0;
     if (counts) {
         u64 *planes = malloc(10 * words * 8);
