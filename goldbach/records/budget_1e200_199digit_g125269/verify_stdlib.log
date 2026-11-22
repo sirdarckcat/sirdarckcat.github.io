@@ -7,5 +7,5 @@
 [C] q = 125269 prime (trial division); N - q proven prime by ECPP (30 steps, independently re-verified)
 [D] q = 125269 > 119419 OK
 [D] N has 199 <= 199 digits OK
-[PASS] g(N) = 125269 for the 199-digit N in /home/user/sirdarckcat.github.io/goldbach/records/budget_1e199_199digit_g125269/package_stdlib.json
+[PASS] g(N) = 125269 for the 199-digit N in /home/user/sirdarckcat.github.io/goldbach/records/budget_1e200_199digit_g125269/package_stdlib.json
 rc=0

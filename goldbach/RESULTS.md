@@ -1,16 +1,21 @@
 # Goldbach Desert Records
 
-## The 200-digit budget game (2026-11-22, 20:31 UTC): g(N) = 125,269 below 10^199
+## The 200-digit budget game (2026-11-22, 20:31 and 20:38 UTC): g(N) = 133,981 below 10^199
 
-**g(N) = 125,269** for a 199-digit even N < 10^199
-(`records/budget_1e199_199digit_g125269/`). It is the largest g known
-below 10^199 and below 10^200. The previous largest was 119,419
-(`records/budget_1e200_199digit_g119419/`), whose N is smaller, so that one
-stays on the frontier too.
+**g(N) = 133,981** for a 199-digit even N < 10^199
+(`records/budget_1e200_199digit_g133981/`), the largest g known below 10^200.
+Eight minutes earlier the same campaign found **g(N) = 125,269**
+(`records/budget_1e200_199digit_g125269/`), at a slightly smaller N. The previous
+largest was 119,419 (`records/budget_1e200_199digit_g119419/`). All three stay on
+the frontier, since each larger g comes with a larger N.
 
-- **Closeness.** 5.94% of the largest g expected at 199 digits (119,419:
-  5.70%), 78× a typical number of that size.
-- **How.** campaign3's cover: Q = 122,000, 88 classes, M of 191 digits.
+- **Closeness.** 133,981: 6.36% of the largest g expected at 199 digits, 83× a
+  typical number of that size. 125,269: 5.94%, 78×. 119,419: 5.70%.
+- **The second hit.** Variant `r200b_q122k_w175` (870 residual primes) of a second
+  family of residue swaps, at member k = 541,000,854. Found by the second RTX PRO 6000
+  after 3.90·10^9 members (the model expected 0.4), 9 minutes into its run. Checked the
+  same five ways: 12,493 witnesses, a 31-step ECPP chain, PASS from the stdlib verifier.
+- **How (the first hit).** campaign3's cover: Q = 122,000, 88 classes, M of 191 digits.
   Residue-swap variant `r200b_q122k_v367`, with 874 residual primes, at member
   k = 533,337,309. Above Q the classes go on killing most N − p, so g came out
   3,269 above Q (the first prime past Q is 122,011).
@@ -1082,7 +1087,8 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
-| `budget_1e199_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
+| `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
+| `budget_1e200_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
 | `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
 | `height_2480digit_g1157341` | 1,157,341 | 2,480 | ~4.7·10^8 | 0.25% | 39 | 151 |
