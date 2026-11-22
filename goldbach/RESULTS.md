@@ -67,11 +67,21 @@ R record (largest g below its N).
     still untested.
 - **Verification.** No screen result is trusted. The hit was re-proved
   with `desert.bls_prove` on the runtime, and again on this container's
-  CPU (759 s). It passes `verify.py` (700 s). The PARI cross-check and the
-  two `bls/` verifiers are running.
+  CPU (759 s). It passes `verify.py` (700 s).
+  - The independent `bls/` stack passes: `xverify.py` (2.4 h) and
+    `verify_bls_record.py` (2.5 h) on Python ints, through
+    `proth/divmod_pow_run.py` (`xverify_divmod.log`,
+    `verify_bls_record_divmod.log`). Each ran alone on a Colab CPU
+    runtime, with CPython 3.13.18 as here.
+  - The PARI cross-check is running here. PARI's own N−1 certificate for
+    P is valid; `isprime` and the gcd scan of all 1,033,885 complements
+    follow.
 - **Cross-verification.** The second session rebuilt N from `spec.json`
-  and t alone and got the same sha256. `verify.py` passed on its own
-  machine (632 s). Its PARI and `xverify` legs are running.
+  and t alone and got the same sha256. On its own machine:
+  - `verify.py` passed (632 s), and `bls/xverify.py` passed (8,313 s).
+  - The PARI gcd scan passed in nine ranges whose counts add up to
+    1,033,885 = π(g − 1), and PARI's N−1 certificate is valid.
+  - Its `isprime` line is outstanding.
 
 ## New height record (2026-11-21, night): g(N) = 10,000,141, GPU-screened
 
