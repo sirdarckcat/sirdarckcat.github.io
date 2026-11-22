@@ -11,7 +11,7 @@ Lake or later, Zen 4 or later).
 | file | what it is |
 |---|---|
 | `fscan.c` | the scanner: enumerates the residue vectors and scans each one |
-| `fermat52.h` | base-2 Fermat test, 16 numbers at a time, 52-bit limbs (AVX-512 IFMA) |
+| `fermat52.h` | base-2 Fermat test, 24 numbers at a time, 52-bit limbs (AVX-512 IFMA) |
 | `test_fermat.c`, `test_fermat.py` | check of `fermat52.h` against Python on 150,000 numbers of 41 to 100 bits |
 | `check_small.py` | end-to-end check against brute force on a small threshold |
 | `check.py` | recomputes g(N) from N alone with gmpy2 |
@@ -24,8 +24,8 @@ Lake or later, Zen 4 or later).
 `tscan` sieves every member of a progression to 131,072 (about 400 cycles a
 member) and then Fermat-tests the 1.3% with the fewest rows left, with a
 scalar test of about 2,500 cycles. That balance is right when a test is that
-expensive. With 52-bit multiply-add instructions sixteen tests run side by
-side at 166 cycles each (15 times cheaper), and the best balance moves to
+expensive. With 52-bit multiply-add instructions 24 tests run side by side
+at 119 cycles each (about 20 times cheaper), and the best balance moves to
 almost no sieving and many more tests:
 
 1. **Score.** For a small prime s the number of residual rows q with
@@ -39,7 +39,7 @@ almost no sieving and many more tests:
    mask per prime: about 90 cycles. Members with more than Ta rows left are
    dropped.
 3. **Fermat.** The rows of the remaining members (0.3%) are tested one row
-   per member per round, 16 members at a time, and a member is dropped at
+   per member per round, 24 members at a time, and a member is dropped at
    its first probable prime (5.2 tests on average, since a row that survives
    the primes ≤ 383 is prime with probability 0.19).
 

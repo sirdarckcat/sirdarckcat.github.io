@@ -8,7 +8,7 @@
  *      table, added 64 members at a time.  About half a cycle per member.
  *   2. For the few members whose score reaches the threshold, compute the EXACT set of rows that
  *      no prime <= L kills (one 256-bit mask per prime), and keep those with at most Ta rows left.
- *   3. FERMAT-test the rows of those members, 16 numbers at a time (fermat52.h, AVX-512 IFMA),
+ *   3. FERMAT-test the rows of those members, 24 numbers at a time (fermat52.h, AVX-512 IFMA),
  *      one row per member per round, dropping a member at its first probable prime.
  *
  * tscan sieves every member to 131072 (about 400 cycles) and then tests the best 1.3%.  Here a
@@ -82,7 +82,7 @@ typedef struct {
     int rowq[MAXROWS];                /* the prime of each row */
     u64 n0;
     member_t *queue; int qn, qcap;
-    member_t slot[16]; int act[16];
+    member_t slot[F52_LANES]; int act[F52_LANES];
     stats_t st;
     FILE *out;
 } tls_t;
@@ -124,13 +124,13 @@ static void success(tls_t *T, const member_t *m) {
 static void fermat_drain(tls_t *T, int need) {
     for (;;) {
         int nact = 0;
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < F52_LANES; i++) {
             if (!T->act[i] && T->qn) { T->slot[i] = T->queue[--T->qn]; T->act[i] = 1; }
             nact += T->act[i];
         }
         if (nact < need || nact == 0) return;
-        u128 n[16], mx = 0; int row[16], first = -1;
-        for (int i = 0; i < 16; i++) {
+        u128 n[F52_LANES], mx = 0; int row[F52_LANES], first = -1;
+        for (int i = 0; i < F52_LANES; i++) {
             if (!T->act[i]) continue;
             member_t *m = &T->slot[i];
             int w = 0; while (!m->m[w]) w++;
@@ -141,13 +141,13 @@ static void fermat_drain(tls_t *T, int need) {
         }
         int b = 0; for (u128 x = mx; x; x >>= 1) b++;
         int t = b - 6;
-        f52_lanes LA, LB;
-        for (int i = 0; i < 16; i++) {
+        f52_lanes LL[3];
+        for (int i = 0; i < F52_LANES; i++) {
             if (!T->act[i]) n[i] = n[first];
-            if (i < 8) f52_setup(&LA, i, n[i], t); else f52_setup(&LB, i - 8, n[i], t);
+            f52_setup(&LL[i >> 3], i & 7, n[i], t);
         }
-        unsigned res = f52_run(&LA, &LB, n, 16, t);
-        for (int i = 0; i < 16; i++) {
+        unsigned res = f52_run(LL, n, F52_LANES, t);
+        for (int i = 0; i < F52_LANES; i++) {
             if (!T->act[i]) continue;
             member_t *m = &T->slot[i];
             T->st.tests++;
@@ -268,7 +268,7 @@ static void scan_vector(tls_t *T) {
             member_t *m = &T->queue[T->qn++];
             m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
-        if (T->qn >= 64) fermat_drain(T, 16);
+        if (T->qn >= 96) fermat_drain(T, F52_LANES);
         for (int p = 0; p < ns; p++) { int f = phi[p] + ckm[p]; if (f >= SP[p]) f -= SP[p]; phi[p] = (u16)f; }
     }
     st->members += kmax - kmin + 1;

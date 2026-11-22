@@ -8,7 +8,7 @@ batches = []
 for bits in range(41, 101):
     for _ in range(300):
         b = []
-        for _ in range(random.randint(1, 16)):
+        for _ in range(random.randint(1, int(sys.argv[3]) if len(sys.argv) > 3 else 16)):
             w = max(41, bits - (random.randint(0, 5) if random.random() < 0.33 else 0))
             v = random.getrandbits(w) | (1 << (w - 1)) | 1
             if random.random() < 0.25:
