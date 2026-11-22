@@ -105,7 +105,7 @@ void s200_free(S200 *c) {
 S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 B, int logK, const u32 *excl, int nExcl) {
     u64 *N0, *M; int nN, nM;
     if (parse_hex(N0_hex, &N0, &nN) || parse_hex(M_hex, &M, &nM)) return NULL;
-    if (logK < 9 || logK > 26 || nU < 1 || B < 5) { free(N0); free(M); return NULL; }
+    if (logK < 9 || logK > 26 || nU < 1 || nU > 4095 || B < 5) { free(N0); free(M); return NULL; }
     for (int i = 0; i < nU; i++)
         if ((u64)U[i] * B >= (1ull << 50)) { free(N0); free(M); return NULL; }
     S200 *c = calloc(1, sizeof *c);
@@ -168,11 +168,11 @@ size_t s200_bits_bytes(const S200 *c) { return (size_t)c->nU * c->words * 8; }  
 
 static inline void fa(u64 a, u64 b, u64 c, u64 *s, u64 *k) { u64 t = a ^ b; *s = t ^ c; *k = (a & b) | (t & c); }
 
-/* counts[j] = number of rows whose bit j is set; planes: 10 * words u64 of scratch (counts up to 1023 rows) */
+/* counts[j] = number of rows whose bit j is set; planes: 12 * words u64 of scratch (counts up to 4095 rows) */
 static void count_rows(const u64 *bits, int nU, u64 words, u16 *counts, u64 *planes) {
-    memset(planes, 0, 10 * words * 8);
+    memset(planes, 0, 12 * words * 8);
     u64 *P0 = planes, *P1 = P0 + words, *P2 = P1 + words, *P3 = P2 + words, *P4 = P3 + words;
-    u64 *P5 = P4 + words, *P6 = P5 + words, *P7 = P6 + words, *P8 = P7 + words, *P9 = P8 + words;
+    u64 *P5 = P4 + words, *P6 = P5 + words, *P7 = P6 + words, *P8 = P7 + words, *P9 = P8 + words, *P10 = P9 + words, *P11 = P10 + words;
     int r = 0;
     for (; r + 16 <= nU; r += 16) {
         const u64 *R0 = bits + (size_t)r * words, *R1 = R0 + words, *R2 = R1 + words, *R3 = R2 + words, *R4 = R3 + words,
@@ -201,7 +201,9 @@ static void count_rows(const u64 *bits, int nU, u64 words, u16 *counts, u64 *pla
             a = P6[w]; P6[w] = a ^ carry; carry = a & carry;
             a = P7[w]; P7[w] = a ^ carry; carry = a & carry;
             a = P8[w]; P8[w] = a ^ carry; carry = a & carry;
-            P9[w] ^= carry;
+            a = P9[w]; P9[w] = a ^ carry; carry = a & carry;
+            a = P10[w]; P10[w] = a ^ carry; carry = a & carry;
+            P11[w] ^= carry;
         }
     }
     for (; r < nU; r++) {                                   /* the last rows, one at a time */
@@ -217,15 +219,18 @@ static void count_rows(const u64 *bits, int nU, u64 words, u16 *counts, u64 *pla
             a = P6[w]; P6[w] = a ^ carry; carry = a & carry;
             a = P7[w]; P7[w] = a ^ carry; carry = a & carry;
             a = P8[w]; P8[w] = a ^ carry; carry = a & carry;
-            P9[w] ^= carry;
+            a = P9[w]; P9[w] = a ^ carry; carry = a & carry;
+            a = P10[w]; P10[w] = a ^ carry; carry = a & carry;
+            P11[w] ^= carry;
         }
     }
     for (u64 w = 0; w < words; w++) {                       /* planes -> counts */
-        u64 p0 = P0[w], p1 = P1[w], p2 = P2[w], p3 = P3[w], p4 = P4[w], p5 = P5[w], p6 = P6[w], p7 = P7[w], p8 = P8[w], p9 = P9[w];
+        u64 p0 = P0[w], p1 = P1[w], p2 = P2[w], p3 = P3[w], p4 = P4[w], p5 = P5[w], p6 = P6[w], p7 = P7[w], p8 = P8[w], p9 = P9[w], p10 = P10[w], p11 = P11[w];
         u16 *o = counts + 64 * w;
         for (int b = 0; b < 64; b++)
             o[b] = (u16)(((p0 >> b) & 1) | (((p1 >> b) & 1) << 1) | (((p2 >> b) & 1) << 2) | (((p3 >> b) & 1) << 3) | (((p4 >> b) & 1) << 4)
-                       | (((p5 >> b) & 1) << 5) | (((p6 >> b) & 1) << 6) | (((p7 >> b) & 1) << 7) | (((p8 >> b) & 1) << 8) | (((p9 >> b) & 1) << 9));
+                       | (((p5 >> b) & 1) << 5) | (((p6 >> b) & 1) << 6) | (((p7 >> b) & 1) << 7) | (((p8 >> b) & 1) << 8) | (((p9 >> b) & 1) << 9)
+                       | (((p10 >> b) & 1) << 10) | (((p11 >> b) & 1) << 11));
     }
 }
 
@@ -381,7 +386,7 @@ int s200_block(const S200 *c, u64 k0, u16 *counts, u64 *bits) {
     free(d); free(nxt);
     int rc = 0;
     if (counts) {
-        u64 *planes = malloc(10 * words * 8);
+        u64 *planes = malloc(12 * words * 8);
         if (!planes) rc = -1; else { count_rows(bits, c->nU, words, counts, planes); free(planes); }
     }
     if (own) free(bits);
