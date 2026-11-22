@@ -135,6 +135,21 @@ def campaign(march, full, rng):
         same = np.array_equal(alive[:, 32768 * b:32768 * (b + 1)], ref)
         print(f"  K=2^17, sub-block {b}: {'ok' if same else 'MISMATCH'}")
         ok &= same
+    # a window of 2^20 members (eight tiles of 2^17 bits for the small primes): sub-blocks 0, 7 and 31 against numpy
+    sb = 200003
+    search.G.clear()
+    search._SIEVE_CACHE.clear()
+    search.init_spec(spec, sb, 32768)
+    sv = Sieve200(int(spec["N0"]), int(spec["M"]), spec["residual"], sb, logK=20, exclude=cover, march=march)
+    k0 = 32768 * 1234
+    cnt, bits = sv.block(k0)
+    alive = sv.alive(bits)
+    for b in (0, 7, 31):
+        ref = numpy_alive(search, k0 + 32768 * b)
+        same = np.array_equal(alive[:, 32768 * b:32768 * (b + 1)], ref)
+        print(f"  K=2^20, sub-block {b}: {'ok' if same else 'MISMATCH'}")
+        ok &= same
+    ok &= np.array_equal(cnt.astype(np.int64), alive.sum(axis=0))
     return ok
 
 
