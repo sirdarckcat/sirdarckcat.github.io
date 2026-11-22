@@ -1,9 +1,10 @@
 # All vectors that differ from a given cover in one class (and, among those found, in two) and leave
 # at most `best + win` rows.  Output in the pool format of tempering.py.
-#   python3 neighbours.py tempering.json win out_pool.json
+#   python3 neighbours.py tempering.json win out_pool.json [max vectors written, default 4000]
 import json, sys, itertools
 import numpy as np
 t = json.load(open(sys.argv[1])); win = int(sys.argv[2]); out = sys.argv[3]
+LIMIT = int(sys.argv[4]) if len(sys.argv) > 4 else 4000
 Q = t["Q"]; cover = sorted((int(r), int(a)) for r, a in t["cover"]); mods = [r for r, _ in cover]; base = [a for _, a in cover]
 def primes_upto(n):
     s = np.ones(n + 1, dtype=bool); s[:2] = False
@@ -35,4 +36,4 @@ for (j1, a1), (j2, a2) in itertools.combinations(single, 2):
 top = sorted(pool.items(), key=lambda kv: (kv[1], kv[0]))
 from collections import Counter
 print("vectors:", len(top), "by rows left:", sorted(Counter(k for _, k in top).items()))
-json.dump({"Q": Q, "mods": mods, "pool": [[k, list(v)] for v, k in top[:4000]]}, open(out, "w"))
+json.dump({"Q": Q, "mods": mods, "pool": [[k, list(v)] for v, k in top[:LIMIT]]}, open(out, "w"))

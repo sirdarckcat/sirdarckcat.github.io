@@ -56,6 +56,20 @@ nearly as cheap as designing for it.
 With the three primes 443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows
 (`E` = 20.24), but a vector then has only about 60 members: no gain in practice.
 
+## More vectors for a running target
+
+The fleet uses a vector in minutes, so 128 are not enough. `neighbours.py` lists every vector
+that differs from the best one in one or two classes and stays within a few rows of it:
+
+    python3 -I neighbours.py dos_Q150000_m88_seed1.json 3 pool.json 100000
+    python3 -I mkspecs.py specs.json r200_q150k_c 2415 200 pool_q150000_le1100.json
+
+At `Q = 150,000` that is 12,619 vectors: 23 with 1,098 rows, 282 with 1,099, 2,110 with 1,100
+and 10,204 with 1,101. `pool_q150000_le1100.json` holds the 2,415 with at most 1,100 rows, in
+the order `mkspecs.py` names them, so its first 128 are exactly `specs_q150000_top128.json`
+(`r200_q150k_c_v0` to `v127`) and the new ones are `v128` to `v2414`. One more row costs 2.4%
+of the hit rate. The same two commands work for any `dos_Q*.json` here.
+
 ## Brainstorm of 2026-11-22
 
 `brainstorm/` holds the measurements made to test the research session's 100 ideas for reaching
