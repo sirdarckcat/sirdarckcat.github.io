@@ -35,6 +35,7 @@ ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one l
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
 ap.add_argument("--klog", type=int, default=19, help="members per GPU sieve window: 2^klog")
+ap.add_argument("--sieve-threads", type=int, default=256, help="GpuFeeder threads per CTA (1024 is faster on sm_80/89)")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
 ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
@@ -78,7 +79,8 @@ def feeder_for(spec):
         if _SH.get("M") != spec["M"]:
             _FD.clear()
             _SH.clear(); _SH["M"] = spec["M"]
-            _SH["fd0"] = GpuFeeder.from_search_G(G, klog=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est)
+            _SH["fd0"] = GpuFeeder.from_search_G(G, klog=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+                                                 nthreads=args.sieve_threads)
         _VAR[key] = (cp.asarray(np.asarray(G["U"], dtype=np.uint32)), cp.asarray(np.asarray(G["n0m"], dtype=np.uint32)), len(G["U"]))
     U, N0M, nU = _VAR[key]
     fd = _FD.get(nU)
