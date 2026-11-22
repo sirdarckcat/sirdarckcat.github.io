@@ -7,7 +7,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py and both bls/ verifiers here; PARI running (its N−1 certificate is valid). Cross-checked by the second session: verify.py, bls/xverify.py and the PARI scan pass, its isprime line outstanding. Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py, PARI (N−1 certificate, isprime and the full scan) and both bls/ verifiers here. Cross-verified by the second session (verify.py, bls/xverify.py, the PARI scan and certificate: all pass). Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
@@ -155,8 +155,11 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
     same sha256. Its `verify.py` passed in 632 s.
   - Both `bls/` legs pass, run alone on two Colab CPU runtimes:
     `xverify` in 2.4 h and `verify_bls_record` in 2.5 h.
-  - PARI here: its N−1 certificate is valid, and `isprime` plus the scan
-    are running.
+  - PARI here passes in full (5.4 h): N−1 certificate valid,
+    `isprime(P) = 1` (~3 h on one core), and the complete scan. A second
+    scan, in six ranges on two Colab runtimes, passes too.
+  - Colab reclaimed the four runtimes that sat idle after the search,
+    the A100 among them.
   - The second session's `xverify` and PARI scan (nine ranges) pass too.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
