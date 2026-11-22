@@ -18,7 +18,7 @@ for bits in range(41, 101):
             b.append(v)
         batches.append(b)
 inp = "\n".join("\n".join(f"{v:x}" for v in b) + "\n" for b in batches)
-out = subprocess.run(["./test_fermat"], input=inp, capture_output=True, text=True, check=True).stdout.split()
+out = subprocess.run([sys.argv[2] if len(sys.argv) > 2 else "./test_fermat"], input=inp, capture_output=True, text=True, check=True).stdout.split()
 assert len(out) == len(batches), (len(out), len(batches))
 tot = prp = bad = 0
 for b, o in zip(batches, out):

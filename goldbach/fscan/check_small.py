@@ -17,6 +17,7 @@ XMAX = int(float(sys.argv[3])) if len(sys.argv) > 3 else 10**20
 NVEC = int(sys.argv[4]) if len(sys.argv) > 4 else 150
 XMIN = 4 * 10**18
 L = 383
+EXE = __import__("os").environ.get("FSCAN", "./fscan")
 COVER = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43]
 M = 2
 for r in COVER:
@@ -25,7 +26,7 @@ rows_all = [q for q in range(3, Q, 2) if gmpy2.is_prime(q)]
 
 
 def run(*args):
-    out = subprocess.run(["./fscan", str(Q), str(L)] + [str(a) for a in args], capture_output=True, text=True, check=True).stdout
+    out = subprocess.run([EXE, str(Q), str(L)] + [str(a) for a in args], capture_output=True, text=True, check=True).stdout
     return out.splitlines()
 
 

@@ -36,7 +36,7 @@ almost no sieving and many more tests:
    only a filter (its correlation with the exact count is 0.87).
 2. **Exact rows.** For the members whose score reaches the threshold (0.8%),
    the rows that no prime ≤ 383 kills are computed exactly from one 256-bit
-   mask per prime: about 300 cycles. Members with more than Ta rows left are
+   mask per prime: about 90 cycles. Members with more than Ta rows left are
    dropped.
 3. **Fermat.** The rows of the remaining members (0.3%) are tested one row
    per member per round, 16 members at a time, and a member is dropped at
@@ -133,9 +133,11 @@ grep -h '^S ' runs/*.log | python3 check.py -                      # g(N) for ev
 
 Arguments: Q, L, the range of residual sizes, the range of N, the score
 threshold θ for residual size `rref` (default: the first size), and Ta.
-`slice=i/n` takes every n-th of the 5,760 work units (the residues mod 3, 5,
-7, 11, 13), so several machines can share a class; `done=FILE` records each
-finished unit with its counts and skips it on a restart. The classes up to
+`slice=i/n` takes every n-th of the 92,160 work units (the residues mod 3, 5,
+7, 11, 13, 17), so several machines can share a class; `done=FILE` records
+each finished unit with its counts and skips it on a restart. The units are
+very unequal, because the small vectors share the best classes of the small
+primes; inside a unit the threads share the subtrees nine primes deep. The classes up to
 192 are what the `vscan.py` runs cover, so the production runs here start
 at 193.
 

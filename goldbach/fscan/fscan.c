@@ -27,11 +27,11 @@
  *       Xmin Xmax  members with Xmin < N <= Xmax (decimal or 1e23 style)
  *       theta      score threshold for residual size rref; a vector of size R uses theta + R - rref
  *       Ta         keep members with at most Ta rows left after the primes <= L
- *     keys: rref=R (default Rlo)   slice=i/n (every n-th subtree)   done=FILE (resume/progress log)
+ *     keys: rref=R (default Rlo)   slice=i/n (every n-th work unit)   done=FILE (resume/progress log)
  *           sample=S (exact stage on every 2^S-th member for the mass estimate, default 12)
  *           dump=1 (print the vectors, no scan)   one=N0 (scan only the vector with this N0)
  *           hist=1 (print the score and a histograms)   threads=T   c2=X (pair term, see README)
- * Output: "S <N> <k> <N0> <R>" per success, "U ..." per finished subtree, then one "STATS" line.
+ * Output: "S <N> <k> <N0> <R>" per success, then one "STATS" line; the done file gets one "W ..." line per finished unit.
  */
 #include <math.h>
 #include <stdint.h>
@@ -78,6 +78,8 @@ typedef struct {
     u8 *cbuf;                         /* score tables: per prime s + CK bytes, periodic */
     u64 *mbuf;                        /* row masks: per prime s entries of 4 words */
     int rows[MAXROWS], nrows;
+    u64 rowmask[4];                   /* bits 0..nrows-1 */
+    int rowq[MAXROWS];                /* the prime of each row */
     u64 n0;
     member_t *queue; int qn, qcap;
     member_t slot[16]; int act[16];
@@ -133,7 +135,7 @@ static void fermat_drain(tls_t *T, int need) {
             member_t *m = &T->slot[i];
             int w = 0; while (!m->m[w]) w++;
             row[i] = 64 * w + __builtin_ctzll(m->m[w]);
-            n[i] = m->N - (u128)qs[T->rows[row[i]]];
+            n[i] = m->N - (u128)T->rowq[row[i]];
             if (n[i] > mx) mx = n[i];
             if (first < 0) first = i;
         }
@@ -170,17 +172,18 @@ static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
         x = _mm512_min_epu16(x, _mm512_sub_epi16(x, s));
         _mm512_store_si512(c + p, x);
     }
-    __m256i al = _mm256_set1_epi64x(-1);
     const u64 *mb = T->mbuf;
-    for (int p = 0; p < ns; p++)
-        al = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), al);
-    _mm256_storeu_si256((__m256i *)mask, al);
-    int R = T->nrows;                                   /* drop the bits beyond the last row */
-    for (int w = 0; w < 4; w++) {
-        int lo = 64 * w;
-        if (R <= lo) mask[w] = 0;
-        else if (R < lo + 64) mask[w] &= (1ull << (R - lo)) - 1;
+    __m256i a0 = _mm256_loadu_si256((const __m256i *)T->rowmask), a1 = _mm256_set1_epi64x(-1), a2 = a1, a3 = a1;
+    int p = 0;
+    for (; p + 4 <= ns; p += 4) {
+        a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
+        a1 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 1] + 4 * c[p + 1])), a1);
+        a2 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 2] + 4 * c[p + 2])), a2);
+        a3 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 3] + 4 * c[p + 3])), a3);
     }
+    for (; p < ns; p++) a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
+    a0 = _mm256_and_si256(_mm256_and_si256(a0, a1), _mm256_and_si256(a2, a3));
+    _mm256_storeu_si256((__m256i *)mask, a0);
     return __builtin_popcountll(mask[0]) + __builtin_popcountll(mask[1]) + __builtin_popcountll(mask[2]) + __builtin_popcountll(mask[3]);
 }
 u16 SPv[MAXS + 32] __attribute__((aligned(64))), RECv[MAXS + 32] __attribute__((aligned(64)));
@@ -211,6 +214,8 @@ static void scan_vector(tls_t *T) {
         }
         for (int i = s; i < s + CK; i++) ct[i] = ct[i - s];
     }
+    for (int w = 0; w < 4; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
+    for (int j = 0; j < R; j++) T->rowq[j] = qs[T->rows[j]];
     int th = theta0 + R - rref; if (th < 0) th = 0; if (th > 255) th = 255;
     u128 lo = Xmin > n0 ? (Xmin - n0) / Mmod + 1 : 0;      /* first k with N > Xmin */
     if (Xmax < n0) return;
@@ -232,6 +237,7 @@ static void scan_vector(tls_t *T) {
         }
         double lnN = log((double)((u128)n0 + (u128)kc * Mmod)), eps = eps_at(lnN), l1 = log1p(-eps);
         double odds2 = (eps / (1 - eps)) * (eps / (1 - eps));
+        u16 todo_d[CK + 8]; int ntodo = 0;
         for (int b = 0; b < 8; b++) {
             u64 bk = kc + 64 * b;
             if (do_hist) { u8 tmp[64]; _mm512_storeu_si512(tmp, sc[b]); for (int j = 0; j < 64; j++) if (bk + j >= kmin && bk + j <= kmax) st->hs[tmp[j]]++; }
@@ -242,22 +248,25 @@ static void scan_vector(tls_t *T) {
             u64 todo = mm | sm;
             while (todo) {
                 int j = __builtin_ctzll(todo); todo &= todo - 1;
-                u64 k = bk + j;
-                if (k < kmin || k > kmax) continue;
-                u64 mask[4];
-                int a = exact_stage(T, phi, 64 * b + j, mask);
-                int issel = (mm >> j) & 1, issam = (sm >> j) & 1;
-                if (issel) st->sel++;
-                if (!issam && (!issel || a > Ta)) continue;
-                double w = exp(l1 * a);
-                if (issam) { st->samples++; st->mass_all += w; if (issel && a <= Ta) st->mass_cap += w; if (do_hist) st->ha[a]++; }
-                if (!issel || a > Ta) continue;
-                st->kept++; st->exp_tested += w; st->exp_corr += w * exp(c2 * odds2 * a * (a - 1) / 2);
-                if (a == 0) { member_t m0 = {(u128)n0 + (u128)k * Mmod, {0, 0, 0, 0}, k}; success(T, &m0); continue; }
-                if (T->qn == T->qcap) { T->qcap *= 2; T->queue = realloc(T->queue, T->qcap * sizeof(member_t)); }
-                member_t *m = &T->queue[T->qn++];
-                m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
+                todo_d[ntodo++] = (u16)(64 * b + j) | (u16)(((mm >> j) & 1) << 14) | (u16)(((sm >> j) & 1) << 15);
             }
+        }
+        for (int i = 0; i < ntodo; i++) {
+            int d = todo_d[i] & 0x3fff, issel = (todo_d[i] >> 14) & 1, issam = todo_d[i] >> 15;
+            u64 k = kc + d;
+            if (k < kmin || k > kmax) continue;
+            u64 mask[4];
+            int a = exact_stage(T, phi, d, mask);
+            if (issel) st->sel++;
+            if (!issam && (!issel || a > Ta)) continue;
+            double w = exp(l1 * a);
+            if (issam) { st->samples++; st->mass_all += w; if (issel && a <= Ta) st->mass_cap += w; if (do_hist) st->ha[a]++; }
+            if (!issel || a > Ta) continue;
+            st->kept++; st->exp_tested += w; st->exp_corr += w * exp(c2 * odds2 * a * (a - 1) / 2);
+            if (a == 0) { member_t m0 = {(u128)n0 + (u128)k * Mmod, {0, 0, 0, 0}, k}; success(T, &m0); continue; }
+            if (T->qn == T->qcap) { T->qcap *= 2; T->queue = realloc(T->queue, T->qcap * sizeof(member_t)); }
+            member_t *m = &T->queue[T->qn++];
+            m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
         if (T->qn >= 64) fermat_drain(T, 16);
         for (int p = 0; p < ns; p++) { int f = phi[p] + ckm[p]; if (f >= SP[p]) f -= SP[p]; phi[p] = (u16)f; }
@@ -293,6 +302,28 @@ static void dfs(tls_t *T, int i, const u64 *alive, int n, u128 n0) {
         u64 next[NW];
         for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
         dfs(T, i + 1, next, n - cnt[a], n0 + (u128)a * Ebasis[i]);
+    }
+}
+
+#define SPLIT 9
+typedef struct { u64 alive[NW]; int n; u128 n0; } node_t;
+static node_t *nodes; static int nnodes, capnodes;
+/* the nodes SPLIT primes deep of one unit that can still hold a vector with at most Rhi residual primes */
+static void collect(int i, const u64 *alive, int n, u128 n0) {
+    if (i == SPLIT) {
+        if (nnodes == capnodes) { capnodes = capnodes ? 2 * capnodes : 1024; nodes = realloc(nodes, capnodes * sizeof(node_t)); }
+        memcpy(nodes[nnodes].alive, alive, sizeof(u64) * NW); nodes[nnodes].n = n; nodes[nnodes].n0 = n0; nnodes++;
+        return;
+    }
+    int later = 0;
+    for (int j = i + 1; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(alive, cls[j][a]); if (c > best) best = c; } later += best; }
+    int r = RS[i];
+    for (int a = 1; a < r; a++) {
+        int c = pcw(alive, cls[i][a]);
+        if (n - c - later > Rhi) continue;
+        u64 next[NW];
+        for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
+        collect(i + 1, next, n - c, n0 + (u128)a * Ebasis[i]);
     }
 }
 
@@ -352,8 +383,10 @@ int main(int argc, char **argv) {
     for (int p = ns; p < MAXS + 32; p++) { SPv[p] = 1; RECv[p] = 0; }
     if (L + CK >= 65536) { fprintf(stderr, "L too large\n"); return 2; }
 
-    /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13 */
-    int nsub = 2 * 4 * 6 * 10 * 12;
+    /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17.  They are very unequal (the
+       small vectors share the best classes of the small primes), so the units are taken one after the other
+       and the threads share the subtrees SPLIT primes deep inside each unit. */
+    int nsub = 2 * 4 * 6 * 10 * 12 * 16;
     char *done = calloc(nsub, 1);
     stats_t total; memset(&total, 0, sizeof total);
     char tag[256];
@@ -364,9 +397,9 @@ int main(int argc, char **argv) {
             char line[2048];
             while (fgets(line, sizeof line, f)) {
                 int id; char *p = strstr(line, " | ");
-                if (line[0] != 'U' || !p || strncmp(p + 3, tag, strlen(tag))) continue;
+                if (line[0] != 'W' || !p || strncmp(p + 3, tag, strlen(tag))) continue;
                 stats_t s; memset(&s, 0, sizeof s);
-                if (sscanf(line, "U %d %lu %lu %lu %lu %lu %lu %lu %lu %lf %lf %lf %lf", &id, &s.vectors, &s.members, &s.sel, &s.kept,
+                if (sscanf(line, "W %d %lu %lu %lu %lu %lu %lu %lu %lu %lf %lf %lf %lf", &id, &s.vectors, &s.members, &s.sel, &s.kept,
                            &s.tests, &s.prps, &s.found, &s.samples, &s.exp_tested, &s.exp_corr, &s.mass_all, &s.mass_cap) == 13 && id >= 0 && id < nsub && !done[id]) {
                     done[id] = 1; add_stats(&total, &s);
                 }
@@ -378,35 +411,44 @@ int main(int argc, char **argv) {
     u64 all[NW] = {0};
     for (int x = 0; x < nq; x++) all[x >> 6] |= 1ull << (x & 63);
     double t0 = omp_get_wtime();
-    #pragma omp parallel num_threads(threads)
-    {
+    tls_t **TT = calloc(threads, sizeof(tls_t *));
+    for (int t = 0; t < threads; t++) {
         tls_t *T = aligned_alloc(64, (sizeof(tls_t) + 63) & ~(size_t)63);
         memset(T, 0, sizeof *T);
         T->cbuf = aligned_alloc(64, (ctot + 64 + 63) & ~63); T->mbuf = aligned_alloc(64, ((size_t)mtot * 8 + 63) & ~(size_t)63);
         T->qcap = 256; T->queue = malloc(T->qcap * sizeof(member_t));
-        #pragma omp for schedule(dynamic, 1)
-        for (int id = 0; id < nsub; id++) {
-            if (done[id] || id % slice_n != slice_i) continue;
-            int av[5] = {1 + id % 2, 1 + (id / 2) % 4, 1 + (id / 8) % 6, 1 + (id / 48) % 10, 1 + (id / 480) % 12};
-            u64 al[NW]; u128 n0 = 0;
-            for (int w = 0; w < NW; w++) al[w] = all[w];
-            for (int j = 0; j < 5; j++) { for (int w = 0; w < NW; w++) al[w] &= ~cls[j][av[j]][w]; n0 += (u128)av[j] * Ebasis[j]; }
-            int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
-            memset(&T->st, 0, sizeof T->st);
-            /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
-            int later = 0;
-            for (int j = 5; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
-            if (n - later <= Rhi) dfs(T, 5, al, n, n0);
-            #pragma omp critical(out)
-            {
-                stats_t *s = &T->st;
-                add_stats(&total, s);
-                if (df && (s->vectors || !do_dump)) {
-                    fprintf(df, "U %d %lu %lu %lu %lu %lu %lu %lu %lu %.9g %.9g %.9g %.9g | %s\n", id, s->vectors, s->members, s->sel, s->kept,
-                            s->tests, s->prps, s->found, s->samples, s->exp_tested, s->exp_corr, s->mass_all, s->mass_cap, tag);
-                    fflush(df);
-                }
-            }
+        TT[t] = T;
+    }
+    static const int UM[6] = {2, 4, 6, 10, 12, 16};
+    for (int id = 0; id < nsub; id++) {
+        if (done[id] || id % slice_n != slice_i) continue;
+        u64 al[NW]; u128 n0 = 0;
+        for (int w = 0; w < NW; w++) al[w] = all[w];
+        for (int j = 0, x = id; j < 6; j++) {
+            int a = 1 + x % UM[j]; x /= UM[j];
+            for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
+            n0 += (u128)a * Ebasis[j];
+        }
+        int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
+        /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
+        int later = 0;
+        for (int j = 6; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
+        if (n - later > Rhi) continue;
+        nnodes = 0;
+        collect(6, al, n, n0);
+        for (int t = 0; t < threads; t++) memset(&TT[t]->st, 0, sizeof(stats_t));
+        #pragma omp parallel for schedule(dynamic, 1) num_threads(threads)
+        for (int i = 0; i < nnodes; i++) {
+            tls_t *T = TT[omp_get_thread_num()];
+            dfs(T, SPLIT, nodes[i].alive, nodes[i].n, nodes[i].n0);
+        }
+        stats_t us; memset(&us, 0, sizeof us);
+        for (int t = 0; t < threads; t++) add_stats(&us, &TT[t]->st);
+        add_stats(&total, &us);
+        if (df && (us.vectors || !do_dump)) {
+            fprintf(df, "W %d %lu %lu %lu %lu %lu %lu %lu %lu %.9g %.9g %.9g %.9g | %s\n", id, us.vectors, us.members, us.sel, us.kept,
+                    us.tests, us.prps, us.found, us.samples, us.exp_tested, us.exp_corr, us.mass_all, us.mass_cap, tag);
+            fflush(df);
         }
     }
     double dt = omp_get_wtime() - t0;

@@ -8,6 +8,7 @@
  * gives v = -(n + 103), u = 1 - n: the result is 2^(1-n), which is 1 exactly when n is a base-2
  * probable prime.  All 16 lanes run the same t (from the largest n of the batch).
  * Bounds: inputs < 4n, outputs of a squaring < 2n (needs 16n <= R), so no reduction inside the loop.
+ * 26 vector operations per squaring of 8 numbers, 15 of them multiply-adds.
  */
 #include <immintrin.h>
 #include <stdint.h>
@@ -32,20 +33,22 @@ static inline void f52_setup(f52_lanes *L, int i, u128 n, int t) {
     L->a0[i] = (uint64_t)y & M52; L->a1[i] = (uint64_t)(y >> 52);
 }
 
-/* one Montgomery squaring with optional doubling (shift count b = 0 or 1 per lane) */
+/* one Montgomery squaring with optional doubling (shift count b = 0 or 1 per lane).
+ * a0 may carry garbage above bit 52: it is only ever used as a multiplicand, and the multiply-add
+ * instructions read the low 52 bits.  a1 < 2^50, so 2*a1 fits.  The first reduction carry is 1
+ * exactly when z0 is not zero, because z0 + lo(m0*n0) is 0 or 2^52. */
 #define F52_STEP(a0, a1, n0, n1, ni, b) do {                                   \
+    __m512i ad = _mm512_add_epi64(a1, a1);                                      \
     __m512i z0 = _mm512_madd52lo_epu64(zero, a0, a0);                           \
     __m512i z1 = _mm512_madd52hi_epu64(zero, a0, a0);                           \
-    __m512i xl = _mm512_madd52lo_epu64(zero, a0, a1);                           \
-    __m512i xh = _mm512_madd52hi_epu64(zero, a0, a1);                           \
-    __m512i z2 = _mm512_madd52lo_epu64(_mm512_add_epi64(xh, xh), a1, a1);       \
+    __m512i z2 = _mm512_madd52lo_epu64(zero, a1, a1);                           \
     __m512i z3 = _mm512_madd52hi_epu64(zero, a1, a1);                           \
-    z1 = _mm512_add_epi64(z1, _mm512_add_epi64(xl, xl));                        \
+    z1 = _mm512_madd52lo_epu64(z1, a0, ad);                                     \
+    z2 = _mm512_madd52hi_epu64(z2, a0, ad);                                     \
     __m512i m0 = _mm512_madd52lo_epu64(zero, z0, ni);                           \
-    __m512i c0 = _mm512_srli_epi64(_mm512_madd52lo_epu64(z0, m0, n0), 52);      \
+    z1 = _mm512_mask_add_epi64(z1, _mm512_test_epi64_mask(z0, z0), z1, one);    \
     z1 = _mm512_madd52hi_epu64(z1, m0, n0);                                     \
     z1 = _mm512_madd52lo_epu64(z1, m0, n1);                                     \
-    z1 = _mm512_add_epi64(z1, c0);                                              \
     z2 = _mm512_madd52hi_epu64(z2, m0, n1);                                     \
     __m512i m1 = _mm512_madd52lo_epu64(zero, z1, ni);                           \
     __m512i c1 = _mm512_srli_epi64(_mm512_madd52lo_epu64(z1, m1, n0), 52);      \
@@ -53,14 +56,13 @@ static inline void f52_setup(f52_lanes *L, int i, u128 n, int t) {
     z2 = _mm512_madd52lo_epu64(z2, m1, n1);                                     \
     z2 = _mm512_add_epi64(z2, c1);                                              \
     z3 = _mm512_madd52hi_epu64(z3, m1, n1);                                     \
-    z2 = _mm512_sllv_epi64(z2, b); z3 = _mm512_sllv_epi64(z3, b);               \
-    a0 = _mm512_and_si512(z2, mask);                                            \
-    a1 = _mm512_add_epi64(z3, _mm512_srli_epi64(z2, 52));                       \
+    a0 = _mm512_sllv_epi64(z2, b); z3 = _mm512_sllv_epi64(z3, b);               \
+    a1 = _mm512_add_epi64(z3, _mm512_srli_epi64(a0, 52));                       \
 } while (0)
 
 /* run t squarings on two groups of 8 lanes; cnt = number of lanes in use (1..16), n[] their moduli */
 static inline unsigned f52_run(f52_lanes *LA, f52_lanes *LB, const u128 *n, int cnt, int t) {
-    const __m512i zero = _mm512_setzero_si512(), mask = _mm512_set1_epi64(M52);
+    const __m512i zero = _mm512_setzero_si512(), one = _mm512_set1_epi64(1);
     __m512i a0 = _mm512_loadu_si512(LA->a0), a1 = _mm512_loadu_si512(LA->a1);
     __m512i n0 = _mm512_loadu_si512(LA->n0), n1 = _mm512_loadu_si512(LA->n1), ni = _mm512_loadu_si512(LA->ni);
     __m512i e0 = _mm512_loadu_si512(LB->a0), e1 = _mm512_loadu_si512(LB->a1);
@@ -82,9 +84,10 @@ static inline unsigned f52_run(f52_lanes *LA, f52_lanes *LB, const u128 *n, int 
     _mm512_storeu_si512(r0 + 8, e0); _mm512_storeu_si512(r1 + 8, e1);
     unsigned res = 0;
     for (int i = 0; i < cnt; i++) {
-        u128 y = ((u128)r1[i] << 52) + r0[i];
-        while (y >= n[i]) y -= n[i];
-        if (y == 1) res |= 1u << i;
+        u128 y = ((u128)r1[i] << 52) + (r0[i] & M52), m = n[i];      /* y < 4n */
+        y -= (m << 1) & -(u128)(y >= (m << 1));
+        y -= m & -(u128)(y >= m);
+        res |= (unsigned)(y == 1) << i;
     }
     return res;
 }
