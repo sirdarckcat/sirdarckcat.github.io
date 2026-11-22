@@ -16,7 +16,7 @@ static inline unsigned atomicAdd(unsigned *p, unsigned v) { return __atomic_fetc
 static inline unsigned __funnelshift_l(unsigned lo, unsigned hi, unsigned s) { return (unsigned)((((unsigned long long)hi << 32) | lo) << (s & 31) >> 32); }
 struct uint4 { unsigned x, y, z, w; };
 static inline unsigned __umulhi(unsigned a, unsigned b) { return (unsigned)(((unsigned long long)a * b) >> 32); }
-struct dim_t { unsigned x; };
+struct dim_t { unsigned x, y; };
 static thread_local dim_t threadIdx;
 static dim_t blockIdx, blockDim;
 static pthread_barrier_t g_bar;

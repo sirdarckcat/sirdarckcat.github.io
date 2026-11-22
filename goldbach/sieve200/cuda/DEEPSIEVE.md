@@ -27,7 +27,12 @@ Pair visits at batch scale (K = 2^25, one pair visit per batch): rows x pi(B) = 
 * `test_gbig.py`: identical to a brute-force reference (3 geometries, row groups, the overflow flag); `test_gbig_cpu.py`: the cupy glue and the retry path with cupy replaced by numpy + the emulation.
 * `bench_bigprimes.py`: ns a mark for the whole stage with the pass A / pass B / apply split and GB/s: **the number the question needs**.
 
-## What would still have to be built if the measurement says go
+* `gbatch_kernels.cuh`, `gbatch_cpu.cpp`, `gbatch.py`, `test_gbatch_cpu.py`: the rest of the batch pipeline, **built and CPU-verified end to end**: `s200g_prep_tiles` (a table per tile),
+  `s200g_tile` (CTA (row, tile): the small-prime marks, then the (row, tile) bin applied to the same shared bitmap, then the tile written into the batch matrix), and `BatchFeeder`
+  (a `GpuFeeder` whose window is a batch of 2^ks_log members: per group of rg rows `gbig_gen` then the tile kernel; count, select, finalize and rows are the GpuFeeder's).  Identical to
+  sieve200's CPU Feeder (counts, selected members, rows, statistics) on four geometries: all primes large, none large, mixed, row groups that do not divide the row count, f from 0 to 0.9.
+
+## What would still be needed if the measurement says go (the first three items above are done; this is what remains)
 
 1. The small-prime kernel as a tile kernel of a batch: CTA (row, tile), the Shoup marks of the tile (a table per tile: c0 = (N0 M^-1 + k0 + tile 2^19) mod s, 64 x 1.25 MB), then the bin of
    (row, tile) applied to the same shared bitmap, then the tile written into the batch matrix `bits[row][2^25 / 32]` (4.6 GB for 1,093 rows; fits an RTX PRO 6000, A100 and L4).

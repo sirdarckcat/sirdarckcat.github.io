@@ -59,16 +59,18 @@ def expected_cap(S, tile_log, margin=1.08):
 
 
 class BigStage:
-    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None):
+    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None):
+        """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity)"""
         self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
-        self.TAB = cp.asarray(np.ascontiguousarray(TAB, dtype=np.uint32))
+        self.TAB = TAB if isinstance(TAB, cp.ndarray) else cp.asarray(np.ascontiguousarray(TAB, dtype=np.uint32))
         self.nP = int(self.TAB.shape[0])
         self.ks_log, self.tile_log, self.rg, self.ppt, self.threads = ks_log, tile_log, rg, ppt, threads
         self.ntiles = 1 << (ks_log - tile_log)
         self.nbins = rg * self.ntiles
         self.tile_words = (1 << tile_log) // 32
-        self.k = _kernels(tile_log, ks_log, rg, ppt)
-        S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt)
+        if S is None:
+            S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         self.cap = cap or expected_cap(S, tile_log)
         self.apply_smem = 4 * self.tile_words
         if self.apply_smem > 48 * 1024:
@@ -86,19 +88,20 @@ class BigStage:
             self._bins = cp.empty(need, dtype=cp.uint32)
         return self._bins
 
-    def run_group(self, row0, nrows, timings=None):
-        """marks of rows row0 .. row0 + nrows - 1 (nrows <= rg): returns the bit matrix [nrows, 2^ks_log / 32] (a view of an internal buffer, valid until the next call).
-        timings: a dict that receives the ms of the generate and the apply kernels (all attempts' generate time is added to 'gen_retry')."""
+    def gen_group(self, row0, nrows, timings=None, U=None):
+        """gbig_gen for rows row0 .. row0 + nrows - 1 (nrows <= rg), repeated with the capacity the demand asks for if a bin overflowed.  Leaves self.gcnt, the bins and self.cap
+        for gbig_apply / the tile kernel; returns (event before, event after) when timings is a dict (the generate time is added to timings['gen'])."""
         assert 1 <= nrows <= self.rg
+        U = self.U if U is None else U
         grid = (self.nP + self.threads * self.ppt - 1) // (self.threads * self.ppt)
         use_events = timings is not None
         while True:
             bins = self._bins_for(self.cap)
             self.gcnt[:] = 0
             if use_events:
-                e0, e1, e2 = cp.cuda.Event(), cp.cuda.Event(), cp.cuda.Event()
+                e0, e1 = cp.cuda.Event(), cp.cuda.Event()
                 e0.record()
-            self.k["gbig_gen"]((grid,), (self.threads,), (self.U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
+            self.k["gbig_gen"]((grid,), (self.threads,), (U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
             if use_events:
                 e1.record()
             if int(self.gcnt[self.nbins]) == 0:
@@ -109,10 +112,21 @@ class BigStage:
                 timings["gen_retry"] = timings.get("gen_retry", 0.0) + cp.cuda.get_elapsed_time(e0, e1)
             self.cap = int(math.ceil((need + 64) / 32.0)) * 32
             self.retries += 1
-        self.k["gbig_apply"]((nrows * self.ntiles,), (self.threads,), (self.gcnt, bins, np.uint32(self.cap), self.out), shared_mem=self.apply_smem)
         if use_events:
-            e2.record(); e2.synchronize()
+            e1.synchronize()
             timings["gen"] = timings.get("gen", 0.0) + cp.cuda.get_elapsed_time(e0, e1)
+        return bins
+
+    def run_group(self, row0, nrows, timings=None):
+        """marks of rows row0 .. row0 + nrows - 1 (nrows <= rg): returns the bit matrix [nrows, 2^ks_log / 32] (a view of an internal buffer, valid until the next call).
+        timings: a dict that receives the ms of the generate and the apply kernels (all attempts' generate time is added to 'gen_retry')."""
+        bins = self.gen_group(row0, nrows, timings)
+        if timings is not None:
+            e1, e2 = cp.cuda.Event(), cp.cuda.Event()
+            e1.record()
+        self.k["gbig_apply"]((nrows * self.ntiles,), (self.threads,), (self.gcnt, bins, np.uint32(self.cap), self.out), shared_mem=self.apply_smem)
+        if timings is not None:
+            e2.record(); e2.synchronize()
             timings["apply"] = timings.get("apply", 0.0) + cp.cuda.get_elapsed_time(e1, e2)
         return self.out[:nrows * self.ntiles * self.tile_words].reshape(nrows, self.ntiles * self.tile_words)
 

@@ -51,7 +51,7 @@ class Window:
 
 
 class GpuFeeder:
-    def __init__(self, S, INV, U, N0M, B=None, klog=18, llog=15, f=0.97, p_est=0.055, nthreads=256, shared=None, sieve_threads=None, shoup=True, unroll=1):
+    def __init__(self, S, INV, U, N0M, B=None, klog=18, llog=15, f=0.97, p_est=0.055, nthreads=256, shared=None, sieve_threads=None, shoup=True, unroll=1, plain_sieve=True, kernels=None):
         assert llog <= klog and llog <= 19 and (1 << llog) % nthreads == 0
         self.klog, self.llog, self.K, self.L = klog, llog, 1 << klog, 1 << llog
         self.f, self.p_est, self.nthreads = float(f), float(p_est), nthreads
@@ -70,14 +70,14 @@ class GpuFeeder:
         self.N0M = N0M.astype(cp.uint32) if isinstance(N0M, cp.ndarray) else cp.asarray(np.asarray(N0M, dtype=np.uint32))
         self.nU = int(self.U.size)
         assert self.nU < 4096
-        self.k = _kernels(klog, llog, nthreads, self.unroll)
+        self.k = kernels if kernels is not None else _kernels(klog, llog, nthreads, self.unroll)
         self.bits = cp.empty((self.nU, self.K // 32), dtype=cp.uint32)
         self.counts = cp.empty(self.K, dtype=cp.uint16)
         self.smem = 4 * (self.K // 32 + (1 if self.unroll >= 3 else 0))           # the Shoup kernel with unroll 3 has a dummy word
-        if self.smem > 48 * 1024:
+        if plain_sieve and self.smem > 48 * 1024:                                  # (a BatchFeeder never launches the whole-window sieve kernels: 4 MB of shared memory)
             self.k["s200g_sieve"].max_dynamic_shared_size_bytes = self.smem
             self.k["s200g_sieve_sh"].max_dynamic_shared_size_bytes = self.smem
-        self.tab = cp.empty((self.sh["nS"], 4), dtype=cp.uint32) if self.shoup else None     # {s, M^-1, invp, c0} a prime
+        self.tab = cp.empty((self.sh["nS"], 4), dtype=cp.uint32) if (self.shoup and plain_sieve) else None     # {s, M^-1, invp, c0} a prime
         self._tmp = {}
 
     @classmethod
@@ -106,6 +106,23 @@ class GpuFeeder:
             self._tmp[k] = cp.empty(shape, dtype=dtype)
         return self._tmp[k]
 
+    def _sieve_phase(self, k0, ev):
+        """the per-prime table and the sieve: fills self.bits [nU, K / 32] (ev[1] is recorded after the table, when ev is not None; ev[2] by the caller)"""
+        sh, K, nt, snt = self.sh, self.K, self.nthreads, self.sieve_threads
+        nS = sh["nS"]
+        if self.shoup:
+            self.k["s200g_prep"](((nS + 255) // 256,), (256,), (sh["S"], sh["INV"], sh["INVP"], self.N0M, np.uint64(k0), np.int32(nS), self.tab))
+            if ev is not None:
+                ev[1].record()
+            self.k["s200g_sieve_sh"]((self.nU,), (snt,), (self.U, self.tab, np.int32(nS), self.bits), shared_mem=self.smem)
+        else:
+            KM = cp.empty(nS, dtype=cp.uint32)
+            self.k["s200g_km"](((nS + nt - 1) // nt,), (nt,), (sh["S"], np.uint64(k0), np.int32(nS), KM))
+            if ev is not None:
+                ev[1].record()
+            self.k["s200g_sieve"]((self.nU,), (snt,), (self.U, sh["S"], sh["INV"], sh["MU"], self.N0M, KM, np.int32(nS), self.bits),
+                                  shared_mem=4 * (K // 32))
+
     def window(self, k0, f=None, timings=False):
         """Six launches and two small synchronisations: the per-prime table (c0 = (N0 M^-1 + k0) mod s, or k0 mod s), sieve, counts, select, finalize (k, counts,
         CSR offsets), then once the number of survivor rows is known the rows kernel.  timings=True: see the module docstring."""
@@ -120,18 +137,7 @@ class GpuFeeder:
         if timings:
             wall0 = time.perf_counter()
             ev[0].record()
-        if self.shoup:
-            self.k["s200g_prep"](((nS + 255) // 256,), (256,), (sh["S"], sh["INV"], sh["INVP"], self.N0M, np.uint64(k0), np.int32(nS), self.tab))
-            if timings:
-                ev[1].record()
-            self.k["s200g_sieve_sh"]((self.nU,), (snt,), (self.U, self.tab, np.int32(nS), self.bits), shared_mem=self.smem)
-        else:
-            KM = cp.empty(nS, dtype=cp.uint32)
-            self.k["s200g_km"](((nS + nt - 1) // nt,), (nt,), (sh["S"], np.uint64(k0), np.int32(nS), KM))
-            if timings:
-                ev[1].record()
-            self.k["s200g_sieve"]((self.nU,), (snt,), (self.U, sh["S"], sh["INV"], sh["MU"], self.N0M, KM, np.int32(nS), self.bits),
-                                  shared_mem=4 * (K // 32))
+        self._sieve_phase(k0, ev)
         if timings:
             ev[2].record()
         self.k["s200g_count"](((K // 32 + nt - 1) // nt,), (nt,), (self.bits, np.int32(self.nU), self.counts))
