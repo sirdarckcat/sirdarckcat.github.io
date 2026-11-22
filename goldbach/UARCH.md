@@ -1,0 +1,34 @@
+# Micro-optimizations of the search engines: index, numbers, how to test
+
+Everything here was measured, and every replacement is tested against the code it replaces before it was offered.  Speeds are one
+core of a 4-core Sapphire Rapids container (AVX-512 with IFMA, about 3.6 GHz under 512-bit load) unless a GPU is named.  GPU code
+was written and verified on a CPU (the same source compiled as C++), then timed by the GPU session on its GPUs.
+
+| directory | what it replaces | result | test |
+|---|---|---|---|
+| `fscan/` | `fscan.c`'s score loop, exact stage, Fermat kernels (IFMA 52-bit, AVX2 3 x 30-bit) | 27-31% fewer cycles a member (Intel and Zen 2), same members found; `FERMAT26_STEP.md` states the 3-limb step for a proof | `selftest_ab.sh`, `test_fermat.py`, `stress_fermat.py`, `check_record.sh` |
+| `sieve200/` | numpy sieve of `search.run_block` (campaign 3, 867-1,094 rows, 661-bit members) | 0.64 us a member at B=1e6 against 52 us (K=2^20, 867 rows); identical alive matrices, counts, tests, prps, successes; the feeder (counts, selection, CSR survivor rows) gives a GPU tester exactly what it needs | `test_sieve200.py`, `test_dropin.py`, `test_feeder.py` |
+| `fermat661/` | `gmpy2.powmod(2, n-1, n)` on 661-bit numbers | 10-11 us a test against 110-129 us on IFMA CPUs (13 limbs of 52 bits, 8 lanes); `search_c.py` uses it: a whole block 8.3 s -> 0.61 s | `test_fm13.py`, `test_dropin.py` |
+| `fermat661/cuda/` | `gpu_fermat.py`'s `fermat2` and `fermat3` | 22.9M tests/s on an RTX PRO 6000 against 13.1M (`fermat3`) and 8.9M (`fermat2`): 24 limbs of 28 bits, every product one 64-bit multiply-add, dedicated squaring, generated step with static indices, lazy reduction, start value 2^(672-c); ties `fermat3` on sm_80/89 | `test_fermat28.py`, `test_step28.py` (CPU), `test_gpu_fermat28.py` (GPU) |
+| `sieve200/cuda/` | `search_gpu3.py`'s sieve3, `alive.sum`, `lexsort`, gather, `nonzero` | CPU-verified; GPU numbers pending | `test_gsieve.py`, `test_gpu_sieve_cpu.py` (CPU), `test_gpu_sieve.py` (GPU) |
+
+`sieve200/balance.py` answers "which sieve bound B": with a CPU feeder and a GPU tester of a few tens of million tests a second the best
+B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` stays.
+
+## What was learned (and what it cost to find out)
+
+* **Count first, then optimize.**  `search.run_block` spent 26% in the numpy sieve and 73% in gmpy2 tests, so the sieve drop-in alone gave
+  1.3x, not the 2.4x that had been hoped for; the test kernel gave the next 10x.
+* **Arrays indexed by a loop variable live in local memory on a GPU.**  `fermat2` kept `x` and `n` there: 190 `ld.local` for
+  882 multiply-adds a step (found by compiling to PTX with clang for sm_80, no GPU needed).  A generated, fully unrolled step has none.
+* **Reduced radix beats carry chains where a multiply-add into a 64-bit register is one instruction**: 28-bit limbs, 876 multiply-adds
+  and no carry per product, against about 3.5 instructions a product for 32-bit limbs.  It only ties on sm_80/89, where the wide multiply
+  appears to be half rate.
+* **The sieve's cost is in the marks and the per-prime loop exits, not in the arithmetic.**  A constant trip count made the mark loop
+  66% busier yet 23% faster (branch mispredictions at the exits); marks of the small primes done a 16 KB tile at a time and a
+  7-instruction BMI2 loop gave a further 17-22%.  Per-(row, prime) set-up is vectorized (64 primes at a time, double reciprocal).
+* **Measure interleaved.**  Timings on this VM drift by 20% over minutes; A/B/A/B rounds with the minimum are the only comparison that held up.
+  A first-touch page fault in a VM costs far more than a cache miss: warm up before timing.
+* **Mistakes that were caught by tests, not by reading**: a 10-plane vertical counter overflows above 1,023 rows (Q = 150,000 has 1,093);
+  `fermat28`'s lazy reduction needs 16n < R, so n < 2^668 (669-bit inputs gave a wrong residue in 0.3% of cases, invisible in verdicts,
+  which are 0 for almost every random number: the final residue 2^(1-n) mod n is what to compare).
