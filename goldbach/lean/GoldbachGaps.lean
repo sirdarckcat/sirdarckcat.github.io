@@ -6,6 +6,9 @@ import GoldbachGaps.Desert
 import GoldbachGaps.Record150
 import GoldbachGaps.Record199
 import GoldbachGaps.Records
+import GoldbachGaps.Record23_g11701
+import GoldbachGaps.Record23_g10729
+import GoldbachGaps.Record23_g10771
 import GoldbachGaps.Fscan.Fermat52
 import GoldbachGaps.Fscan.Fermat26
 import GoldbachGaps.Fscan.Schedule
@@ -19,6 +22,11 @@ import GoldbachGaps.Cap.Budget
 import GoldbachGaps.Cap.FirstMoment
 import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
+import GoldbachGaps.Cap.Layers
+import GoldbachGaps.Cap.Selection
+import GoldbachGaps.Gpu.Limbs
+import GoldbachGaps.Gpu.MontSqr
+import GoldbachGaps.Gpu.Fermat
 
 /-!
 # Least Goldbach summands in Lean
@@ -38,6 +46,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Records`  – the two bounded record games as closed theorems.
+* `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
+               23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
+               branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
+               `g(30625623272505310405982) = 10729`, `g(35505990484772441527442) = 10771`.
 * `Fscan.*`  – correctness of the arithmetic kernels of the `goldbach/fscan` scanner (code
                at commit `a3ab69c` on branch `ccr-d4a17dd0-7uu03r`), one lane at a time:
                `Fermat52` / `Fermat26` are the Montgomery squaring steps `F52_STEP` and
@@ -55,7 +67,22 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                vectors exactly `|P| · ∏ (r - 2)/(r - 1)` rows are left, and the average of
                rows × boost is at least `|P| / 2` for every modulus set), `Poly` (`N = f(u)`
                makes the rows `f(c)` composite; at most `√Q + 1` of them and `√X + 1`
-               members for degree `≥ 2`), `Transfer` (a prime desert gives a Goldbach gap).
+               members for degree `≥ 2`), `Transfer` (a prime desert gives a Goldbach gap),
+               `Layers` (a fixed layer, a pigeonhole layer and a mop-up layer of moduli give
+               an even `N` in an explicit window with no Goldbach summand below `Q` as soon
+               as three counts allow it: the finite skeleton of lower bounds for
+               `max {g(N) : N ≤ X}`, with the structure of the rows that survive a layer
+               `N ≡ 1 (mod p)`), `Selection` (with independent rows, the logged hit mass
+               `Σ (1 - p)^(rows left)` over any selected set of members is exactly the
+               expected number of successes among them).
+* `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
+               (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
+               of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
+               `MontSqr` (`mont_sqr` is a CIOS Montgomery squaring with result below `n`;
+               `dbl_mod` doubles modulo `n`), `Fermat` (the Newton inverse modulo `2^32`,
+               the word and bit loop, and `fermat2_correct`: the flag is `1` iff
+               `2^(n-1) ≡ 1 (mod n)`, for `n = cq + k·M` odd, `> 1`, below `2^(32 L)`,
+               `k < 2^32`).
 
 ## Building
 
