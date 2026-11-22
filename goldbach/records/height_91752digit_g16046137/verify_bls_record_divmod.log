@@ -1,0 +1,23 @@
+# python3 proth/interop.py to-bls record.json out.json && python3 proth/divmod_pow_run.py verify_bls_record out.json  (bls/verify_bls_record.py unchanged except that its pow is proth/divmod_pow_run.py's pure-Python square-and-multiply with divmod reduction, checkpointed)
+# bls/, proth/divmod_pow_run.py and proth/interop.py as of commit b2954d7. Ran 11:19:50-13:50:13 UTC 2026-11-22 on the Colab CPU runtime gold-cpu5 (AMD EPYC 7B12, Python 3.13.18), alone on that runtime; it ran in full (no "[dpow] resumed" line).
+[dpow] bit 19483/304791, 600s
+[dpow] bit 38885/304791, 1200s
+[dpow] bit 58194/304791, 1800s
+[dpow] bit 77984/304791, 2400s
+[dpow] bit 98279/304791, 3000s
+[dpow] bit 118207/304791, 3600s
+[dpow] bit 138168/304791, 4200s
+[dpow] bit 158551/304791, 4800s
+[dpow] bit 179375/304791, 5400s
+[dpow] bit 200333/304791, 6000s
+[dpow] bit 220966/304791, 6600s
+[dpow] bit 241779/304791, 7200s
+[dpow] bit 262451/304791, 7800s
+[dpow] bit 282955/304791, 8400s
+[dpow] bit 304121/304791, 9000s
+PASS  g(N) = 16,046,137
+  N: 91,752 digits, sha256(decimal) 125984855b385699...
+  1,033,885 primes q < g: q=2 by parity, 1,033,884 odd q by 13,093 cover congruences
+  P = N - g (91,752 digits) prime by BLS, F = 2^101604, base 7; modexp 9019.6s (python int)
+  total 9022.6s
+LEG-EXIT 0 verify_bls_record 2026-11-22T11:19:50Z 2026-11-22T13:50:13Z Python 3.13.18 Model name: AMD EPYC 7B12

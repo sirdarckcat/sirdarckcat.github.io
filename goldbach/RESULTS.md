@@ -297,6 +297,50 @@ counts only when it is on the frontier: no smaller known N has a g at least
 as large. Such a point is at once a T record (smallest N for its g) and an
 R record (largest g below its N).
 
+## New height record (2026-11-22): g(N) = 16,046,137
+
+**g(N) = 16,046,137** for a 91,752-digit N
+(`records/height_91752digit_g16046137/`):
+- **Cover.** All 1,033,885 primes below g lie in a class of a complete
+  13,094-class cover (prime moduli ≤ 459,089, built for the primes below
+  Q = 16,045,849). g is the first prime the cover misses.
+- **Proof.** N − g = m·2^101604 + 1 (m odd) is proved prime by
+  7^((P−1)/2) ≡ −1 (mod P) with 2^101604 > P^(1/3), plus the BLS
+  non-square condition. P has 304,793 bits.
+- **Search.** 13,124 distinct candidates were tested, against ~4,488
+  expected per prime: a late draw, with a probability of ~5%.
+  - Main range t < 32768, sieved to 3·10¹¹ (14,579 survivors): 12,470
+    tested. 7,168 of these were GPU screens on a Colab A100 (6.1 s each).
+    The rest ran on up to six Colab CPU runtimes: GMP Euler tests at
+    ~1,000 s each, then from 07:50Z on 22 Nov OpenPFGW Fermat PRP tests at
+    ~60 s each, four per runtime (`proth/pfgw_search.py`).
+  - Fallback range t ∈ [32768, 131072): the spec allows t < 2^20. It was
+    sieved to 3·10¹¹ on this session's container while the search ran
+    (44,130 survivors), and each CPU runtime moved there when its main
+    slice ran out.
+  - The hit is the fallback range's 643rd test: t = 127,534, found by PFGW
+    on the A100 host's CPUs (45.5 s). 2,109 survivors below 32768 were
+    still untested.
+- **Verification.** No screen result is trusted. The hit was re-proved
+  with `desert.bls_prove` on the runtime, and again on this container's
+  CPU (759 s). It passes `verify.py` (700 s).
+  - The independent `bls/` stack passes: `xverify.py` (2.4 h) and
+    `verify_bls_record.py` (2.5 h) on Python ints, through
+    `proth/divmod_pow_run.py` (`xverify_divmod.log`,
+    `verify_bls_record_divmod.log`). Each ran alone on a Colab CPU
+    runtime, with CPython 3.13.18 as here.
+  - The PARI cross-check is running here. PARI's own N−1 certificate for
+    P is valid; `isprime` and the gcd scan of all 1,033,885 complements
+    follow.
+- **Cross-verification.** The second session rebuilt N from `spec.json`
+  and t alone and got the same sha256. On its own machine:
+  - `verify.py` passed (632 s), and `bls/xverify.py` passed (8,313 s).
+  - The PARI gcd scan passed in nine ranges whose counts add up to
+    1,033,885 = π(g − 1), and PARI's N−1 certificate is valid.
+  - Its own PARI `isprime` call was not completed (it needs about 3 hours on
+    one core and was stopped at a 2-hour task limit); the first session's
+    PARI run printed isprime(P) = 1. Log: `crossverify_2ce9e63a.log`.
+
 ## New height record (2026-11-21, night): g(N) = 10,000,141, GPU-screened
 
 **g(N) = 10,000,141** for a 61,329-digit N
@@ -318,13 +362,20 @@ R record (largest g below its N).
   CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s)
   and the PARI cross-check: PARI's own N−1 certificate, `isprime`, and a
   brute-force gcd scan of all 664,584 complements (2.8 h, `crosscheck.log`,
-  no error lines). The independent `bls/` stack (`xverify.py`,
-  `verify_bls_record.py`, unmodified, on Python ints) was still running here
-  when this was written; its logs go in the record directory.
+  no error lines). The independent `bls/` stack passes as well:
+  `xverify.py` and `verify_bls_record.py`, 61 min each on Python ints
+  (`xverify_divmod.log`, `verify_bls_record_divmod.log`).
+  - Both ran unchanged except for their one big modular exponentiation.
+    `proth/divmod_pow_run.py` supplies it as a square-and-multiply that
+    reduces with `divmod`, ~4× faster than the built-in 3-argument `pow`
+    at this size on CPython ≥ 3.12, and checkpointed.
+  - The first, fully unmodified runs were lost at ~3.4 h, when this
+    session's container was replaced.
 - **Cross-verification.** The second session re-ran all three checks on
   its own machine, with verifier code from a commit older than the record:
   `proth/verify.py` (246 s), the PARI cross-check, and `bls/xverify.py`
-  on Python ints (51 min). All passed (`crossverify_2ce9e63a.log`).
+  on Python ints with the same kind of `divmod` exponentiation (51 min).
+  All passed (`crossverify_2ce9e63a.log`).
 
 This doubles the evening's 5·10⁶ record, which is described next. The cost
 model had put this rung at ~3.4 days on 4 cores. The 16,045,849 rung now
@@ -876,6 +927,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |
 | `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~1.1·10^11 | 0.0044% | 9.3 | 296 |
 | `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.9·10^11 | 0.0026% | 9.8 | 409 |
+| `height_91752digit_g16046137` | 16,046,137 | 91,752 | ~9.0·10^11 | 0.0018% | 10.2 | 509 |
 
 Two readings. (1) A random even number with as many digits as the 5M
 record already has g near 540,000 (Hardy–Littlewood mean; measured on

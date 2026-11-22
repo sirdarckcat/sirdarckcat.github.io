@@ -1,0 +1,18 @@
+# python3 proth/divmod_pow_run.py xverify records/height_91752digit_g16046137/record.json  (bls/xverify.py unchanged except that its pow is proth/divmod_pow_run.py's pure-Python square-and-multiply with divmod reduction, checkpointed)
+# bls/ and proth/divmod_pow_run.py as of commit b2954d7. Ran 11:19:43-13:43:01 UTC 2026-11-22 on the Colab CPU runtime gold-cpu2 (AMD EPYC 7B12, Python 3.13.18), alone on that runtime; it ran in full (no "[dpow] resumed" line).
+[dpow] bit 21161/304791, 600s
+[dpow] bit 42102/304791, 1200s
+[dpow] bit 62921/304791, 1800s
+[dpow] bit 83507/304791, 2400s
+[dpow] bit 104020/304791, 3000s
+[dpow] bit 124640/304791, 3600s
+[dpow] bit 145223/304791, 4200s
+[dpow] bit 165931/304791, 4800s
+[dpow] bit 187146/304791, 5400s
+[dpow] bit 208409/304791, 6000s
+[dpow] bit 230387/304791, 6600s
+[dpow] bit 252754/304791, 7200s
+[dpow] bit 275113/304791, 7800s
+[dpow] bit 297504/304791, 8400s
+PASS g(N) = 16,046,137: 91,752 digits, 1,033,885 primes < g covered by 13,093 odd congruences, F = 2^101604, base 7; modexp 8596s (python int)
+LEG-EXIT 0 xverify 2026-11-22T11:19:43Z 2026-11-22T13:43:01Z Python 3.13.18 Model name: AMD EPYC 7B12

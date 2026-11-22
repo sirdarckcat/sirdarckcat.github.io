@@ -7,7 +7,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **61,329-digit** N (records/height_61329digit_g10000141) | g = **10,000,141** | **new 2026-11-21 (night)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py and PARI here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py and both bls/ verifiers here; PARI running (its N−1 certificate is valid). Cross-checked by the second session: verify.py, bls/xverify.py and the PARI scan pass, its isprime line outstanding. Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
@@ -41,6 +41,9 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
     removed later.
   - The hit was re-proved on the CPU (BLS, 306 s) and passes `verify.py`:
     9,095 cover classes and all 664,584 primes below g.
+  - It also passes the PARI cross-check (2.8 h) and both `bls/`
+    verifiers (61 min each through `proth/divmod_pow_run.py`). The second
+    session re-ran `verify.py`, PARI and `bls/xverify.py`: all pass.
   - g is the first prime above 10⁷ that the cover (built for the odd
     primes below 10⁷) misses; the five primes in between are covered.
 - **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
@@ -91,6 +94,70 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   2.5 h on 8 threads) found 767 kills, all re-verified locally (p prime,
   p | P_t). 636 are new against the 10¹¹ list, which goes 15,215 → 14,579.
   gold-cpu then joins the fleet as slice 5.
+- **Fourth incident (this session's container was replaced).** At ~02:11Z
+  on 11-22 the local container was reclaimed while no harness-tracked task
+  was running: the failure mode logged on 2026-07-22. Files survived;
+  processes did not.
+  - Lost: the two unmodified `bls/` verifier legs for 10⁷, ~3.4 h into
+    a ~4.5 h run, and the local Colab watchers.
+  - Unaffected: Colab. All six runtimes kept searching the 16M rung.
+  - Recovery: the legs were re-run through `proth/divmod_pow_run.py`
+    (divmod reduction, ~4× faster, checkpointed) as harness-tracked
+    tasks, which also keep the container alive. Both passed in 61 min.
+    When nothing is running, a scheduled check-in now resumes the session.
+  - Both legs do the same exponentiation, so they shared one checkpoint
+    file. Neither resumed from it, so each computed it in full. The
+    checkpoint key now includes the verifier's name, and a finished run
+    deletes its checkpoint.
+- **Time limit, relay and a fallback range (05:45Z).** The alarm and the
+  local slice 6/8 reached the harness's 2 h limit for background tasks.
+  They were not restarted: the alarm now runs under the Monitor tool
+  (30-min re-arms), and the local cores went to the fallback below.
+  - After 5,517 tests with no hit, the chance that the remaining 9,062
+    survivors below 32768 hold no prime is e^(−9062/4488) ≈ 13%. The spec
+    allows t < 2^20, so the local cores sieve t ∈ [32768, 131072) by the
+    same chain.
+  - That sieve reproduced the main 10⁹ pool exactly below 32768. The
+    local `deepsieve` build matched the Colab kills on [10⁹, 2·10⁹)
+    exactly (607 of 607). [10⁹, 10¹¹) took 56,187 → 45,994 survivors
+    (−18.1%; the main pool lost 18.0%).
+  - A relay now puts every tested t on every machine as a `*.kills.json`
+    list, so the GPU (bottom-up) and the fleet (top-down) stop at each
+    other's work. gold-cpu3's first reload dropped exactly the 516
+    GPU-tested t of its slice.
+- **PFGW (~07:50Z, approved by the user).** OpenPFGW 4.1.8 (gwnum)
+  replaced GMP on all six CPU runtimes, as a screen only; a pass is
+  re-proved by `desert.bls_prove`.
+  - On gold-cpu5, with its GMP search paused, the 10⁷ record's P was
+    3-PRP in 23 s, and eight known composites came out composite with
+    reproducible residues.
+  - A 16M test took ~60 s with four in parallel, against ~1,000 s for one
+    GMP test with eight in parallel: ~240 tests/h per runtime instead of
+    ~29.
+  - The fleet goes from ~170 to ~1,450 tests/h, beside the GPU's ~590.
+  - gold-gpu runs five at nice 19 so the GPU's host process keeps
+    priority.
+- **g = 16,046,137 at 91,752 digits (hit 10:52Z on 11-22).** It was found
+  on gold-gpu's fallback slice 4/6, at t = 127,534: PFGW 3-PRP in 45.5 s,
+  then `desert.bls_prove` on the runtime. All searches stopped at 10:53Z.
+  - Tests run: 13,124 distinct t. 12,470 of the 14,579 survivors below
+    32768 were tested (7,168 GPU, the rest CPU), and 643 of the 44,130 in
+    the fallback range.
+  - 191 t were tested by both the GPU and the fleet, where they met; all
+    were composite both times.
+  - At ~4,488 expected tests per prime, a first prime this late has a
+    probability of ~5%. The hit came from the fallback range while 2,109
+    survivors below 32768 were still untested. Those had about a 37%
+    chance of holding a prime; that range is now left unsearched.
+  - Proved again here with `desert.bls_prove` (759 s). F = 2^101604, since
+    m = m0 + t·Mc is divisible by 16; P has 304,793 bits.
+  - The second session rebuilt N from `spec.json` and t alone and got the
+    same sha256. Its `verify.py` passed in 632 s.
+  - Both `bls/` legs pass, run alone on two Colab CPU runtimes:
+    `xverify` in 2.4 h and `verify_bls_record` in 2.5 h.
+  - PARI here: its N−1 certificate is valid, and `isprime` plus the scan
+    are running.
+  - The second session's `xverify` and PARI scan (nine ranges) pass too.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.

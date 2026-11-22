@@ -56,6 +56,7 @@ ln P / (e^γ ln B) tests are expected.
 
 | g(N) | digits of N | cover | PRP tests | proof of the partition | directory |
 |---|---|---|---|---|---|
+| **16,046,137** | 91,752 | 13,094 classes (moduli ≤ 459,089, lazy greedy), complete below g | 13,124: 7,168 GPU (Colab A100) and 6,147 CPU (GMP, then OpenPFGW; 191 on both); the hit is the 643rd test of the fallback range t ≥ 32768 (expected ~4,488 per prime) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^101604 > P^(1/3) | `../records/height_91752digit_g16046137` |
 | **10,000,141** | 61,329 | 9,095 classes (moduli ≤ 306,239, lazy greedy), complete below g | 3,072 GPU (Colab A100s); the hit is the 2,718th survivor of the 10¹¹-sieved list (expected ~3,130) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^67914 > P^(1/3) | `../records/height_61329digit_g10000141` |
 | **5,000,251** | 33,938 | 5,342 classes (moduli ≤ 167,107, lazy greedy), complete below g | 68 CPU + 3,072 GPU (Colab A100); the hit is the 3,080th survivor (expected ~2,118) | one `powmod` (5^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^37584 > P^(1/3) | `../records/height_33938digit_g5000251` |
 | **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `../records/height_15595digit_g2000269` |
@@ -76,6 +77,14 @@ single modular exponentiation if present):
     cd ../records/<dir> && gp -q crosscheck.gp                 # independent PARI/GP path, ~2 min
 
 (timings for the 11,263-digit record on one core; the 15,595-digit record takes 12 s, 270 s and ~8.5 min).
+
+Past ~10⁵ digits the `bls/` legs spend nearly all their time in one
+Python-int exponentiation. `divmod_pow_run.py xverify|verify_bls_record
+<record> [--ckdir DIR]` runs either verifier unchanged except for that
+`pow`, which it reduces with `divmod` (~4× faster on CPython ≥ 3.12) and
+checkpoints, so a killed run resumes. For the 61,329-digit record each leg
+takes 61 min on one core. `verify_bls_record` needs the record in its own
+format first (`interop.py to-bls record.json out.json`).
 
 `crosscheck.gp` does not use the cover classes: it lets PARI build and
 validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
@@ -219,6 +228,28 @@ For the 16,045,849 rung a CPU fleet runs beside the GPU:
 - The A100 host's CPUs join once their sieve range is done. PRP tests then
   save more GPU time than sieving [3·10¹¹, 10¹²) would (~180 against
   ~100 tests).
+- Since ~07:50Z on 22 Nov the fleet runs `pfgw_search.py`: the same
+  slices, queue, kill lists and logs, but each test is a base-3 Fermat PRP
+  test by OpenPFGW 4.1.8 (gwnum FFT arithmetic) instead of GMP.
+  - Speed: on a 4-core EPYC 7B12 a 16M candidate takes 56 s alone and
+    ~60 s with four running at once (one per core), ~240 tests/h per
+    runtime against ~29 with GMP. Eight at once (hyperthreads) take 160 s
+    each, ~180 tests/h, so it runs four.
+  - Like the GPU, PFGW is only a screen: a PRP is re-proved by
+    `desert.bls_prove` (GMP Euler test with the spec's base, then BLS)
+    before any hit is written.
+  - Checks before the switch: the 10⁷ record's P is 3-PRP (23 s); eight
+    t that the GPU had found composite come out composite; the five run
+    twice gave identical residues.
+  - The binary is not in this repository. It is `pfgw_linux_4.1.8.7z` from
+    the OpenPFGW SourceForge project (md5 646e006e9b20a99416c12b68bfd97e1b,
+    sha256 aadf885e2d6489866bb7eeea2ba3f75a3fa02e679f1d6a86fd2632e042a99c99),
+    unpacked to `pfgw64` (sha256
+    ebd9357b769c73b62e1e7b35620d6a1ea84e068c6284b23b463378cadf771b5b,
+    "4.1.8.64BIT.20260508.x86_Dev [GWNUM 31.5]").
+- A relay copies every t tested anywhere to every machine as one more
+  `*.kills.json` list. So the GPU and the fleet stop at each other's work
+  where they meet, instead of re-testing it.
 
 Known constant factors not taken: a Montgomery reduction specialised to
 P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; prototyped and
@@ -281,11 +312,16 @@ this is a few-hundred-line development plus a data file generated from
 - `tamper_test.py` — mutation test for `verify.py`
 - `interop.py`, `overlap_check.py` — cross-check against the independent
   pipeline (`../bls/`); the reviews are `../phd/crossreview_*.md`
+- `divmod_pow_run.py` — runs a `../bls/` verifier with a faster,
+  checkpointed pure-Python `pow` (for records past ~10⁵ digits)
 - `probe.py` — exhaustive prime count over sieve survivors vs the model;
   `probe_1200k_result.json` is its result on the 1.2·10⁶ progression
 - `ladder.py` — the cost ladder above, from lazy covers and measured timings
 - `gpu_screen.py`, `gpu_search.py`, `gpu_hit.py` — GPU screen (CuPy),
   batch driver, and hit → CPU proof → packaged record
+- `cpu_search.py`, `pfgw_search.py` — the CPU fleet's top-down slice
+  search, with GMP or with OpenPFGW as the screen (a pass is re-proved
+  with GMP)
 - `gpu_validate.py`, `gpu_validate_v2.py`, `gpu_validate_v3.py`,
   `gpu_bench*.py` — engine validation against gmpy2 and timings
 - `deepsieve.c`, `deep_sieve.py` — deeper sieve (C, GMP), streamed into a

@@ -1,0 +1,5 @@
+2026-11-22T05:43:03Z start
+2026-11-22T05:50:29Z DONE: 56187 survivors in [32768, 131072) after primes < 1e+09, 446s
+2026-11-22T07:01:37Z DONE: 56187 -> 45994 survivors after primes < 1e+11
+2026-11-22T09:19:07Z DONE: 45994 -> 44130 survivors after primes < 3e+11
+2026-11-22T09:19:07Z EXT-DONE
