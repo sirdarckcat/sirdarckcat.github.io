@@ -94,6 +94,25 @@ Version 3 (22 Nov):
   - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
     on the RTX PRO 6000, against 3.6 s before.
   - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
+  (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
+  so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
+  2^(672−c) instead of 672 doublings. The variant used is "s1 asm".
+  - `test28_prod.py` on production-range candidates (k in [2^30, 2^32), n ≥ 2^662): 0 mismatches against gmpy2 on 40,000 for every
+    variant, flags identical to fermat2's on 2M.
+  - Speed (best variant):
+
+    | GPU | fermat2 | fermat3 | fermat28 |
+    |---|---|---|---|
+    | RTX PRO 6000 | 8.86M tests/s | 13.08M | 22.86M |
+    | A100 | 4.03M | 6.94M | 6.95M |
+    | L4 | 2.18M | 4.07M | 4.02M |
+
+    So the A100 and the L4 stay on kernel 3.
+  - `check_k28.sh`: search_gpu3.py with kernels 3 and 28 on 12 production slices below 2^30 gives identical slice lines at f = 0.97
+    and at f = 0.
+  - Production batch of 32 slices on an RTX PRO 6000: 2.2 s.
+  - search_gpu3.py asserts 2^642 ≤ n < 2^668 for kernel 28 (it flags 2 outside), and counts only flag == 1 as a PRP.
 - Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
   gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,
