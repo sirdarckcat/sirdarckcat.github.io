@@ -19,6 +19,7 @@ import GoldbachGaps.Cap.Budget
 import GoldbachGaps.Cap.FirstMoment
 import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
+import GoldbachGaps.Cap.Layers
 
 /-!
 # Least Goldbach summands in Lean
@@ -55,7 +56,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                vectors exactly `|P| · ∏ (r - 2)/(r - 1)` rows are left, and the average of
                rows × boost is at least `|P| / 2` for every modulus set), `Poly` (`N = f(u)`
                makes the rows `f(c)` composite; at most `√Q + 1` of them and `√X + 1`
-               members for degree `≥ 2`), `Transfer` (a prime desert gives a Goldbach gap).
+               members for degree `≥ 2`), `Transfer` (a prime desert gives a Goldbach gap),
+               `Layers` (a fixed layer, a pigeonhole layer and a mop-up layer of moduli give
+               an even `N` in an explicit window with no Goldbach summand below `Q` as soon
+               as three counts allow it: the finite skeleton of lower bounds for
+               `max {g(N) : N ≤ X}`).
 
 ## Building
 
