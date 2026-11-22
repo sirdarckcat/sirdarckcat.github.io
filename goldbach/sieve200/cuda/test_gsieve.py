@@ -24,6 +24,7 @@ def build(klog, llog, nthreads, maxsort=8192):
     lib.cpu_count.argtypes = [vp, ctypes.c_int, vp]
     lib.cpu_select.argtypes = [vp, ctypes.c_int, ctypes.c_int, ctypes.c_double, vp, vp]
     lib.cpu_rows.argtypes = [vp, ctypes.c_int, vp, vp, ctypes.c_int, vp]
+    lib.cpu_n0m.argtypes = [vp, ctypes.c_int, vp, vp, ctypes.c_int, vp]
     return lib
 
 
@@ -90,6 +91,11 @@ def main():
                 gr = all(np.array_equal(rows[offs[i]:offs[i + 1]], np.nonzero(alive[:, int(m)])[0]) for i, m in enumerate(member[:400]))
                 res.append(f"rows {'ok' if gr else 'MISMATCH'}")
                 ok &= gr
+        n0l = np.frombuffer(N0.to_bytes(4 * 24, "little"), dtype=np.uint32).copy()
+        n0got = np.zeros(len(S), dtype=np.uint32)
+        lib.cpu_n0m(n0l.ctypes.data, 24, Su.ctypes.data, MU.ctypes.data, len(S), n0got.ctypes.data)
+        res.append(f"n0m {'ok' if np.array_equal(n0got, N0M) else 'MISMATCH'}")
+        ok &= np.array_equal(n0got, N0M)
         print("  " + "; ".join(res), flush=True)
     print("ALL OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

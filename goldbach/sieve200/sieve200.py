@@ -62,9 +62,15 @@ def load(march=None):
         lib.s200_new.argtypes = [ctypes.c_char_p, ctypes.c_char_p, u32p, ctypes.c_int, ctypes.c_uint32,
                                  ctypes.c_int, u32p, ctypes.c_int]
         lib.s200_free.argtypes = [ctypes.c_void_p]
+        lib.s200_variant.restype = ctypes.c_void_p
+        lib.s200_variant.argtypes = [ctypes.c_void_p, ctypes.c_char_p, u32p, ctypes.c_int]
+        lib.s200_n0m.restype = ctypes.c_int
+        lib.s200_n0m.argtypes = [ctypes.c_char_p, u32p, ctypes.c_uint32, u32p]
         for f in ("s200_nprimes", "s200_nrows", "s200_block_log"):
             getattr(lib, f).restype = ctypes.c_int
             getattr(lib, f).argtypes = [ctypes.c_void_p]
+        lib.s200_primes.restype = None
+        lib.s200_primes.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
         lib.s200_prime.restype = ctypes.c_uint32
         lib.s200_prime.argtypes = [ctypes.c_void_p, ctypes.c_int]
         lib.s200_bits_bytes.restype = ctypes.c_size_t
@@ -113,8 +119,22 @@ class Sieve200:
             self.lib.s200_free(ctx)
             self.ctx = None
 
+    def with_variant(self, N0, U):
+        """Another N0 and another list of rows with the same M, B, K and cover primes, sharing this object's per-prime tables
+        (about a millisecond instead of tens: s200_new redoes every prime).  Keep this object alive while the variant is in use."""
+        U = np.ascontiguousarray(U, dtype=np.uint32)
+        ctx = self.lib.s200_variant(self.ctx, ("%x" % int(N0)).encode(), U.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)), len(U))
+        if not ctx:
+            raise ValueError("s200_variant failed (bad hex, rows not in 1..4095, or q * B >= 2^50)")
+        v = object.__new__(Sieve200)
+        v.lib, v.ctx, v.nU, v.U, v.B, v.logK, v.K, v.words, v.nS = self.lib, ctx, len(U), U, self.B, self.logK, self.K, self.words, self.nS
+        v._parent = self
+        return v
+
     def primes(self):
-        return np.array([self.lib.s200_prime(self.ctx, i) for i in range(self.nS)], dtype=np.int64)
+        out = np.empty(self.nS, dtype=np.uint32)
+        self.lib.s200_primes(self.ctx, out.ctypes.data)
+        return out.astype(np.int64)
 
     def block(self, k0, counts=True, bits=None):
         """Sieve members k0 .. k0 + K - 1.  Returns (counts or None, bits)."""
@@ -213,3 +233,15 @@ class Feeder:
             fb.alive_total, fb.hm_all, fb.hm_kept = int(at.value), ha.value, hk.value
             out.append(fb)
         return out
+
+
+def n0_mod_primes(N0, S, march=None):
+    """N0 mod s for every prime of the array S (uint32 or int64 values below 2^37): numpy uint32 array, about 0.5 ms for 78,409 primes
+    (search.init_spec's Python loop takes 17 ms)."""
+    lib = load(march)
+    S = np.ascontiguousarray(S, dtype=np.uint32)
+    out = np.empty(len(S), dtype=np.uint32)
+    u32p = ctypes.POINTER(ctypes.c_uint32)
+    if lib.s200_n0m(("%x" % int(N0)).encode(), S.ctypes.data_as(u32p), len(S), out.ctypes.data_as(u32p)):
+        raise ValueError("bad number")
+    return out

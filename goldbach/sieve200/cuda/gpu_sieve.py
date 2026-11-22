@@ -32,7 +32,7 @@ def _kernels(klog, llog, nthreads):
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {klog}\n#define LLOG {llog}\n"
                 f"#define NTHREADS {nthreads}\n")
         mod = cp.RawModule(code=head + _SRC)
-        _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_count", "s200g_select", "s200g_rows")}
+        _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_count", "s200g_select", "s200g_rows", "s200g_n0m")}
     return _KCACHE[key]
 
 
@@ -52,7 +52,7 @@ class GpuFeeder:
                           S64=cp.asarray(S), nS=int(S.size))
         self.sh = shared
         self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
-        self.N0M = cp.asarray(np.asarray(N0M, dtype=np.uint32))
+        self.N0M = N0M.astype(cp.uint32) if isinstance(N0M, cp.ndarray) else cp.asarray(np.asarray(N0M, dtype=np.uint32))
         self.nU = int(self.U.size)
         assert self.nU < 4096
         self.k = _kernels(klog, llog, nthreads)
@@ -66,6 +66,15 @@ class GpuFeeder:
     def from_search_G(cls, G, **kw):
         """After search.init_spec: G["S"], G["inv"] (M^-1 mod s), G["n0m"] (N0 mod s), G["U"] (the rows)."""
         return cls(G["S"], G["inv"], G["U"], G["n0m"], **kw)
+
+    def with_N0(self, N0, U):
+        """The feeder of the variant with this N0 (same M): N0 mod s for every prime is computed on the GPU, nothing on the host."""
+        limbs = cp.asarray(np.frombuffer(int(N0).to_bytes(4 * 24, "little"), dtype=np.uint32).copy())      # 24 limbs: N0 < 2^768
+        sh = self.sh
+        n0m = cp.empty(sh["nS"], dtype=cp.uint32)
+        nt = 256
+        self.k["s200g_n0m"](((sh["nS"] + nt - 1) // nt,), (nt,), (limbs, np.int32(24), sh["S"], sh["MU"], np.int32(sh["nS"]), n0m))
+        return GpuFeeder(None, None, U, n0m, klog=self.klog, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads, shared=sh)
 
     def with_variant(self, n0m, U):
         return GpuFeeder(None, None, U, n0m, klog=self.klog, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads, shared=self.sh)

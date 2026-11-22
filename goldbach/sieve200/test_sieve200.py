@@ -153,6 +153,41 @@ def campaign(march, full, rng):
     return ok
 
 
+def variants_and_mods(march, rng):
+    """n0_mod_primes against Python's %, with_variant against a fresh context."""
+    from sieve200 import n0_mod_primes
+    ok = True
+    print("N0 mod s and variants")
+    big = np.array(primes_below(2_000_000)[::7] + [134217689, 134217649, 99999989, 67108859, 16777213], dtype=np.uint32)   # up to 2^27
+    bad = 0
+    for bits in (1, 2, 15, 16, 17, 31, 32, 33, 64, 100, 300, 629, 640, 700, 1000):
+        for _ in range(3):
+            n = rng.getrandbits(bits) | (1 << (bits - 1))
+            got = n0_mod_primes(n, big, march=march)
+            bad += sum(int(g) != n % int(s) for g, s in zip(got, big))
+    n0_mod_primes(0, big[:5], march=march)
+    print(f"  n0_mod_primes: {bad} wrong in {45 * len(big)} residues (N0 of 1..1000 bits, primes up to 2^27)")
+    ok &= bad == 0
+    cover = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+    M = 1
+    for c in cover:
+        M *= c
+    qs1 = [p for p in primes_below(5000) if p > 100][:30]
+    qs2 = [p for p in primes_below(9000) if p > 200][:40]
+    N1, N2 = rng.getrandbits(250) | 1, rng.getrandbits(300) | 1
+    for B in (2000, 70000):
+        sv = Sieve200(N1, M, qs1, B, logK=12, exclude=(), march=march)
+        v = sv.with_variant(N2, qs2)
+        fresh = Sieve200(N2, M, qs2, B, logK=12, exclude=(), march=march)
+        for k0 in (0, 777, 1 << 33):
+            c1, b1 = v.block(k0)
+            c2, b2 = fresh.block(k0)
+            same = np.array_equal(c1, c2) and np.array_equal(b1, b2)
+            ok &= same
+        print(f"  with_variant B={B}: {'identical to a fresh context' if same else 'MISMATCH'}")
+    return ok
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--full", action="store_true")
@@ -161,6 +196,7 @@ def main():
     a = ap.parse_args()
     rng = random.Random(a.seed)
     ok = synthetic(a.march, rng)
+    ok &= variants_and_mods(a.march, rng)
     ok &= campaign(a.march, a.full, rng)
     print("ALL OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

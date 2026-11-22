@@ -33,6 +33,9 @@ class _Fn:
         elif self.name == "s200g_rows":
             bits, nU, member, offs, nsel, rows = args
             L.cpu_rows(P(bits), int(nU), P(member), P(offs), int(nsel), P(rows))
+        elif self.name == "s200g_n0m":
+            limbs, nl, S, MU, nS, out = args
+            L.cpu_n0m(P(limbs), int(nl), P(S), P(MU), int(nS), P(out))
         else:
             raise KeyError(self.name)
 
@@ -101,6 +104,16 @@ def main():
         good &= np.array_equal(w.k[pos:pos + n], fb.k) and np.array_equal(w.rows[w.offs[pos]:w.offs[pos + n]], fb.rows) and int(w.alive_total[b]) == fb.alive_total
         pos += n
     print(f"  with_variant (another N0, same M): {'identical to the CPU feeder' if good else 'DIFFERENT'}")
+    ok &= good
+    gf3 = gf.with_N0(N0b, search.G["U"])                         # N0 mod s computed by the s200g_n0m kernel
+    w3 = gf3.window(8192)
+    pos, good = 0, True
+    for b, fb in enumerate(cf2.window(8192)):
+        n = len(fb.k)
+        good &= np.array_equal(w3.k[pos:pos + n], fb.k) and np.array_equal(w3.rows[w3.offs[pos]:w3.offs[pos + n]], fb.rows) and int(w3.alive_total[b]) == fb.alive_total
+        pos += n
+    good &= np.array_equal(gf3.N0M, n0m_b.astype(np.uint32))
+    print(f"  with_N0 (N0 mod s on the GPU kernel): {'identical to the CPU feeder' if good else 'DIFFERENT'}")
     ok &= good
     print("ALL IDENTICAL" if ok else "FAILED")
     sys.exit(0 if ok else 1)

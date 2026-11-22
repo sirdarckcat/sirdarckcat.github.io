@@ -224,3 +224,21 @@ extern "C" __global__ void s200g_rows(const u32 *bits, int nU, const u32 *member
     for (int r = 0; r < nU; r++)
         if ((bits[(size_t)r * KW + w] >> sh) & 1u) rows[o++] = (u16)r;
 }
+
+/* N0 mod s for every sieve prime, one thread per prime (so that a new variant costs no host time): N0L = nl limbs of 32 bits (little
+   endian), Barrett with the same mu = floor((2^64-1)/s) as the sieve kernel; r * 2^32 + limb < 2^59 for s < 2^27. */
+extern "C" __global__ void s200g_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int nS, u32 *out) {
+    const int p = blockIdx.x * blockDim.x + threadIdx.x;
+    if (p >= nS) return;
+    const u32 s = S[p];
+    const u64 mu = MU[p];
+    u32 r = 0;
+    for (int i = nl - 1; i >= 0; i--) {
+        const u64 x = ((u64)r << 32) | N0L[i];
+        const u64 qe = __umul64hi(x, mu);
+        u64 rr = x - qe * (u64)s;
+        if (rr >= s) rr -= s;
+        r = (u32)rr;
+    }
+    out[p] = r;
+}

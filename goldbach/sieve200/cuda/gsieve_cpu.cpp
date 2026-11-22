@@ -77,3 +77,10 @@ extern "C" void cpu_rows(const u32 *bits, int nU, const u32 *member, const i64 *
     run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows_tramp, &a);
 }
 extern "C" unsigned cpu_kw() { return KW; }
+
+struct n0m_args { const u32 *N0L; int nl; const u32 *S; const u64 *MU; int nS; u32 *out; };
+static void n0m_tramp(void *a) { n0m_args *x = (n0m_args *)a; s200g_n0m(x->N0L, x->nl, x->S, x->MU, x->nS, x->out); }
+extern "C" void cpu_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int nS, u32 *out) {
+    n0m_args a{N0L, nl, S, MU, nS, out};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, n0m_tramp, &a);
+}

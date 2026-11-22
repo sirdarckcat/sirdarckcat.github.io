@@ -54,6 +54,7 @@ typedef struct S200 {
     u32 B; int logK; u64 K, words;
     u32 nS; u32 *S, *Minv, *cS, *nf, *nt; double *rinv; u32 nP1; int logT;   /* nt = floor(T / s); primes below nP1 are tiled */   /* nf = floor(K / s): marks of a row that are certainly inside the window */
     u32 nSmall; unsigned char **pat; u32 *inv8, *step;
+    int shared;                                      /* a variant of another context: the per-prime tables belong to that one */
 } S200;
 
 /* ---------------------------------------------------------------- big numbers (little-endian u64 limbs) */
@@ -74,11 +75,81 @@ static int parse_hex(const char *s, u64 **out, int *nl) {
     *out = a; *nl = n;
     return 0;
 }
-static u32 mod_big(const u64 *a, int nl, u32 s) {
-    u64 r = 0;
-    for (int i = nl - 1; i >= 0; i--) r = (u64)((((u128)r << 64) | a[i]) % s);
-    return (u32)r;
+/* out[i] = X mod S[i] for the number X = sum limbs[j] 2^(16 j) (n limbs of 16 bits), S[i] < 2^37.  Horner in steps of 16 bits: r * 2^16 + limb
+   stays below 2^53, so the quotient comes from a double reciprocal (off by at most one: two conditional corrections); eight primes at a time with
+   AVX-512, one at a time otherwise.  About 0.5 ms for the 78,409 primes below 10^6 and a number of 640 bits, 10 ms with Python ints. */
+static void mods_of_primes(const u16 *limbs, int n, const u32 *S, u32 nS, u32 *out) {
+    u32 p = 0;
+#if defined(__AVX512F__) && defined(__AVX512DQ__)
+    const __m512i zero = _mm512_setzero_si512();
+    for (; p + 64 <= nS; p += 64) {                              /* eight vectors in flight: one step of the Horner scheme has a latency of ~30 cycles */
+        __m512i vs[8], r[8];
+        __m512d vr[8];
+        #pragma GCC unroll 8
+        for (int k = 0; k < 8; k++) {
+            const __m256i s32 = _mm256_loadu_si256((const __m256i *)(S + p + 8 * k));
+            vs[k] = _mm512_cvtepu32_epi64(s32);
+            vr[k] = _mm512_div_pd(_mm512_set1_pd(1.0), _mm512_cvtepu32_pd(s32));
+            r[k] = zero;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            const __m512i limb = _mm512_set1_epi64(limbs[i]);
+            #pragma GCC unroll 8
+            for (int k = 0; k < 8; k++) {
+                const __m512i x = _mm512_or_si512(_mm512_slli_epi64(r[k], 16), limb);
+                const __m512i q = _mm512_cvttpd_epu64(_mm512_mul_pd(_mm512_cvtepu64_pd(x), vr[k]));
+                __m512i t = _mm512_sub_epi64(x, _mm512_mul_epu32(q, vs[k]));
+                t = _mm512_mask_add_epi64(t, _mm512_cmplt_epi64_mask(t, zero), t, vs[k]);
+                r[k] = _mm512_mask_sub_epi64(t, _mm512_cmpge_epu64_mask(t, vs[k]), t, vs[k]);
+            }
+        }
+        #pragma GCC unroll 8
+        for (int k = 0; k < 8; k++) _mm256_storeu_si256((__m256i *)(out + p + 8 * k), _mm512_cvtepi64_epi32(r[k]));
+    }
+#endif
+    for (; p < nS; p++) {
+        const u64 s = S[p];
+        const double rinv = 1.0 / (double)s;
+        u64 r = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            const u64 x = (r << 16) | limbs[i];
+            u64 t = x - (u64)((double)x * rinv) * s;
+            if ((int64_t)t < 0) t += s;
+            if (t >= s) t -= s;
+            r = t;
+        }
+        out[p] = (u32)r;
+    }
 }
+
+/* a * b mod s for a, b < s < 2^26: the quotient from a double reciprocal (a b < 2^52 is exact), off by at most one */
+static inline u32 mulmod32(u32 a, u32 b, u32 s) {
+    const u64 x = (u64)a * b;
+    u64 t = x - (u64)((double)x * (1.0 / (double)s)) * s;
+    if ((int64_t)t < 0) t += s;
+    if (t >= s) t -= s;
+    return (u32)t;
+}
+
+/* 16-bit limbs (little endian) of a number given as 64-bit limbs; returns their count (trailing zero limbs trimmed, at least 1) */
+static int split16(const u64 *a, int nl, u16 *out) {
+    int n = 0;
+    for (int i = 0; i < nl; i++) for (int j = 0; j < 4; j++) out[n++] = (u16)(a[i] >> (16 * j));
+    while (n > 1 && !out[n - 1]) n--;
+    return n;
+}
+
+/* N0 mod s for the primes S[0..nS): N0 as hex.  Returns 0, or -1 on a bad number. */
+int s200_n0m(const char *N0_hex, const u32 *S, u32 nS, u32 *out) {
+    u64 *N0; int nN;
+    if (parse_hex(N0_hex, &N0, &nN)) return -1;
+    u16 *l = malloc(2 * 4 * (size_t)nN);
+    int n = split16(N0, nN, l);
+    mods_of_primes(l, n, S, nS, out);
+    free(l); free(N0);
+    return 0;
+}
+
 static u32 inv_mod(u32 a, u32 s) {              /* a^-1 mod s, s prime, a != 0 */
     int64_t t = 0, nt = 1, r = s, nr = a;
     while (nr) {
@@ -93,6 +164,7 @@ static u32 inv_mod(u32 a, u32 s) {              /* a^-1 mod s, s prime, a != 0 *
 
 void s200_free(S200 *c) {
     if (!c) return;
+    if (c->shared) { free(c->U); free(c->cS); free(c); return; }
     for (u32 p = 0; p < c->nSmall; p++) free(c->pat[p]);
     free(c->pat); free(c->inv8); free(c->step); free(c->U); free(c->S); free(c->Minv); free(c->cS); free(c->nf); free(c->nt); free(c->rinv);
     free(c);
@@ -113,25 +185,36 @@ S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 
     c->B = B; c->logK = logK; c->K = 1ull << logK; c->words = c->K / 64;
     char *comp = calloc((size_t)B + 1, 1);
     for (int i = 0; i < nExcl; i++) if (excl[i] < B) comp[excl[i]] = 2;     /* 2: left out, but still sieves its multiples */
-    u32 cap = 1024; c->S = malloc(4 * cap); c->Minv = malloc(4 * cap); c->cS = malloc(4 * cap); c->nf = malloc(4 * cap); c->rinv = malloc(8 * cap);
+    /* the candidate primes 3 <= s < B (not excluded), then those that do not divide M, with M^-1 and -N0/M mod s */
+    u32 ncand = 0, capc = 1024;
+    u32 *P = malloc(4 * (size_t)capc);
     for (u64 s = 2; s < B; s++) {                              /* the primes 3 <= s < B, as numpy's primerange(3, B) */
         if (comp[s] == 1) continue;
         for (u64 j = s * s; j < B; j += s) comp[j] = 1;
         if (s == 2 || comp[s]) continue;
-        u32 mm = mod_big(M, nM, (u32)s);
-        if (!mm) continue;                                     /* s divides M: removed, as init_spec does */
-        if (c->nS == cap) {
-            cap *= 2;
-            c->S = realloc(c->S, 4 * cap); c->Minv = realloc(c->Minv, 4 * cap); c->cS = realloc(c->cS, 4 * cap);
-            c->nf = realloc(c->nf, 4 * cap); c->rinv = realloc(c->rinv, 8 * cap);
-        }
-        u32 mi = inv_mod(mm, (u32)s), n0 = mod_big(N0, nN, (u32)s);
-        u32 i = c->nS++;
-        c->S[i] = (u32)s; c->Minv[i] = mi;
-        c->cS[i] = (u32)(((u64)(s - n0) % s) * mi % s);       /* -N0/M mod s */
-        c->rinv[i] = 1.0 / (double)s;
-        c->nf[i] = (u32)(c->K / s);                           /* positions j, j+s, .. j+(nf-1)s are below K for j < s; one more may be */
+        if (ncand == capc) { capc *= 2; P = realloc(P, 4 * (size_t)capc); }
+        P[ncand++] = (u32)s;
     }
+    u16 *l16 = malloc(2 * 4 * (size_t)(nM > nN ? nM : nN));
+    u32 *mmod = malloc(4 * (size_t)ncand + 4);
+    int n16 = split16(M, nM, l16);
+    mods_of_primes(l16, n16, P, ncand, mmod);
+    u32 nk = 0;                                                 /* s divides M: removed, as init_spec does */
+    for (u32 i = 0; i < ncand; i++) if (mmod[i]) { P[nk] = P[i]; mmod[nk] = mmod[i]; nk++; }
+    u32 *n0mod = malloc(4 * (size_t)nk + 4);
+    n16 = split16(N0, nN, l16);
+    mods_of_primes(l16, n16, P, nk, n0mod);
+    c->nS = nk;
+    c->S = malloc(4 * ((size_t)nk + CHUNK)); c->Minv = malloc(4 * ((size_t)nk + CHUNK)); c->cS = malloc(4 * ((size_t)nk + CHUNK));
+    c->nf = malloc(4 * ((size_t)nk + CHUNK)); c->rinv = malloc(8 * ((size_t)nk + CHUNK));
+    for (u32 i = 0; i < nk; i++) {
+        const u32 sp = P[i], mi = inv_mod(mmod[i], sp), n0 = n0mod[i];
+        c->S[i] = sp; c->Minv[i] = mi;
+        c->cS[i] = mulmod32(n0 ? sp - n0 : 0, mi, sp);         /* -N0/M mod s */
+        c->rinv[i] = 1.0 / (double)sp;
+        c->nf[i] = (u32)(c->K / sp);                           /* positions j, j+s, .. j+(nf-1)s are below K for j < s; one more may be */
+    }
+    free(P); free(mmod); free(n0mod); free(l16);
     free(comp); free(N0); free(M);
     {                                                           /* pad the per-prime arrays so that 64 primes can be read at a time */
         u32 n = c->nS + CHUNK;
@@ -158,7 +241,34 @@ S200 *s200_new(const char *N0_hex, const char *M_hex, const u32 *U, int nU, u32 
     return c;
 }
 
+/* A variant of the context of the same M (and B, K, cover): another N0 and another list of rows.  It shares the per-prime tables with c
+   (c must outlive it and must not be freed first); only -N0/M mod s per prime and the rows are its own, so it costs about a millisecond
+   instead of the 30 ms of s200_new.  Returns NULL on bad input. */
+S200 *s200_variant(const S200 *c, const char *N0_hex, const u32 *U, int nU) {
+    u64 *N0; int nN;
+    if (parse_hex(N0_hex, &N0, &nN)) return NULL;
+    if (nU < 1 || nU > 4095) { free(N0); return NULL; }
+    for (int i = 0; i < nU; i++) if ((u64)U[i] * c->B >= (1ull << 50)) { free(N0); return NULL; }
+    S200 *v = malloc(sizeof *v);
+    *v = *c;
+    v->shared = 1;
+    v->nU = nU; v->U = malloc(4 * (size_t)nU); memcpy(v->U, U, 4 * (size_t)nU);
+    v->cS = malloc(4 * ((size_t)c->nS + CHUNK));
+    u16 *l16 = malloc(2 * 4 * (size_t)nN);
+    u32 *n0mod = malloc(4 * (size_t)c->nS + 4);
+    int n16 = split16(N0, nN, l16);
+    mods_of_primes(l16, n16, c->S, c->nS, n0mod);
+    for (u32 i = 0; i < c->nS; i++) {
+        const u32 sp = c->S[i];
+        v->cS[i] = mulmod32(n0mod[i] ? sp - n0mod[i] : 0, c->Minv[i], sp);
+    }
+    for (u32 i = c->nS; i < c->nS + CHUNK; i++) v->cS[i] = 0;
+    free(l16); free(n0mod); free(N0);
+    return v;
+}
+
 int s200_nprimes(const S200 *c) { return (int)c->nS; }
+void s200_primes(const S200 *c, u32 *out) { memcpy(out, c->S, 4 * (size_t)c->nS); }
 int s200_nrows(const S200 *c) { return c->nU; }
 int s200_block_log(const S200 *c) { return c->logK; }
 u32 s200_prime(const S200 *c, int i) { return c->S[i]; }
