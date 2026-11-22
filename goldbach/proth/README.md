@@ -77,6 +77,14 @@ single modular exponentiation if present):
 
 (timings for the 11,263-digit record on one core; the 15,595-digit record takes 12 s, 270 s and ~8.5 min).
 
+Past ~10⁵ digits the `bls/` legs spend nearly all their time in one
+Python-int exponentiation. `divmod_pow_run.py xverify|verify_bls_record
+<record> [--ckdir DIR]` runs either verifier unchanged except for that
+`pow`, which it reduces with `divmod` (~4× faster on CPython ≥ 3.12) and
+checkpoints, so a killed run resumes. For the 61,329-digit record each leg
+takes 61 min on one core. `verify_bls_record` needs the record in its own
+format first (`interop.py to-bls record.json out.json`).
+
 `crosscheck.gp` does not use the cover classes: it lets PARI build and
 validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
 scans every prime q < g checking that N − q shares a factor with the
@@ -281,6 +289,8 @@ this is a few-hundred-line development plus a data file generated from
 - `tamper_test.py` — mutation test for `verify.py`
 - `interop.py`, `overlap_check.py` — cross-check against the independent
   pipeline (`../bls/`); the reviews are `../phd/crossreview_*.md`
+- `divmod_pow_run.py` — runs a `../bls/` verifier with a faster,
+  checkpointed pure-Python `pow` (for records past ~10⁵ digits)
 - `probe.py` — exhaustive prime count over sieve survivors vs the model;
   `probe_1200k_result.json` is its result on the 1.2·10⁶ progression
 - `ladder.py` — the cost ladder above, from lazy covers and measured timings

@@ -62,13 +62,20 @@ R record (largest g below its N).
   CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s)
   and the PARI cross-check: PARI's own N−1 certificate, `isprime`, and a
   brute-force gcd scan of all 664,584 complements (2.8 h, `crosscheck.log`,
-  no error lines). The independent `bls/` stack (`xverify.py`,
-  `verify_bls_record.py`, unmodified, on Python ints) was still running here
-  when this was written; its logs go in the record directory.
+  no error lines). The independent `bls/` stack passes as well:
+  `xverify.py` and `verify_bls_record.py`, 61 min each on Python ints
+  (`xverify_divmod.log`, `verify_bls_record_divmod.log`).
+  - Both ran unchanged except for their one big modular exponentiation.
+    `proth/divmod_pow_run.py` supplies it as a square-and-multiply that
+    reduces with `divmod`, ~4× faster than the built-in 3-argument `pow`
+    at this size on CPython ≥ 3.12, and checkpointed.
+  - The first, fully unmodified runs were lost at ~3.4 h, when this
+    session's container was replaced.
 - **Cross-verification.** The second session re-ran all three checks on
   its own machine, with verifier code from a commit older than the record:
   `proth/verify.py` (246 s), the PARI cross-check, and `bls/xverify.py`
-  on Python ints (51 min). All passed (`crossverify_2ce9e63a.log`).
+  on Python ints with the same kind of `divmod` exponentiation (51 min).
+  All passed (`crossverify_2ce9e63a.log`).
 
 This doubles the evening's 5·10⁶ record, which is described next. The cost
 model had put this rung at ~3.4 days on 4 cores. The 16,045,849 rung now

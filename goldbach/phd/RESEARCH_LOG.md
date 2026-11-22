@@ -7,7 +7,7 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | **61,329-digit** N (records/height_61329digit_g10000141) | g = **10,000,141** | **new 2026-11-21 (night)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py and PARI here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
+| Height H (Game 1) | **61,329-digit** N (records/height_61329digit_g10000141) | g = **10,000,141** | **new 2026-11-21 (night)**; GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
 | Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
 
@@ -41,6 +41,9 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
     removed later.
   - The hit was re-proved on the CPU (BLS, 306 s) and passes `verify.py`:
     9,095 cover classes and all 664,584 primes below g.
+  - It also passes the PARI cross-check (2.8 h) and both `bls/`
+    verifiers (61 min each through `proth/divmod_pow_run.py`). The second
+    session re-ran `verify.py`, PARI and `bls/xverify.py`: all pass.
   - g is the first prime above 10⁷ that the cover (built for the odd
     primes below 10⁷) misses; the five primes in between are covered.
 - **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
@@ -91,6 +94,21 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   2.5 h on 8 threads) found 767 kills, all re-verified locally (p prime,
   p | P_t). 636 are new against the 10¹¹ list, which goes 15,215 → 14,579.
   gold-cpu then joins the fleet as slice 5.
+- **Fourth incident (this session's container was replaced).** At ~02:11Z
+  on 11-22 the local container was reclaimed while no harness-tracked task
+  was running: the failure mode logged on 2026-07-22. Files survived;
+  processes did not.
+  - Lost: the two unmodified `bls/` verifier legs for 10⁷, ~3.4 h into
+    a ~4.5 h run, and the local Colab watchers.
+  - Unaffected: Colab. All six runtimes kept searching the 16M rung.
+  - Recovery: the legs were re-run through `proth/divmod_pow_run.py`
+    (divmod reduction, ~4× faster, checkpointed) as harness-tracked
+    tasks, which also keep the container alive. Both passed in 61 min.
+    When nothing is running, a scheduled check-in now resumes the session.
+  - Both legs do the same exponentiation, so they shared one checkpoint
+    file. Neither resumed from it, so each computed it in full. The
+    checkpoint key now includes the verifier's name, and a finished run
+    deletes its checkpoint.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.
