@@ -91,9 +91,25 @@ section but one. The per-unit counts are in `runs/`.
 |---|---|---|---|---|---|---|---|
 | 193 | 154,098 | 1.178·10^12 | 2.32·10^10 | 0 | 0.045 | 8.4% | 26 min (first build, threads partly idle) |
 | 194 | 467,071 | 3.570·10^12 | 5.29·10^10 | 0 | 0.100 | 7.2% | 43 min |
+| 195 | 1,346,301 | 1.029·10^13 | 1.136·10^11 | 0 | 0.209 | 5.5% | 85 min |
 
 Class 194 ran at 1.37·10^9 members per second on the 4 cores, 6.7 cycles a
-member, with 1.5% of the members Fermat-tested.
+member, with 1.5% of the members Fermat-tested; class 195 at 2.0·10^9
+members per second, 4.6 cycles a member, with 1.1% tested (other jobs ran
+beside class 194). Together the three classes had 0.35 expected successes
+and found none (probability 0.70).
+
+Class 197 was run with this scanner by another session of the project on
+six machines (`slice=0/6` … `5/6`), and it found two numbers, both checked
+here from N alone with `check.py`:
+
+| N | digits | g(N) | k | N0 | build | closeness |
+|---|---|---|---|---|---|---|
+| 83668534093338795647672 | 23 | 10,159 | 6,395,326 | 10397114829367892 | AVX2, EPYC 7B12 | 63.3% |
+| 78209882584085138254532 | 23 | 10,399 | 5,978,086 | 10225887175291952 | AVX-512 IFMA | 65.0% |
+
+The record before them was N = 5471513744131872011405456 (25 digits,
+g = 10,357), found with `tscan`.
 
 ## Without AVX-512
 
@@ -114,9 +130,9 @@ tests).
 primes ≤ L and ε = 1/(ln N · ∏_{r ≤ L}(1 − 1/r)) the chance that such a row
 is prime. This treats the rows as independent, and they are not quite: a
 prime s > L divides two rows only when it divides the difference of their
-primes, and the residual primes of a cover vector all lie in one class mod 3
-and in few classes mod 5, 7, …, so their differences are multiples of 6 and
-rarely have a prime factor above 383. The rows therefore die more
+primes, and the residual primes of a cover vector (3 itself aside) all lie in
+one class mod 3 and in few classes mod 5, 7, …, so their differences are
+multiples of 6 and rarely have a prime factor above 383. The rows therefore die more
 "one at a time" than independent ones would, the number left after a deeper
 sieve is less spread out (measured variance 30.4 against 31.4 for
 independent thinning, exactly what the pair count predicts), and a member
