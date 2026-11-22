@@ -5,11 +5,22 @@
 g(N) is the least prime p with N - p prime.  Three yardsticks, all functions
 of L = ln N only:
 
-  ceiling(N) = C * L^2 * ln L, C = 1.4
-      the largest g any number of that size is expected to have (the
-      Granville / van de Lune - te Riele law; C is fitted to the exhaustive
-      data, g <= 9,781 for all even N <= 4*10^18 -- see
-      SOK_GOLDBACH_GAPS.md section 6).  CONJECTURAL: nothing like it is proved.
+  ceiling(N) = the largest g expected below N
+      Nothing is proved about it, so this is a prediction: the median of the
+      largest g among the even numbers below N in the Hardy-Littlewood model
+      of ceiling_model.py, which has no fitted constant.  The model is
+      tabulated in ceiling_table.json from 19 digits up and interpolated
+      here.  Past the end of the table the formula below is used, which
+      reproduces the table to about 1%: the ceiling is the prime number with
+      index
+          (L / 1.3203) * (L - ln 2 - A * ln L - B),
+      1.3203 being twice the twin prime constant and A, B fitted to the table.
+      Below the table (N < 3.3e18) the value is the table's first point scaled
+      by L^2 ln L.  Checks of the model: ceiling_model.py and RESULTS.md.
+      (Until 2026-11-22 this was 1.4 * L^2 * ln L, with the 1.4 fitted to the
+      exhaustive search.  The model gives 1.40 at 19 digits as well, but the
+      ratio grows with size, so that formula was 5% low at 25 digits and
+      10% low at 40.)
   typical(N) = the 0.5665*L-th prime
       the mean g of a random even number of that size (Hardy-Littlewood:
       the count of primes p <= y with N - p prime is about S(N)*pi(y)/L;
@@ -38,12 +49,13 @@ import sys
 if hasattr(sys, "set_int_max_str_digits"):
     sys.set_int_max_str_digits(0)
 
-C = 1.4
+TWIN2 = 1.3203236316                 # twice the twin prime constant
 MEAN_INV_SINGULAR = 0.5665
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # Not ours: the largest g found by exhaustive search (Oliveira e Silva,
-# Herzog & Pardi, Math. Comp. 2014).  C is fitted to it, so it scores ~100%.
+# Herzog & Pardi, Math. Comp. 2014).  The model's median for the largest g
+# below this N is about 9,570, so it scores ~100%.
 REFERENCE = [("exhaustive search <= 4e18 (not ours)", 3325581707333960528, 9781)]
 
 
@@ -52,8 +64,43 @@ def ln_int(n):
     return math.log(float(s[:17])) + (len(s) - min(len(s), 17)) * math.log(10)
 
 
+def nth_prime(n):
+    """The n-th prime from the first terms of its asymptotic expansion: 0.4% low at n = 6,000,
+    0.1% at n = 100,000.  It is only used past the end of the table, where n is larger still."""
+    ln, lln = math.log(n), math.log(math.log(n))
+    return n * (ln + lln - 1 + (lln - 2) / ln - (lln * lln - 6 * lln + 11) / (2 * ln * ln))
+
+
+def _load_table():
+    """[(L, median ceiling)] from ceiling_table.json, and the least-squares fit of
+    L - ln 2 - 1.3203 * (odd primes below the ceiling) / L  =  A * ln L + B."""
+    rows = sorted(json.load(open(os.path.join(HERE, "ceiling_table.json"))).values(), key=lambda v: v["L"])
+    pts = [(math.log(v["L"]), v["L"] - math.log(2) - TWIN2 * v["pi"] / v["L"]) for v in rows]
+    n, sx, sy = len(pts), sum(x for x, _ in pts), sum(y for _, y in pts)
+    sxx, sxy = sum(x * x for x, _ in pts), sum(x * y for x, y in pts)
+    A = (n * sxy - sx * sy) / (n * sxx - sx * sx)
+    return [(v["L"], v["median"]) for v in rows], A, (sy - A * sx) / n
+
+
+TABLE, FIT_A, FIT_B = _load_table()
+
+
+def _formula(L):
+    return nth_prime(L / TWIN2 * (L - math.log(2) - FIT_A * math.log(L) - FIT_B))
+
+
 def ceiling(L):
-    return C * L * L * math.log(L)
+    """Median of the largest g among the even numbers below e^L (see the docstring)."""
+    L0, c0 = TABLE[0]
+    L1, c1 = TABLE[-1]
+    if L < L0:
+        return c0 * (L * L * math.log(L)) / (L0 * L0 * math.log(L0))
+    if L >= L1:
+        return _formula(L) * c1 / _formula(L1)       # continuous at the end of the table
+    for (La, ca), (Lb, cb) in zip(TABLE, TABLE[1:]):
+        if L <= Lb:
+            f = (math.log(L) - math.log(La)) / (math.log(Lb) - math.log(La))
+            return math.exp(math.log(ca) + f * (math.log(cb) - math.log(ca)))
 
 
 def typical(L):
@@ -61,7 +108,7 @@ def typical(L):
     if n < 6:
         return float("nan")
     ln, lln = math.log(n), math.log(math.log(n))
-    return n * (ln + lln - 1 + (lln - 2) / ln)      # n-th prime, to ~1%
+    return n * (ln + lln - 1 + (lln - 2) / ln)      # rough n-th prime: a yardstick, not a measurement
 
 
 def ideal_digits(g):

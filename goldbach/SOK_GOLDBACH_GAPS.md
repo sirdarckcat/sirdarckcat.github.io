@@ -182,6 +182,13 @@ ever been overturned.
 
 ## 6. THE WALL — predicted limits, per game
 
+(Update 2026-11-22: the constant no longer has to be fitted.
+`ceiling_model.py` computes g_max(X) from the Hardy–Littlewood heuristic
+alone; it gives the same 1.40 at 19 digits, but the ratio to ln²X·ln ln X
+grows with size, to 1.47 at 25 digits and 1.58 at 63. Where this section
+uses C ≈ 1.4 above 19 digits its "truth" figures are therefore somewhat too
+small in g, or too large in digits. See the first section of RESULTS.md.)
+
 Calibration used throughout: the exhaustive record (g ≤ 9,781 for all
 even N ≤ 4×10¹⁸) fixes the constant in the GLvdtR law at C ≈ 1.4
 (g_max(X) ≈ C·ln²X·ln ln X); the measured cost identity for our

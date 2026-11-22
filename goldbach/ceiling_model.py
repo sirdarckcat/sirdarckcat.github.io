@@ -166,7 +166,8 @@ def cmd_table(digits, particles):
         for d in digits:
             (med, lo, hi), pts = ceiling(10.0 ** d, particles=particles, pool=pool)
             L = d * math.log(10)
-            res[repr(d)] = {"L": L, "median": med, "p05": lo, "p95": hi, "points": pts, "particles": particles}
+            res[repr(d)] = {"L": L, "median": med, "p05": lo, "p95": hi, "pi": int(np.searchsorted(_P, med)) - 1,
+                            "points": pts, "particles": particles}     # pi: odd primes below the median
             print(f"10^{d}: largest g below it: median {med:,.0f}, 5%..95% {lo:,.0f}..{hi:,.0f}; "
                   f"median / (ln^2 N ln ln N) = {med / (L * L * math.log(L)):.4f}", flush=True)
             json.dump(dict(sorted(res.items(), key=lambda kv: float(kv[0]))), open(out, "w"), indent=1)

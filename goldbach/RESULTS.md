@@ -1,5 +1,85 @@
 # Goldbach Desert Records
 
+## The 100% line, computed instead of fitted (2026-11-22)
+
+Closeness divides g by the largest g a number of that size is expected to
+have. That line used to be 1.4·ln²N·ln ln N, with the 1.4 fitted to one
+number, the largest g of the exhaustive search. It is now computed from the
+Hardy–Littlewood prime tuple heuristic with no fitted constant
+(`ceiling_model.py`; its docstring states the model). Nothing about the size
+of g(N) is proved, so the line is still a prediction. These are the checks
+it passes.
+
+- **Random numbers.** `gsample.c` computed g for 600 million random even N
+  in [10^18, 1.1·10^18) (`samples/random_1e18.txt`). The model's chance of
+  g(N) ≥ y agrees with the measured share within 0.5% from y = 11 (86% of
+  the numbers) to y = 1,801 (one in 43,000), within 2% to y = 2,203 (one in
+  240,000), and within the counting error beyond that: 75 numbers have
+  g ≥ 3,001 where the model expects 69. The same test on 300 million random
+  14-digit numbers (`samples/random_1e13.txt`) agrees within 1.3% down to
+  one in 43,000 (y = 1,201) and within the counting error beyond.
+- **Real numbers far in the tail.** For one progression of the 25-digit
+  search (residues fixed on 13 primes, 189 complements left) two unrelated
+  computations give the chance that a member has g > 10,000: the scanner's
+  sieve statistics over 16.7 million consecutive members, and the model's
+  average over the residues. Both give e^−25.40, within the 0.6% counting
+  error of the first.
+- **Successes of the scanner.** `tscan` predicts its successes with the same
+  model, with the sieve done by brute force. Over its test instances and
+  the four record searches it predicted 138 and found 145.
+- **Record holders.** `record_holders.txt` has the 69 record holders below
+  4·10^18: each is the first N whose g reaches its value. For the last one,
+  g = 9,781 at 3.3·10^18, the model's median for the largest g below that N
+  is 9,570 (5% to 95%: 9,190 to 10,240). For each record holder the model
+  also gives the expected number of earlier numbers with a g at least as
+  large; with an exact model these behave like a standard exponential
+  variable (median 0.69). Over the 35 record holders above 10^9 the median
+  is 0.29: the real ones come somewhat early, by about two standard errors.
+  If that is a real effect the line is about 1.5% too low. No correction is
+  applied.
+- **The sampler** that evaluates the model agrees with full enumeration of
+  the residue vectors on small cases to four digits.
+
+| digits of N | largest g expected below N (median) | 5% to 95% | ÷ ln²N·ln ln N | earlier fitted line |
+|---|---|---|---|---|
+| 19 (3.3·10^18) | 9,570 | 9,190 to 10,240 | 1.40 | 9,560 |
+| 20 | 11,560 | 11,120 to 12,350 | 1.42 | 11,370 |
+| 22 | 14,560 | 14,070 to 15,450 | 1.45 | 14,100 |
+| 25 | 19,740 | 19,120 to 20,830 | 1.47 | 18,800 |
+| 28 | 25,770 | 25,090 to 26,970 | 1.49 | 24,240 |
+| 32 | 35,240 | 34,430 to 36,690 | 1.51 | 32,680 |
+| 40 | 59,000 | 57,930 to 60,880 | 1.54 | 53,720 |
+| 50 | 98,250 | 96,860 to 100,720 | 1.56 | 88,070 |
+| 63 | 165,920 | 164,030 to 169,300 | 1.58 | 146,630 |
+
+The ratio to ln²N·ln ln N is 1.40 at 19 digits, where the old constant was
+fitted, and it grows with size. The earlier line was therefore too low
+everywhere above 19 digits, by 5% at 25 digits and 10% at 40, and every
+closeness figure drops (`closeness.py` now interpolates this table):
+
+| record | g | closeness, fitted line | closeness, model line |
+|---|---|---|---|
+| 25 digits | 10,357 | 56.4% | 53.8% |
+| 27 digits | 10,111 | 47.3% | 44.7% |
+| 30 digits | 10,459 | 39.0% | 36.5% |
+| 46 digits | 20,551 | 28.2% | 25.5% |
+| 63 digits | 30,139 | 20.7% | 18.3% |
+| 150 digits | 104,527 | 10.7% | 9.2% (line extrapolated) |
+
+The closeness figures in the sections below were written with the fitted
+line; the table in the Closeness section near the end has the model values
+for every record.
+
+Two more numbers from the model. The smallest N with g > 10,000 is expected
+near 7·10^18, just above the exhaustive range; our 25-digit N is about a
+million times larger. And about 9·10^9 even numbers below that 25-digit N
+should have a g of at least its 10,357 (for the 27-digit record: 9·10^12).
+
+Past the table (above 63 digits) `closeness.py` uses a formula that
+reproduces the table to about 1%: the ceiling is the prime number with index
+(L ÷ 1.3203)·(L − ln 2 − 0.80·ln L − 2.38), where L = ln N and
+1.3203 is twice the twin prime constant.
+
 ## The threshold game at 30,000 (2026-11-22): g(N) > 30,000 at 63 digits
 
 **g(N) = 30,139** for
@@ -752,29 +832,31 @@ predicted density e^−18.2. The measured density model (calibrated at
 | T(100 000) upper bound | 5.83·10^198 (199 digits) | **6.94·10^196 (197 digits)** |
 | R(10^199) lower bound | 105 667 | **107 719** |
 
-## Closeness: every record scored against the size of its N (2026-11-21)
+## Closeness: every record scored against the size of its N (2026-11-21, line recomputed 2026-11-22)
 
 The height game has no ceiling, so its records measure compute, not how
 remarkable the number is. `closeness.py` scores each record by
-g(N) ÷ ceiling(N), where ceiling(N) = 1.4·ln²N·ln ln N is the largest g a
-number of that size is expected to have (conjectural; the constant is
-fitted to the exhaustive data up to 4·10^18, SOK §6). The literal bound
-g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
+g(N) ÷ ceiling(N), where ceiling(N) is the largest g a number of that size
+is expected to have: the median of the largest g below N in the
+Hardy–Littlewood model of `ceiling_model.py` (a prediction, checked as
+described in the first section of this file; tabulated up to 63 digits
+and continued by a formula beyond). The literal bound g ≤ N/2 is attained
+only at N = 4 and 6 and is useless elsewhere.
 
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
-| exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | ~100% (it fixes the constant) | 132 | 19 |
-| `threshold_25digit_g10357` | 10,357 | 25 | ~18,400 | 56.4% | 92 | 19 |
-| `threshold_27digit_g10111` | 10,111 | 27 | ~21,400 | 47.3% | 81 | 19 |
-| `threshold_30digit_g10459` | 10,459 | 30 | ~26,800 | 39.0% | 73 | 19 |
-| `threshold_46digit_g20551` | 20,551 | 46 | ~72,800 | 28.2% | 79 | 26 |
-| `threshold_63digit_g30139` | 30,139 | 63 | ~145,000 | 20.7% | 77 | 31 |
-| `threshold_150digit_g104527` | 104,527 | 150 | ~975,000 | 10.7% | 91 | 54 |
-| `budget_1e200_200digit_g112249` | 112,249 | 200 | ~1.8M | 6.2% | 70 | 56 |
-| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~4.7·10^8 | 0.24% | 35 | 161 |
-| `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~1.9·10^10 | 0.011% | 8.7 | 209 |
-| `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~9.6·10^10 | 0.005% | 9.3 | 319 |
-| `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.3·10^11 | 0.003% | 9.8 | 441 |
+| exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
+| `threshold_27digit_g10111` | 10,111 | 27 | ~22,600 | 44.7% | 81 | 19 |
+| `threshold_30digit_g10459` | 10,459 | 30 | ~28,600 | 36.5% | 73 | 19 |
+| `threshold_46digit_g20551` | 20,551 | 46 | ~80,700 | 25.5% | 79 | 25 |
+| `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
+| `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
+| `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
+| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.6·10^8 | 0.20% | 35 | 150 |
+| `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |
+| `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~1.1·10^11 | 0.0044% | 9.3 | 296 |
+| `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.9·10^11 | 0.0026% | 9.8 | 408 |
 
 Two readings. (1) A random even number with as many digits as the 5M
 record already has g near 540,000 (Hardy–Littlewood mean; measured on
@@ -807,3 +889,10 @@ k) and re-derives all witnesses; nothing depends on the discovery path.
 - `verify_record.py` — per-offset compositeness evidence generator
 - `package_record.py` — record dir: evidence + PARI ECPP certificate
 - `records/` — the record integers and their proofs
+- `tscan/` — the C scanner for the small-N threshold game, with its drivers
+- `closeness.py` — every record scored against the largest g expected at
+  its size
+- `ceiling_model.py` — that largest expected g, from the Hardy–Littlewood
+  heuristic with no fitted constant; `ceiling_table.json` is its output
+- `gsample.c` — g(N) for random N of a given size; `samples/` has two runs
+- `record_holders.txt` — the 69 record holders of g below 4·10^18
