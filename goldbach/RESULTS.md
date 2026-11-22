@@ -79,6 +79,20 @@ near 7·10^18, just above the exhaustive range; our 25-digit N is about a
 million times larger. And about 9·10^9 even numbers below that 25-digit N
 should have a g of at least its 10,357 (for the 27-digit record: 9·10^12).
 
+What is published (literature check by a third session, 2026-11-22; it
+could not open the 2014 paper itself, so the second item is second-hand).
+Granville, van de Lune and te Riele (1989, p. 432) conjecture only the
+order, g(N) ≪ ln²N·ln ln N, with no constant. Two candidate constants for
+the limit of max g ÷ (ln²N·ln ln N) are attributed to Granville in later
+papers (Juhász et al. 2023, citing Oliveira e Silva, Herzog and Pardi 2014):
+1/C₂ = 1.515 and 2e^−γ/C₂ = 1.701, C₂ being the twin prime constant, with
+the data called inconclusive. We found no published calculation of the
+expected record at a given size. The model here has 1/C₂ as its limit, but
+from above and extremely slowly: its ratio is 1.40 at 19 digits, passes
+1.515 near 35 digits, and is still rising at 200 (1.64). So a ratio above
+1.515 at reachable sizes says nothing against that limit, and the two
+candidates cannot be told apart by any feasible search.
+
 Past the table (above 200 digits) `closeness.py` uses a formula that
 reproduces the table within 1.5%, and within 0.3% from 50 digits up: the
 ceiling is the prime number with index
