@@ -30,6 +30,10 @@ import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
+import GoldbachGaps.Gpu28.Conv
+import GoldbachGaps.Gpu28.Step
+import GoldbachGaps.Gpu28.Final
+import GoldbachGaps.Gpu28.Kernel
 
 /-!
 # Least Goldbach summands in Lean
@@ -95,6 +99,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the word and bit loop, and `fermat2_correct`: the flag is `1` iff
                `2^(n-1) ≡ 1 (mod n)`, for `n = cq + k·M` odd, `> 1`, below `2^(32 L)`,
                `k < 2^32`).
+* `Gpu28.*`  – the GPU Fermat kernel `fermat28` of `goldbach/fermat661/cuda/` (commit
+               `560a2cf`, branch `ccr-b8c25887-i6tn9f`): 24 limbs of 28 bits, Montgomery
+               squaring by columns with lazy 64-bit accumulators, values kept below `4n`, no
+               `R mod n`. `Conv` (the column sums of a square), `Step` (`fm28_step`: exact
+               accumulators, `R · Y = 2^b (X² + μ N)`, `Y < 4N`), `Final` (the comparison
+               loop, the borrow chain, the two conditional subtractions and the test against
+               1), `Kernel` (the Newton inverse with seed `(3·lo) xor 2`, the loop, and
+               `fermat28_correct`: the lane reports `1` iff `2^(n-1) ≡ 1 (mod n)`, for odd
+               `n` of 642 to 668 bits). The set-up that derives the limbs, `c` and the bits
+               of the schedule from `n` is a hypothesis; `scripts/gpu28_check` compares the
+               model with the kernel source compiled for the CPU, set-up included.
 
 ## Building
 
