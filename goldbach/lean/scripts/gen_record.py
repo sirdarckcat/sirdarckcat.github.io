@@ -150,7 +150,13 @@ def main():
         assert m % s == 0
         q = m // s
         args = (Ni, a % Ni, x % Ni, y % Ni, s, q)
-        assert step_check(*args), "step rejected by the affine reference checker"
+        if not step_check(*args):
+            # `stepCheck` uses the trivial bound #E <= 2N + 1 and therefore needs
+            # 4N < (q - 1)^2, while the last steps of a PARI certificate may only satisfy the
+            # weaker condition that goes with Hasse's bound. Such a step is skipped when N_i
+            # is small enough for Mathlib's `primality`: the chain ends at N_i.
+            assert Ni < 10 ** 30, "step rejected by the affine reference checker"
+            break
         steps.append(args)
         expect = q
     final_q = expect

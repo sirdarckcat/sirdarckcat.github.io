@@ -34,12 +34,21 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
 
 ## Other targets, same 88 moduli (one run of 4,000 sweeps each)
 
-| Q | best rows left | `E` below `10^200` (`-k ln(1-p)`, `p` = 0.02390) | `E - ln(members per vector)` |
-|---|---|---|---|
-| 122,000 | 850 | 20.57 | -1.85 |
-| 135,000 | 967 | 23.40 | +0.98 |
-| 150,000 | 1,098 | 26.57 | +4.15 |
+`E` is `-k ln(1 - p)` with `p = 0.02390` (cap `10^200`); `ln(members per vector)` is 22.42
+below `10^200`, 22.18 with `k < 2^32`.
 
-`ln(members per vector)` is 22.42 below `10^200` (21.2 with `k < 2^32`). With the three primes
-443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows (`E` = 20.24), but a
-vector then has only about 60 members: no gain in practice.
+| Q | best rows left | `E` | file with 128 vectors |
+|---|---|---|---|
+| 122,000 | 850 | 20.57 | `specs_q122000_top64.json` (64 vectors: 850, 851) |
+| 130,000 | 923 | 22.33 | `specs_q130000_top128.json` (923, 924) |
+| 135,000 | 967 | 23.40 | `specs_q135000_top128.json` (967, 968) |
+| 140,000 | 1,011 | 24.46 | `specs_q140000_top128.json` (1011 to 1013) |
+| 150,000 | 1,098 | 26.57 | `specs_q150000_top128.json` (1098, 1099) |
+
+So `E` grows by 0.216 nats per 1,000 in `Q` with re-optimised covers. Beyond the `Q` a cover
+was built for, a further prime is left with probability 0.12 (the random-class rate) and
+costs `p` each, which is 0.245 nats per 1,000: surviving past the design value by luck is
+nearly as cheap as designing for it.
+
+With the three primes 443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows
+(`E` = 20.24), but a vector then has only about 60 members: no gain in practice.
