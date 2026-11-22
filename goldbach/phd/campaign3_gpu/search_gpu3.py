@@ -26,7 +26,8 @@ slice. A slice's seconds are its batch's time divided by the number of slices in
 Campaign mode reads DIR/my_specs.json and skips the slices already in DIR/search.log (2^20 k each,
 k-major order, from --klo up to --kmax, or downwards with --desc: E falls as N grows, so the slices
 just below the 199-digit ceiling give the most hits per k). It appends a line per slice to DIR/search.log once its batch is done, and statistics
-to DIR/gpu3_stats.log. It stops on a hit (exit 3, DIR/found.jsonl not empty; with --no-stop it goes on)
+to DIR/gpu3_stats.log (with the batch's expected hits, the sum of (1 - p^)^count over the members it
+tested, p^ its measured PRP rate). It stops on a hit (exit 3, DIR/found.jsonl not empty; with --no-stop it goes on)
 or when every variant reaches --kmax (exit 2).
 """
 import argparse, json, math, os, re, sys, time
@@ -181,7 +182,7 @@ def run_batch(batch, out):
     st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], kmax=0) for _ in batch]
     pool = []                                                    # (sid, kv, cnt, cols) chunks
     npool = [0]
-    gt = [0, 0]
+    gt = [0, 0, 0.0]                                             # tests computed, launches, expected hits
 
     def flush():
         if not pool:
@@ -193,6 +194,9 @@ def run_batch(batch, out):
         pool.clear(); npool[0] = 0
         tests_m, prp_m, succ_m, g, nl = run_pool(tester, kv, cnt, cols)
         gt[0] += g; gt[1] += nl
+        tt, pp = int(tests_m.sum()), int(prp_m.sum())
+        if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count
+            gt[2] += float(((1.0 - pp / tt) ** cnt.astype(cp.float64)).sum())
         for si in range(len(batch)):
             m = sid == si
             st[si]["tests"] += int(tests_m[m].sum())
@@ -251,7 +255,7 @@ def run_batch(batch, out):
     tests = sum(s["tests"] for s in st)
     stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch {batch[0]['name']}..{batch[-1]['name']} "
              f"({len(batch)} slices) {dt*len(batch):.1f}s: tests {tests} counted, {gt[0]} computed "
-             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches")
+             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4f}, found {len(found)}")
     return lines, found, stats
 
 
