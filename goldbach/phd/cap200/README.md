@@ -32,7 +32,7 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
   modulus; the next prime outside the cover is worth 0.12 nats for 6.1.
 - Pair term for the 867 rows of the campaign cover: -0.013 nats.
 
-## Other targets, same 88 moduli (one run of 4,000 sweeps each)
+## Other targets, same 88 moduli (runs of 4,000 sweeps)
 
 `E` is `-k ln(1 - p)` with `p = 0.02390` (cap `10^200`); `ln(members per vector)` is 22.42
 below `10^200`, 22.18 with `k < 2^32`.
@@ -42,10 +42,13 @@ below `10^200`, 22.18 with `k < 2^32`.
 | 122,000 | 850 | 20.57 | `specs_q122000_top64.json` (64 vectors: 850, 851) |
 | 130,000 | 923 | 22.33 | `specs_q130000_top128.json` (923, 924) |
 | 135,000 | 967 | 23.40 | `specs_q135000_top128.json` (967, 968) |
-| 140,000 | 1,011 | 24.46 | `specs_q140000_top128.json` (1011 to 1013) |
+| 140,000 | 1,007 | 24.36 | `specs_q140000_top128.json` (1007, 1008; second run, the first gave 1011) |
+| 145,000 | 1,051 | 25.43 | `specs_q145000_top128.json` (1051, 1052) |
 | 150,000 | 1,098 | 26.57 | `specs_q150000_top128.json` (1098, 1099) |
 
-So `E` grows by 0.216 nats per 1,000 in `Q` with re-optimised covers. Beyond the `Q` a cover
+So `E` grows by about 0.21 nats per 1,000 in `Q` with re-optimised covers. The research
+session's sampler (`goldbach/fscan/cover/` on `ccr-d4a17dd0-7uu03r`) reports 851, 921, 1,011,
+1,050 and 1,093 for 122,000, 130,000, 140,000, 145,000 and 150,000: the two agree to a few rows. Beyond the `Q` a cover
 was built for, a further prime is left with probability 0.12 (the random-class rate) and
 costs `p` each, which is 0.245 nats per 1,000: surviving past the design value by luck is
 nearly as cheap as designing for it.
