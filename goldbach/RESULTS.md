@@ -1,5 +1,40 @@
 # Goldbach Desert Records
 
+## The 200-digit budget game (2026-11-22, 20:31 UTC): g(N) = 125,269 below 10^199
+
+**g(N) = 125,269** for a 199-digit even N < 10^199
+(`records/budget_1e199_199digit_g125269/`). It is the largest g known
+below 10^199 and below 10^200. The previous largest was 119,419
+(`records/budget_1e200_199digit_g119419/`), whose N is smaller, so that one
+stays on the frontier too.
+
+- **Closeness.** 5.94% of the largest g expected at 199 digits (119,419:
+  5.70%), 78× a typical number of that size.
+- **How.** campaign3's cover: Q = 122,000, 88 classes, M of 191 digits.
+  Residue-swap variant `r200b_q122k_v367`, with 874 residual primes, at member
+  k = 533,337,309. Above Q the classes go on killing most N − p, so g came out
+  3,269 above Q (the first prime past Q is 122,011).
+- **The engine.** `phd/campaign3_gpu/search_gpu3.py` on a Colab RTX PRO 6000
+  Blackwell (G4), about 10 minutes into its run:
+  - It tests the emptiest 3% of each block (skip-frac 0.97, 14.2% of the hit
+    mass), with the survivors of 32 slices pooled into one GPU tester.
+  - It scans the top half of k first, where N is largest and E lowest.
+  - Before the hit it covered 5.39·10^9 members, where the model expected
+    0.5 hits.
+  - The pooling replaced `search_gpu2.py`, where 41% of the GPU's Fermat tests
+    fell after a member's first PRP (93% at skip-frac 0.97). On this GPU it
+    gives 1.32M members/s of full hit mass, against 63k for `search_gpu2.py`
+    on the L4.
+- **Checked** five ways (`phd/campaign3_gpu/certify_c3.sh`):
+  - a witness for each of the 11,757 primes below g;
+  - PARI `primecert` of N − g, valid;
+  - the certificate re-verified without PARI (`ecpp_check.py`);
+  - slop's stdlib-only `verify_record.py`, which rebuilds N from the classes
+    and checks g > 119,419 and ≤ 199 digits;
+  - direct gmpy2 and PARI checks from N and g alone (`isprime(N − g)` = 1).
+- **Lean.** The found line went to the Lean session (via session 2ce9e63a)
+  for a kernel-checked proof.
+
 ## Smallest N above the exhaustive range (2026-11-22, 19:20 UTC): g(N) = 10,729 at 3.1·10^22
 
 **g(N) = 10,729** for N = 30625623272505310405982 (23 digits,
@@ -1047,6 +1082,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e199_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
 | `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
 | `height_2480digit_g1157341` | 1,157,341 | 2,480 | ~4.7·10^8 | 0.25% | 39 | 151 |
