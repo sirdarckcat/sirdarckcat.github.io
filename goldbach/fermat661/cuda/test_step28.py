@@ -20,6 +20,8 @@ def val(l):
     return sum(int(v) << (28 * i) for i, v in enumerate(l))
 
 
+RED = os.environ.get("FM28_STEP", "").endswith("r.cuh")
+OUTBITS = 29 if RED else 28                        # the redundant steps leave limbs below 2^29
 rng = random.Random(11)
 R = 1 << 672
 bad = total = 0
@@ -32,7 +34,7 @@ def one(n, X, b):
     xi, nl = limbs(X), limbs(n)
     lib.step_test(xi.ctypes.data, nl.ctypes.data, np_, b, xo.ctypes.data)
     Y = val(xo)
-    good = Y < 4 * n and all(int(v) >> 28 == 0 for v in xo) and (Y - ((1 << b) * X * X * pow(R, -1, n))) % n == 0
+    good = Y < 4 * n and all(int(v) >> OUTBITS == 0 for v in xo) and (Y - ((1 << b) * X * X * pow(R, -1, n))) % n == 0
     total += 1
     bad += not good
     worst = max(worst, Y / n)
@@ -55,5 +57,49 @@ for n in ((1 << 668) - 1, (1 << 668) - 3, (1 << 667) | 1, (1 << 642) | 1, (1 << 
     for X in (4 * n - 1, 4 * n - 2, 2 * n, n, 1, 0, (1 << 24 * 28) - 1 if (1 << 24 * 28) - 1 < 4 * n else 4 * n - 1):
         for b in (0, 1):
             one(n, X, b)
+# the redundant-limb steps (fermat28_step_*r.cuh): inputs with limbs below 2^29 (the same value, some of the carries left in the limbs), outputs likewise
+if os.environ.get("FM28_STEP", "").endswith("r.cuh"):
+    def redundant(X, mode):
+        l = [int(v) for v in limbs(X)]
+        if mode == 0:                                        # a random carry moved down into the limb below
+            for i in range(22, -1, -1):
+                if l[i + 1] >= 1 and rng.random() < 0.7:
+                    l[i] += 1 << 28; l[i + 1] -= 1
+        elif mode == 1:                                      # as many limbs as possible near 2^29 - 1
+            for i in range(0, 23):
+                if l[i + 1] >= 1:
+                    l[i] += 1 << 28; l[i + 1] -= 1
+        return l
+    def one_r(n, l, b):
+        global bad, total, worst
+        X = sum(v << (28 * i) for i, v in enumerate(l))
+        np_ = lib.inv_test(n & 0xFFFFFFFF)
+        xo = np.zeros(24, dtype=np.uint32)
+        xi, nl = np.array(l, dtype=np.uint32), limbs(n)
+        lib.step_test(xi.ctypes.data, nl.ctypes.data, np_, b, xo.ctypes.data)
+        Y = val(xo)
+        good = Y < 4 * n and all(int(v) >> 29 == 0 for v in xo) and (Y - ((1 << b) * X * X * pow(R, -1, n))) % n == 0
+        total += 1; bad += not good; worst = max(worst, Y / n)
+        if not good and bad < 4:
+            print("FAIL redundant: bits", n.bit_length(), "b", b, "Y/n", Y / n, "max limb", max(l) >> 28)
+    for trial in range(6000):
+        bits = rng.choice([642, 650, 660, 664, 665, 667, 668, 668])
+        n = rng.getrandbits(bits) | (1 << (bits - 1)) | 1
+        kind = trial % 4
+        X = rng.randrange(0, 4 * n) if kind == 0 else (4 * n - 1 - rng.randrange(0, 1000) if kind == 1 else rng.randrange(n, 4 * n) if kind == 2 else rng.randrange(0, 1 << 600))
+        one_r(n, redundant(X, trial % 2), rng.randrange(2))
+    # the extremes of C3': limbs 0..21 at 2^29 - 1; and limbs 0..22 at 2^29 - 1 with the top limb as large as X < 4n allows
+    for n in ((1 << 668) - 1, (1 << 668) - 3, (1 << 667) | 1, (1 << 650) | 1, (1 << 642) | 1):
+        l = [(1 << 29) - 1] * 22 + [0, 0]
+        if sum(v << (28 * i) for i, v in enumerate(l)) < 4 * n:
+            for b in (0, 1):
+                one_r(n, l, b)
+        low = sum(((1 << 29) - 1) << (28 * i) for i in range(23))
+        if low < 4 * n:
+            top = min((1 << 29) - 1, (4 * n - 1 - low) >> (28 * 23))
+            l = [(1 << 29) - 1] * 23 + [top]
+            assert sum(v << (28 * i) for i, v in enumerate(l)) < 4 * n
+            for b in (0, 1):
+                one_r(n, l, b)
 print(f"{total} steps, wrong {bad}, largest Y/n seen {worst:.4f}")
 sys.exit(1 if bad else 0)

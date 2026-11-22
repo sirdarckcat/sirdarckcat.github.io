@@ -23,7 +23,8 @@ def source(step_file="fermat28_step.cuh"):
 
 def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
     """step_file: fermat28_step_s1.cuh / fermat28_step.cuh (2) / fermat28_step_s4.cuh = 1, 2 or 4 independent accumulators per
-    column.  asm_mad=True writes every product as PTX mad.wide.u32 instead of leaving the choice to the compiler.
+    column; fermat28_step_s1r.cuh / fermat28_step_r.cuh are the same with redundant limbs (no carry chain after the doubling, see
+    FERMAT28.md).  asm_mad=True writes every product as PTX mad.wide.u32 instead of leaving the choice to the compiler.
     maxreg: NVRTC --maxrregcount (try 96, 128, 160 if the kernel uses many registers and occupancy is low)."""
     assert limbs == 21, "fermat28 is built for 21 x u32 input limbs (n < 2^672)"
     key = (step_file, asm_mad, maxreg)

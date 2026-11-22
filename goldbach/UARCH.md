@@ -9,7 +9,7 @@ was written and verified on a CPU (the same source compiled as C++), then timed 
 | `fscan/` | `fscan.c`'s score loop, exact stage, Fermat kernels (IFMA 52-bit, AVX2 3 x 30-bit) | 27-31% fewer cycles a member (Intel and Zen 2), same members found; `FERMAT26_STEP.md` states the 3-limb step for a proof | `selftest_ab.sh`, `test_fermat.py`, `stress_fermat.py`, `check_record.sh` |
 | `sieve200/` | numpy sieve of `search.run_block` (campaign 3, 867-1,094 rows, 661-bit members) | 0.64 us a member at B=1e6 against 52 us (K=2^20, 867 rows); identical alive matrices, counts, tests, prps, successes; the feeder (counts, selection, CSR survivor rows) gives a GPU tester exactly what it needs | `test_sieve200.py`, `test_dropin.py`, `test_feeder.py` |
 | `fermat661/` | `gmpy2.powmod(2, n-1, n)` on 661-bit numbers | 10-11 us a test against 110-129 us on IFMA CPUs (13 limbs of 52 bits, 8 lanes); `search_c.py` uses it: a whole block 8.3 s -> 0.61 s | `test_fm13.py`, `test_dropin.py` |
-| `fermat661/cuda/` | `gpu_fermat.py`'s `fermat2` and `fermat3` | 22.9M tests/s on an RTX PRO 6000 against 13.1M (`fermat3`) and 8.9M (`fermat2`): 24 limbs of 28 bits, every product one 64-bit multiply-add, dedicated squaring, generated step with static indices, lazy reduction, start value 2^(672-c); ties `fermat3` on sm_80/89 | `test_fermat28.py`, `test_step28.py` (CPU), `test_gpu_fermat28.py` (GPU) |
+| `fermat661/cuda/` | `gpu_fermat.py`'s `fermat2` and `fermat3` | 22.9M tests/s on an RTX PRO 6000 against 13.1M (`fermat3`) and 8.9M (`fermat2`): 24 limbs of 28 bits, every product one 64-bit multiply-add, dedicated squaring, generated step with static indices, lazy reduction, start value 2^(672-c); ties `fermat3` on sm_80/89; optional redundant-limb steps (`_r`, `_s1r`: no carry chain after the doubling, limbs < 2^29, columns < 2^62.96): 70 of 1,169 PTX instructions a step less, CPU-verified, GPU timing pending | `test_fermat28.py`, `test_step28.py` (CPU), `test_gpu_fermat28.py` (GPU) |
 | `sieve200/cuda/` | `search_gpu3.py`'s sieve3, `alive.sum`, `lexsort`, gather, `nonzero` | CPU-verified; GPU numbers pending | `test_gsieve.py`, `test_gpu_sieve_cpu.py` (CPU), `test_gpu_sieve.py` (GPU) |
 
 `sieve200/balance.py` answers "which sieve bound B": with a CPU feeder and a GPU tester of a few tens of million tests a second the best
@@ -29,6 +29,9 @@ B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` st
   7-instruction BMI2 loop gave a further 17-22%.  Per-(row, prime) set-up is vectorized (64 primes at a time, double reciprocal).
 * **Measure interleaved.**  Timings on this VM drift by 20% over minutes; A/B/A/B rounds with the minimum are the only comparison that held up.
   A first-touch page fault in a VM costs far more than a cache miss: warm up before timing.
+* **Count the loop body, not the file.**  Moving a carry chain from the end of the step to after the loop leaves the static instruction count of the whole
+  kernel unchanged (my first comparison said "identical"); the inner loop went from 1,169 to 1,099 PTX instructions.  LLVM's NVPTX output puts
+  `// =>This Inner Loop Header` after a label, so a parser that tests `line.endswith(':')` finds no loops: strip the comments first.
 * **Mistakes that were caught by tests, not by reading**: a 10-plane vertical counter overflows above 1,023 rows (Q = 150,000 has 1,093);
   `fermat28`'s lazy reduction needs 16n < R, so n < 2^668 (669-bit inputs gave a wrong residue in 0.3% of cases, invisible in verdicts,
   which are 0 for almost every random number: the final residue 2^(1-n) mod n is what to compare).

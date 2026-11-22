@@ -8,6 +8,7 @@ same 21 x u32 limb layout for `CQ` and `Mv`, same meaning of `out` (1 iff 2^(n-1
 |---|---|
 | `gen_fermat28.py` | writes `fermat28_step*.cuh`, one Montgomery squaring step as straight-line code (`python3 gen_fermat28.py 2`) |
 | `fermat28_step.cuh`, `_s1`, `_s4` | the generated step with 2, 1 or 4 independent 64-bit accumulators per column (a longer dependent chain of multiply-adds against 2 more adds per column) |
+| `fermat28_step_r.cuh`, `_s1r` | the same with **redundant limbs** (2 and 1 accumulators): no carry chain after the doubling, limbs left below 2^29, one normalising chain in the kernel after the last step (`#define FM28_REDUNDANT`, set by the step file); 70 of the 1,169 PTX instructions of a step less (`python3 gen_fermat28.py 2 fermat28_step_r.cuh redundant`) |
 | `fermat28_kernel.cuh` | the kernel: n = cq + M k, setup, the step loop, the final test |
 | `gpu_fermat28.py` | `kernel(limbs, step_file=..., asm_mad=...)`, `Tester`, `MultiTester` (checks the range of the whole pool), `to_limbs` |
 | `test_gpu_fermat28.py` | on a GPU: mismatches against gmpy2, registers and local memory of every variant, tests/s of every variant against `fermat2` |
@@ -54,6 +55,30 @@ carry is 0 and every limb is below B.  The step maps {X < 4n} to itself.
 (C4) the start value 2^(672-c) with 32 <= c <= 65 (c = ceil((n + 671) / 2^(bits(n) - 6))) is below n/2, and with v = log2(y) - 672 a step is
 v -> 2v + b, so after t steps v = -c 2^t + B_t = -(n + 671), y = 2^(1-n) (mod n).  `test_step28.py` checks C1/C2 on 6,070 random and
 adversarial inputs (limbs all ones, X near 4n, n near 2^668: the largest Y/n seen is 3.857).
+
+## Redundant limbs (`fermat28_step_r.cuh`, `fermat28_step_s1r.cuh`): an optional 6% fewer instructions a step
+
+The last thing the step does is the carry chain `x[i] = ((y_i << b) + carry) & MASK28` (24 x add, and, shift, about 70 instructions of the
+1,169 in a step).  It is not needed to keep the numbers in range: **leave `x_i = y_i << b`**, which is below 2^29 and has the value 2^b Y exactly.
+The next step only needs the limbs small enough that no 64-bit column overflows, so the change to the proof of the step is:
+
+* (C1) and (C2) are unchanged: they use only the value X < 4n (here X = sum x_i B^i = 2^b Y < 4n) and the exact division by R.
+* (C3') no overflow with limbs below 2^29: a doubled product d_i x_j = 2 x_i x_j < 2^30 * 2^29 = 2^59 (at most 12 per column), the diagonal
+  x_i^2 < 2^58, a reduction product m_i n_j < 2^56 (m, n have limbs below 2^28; at most 24 per column), the carry < 2^36:
+  12 * 2^59 + 2^58 + 24 * 2^56 + 2^36 < 15.5 * 2^59 + 2^36 < 2^63 (about 2^62.96).  The 32-bit value `acc mod 2^32` that feeds m_k is still exact.
+* The output limbs are y_i << b < 2^29 (y_i = acc mod B < 2^28, and y_23 = acc < B because Y_pre < 2n < R), so the invariant of the loop is
+  "limbs < 2^29, value < 4n" instead of "limbs < 2^28, value < 4n".  The start value 2^(672-c) has one nonzero limb below 2^28.
+* After the last step the kernel runs one carry chain (`#ifdef FM28_REDUNDANT` in `fermat28_kernel.cuh`), which brings the limbs below 2^28 for the final
+  reduction and comparison; the value is unchanged, so the verdict and the residue are the same bit for bit.
+
+`FM28_STEP=fermat28_step_s1r.cuh python3 test_step28.py` checks C1/C2/C3' on 12,088 steps: the 6,070 of the default files, and 6,000 inputs whose
+carries are partly left in the limbs (limbs up to 2^29 - 1), among them the extremes of C3' (limbs 0..22 all at 2^29 - 1 and the top limb as large
+as X < 4n allows): wrong 0, largest Y/n 3.959 (< 4).
+`FM28_STEP=fermat28_step_s1r.cuh python3 test_fermat28.py` and `FM28_STEP=fermat28_step_r.cuh python3 test_fermat28.py` pass everything the
+other files pass (3,000 residues, primes, pseudoprimes, edge values, campaign-3 numbers).  **The proof in the section above is for the
+default files (limbs < 2^28); the redundant ones change the invariant and the bound C3, so they need the paragraph above to be checked too.**
+Whether it is faster on a GPU is for `test_gpu_fermat28.py` to say ("s1r", "s2r" rows): the multiply-adds, 876 of them, are unchanged, so
+the gain is at most the 6% of issue slots and less where the wide multiply, not the issue rate, is the limit.
 
 ## Verified on the CPU (the same source text, `fermat28_cpu.cpp`)
 

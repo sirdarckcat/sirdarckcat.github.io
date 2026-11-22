@@ -10,7 +10,10 @@ static inline int __clz(u32 x) { return __builtin_clz(x); }
 struct { unsigned x; } blockIdx, blockDim, threadIdx;
 #define FM28_DEBUG 1
 static u32 *fm28_dbg;
-#include "fermat28_step.cuh"
+#ifndef STEP_FILE
+#define STEP_FILE "fermat28_step.cuh"
+#endif
+#include STEP_FILE
 #include "fermat28_kernel.cuh"
 extern "C" void set_dbg(u32 *p) { fm28_dbg = p; }
 extern "C" void run_cpu(const u32 *CQ, const u32 *Mv, const int *idx, const u32 *kv, unsigned char *out, int T) {

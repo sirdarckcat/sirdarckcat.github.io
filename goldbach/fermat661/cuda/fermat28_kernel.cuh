@@ -127,6 +127,13 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
 #ifdef FM28_DEBUG
     for (int i = 0; i < NL; i++) fm28_dbg[(size_t)tid * NL + i] = x[i];       /* the residue before the reduction (CPU test only) */
 #endif
+#ifdef FM28_REDUNDANT
+    {                                                             /* the steps leave limbs below 2^29: one carry chain brings them below 2^28 */
+        u32 cy = 0;
+        #pragma unroll
+        for (int i = 0; i < NL; i++) { const u32 v = x[i] + cy; x[i] = v & MASK28; cy = v >> 28; }
+    }
+#endif
     /* y < 4n; reduce and compare with 1 */
     u32 n2[NL];
     {

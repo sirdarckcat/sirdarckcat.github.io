@@ -13,10 +13,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def build():
-    out = os.path.join(HERE, "libfermat28_cpu.so")
-    srcs = [os.path.join(HERE, f) for f in ("fermat28_cpu.cpp", "fermat28_step.cuh", "fermat28_kernel.cuh")]
+    step = os.environ.get("FM28_STEP", "fermat28_step.cuh")          # which generated step to test, e.g. fermat28_step_s1r.cuh
+    tag = os.path.splitext(step)[0].replace("fermat28_", "")
+    out = os.path.join(HERE, f"libfermat28_cpu_{tag}.so")
+    srcs = [os.path.join(HERE, f) for f in ("fermat28_cpu.cpp", step, "fermat28_kernel.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-Wno-unused", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0]])
+        subprocess.check_call(["g++", "-O2", f'-DSTEP_FILE="{step}"', "-Wno-unused", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0]])
     return out
 
 
