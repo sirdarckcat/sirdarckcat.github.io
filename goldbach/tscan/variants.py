@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """All near-optimal residue vectors on a cover's primes, as scan specs.
 
-    python3 variants.py base_spec.json D out.json
+    python3 variants.py base_spec.json D out.json [max_vectors [tail]]
 
 base_spec.json is a cover.py output: congruences N = a_r (mod r) for a set
 of small primes r, and the residual primes q < Q that no congruence covers.
@@ -18,7 +18,11 @@ V of them to the same height reaches a V times smaller N for the same
 number of candidates (vscan.py).  The greedy vector is usually not the best.
 
 Output: a list of specs {name, Q, cover, residual, N0, M}, smallest residual
-set first.
+set first.  With max_vectors the search stops after that many vectors (for
+covers with many primes, where the full list is astronomically long); the
+result is then a sample, not the complete set.  With tail only the tail
+largest cover primes are varied and the others keep the base residues,
+which is what makes the search finish on covers of 20 or more primes.
 """
 import json
 import sys
@@ -28,27 +32,34 @@ from sympy import primerange
 from sympy.ntheory.modular import crt
 
 
-def enumerate_vectors(Q, rs, limit):
-    """[(residual size, [(r, a), ...])] for all nonzero residue vectors with residual size <= limit."""
+def enumerate_vectors(Q, rs, limit, max_vectors=None, fixed=()):
+    """[(residual size, [(r, a), ...])] for all nonzero residue vectors with residual size <= limit
+    (or the first max_vectors of them in depth-first order)."""
     primes = np.array(list(primerange(3, Q)), dtype=np.int64)
     res = {r: primes % r for r in rs}
     out = []
+    fixed = dict(fixed)                     # prime -> residue it must keep
 
     def dfs(i, alive, vec):
+        if max_vectors is not None and len(out) >= max_vectors:
+            return
+        n = int(alive.sum())
         if i == len(rs):
-            out.append((int(alive.sum()), list(vec)))
+            out.append((n, list(vec)))
             return
         counts = [np.bincount(res[r][alive], minlength=r) for r in rs[i:]]
-        if int(alive.sum()) - sum(int(c[1:].max()) for c in counts) > limit:
-            return
+        # the later primes remove at most their largest class of the primes alive now
+        later = sum(int(c[1:].max()) for c in counts[1:])
         r, cnt = rs[i], counts[0]
-        for a in sorted(range(1, r), key=lambda a: -cnt[a]):
+        for a in ([fixed[r]] if r in fixed else sorted(range(1, r), key=lambda a: -cnt[a])):
+            if n - int(cnt[a]) - later > limit:
+                break                       # classes come in decreasing size: the rest fail too
             vec.append((r, a))
             dfs(i + 1, alive & (res[r] != a), vec)
             vec.pop()
 
     dfs(0, np.ones(len(primes), bool), [])
-    out = [(n, v) for n, v in out if n <= limit]
+    assert all(n <= limit for n, _ in out)
     out.sort()
     return primes, res, out
 
@@ -59,9 +70,13 @@ def main():
     D = int(sys.argv[2])
     Q, rs = spec["Q"], sorted(int(r) for r, _ in spec["cover"])
     base = len(spec["residual"])
-    primes, res, vectors = enumerate_vectors(Q, rs, base + D)
+    cap = int(sys.argv[4]) if len(sys.argv) > 4 else None
+    tail = int(sys.argv[5]) if len(sys.argv) > 5 else len(rs)
+    fixed = {int(r): int(a) % int(r) for r, a in spec["cover"] if int(r) in rs[:len(rs) - tail]}
+    primes, res, vectors = enumerate_vectors(Q, rs, base + D, cap, fixed)
     sizes = [n for n, _ in vectors]
-    print(f"cover primes {rs}; greedy residual {base}; {len(vectors)} vectors with residual <= {base + D}: "
+    print(f"cover primes {rs}; greedy residual {base}; {len(vectors)} vectors"
+          f"{' (search capped)' if cap and len(vectors) >= cap else ''} with residual <= {base + D}: "
           + ", ".join(f"{sizes.count(n)} with {n}" for n in sorted(set(sizes))))
     M = 2
     for r in rs:
