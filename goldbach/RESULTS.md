@@ -59,10 +59,12 @@ R record (largest g below its N).
   - Another ~1.4 h of GPU work was lost when a runtime vanished; those
     candidates were re-run.
 - **Verification.** No GPU result is trusted. The hit was re-proved on the
-  CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s).
-  The PARI cross-check and the independent `bls/` stack
-  (`xverify.py`, `verify_bls_record.py`) were still running when this was
-  written; their logs go in the record directory.
+  CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s)
+  and the PARI cross-check: PARI's own N−1 certificate, `isprime`, and a
+  brute-force gcd scan of all 664,584 complements (2.8 h, `crosscheck.log`,
+  no error lines). The independent `bls/` stack (`xverify.py`,
+  `verify_bls_record.py`, unmodified, on Python ints) was still running here
+  when this was written; its logs go in the record directory.
 - **Cross-verification.** The second session re-ran all three checks on
   its own machine, with verifier code from a commit older than the record:
   `proth/verify.py` (246 s), the PARI cross-check, and `bls/xverify.py`
