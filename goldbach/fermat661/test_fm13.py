@@ -27,10 +27,14 @@ def from_words(w):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--lib", default=os.path.join(HERE, "libfm13.so"))
+    ap.add_argument("--lib", default=None, help="default: the library fm13.py builds")
     ap.add_argument("--count", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=3)
     a = ap.parse_args()
+    if a.lib is None:
+        sys.path.insert(0, HERE)
+        import fm13
+        a.lib = fm13.build()
     lib = ctypes.CDLL(a.lib)
     lib.fm13_test.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p]
     lib.fm13_lanes.restype = ctypes.c_int

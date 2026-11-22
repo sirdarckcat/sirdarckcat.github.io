@@ -6,11 +6,15 @@ import numpy as np
 import gmpy2
 HERE = os.path.dirname(os.path.abspath(__file__))
 ap = argparse.ArgumentParser()
-ap.add_argument("libs", nargs="*", default=["libfm13.so"])
+ap.add_argument("libs", nargs="*", default=[], help="default: the library fm13.py builds")
 ap.add_argument("--rounds", type=int, default=30)
 ap.add_argument("--count", type=int, default=256)
 ap.add_argument("--nogmp", action="store_true")
 a = ap.parse_args()
+if not a.libs:
+    import sys; sys.path.insert(0, HERE)
+    import fm13
+    a.libs = [os.path.basename(fm13.build())]
 libs = []
 for name in a.libs:
     lib = ctypes.CDLL(os.path.join(HERE, name))

@@ -18,6 +18,10 @@ try:
     import gpu_fermat as g32
 except ImportError:
     g32 = None
+try:
+    import gpu_fermat3 as g33
+except ImportError:
+    g33 = None
 
 specs = json.load(open(sys.argv[1]))
 S = int(sys.argv[2]) if len(sys.argv) > 2 else 40000
@@ -55,6 +59,7 @@ VARIANTS = [("s2 plain", dict()), ("s2 asm", dict(asm_mad=True)), ("s1 plain", d
             ("s1 asm", dict(step_file="fermat28_step_s1.cuh", asm_mad=True)), ("s4 plain", dict(step_file="fermat28_step_s4.cuh")),
             ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True))]
 T32 = g32.Tester(N0, M, U) if g32 else None
+T33 = g33.Tester3(N0, M, U) if g33 else None
 ref_out = None
 for name, kopts in VARIANTS:
     try:
@@ -72,8 +77,9 @@ for name, kopts in VARIANTS:
             d32, o32 = timeit(T32, threads)
             line += f"   | fermat2 {TB / d32:12,.0f} tests/s, ratio {d32 / d28:.2f}, flags equal: {bool((o28.get() == o32.get()).all())}"
         print(line, flush=True)
-if T32:
-    for threads in (64, 256):
-        d32, _ = timeit(T32, threads)
-        print(f"fermat2 (gpu_fermat.py) {threads} thr/blk: {TB / d32:12,.0f} tests/s")
+for label, T_ in (("fermat2 (gpu_fermat.py) ", T32), ("fermat3 (gpu_fermat3.py)", T33)):
+    if T_:
+        for threads in (64, 128, 256):
+            d_, o_ = timeit(T_, threads)
+            print(f"{label} {threads:3d} thr/blk: {TB / d_:12,.0f} tests/s   flags same as fermat28: {bool((o_.get() == ref_out).all())}")
 print("ALL MATCH" if bad == 0 else f"MISMATCHES: {bad}")
