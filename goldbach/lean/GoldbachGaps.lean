@@ -23,6 +23,7 @@ import GoldbachGaps.Cap.FirstMoment
 import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
+import GoldbachGaps.Cap.Selection
 
 /-!
 # Least Goldbach summands in Lean
@@ -67,7 +68,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `Layers` (a fixed layer, a pigeonhole layer and a mop-up layer of moduli give
                an even `N` in an explicit window with no Goldbach summand below `Q` as soon
                as three counts allow it: the finite skeleton of lower bounds for
-               `max {g(N) : N ≤ X}`).
+               `max {g(N) : N ≤ X}`, with the structure of the rows that survive a layer
+               `N ≡ 1 (mod p)`), `Selection` (with independent rows, the logged hit mass
+               `Σ (1 - p)^(rows left)` over any selected set of members is exactly the
+               expected number of successes among them).
 
 ## Building
 

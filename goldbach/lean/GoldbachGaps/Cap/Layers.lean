@@ -243,4 +243,55 @@ theorem exists_even_le_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q B 
     (fun q hq hq2 hqQ => ha q (Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hqQ, hq, hq2⟩))
   exact ⟨N, h1, h2, h3, h5⟩
 
+/-- **Structure of the rows surviving a fixed layer** (step (E4) of the Erdős–Rankin
+adaptation). If every prime factor of `n` is `≤ z` or `> w`, and `n < w²`, then either `n` is
+`z`-smooth, or `n = A · p'` with `p' > w` prime and `A` `z`-smooth. -/
+theorem smooth_or_large_prime_factor {n z w : ℕ} (hn : 0 < n) (hlt : n < w * w)
+    (h : ∀ p, p.Prime → p ∣ n → p ≤ z ∨ w < p) :
+    (∀ p, p.Prime → p ∣ n → p ≤ z) ∨
+      ∃ p' A, p'.Prime ∧ w < p' ∧ n = A * p' ∧ ∀ p, p.Prime → p ∣ A → p ≤ z := by
+  by_cases hall : ∀ p, p.Prime → p ∣ n → p ≤ z
+  · exact Or.inl hall
+  · right
+    have hex : ∃ p, p.Prime ∧ p ∣ n ∧ z < p := by
+      by_contra hcon
+      exact hall fun p hp hd => by
+        by_contra hlt'
+        exact hcon ⟨p, hp, hd, by omega⟩
+    obtain ⟨p', hp', hdvd, hz⟩ := hex
+    have hw : w < p' := by
+      rcases h p' hp' hdvd with h1 | h1
+      · omega
+      · exact h1
+    obtain ⟨A, hA⟩ := hdvd
+    refine ⟨p', A, hp', hw, by rw [hA, mul_comm], ?_⟩
+    intro p hp hpA
+    have hpn : p ∣ n := hA ▸ Dvd.dvd.mul_left hpA p'
+    rcases h p hp hpn with h1 | h1
+    · exact h1
+    · exfalso
+      obtain ⟨A', hA'⟩ := hpA
+      have e : n = p' * p * A' := by rw [hA, hA']; ring
+      have hle : p' * p ≤ n := Nat.le_of_dvd hn ⟨A', e⟩
+      have : w * w < p' * p := Nat.mul_lt_mul'' hw h1
+      omega
+
+/-- The same for a row: a number `q ≥ 2` with `q - 1 < w²` that is not `≡ 1` modulo any
+prime in `(z, w]` has `q - 1` `z`-smooth, or `q = A · p' + 1` with `p' > w` prime and `A`
+`z`-smooth. So the rows that the fixed layer `N ≡ 1 (mod p)`, `z < p ≤ w`, leaves are counted
+by smooth numbers and by prime pairs `(p', A p' + 1)`. -/
+theorem row_structure_of_fixed_layer {q z w : ℕ} (hq : 2 ≤ q) (hlt : q - 1 < w * w)
+    (hF : ∀ p, p.Prime → z < p → p ≤ w → ¬ q ≡ 1 [MOD p]) :
+    (∀ p, p.Prime → p ∣ q - 1 → p ≤ z) ∨
+      ∃ p' A, p'.Prime ∧ w < p' ∧ q = A * p' + 1 ∧ ∀ p, p.Prime → p ∣ A → p ≤ z := by
+  have h : ∀ p, p.Prime → p ∣ q - 1 → p ≤ z ∨ w < p := by
+    intro p hp hd
+    by_contra hcon
+    have h1 : z < p := by omega
+    have h2 : p ≤ w := by omega
+    exact hF p hp h1 h2 ((Nat.modEq_iff_dvd' (by omega : 1 ≤ q)).mpr hd).symm
+  rcases smooth_or_large_prime_factor (by omega : 0 < q - 1) hlt h with h1 | ⟨p', A, hp', hw, he, hA⟩
+  · exact Or.inl h1
+  · exact Or.inr ⟨p', A, hp', hw, by omega, hA⟩
+
 end GoldbachGaps.Cap
