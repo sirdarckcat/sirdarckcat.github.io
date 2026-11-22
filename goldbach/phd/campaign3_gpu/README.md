@@ -104,9 +104,9 @@ Version 3 (22 Nov):
   - Production: a batch of 32 slices takes 1.1 s, with the CPU side 1.03-1.13 s and the GPU side 1.09-1.14 s, i.e. ~30M members/s
     per G4. That is against 2.2 s with search_gpu3.py and kernel 28, and 3.6 s at 21:00Z. The survivor rows travel to the GPU as
     u16, per window, and are widened and offset there.
-- Q = 150,000 supply: 4,462 residue-swap variants of the research vectors pt_q150k_v0..v3 ( per base, |U| ≤ 1,097 kept; |U| 1,094-1,097 against the best 1,093). Each was checked independently
+- Q = 150,000 supply: 4,462 residue-swap variants of the research vectors pt_q150k_v0..v3 (`gen_variants.variants(base, 1500, pair_pool=80)` per base, |U| ≤ 1,097 kept; |U| 1,094-1,097 against the best 1,093). Each was checked independently
   (congruences, M, residual list, ceiling 200), and N0 is distinct from the research 128. Index:
-  ; full list sha256 b864f9f8915b0fe196282d5bb617b96c3a4ad34a885762eee6e866fb99d436ac.
+  `../campaign3/variants_q150k_minted_index.json`; full list sha256 b864f9f8915b0fe196282d5bb617b96c3a4ad34a885762eee6e866fb99d436ac.
 - Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
   (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
   so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
