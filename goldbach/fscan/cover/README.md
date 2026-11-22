@@ -14,7 +14,10 @@ which says where the search has to stop.
 | `make_specs.py` | turns covers into search specs (the JSON format of `phd/campaign3`), rechecking each from scratch |
 | `c3_moduli.txt` | the 88 moduli and residues of campaign 3 (k = 867), `c3_moduli_only.txt` the moduli alone |
 | `cover_q122k_k856.json` | the best cover found here for Q = 122,000 on those moduli |
-| `pt_*.txt` | the runs behind the tables below |
+| `check_specs.py` | independent recheck of a spec file from N0 and M alone |
+| `selection_check.py` | rows left per member by sieve depth and the hit mass of the emptiest members, on real members |
+| `deliver/` | spec files for six targets, and the runs that produced them |
+| `pt_*.txt` | the other runs behind the tables below |
 
 ## Method
 
@@ -42,24 +45,42 @@ it gives 3.66 against ln 34 = 3.53 for the covers up to 187.
 Random classes leave 1,377 ± 20 rows (measured at β = 0). The cover of
 campaign 3, found by greedy choice plus annealing, has k = 867.
 
-| Q | rows | best k found | k where S = 0 | E = p1·k |
+| Q | rows | best k found | E = p1·k (200 digits) | spec file in `deliver/` |
 |---|---|---|---|---|
-| 122,000 | 11,474 | **856** | 860 | 20.56 |
-| 130,000 | 12,159 | 925 | 935 | 22.22 |
-| 140,000 | 13,010 | 1,014 | 1,021 | 24.36 |
-| 150,000 | 13,848 | 1,103 | 1,109 | 26.49 |
-| 160,000 | 14,683 | 1,190 | 1,195 | 28.58 |
+| 122,000 | 11,474 | **851** | 20.34 | `specs_q122000_64.json` |
+| 130,000 | 12,159 | 921 | 22.02 | `specs_q130000_128.json` |
+| 135,000 | 12,591 | 968 | 23.14 | `specs_q135000_128.json` |
+| 140,000 | 13,010 | 1,011 | 24.17 | `specs_q140000_128.json` |
+| 145,000 | 13,427 | 1,050 | 25.10 | `specs_q145000_128.json` |
+| 150,000 | 13,848 | 1,093 | 26.13 | `specs_q150000_128.json` |
+| 160,000 | 14,683 | 1,190 (short run) | 28.4 | |
 
-(Q = 122,000: 30,000 sweeps, 3.6 minutes on 4 cores, from random starts;
-the others 20,000 sweeps. The coldest replicas are not fully equilibrated,
-which is why covers a few rows below the point S = 0 exist.)
+(60,000 sweeps on one core, about 15 minutes each, from random starts;
+`deliver/run_*.txt`. A first run of 30,000 sweeps on 4 cores gave 856 at
+Q = 122,000 in 3.6 minutes, with the entropy reaching zero at ⟨k⟩ = 860:
+the coldest replicas are not fully equilibrated, which is why covers a few
+rows below that point exist. An independent sampler of another session
+reached 850.)
+
+The spec files hold 64 or 128 residue vectors each, all within one or two
+rows of the best found, in the JSON format of `phd/campaign3`, with
+kmax = 5.4·10^9 so that N stays below 10^200. `check_specs.py` rechecks
+them from N0 and M alone: a row q counts as covered exactly when
+gcd(N0 − q, M) > 1.
+
+Other modulus sets at Q = 122,000 (20,000 sweeps): the first 86 odd primes
+give 870, the first 88 give 856, the first 90 give 842
+(`pt_first*.txt`). Two more moduli buy 14 rows, about 0.25 nats of E after
+the larger boost, for 5.3 digits of modulus: 0.02 nats of E per nat of
+modulus. The campaign's set (84 primes to 439 plus 467, 487, 491, 683) is
+equivalent to the first 88.
 
 Three conclusions.
 
 1. **The plateau is the optimum.** The entropy vanishes within a few rows
    of the best cover found, at 0.62 of the random mean. No cover much
-   below 856 exists on these moduli; what is left for cover optimization
-   is about 0.3 nats, not the several nats that a "perfect rounding" of the
+   below 850 exists on these moduli; against the 867 of campaign 3 that is
+   0.4 nats, not the several nats that a "perfect rounding" of the
    fractional cover would give. This is a heuristic certificate (it rests
    on the sampler being in equilibrium down to β ≈ 4, which the 13-modulus
    check supports), not a proof.
@@ -68,8 +89,31 @@ Three conclusions.
    within 10 rows (0.24 nats) of the best. A search is therefore limited by
    compute, not by the range of one progression, and `PT_DUMP` delivers as
    many independent vectors as wanted.
-3. **Raising the target costs 8.8 rows, 0.21 nats, per 1,000 in g** with
+3. **Raising the target costs 8.6 rows, 0.21 nats, per 1,000 in g** with
    optimal covers, steady from 122,000 to 160,000.
+
+## Which members to test
+
+A member N0 + tM succeeds with probability (1 − p)^a, where a is the number
+of its residual rows that the sieve leaves and p the chance that such a row
+is prime, so the emptiest members carry far more than their share of the
+hits. `selection_check.py` measures this on real members (131,072 members
+of the first Q = 130,000 vector, every row sieved by all non-modulus primes
+up to the depth; `selection_check_q130k.txt`):
+
+| sieve depth | rows left, mean ± sd | p | hit mass in the emptiest 0.1% / 1% / 8% | binomial model |
+|---|---|---|---|---|
+| 2^17 | 483.0 ± 14.7 | 0.0456 | 0.8% / 5.0% / 23.7% | 0.9 / 5.3 / 24.3 |
+| 2^20 | 410.6 ± 14.7 | 0.0537 | 1.1% / 6.4% / 27.5% | 1.2 / 6.8 / 28.3 |
+| 2^23 | 357.1 ± 14.5 | 0.0617 | 1.4% / 8.0% / 31.4% | 1.6 / 8.3 / 32.2 |
+| 2^26 | 315.9 ± 14.2 | 0.0698 | 1.9% / 9.4% / 34.8% | 2.0 / 10.0 / 35.8 |
+| 2^28 | 293.3 ± 14.0 | 0.0752 | 2.2% / 10.5% / 37.1% | 2.4 / 11.1 / 38.2 |
+
+The rows left are slightly less spread than a binomial (the model is 5 to
+10% optimistic in the tail), the mean is exact, and the mean success
+probability is the same at every depth (2.0·10^-10), as it must be. The
+model column is Φ(Φ⁻¹(f) + δ·sd) with δ = −ln(1 − p); it is what the
+campaign table (tested fraction against test rate) is computed from.
 
 ## Use
 
