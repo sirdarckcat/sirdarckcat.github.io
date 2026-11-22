@@ -17,6 +17,7 @@ which says where the search has to stop.
 | `check_specs.py` | independent recheck of a spec file from N0 and M alone |
 | `selection_check.py` | rows left per member by sieve depth and the hit mass of the emptiest members, on real members |
 | `deliver/` | spec files for eight targets, and the runs that produced them |
+| `meanfield.py`, `greedy_vs_model.py` | a closed-form prediction of the optimum and why it misses the level |
 | `pt_*.txt` | the other runs behind the tables below |
 
 ## Method
@@ -115,6 +116,31 @@ The rows left are slightly less spread than a binomial (the model is 5 to
 probability is the same at every depth (2.0·10^-10), as it must be. The
 model column is Φ(Φ⁻¹(f) + δ·sd) with δ = −ln(1 − p); it is what the
 campaign table (tested fraction against test rate) is computed from.
+
+## What does not give the optimum: a formula, or a proof
+
+*A formula.* `meanfield.py` treats the alive rows before each modulus r as an
+independent thinning of the classes mod r and lets the cover take the
+fullest class that exists (N·D(x‖α) = d·ln(r − 1), with the sub-Poisson
+factor d = min(1, ln m/ln Q) for small moduli). It gets the trends right:
+14 rows for two more moduli (measured 14), and a slope in Q within 15% of
+the measured one. It gets the level wrong: 682 predicted at Q = 122,000
+against 851, and the ratio predicted/optimum is 0.79 to 0.84 in every case
+tried. `greedy_vs_model.py` shows why: prime by prime, the class the greedy
+choice actually finds is one or two rows smaller than the largest class of
+a Poisson sample of the same mean (6 against 7 at r = 439, 26 against 28 at
+r = 97, 1,436 against 1,455 at r = 5), and plain greedy ends at 912. So the
+sampler, not a formula, is the tool for k_opt.
+
+*A proof.* A rigorous floor needs an upper bound on the number of covers
+with few uncovered rows. The routes tried all end vacuous for 88 moduli:
+exact enumeration of the classes of the primes up to 13 followed by "every
+later prime covers at most its fullest class" leaves a capacity of about
+3,500 rows for 2,957 alive ones; tree-structured inclusion–exclusion
+(Hunter–Worsley) over the moduli over-counts every row covered by primes
+that are not adjacent in the tree; bounded-difference and Bernstein
+inequalities for the lower tail of k are dominated by the small primes. The
+entropy estimate above therefore stays a measurement.
 
 ## Use
 
