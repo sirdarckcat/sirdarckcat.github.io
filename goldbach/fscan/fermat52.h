@@ -9,12 +9,19 @@
  * probable prime.  All 24 lanes run the same t (from the largest n of the batch).
  * Bounds: inputs < 4n, outputs of a squaring < 2n (needs 16n <= R), so no reduction inside the loop.
  * 26 vector operations per squaring of 8 numbers, 15 of them multiply-adds.
+ * One squaring is a chain of about 40 cycles (each multiply-add waits for the previous one: z0 -> m0 -> z1 -> m1 -> carry),
+ * while the 26 operations need only 13 cycles on two vector ports, so three independent groups of 8 leave the ports idle
+ * a part of the time.  FM_GROUPS = 4 (32 numbers a round, the default) is about 12% faster per test than 3 on Sapphire
+ * and Emerald Rapids; 5 and 6 gain nothing more.
  */
 #include <immintrin.h>
 #include <stdint.h>
 typedef unsigned __int128 u128;
 #define M52 ((1ull << 52) - 1)
 
+#ifndef FM_GROUPS
+#define FM_GROUPS 4                     /* independent groups of 8 numbers per round */
+#endif
 typedef struct { uint64_t a0[8], a1[8], n0[8], n1[8], ni[8], bh[8], bl[8]; } f52_lanes;
 
 static inline void f52_setup(f52_lanes *L, int i, u128 n, int t) {
@@ -60,47 +67,51 @@ static inline void f52_setup(f52_lanes *L, int i, u128 n, int t) {
     a1 = _mm512_add_epi64(z3, _mm512_srli_epi64(a0, 52));                       \
 } while (0)
 
-/* run t squarings on three groups of 8 lanes (three independent dependency chains keep both vector
-   ports busy); cnt = number of lanes in use (1..24), n[] their moduli */
-#define F52_LANES 24
+/* run t squarings on FM_GROUPS independent groups of 8 lanes (independent dependency chains keep both vector ports
+   busy); cnt = number of lanes in use (1..F52_LANES), n[] their moduli */
+#define F52_LANES (8 * FM_GROUPS)
+#if F52_LANES > 32
+#error "FM_GROUPS > 4: the result of f52_run is a 32-bit mask, one bit per lane"
+#endif
 static inline unsigned f52_run(f52_lanes *LL, const u128 *n, int cnt, int t) {
     const __m512i zero = _mm512_setzero_si512(), one = _mm512_set1_epi64(1);
-    __m512i a0 = _mm512_loadu_si512(LL[0].a0), a1 = _mm512_loadu_si512(LL[0].a1);
-    __m512i n0 = _mm512_loadu_si512(LL[0].n0), n1 = _mm512_loadu_si512(LL[0].n1), ni = _mm512_loadu_si512(LL[0].ni);
-    __m512i e0 = _mm512_loadu_si512(LL[1].a0), e1 = _mm512_loadu_si512(LL[1].a1);
-    __m512i p0 = _mm512_loadu_si512(LL[1].n0), p1 = _mm512_loadu_si512(LL[1].n1), pi = _mm512_loadu_si512(LL[1].ni);
-    __m512i g0 = _mm512_loadu_si512(LL[2].a0), g1 = _mm512_loadu_si512(LL[2].a1);
-    __m512i q0 = _mm512_loadu_si512(LL[2].n0), q1 = _mm512_loadu_si512(LL[2].n1), qi = _mm512_loadu_si512(LL[2].ni);
-    __m512i ba = _mm512_loadu_si512(LL[0].bh), bb = _mm512_loadu_si512(LL[1].bh), bc = _mm512_loadu_si512(LL[2].bh);
+    __m512i A0[FM_GROUPS], A1[FM_GROUPS], N0[FM_GROUPS], N1[FM_GROUPS], NI[FM_GROUPS], BB[FM_GROUPS];
+    for (int g = 0; g < FM_GROUPS; g++) {
+        A0[g] = _mm512_loadu_si512(LL[g].a0); A1[g] = _mm512_loadu_si512(LL[g].a1);
+        N0[g] = _mm512_loadu_si512(LL[g].n0); N1[g] = _mm512_loadu_si512(LL[g].n1); NI[g] = _mm512_loadu_si512(LL[g].ni);
+        BB[g] = _mm512_loadu_si512(LL[g].bh);
+    }
     int first = t < 64 ? t : 64;
     for (int phase = 0; phase < 2; phase++) {
         int it = phase == 0 ? first : t - first;
         for (int i = 0; i < it; i++) {
-            __m512i sa = _mm512_srli_epi64(ba, 63), sb = _mm512_srli_epi64(bb, 63), sc = _mm512_srli_epi64(bc, 63);
-            ba = _mm512_slli_epi64(ba, 1); bb = _mm512_slli_epi64(bb, 1); bc = _mm512_slli_epi64(bc, 1);
-            F52_STEP(a0, a1, n0, n1, ni, sa);
-            F52_STEP(e0, e1, p0, p1, pi, sb);
-            F52_STEP(g0, g1, q0, q1, qi, sc);
+            for (int g = 0; g < FM_GROUPS; g++) {
+                __m512i sb = _mm512_srli_epi64(BB[g], 63);
+                BB[g] = _mm512_slli_epi64(BB[g], 1);
+                F52_STEP(A0[g], A1[g], N0[g], N1[g], NI[g], sb);
+            }
         }
-        ba = _mm512_loadu_si512(LL[0].bl); bb = _mm512_loadu_si512(LL[1].bl); bc = _mm512_loadu_si512(LL[2].bl);
+        for (int g = 0; g < FM_GROUPS; g++) BB[g] = _mm512_loadu_si512(LL[g].bl);
     }
-    uint64_t r0[24], r1[24];
-    _mm512_storeu_si512(r0, a0); _mm512_storeu_si512(r1, a1);
-    _mm512_storeu_si512(r0 + 8, e0); _mm512_storeu_si512(r1 + 8, e1);
-    _mm512_storeu_si512(r0 + 16, g0); _mm512_storeu_si512(r1 + 16, g1);
     unsigned res = 0;
-    for (int i = 0; i < cnt; i++) {
-        u128 y = ((u128)r1[i] << 52) + (r0[i] & M52), m = n[i];      /* y < 4n */
-        y -= (m << 1) & -(u128)(y >= (m << 1));
-        y -= m & -(u128)(y >= m);
-        res |= (unsigned)(y == 1) << i;
+    for (int g = 0; g < FM_GROUPS; g++) {
+        uint64_t r0[8], r1[8];
+        _mm512_storeu_si512(r0, A0[g]); _mm512_storeu_si512(r1, A1[g]);
+        for (int l = 0; l < 8; l++) {
+            int i = g * 8 + l;
+            if (i >= cnt) break;
+            u128 y = ((u128)r1[l] << 52) + (r0[l] & M52), m = n[i];      /* y < 4n */
+            y -= (m << 1) & -(u128)(y >= (m << 1));
+            y -= m & -(u128)(y >= m);
+            res |= (unsigned)(y == 1) << i;
+        }
     }
     return res;
 }
 
-/* convenience: test cnt <= 24 numbers */
+/* convenience: test cnt <= F52_LANES numbers */
 static inline unsigned f52_test(const u128 *n, int cnt) {
-    f52_lanes LL[3];
+    f52_lanes LL[FM_GROUPS];
     u128 mx = 0;
     for (int i = 0; i < cnt; i++) if (n[i] > mx) mx = n[i];
     int b = 0; for (u128 x = mx; x; x >>= 1) b++;
@@ -111,7 +122,6 @@ static inline unsigned f52_test(const u128 *n, int cnt) {
 
 /* the names fscan.c and test_fermat.c use for whichever kernel is compiled in */
 #define FM_W 8
-#define FM_GROUPS 3
 #define FM_LANES F52_LANES
 typedef f52_lanes fm_lanes_t;
 #define fm_setup f52_setup

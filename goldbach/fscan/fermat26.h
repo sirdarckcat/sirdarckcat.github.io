@@ -20,8 +20,8 @@
  *       used only when the batch holds a number of 87 bits or more.
  * Measured on one Emerald Rapids core built with -march=haswell (min of repeated runs): 1.3 to 1.7 times
  * as fast per test as the 4-limb kernel.  Zen 2 was not measured: its model in llvm-mca (vpmuludq on one
- * pipe) predicts about 1.55 times.  Compile with -DFM_GROUPS=4 to run 16 numbers per round (about 10%
- * faster again on Intel, neutral in the Zen 2 model).
+ * pipe) predicts about 1.55 times.  FM_GROUPS = 4 (16 numbers per round, the default) is about 10% faster again
+ * on Intel than 3, and neutral in the Zen 2 model; use -DFM_GROUPS=3 to get the previous batch size.
  */
 #include <immintrin.h>
 #include <stdint.h>
@@ -29,9 +29,12 @@ typedef unsigned __int128 u128;
 #define M26 ((1ull << 26) - 1)
 #define FM_W 4                         /* lanes per vector */
 #ifndef FM_GROUPS
-#define FM_GROUPS 3                    /* independent vectors per round */
+#define FM_GROUPS 4                    /* independent vectors per round (3 to 8; 4 is about 10% faster than 3 on Intel) */
 #endif
 #define FM_LANES (FM_W * FM_GROUPS)
+#if FM_LANES > 32
+#error "FM_GROUPS > 8: the result of fm_run is a 32-bit mask, one bit per lane"
+#endif
 
 #define W3 30                          /* limb width of the 3-limb kernel */
 #define M3 ((1ull << W3) - 1)
