@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-"""Turn covers found by ptcover into search specs (the JSON format of goldbach/phd/campaign3).
+"""Turn covers found by ptcover or covergen into search specs (the JSON format of goldbach/phd/campaign3).
 
-    python3 make_specs.py Q name kmax covers.txt out.json [max_covers] [kmax_residual]
+    python3 make_specs.py Q name kmax covers.txt out.json [max_covers] [kmax_residual] [ledger.txt]
+    python3 make_specs.py --ledger ledger.txt specs.json [more.json ...]
 
-covers.txt holds lines "COVER k r:a r:a ..." or "BEST r:a r:a ..." (ptcover output).  Every cover is checked
-from scratch: residues nonzero, residual recomputed, N0 = the even number below M = 2*prod(r) with N0 = a (mod r).
-Identical covers are dropped; the max_covers best by the residual size the sampler reported are kept, and that size is
-recomputed for each of them.
+covers.txt holds lines "COVER k r:a r:a ..." or "BEST r:a r:a ..." (ptcover / covergen output).  Every cover is
+checked from scratch: residues nonzero, residual recomputed, N0 = the even number below M = 2*prod(r) with
+N0 = a (mod r).  Identical covers are dropped; the covers are taken in the order of the residual size the sampler
+reported, that size is recomputed for each, and the first max_covers specs with at most kmax_residual rows are kept.
+
+ledger.txt (optional) has one line per vector already handed out: the first 20 hex digits of the SHA-256 of the
+decimal N0.  A cover whose N0 is in the ledger is skipped and the N0 of every spec written is appended, so batches
+made with the same ledger never repeat a vector.  The second form adds the vectors of existing spec files.
 """
-import json, math, sys
-from functools import reduce
+import hashlib, json, math, sys
+try:
+    import numpy as np
+except ImportError:                      # the pure Python path is the same computation, about 100 times slower
+    np = None
 
 def primes_upto(n):
     s = bytearray([1]) * (n + 1); s[0] = s[1] = 0
@@ -24,9 +32,22 @@ def crt_even(cover):
         x += M * t; M *= r
     return x, M
 
+def key(N0): return hashlib.sha256(str(N0).encode()).hexdigest()[:20]
+
+_rows_np, _rowmod = None, {}
+def residual_of(rows, cover):
+    global _rows_np
+    if np is None: return [q for q in rows if all(q % r != a for r, a in cover)]
+    if _rows_np is None: _rows_np = np.array(rows, dtype=np.int64)
+    covered = np.zeros(len(rows), dtype=bool)
+    for r, a in cover:
+        if r not in _rowmod: _rowmod[r] = (_rows_np % r).astype(np.int32)
+        covered |= _rowmod[r] == a
+    return _rows_np[~covered].tolist()
+
 def spec(Q, rows, cover, name, kmax):
     assert all(0 < a < r for r, a in cover) and len({r for r, _ in cover}) == len(cover)
-    residual = [q for q in rows if all(q % r != a for r, a in cover)]
+    residual = residual_of(rows, cover)
     N0, M = crt_even(cover)
     assert N0 % 2 == 0 and all(N0 % r == a for r, a in cover)
     boost = 2.0
@@ -37,9 +58,23 @@ def spec(Q, rows, cover, name, kmax):
             "kmax": kmax, "ceiling_digits": len(str(N0 + (kmax - 1) * M)), "stop_on_success": True}
 
 if __name__ == "__main__":
+    if sys.argv[1] == "--ledger":
+        have = set(open(sys.argv[2]).read().split()) if __import__("os").path.exists(sys.argv[2]) else set()
+        new = []
+        for f in sys.argv[3:]:
+            for s in json.load(open(f)):
+                h = key(int(s["N0"]))
+                if h not in have: have.add(h); new.append(h)
+        with open(sys.argv[2], "a") as g: g.write("".join(h + "\n" for h in new))
+        print(f"{len(new)} vectors added to {sys.argv[2]} ({len(have)} in all)"); sys.exit()
     Q, name, kmax, src, dst = int(sys.argv[1]), sys.argv[2], int(float(sys.argv[3])), sys.argv[4], sys.argv[5]
     limit = int(sys.argv[6]) if len(sys.argv) > 6 else 10 ** 9
     kcap = int(sys.argv[7]) if len(sys.argv) > 7 else 10 ** 9
+    ledger = sys.argv[8] if len(sys.argv) > 8 else None
+    used = set()
+    if ledger:
+        try: used = set(open(ledger).read().split())
+        except FileNotFoundError: pass
     rows = [q for q in primes_upto(Q - 1) if q > 2]
     seen, covers = set(), []
     for line in open(src):
@@ -48,12 +83,22 @@ if __name__ == "__main__":
         cov = tuple(tuple(map(int, x.split(":"))) for x in f[(2 if f[0] == "COVER" else 1):])
         if cov in seen: continue
         seen.add(cov); covers.append((int(f[1]) if f[0] == "COVER" else 0, len(covers), cov))
-    covers = [c for _, _, c in sorted(covers)]
-    specs = [spec(Q, rows, c, "", kmax) for c in covers[:limit]]      # covers are presorted by the k the sampler reported
-    specs = [s for s in specs if len(s["residual"]) <= kcap]
+    covers = [c for _, _, c in sorted(covers)]            # by the residual size the sampler reported
+    specs, skipped, new = [], 0, []
+    for c in covers:
+        if len(specs) >= limit: break
+        s = spec(Q, rows, c, "", kmax)
+        if len(s["residual"]) > kcap: continue
+        h = key(int(s["N0"]))
+        if h in used: skipped += 1; continue
+        used.add(h); new.append(h); specs.append(s)
+    if not specs: sys.exit(f"no new spec: {len(covers)} covers read, {skipped} already in the ledger")
     specs.sort(key=lambda s: len(s["residual"]))
     for i, s in enumerate(specs): s["name"] = f"{name}_v{i}"
     json.dump(specs, open(dst, "w"))
+    if ledger:
+        with open(ledger, "a") as g: g.write("".join(h + "\n" for h in new))
     ks = [len(s["residual"]) for s in specs]
     print(f"{len(specs)} specs written to {dst}: residual sizes {min(ks)}..{max(ks)}, E {specs[0]['E']:.3f}..{specs[-1]['E']:.3f}, "
-          f"M has {specs[0]['m_digits']:.2f} digits, N below 10^{specs[0]['n_digits_est']:.2f} for k < {kmax}")
+          f"M has {specs[0]['m_digits']:.2f} digits, N below 10^{specs[0]['n_digits_est']:.2f} for k < {kmax}"
+          + (f"; {skipped} covers skipped as already in {ledger}" if ledger else ""))

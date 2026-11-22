@@ -98,6 +98,47 @@ Three conclusions.
 3. **Raising the target costs 8.7 rows, 0.21 nats, per 1,000 in g** with
    optimal covers, steady from 122,000 to 160,000.
 
+## Vectors in bulk (`covergen.c`, `gen_vectors.sh`)
+
+With the CPU sieve in front of the GPUs a vector's whole progression is used
+up in about two minutes, so the search needs thousands of vectors a day.
+They exist: near the best cover, the covers with at most a given number of
+uncovered rows form large sets connected by single-class changes, and
+`covergen` walks in such a set (a move is accepted exactly when it stays at
+or below the cap) and prints every cover it visits once.
+
+| target Q | cap on uncovered rows | distinct covers reached | time (4 cores) |
+|---|---|---|---|
+| 150,000 | 1,092 (the best known) | about 1,000 | used up |
+| 150,000 | 1,093 | more than 120,000 | 20,000 in 5 s; 120,000 in 6 min |
+| 150,000 | 1,094 | not exhausted | 20,000 in 3 s |
+| 140,000 | 1,007 (the best known) | 50 | used up |
+| 140,000 | 1,008 | about 4,800 | 45 s |
+
+One row more multiplies the supply by 30 to 100 and costs 2.4% of the
+success probability per member, so a search that needs 1,700 vectors a day
+can stay within one or two rows of the best cover for months.
+
+```
+./gen_vectors.sh 150000 1093 5000 b1 101     # -> specs_q150000_b1.json, 5,000 new vectors, best first
+./gen_vectors.sh 140000 1008 2000 b1 201     # at 140,000 use cap 1009 once 1008 runs dry
+```
+
+The script builds `covergen`, walks from the covers in `starts/q<Q>.txt`,
+turns the best `count` new covers into specs with `make_specs.py` and
+rechecks the file with `check_specs.py` (5,000 vectors: 4 minutes, nearly all
+of it the recheck). `starts/ledger_q<Q>.txt` remembers every vector handed
+out (a hash of N0) so that batches never repeat one; the two ledgers start
+with the files delivered so far for these targets, including the other
+sampler's. Use a new seed for every batch. If the walk stops early ("no new
+cover for 30 s") the cap is used up: raise it by one. For another target,
+`python3 specs_to_covers.py specs.json > starts/q<Q>.txt` makes starting
+points from any spec file, and `python3 make_specs.py --ledger
+starts/ledger_q<Q>.txt specs.json` enters its vectors in the ledger. The
+starting points at 140,000 are the 1,007- and 1,008-row covers of the other
+session's sampler (`phd/cap200`), which are better than this sampler's
+1,011.
+
 ## Which members to test
 
 A member N0 + tM succeeds with probability (1 − p)^a, where a is the number
