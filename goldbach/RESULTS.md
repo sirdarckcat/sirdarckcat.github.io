@@ -1,5 +1,25 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22, 19:00 UTC): g(N) = 10,771 at 3.6·10^22
+
+**g(N) = 10,771** for N = 35505990484772441527442 (23 digits,
+`records/threshold_23digit_g10771/`). It is smaller than every N we had
+with g above the exhaustive range and its g is larger than all of theirs,
+including the 30-digit N (g = 10,459). So one number now holds the low end
+of the frontier alone: the next frontier point is the 40-digit N with
+g = 11,173.
+
+- **Closeness.** 69.7% of the largest g expected at that size.
+- **How.** The third success of the `fscan` run on the progressions with
+  197 residual primes (scanner at `e383cbc`, AVX2 build, one of the Colab
+  machines); member k = 2,713,952.
+- **Expected against found** for that class is still partial: the one
+  finished slice of six expected 0.13 successes and found 1; three
+  successes in the class so far. The full counts follow when the other
+  slices end.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,311 primes below g).
+
 ## The records of the parallel collection, brought onto the scoreboard (2026-11-22)
 
 `slop/goldbach/records/` holds six certified records from an earlier
@@ -984,6 +1004,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_23digit_g10771` | 10,771 | 23 | ~15,400 | 69.7% | 109 | 19 |
 | `threshold_23digit_g10399` | 10,399 | 23 | ~16,000 | 65.0% | 103 | 19 |
 | `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
