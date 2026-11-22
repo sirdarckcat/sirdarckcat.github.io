@@ -51,6 +51,10 @@ it passes.
 | 40 | 59,000 | 57,930 to 60,880 | 1.54 | 53,720 |
 | 50 | 98,250 | 96,860 to 100,720 | 1.56 | 88,070 |
 | 63 | 165,920 | 164,030 to 169,300 | 1.58 | 146,630 |
+| 80 | 283,410 | 280,870 to 287,920 | 1.60 | 247,790 |
+| 100 | 465,350 | 462,100 to 471,120 | 1.61 | 403,730 |
+| 150 | 1.14 million | 1.13 million to 1.15 million | 1.63 | 976,120 |
+| 200 | 2.13 million | 2.12 million to 2.14 million | 1.64 | 1.82 million |
 
 The ratio to ln²N·ln ln N is 1.40 at 19 digits, where the old constant was
 fitted, and it grows with size. The earlier line was therefore too low
@@ -64,7 +68,7 @@ closeness figure drops (`closeness.py` now interpolates this table):
 | 30 digits | 10,459 | 39.0% | 36.5% |
 | 46 digits | 20,551 | 28.2% | 25.5% |
 | 63 digits | 30,139 | 20.7% | 18.3% |
-| 150 digits | 104,527 | 10.7% | 9.2% (line extrapolated) |
+| 150 digits | 104,527 | 10.7% | 9.2% |
 
 The closeness figures in the sections below were written with the fitted
 line; the table in the Closeness section near the end has the model values
@@ -75,9 +79,10 @@ near 7·10^18, just above the exhaustive range; our 25-digit N is about a
 million times larger. And about 9·10^9 even numbers below that 25-digit N
 should have a g of at least its 10,357 (for the 27-digit record: 9·10^12).
 
-Past the table (above 63 digits) `closeness.py` uses a formula that
-reproduces the table to about 1%: the ceiling is the prime number with index
-(L ÷ 1.3203)·(L − ln 2 − 0.80·ln L − 2.38), where L = ln N and
+Past the table (above 200 digits) `closeness.py` uses a formula that
+reproduces the table within 1.5%, and within 0.3% from 50 digits up: the
+ceiling is the prime number with index
+(L ÷ 1.3203)·(L − ln 2 − 0.71·ln L − 2.74), where L = ln N and
 1.3203 is twice the twin prime constant.
 
 ## The threshold game at 30,000 (2026-11-22): g(N) > 30,000 at 63 digits
@@ -839,7 +844,7 @@ remarkable the number is. `closeness.py` scores each record by
 g(N) ÷ ceiling(N), where ceiling(N) is the largest g a number of that size
 is expected to have: the median of the largest g below N in the
 Hardy–Littlewood model of `ceiling_model.py` (a prediction, checked as
-described in the first section of this file; tabulated up to 63 digits
+described in the first section of this file; tabulated up to 200 digits
 and continued by a formula beyond). The literal bound g ≤ N/2 is attained
 only at N = 4 and 6 and is useless elsewhere.
 
@@ -853,10 +858,10 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
-| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.6·10^8 | 0.20% | 35 | 150 |
+| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.5·10^8 | 0.20% | 35 | 150 |
 | `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |
 | `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~1.1·10^11 | 0.0044% | 9.3 | 296 |
-| `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.9·10^11 | 0.0026% | 9.8 | 408 |
+| `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.9·10^11 | 0.0026% | 9.8 | 409 |
 
 Two readings. (1) A random even number with as many digits as the 5M
 record already has g near 540,000 (Hardy–Littlewood mean; measured on

@@ -9,10 +9,10 @@ of L = ln N only:
       Nothing is proved about it, so this is a prediction: the median of the
       largest g among the even numbers below N in the Hardy-Littlewood model
       of ceiling_model.py, which has no fitted constant.  The model is
-      tabulated in ceiling_table.json from 19 digits up and interpolated
+      tabulated in ceiling_table.json for 19 to 200 digits and interpolated
       here.  Past the end of the table the formula below is used, which
-      reproduces the table to about 1%: the ceiling is the prime number with
-      index
+      reproduces the table within 1.5% (0.3% from 50 digits up): the ceiling
+      is the prime number with index
           (L / 1.3203) * (L - ln 2 - A * ln L - B),
       1.3203 being twice the twin prime constant and A, B fitted to the table.
       Below the table (N < 3.3e18) the value is the table's first point scaled
