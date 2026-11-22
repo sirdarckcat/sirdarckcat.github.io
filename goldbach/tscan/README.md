@@ -62,7 +62,16 @@ search (`variants.py`) finds 6 vectors with 186, 28 with 187, 157 with 188,
 vector's success rate depends on little but its residual count. Scanning V
 of them to the same height reaches a V times smaller N for the same number
 of candidates. `vscan.py` does this: it always advances the progression
-that is lowest.
+that is lowest. Several machines can share one list: each takes every n-th
+progression (last argument `i/n`) and keeps its own state file.
+
+Why 13 primes and not 14: fixing the residue mod 47 as well gives 47 times
+as many progressions, each 47 times shorter, and lets the search keep only
+the best classes mod 47 instead of sieving all of them. There are 7 vectors
+on the 14 primes with 178 residual primes, 85 with 179, 462 with 180, 2,498
+with 181, 10,936 with 182 and 42,906 with 183. For the same number of
+candidates that is an estimated 1.3 times more successes, which did not
+justify a scanner that handles tens of thousands of short progressions.
 
 ## Use
 
@@ -72,6 +81,7 @@ python3 ../cover.py 10007 23 spec.json                # then add a "name" field
 python3 scan.py plan.json 3600                        # plan.json: see scan.py
 python3 variants.py spec.json 3 variants.json
 python3 vscan.py variants.json state.json 3600 188    # only vectors with <= 188 residual primes
+python3 vscan.py variants.json mine.json 3600 190 24 0/3   # one of three machines sharing the list
 ```
 
 `scan.py` compiles `tscan.c` on first use (`gcc -O3 -march=native -fopenmp`).

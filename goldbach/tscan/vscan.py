@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scan many progressions with the same modulus in lockstep (smallest N first).
 
-    python3 vscan.py variants.json state.json <seconds> [umax] [log2 chunk]
+    python3 vscan.py variants.json state.json <seconds> [umax] [log2 chunk] [i/n]
 
 variants.json comes from variants.py: residue vectors on the same cover
 primes, i.e. progressions N = N0_v + k*M with one M.  The driver always
@@ -9,7 +9,10 @@ advances the progression whose position k is lowest, by one chunk, so all
 of them climb together and N grows as slowly as possible for the work done.
 Only variants with at most umax residual primes are used (default: all).
 Adding variants later (a larger file or umax, same state file) is fine: the
-new ones start at k = 0 and catch up first.
+new ones start at k = 0 and catch up first.  With i/n only every n-th of
+those variants is used, starting at the i-th (in order of residual size,
+then name): n machines given 0/n ... n-1/n share the list without overlap,
+each with its own state file.
 
 It stops when a success is known and no progression can still produce a
 smaller one (every position is past it), or when the time is up.  State:
@@ -66,6 +69,10 @@ def main():
         os.replace(st_path + ".tmp", st_path)
 
     order = sorted(specs, key=lambda s: (len(s["residual"]), s["name"]))
+    if len(sys.argv) > 6:
+        i, n = map(int, sys.argv[6].split("/"))
+        assert 0 <= i < n
+        order = order[i::n]
     k_cal = max(min(pos[s["name"]] for s in order), 1 << 26)
     t_sieve, t_test, p, hist = scan.calibrate(exe, jobfile(order[0]), k_cal, B, LOGK)
     T = {}                                            # residual size -> threshold
