@@ -13,6 +13,7 @@ numbers of 20 to 80 digits.
 | `variants.py` | every near-optimal residue vector on a cover's primes |
 | `vscan.py` | driver that scans many such progressions in lockstep, smallest N first |
 | `selftest.py` | tests against gmpy2 and a brute-force reference (`selftest_q3001.json`) |
+| `q10007_e23.json` | the cover behind the 27-digit record (`cover.py 10007 23`, 13 primes r ≤ 43), the base of the list `variants.py` builds |
 
 A record never rests on this code. Each success is re-checked by
 `search.verify_success`, then proved by `package_record.py` (a witness per
@@ -79,7 +80,7 @@ justify a scanner that handles tens of thousands of short progressions.
 python3 selftest.py                                   # about 10 s
 python3 ../cover.py 10007 23 spec.json                # then add a "name" field
 python3 scan.py plan.json 3600                        # plan.json: see scan.py
-python3 variants.py spec.json 3 variants.json
+python3 variants.py q10007_e23.json 3 variants.json   # 18,208 vectors with <= 191 residual primes, about 10 s
 python3 vscan.py variants.json state.json 3600 188    # only vectors with <= 188 residual primes
 python3 vscan.py variants.json mine.json 3600 190 24 0/3   # one of three machines sharing the list
 ```
