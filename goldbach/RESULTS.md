@@ -1,5 +1,54 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22, later): g(N) > 10,000 at 25 digits
+
+**g(N) = 10,357** for N = 5471513744131872011405456 (25 digits,
+`records/threshold_25digit_g10357/`). It is 55 times smaller than the
+27-digit N two sections down and has a larger g, so it replaces that N as
+the smallest N known to us whose g exceeds everything in the exhaustive
+range (9,781).
+
+- **Closeness.** g is 56.4% of the conjectural ceiling for a 25-digit
+  number (`closeness.py`) and 92 times the g of a typical number of that
+  size. The 27-digit record has 47.3%.
+- **What changed.** One progression became 1,009. `tscan/variants.py`
+  lists every residue vector on the 13 primes r ≤ 43 that leaves at most
+  189 primes below 10,007 uncovered: 6 vectors with 186, 28 with 187, 157
+  with 188 and 818 with 189. They all share the modulus M.
+  `tscan/vscan.py` scans them in lockstep, always advancing the progression
+  that is lowest, so N grows as slowly as possible for the work done.
+- **Search.** 4.9·10^11 members in 6.5 hours on 4 cores. The 191
+  progressions with at most 188 residual primes were scanned for k below
+  7.4·10^8 or more (N up to 9.7·10^24), the 818 with 189 for k below
+  4.2·10^8. The scanner tested about 1% of the members (the ones with the
+  fewest complements left after the sieve: at most 49 of 189 in the
+  progression that succeeded), and by the survivor histogram those hold
+  about two thirds of the expected successes. The success is at
+  k = 418,223,156 of a progression with 189 residual primes.
+- **It came late.** By the model the expected number of successes up to
+  there was 2.7; the chance of none by then is 7%. Because of the empty
+  stretch the scanner and the model were checked again before the success
+  turned up, on cut-down instances where successes are common (only the
+  first 110 or 130 residual primes as rows): 103 successes found against
+  95 expected, and 16 against 17.5 with `vscan.py` end to end. Every one
+  of them was confirmed with gmpy2.
+- **Nothing smaller in the scan.** All 1,009 progressions have been
+  scanned up to this N, and this is the only success among the members
+  tested. The members that were not tested hold the other third of the
+  expected successes, so a smaller N may still sit among them or in other
+  progressions.
+- **Proof.** Nothing in it depends on the scanner. `evidence.json` has a
+  compositeness witness for N − q for each of the 1,270 primes q < g: a
+  cover prime (1,073), a prime below 10^5 (146), a failed strong base-2
+  test (50), or parity (q = 2). N − g is proved prime by a PARI ECPP
+  certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The 27-digit N leaves the frontier, because a smaller N with a larger g is
+now known. The 30-digit N stays: no smaller N with a g as large as its
+10,459 is known.
+
 ## The threshold game at 20,000 (2026-11-22): g(N) > 20,000 at 46 digits
 
 **g(N) = 20,551** for N = 7687588743764734829791950727864816819276291322
@@ -35,6 +84,8 @@ It is a frontier point: every smaller N we know has a smaller g (the
 `records/threshold_27digit_g10111/`). It is 646 times smaller than the
 30-digit N of the next section and replaces it as the smallest N known to
 us whose g exceeds everything in the exhaustive range (9,781).
+Later the same day the 25-digit N at the top of this file took that place,
+and this N left the frontier.
 
 - **Closeness.** g is 47.3% of the conjectural ceiling for a 27-digit
   number (`closeness.py`); the 30-digit record has 39.0%.
@@ -672,6 +723,7 @@ g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | ~100% (it fixes the constant) | 132 | 19 |
+| `threshold_25digit_g10357` | 10,357 | 25 | ~18,400 | 56.4% | 92 | 19 |
 | `threshold_27digit_g10111` | 10,111 | 27 | ~21,400 | 47.3% | 81 | 19 |
 | `threshold_30digit_g10459` | 10,459 | 30 | ~26,800 | 39.0% | 73 | 19 |
 | `threshold_46digit_g20551` | 20,551 | 46 | ~72,800 | 28.2% | 79 | 26 |

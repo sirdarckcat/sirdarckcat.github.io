@@ -13,7 +13,7 @@ numbers of 20 to 80 digits.
 | `variants.py` | every near-optimal residue vector on a cover's primes |
 | `vscan.py` | driver that scans many such progressions in lockstep, smallest N first |
 | `selftest.py` | tests against gmpy2 and a brute-force reference (`selftest_q3001.json`) |
-| `q10007_e23.json` | the cover behind the 27-digit record (`cover.py 10007 23`, 13 primes r ≤ 43), the base of the list `variants.py` builds |
+| `q10007_e23.json` | the cover behind the 27-digit record (`cover.py 10007 23`, 13 primes r ≤ 43), the base of the list `variants.py` builds; the 25-digit record is in one of the list's progressions |
 
 A record never rests on this code. Each success is re-checked by
 `search.verify_success`, then proved by `package_record.py` (a witness per
@@ -69,6 +69,9 @@ of them to the same height reaches a V times smaller N for the same number
 of candidates. `vscan.py` does this: it always advances the progression
 that is lowest. Several machines can share one list: each takes every n-th
 progression (last argument `i/n`) and keeps its own state file.
+
+The 25-digit record (g = 10,357) was found this way: the 1,009 vectors with
+at most 189 residual primes, 4.9·10^11 members, 6.5 hours on 4 cores.
 
 Why 13 primes and not 14: fixing the residue mod 47 as well gives 47 times
 as many progressions, each 47 times shorter, and lets the search keep only
