@@ -26,8 +26,8 @@ slice. A slice's seconds are its batch's time divided by the number of slices in
 Campaign mode reads DIR/my_specs.json and skips the slices already in DIR/search.log (2^20 k each,
 k-major order, from --klo up to --kmax, or downwards with --desc: E falls as N grows, so the slices
 just below the 199-digit ceiling give the most hits per k). It appends a line per slice to DIR/search.log once its batch is done, and statistics
-to DIR/gpu3_stats.log. It stops on a hit (exit 3, DIR/found.jsonl not empty) or when every variant
-reaches --kmax (exit 2).
+to DIR/gpu3_stats.log. It stops on a hit (exit 3, DIR/found.jsonl not empty; with --no-stop it goes on)
+or when every variant reaches --kmax (exit 2).
 """
 import argparse, json, math, os, re, sys, time
 import numpy as np
@@ -39,6 +39,7 @@ ap.add_argument("--batch", type=int, default=16, help="slices per pool (campaign
 ap.add_argument("--kmax", type=int, default=450_000_000, help="campaign mode: slices below this k (the 199-digit ceiling also caps)")
 ap.add_argument("--klo", type=int, default=0, help="campaign mode: slices from this k up")
 ap.add_argument("--desc", action="store_true", help="campaign mode: highest slices first (larger N: lower E, more hits per k)")
+ap.add_argument("--no-stop", action="store_true", help="campaign mode: keep going after a hit (more hits, larger best g)")
 ap.add_argument("--slice", type=int, default=1 << 20)
 ap.add_argument("--block", type=int, default=32768)
 ap.add_argument("--sieve-b", type=int, default=1000000)
@@ -265,7 +266,7 @@ def campaign(D):
                 done.add(m.group(1))
     out = open(FOUND, "a")
     while True:
-        if os.path.exists(FOUND) and os.path.getsize(FOUND) > 0:
+        if not args.no_stop and os.path.exists(FOUND) and os.path.getsize(FOUND) > 0:
             print("C3GPU-HIT: found.jsonl is not empty", flush=True)
             return 3
         batch = []
