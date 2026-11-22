@@ -105,6 +105,11 @@ static u64 cls[NR][44][NW];
 static u64 Mmod, Ebasis[NR];
 static u128 Xmin, Xmax;
 static int SP[MAXS], coff[MAXS], moff[MAXS], ckm[MAXS];
+/* the score window of prime s for block b starts at offs[s][b] = (kc + VB*b) mod s; all of them advance by CK mod s a
+   chunk, which is one SIMD add and wrap over the flat array.  The tables are then only s + VB bytes long (16 KB in all
+   instead of 44 KB with the periodic extension by CK), so the exact stage's traffic does not push them out of L1. */
+#define NOFF (MAXS * NB)
+static u16 DLT[NOFF + 64] __attribute__((aligned(64))), SPB[NOFF + 64] __attribute__((aligned(64))), CKMv[MAXS + 32] __attribute__((aligned(64)));
 static u16 *qM[MAXS];                 /* qM[p][x] = qs[x] * M^-1 mod s */
 static u64 minv[MAXS];
 static double prodL;                  /* prod over primes r <= L of (1 - 1/r) */
@@ -257,7 +262,7 @@ static void scan_vector(tls_t *T) {
             ct[kap]++;
             mk[4 * kap + (j >> 6)] |= 1ull << (j & 63);
         }
-        for (int i = s; i < s + CK; i++) ct[i] = ct[i - s];
+        for (int i = s; i < s + VB; i++) ct[i] = ct[i - s];
     }
     for (int w = 0; w < 4; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
     for (int j = 0; j < R; j++) T->rowq[j] = qs[T->rows[j]];
@@ -271,14 +276,19 @@ static void scan_vector(tls_t *T) {
     u16 phi[MAXS + 32] __attribute__((aligned(64)));
     memset(phi, 0, sizeof phi);
     for (int p = 0; p < ns; p++) phi[p] = (u16)(kc % SP[p]);
+    u16 offs[NOFF + 64] __attribute__((aligned(64)));
+    memset(offs, 0, sizeof offs);
+    for (int p = 0; p < ns; p++) for (int b = 0; b < NB; b++) offs[p * NB + b] = (u16)((kc + (u64)VB * b) % SP[p]);
+    const int nflat = (ns * NB + VW - 1) / VW * VW;
     const vb_t thv = vb_set1(th);
     const u64 smask = ((u64)1 << sample_bits) - 1;
     for (; kc <= kmax; kc += CK) {
         vb_t sc[NB];
         for (int b = 0; b < NB; b++) sc[b] = vb_zero();
         for (int p = 0; p < ns; p++) {
-            const u8 *t = T->cbuf + coff[p] + phi[p];
-            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + VB * b));
+            const u8 *t = T->cbuf + coff[p];
+            const u16 *o = offs + p * NB;
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + o[b]));
         }
         double lnN = log((double)((u128)n0 + (u128)kc * Mmod)), eps = eps_at(lnN), l1 = log1p(-eps);
         double odds2 = (eps / (1 - eps)) * (eps / (1 - eps));
@@ -314,7 +324,14 @@ static void scan_vector(tls_t *T) {
             m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
         if (T->qn >= 4 * FM_LANES) fermat_drain(T, FM_LANES);
-        for (int p = 0; p < ns; p++) { int f = phi[p] + ckm[p]; if (f >= SP[p]) f -= SP[p]; phi[p] = (u16)f; }
+        for (int i = 0; i < nflat; i += VW) {             /* advance every window by CK, wrapping at the period (u16: min(x, x - s) picks x - s when x >= s) */
+            vw_t x = vw_add(vw_loadu(offs + i), vw_loadu(DLT + i));
+            vw_store(offs + i, vw_min(x, vw_sub(x, vw_loadu(SPB + i))));
+        }
+        for (int p = 0; p < ns; p += VW) {
+            vw_t x = vw_add(vw_loadu(phi + p), vw_loadu(CKMv + p));
+            vw_store(phi + p, vw_min(x, vw_sub(x, vw_loadu(SPv + p))));
+        }
     }
     st->members += kmax - kmin + 1;
     fermat_drain(T, 1);                                  /* finish this vector's members */
@@ -417,7 +434,7 @@ int main(int argc, char **argv) {
         prodL *= 1.0 - 1.0 / p;
         if (p <= RS[NR - 1]) continue;
         if (ns >= MAXS) { fprintf(stderr, "too many score primes\n"); return 2; }
-        SP[ns] = p; coff[ns] = ctot; ctot += p + CK; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
+        SP[ns] = p; coff[ns] = ctot; ctot += p + VB; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
         minv[ns] = invmod(Mmod % p, p);
         qM[ns] = malloc(nq * sizeof(u16));
         for (int x = 0; x < nq; x++) qM[ns][x] = (u16)((u64)(qs[x] % p) * minv[ns] % p);
@@ -425,6 +442,11 @@ int main(int argc, char **argv) {
         ns++;
     }
     for (int p = ns; p < MAXS + 32; p++) { SPv[p] = 1; RECv[p] = 0; }
+    for (int i = 0; i < NOFF + 64; i++) { DLT[i] = 0; SPB[i] = 1; }       /* padding lanes stay at 0 */
+    for (int p = 0; p < ns; p++) {
+        CKMv[p] = (u16)ckm[p];
+        for (int b = 0; b < NB; b++) { DLT[p * NB + b] = (u16)ckm[p]; SPB[p * NB + b] = (u16)SP[p]; }
+    }
     if (L + CK >= 65536) { fprintf(stderr, "L too large\n"); return 2; }
 
     /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17, 19.  They are very unequal (the
