@@ -110,11 +110,15 @@ _Static_assert(NB % 4 == 0, "NB must be a multiple of 4");
    Measured on one Emerald Rapids core (48 KB L1, three load pipes), whole scanner, min of 5 interleaved runs: with AVX-512
    1 is 10.7% faster than 0 and 2 is 10.2% faster (the 43.5 KB of tables do not fit beside the exact stage's traffic); with
    AVX2 0 is the fastest, 1 and 2 are 8% slower (the 29.5 KB of tables fit, so the extra loads and ALU work are pure cost).
-   Zen 2 (32 KB L1, two load pipes) is in between and was NOT measured: a simulated 32 KB 8-way L1 gives the score loop's
-   misses 28.3% in mode 0 against 11.9% in mode 1, but mode 1 doubles the loads.  Time all three there: selftest_ab.sh does. */
+   Zen 2 (EPYC 7B12: 32 KB L1, two load pipes), measured on a Colab runtime with the production scan paused, same method: 0 is
+   the reference, 1 is 0.6% slower, 2 is 2.1% faster (a simulated 32 KB 8-way L1 puts the score loop's L1 misses at 28.3% in
+   mode 0 and 11.9% in mode 1, but mode 1 doubles the loads and mode 2 does not).  Other cores are untested: selftest_ab.sh
+   times all three. */
 #ifndef SCORE_MODE
-#ifdef __AVX512BW__
+#if defined(__AVX512BW__)
 #define SCORE_MODE 1
+#elif defined(__znver2__)
+#define SCORE_MODE 2
 #else
 #define SCORE_MODE 0
 #endif

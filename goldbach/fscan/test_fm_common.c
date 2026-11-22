@@ -1,7 +1,7 @@
 /* test_fm_common.c -- fm_exp_words (64-bit operations, fm_common.h) against the 128-bit formulas it replaced:
  *     E = n + Rb - 1;  c = ceil(E / 2^t);  B = c * 2^t - E;  B <<= 128 - t;  (bh, bl) = (B >> 64, B)
  * for random and edge-case n of 41 to 100 bits (low word wrapping, B = 0, all ones, powers of two), t = bits - 6, Rb = 90 and 104.
- *     gcc -O2 -o test_fm_common test_fm_common.c && ./test_fm_common      (about 10 seconds; must print 0 mismatches)
+ *     gcc -O2 -o test_fm_common test_fm_common.c && ./test_fm_common      (a few seconds; must print 0 mismatches)
  */
 #include <stdio.h>
 #include <stdlib.h>
