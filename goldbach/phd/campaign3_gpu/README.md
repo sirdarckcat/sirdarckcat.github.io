@@ -68,6 +68,14 @@ Version 3 (22 Nov):
   `../campaign3/variants1000_index.json` lists each variant's name, N0, |U| and E, and the full output
   has sha256 22e9b38769d96d92d1a331d81cc5c02331991e5025fcbcae3d5621b328fc5bbd. Its first 60 specs are
   those of `specs_variants.json` and `specs_variants_ext.json`.
+- A second family, `r200b_q122k_w0..w4950` (`../campaign3/variants_w_index.json`): `gen_variants.variants(base, 6000,
+  kmax=150000000, ceiling=199, pair_pool=120)`, minus every N0 of the first family, |U| ≤ 872 kept (sha256 of the
+  full list 352fe5962138c19b125274661b507a2d8a24f7b4787f0c6be353c185ac7d5cb1).
+- Three GPUs since 20:30Z: gold-gpu (L4), gold-g4 and gold-g4b (RTX PRO 6000 each), ~21M k/s together at hit% 14.2.
+- A hit is certified by `certify_c3.sh found.jsonl specs.json`. It runs `package_record.py`
+  (witnesses, PARI primecert), `ecpp_check.py`, slop's stdlib `verify_record.py` with the claims
+  g > 119,419 and ≤ 199 digits, and direct gmpy2 and PARI checks. Rehearsed on the g = 119,419 record:
+  every check passes except, by construction, the claim g > 119,419.
 - Order: E falls as N grows (p ∝ 1/ln N): E^ is ≈ 20.8 just below 10^199 and ≈ 21.05 at k ≈ 10^7, so the
   GPUs scan k ∈ [2.73·10^8, kcap] from the top down (`--desc --klo 272629760 --kmax 543859952`).
 
