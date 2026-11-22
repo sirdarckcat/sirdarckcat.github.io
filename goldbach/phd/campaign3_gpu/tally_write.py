@@ -44,6 +44,20 @@ for fam in fams:
     tot_e += fe; tot_f += ff
     summary.append(dict(family=fam, members=fm, hit_mass_members=fh, expected=fe, found=int(ff), g=sorted(gs, reverse=True)))
 lines += [f"**All covers: expected {tot_e:.2f}, found {int(tot_f)}.**", ""]
+ov = os.path.join(OUT, "overshoot.json")
+if os.path.exists(ov):
+    o = json.load(open(ov))
+    lines += ["## How far past Q the hits went (`overshoot.py`)", "",
+              "The rows a hit survived beyond its threshold are the primes q in [Q, g) that its cover leaves uncovered. Each such N − q is",
+              "a composite the cover did not force. The model makes each prime with probability p = boost / ln N, so the count is geometric",
+              "with mean (1 − p)/p ≈ 41 and tail P(≥ u) = (1 − p)^u, and the sum over hits is negative binomial.", "",
+              "| hit | Q | g | rows survived | expected | P(≥ that) |", "|---|---|---|---|---|---|"]
+    for r in o["rows"]:
+        lines.append(f"| `{r['name']}` | {r['Q']:,} | {r['g']:,} | {r['rows_survived']} | {r['expected']:.1f} | {r['tail']:.3f} |")
+    lines.append("")
+    for Q, b in o["by_Q"].items():
+        lines.append(f"- Q = {int(Q):,}: {b['hits']} hits survived {b['rows_survived']} rows against {b['expected']} expected, P(sum ≥ that) = {b['tail']:.3f}.")
+    lines.append("")
 open(OUT + "/TALLY.md", "w").write("\n".join(lines))
 json.dump(dict(updated=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), rows=rows, summary=summary), open(OUT + "/tally.json", "w"), indent=1)
 print("\n".join(lines[-12:]))

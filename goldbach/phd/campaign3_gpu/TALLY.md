@@ -1,6 +1,6 @@
 # campaign3 on the GPUs: expected against found
 
-Updated 2026-11-22 22:10 UTC. Regenerated from the runtimes' own logs:
+Updated 2026-11-22 22:41 UTC. Regenerated from the runtimes' own logs:
 - `tally_rt.py` runs on each runtime and reads its search.log, gpu3_stats.log and found.jsonl;
 - this page is written from those results.
 
@@ -56,3 +56,21 @@ Columns:
 | **all** | | 0.19e9 | 0.189e9 | | **0.110** | **0** | - |
 
 **All covers: expected 7.67, found 7.**
+
+## How far past Q the hits went (`overshoot.py`)
+
+The rows a hit survived beyond its threshold are the primes q in [Q, g) that its cover leaves uncovered. Each such N − q is
+a composite the cover did not force. The model makes each prime with probability p = boost / ln N, so the count is geometric
+with mean (1 − p)/p ≈ 41 and tail P(≥ u) = (1 − p)^u, and the sum over hits is negative binomial.
+
+| hit | Q | g | rows survived | expected | P(≥ that) |
+|---|---|---|---|---|---|
+| `r200b_q122k_v367@532676608` | 122,000 | 125,269 | 44 | 40.6 | 0.343 |
+| `r200b_q122k_w175@540016640` | 122,000 | 133,981 | 140 | 40.6 | 0.033 |
+| `r200b_q122k_v851@537919488` | 122,000 | 132,103 | 116 | 40.6 | 0.060 |
+| `r200_q122k_k850_v1760@4292870144` | 122,000 | 126,397 | 57 | 40.8 | 0.252 |
+| `r200_q122k_k850_v2028@4291821568` | 122,000 | 123,259 | 16 | 40.8 | 0.679 |
+| `r200_q122k_k850_v440@4282384384` | 122,000 | 122,827 | 9 | 40.8 | 0.804 |
+| `r200_q122k_k850_v1039@4281335808` | 122,000 | 125,221 | 43 | 40.8 | 0.353 |
+
+- Q = 122,000: 7 hits survived 425 rows against 285.1 expected, P(sum ≥ that) = 0.108.
