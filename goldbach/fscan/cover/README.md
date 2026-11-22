@@ -48,13 +48,13 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 | Q | rows | best k found | E = p1·k (200 digits) | spec file in `deliver/` |
 |---|---|---|---|---|
 | 122,000 | 11,474 | **851** | 20.34 | `specs_q122000_64.json` |
-| 130,000 | 12,159 | 921 | 22.02 | `specs_q130000_128.json` |
-| 135,000 | 12,591 | 968 | 23.14 | `specs_q135000_128.json` |
-| 140,000 | 13,010 | 1,011 | 24.17 | `specs_q140000_128.json` |
-| 145,000 | 13,427 | 1,050 | 25.10 | `specs_q145000_128.json` |
-| 150,000 | 13,848 | 1,093 | 26.13 | `specs_q150000_128.json` |
-| 155,000 | 14,268 | 1,138 | 27.20 | `specs_q155000_128.json` |
-| 160,000 | 14,683 | 1,185 | 28.33 | `specs_q160000_128.json` |
+| 130,000 | 12,158 | 921 | 22.02 | `specs_q130000_128.json` |
+| 135,000 | 12,575 | 968 | 23.14 | `specs_q135000_128.json` |
+| 140,000 | 13,009 | 1,011 | 24.17 | `specs_q140000_128.json` |
+| 145,000 | 13,421 | 1,050 | 25.10 | `specs_q145000_128.json` |
+| 150,000 | 13,847 | 1,093 | 26.13 | `specs_q150000_128.json` |
+| 155,000 | 14,271 | 1,138 | 27.20 | `specs_q155000_128.json` |
+| 160,000 | 14,682 | 1,185 | 28.33 | `specs_q160000_128.json` |
 
 (60,000 sweeps on one core, about 15 minutes each, from random starts;
 `deliver/run_*.txt`. A first run of 30,000 sweeps on 4 cores gave 856 at
@@ -90,7 +90,7 @@ Three conclusions.
    within 10 rows (0.24 nats) of the best. A search is therefore limited by
    compute, not by the range of one progression, and `PT_DUMP` delivers as
    many independent vectors as wanted.
-3. **Raising the target costs 8.6 rows, 0.21 nats, per 1,000 in g** with
+3. **Raising the target costs 8.7 rows, 0.21 nats, per 1,000 in g** with
    optimal covers, steady from 122,000 to 160,000.
 
 ## Which members to test
