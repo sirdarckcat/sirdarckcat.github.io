@@ -1,0 +1,4 @@
+[1] N has 91752 digits and lies in all 13094 classes (prime moduli up to 459089)
+[2] all 1033885 primes q < g = 16046137 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 7^((P-1)/2) = -1 (mod P), F = 2^101604 (101604/304793 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [699.9s, gmpy2]
+ALL CHECKS PASSED: g(N) = 16046137 for this 91752-digit N

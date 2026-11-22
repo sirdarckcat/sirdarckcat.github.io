@@ -56,6 +56,7 @@ ln P / (e^γ ln B) tests are expected.
 
 | g(N) | digits of N | cover | PRP tests | proof of the partition | directory |
 |---|---|---|---|---|---|
+| **16,046,137** | 91,752 | 13,094 classes (moduli ≤ 459,089, lazy greedy), complete below g | 13,124: 7,168 GPU (Colab A100) and 6,147 CPU (GMP, then OpenPFGW; 191 on both); the hit is the 643rd test of the fallback range t ≥ 32768 (expected ~4,488 per prime) | one `powmod` (7^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^101604 > P^(1/3) | `../records/height_91752digit_g16046137` |
 | **10,000,141** | 61,329 | 9,095 classes (moduli ≤ 306,239, lazy greedy), complete below g | 3,072 GPU (Colab A100s); the hit is the 2,718th survivor of the 10¹¹-sieved list (expected ~3,130) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^67914 > P^(1/3) | `../records/height_61329digit_g10000141` |
 | **5,000,251** | 33,938 | 5,342 classes (moduli ≤ 167,107, lazy greedy), complete below g | 68 CPU + 3,072 GPU (Colab A100); the hit is the 3,080th survivor (expected ~2,118) | one `powmod` (5^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^37584 > P^(1/3) | `../records/height_33938digit_g5000251` |
 | **2,000,269** | 15,595 | 2,670 classes (moduli ≤ 79,139, lazy greedy), complete below g | 648 (expected ~970) | one `powmod` (11^((P−1)/2) ≡ −1) + one `isqrt`; F = 2^17274 > P^(1/3) | `../records/height_15595digit_g2000269` |

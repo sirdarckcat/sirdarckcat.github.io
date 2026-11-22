@@ -41,6 +41,38 @@ counts only when it is on the frontier: no smaller known N has a g at least
 as large. Such a point is at once a T record (smallest N for its g) and an
 R record (largest g below its N).
 
+## New height record (2026-11-22): g(N) = 16,046,137
+
+**g(N) = 16,046,137** for a 91,752-digit N
+(`records/height_91752digit_g16046137/`):
+- **Cover.** All 1,033,885 primes below g lie in a class of a complete
+  13,094-class cover (prime moduli ≤ 459,089, built for the primes below
+  Q = 16,045,849). g is the first prime the cover misses.
+- **Proof.** N − g = m·2^101604 + 1 (m odd) is proved prime by
+  7^((P−1)/2) ≡ −1 (mod P) with 2^101604 > P^(1/3), plus the BLS
+  non-square condition. P has 304,793 bits.
+- **Search.** 13,124 distinct candidates were tested, against ~4,488
+  expected per prime: a late draw, with a probability of ~5%.
+  - Main range t < 32768, sieved to 3·10¹¹ (14,579 survivors): 12,470
+    tested. 7,168 of these were GPU screens on a Colab A100 (6.1 s each).
+    The rest ran on up to six Colab CPU runtimes: GMP Euler tests at
+    ~1,000 s each, then from 07:50Z on 22 Nov OpenPFGW Fermat PRP tests at
+    ~60 s each, four per runtime (`proth/pfgw_search.py`).
+  - Fallback range t ∈ [32768, 131072): the spec allows t < 2^20. It was
+    sieved to 3·10¹¹ on this session's container while the search ran
+    (44,130 survivors), and each CPU runtime moved there when its main
+    slice ran out.
+  - The hit is the fallback range's 643rd test: t = 127,534, found by PFGW
+    on the A100 host's CPUs (45.5 s). 2,109 survivors below 32768 were
+    still untested.
+- **Verification.** No screen result is trusted. The hit was re-proved
+  with `desert.bls_prove` on the runtime, and again on this container's
+  CPU (759 s). It passes `verify.py` (700 s). The PARI cross-check and the
+  two `bls/` verifiers are running.
+- **Cross-verification.** The second session rebuilt N from `spec.json`
+  and t alone and got the same sha256. `verify.py` passed on its own
+  machine (632 s). Its PARI and `xverify` legs are running.
+
 ## New height record (2026-11-21, night): g(N) = 10,000,141, GPU-screened
 
 **g(N) = 10,000,141** for a 61,329-digit N
@@ -621,6 +653,7 @@ g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
 | `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~1.9·10^10 | 0.011% | 8.7 | 209 |
 | `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~9.6·10^10 | 0.005% | 9.3 | 319 |
 | `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.3·10^11 | 0.003% | 9.8 | 441 |
+| `height_91752digit_g16046137` | 16,046,137 | 91,752 | ~7.7·10^11 | 0.0021% | 10.2 | 550 |
 
 Two readings. (1) A random even number with as many digits as the 5M
 record already has g near 540,000 (Hardy–Littlewood mean; measured on
