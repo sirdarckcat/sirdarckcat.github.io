@@ -11,6 +11,8 @@ import GoldbachGaps.Fscan.Fermat26
 import GoldbachGaps.Fscan.Schedule
 import GoldbachGaps.Fscan.Kernel52
 import GoldbachGaps.Fscan.Kernel26
+import GoldbachGaps.Fscan.Fermat30
+import GoldbachGaps.Fscan.Kernel30
 import GoldbachGaps.Fscan.ClassStage
 
 /-!
@@ -37,7 +39,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `FM_STEP` (relation, bounds, no 64-bit overflow); `Schedule` is the exponent
                schedule; `Kernel52` / `Kernel26` combine them into "the lane reports 1 iff
                `2^(n-1) ≡ 1 (mod n)`"; `ClassStage` is the division-free residue of
-               `exact_stage`.
+               `exact_stage`. `Fermat30` / `Kernel30` do the same for the 3-limb, 30-bit
+               step `FM3_STEP` added at commit `1d8ab96` on branch `ccr-b8c25887-i6tn9f`.
 
 ## Building
 

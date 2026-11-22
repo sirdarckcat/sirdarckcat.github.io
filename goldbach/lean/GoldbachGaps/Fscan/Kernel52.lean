@@ -122,9 +122,7 @@ theorem lane_correct {n n0 n1 ni t : ℕ} (hnd : n = n0 + n1 * W) (hn0 : n0 < W)
   have hA : val (y % W, y / W) < 4 * n := by
     rw [hval0]
     exact hy4
-  have hβ : ∀ i, beta n t i ≤ 1 := fun i => by
-    unfold beta
-    omega
+  have hβ : ∀ i, beta n t i ≤ 1 := beta_le_one n t
   -- `n` is odd
   have hodd : n % 2 = 1 := by
     have hp : Odd (n0 * ni) := Nat.odd_iff.mpr (by omega)
