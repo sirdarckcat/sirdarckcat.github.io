@@ -54,7 +54,7 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 | 135,000 | 12,575 | 968 | 23.14 | `specs_q135000_128.json` |
 | 140,000 | 13,009 | 1,011 | 24.17 | `specs_q140000_128.json` |
 | 145,000 | 13,421 | 1,050 | 25.10 | `specs_q145000_128.json` |
-| 150,000 | 13,847 | 1,093 | 26.13 | `specs_q150000_128.json` |
+| 150,000 | 13,847 | 1,092 | 26.10 | `specs_q150000_128_k1092.json` (and `specs_q150000_128.json` at 1,093) |
 | 155,000 | 14,271 | 1,138 | 27.20 | `specs_q155000_128.json` |
 | 160,000 | 14,682 | 1,185 | 28.33 | `specs_q160000_128.json` |
 
@@ -63,7 +63,10 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 Q = 122,000 in 3.6 minutes, with the entropy reaching zero at ⟨k⟩ = 860:
 the coldest replicas are not fully equilibrated, which is why covers a few
 rows below that point exist. An independent sampler of another session
-reached 850.)
+reached 850 at Q = 122,000 and 1,007 at 140,000. Four more seeds of 150,000
+sweeps at Q = 150,000 ended at 1,092, 1,092, 1,093 and 1,097
+(`deliver/more150/`): the bottom is rugged at the level of a few rows, and a
+single run is within about five rows of it.)
 
 The spec files hold 64 or 128 residue vectors each, all within one or two
 rows of the best found, in the JSON format of `phd/campaign3`, with

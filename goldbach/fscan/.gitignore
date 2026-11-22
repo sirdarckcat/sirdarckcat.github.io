@@ -10,3 +10,4 @@ cover/__pycache__/
 runs/*.done
 runs/calib/*.done
 cover/deliver/dump_*.txt
+cover/deliver/more150/dump_*.txt
