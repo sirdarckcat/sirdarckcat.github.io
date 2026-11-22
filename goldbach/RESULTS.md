@@ -329,9 +329,12 @@ R record (largest g below its N).
     `proth/divmod_pow_run.py` (`xverify_divmod.log`,
     `verify_bls_record_divmod.log`). Each ran alone on a Colab CPU
     runtime, with CPython 3.13.18 as here.
-  - The PARI cross-check is running here. PARI's own N−1 certificate for
-    P is valid; `isprime` and the gcd scan of all 1,033,885 complements
-    follow.
+  - It passes the PARI cross-check (`crosscheck.log`, no error lines),
+    5.4 h in all: PARI's own N−1 certificate for P (valid),
+    `isprime(P) = 1` (about 3 h of the total, on one core), and a
+    brute-force gcd scan of all 1,033,885 complements.
+  - A second gcd scan, in six ranges on two Colab CPU runtimes, passes as
+    well (`crosscheck_ranges_colab.log`).
 - **Cross-verification.** The second session rebuilt N from `spec.json`
   and t alone and got the same sha256. On its own machine:
   - `verify.py` passed (632 s), and `bls/xverify.py` passed (8,313 s).
