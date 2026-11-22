@@ -36,6 +36,8 @@ for t in range(nt):
 perm = list(range(nt))            # perm[i] = replica currently at temperature i
 ksum = np.zeros(nt); k2sum = np.zeros(nt); nsamp = 0
 best = (10 ** 9, None)
+pool = {}
+POOLWIN = 4
 burn = SWEEPS // 4
 t0 = time.time()
 swaps = np.zeros(nt - 1); tries = 0
@@ -57,6 +59,11 @@ for sweep in range(SWEEPS):
     for i in range(nt):
         if ks[i] < best[0]:
             best = (ks[i], state[perm[i]].copy())
+    for i in range(nt - 20, nt):
+        if ks[i] <= best[0] + POOLWIN:
+            pool.setdefault(tuple(int(v) for v in state[perm[i]]), ks[i])
+    if len(pool) > 4000:
+        keep = sorted(pool.items(), key=lambda kv: kv[1])[:2000]; pool = dict(keep)
     # replica exchange between neighbours
     tries += 1
     for i in range(sweep % 2, nt - 1, 2):
@@ -79,4 +86,7 @@ for i in range(nt):
     S = lnvec + lnZ[i] + lams[i] * mean[i]
     print("%5.3f %7.1f %6.2f %9.1f %s" % (lams[i], mean[i], sd[i], S, ("%.2f" % (swaps[i] / (tries / 2))) if i < nt - 1 else ""))
 print("best rows left found: %d" % best[0])
+top = sorted(pool.items(), key=lambda kv: kv[1])[:256]
+print("pool: %d distinct vectors within %d rows of the best; counts of the top 256: %s" % (len(pool), POOLWIN, sorted(set(k for _, k in top))))
+json.dump({"Q": Q, "mods": mods, "pool": [[k, list(v)] for v, k in top]}, open("pool_Q%d_m%d_seed%d.json" % (Q, len(mods), SEED), "w"))
 json.dump({"Q": Q, "best": best[0], "cover": [[r, int(a)] for r, a in zip(mods, best[1])], "lams": lams, "mean": mean.tolist(), "sd": sd.tolist(), "lnvec": lnvec}, open("tempering_Q%d_m%d_seed%d.json" % (Q, len(mods), SEED), "w"))

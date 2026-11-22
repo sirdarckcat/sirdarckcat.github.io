@@ -10,6 +10,8 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
 | `tempering.py SPEC SWEEPS SEED [Q] [extra moduli] [drop]` | Gibbs sampling with replica exchange over all nonzero residue vectors on the moduli of SPEC, weight `exp(-lam * rows left)`. Writes the best vector found and the mean rows left at each `lam` (`tempering_Q*_m*_seed*.json`). It is both an optimiser for covers and a measurement of how many vectors exist at each number of rows left. |
 | `dos.py BOOST MDIGITS file.json ...` | Thermodynamic integration of those means: `S = ln(number of vectors)` as a function of rows left. |
 | `mkspec.py tempering.json NAME OUT [digits]` | Re-counts the rows a vector leaves with independent code, builds `N0` by CRT and writes a spec in the campaign schema. Fed the campaign cover it reproduces `base_spec.json` field for field. |
+| `neighbours.py tempering.json WIN OUT` | All vectors differing from a cover in one class (and pairs of those) that leave at most `best + WIN` rows, in the pool format. |
+| `mkspecs.py OUT PREFIX COUNT CEILING pool.json ...` | The `COUNT` lowest distinct vectors of one or more pools as a list of specs in the schema of `campaign3/specs_variants.json`, each re-counted with independent code. `kmax` is capped below `2^32` because the GPU kernel holds `k` in 32 bits. |
 | `capstudy.py SPEC` | First-moment law, Monte Carlo over random vectors, value of each modulus of the cover and of further moduli. |
 | `pairs.py SPEC` | Second-order (pair) term of the Hardy–Littlewood model for the rows left. |
 
@@ -17,6 +19,9 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
 
 - `spec_q122000_k850.json`: a cover leaving **850** rows (campaign 3: 867), same modulus.
   `E` at 199 digits is 20.42 instead of 20.83.
+- `specs_q122000_top64.json`: 64 distinct vectors on the same modulus, 2 leaving 850 rows and
+  62 leaving 851 (`E` at 199 digits 20.42 to 20.45). Around the 850 cover there are 109
+  vectors with 851 rows, 1,687 with 852 and 13,721 with 853 within two class changes.
 - Random nonzero vectors leave 1376.9 rows on average (exact; standard deviation 20.2), which
   is 33.08 nats. The campaign cover is 25 standard deviations below that average.
 - Number of vectors by rows left (`dos_Q122000_m88_seed*.json`): `e^436` in all; about `e^131`
@@ -26,3 +31,15 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
 - Value of moduli: the 20 largest of the cover are worth 3.1 nats of `E` for 120.6 nats of
   modulus; the next prime outside the cover is worth 0.12 nats for 6.1.
 - Pair term for the 867 rows of the campaign cover: -0.013 nats.
+
+## Other targets, same 88 moduli (one run of 4,000 sweeps each)
+
+| Q | best rows left | `E` below `10^200` (`-k ln(1-p)`, `p` = 0.02390) | `E - ln(members per vector)` |
+|---|---|---|---|
+| 122,000 | 850 | 20.57 | -1.85 |
+| 135,000 | 967 | 23.40 | +0.98 |
+| 150,000 | 1,098 | 26.57 | +4.15 |
+
+`ln(members per vector)` is 22.42 below `10^200` (21.2 with `k < 2^32`). With the three primes
+443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows (`E` = 20.24), but a
+vector then has only about 60 members: no gain in practice.

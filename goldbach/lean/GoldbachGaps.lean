@@ -24,6 +24,9 @@ import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
+import GoldbachGaps.Gpu.Limbs
+import GoldbachGaps.Gpu.MontSqr
+import GoldbachGaps.Gpu.Fermat
 
 /-!
 # Least Goldbach summands in Lean
@@ -72,6 +75,14 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `N ≡ 1 (mod p)`), `Selection` (with independent rows, the logged hit mass
                `Σ (1 - p)^(rows left)` over any selected set of members is exactly the
                expected number of successes among them).
+* `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
+               (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
+               of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
+               `MontSqr` (`mont_sqr` is a CIOS Montgomery squaring with result below `n`;
+               `dbl_mod` doubles modulo `n`), `Fermat` (the Newton inverse modulo `2^32`,
+               the word and bit loop, and `fermat2_correct`: the flag is `1` iff
+               `2^(n-1) ≡ 1 (mod n)`, for `n = cq + k·M` odd, `> 1`, below `2^(32 L)`,
+               `k < 2^32`).
 
 ## Building
 
