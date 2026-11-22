@@ -7,5 +7,6 @@ test_fermat_avx2
 runs/old/
 cover/ptcover
 cover/__pycache__/
+runs/*.done
 runs/calib/*.done
 cover/deliver/dump_*.txt
