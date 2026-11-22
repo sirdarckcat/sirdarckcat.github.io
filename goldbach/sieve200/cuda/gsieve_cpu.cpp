@@ -68,7 +68,7 @@ extern "C" void cpu_select(const u16 *counts, int maxc, int nkeep, double p_est,
     select_args a{counts, maxc, nkeep, p_est, keys, stats};
     const unsigned nb = ((maxc + 2) + 3) & ~3u;
     unsigned n2 = 1; while (n2 < (unsigned)nkeep) n2 <<= 1;
-    run_grid(1u << (KLOG - LLOG), NTHREADS, 4 * (nb + (n2 > (unsigned)nkeep ? n2 : (unsigned)nkeep) + 8), select_tramp, &a);
+    run_grid(1u << (KLOG - LLOG), NTHREADS, 4 * (nb + ((unsigned)nkeep <= MAXKEEP_SORT ? n2 : 0) + 8), select_tramp, &a);
 }
 struct rows_args { const u32 *bits; int nU; const u32 *member; const i64 *offs; int nsel; u16 *rows; };
 static void rows_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }

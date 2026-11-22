@@ -12,11 +12,11 @@ sys.path.insert(0, os.path.join(HERE, ".."))
 from sieve200 import Sieve200
 
 
-def build(klog, llog, nthreads):
-    out = os.path.join(HERE, f"libgsieve_cpu_{klog}_{llog}_{nthreads}.so")
+def build(klog, llog, nthreads, maxsort=8192):
+    out = os.path.join(HERE, f"libgsieve_cpu_{klog}_{llog}_{nthreads}_{maxsort}.so")
     srcs = [os.path.join(HERE, f) for f in ("gsieve_cpu.cpp", "gsieve_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={klog}", f"-DLLOG={llog}", f"-DNTHREADS={nthreads}", "-Wno-unused-variable",
+        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={klog}", f"-DLLOG={llog}", f"-DNTHREADS={nthreads}", f"-DMAXKEEP_SORT={maxsort}u", "-Wno-unused-variable",
                                "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
@@ -37,8 +37,9 @@ def main():
     cover = [r for r, _ in spec["cover"]]
     N0, M = int(spec["N0"]), int(spec["M"])
     ok = True
-    for B, klog, llog, nthreads, k0 in ((3001, 12, 11, 64, 777), (20011, 13, 11, 64, 2 ** 31 + 5), (100003, 14, 12, 128, 4293885952 - 4293885952 % 16384)):
-        lib = build(klog, llog, nthreads)
+    for B, klog, llog, nthreads, k0, maxsort in ((3001, 12, 11, 64, 777, 8192), (20011, 13, 11, 64, 2 ** 31 + 5, 8192),
+                                                 (100003, 14, 12, 128, 4293885952 - 4293885952 % 16384, 8192), (20011, 12, 11, 64, 99, 64)):
+        lib = build(klog, llog, nthreads, maxsort)
         K, L = 1 << klog, 1 << llog
         sv = Sieve200(N0, M, U, B, logK=klog, exclude=cover)
         S = sv.primes()
@@ -56,7 +57,7 @@ def main():
         counts = np.zeros(K, dtype=np.uint16)
         lib.cpu_count(bits.ctypes.data, len(U), counts.ctypes.data)
         same_cnt = np.array_equal(counts, cnt_ref)
-        res = [f"B={B} K=2^{klog} L=2^{llog} rows={len(U)} primes={len(S)}: bits {'ok' if same_bits else 'MISMATCH'}, counts {'ok' if same_cnt else 'MISMATCH'}"]
+        res = [f"B={B} K=2^{klog} L=2^{llog} maxsort={maxsort} rows={len(U)} primes={len(S)}: bits {'ok' if same_bits else 'MISMATCH'}, counts {'ok' if same_cnt else 'MISMATCH'}"]
         ok &= same_bits and same_cnt
         p_est = 0.055
         for nkeep in (0, 1, 3, 20, L // 4, L - 1, L):
@@ -71,12 +72,16 @@ def main():
                 order = np.argsort(cb, kind="stable")[:nkeep]
                 exp_keys = ((cb[order] << 20) | order).astype(np.uint32)
                 w = (1 - p_est) ** cb.astype(np.float64)
-                good &= np.array_equal(keys[b * nkeep:(b + 1) * nkeep], exp_keys)
+                got = keys[b * nkeep:(b + 1) * nkeep]
+                if nkeep > maxsort:
+                    got = np.sort(got)                           # the caller sorts what the kernel could not
+                good &= np.array_equal(got, exp_keys)
                 good &= int(round(stats[3 * b])) == int(cb.sum()) and abs(stats[3 * b + 1] - w.sum()) <= 1e-12 * w.sum() and abs(stats[3 * b + 2] - w[order].sum()) <= 1e-12 * w[order].sum()
             res.append(f"select nkeep={nkeep}: {'ok' if good else 'MISMATCH'}")
             ok &= good
             if nkeep in (20, L // 4):                           # the rows of the kept members
-                member = np.concatenate([(b * L + (keys[b * nkeep:(b + 1) * nkeep] & 0xFFFFF)).astype(np.uint32) for b in range(nb)])
+                kk = np.sort(keys.reshape(nb, nkeep), axis=1) if nkeep > maxsort else keys.reshape(nb, nkeep)
+                member = np.concatenate([(b * L + (kk[b] & 0xFFFFF)).astype(np.uint32) for b in range(nb)])
                 cm = counts[member].astype(np.int64)
                 offs = np.concatenate([[0], np.cumsum(cm)]).astype(np.int64)
                 rows = np.zeros(int(offs[-1]) + 1, dtype=np.uint16)

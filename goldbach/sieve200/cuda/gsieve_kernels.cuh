@@ -20,7 +20,9 @@ typedef unsigned short u16;
 typedef long long i64;
 #define KW ((1u << KLOG) / 32u)
 #define BLK_MEMBERS (1u << LLOG)
+#ifndef MAXKEEP_SORT
 #define MAXKEEP_SORT 8192u          /* the bitonic sort is done in shared memory up to this many kept members per block */
+#endif
 
 extern "C" __global__ void s200g_sieve(const u32 *U, const u32 *S, const u32 *INV, const u64 *MU, const u32 *N0M, const u32 *KM,
                                        int nS, u32 *bits) {
