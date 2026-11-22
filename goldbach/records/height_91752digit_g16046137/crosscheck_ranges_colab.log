@@ -1,0 +1,42 @@
+# A second PARI gcd scan of every prime q < g, in six ranges of equal prime count on two Colab CPU runtimes
+# (gold-cpu2: ranges 1-3, gold-cpu5: ranges 4-6; AMD EPYC 7B12, PARI/GP 2.15.4 from Ubuntu's pari-gp, 8 threads),
+# each run as: gp -q range.gp crosscheck.gp, with this directory's N.txt and crosscheck.gp and range.gp = "qlo = ...; qhi = ...;".
+# Run 14:54-15:35 UTC 2026-11-22, while the full crosscheck.gp run here (crosscheck.log) was inside isprime(P). "new stack size" warnings removed.
+
+== range 1
+primes q in [2, 2341512) scanned: 172314   (primepi difference = 172314)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [2, 2341512), 172314 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T14:54:36Z 2026-11-22T15:05:16Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+== range 2
+primes q in [2341512, 4940670) scanned: 172314   (primepi difference = 172314)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [2341512, 4940670), 172314 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T15:05:16Z 2026-11-22T15:15:55Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+== range 3
+primes q in [4940670, 7637424) scanned: 172314   (primepi difference = 172314)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [4940670, 7637424), 172314 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T15:15:55Z 2026-11-22T15:26:34Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+== range 4
+primes q in [7637424, 10397958) scanned: 172314   (primepi difference = 172314)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [7637424, 10397958), 172314 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T15:02:17Z 2026-11-22T15:13:10Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+== range 5
+primes q in [10397958, 13202798) scanned: 172314   (primepi difference = 172314)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [10397958, 13202798), 172314 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T15:13:11Z 2026-11-22T15:23:50Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+== range 6
+primes q in [13202798, 16046137) scanned: 172315   (primepi difference = 172315)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [13202798, 16046137), 172315 primes, g = 16046137
+RANGE-EXIT 0 2026-11-22T15:23:51Z 2026-11-22T15:34:30Z gp [2, 15, 4] threads 8 Model name: AMD EPYC 7B12
+
+sum of the six counts: 1033885 = primepi(g - 1)
