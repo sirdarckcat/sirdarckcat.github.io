@@ -16,7 +16,8 @@ tests on a GPU.
 | `check_small_gpu.py` | end to end where successes are frequent (Q = 3001): brute force with gmpy2, `search.run_block` and `search_gpu2.py` must find the same successes with the same tests and prps |
 | `search.log` | the GPU run's slice log (seeded with the committed campaign3 lines of its variants) |
 | `run_c3gpu.py` | driver: the variants in `my_specs.json`, k-major slices of 2^20 k, resumes from its own `search.log` |
-| `variant_split.json` | which of the 40 variants the GPU and the CPU machines scan (disjoint) |
+| `variant_split.json` | which variants each runner scans (disjoint): the GPU, the six CPU machines, session 2ce9e63a's 4 cores, and the unassigned rest |
+| `../campaign3/specs_variants_ext.json` | 20 more residue-swap variants, v39..v58 (22 Nov): `gen_variants.py base_spec.json out.json 60 150000000 199`, whose first 40 specs are field for field those of `specs_variants.json`; for each new one N0 ≡ a (mod r) for every cover pair, M = 2·∏r, and the residual list is exactly the primes 3 ≤ q < 122,000 that no pair covers (869 of them) |
 
 Checks, on a Colab NVIDIA L4 (22 Nov):
 - The kernel matches gmpy2 on 80,000 candidates of two variants (1,884 PRPs, 0 mismatches),

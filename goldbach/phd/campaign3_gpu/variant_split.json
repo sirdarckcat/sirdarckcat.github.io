@@ -42,5 +42,55 @@
   "r200b_q122k_v36",
   "r200b_q122k_v37",
   "r200b_q122k_v38"
+ ],
+ "cpu fleet machines (run_campaign3.py, skip-frac 0.92)": {
+  "gold-cpu2": [
+   "r200b_q122k_v27",
+   "r200b_q122k_v28"
+  ],
+  "gold-cpu5": [
+   "r200b_q122k_v29",
+   "r200b_q122k_v30"
+  ],
+  "gold-cpu": [
+   "r200b_q122k_v31",
+   "r200b_q122k_v32"
+  ],
+  "gold-cpu3": [
+   "r200b_q122k_v33",
+   "r200b_q122k_v34"
+  ],
+  "gold-cpu4": [
+   "r200b_q122k_v35",
+   "r200b_q122k_v36"
+  ],
+  "session 8ffe9d7a container": [
+   "r200b_q122k_v37",
+   "r200b_q122k_v38"
+  ]
+ },
+ "session 2ce9e63a, IFMA container, 4 cores (run_campaign3.py; from ../campaign3/specs_variants_ext.json)": [
+  "r200b_q122k_v39",
+  "r200b_q122k_v40",
+  "r200b_q122k_v41",
+  "r200b_q122k_v42"
+ ],
+ "unassigned (../campaign3/specs_variants_ext.json)": [
+  "r200b_q122k_v43",
+  "r200b_q122k_v44",
+  "r200b_q122k_v45",
+  "r200b_q122k_v46",
+  "r200b_q122k_v47",
+  "r200b_q122k_v48",
+  "r200b_q122k_v49",
+  "r200b_q122k_v50",
+  "r200b_q122k_v51",
+  "r200b_q122k_v52",
+  "r200b_q122k_v53",
+  "r200b_q122k_v54",
+  "r200b_q122k_v55",
+  "r200b_q122k_v56",
+  "r200b_q122k_v57",
+  "r200b_q122k_v58"
  ]
 }
