@@ -81,6 +81,20 @@ below 10^23, every setting between (L, θ, Ta) = (293, 91, 118), (383, 99,
 successes per core-second, with shares from 4.5% to 10% (`tune.py`). The
 threshold θ moves by one per residual class, Ta does not move.
 
+## Production runs (Q = 10,007, N below 10^23, 4 cores)
+
+One pass per residual class, θ = 99 at class 194 plus one per class,
+Ta = 113, L = 383. `expected` is with the pair correction of the next
+section but one. The per-unit counts are in `runs/`.
+
+| class | vectors | members | Fermat tests | found | expected | share of the class | wall time |
+|---|---|---|---|---|---|---|---|
+| 193 | 154,098 | 1.178·10^12 | 2.32·10^10 | 0 | 0.045 | 8.4% | 26 min (first build, threads partly idle) |
+| 194 | 467,071 | 3.570·10^12 | 5.29·10^10 | 0 | 0.100 | 7.2% | 43 min |
+
+Class 194 ran at 1.37·10^9 members per second on the 4 cores, 6.7 cycles a
+member, with 1.5% of the members Fermat-tested.
+
 ## Without AVX-512
 
 On a CPU with AVX2 only (the Colab machines are EPYC 7B12, Zen 2) the byte
