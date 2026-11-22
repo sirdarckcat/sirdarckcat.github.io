@@ -82,6 +82,23 @@ validate its own N−1 (Pocklington–Lehmer) certificate for P, and brute-force
 scans every prime q < g checking that N − q shares a factor with the
 primorial of the largest cover modulus.
 
+- **Read the log, not only the last line.** `gp` carries on with the next
+  line after an error. In scripts written before 2026-11-22 (every record
+  through 10,000,141), a failed check would still be followed by its
+  "valid" and "PASSED" lines. Only an error line (`***`) would show the
+  failure.
+- **No past record is affected.** None of the committed `crosscheck.log`
+  files, nor the other session's cross-verification logs, has an error
+  line apart from PARI's stack-size warning.
+- **The new script is fail-stop.** `package.py` now writes a version
+  where each check sets a flag and `die()` exits with status 1 unless it
+  is set. `package.py` also requires exit status 0 and no `***` line.
+  Tested on the 1.2M record: N + 2, and a range past g, are both rejected.
+- **Split runs.** For the 16M rung the scan can be split by prime range:
+  `echo 'qlo = 2; qhi = 4000000;' > range.gp && gp -q range.gp crosscheck.gp`
+  prints `RANGE PASSED` with its count, and the counts must add up to
+  primepi(g − 1).
+
 ## Independent replication, and the verification stack
 
 A second session, working separately, arrived at the same construction the

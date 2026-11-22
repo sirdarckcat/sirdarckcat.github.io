@@ -4,3 +4,11 @@ t=6063: CPU proof in 306s: BLS (F = 2^67914 > P^(1/3), c1^2 - 4 c2 not a square)
 [3] P = N - g is prime: 11^((P-1)/2) = -1 (mod P), F = 2^67914 (67914/203731 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [291.9s, gmpy2]
 ALL CHECKS PASSED: g(N) = 10000141 for this 61329-digit N
  
+PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid
+PARI isprime(P) = 1
+primes q < g scanned: 664584   (pi(g-1) = 664584)
+complements N - q with no prime factor <= 306239: 0
+CROSSCHECK PASSED: g(N) = 10000141
+
+packaged /home/user/sirdarckcat.github.io/goldbach/proth/../records/height_61329digit_g10000141 in 10352s
+record: /home/user/sirdarckcat.github.io/goldbach/records/height_61329digit_g10000141
