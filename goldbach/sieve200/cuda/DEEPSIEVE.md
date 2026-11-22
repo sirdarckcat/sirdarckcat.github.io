@@ -32,13 +32,14 @@ Pair visits at batch scale (K = 2^25, one pair visit per batch): rows x pi(B) = 
   (a `GpuFeeder` whose window is a batch of 2^ks_log members: per group of rg rows `gbig_gen` then the tile kernel; count, select, finalize and rows are the GpuFeeder's).  Identical to
   sieve200's CPU Feeder (counts, selected members, rows, statistics) on four geometries: all primes large, none large, mixed, row groups that do not divide the row count, f from 0 to 0.9.
 
-## What would still be needed if the measurement says go (the first three items above are done; this is what remains)
+## What would still be needed if the measurement says go
 
-1. The small-prime kernel as a tile kernel of a batch: CTA (row, tile), the Shoup marks of the tile (a table per tile: c0 = (N0 M^-1 + k0 + tile 2^19) mod s, 64 x 1.25 MB), then the bin of
-   (row, tile) applied to the same shared bitmap, then the tile written into the batch matrix `bits[row][2^25 / 32]` (4.6 GB for 1,093 rows; fits an RTX PRO 6000, A100 and L4).
-2. count over the batch matrix (KLOG = 25: 4,096 CTAs, 64 MB of counts), select over 1,024 blocks of 2^15 (a 64x better filled GPU than today's 16 CTAs), finalize with a scan over ~1M keys,
-   rows extraction for ~1M kept members (the present rows kernel gathers one bit a row at a 64 KB stride: 550 MB of L2 traffic per 2^19 members; order the kept members by index first, ~6x less).
-3. The caller (search_gpu5) works on batches instead of 2^19-member windows.
+1. Measure it end to end on the three cards (`bench_batch.py`: the whole pipeline at production size, per-phase times) and at the keep fraction the model wants (~1%, not 3%).
+2. count over the batch matrix (KLOG = 25: 4,096 CTAs, 64 MB of counts) and select over 1,024 blocks of 2^15 (a 64x better filled GPU than today's 16 CTAs) work unchanged; finalize
+   scans ~1M keys in one CTA and rows extraction handles ~1M kept members: the present rows kernel gathers one bit a row at a 64 KB stride (550 MB of L2 traffic per 2^19 members;
+   order the kept members by index first, ~6x less), so these two may need work once they are measured at batch scale.
+3. The caller (search_gpu5) works on batches instead of 2^19-member windows; overlapping the sieve of batch b+1 with the Fermat rounds of batch b matters more here than today (at ~1% kept the
+   sieve is a large share of a batch).
 4. An L4 stays at 1e6 (its DRAM is 300 GB/s: the bins would cost ~0.03 ns a mark).
 
 Exactness is not at risk: a deeper sieve only removes rows that have a prime factor, and the same identical-to-CPU tests (`test_gsieve.py` style, B up to 2^15 on small geometries) apply.
