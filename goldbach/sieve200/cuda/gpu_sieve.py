@@ -97,7 +97,7 @@ class GpuFeeder:
         while n2 < nkeep:
             n2 <<= 1
         shared = 4 * (nbins + (n2 if nkeep <= 8192 else 0) + 8)
-        if shared > 48 * 1024:
+        if shared + 28 * nt + 64 > 48 * 1024:                      # static shared memory of the kernel: scan u32 + red 3 doubles a thread
             self.k["s200g_select"].max_dynamic_shared_size_bytes = shared
         self.k["s200g_select"]((nb,), (nt,), (self.counts, np.int32(self.nU), np.int32(nkeep), np.float64(self.p_est), keys, stats), shared_mem=shared)
         if nkeep > 8192:
