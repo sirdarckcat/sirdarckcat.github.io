@@ -18,13 +18,25 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "sieve200.c")
 
 
+def _cpu_tag():
+    """short hash of this CPU's model and flags: a -march=native build is only valid on the CPU that made it"""
+    import hashlib
+    try:
+        lines = [l for l in open("/proc/cpuinfo") if l.startswith(("model name", "flags"))][:2]
+        return hashlib.sha1("".join(lines).encode()).hexdigest()[:8]
+    except OSError:
+        return "x"
+
+
 def build(march=None, force=False):
     march = march or os.environ.get("SIEVE200_MARCH", "native")
-    tag = march.replace("=", "_")
+    tag = march.replace("=", "_") + ("-" + _cpu_tag() if march == "native" else "")
     out = os.path.join(HERE, f"libsieve200_{tag}.so")
     if force or not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(SRC):
         flags = [] if march == "generic" else [f"-march={march}"]
-        subprocess.check_call(["gcc", "-O3", *flags, "-shared", "-fPIC", "-o", out, SRC])
+        tmp = f"{out}.{os.getpid()}.tmp"
+        subprocess.check_call(["gcc", "-O3", *flags, "-shared", "-fPIC", "-o", tmp, SRC])
+        os.replace(tmp, out)                      # atomic: another process may be building or loading the same file
     return out
 
 
@@ -49,6 +61,12 @@ def load(march=None):
         lib.s200_bits_bytes.argtypes = [ctypes.c_void_p]
         lib.s200_block.restype = ctypes.c_int
         lib.s200_block.argtypes = [ctypes.c_void_p, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_void_p]
+        lib.s200_extract.restype = ctypes.c_long
+        lib.s200_extract.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
+                                     ctypes.c_void_p, ctypes.c_long, ctypes.c_void_p]
+        lib.s200_extract_bitmaps.restype = None
+        lib.s200_extract_bitmaps.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int,
+                                             ctypes.c_void_p]
         _LIBS[path] = lib
     return _LIBS[path]
 
@@ -96,3 +114,23 @@ class Sieve200:
         """The boolean matrix [nU, K] of a bit matrix (search.run_block's `alive`)."""
         b = bits.view(np.uint8).reshape(self.nU, self.K // 8)
         return np.unpackbits(b, axis=1, bitorder="little").astype(bool)
+
+    def survivors(self, bits, js):
+        """The alive rows of members js (offsets inside the block): (rows u16, offsets i64[len(js)+1]), member i has
+        rows[offsets[i]:offsets[i+1]] in increasing order."""
+        js = np.ascontiguousarray(js, dtype=np.uint32)
+        offs = np.empty(len(js) + 1, dtype=np.int64)
+        cap = len(js) * self.nU
+        rows = np.empty(cap, dtype=np.uint16)
+        n = self.lib.s200_extract(self.ctx, bits.ctypes.data, js.ctypes.data, len(js), rows.ctypes.data, cap,
+                                  offs.ctypes.data)
+        if n < 0:
+            raise MemoryError("s200_extract")
+        return rows[:n], offs
+
+    def bitmaps(self, bits, js):
+        """The alive rows of members js as u64[len(js), ceil(nU/64)] bitmaps (bit r of member i: row r alive)."""
+        js = np.ascontiguousarray(js, dtype=np.uint32)
+        out = np.empty((len(js), (self.nU + 63) // 64), dtype=np.uint64)
+        self.lib.s200_extract_bitmaps(self.ctx, bits.ctypes.data, js.ctypes.data, len(js), out.ctypes.data)
+        return out
