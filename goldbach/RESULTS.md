@@ -1,5 +1,15 @@
 # Goldbach Desert Records
 
+## Smallest N above the exhaustive range (2026-11-22, 19:20 UTC): g(N) = 10,729 at 3.1·10^22
+
+**g(N) = 10,729** for N = 30625623272505310405982 (23 digits,
+`records/threshold_23digit_g10729/`), the fifth success of the same `fscan`
+run on the progressions with 197 residual primes. It is the smallest N
+known to us with g above 9,781; closeness 70.2%. The frontier at the low
+end is now three numbers: this one, 3.6·10^22 with g = 10,771, and
+5.4·10^22 with g = 11,701 (the best closeness, 74.3%). Checked from N and g
+alone by the finding session and here (gmpy2, PARI); 1,307 primes below g.
+
 ## Best closeness so far (2026-11-22, 19:05 UTC): g(N) = 11,701 at 5.4·10^22, 74.3%
 
 **g(N) = 11,701** for N = 54284735534856910692542 (23 digits,
@@ -1024,6 +1034,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
 | `threshold_23digit_g11701` | 11,701 | 23 | ~15,700 | 74.3% | 117 | 20 |
 | `threshold_23digit_g10771` | 10,771 | 23 | ~15,400 | 69.7% | 109 | 19 |
+| `threshold_23digit_g10729` | 10,729 | 23 | ~15,300 | 70.2% | 108 | 19 |
 | `threshold_23digit_g10399` | 10,399 | 23 | ~16,000 | 65.0% | 103 | 19 |
 | `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
