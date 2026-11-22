@@ -24,6 +24,8 @@ matrix), `alive.sum(axis=0)`, `cp.lexsort`, `alive[:, order].T` and `cp.nonzero`
   `need` at it), a bitonic sort of the keys `count << 20 | index` (up to 8192 kept members; beyond that the caller sorts), and the
   statistics alive_total, hm_all, hm_kept.  The result is exactly `np.argsort(counts, kind="stable")[:ceil(L (1-f))]`.
 * `s200g_rows`: a thread per kept member: its alive rows ascending, read from the bit matrix, written to `rows[offs[i]...]`.
+* `s200g_km` (k0 mod s per prime), `s200g_finalize` (k, counts, member index and the CSR offsets by one scan, in a CTA), `s200g_n0m` (N0 mod s per prime,
+  for `GpuFeeder.with_N0`): the glue that was a dozen small cupy launches.  A window is six launches and two small waits.
 
 ## Use
 

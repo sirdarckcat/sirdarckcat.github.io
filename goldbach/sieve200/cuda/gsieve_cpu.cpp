@@ -84,3 +84,16 @@ extern "C" void cpu_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int
     n0m_args a{N0L, nl, S, MU, nS, out};
     run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, n0m_tramp, &a);
 }
+
+struct km_args { const u32 *S; u64 k0; int nS; u32 *out; };
+static void km_tramp(void *a) { km_args *x = (km_args *)a; s200g_km(x->S, x->k0, x->nS, x->out); }
+extern "C" void cpu_km(const u32 *S, u64 k0, int nS, u32 *out) {
+    km_args a{S, k0, nS, out};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, km_tramp, &a);
+}
+struct fin_args { const u32 *keys; int nsel, nkeep; u64 k0; u16 *cnt; u32 *member; u64 *kout; i64 *offs, *total; };
+static void fin_tramp(void *a) { fin_args *x = (fin_args *)a; s200g_finalize(x->keys, x->nsel, x->nkeep, x->k0, x->cnt, x->member, x->kout, x->offs, x->total); }
+extern "C" void cpu_finalize(const u32 *keys, int nsel, int nkeep, u64 k0, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    fin_args a{keys, nsel, nkeep, k0, cnt, member, kout, offs, total};
+    run_grid(1, NTHREADS, 0, fin_tramp, &a);
+}

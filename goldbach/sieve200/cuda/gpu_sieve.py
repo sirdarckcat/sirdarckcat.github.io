@@ -32,7 +32,7 @@ def _kernels(klog, llog, nthreads):
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {klog}\n#define LLOG {llog}\n"
                 f"#define NTHREADS {nthreads}\n")
         mod = cp.RawModule(code=head + _SRC)
-        _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_count", "s200g_select", "s200g_rows", "s200g_n0m")}
+        _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_km", "s200g_finalize")}
     return _KCACHE[key]
 
 
@@ -80,12 +80,17 @@ class GpuFeeder:
         return GpuFeeder(None, None, U, n0m, klog=self.klog, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads, shared=self.sh)
 
     def window(self, k0, f=None):
+        """Six launches and two small synchronisations: k0 mod s, sieve, counts, select, finalize (k, counts, CSR offsets), then once the
+        number of survivor rows is known the rows kernel."""
         sh, K, L, nt = self.sh, self.K, self.L, self.nthreads
         f = self.f if f is None else float(f)
         nkeep = int(math.ceil(L * (1.0 - f)))
         nb = K // L
-        KM = (cp.uint64(k0) % sh["S64"].astype(cp.uint64)).astype(cp.uint32)
-        self.k["s200g_sieve"]((self.nU,), (nt,), (self.U, sh["S"], sh["INV"], sh["MU"], self.N0M, KM, np.int32(sh["nS"]), self.bits),
+        nsel = nb * nkeep
+        nS = sh["nS"]
+        KM = cp.empty(nS, dtype=cp.uint32)
+        self.k["s200g_km"](((nS + nt - 1) // nt,), (nt,), (sh["S"], np.uint64(k0), np.int32(nS), KM))
+        self.k["s200g_sieve"]((self.nU,), (nt,), (self.U, sh["S"], sh["INV"], sh["MU"], self.N0M, KM, np.int32(nS), self.bits),
                               shared_mem=4 * (K // 32))
         self.k["s200g_count"](((K // 32 + nt - 1) // nt,), (nt,), (self.bits, np.int32(self.nU), self.counts))
         w = Window()
@@ -102,23 +107,22 @@ class GpuFeeder:
         self.k["s200g_select"]((nb,), (nt,), (self.counts, np.int32(self.nU), np.int32(nkeep), np.float64(self.p_est), keys, stats), shared_mem=shared)
         if nkeep > 8192:
             keys = cp.sort(keys, axis=1)                         # kept members came out unsorted: sort (count, index) as one key
-        keys = keys[:, :nkeep]
+        keys = cp.ascontiguousarray(keys[:, :nkeep])
+        cnt = cp.empty(nsel, dtype=cp.uint16)
+        member = cp.empty(nsel, dtype=cp.uint32)
+        kv = cp.empty(nsel, dtype=cp.uint64)
+        offs = cp.empty(nsel + 1, dtype=cp.int64)
+        total = cp.empty(1, dtype=cp.int64)
+        self.k["s200g_finalize"]((1,), (nt,), (keys, np.int32(nsel), np.int32(max(nkeep, 1)), np.uint64(k0), cnt, member, kv, offs, total))
+        tot = int(total[0])                                        # the one wait for the device before the rows can be allocated
+        rows = cp.empty(tot, dtype=cp.uint16)
+        if nsel:
+            self.k["s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
         st = cp.asnumpy(stats)
         w.alive_total = np.rint(st[:, 0]).astype(np.int64)
         w.hm_all, w.hm_kept = st[:, 1], st[:, 2]
-        idx = (keys & cp.uint32(0xFFFFF)).astype(cp.int64)
-        cnt = (keys >> cp.uint32(20)).astype(cp.uint16)
-        blk = cp.broadcast_to(cp.arange(nb, dtype=cp.int32)[:, None], idx.shape)
-        member = (idx + (cp.arange(nb, dtype=cp.int64)[:, None] << self.llog)).astype(cp.uint32).ravel()
-        cnt = cnt.ravel()
-        offs = cp.zeros(cnt.size + 1, dtype=cp.int64)
-        cp.cumsum(cnt.astype(cp.int64), out=offs[1:])
-        rows = cp.empty(int(offs[-1]), dtype=cp.uint16)
-        nsel = int(cnt.size)
-        if nsel:
-            self.k["s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
-        w.k = member.astype(cp.uint64) + cp.uint64(k0)
-        w.cnt, w.offs, w.rows, w.block = cnt, offs, rows, blk.ravel().copy()
+        w.k, w.cnt, w.offs, w.rows = kv, cnt, offs, rows
+        w.block = (cp.arange(nsel, dtype=cp.int32) // max(nkeep, 1)).astype(cp.int32)
         return w
 
 

@@ -33,6 +33,12 @@ class _Fn:
         elif self.name == "s200g_rows":
             bits, nU, member, offs, nsel, rows = args
             L.cpu_rows(P(bits), int(nU), P(member), P(offs), int(nsel), P(rows))
+        elif self.name == "s200g_km":
+            S, k0, nS, out = args
+            L.cpu_km(P(S), int(k0), int(nS), P(out))
+        elif self.name == "s200g_finalize":
+            keys, nsel, nkeep, k0, cnt, member, kout, offs, total = args
+            L.cpu_finalize(P(keys), int(nsel), int(nkeep), int(k0), P(cnt), P(member), P(kout), P(offs), P(total))
         elif self.name == "s200g_n0m":
             limbs, nl, S, MU, nS, out = args
             L.cpu_n0m(P(limbs), int(nl), P(S), P(MU), int(nS), P(out))

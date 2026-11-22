@@ -242,3 +242,39 @@ extern "C" __global__ void s200g_n0m(const u32 *N0L, int nl, const u32 *S, const
     }
     out[p] = r;
 }
+
+/* k0 mod s for every prime (one thread each): the offsets of the window's first member in every progression. */
+extern "C" __global__ void s200g_km(const u32 *S, u64 k0, int nS, u32 *out) {
+    const int p = blockIdx.x * blockDim.x + threadIdx.x;
+    if (p < nS) out[p] = (u32)(k0 % S[p]);
+}
+
+/* After s200g_select: from the nsel = nb * nkeep sorted keys (block by block, nkeep each) the member index in the window, k, the count
+   and the CSR offsets of the survivor rows (an exclusive scan of the counts), in one CTA of NTHREADS threads (each takes a run of
+   consecutive keys).  total = offs[nsel] = number of survivor rows. */
+extern "C" __global__ void s200g_finalize(const u32 *keys, int nsel, int nkeep, u64 k0, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    __shared__ i64 part[NTHREADS];
+    const int per = (nsel + blockDim.x - 1) / blockDim.x;
+    const int i0 = threadIdx.x * per, i1 = i0 + per < nsel ? i0 + per : nsel;
+    i64 sum = 0;
+    for (int i = i0; i < i1; i++) {
+        const u32 key = keys[i];
+        const u32 m = ((u32)(i / nkeep) << LLOG) + (key & 0xFFFFFu);
+        cnt[i] = (u16)(key >> 20);
+        member[i] = m;
+        kout[i] = k0 + m;
+        sum += key >> 20;
+    }
+    part[threadIdx.x] = sum;
+    __syncthreads();
+    for (u32 d = 1; d < blockDim.x; d <<= 1) {                    /* inclusive scan of the run sums */
+        const i64 v = part[threadIdx.x] + (threadIdx.x >= d ? part[threadIdx.x - d] : 0);
+        __syncthreads();
+        part[threadIdx.x] = v;
+        __syncthreads();
+    }
+    i64 run = part[threadIdx.x] - sum;
+    for (int i = i0; i < i1; i++) { offs[i] = run; run += keys[i] >> 20; }
+    if (threadIdx.x == blockDim.x - 1) { offs[nsel] = run; *total = run; }
+    if (nsel == 0 && threadIdx.x == 0) { offs[0] = 0; *total = 0; }
+}

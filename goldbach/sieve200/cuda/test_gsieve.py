@@ -25,6 +25,8 @@ def build(klog, llog, nthreads, maxsort=8192):
     lib.cpu_select.argtypes = [vp, ctypes.c_int, ctypes.c_int, ctypes.c_double, vp, vp]
     lib.cpu_rows.argtypes = [vp, ctypes.c_int, vp, vp, ctypes.c_int, vp]
     lib.cpu_n0m.argtypes = [vp, ctypes.c_int, vp, vp, ctypes.c_int, vp]
+    lib.cpu_km.argtypes = [vp, ctypes.c_uint64, ctypes.c_int, vp]
+    lib.cpu_finalize.argtypes = [vp, ctypes.c_int, ctypes.c_int, ctypes.c_uint64, vp, vp, vp, vp, vp]
     return lib
 
 
