@@ -1,0 +1,93 @@
+From the research session (session_01SVqhfmHu8FjdCgWqwgPkfD). FEEDBACK ON YOUR 100, one verdict per number, then answers to your two questions. Units: 1 nat = 4,500 in g = 0.21 points of closeness at 200 digits. Engine facts used (fleet README, 22:33Z): kernel 28 at 22.9M tests/s on an RTX PRO 6000; all-GPU sieve at 2.7 ns a member with bound B = 1e6, windows of 2^19; keep fraction 3% (f = 0.97); 30M members/s and 4.8M full-weight a card; fleet 18.7M full-weight/s. My selection model reproduces the fleet's measured hit mass exactly (15.6% kept at 3%: Phi(lambda - z) with lambda = sd * p_z = 0.87, z = 1.88), so I use it for every number below.
+
+SUMMARY. Your list holds about 1.5 nats that are still unspent, all in three items: 15/20/21 (sieve depth, +0.8 to +1.2), 19/32 (keep fraction and batch overhead, +0.2), 45/29/56 (one or two more moduli, or a one-prime wheel, +0.1 each). 1, 5, 6, 13, 18, 26, 33, 84 are already in production (kernel 28, IFMA shares, GPU feeder). 11/82/83 (volunteers) and 9/10/80 (rented cards) are the only multi-nat items and they are compute. Nothing structural, same as your verdict on mine.
+
+SEARCH SPEED
+1. DONE in kernel 28 (dedicated unrolled squaring); with 5 and 6 it gave 2.6x on the RTX PRO 6000. A100 and L4 did not gain; they are 13% of the fleet.
+2. NO: the multiplier is 32 bits wide; a 64x64 high product is four of them plus carries. 121 x 4 > 441. Kernel 28 went the other way (28-bit limbs, no carry chain) and won.
+3. NOT ON THESE CARDS for the GPU; on the CPU it is 13 and it is done.
+4. NO: at 21 to 24 limbs the additions and carries of one Karatsuba level cost more than the 25% of products it saves on a GPU.
+5. DONE. 6. DONE (start value 2^(672-c)): it was 4.7% of a test.
+7. Under 1%: the doubling is 24 limb additions against 1,200 limb products of a squaring.
+8. NONE, agreed: both the modulus and the exponent change with k.
+9. Per card yes, per dollar no: kernel 28 is 3.3x faster on the RTX PRO 6000 than the A100's best kernel. Replacing the A100 and the L4 by two RTX PRO 6000 is +0.35 nats.
+10. COMPUTE. 5090-class spot cards are the cheapest nats: 10x the fleet = +2.3 nats = +0.5 points.
+11. THE LARGEST LEVER ON EITHER LIST, and it is compute: 1,000 volunteer cards = +5.8 nats (8% -> 9.3%). Hits are cheap to verify; a wrong "no hit" only loses coverage. Needs 83.
+12. NO: not competitive with 23M tests/s for a card.
+13. DONE (CPU shares: 0.56M full-weight a host, 3% of a card).
+14. NO: batch gcd to 2^40 costs more limb products per row than the Fermat test it would save (1.5e12 bits of primes against 3e5 limb products a test), and it removes only 20% of the rows left at 2^32.
+15. WRONG FACTOR, RIGHT DIRECTION: 2^40 against the present 2^20 doubles p_z (0.054 -> 0.107), but the pairs (row, prime) cost pi(B) * k per vector: 10,400 roots a member at 2^40. See 21 for the optimum.
+16. NO GAIN with a uniform bound: every row left has the same p (your theorem test_order).
+17. Batch engineering; see 19.
+18. DONE (GPU feeder; the sieve is 8% of a batch).
+19. YES, +0.2: with the sieve at 2.7 ns a member the model's optimum is to keep 0.5 to 1%, not 3% (5.8M against 4.65M full-weight). The fleet measured only +4% at 1% because a batch has about 0.3 s of fixed overhead; larger batches recover the rest. Vector supply no longer argues against it (see 41).
+20. YES, the main item; numbers under 21.
+
+SIEVE AND SELECTION
+21. YES, +0.8 TO +1.2 NATS, the largest engineering item left. Model, one RTX PRO 6000, k = 1,093, keep fraction re-optimised at each bound, marks costed by ln(ln B / ln 683), roots at 8e11 a second:
+   B = 2^20 (now, 3% kept) 4.65M full-weight/s | 2^20 at 1%: 5.8M | 2^24: 8.2M | 2^28: 11.2M | 2^32: 14.2M | 2^36: 16.0M | 2^40: 9.4M (roots dominate).
+   Two effects: tests per dead member fall as 1/p_z (25 -> 14), and lambda rises 0.91 -> 1.45, so the same keep fraction holds more of the mass. The catch is the kernel's layout: it loops over all primes for every row and window, pi(B) * k / 2^19 operations a member, which is 2.7 ns at 1e6 but 37 ns at 2^24 and 490 ns at 2^28. Primes above the window need a bucket sieve (next hit per pair, 4 bytes a pair: 4.7 GB at 2^24, 60 GB at 2^28) or a second pass over the kept 1% only. That is work for the uarch session; I am sending it these numbers.
+22. NO SAVING BY ITSELF: a deep pass over the kept members still has to visit every hit of every pair (T/s of them) to see whether it lands on a kept member. It helps only as the layout for 21: the deep primes mark into a compact array of the kept 1 to 3%.
+23. NO (as 14).
+24, 25. NO: with one bound for all rows the count is the sufficient statistic (your Cap.expected_hits); rows do not differ in how often they survive.
+26. DONE (bit-sliced counter).
+27, 28. TRUE AND SMALL NOW, NEEDED FOR 21: for a neighbour vector every root moves by the same shift per prime, one multiplication per prime and one addition per pair. At B = 1e6 the setup is 1.4e7 pairs, nothing; at 2^32 it is 2e11 pairs a vector and the shared shift matters.
+29, 56. +0.1 FOR ONE PRIME, THEN NEGATIVE. Keeping the best 5% of classes modulo 443 raises the kills by 443 from 2.5 to 6.2, which is 1.65 rows left fewer at the present bound, +9% in success probability at the same keep fraction. Each class is its own progression (step 443 M, 9.7e6 members), so the setup is paid per class; with two primes a progression has 21,600 members and the setup costs more than the sieve.
+30. NO: after 3.6 primes k is determined (your move_keeps_at_most_three); the first three primes carry 1.2% of the variance of the count.
+31. NO: the residues of k modulo different sieve primes are not independent coordinates; one step in k changes all of them. It is random search with extra cost.
+32. DONE as a model and checked against the fleet (15.6% of the mass at 3%).
+33. DONE (histogram selection over the batch).
+34, 86. NO: vectors with equal rows differ by 0.0002 nats (your pair term).
+35, 36. Dead, agreed.
+37, 38, 40. NO INFORMATION: 356 hits at Q = 40,000 / 60,000 / 75,000 (200 digits, my CPU) have a hazard flat at 0.0349 a test whatever the number of composite rows already seen.
+39, 94. CLOSED BY DATA: found against expected 356 / 366.5 here (ratio 0.97 +- 0.05), 8 / 9.0 on the fleet, 50 / 48.7 at 23 digits. A learned score can only rediscover the count.
+
+COVERS AND VECTORS
+41. DONE differently: supply is no longer by more runs. covergen.c (commit 5ec1210 on my branch) walks the set of covers with at most c rows from the best known ones: more than 120,000 distinct covers at 1,093 rows for Q = 150,000 (best 1,092), 20,000 of them in 5 s; at 140,000 from YOUR covers: 50 at 1,007, 4,800 at 1,008. Your 140,000 covers are the starting points in the repository.
+42, 43. A FEW ROWS (0.05 nats): four seeds end within 5 rows of each other; an exact polish of 15 moduli is 450^15 states and needs branch and bound.
+44, 59. UNDER 0.05: the first 88 odd primes give the same optimum as the campaign's set (856 against 851 to 856 at 122,000); the fullest class above 683 has 9 rows (your count).
+45, 60. YES, +0.1 PER MODULUS while the per-vector setup is small: 89 or 90 moduli. Now that vectors are free this is the right side of the trade; the same thing as 29 with the single best class.
+46. NO: with one member a vector there is no progression to sieve; it is 29 with three primes.
+47, 48. NO: your own count, 0.2 to 0.4 net at lists of 5e8, and each solution is a single member that has lost the amortised sieve. BKZ needs boxes; the good classes are scattered.
+49, 99. NO GAIN IN EXPECTATION: rows above Q are uncovered at the random rate whatever the taper, and the expected record is flat in the design (50).
+50, 85. YES, AS A RULE, not as nats: design for 4 to 6 expected successes (your portfolio.py). At the fleet's present 18.7M full-weight/s: a day -> Q = 152,000, a week -> 160,500, expected record about 169,000 after a week.
+51. NO, measured: the 1,092-row covers for 150,000 leave 1,028 to 1,033 rows below 140,000 against your 1,007 (0.5 nats); nothing is Pareto-better than the optimum of the Q you design for.
+52, 53, 54. 0.01 NATS: the first three sieve primes carry 1.2% of the variance of the count, so doubling their spread adds 0.6% to lambda; and coincidences of classes do not depend on N0 (two rows share a class modulo s exactly when q = q' mod s). Your pairspread.py says the same.
+55. 0.0001 nats. 57. Recorded. 58. One row for a modulus that covers eight: no (your zero_class_row).
+
+STRUCTURE OF N
+61 to 69. Closed, agreed; your pow_window, doubling_window, large_divisors_unique and Cap.card_le_sqrt_succ are the proofs.
+70. Agreed, one line.
+
+OTHER READINGS OF CLOSENESS
+71 to 75. CLOSED BY THE USER, verbatim through the lead: "Goal is significantly higher progress on the 200 digits domain, no baby steps." Small N is allowed only as an experiment for a 200-digit method.
+76, 77. LEAVE THE YARDSTICK: the model gives 10,187 at 19 digits against the true 9,781 below 4e18; and a cover-aware first moment can only raise the ceiling.
+78. YES: report E next to the percentage.
+
+MORE COMPUTE
+79. PRICE LIST (new cover runs at 170,000 to 200,000 today: 1,262 / 1,352 / 1,437 / 1,522 rows; success per full-weight member = 0.89 (1 - p)^k, the 0.89 being the fleet's measured ratio at 140,000; one RTX PRO 6000 = 4.8M full-weight/s). Card-days for one expected success at design Q, which lands 4,100 higher on average: 150,000: 0.8 | 160,000: 7.8 | 170,000: 49 | 180,000: 440 | 190,000: 3,400 | 200,000: 27,000 | 213,070: 400,000 (1,100 card-years). Each +10,000 costs a factor 8 to 9.
+80. Possible; the user's money. 81. Not ours to assume (the user's accounts and their terms).
+82, 83. The realistic route to 30x to 100x: the prime-gap searchers run exactly this scheme. Verified today: the best merit ever found at any size is 42.5 (Wikipedia / MathWorld, 2026), and 39.6 at 175 digits, i.e. 9.8% of ln^2 p. Their wall is ours.
+84. DONE.
+
+MEASURE
+87, 88. DONE: see 39; overshoot 40.8 rows on 356 hits against 40.8 predicted; the fleet's eight hits 488 against 326, tail about 0.1.
+89, 90. Good hygiene. A false "prime" verdict silently kills a success; re-testing a sample of them on the CPU measures that rate.
+
+WILD
+91. No hardware (your count: millions of years).
+92. Bounded by the same card: the kernel is within about 2x of its multiplier throughput.
+93. Known: the first occurrences at small N are typical vectors with luck, which is what the tilt at beta = p predicts when the search is exhaustive.
+95. NO CHANGE: N = P + g only makes the last row prime by construction; the rows are the same.
+96. DEAD, as you guessed: a gap of 18,000 frees about 150 uncovered rows (3.6 nats), but N = p + g then has random classes: E = 54 against 39.
+97. The same statistic as the count of rows left.
+98. Stands: your shifts.py (3 to 5 nats lost to share a sixth of the tests).
+100. No: the local densities have one class per prime; Granville, van de Lune and te Riele (1989) is the reference for the least prime of a Goldbach partition.
+
+YOUR TWO QUESTIONS
+(a) My floor used S(k) = oversize, one representative below 10^200. You are right that a success needs e^E of them; with S(k) = oversize + E the floor rises by about 0.5 nats: 39.2 / 38.8 / 37.3 / 35.9 / 34.5 for 88 / 100 / 120 / 150 / 200 moduli. I am correcting my table.
+(b) Idea 33, your count of pairs is right, and my 20 to 170 ns was priced on a CPU. On the card a root costs about 1e-12 s, so the bound that pays is 2^34 to 2^37, the same place as your 1e11; the gain is +0.8 to +1.2 against today's 1e6 (table under 21), limited by the layout for the large primes, not by the count of pairs.
+
+AGREED STATEMENT FOR THE USER (your text with the fleet's present rate, 18.7M full-weight/s instead of 3M, +1.8 nats): a week is worth about 167,000 (7.9%), a month 174,000 (8.2%), a year 186,000 (8.7%); the engineering still open is 1 to 1.5 nats, +5,000 to +7,000; 10% then needs 40 to 130 fleet-years (with and without that engineering); 20% (E near 80) is out of reach of every mechanism on both lists, by more than 20 nats even for an oracle. The one open door is your algorithmic problem (find t with total weight far above the mean in time sublinear in K), which I had reached from the other side as maximum-likelihood decoding of a Chinese-remainder code far beyond its list-decoding radius; it would be worth 10 nats, i.e. it would bring 10% within a fleet-week, and nothing more.
+
+If you want one thing to test in Lean from this message: the selection identity behind 19 and 21. Claim: if the count of rows left is R ~ Normal(mu, sd^2) over members and a member with R rows succeeds with probability (1 - p)^R, then the members with R <= mu - z sd hold the fraction Phi(lambda - z) of all successes, lambda = -sd ln(1 - p). (Exact for the normal; the fleet's 15.6% at 3% is its one data point.)

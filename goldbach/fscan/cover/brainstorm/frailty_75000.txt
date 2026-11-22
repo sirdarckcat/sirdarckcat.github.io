@@ -1,0 +1,12 @@
+Q=75000: 469 uncovered rows below Q, 957 uncovered primes in [Q, Q+90000), boost 11.008, sieve primes 939
+members 1600000, hits 20, expected 18.7, ratio 1.07 +- 0.22; 1476 s
+overshoot: uncovered primes survived beyond Q: mean 56.2, model 40.8, ratio 1.38 +- 0.22; mean g - Q = 4994; hits with no prime found within the window: 0
+hazard (probable prime at the next test | m composite rows seen), in blocks of 10:
+   m =  0.. 9: 478644/13704016 = 0.0349
+   m = 10..19: 335390/9608162 = 0.0349
+   m = 20..29: 235565/6729443 = 0.0350
+   m = 30..39: 164591/4716665 = 0.0349
+   m = 40..49: 115324/3305222 = 0.0349
+   m = 50..59: 80531/2318213 = 0.0347
+   m = 60..69: 56773/1628201 = 0.0349
+   m = 70..79: 39672/1141240 = 0.0348

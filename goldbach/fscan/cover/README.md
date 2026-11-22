@@ -219,6 +219,15 @@ that are not adjacent in the tree; bounded-difference and Bernstein
 inequalities for the lower tail of k are dominated by the small primes. The
 entropy estimate above therefore stays a measurement.
 
+## The brainstorm of 22 November 2026 (`brainstorm/`)
+
+Two hundred ideas for a large step at 200 digits, 100 from this session and
+100 from the Lean session, each tested by the other. None is worth one nat as
+a change of method; `brainstorm/README.md` has the reason, the price list from
+150,000 to 213,070 (10% of the ceiling: 1,100 card-years at the present
+engine), the checks of the model on 356 successes at low thresholds, and the
+engineering that is still open (0.6 to 1.3 nats).
+
 ## Use
 
 ```
