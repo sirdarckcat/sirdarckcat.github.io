@@ -157,15 +157,15 @@ at 193.
   part of the 1.35.
 - **Sharing the sieve between numbers.** Two numbers N and N' share a row
   (N − q = N' − q') only when N' − N = q − q' is small, that is in an
-  exhaustive search of an interval. Such a search can count the rows left
-  for every N of the interval at about 7 cycles each (one sieved position
-  per N, the count by bit-sliced adds), but its candidates are typical
-  numbers, 100 to 200 times less likely to succeed than the members of the
-  best vectors, and a shifted copy of a good vector is a typical vector. It
-  loses to `tscan` by a factor 2 to 3 at 25 digits and scales worse (4.5 per
-  digit against 3.8).
-- **A cost per digit below 3.8.** With the vector counts above the cost of
-  one more digit rises slowly as N falls (the classes needed are closer to
-  the bulk, where the count grows by less per class): about 3.8 at 25
-  digits, 4.3 at 23, 5.5 at 21. The gain of this scanner is a constant
+  exhaustive search of an interval. Such a search could count the rows left
+  for every N of the interval at an estimated 7 cycles each (one sieved
+  position per N, the count by bit-sliced adds; not built), but its
+  candidates are typical numbers, 100 to 200 times less likely to succeed
+  than the members of the best vectors, and a shifted copy of a good vector
+  is a typical vector. By that estimate it loses to `tscan` by a factor 2 to
+  3 at 25 digits and scales worse (4.5 per digit against 3.8).
+- **A cost per digit below 3.8.** With the vector counts above, the cost of
+  one more digit should rise slowly as N falls (the classes needed are closer
+  to the bulk, where the count grows by less per class): an estimated 3.8 at
+  25 digits, 4.3 at 23, 5.5 at 21. The gain of this scanner is a constant
   factor, not a better exponent.

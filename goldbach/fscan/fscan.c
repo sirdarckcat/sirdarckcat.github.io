@@ -69,7 +69,6 @@ static int have_one, slice_i, slice_n = 1;
 typedef struct {
     u64 vectors, members, sel, kept, tests, prps, found, samples;
     double exp_tested, exp_corr, mass_all, mass_cap;
-    u64 hs[256], ha[257];
 } stats_t;
 
 typedef struct { u128 N; u64 m[4]; u64 k; } member_t;
@@ -84,7 +83,7 @@ typedef struct {
     member_t *queue; int qn, qcap;
     member_t slot[F52_LANES]; int act[F52_LANES];
     stats_t st;
-    FILE *out;
+    u64 hs[256], ha[257];
 } tls_t;
 
 static u128 parse_big(const char *s) {
@@ -240,7 +239,7 @@ static void scan_vector(tls_t *T) {
         u16 todo_d[CK + 8]; int ntodo = 0;
         for (int b = 0; b < 8; b++) {
             u64 bk = kc + 64 * b;
-            if (do_hist) { u8 tmp[64]; _mm512_storeu_si512(tmp, sc[b]); for (int j = 0; j < 64; j++) if (bk + j >= kmin && bk + j <= kmax) st->hs[tmp[j]]++; }
+            if (do_hist) { u8 tmp[64]; _mm512_storeu_si512(tmp, sc[b]); for (int j = 0; j < 64; j++) if (bk + j >= kmin && bk + j <= kmax) T->hs[tmp[j]]++; }
             u64 mm = _mm512_cmpge_epu8_mask(sc[b], thv);
             /* every 2^sample_bits-th member also goes through the exact stage, for the mass estimate */
             u64 sm = 0;
@@ -260,7 +259,7 @@ static void scan_vector(tls_t *T) {
             if (issel) st->sel++;
             if (!issam && (!issel || a > Ta)) continue;
             double w = exp(l1 * a);
-            if (issam) { st->samples++; st->mass_all += w; if (issel && a <= Ta) st->mass_cap += w; if (do_hist) st->ha[a]++; }
+            if (issam) { st->samples++; st->mass_all += w; if (issel && a <= Ta) st->mass_cap += w; if (do_hist) T->ha[a]++; }
             if (!issel || a > Ta) continue;
             st->kept++; st->exp_tested += w; st->exp_corr += w * exp(c2 * odds2 * a * (a - 1) / 2);
             if (a == 0) { member_t m0 = {(u128)n0 + (u128)k * Mmod, {0, 0, 0, 0}, k}; success(T, &m0); continue; }
@@ -305,14 +304,14 @@ static void dfs(tls_t *T, int i, const u64 *alive, int n, u128 n0) {
     }
 }
 
-#define SPLIT 9
-typedef struct { u64 alive[NW]; int n; u128 n0; } node_t;
-static node_t *nodes; static int nnodes, capnodes;
+#define SPLIT 11
+typedef struct { u64 alive[NW]; int n, unit; u128 n0; stats_t st; } node_t;
+static node_t *nodes; static int nnodes, capnodes, cur_unit;
 /* the nodes SPLIT primes deep of one unit that can still hold a vector with at most Rhi residual primes */
 static void collect(int i, const u64 *alive, int n, u128 n0) {
     if (i == SPLIT) {
         if (nnodes == capnodes) { capnodes = capnodes ? 2 * capnodes : 1024; nodes = realloc(nodes, capnodes * sizeof(node_t)); }
-        memcpy(nodes[nnodes].alive, alive, sizeof(u64) * NW); nodes[nnodes].n = n; nodes[nnodes].n0 = n0; nnodes++;
+        memcpy(nodes[nnodes].alive, alive, sizeof(u64) * NW); nodes[nnodes].n = n; nodes[nnodes].n0 = n0; nodes[nnodes].unit = cur_unit; nnodes++;
         return;
     }
     int later = 0;
@@ -331,8 +330,6 @@ static void add_stats(stats_t *a, const stats_t *b) {
     a->vectors += b->vectors; a->members += b->members; a->sel += b->sel; a->kept += b->kept; a->tests += b->tests;
     a->prps += b->prps; a->found += b->found; a->samples += b->samples; a->exp_tested += b->exp_tested; a->exp_corr += b->exp_corr;
     a->mass_all += b->mass_all; a->mass_cap += b->mass_cap;
-    for (int i = 0; i < 256; i++) a->hs[i] += b->hs[i];
-    for (int i = 0; i < 257; i++) a->ha[i] += b->ha[i];
 }
 
 int main(int argc, char **argv) {
@@ -384,8 +381,8 @@ int main(int argc, char **argv) {
     if (L + CK >= 65536) { fprintf(stderr, "L too large\n"); return 2; }
 
     /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17.  They are very unequal (the
-       small vectors share the best classes of the small primes), so the units are taken one after the other
-       and the threads share the subtrees SPLIT primes deep inside each unit. */
+       small vectors share the best classes of the small primes), so the threads share the subtrees SPLIT
+       primes deep of a batch of units; a unit is written to the done file when its batch is finished. */
     int nsub = 2 * 4 * 6 * 10 * 12 * 16;
     char *done = calloc(nsub, 1);
     stats_t total; memset(&total, 0, sizeof total);
@@ -420,36 +417,46 @@ int main(int argc, char **argv) {
         TT[t] = T;
     }
     static const int UM[6] = {2, 4, 6, 10, 12, 16};
-    for (int id = 0; id < nsub; id++) {
-        if (done[id] || id % slice_n != slice_i) continue;
-        u64 al[NW]; u128 n0 = 0;
-        for (int w = 0; w < NW; w++) al[w] = all[w];
-        for (int j = 0, x = id; j < 6; j++) {
-            int a = 1 + x % UM[j]; x /= UM[j];
-            for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
-            n0 += (u128)a * Ebasis[j];
+    int *batch_units = malloc(nsub * sizeof(int)), nbatch = 0;
+    nnodes = 0;
+    for (int id = 0; id <= nsub; id++) {
+        if (id < nsub) {
+            if (done[id] || id % slice_n != slice_i) continue;
+            u64 al[NW]; u128 n0 = 0;
+            for (int w = 0; w < NW; w++) al[w] = all[w];
+            for (int j = 0, x = id; j < 6; j++) {
+                int a = 1 + x % UM[j]; x /= UM[j];
+                for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
+                n0 += (u128)a * Ebasis[j];
+            }
+            int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
+            /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
+            int later = 0;
+            for (int j = 6; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
+            if (n - later > Rhi) continue;
+            cur_unit = id;
+            collect(6, al, n, n0);
+            batch_units[nbatch++] = id;
+            if (nnodes < 16384) continue;                  /* gather enough subtrees to keep every thread busy */
         }
-        int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
-        /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
-        int later = 0;
-        for (int j = 6; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
-        if (n - later > Rhi) continue;
-        nnodes = 0;
-        collect(6, al, n, n0);
-        for (int t = 0; t < threads; t++) memset(&TT[t]->st, 0, sizeof(stats_t));
         #pragma omp parallel for schedule(dynamic, 1) num_threads(threads)
         for (int i = 0; i < nnodes; i++) {
             tls_t *T = TT[omp_get_thread_num()];
+            memset(&T->st, 0, sizeof(stats_t));
             dfs(T, SPLIT, nodes[i].alive, nodes[i].n, nodes[i].n0);
+            nodes[i].st = T->st;
         }
-        stats_t us; memset(&us, 0, sizeof us);
-        for (int t = 0; t < threads; t++) add_stats(&us, &TT[t]->st);
-        add_stats(&total, &us);
-        if (df && (us.vectors || !do_dump)) {
-            fprintf(df, "W %d %lu %lu %lu %lu %lu %lu %lu %lu %.9g %.9g %.9g %.9g | %s\n", id, us.vectors, us.members, us.sel, us.kept,
-                    us.tests, us.prps, us.found, us.samples, us.exp_tested, us.exp_corr, us.mass_all, us.mass_cap, tag);
-            fflush(df);
+        for (int u = 0, i = 0; u < nbatch; u++) {         /* the nodes of a unit are consecutive */
+            stats_t us; memset(&us, 0, sizeof us);
+            for (; i < nnodes && nodes[i].unit == batch_units[u]; i++) add_stats(&us, &nodes[i].st);
+            add_stats(&total, &us);
+            if (df && (us.vectors || !do_dump)) {
+                fprintf(df, "W %d %lu %lu %lu %lu %lu %lu %lu %lu %.9g %.9g %.9g %.9g | %s\n", batch_units[u], us.vectors, us.members, us.sel, us.kept,
+                        us.tests, us.prps, us.found, us.samples, us.exp_tested, us.exp_corr, us.mass_all, us.mass_cap, tag);
+            }
         }
+        if (df) fflush(df);
+        nnodes = 0; nbatch = 0;
     }
     double dt = omp_get_wtime() - t0;
     double scale = (double)((u64)1 << sample_bits);
@@ -458,8 +465,10 @@ int main(int argc, char **argv) {
            tag, total.vectors, total.members, total.sel, total.kept, total.tests, total.prps, total.found, total.exp_corr, total.exp_tested,
            total.mass_all * scale, total.mass_cap * scale, total.samples, dt, threads, total.members / (dt > 0 ? dt : 1));
     if (do_hist) {
-        printf("HS"); for (int i = 0; i < 256; i++) if (total.hs[i]) printf(" %d:%lu", i, total.hs[i]); printf("\n");
-        printf("HA"); for (int i = 0; i < 257; i++) if (total.ha[i]) printf(" %d:%lu", i, total.ha[i]); printf("\n");
+        u64 hs[256] = {0}, ha[257] = {0};
+        for (int t = 0; t < threads; t++) { for (int i = 0; i < 256; i++) hs[i] += TT[t]->hs[i]; for (int i = 0; i < 257; i++) ha[i] += TT[t]->ha[i]; }
+        printf("HS"); for (int i = 0; i < 256; i++) if (hs[i]) printf(" %d:%lu", i, hs[i]); printf("\n");
+        printf("HA"); for (int i = 0; i < 257; i++) if (ha[i]) printf(" %d:%lu", i, ha[i]); printf("\n");
     }
     return 0;
 }
