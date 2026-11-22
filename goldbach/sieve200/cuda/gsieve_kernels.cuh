@@ -31,16 +31,24 @@ extern "C" __global__ void s200g_sieve(const u32 *U, const u32 *S, const u32 *IN
     const u32 q = U[r];
     for (u32 i = threadIdx.x; i < KW; i += blockDim.x) bm[i] = 0xFFFFFFFFu;
     __syncthreads();
-    for (int p = threadIdx.x; p < nS; p += blockDim.x) {
-        const u32 s = S[p];
+    /* the constants of the next prime are loaded before the marks of this one are made, so that their latency overlaps the marks */
+    int p = threadIdx.x;
+    u32 s_n = 1, inv_n = 0, n0_n = 0, km_n = 0;
+    u64 mu_n = 0;
+    if (p < nS) { s_n = S[p]; inv_n = INV[p]; mu_n = MU[p]; n0_n = N0M[p]; km_n = KM[p]; }
+    for (; p < nS; p += blockDim.x) {
+        const u32 s = s_n, inv = inv_n, n0 = n0_n, km = km_n;
+        const u64 mu = mu_n;
+        const int pn = p + blockDim.x;
+        if (pn < nS) { s_n = S[pn]; inv_n = INV[pn]; mu_n = MU[pn]; n0_n = N0M[pn]; km_n = KM[pn]; }
         const u32 qm = q < s ? q : q % s;
-        u32 d = qm + s - N0M[p];                                 /* (q - N0) mod s */
+        u32 d = qm + s - n0;                                     /* (q - N0) mod s */
         if (d >= s) d -= s;
-        const u64 x = (u64)d * INV[p];                           /* (q - N0) M^-1, below s^2 < 2^54 */
-        const u64 qe = __umul64hi(x, MU[p]);                     /* floor(x / s) or one less */
+        const u64 x = (u64)d * inv;                              /* (q - N0) M^-1, below s^2 < 2^54 */
+        const u64 qe = __umul64hi(x, mu);                        /* floor(x / s) or one less */
         u64 a = x - qe * (u64)s;
         if (a >= s) a -= s;
-        u32 j = (u32)a + s - KM[p];                              /* (a - k0) mod s */
+        u32 j = (u32)a + s - km;                                 /* (a - k0) mod s */
         if (j >= s) j -= s;
         for (; j < (1u << KLOG); j += s) atomicAnd(&bm[j >> 5], ~(1u << (j & 31)));
     }
