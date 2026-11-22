@@ -1,0 +1,1 @@
+STATS Q=10007 L=383 R=193..193 Xmax=1e23 theta=98 rref=193 Ta=113 | vectors=154098 members=1177823489610 selected=12037875029 kept=4778236594 tests=23218533519 prps=4778236594 found=0 expected=0.045094 expected_raw=0.0495267 mass_all=0.586567 mass_captured_sampled=0.0496622 samples=287546868 seconds=1559.1 threads=4 rate=7.554e+08
