@@ -94,6 +94,14 @@ Version 3 (22 Nov):
   - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
     on the RTX PRO 6000, against 3.6 s before.
   - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- `search_gpu4.py` (22 Nov 21:57Z, production on the three RTX PRO 6000s): the sieve, counts and selection run on the host's
+  CPUs with the uarch session's `sieve200.Feeder` (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/sieve200; C with AVX-512,
+  46 threads on the G4's 48 Zen 5 vCPUs), and the GPU only tests. The CPU prepares batch b+1 while the GPU tests batch b.
+  - `check_v4.sh`: slice lines identical to search_gpu3.py's (kernel 28) on the 12 production slices of `check_k28.sh`, at
+    f = 0.97 and f = 0.
+  - Feeder alone on a G4 host (1,011-row cover, B = 1e6): 0.59 µs a member on one thread at f = 0.97; 27M members/s on
+    24 threads; 35-42M on 48.
+  - Production: a batch of 32 slices takes 1.6 s, against 2.2 s with search_gpu3.py and kernel 28, and 3.6 s at 21:00Z.
 - Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
   (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
   so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
