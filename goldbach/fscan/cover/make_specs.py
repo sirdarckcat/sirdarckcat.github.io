@@ -5,7 +5,8 @@
 
 covers.txt holds lines "COVER k r:a r:a ..." or "BEST r:a r:a ..." (ptcover output).  Every cover is checked
 from scratch: residues nonzero, residual recomputed, N0 = the even number below M = 2*prod(r) with N0 = a (mod r).
-The covers are sorted by residual size; identical ones are dropped.
+Identical covers are dropped; the max_covers best by the residual size the sampler reported are kept, and that size is
+recomputed for each of them.
 """
 import json, math, sys
 from functools import reduce
@@ -33,7 +34,7 @@ def spec(Q, rows, cover, name, kmax):
     nd = math.log10(M) + math.log10(kmax)
     return {"Q": Q, "cover": [list(c) for c in cover], "residual": residual, "boost": boost, "m_digits": math.log10(M),
             "E": len(residual) * boost / (nd * math.log(10)), "n_digits_est": nd, "N0": str(N0), "M": str(M), "name": name,
-            "kmax": kmax, "stop_on_success": True}
+            "kmax": kmax, "ceiling_digits": len(str(N0 + (kmax - 1) * M)), "stop_on_success": True}
 
 if __name__ == "__main__":
     Q, name, kmax, src, dst = int(sys.argv[1]), sys.argv[2], int(float(sys.argv[3])), sys.argv[4], sys.argv[5]
@@ -46,11 +47,11 @@ if __name__ == "__main__":
         if not f or f[0] not in ("COVER", "BEST"): continue
         cov = tuple(tuple(map(int, x.split(":"))) for x in f[(2 if f[0] == "COVER" else 1):])
         if cov in seen: continue
-        seen.add(cov); covers.append(cov)
-    specs = [spec(Q, rows, c, "", kmax) for c in covers]
+        seen.add(cov); covers.append((int(f[1]) if f[0] == "COVER" else 0, len(covers), cov))
+    covers = [c for _, _, c in sorted(covers)]
+    specs = [spec(Q, rows, c, "", kmax) for c in covers[:limit]]      # covers are presorted by the k the sampler reported
     specs = [s for s in specs if len(s["residual"]) <= kcap]
     specs.sort(key=lambda s: len(s["residual"]))
-    specs = specs[:limit]
     for i, s in enumerate(specs): s["name"] = f"{name}_v{i}"
     json.dump(specs, open(dst, "w"))
     ks = [len(s["residual"]) for s in specs]

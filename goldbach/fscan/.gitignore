@@ -8,3 +8,4 @@ runs/old/
 cover/ptcover
 cover/__pycache__/
 runs/calib/*.done
+cover/deliver/dump_*.txt
