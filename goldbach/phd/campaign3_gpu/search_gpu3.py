@@ -56,7 +56,10 @@ ap.add_argument("--dmax", type=int, default=8, help="most complements of one mem
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
 ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
-                     "28: the uarch session's gpu_fermat28.py (24 x 28-bit limbs, 'step_s1' with PTX mad.wide; n in [2^642, 2^668))")
+                     "28: the uarch session's gpu_fermat28.py (24 x 28-bit limbs; n in [2^642, 2^668))")
+ap.add_argument("--k28-step", default=os.environ.get("K28_STEP", "fermat28_step_s1.cuh"),
+                help="kernel 28's step file: fermat28_step_s1.cuh or _s1r.cuh with --k28-asm 1 (sm_120), _s1rw.cuh or _s1w.cuh with --k28-asm 0 (sm_80/89)")
+ap.add_argument("--k28-asm", type=int, default=int(os.environ.get("K28_ASM", "1")), choices=(0, 1), help="kernel 28: PTX mad.wide (1) or plain C (0)")
 args = ap.parse_args()
 sys.path.insert(0, args.goldbach)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -145,7 +148,7 @@ class MultiTester:
                 lo = int(sp["N0"]) - max(int(q) for q in sp["residual"]) + int(sp.get("kstart", 0)) * M
                 hi = int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M
                 assert lo >= 1 << 642 and hi < 1 << 668, f"kernel 28 needs 2^642 <= n < 2^668 ({sp['name']})"
-            self.k = gpu_fermat28.kernel(limbs, step_file="fermat28_step_s1.cuh", asm_mad=True)
+            self.k = gpu_fermat28.kernel(limbs, step_file=args.k28_step, asm_mad=bool(args.k28_asm))
         else:
             self.k = (kernel3 if args.kernel == 3 else kernel2)(limbs)
 

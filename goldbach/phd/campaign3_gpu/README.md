@@ -150,6 +150,34 @@ Version 3 (22 Nov):
     and at f = 0.
   - Production batch of 32 slices on an RTX PRO 6000: 2.2 s.
   - search_gpu3.py asserts 2^642 ≤ n < 2^668 for kernel 28 (it flags 2 outside), and counts only flag == 1 as a PRP.
+- Kernel 28 step files (22 Nov 23:34-23:52Z, production on all five GPUs): the uarch session's a641ecc (same directory; files used in
+  `fermat28_used_a641ecc.sha256`), chosen with `--k28-step` / `--k28-asm` (env `K28_STEP`, `K28_ASM`, `FERMAT28_DIR`).
+  - The RTX PRO 6000s run `fermat28_step_s1r.cuh` with PTX mad.wide.
+  - The A100 and the L4 run `fermat28_step_s1rw.cuh` in plain C. The "w" files drop the dead IADD3s that sm_80/89 executed.
+  - `test28_prod.py ... w` (production range, campaign paused): 0 mismatches against gmpy2 on 40,000 for every variant, and flags
+    identical to fermat2's on 2M. Tests/s at 128 threads, best single launch:
+
+    | GPU | fermat3 | s1 asm | s1 plain | s1 plain+w | s2 plain+w | s1r plain+w | s1r asm |
+    |---|---|---|---|---|---|---|---|
+    | RTX PRO 6000 | 13.08M | 22.85M | 22.23M | 22.27M | 22.58M | 22.74M | **23.39M** |
+    | A100 | 6.94M | 6.60M | 6.95M | 7.55M | 7.51M | **7.63M** | 6.95M |
+    | L4 | 3.92M | 3.74M | 4.00M | 4.57M | 4.54M | **4.62M** | 3.89M |
+
+  - The L4 runs at its 72 W cap in production, at 1,440-1,600 MHz of 2,040. `ab_sustained.py` (interleaved rounds of 6 × 2^20
+    tests after a 15 s warm-up) measures it there: fermat3 3.92M tests/s (54.6k tests/J), s1rw 4.59M (63.8k), s1w 4.53M,
+    s1 plain 3.98M, s1r asm 3.87M.
+  - `check_v5w.sh`: on each of the five GPUs, the production configuration and the new step file give identical slice lines on the
+    12 production slices (f = 0.97 and f = 0).
+  - Production, steady state, batches of 64 slices:
+
+    | GPU | before | after |
+    |---|---|---|
+    | RTX PRO 6000 (×3) | 31.1-31.8M members/s | 31.9-32.7M (+2.5-3.1%) |
+    | A100 | 9.77M | 11.09M (+13.5%) |
+    | L4 | 11.4 s a batch | 10.0 s (+14%) |
+
+  - Restarts: compare steady states, not the first batches. After a restart, the first pass over the variants carries the
+    per-variant setup. On the L4 (1,462 variants, 23 batches a round) that is ~2 s a batch: 13.4 s against 11.4 s on kernel 3.
 - Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
   gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,

@@ -1,12 +1,17 @@
-"""fermat2, fermat3 and the six fermat28 variants on production-range candidates (k in [2^30, 2^32), n >= 2^662):
-flags against gmpy2 on S candidates, flags against each other on TB random ones, and tests/s at 64/128/256 threads."""
+"""fermat2, fermat3 and fermat28 variants on production-range candidates (k in [2^30, 2^32), n >= 2^662): flags against
+gmpy2 on S candidates, flags against each other on TB random ones, and tests/s at 64/128/256 threads (best of 3 single
+launches: on a power-capped GPU such as the L4 this is the boost clock; ab_sustained.py measures the sustained rate).
+
+    python3 test28_prod.py SPECS.json [S] [TB] [SET]    SET: s124 (the s1/s2/s4 files, 554e85c) or w (the s1r and
+    "w" files of a641ecc); FERMAT28_DIR is the uarch goldbach/fermat661/cuda checkout (default /content/f28)."""
+import os
 import json, sys, time
 import numpy as np
 import cupy as cp
 import gmpy2
 from gmpy2 import mpz
 sys.set_int_max_str_digits(0)
-sys.path.insert(0, "/content/f28"); sys.path.insert(0, "/content/c3g")
+sys.path.insert(0, os.environ.get("FERMAT28_DIR", "/content/f28")); sys.path.insert(0, "/content/c3g")
 import gpu_fermat28 as g28, gpu_fermat as g2, gpu_fermat3 as g3
 spec = json.load(open(sys.argv[1]))[0]
 S = int(sys.argv[2]) if len(sys.argv) > 2 else 40000
@@ -26,10 +31,13 @@ ref = np.array([1 if gmpy2.powmod(2, (N0 - U[i] + int(k) * M) - 1, N0 - U[i] + i
                 for i, k in zip(idx.tolist(), kv.tolist())], dtype=np.uint8)
 print(f"spec {spec['name']} Q={spec['Q']}: {S} candidates k in [2^30, 2^32), {int(ref.sum())} base-2 PRPs", flush=True)
 V = [("fermat2", lambda: g2.kernel(21)), ("fermat3", lambda: g3.kernel(21))]
-V += [(f"fermat28 {nm}", (lambda ko: (lambda: g28.kernel(21, **ko)))(ko)) for nm, ko in
-      [("s2 plain", {}), ("s2 asm", dict(asm_mad=True)), ("s1 plain", dict(step_file="fermat28_step_s1.cuh")),
-       ("s1 asm", dict(step_file="fermat28_step_s1.cuh", asm_mad=True)), ("s4 plain", dict(step_file="fermat28_step_s4.cuh")),
-       ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True))]]
+SETS = {"s124": [("s2 plain", {}), ("s2 asm", dict(asm_mad=True)), ("s1 plain", dict(step_file="fermat28_step_s1.cuh")),
+                 ("s1 asm", dict(step_file="fermat28_step_s1.cuh", asm_mad=True)), ("s4 plain", dict(step_file="fermat28_step_s4.cuh")),
+                 ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True))],
+        "w": [("s1 asm", dict(step_file="fermat28_step_s1.cuh", asm_mad=True)), ("s1 plain", dict(step_file="fermat28_step_s1.cuh")),
+              ("s1 plain+w", dict(step_file="fermat28_step_s1w.cuh")), ("s2 plain+w", dict(step_file="fermat28_step_w.cuh")),
+              ("s1r plain+w", dict(step_file="fermat28_step_s1rw.cuh")), ("s1r asm", dict(step_file="fermat28_step_s1r.cuh", asm_mad=True))]}
+V += [(f"fermat28 {nm}", (lambda ko: (lambda: g28.kernel(21, **ko)))(ko)) for nm, ko in SETS[sys.argv[4] if len(sys.argv) > 4 else "s124"]]
 bi = cp.asarray(rng.integers(0, len(U), TB).astype(np.int32)); bk = cp.asarray(rng.integers(1 << 30, 1 << 32, TB, dtype=np.uint64).astype(np.uint32))
 base = None; bad = 0
 for name, mk in V:
