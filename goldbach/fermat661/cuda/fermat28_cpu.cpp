@@ -10,6 +10,7 @@ static inline int __clz(u32 x) { return __builtin_clz(x); }
 struct { unsigned x; } blockIdx, blockDim, threadIdx;
 #define FM28_DEBUG 1
 static u32 *fm28_dbg;
+#define FM28_MADN(acc, a, b) ((acc) += (u64)(u32)(a) * (u32)(b))      /* the "mulw" steps use an explicit PTX mul.wide.u32 for m_i n_j: portable here */
 #ifndef STEP_FILE
 #define STEP_FILE "fermat28_step.cuh"
 #endif

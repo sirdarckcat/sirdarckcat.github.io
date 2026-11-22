@@ -8,6 +8,7 @@ same 21 x u32 limb layout for `CQ` and `Mv`, same meaning of `out` (1 iff 2^(n-1
 |---|---|
 | `gen_fermat28.py` | writes `fermat28_step*.cuh`, one Montgomery squaring step as straight-line code (`python3 gen_fermat28.py 2`) |
 | `fermat28_step.cuh`, `_s1`, `_s4` | the generated step with 2, 1 or 4 independent 64-bit accumulators per column (a longer dependent chain of multiply-adds against 2 more adds per column) |
+| `fermat28_step_s1w.cuh`, `_w`, `_s1rw` | the same with an explicit `mul.wide.u32` for the products m_i n_j (`gen_fermat28.py ... mulw`): **600 fewer SASS instructions a step on sm_80 / 89** (see "Where the time goes") |
 | `fermat28_step_r.cuh`, `_s1r` | the same with **redundant limbs** (2 and 1 accumulators): no carry chain after the doubling, limbs left below 2^29, one normalising chain in the kernel after the last step (`#define FM28_REDUNDANT`, set by the step file); 70 of the 1,169 PTX instructions of a step less (`python3 gen_fermat28.py 2 fermat28_step_r.cuh redundant`) |
 | `fermat28_kernel.cuh` | the kernel: n = cq + M k, setup, the step loop, the final test |
 | `gpu_fermat28.py` | `kernel(limbs, step_file=..., asm_mad=...)`, `Tester`, `MultiTester` (checks the range of the whole pool), `to_limbs` |
@@ -56,7 +57,7 @@ carry is 0 and every limb is below B.  The step maps {X < 4n} to itself.
 v -> 2v + b, so after t steps v = -c 2^t + B_t = -(n + 671), y = 2^(1-n) (mod n).  `test_step28.py` checks C1/C2 on 6,070 random and
 adversarial inputs (limbs all ones, X near 4n, n near 2^668: the largest Y/n seen is 3.857).
 
-## Redundant limbs (`fermat28_step_r.cuh`, `fermat28_step_s1r.cuh`): fewer instructions, but no speed-up expected
+## Redundant limbs (`fermat28_step_r.cuh`, `fermat28_step_s1r.cuh`): 46-47 instructions fewer a step, about +2%
 
 The last thing the step does is the carry chain `x[i] = ((y_i << b) + carry) & MASK28` (24 x add, and, shift, about 70 instructions of the
 1,169 in a step).  It is not needed to keep the numbers in range: **leave `x_i = y_i << b`**, which is below 2^29 and has the value 2^b Y exactly.
@@ -77,36 +78,62 @@ as X < 4n allows): wrong 0, largest Y/n 3.959 (< 4).
 `FM28_STEP=fermat28_step_s1r.cuh python3 test_fermat28.py` and `FM28_STEP=fermat28_step_r.cuh python3 test_fermat28.py` pass everything the
 other files pass (3,000 residues, primes, pseudoprimes, edge values, campaign-3 numbers).  **The proof in the section above is for the
 default files (limbs < 2^28); the redundant ones change the invariant and the bound C3, so they need the paragraph above to be checked too.**
-**Do not expect it to be faster**: the SASS says why (next section).  It removes ALU instructions (the carry chain), and the step is limited by the
-wide multiplier, not by the ALU; the 876 multiply-adds are unchanged.  `test_gpu_fermat28.py` has "s1r" and "s2r" rows if someone wants to see it.
+It removes the carry chain (24 adds, 24 masks, 24 shifts, replaced by 24 shifts): 46 of 1,798 SASS instructions on sm_80 / 89, 47 of 1,151 on sm_120 ("s1 asm").  By the cost model in the
+next section that is about +2% (not the +4% first guessed, not the 0% of the first retraction).  `test_gpu_fermat28.py` has the "s1r" and "s2r" rows.
 
-## Where the time goes (SASS, from `../../sieve200/cuda/sass.py`: NVRTC 12.9 for the real architecture, then `nvdisasm`; no GPU needed)
+## Where the time goes (SASS from `../../sieve200/cuda/sass.py`; instruction costs measured by `../../sieve200/cuda/bench_pipes.py` on the three GPU types)
 
-The step loop (one squaring step, the loop with the largest body) as the GPU runs it, and the registers `ptxas -v` reports (no spills in any):
+The step loop (one squaring step) as the GPU runs it, from NVRTC 12.9 + `nvdisasm` for the real architecture; `ptxas -v` reports no spills in any variant:
 
-| arch | variant | instructions a step | IMAD.WIDE | other IMAD | IADD3 / IADD | registers |
-|---|---|---|---|---|---|---|
-| sm_80 / sm_89 | s1 plain | 1798 | 876 | 52 | 579 | 110 |
-| sm_80 / sm_89 | s1 asm | 2063 | 876 | 75 | 464 + 425 IADD3.X-class | 92 |
-| sm_80 / sm_89 | s1r plain / asm (redundant limbs) | 1752 / 2016 | 876 | 53 / 76 | | 112 / 96 |
-| sm_120 | s1 plain | 1276 | 876 | 24 | 100 | 100 |
-| sm_120 | s1 asm | 1151 | 876 | 24 | 28 | 90 |
-| sm_120 | s1r asm | 1104 | 876 | 24 | 28 | 88 |
-| sm_80 / sm_89 | fermat3 (`gpu_fermat3.py`) | 2328 | 651 | 579 (435 of them IMAD.X) | 751 | 128 |
-| sm_120 | fermat3 | 3196 | 651 | 43 | 5 (+ 2,497 MOV / IADD / HFMA2) | 144 |
+| arch | variant | instructions a step | IMAD.WIDE | IADD3 | registers |
+|---|---|---|---|---|---|
+| sm_80 / sm_89 | s1 plain | 1798 | 876 | 579 (+46 IADD3.X) | 110 |
+| sm_80 / sm_89 | **s1 plain + w** (`fermat28_step_s1w.cuh`) | **1198** | 876 | 49 | 96 |
+| sm_80 / sm_89 | s1r plain + w (`..._s1rw.cuh`, redundant limbs too) | 1151 | 876 | 49 | 94 |
+| sm_80 / sm_89 | s1 asm | 2063 | 876 | 464 + 425 IADD3.X | 92 |
+| sm_120 | s1 plain | 1276 | 876 | 100 | 100 |
+| sm_120 | s1 plain + w | 1197 | 876 | 28 | 96 |
+| sm_120 | s1 asm | 1151 | 876 | 28 | 90 |
+| sm_120 | s1r asm | 1104 | 876 | 28 | 88 |
 
-* On sm_80 / sm_89 an explicit `mad.wide.u32` (the "asm" variants) is lowered by ptxas to `IMAD.WIDE.U32 Rd, Ra, Rb, RZ` plus a 3-input `IADD3` / `IADD3.X` pair
-  for two products: about 2 instructions a product, 2063 a step.  The plain C form `acc += (u64) a * b` becomes one `IMAD.WIDE.U32 Rd, Ra, Rb, Rd` (the
-  accumulator is the addend): 1798 a step.  On sm_120 both are one instruction per product.  So on A100 and L4 use the plain variants, not "asm".
-* **A model that fits six measurements** (A100, L4, RTX PRO 6000 x fermat3, fermat28; the speeds are the GPU session's): a warp-level `IMAD.WIDE` occupies the
-  multiplier pipe of a scheduler for about 4 cycles, any other IMAD flavour (IMAD.X, IMAD.MOV, IMAD.SHL) for 2, and the ALU instructions (IADD3, SHF, LOP3,
-  ISETP ...) use a separate pipe at 2 cycles each.  A step then costs 4 x IMAD.WIDE + 2 x other IMAD cycles on the busier pipe: fermat28 3,552-3,608, fermat3
-  3,762 on sm_80 / 89.  With 655 steps a test and SMs x 4 schedulers x clock, that predicts 8.2M tests/s on the A100 (measured 6.95M for fermat28, 6.94M for
-  fermat3, which the model also predicts to be a tie), 24.8M on the RTX PRO 6000 for fermat28 (measured 22.86M), 6.4M on an L4 at its nominal clock (measured
-  4.0M, power-limited).  It does not fit fermat3 on sm_120 (the ALU and move instructions bind there).
-* If the model is right: **cutting multiplications is the only thing that makes this kernel faster; cutting ALU instructions does nothing** (hence the redundant limbs
-  do nothing), and ALU work up to about 2 instructions per multiplication removed is free.  `bench_pipes.py` (in `../../sieve200/cuda`) measures the pipe rates
-  directly; run it before building anything on the model.
+* **Dead adds.**  LLVM hoists `(u64) n_j` out of the step loop (n does not change), so `(u64) m_i * n_j` becomes `mul.lo.s64` with one operand an opaque 64-bit register (577 of them
+  in the PTX of the plain steps, one per reduction product); on sm_80 / 89 ptxas implements that as `IMAD.WIDE.U32` plus a **dead `IADD3 hi, hi, UR`** (a uniform register that is zero) and some
+  extra 64-bit shifts.  The "w" steps (`python3 gen_fermat28.py 1 fermat28_step_s1w.cuh mulw`) use an explicit `mul.wide.u32` (`FM28_MADN`) for the products with n and the plain form for the others:
+  **1,198 instructions instead of 1,798 on sm_80 / 89, 1,197 instead of 1,276 on sm_120.**  Same arithmetic, so the same results: `test_step28.py` and `test_fermat28.py` pass for them (6,070 exact steps, 1,500 exact residues,
+  primes, pseudoprimes, real primes).
+* **An explicit `mad.wide.u32` (the "asm" steps) is lowered on sm_80 / 89 to `IMAD.WIDE.U32 Rd, Ra, Rb, RZ` plus a 3-input `IADD3` / `IADD3.X` pair for two products**: 2063 instructions a step,
+  worse than plain.  On sm_120 it is one instruction a product and the best of the unmodified steps.
+* **Instruction costs (measured, `bench_pipes.py`, cycles one warp instruction occupies a scheduler; 4 CTAs x 256 threads an SM):**
+
+  | instruction | RTX PRO 6000 (sm_120) | A100 (sm_80) | L4 (sm_89) |
+  |---|---|---|---|
+  | IMAD.WIDE.U32 with the 64-bit addend | ~2.5 | ~2.3 | ~2.4 |
+  | IMAD (32-bit) | 2.0 | 2.05 | 2.04 |
+  | IADD3 | 1.8-1.9 | 2.1 | 2.1 |
+  | IADD3 + IADD3.X (a 64-bit add) | 2.8 | 3.1 | 3.1 |
+  | SHF | 1.8 | 2.1 | 2.1 |
+  | LOP3 | 0.75 | 1.07 | 1.07 |
+
+  and the rows "IMAD.WIDE + k IADD3" grow by 1.9-2.1 cycles for every added IADD3: **ALU instructions do not run beside the multiplications, they add to them.**  (My first model had them on a separate
+  pipe, so that only multiplications counted; the benchmark refuted it, and with it the idea that a step with fewer multiplications and more adds could be faster.)
+* **The cost model**: cycles a step = the sum over the loop's SASS instructions of the costs above (branches, uniform-datapath and local-memory instructions excluded).  Its predictions, as tests/s at 100% efficiency
+  (SMs x 4 schedulers x clock x 32 / (655 steps x cycles); 1.41 GHz A100, 2.4 GHz RTX PRO 6000):
+
+  | arch | variant | cycles a step | vs s1 plain | tests/s at 100% |
+  |---|---|---|---|---|
+  | sm_80 | s1 plain | 3814 | | 7.8M (measured for the best variant: 6.95M, 89%) |
+  | sm_80 | **s1 plain + w** | **2600** | **-32%** | 11.4M |
+  | sm_80 | s1r plain + w | 2526 | -34% | 11.8M |
+  | sm_80 | s1 asm | 4414 | +16% | 6.7M |
+  | sm_80 | fermat31 / fermat30 (`FERMAT31.md`) | 3825 / 3324 | +0% / -13% | 7.8M / 9.0M |
+  | sm_120 | s1 plain | 2842 | | 31.0M |
+  | sm_120 | s1 asm (the best measured: 22.86M, 74%) | 2616 | -8% | 33.7M |
+  | sm_120 | **s1r asm** | **2555** | -10% (-2.3% vs s1 asm) | 34.5M |
+  | sm_120 | fermat31 / fermat30 | 3817 / 3332 | +34% / +17% | 23.1M / 26.5M |
+
+  The model predicts the A100's measured speed within 11% for fermat28 and for fermat3 (and that the two tie there); it over-predicts the RTX PRO 6000 by 26% (something else costs there:
+  clock, latency, instruction fetch of an 18 KB loop body), so trust its *ratios*.  It predicts **+47% tests/s on an A100 and an L4 from "s1 plain + w"**, +2.4% on an RTX PRO 6000 from "s1r asm".
+  That is for the GPU session to measure: `test_gpu_fermat28.py` lists "s1 plain+w", "s2 plain+w", "s1r plain+w" and "s1r asm".
 
 ## Verified on the CPU (the same source text, `fermat28_cpu.cpp`)
 

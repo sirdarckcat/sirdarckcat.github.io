@@ -1,15 +1,18 @@
-# fermat31: a GPU base-2 Fermat kernel with 22 limbs of 31 bits (737 wide multiplications a step instead of 876)
+# fermat31: a GPU base-2 Fermat kernel with 22 limbs of 31 bits (737 wide multiplications a step instead of 876): correct, and predicted NOT faster
 
 Same job and same interface as `fermat28` (`kernel(limbs, step_file=...)`, `Tester`, `MultiTester`, `to_limbs` in `gpu_fermat31.py`; the kernel arguments, the
-21 x u32 input limbs and the flags `out[t]` = 1 / 0 / 2 are fermat28's; valid for odd n with 2^642 <= n < 2^668).  **Verified on a CPU, never run on a GPU:
-the speed, and the two PTX snippets (below), are for the GPU session to check.**
+21 x u32 input limbs and the flags `out[t]` = 1 / 0 / 2 are fermat28's; valid for odd n with 2^642 <= n < 2^668).  **Verified on a CPU, never run on a GPU.**
 
-## Why
+**Result so far: a negative one, kept because the reason is useful.**  It was written on the belief that the multiplier pipe is the bottleneck (so that carry-handling ALU instructions are free).
+`bench_pipes.py` on an RTX PRO 6000, an A100 and an L4 then showed that ALU instructions *add* to the multiplications (`FERMAT28.md`, "Where the time goes"), and with the measured costs the
+model predicts fermat31 at **+0% on sm_80 / 89 and +34% cycles (slower) on sm_120** against fermat28 s1 plain (fermat30: -13% / +17%): the ~1,000 ALU instructions its carries need cost more than
+the 139 multiplications they save.  It is there to be timed if someone wants to test the model (`test_gpu_fermat31.py` times it beside fermat28 in the same run); it should not go into production.
 
-`FERMAT28.md`, "Where the time goes": on the GPUs we run, a warp-level `IMAD.WIDE` holds a scheduler's multiplier pipe for about 4 cycles and the ALU
-instructions run beside it on another pipe, so a step is as fast as it has few wide multiplications.  fermat28 needs 876 (24 limbs of 28 bits: 300 for the
-squaring, 576 for the Montgomery reduction).  With 22 limbs of 31 bits it is 253 + 484 = 737 (-15.9%), with 23 limbs of 30 bits 276 + 529 = 805 (-8.1%).
-The price is carries: a product of two 31-bit limbs is below 2^62, so a 64-bit register holds 4 of them, not 49.
+## Why it was tried
+
+fermat28 needs 876 wide multiplications a step (24 limbs of 28 bits: 300 for the squaring, 576 for the Montgomery reduction).  With 22 limbs of 31 bits it is 253 + 484 = 737 (-15.9%), with 23 limbs of 30 bits
+276 + 529 = 805 (-8.1%).  The price is carries: a product of two 31-bit limbs is below 2^62, so a 64-bit register holds 4 of them, not 49, and the products are summed in groups through a 96-bit column sum.
+A multiplication saved costs about 2.4 cycles, an ALU instruction added about 2.0, and the carries add 1.4 of them per multiplication saved: the design cannot win.
 
 ## The step (`gen_fermat31.py`, `fm31_step`)
 
@@ -39,19 +42,17 @@ Notation: B = 2^31, NL = 22, R = B^22 = 2^682, n odd, 2^642 <= n < 2^668 (so 16 
 
 ## Numbers from the compiler (not from a GPU)
 
-Step loop of the whole kernel, `ptxas -v` registers (no spills; a 176-byte stack frame holds the exponent words and is read once per 32 steps):
+Step loop of the whole kernel, `ptxas -v` registers (no spills; a 176-byte stack frame holds the exponent words and is read once per 32 steps), and the cost model of `FERMAT28.md`:
 
-| arch | kernel | instructions a step | IMAD.WIDE | model: multiplier-pipe cycles a step | registers |
+| arch | kernel | instructions a step | IMAD.WIDE | model cycles a step | registers |
 |---|---|---|---|---|---|
-| sm_80 / sm_89 | fermat28 s1 plain | 1798 | 876 | 3608 | 110 |
-| sm_80 / sm_89 | fermat31 | 1771-1793 | 737 | ~3080 (-15%) | 96 |
-| sm_80 / sm_89 | fermat30 | 1538-1549 | 805 | ~3340 (-7%) | 94 |
-| sm_120 | fermat28 s1 asm | 1151 | 876 | 3552 | 90 |
-| sm_120 | fermat31 | 1823-1831 | 737 | ~3000 (-16%) | 128 |
-| sm_120 | fermat30 | 1539-1548 | 805 | ~3270 (-8%) | 94 |
-
-The model (`FERMAT28.md`) is a fit to six measured speeds; `../../sieve200/cuda/bench_pipes.py` measures its parameters.  If it holds, expect up to +15% tests/s;
-if the ALU pipe turns out to cost more than 2 cycles an instruction (fermat31 has about 1,000 ALU instructions a step against fermat28's 300-870), less.
+| sm_80 / sm_89 | fermat28 s1 plain | 1798 | 876 | 3814 | 110 |
+| sm_80 / sm_89 | fermat31 | 1793 | 737 | 3825 (+0%) | 96 |
+| sm_80 / sm_89 | fermat30 | 1549 | 805 | 3324 (-13%) | 94 |
+| sm_80 / sm_89 | fermat28 s1 plain + w (the better fix) | 1198 | 876 | 2600 (-32%) | 96 |
+| sm_120 | fermat28 s1 asm | 1151 | 876 | 2616 | 90 |
+| sm_120 | fermat31 | 1831 | 737 | 3817 (+46% vs s1 asm) | 128 |
+| sm_120 | fermat30 | 1548 | 805 | 3332 (+27%) | 94 |
 
 ## Verified on the CPU (`fermat31_cpu.cpp`: the same step and kernel text; the PTX carry chain and `mul.wide` are replaced there by portable C)
 
@@ -63,7 +64,7 @@ if the ALU pipe turns out to cost more than 2 cycles an instruction (fermat31 ha
 
 ## Not verified here
 
-* Anything about speed.
+* Anything about speed (the prediction above is a model fitted to the benchmark; a run of `test_gpu_fermat31.py` would test it: it predicts fermat31 at about 0.7x fermat28 s1 asm on an RTX PRO 6000 and about equal to s1 plain on an A100).
 * The two PTX snippets: `FM31_ADD96` (`add.cc.u32 / addc.cc.u32 / addc.u32`) and `fm31_mulw` (`mul.wide.u32`).  The compiler's SASS for them is the expected `IADD3` / `IADD3.X` / `IADD3.X`
   and `IMAD.WIDE.U32`, but only a GPU run checks the carries: `python3 test_gpu_fermat31.py specs_variants.json` compares with gmpy2 (it must print `mismatches 0`) and times every variant
   against fermat28 (s1 plain / asm, s2), fermat3 and fermat2 for 64 / 128 / 256 threads a block, with the register caps 72 and 96 as variants.

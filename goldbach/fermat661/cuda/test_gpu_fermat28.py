@@ -61,6 +61,9 @@ VARIANTS = [("s2 plain", dict()), ("s2 asm", dict(asm_mad=True)), ("s1 plain", d
             ("s4 asm", dict(step_file="fermat28_step_s4.cuh", asm_mad=True)),
             ("s1r plain", dict(step_file="fermat28_step_s1r.cuh")), ("s1r asm", dict(step_file="fermat28_step_s1r.cuh", asm_mad=True)),
             ("s2r plain", dict(step_file="fermat28_step_r.cuh")), ("s2r asm", dict(step_file="fermat28_step_r.cuh", asm_mad=True)),
+            # "w" = explicit mul.wide.u32 for the m_i n_j products (no dead IADD3 a product on sm_80 / 89: 1,198 SASS instructions a step instead of 1,798)
+            ("s1 plain+w", dict(step_file="fermat28_step_s1w.cuh")), ("s2 plain+w", dict(step_file="fermat28_step_w.cuh")),
+            ("s1r plain+w", dict(step_file="fermat28_step_s1rw.cuh")),
             ("s2 plain r128", dict(maxreg=128)), ("s2 asm r128", dict(asm_mad=True, maxreg=128)), ("s2 asm r96", dict(asm_mad=True, maxreg=96))]
 T32 = g32.Tester(N0, M, U) if g32 else None
 T33 = g33.Tester3(N0, M, U) if g33 else None

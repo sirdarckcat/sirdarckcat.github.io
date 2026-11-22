@@ -20,7 +20,8 @@ def val(l):
     return sum(int(v) << (28 * i) for i, v in enumerate(l))
 
 
-RED = os.environ.get("FM28_STEP", "").endswith("r.cuh")
+STEPFILE = os.environ.get("FM28_STEP", "fermat28_step.cuh")
+RED = "#define FM28_REDUNDANT" in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), STEPFILE)).read()
 OUTBITS = 29 if RED else 28                        # the redundant steps leave limbs below 2^29
 rng = random.Random(11)
 R = 1 << 672
@@ -58,7 +59,7 @@ for n in ((1 << 668) - 1, (1 << 668) - 3, (1 << 667) | 1, (1 << 642) | 1, (1 << 
         for b in (0, 1):
             one(n, X, b)
 # the redundant-limb steps (fermat28_step_*r.cuh): inputs with limbs below 2^29 (the same value, some of the carries left in the limbs), outputs likewise
-if os.environ.get("FM28_STEP", "").endswith("r.cuh"):
+if RED:
     def redundant(X, mode):
         l = [int(v) for v in limbs(X)]
         if mode == 0:                                        # a random carry moved down into the limb below
