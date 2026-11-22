@@ -70,3 +70,14 @@ two PyPI wheels and one NVIDIA redistributable, all downloadable on a CPU box). 
 `bench_pipes.py` measures, on a GPU, how many cycles a warp-level `IMAD.WIDE.U32`, `IMAD`, `IADD3`, `IADD3.X`, `LOP3`, `SHF` occupy a scheduler for, how many adds fit beside one
 `IMAD.WIDE` for free, and what `ATOMS.AND`, `STS.32`, `STS.U8`, `LDS` and a plain read-modify-write cost with random and with conflict-free addresses at the shared-memory
 sizes of klog 17, 18 and 19.  `python3 bench_pipes.py --check sm_80` (no GPU) prints the SASS loop of every kernel, to see that it measures what it names.
+
+## A deeper sieve bound (prototype, not in production): see DEEPSIEVE.md
+
+| file | what |
+|---|---|
+| `gbig_kernels.cuh`, `gbig.py` | the large-prime stage: each (row, prime above the tile) pair visited once per 2^25-member batch, marks counted and written into (row, tile) bins; `gbig_apply` applies a bin to a shared bitmap |
+| `gbatch_kernels.cuh`, `gbatch.py` | `s200g_tile` (small-prime marks + the bin of the same (row, tile) on one shared bitmap, tile written into the batch matrix) and `BatchFeeder` (a `GpuFeeder` whose window is a batch) |
+| `bench_bigprimes.py` | **ns a mark** of the large-prime stage with the pass A / pass B / apply split (the number the question "does a deep bound pay?" needs) |
+| `bench_batch.py` | the whole batch pipeline at production size, per-phase times, check against the CPU feeder, `--sweep` of row-group and CTA sizes |
+| `bench_pipes.py` part 3 | the memory-system rates behind it: scattered atomicAnd / store / load in 64 MB .. 4 GB, 128-byte runs, copy bandwidth |
+| `test_gbig.py`, `test_gbig_cpu.py`, `test_gbatch_cpu.py`, `test_bench_batch_cpu.py` | on a CPU: identical to a brute-force reference and to sieve200's CPU Feeder (several geometries, row groups, overflow and retry), glue under a fake cupy |
