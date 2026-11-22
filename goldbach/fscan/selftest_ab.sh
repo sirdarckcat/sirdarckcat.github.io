@@ -11,10 +11,11 @@
 #      TSC cycles a member)
 #   6. the three score-table schemes (SCORE_MODE 0, 1, 2) of the working tree
 #   7. a statistical profile of the working tree (profile/profile.sh)
+#   8. SMT: the kernel and the scanner on one hardware thread alone, then with its sibling thread running the same work
 # STEPS="5 6 7" ./selftest_ab.sh runs only the steps listed.
 OLD=${1:-e383cbc}
 CPU=${CPU:-2}
-STEPS=${STEPS:-1 2 3 4 5 6 7}            # for example STEPS="5 6 7" runs only the timings and the profile
+STEPS=${STEPS:-1 2 3 4 5 6 7 8}            # for example STEPS="5 6 7" runs only the timings and the profile
 step() { [[ " $STEPS " == *" $1 "* ]]; }
 HERE=$(cd "$(dirname "$0")" && pwd)
 cd "$HERE"
@@ -64,6 +65,20 @@ fi
 if step 7; then
 echo "== 7. where the time goes (profile/profile.sh: share of the samples by stage and by source line, one class-194 slice)"
 TOP=14 profile/profile.sh 7/400 $CPU 2>&1 | tail -30 || fail=1
+fi
+if step 8; then
+  [ -z "$SIB" ] && SIB=$(tr ',-' '\n\n' < /sys/devices/system/cpu/cpu$CPU/topology/thread_siblings_list 2>/dev/null | grep -vx "$CPU" | head -1)   # or set SIB=n yourself
+  if [ -z "$SIB" ] || ! command -v taskset >/dev/null; then echo "== 8. SMT: cpu $CPU has no sibling hardware thread here (or no taskset): skipped"; else
+    echo "== 8. SMT: the work on cpu $CPU alone, then while its sibling hardware thread (cpu $SIB) runs the same work"
+    for k in alone with_sibling; do
+      LP=""
+      if [ $k = with_sibling ]; then ( while true; do taskset -c $SIB $T/tf --time 77 >/dev/null; done ) & LP=$!; sleep 2; fi
+      best=$(for r in 1 2 3 4 5; do $RUN $T/tf --time 77 | awk '{print $3}'; done | sort -n | head -1)
+      [ -n "$LP" ] && { pkill -P $LP 2>/dev/null; kill $LP 2>/dev/null; wait $LP 2>/dev/null; } 2>/dev/null
+      printf "   Fermat kernel, 77-bit, %-13s %s TSC cycles a number\n" "$k:" $best
+    done
+    python3 bench_ab.py WORK WORK+smt --cpu $CPU --load $SIB --rounds 3 | tail -4 || fail=1
+  fi
 fi
 [ $fail = 0 ] && echo "== ALL CHECKS PASSED" || echo "== SOMETHING FAILED (see above)"
 rm -rf $T
