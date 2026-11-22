@@ -13,6 +13,9 @@ Part 2, shared memory: ATOMS.AND, plain stores of a word and of a byte, loads an
 (the sieve's marks) and with conflict-free addresses, at the shared-memory sizes (and so the occupancy) of klog 17, 18 and 19.
 It decides whether the sieve's marks should be made with atomics at all.
 
+Part 3, global memory (the large primes of a deep sieve): the cost of one scattered mark: `atomicAnd` / a plain store at random words of a 64 MB, 512 MB and 4 GB array,
+and the write of a mark into one of 512 bins in runs of 32 (what a bucketed sieve does), as ns an operation and G operations a second over the whole GPU.
+
 Every kernel is a loop of independent operations (8 chains a thread), 256 threads a CTA, timed with clock64() inside the kernel,
 so the numbers are cycles per warp instruction per scheduler (an SM has 4), not seconds.  A value of 1.0 means one warp
 instruction every cycle on each scheduler.
@@ -114,12 +117,41 @@ extern "C" __global__ void k(u32 *out, long long *cyc, int iters) {{
 """
 
 
+GLOBAL_BODIES = {
+    # name: statement; s = LCG state, A = the array (u32 words, a power of two of them), NWm = words - 1.  Plain C masks, no modulo (which compiles to a loop of branches)
+    "scattered atomicAnd (random word)": "atomicAnd(&A[(s[{c}] >> 2) & NWm], ~(1u << (s[{c}] & 31)));",
+    "scattered plain store (random word)": "A[(s[{c}] >> 2) & NWm] = s[{c}];",
+    "scattered load (random word)": "r[{c}] += A[(s[{c}] >> 2) & NWm];",
+    "128 B runs at random places (bin writes)": "{{ const u32 sb = __shfl_sync(0xffffffffu, s[{c}], 0); A[(((sb >> 2) & NWm) & ~31u) + (threadIdx.x & 31)] = s[{c}]; }}",
+}
+
+
+def global_kernel(name, body):
+    stmts = "\n".join(f"s[{c}] = s[{c}] * 1664525u + 1013904223u + {c};\n" + body.replace("{c}", str(c)) for c in range(NCH))
+    return HEAD + f"""
+extern "C" __global__ void k(u32 *A, u32 *out, u32 NWm, int iters) {{
+    u32 s[{NCH}], r[{NCH}];
+    const unsigned tid = blockIdx.x * blockDim.x + threadIdx.x;
+    #pragma unroll
+    for (int c = 0; c < {NCH}; c++) {{ s[c] = tid * 2654435761u + c * 40503u; r[c] = tid + c; }}
+    for (int it = 0; it < iters; it++) {{
+{stmts}
+    }}
+    u32 acc = 0;
+    #pragma unroll
+    for (int c = 0; c < {NCH}; c++) acc ^= r[c] + s[c];
+    out[tid] = acc;
+}}
+"""
+
+
 def run_check(arch):
     sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.abspath(__file__)))
     import sass as S
     import re, collections
     nv = S.Nvrtc()
-    cases = [(n, pipe_kernel(n, b)) for n, b in PIPE_BODIES.items()] + [(n, smem_kernel(n, b, 65536)) for n, b in SMEM_BODIES.items()]
+    cases = [(n, pipe_kernel(n, b)) for n, b in PIPE_BODIES.items()] + [(n, smem_kernel(n, b, 65536)) for n, b in SMEM_BODIES.items()] \
+        + [(n, global_kernel(n, b)) for n, b in GLOBAL_BODIES.items()]
     for name, src in cases:
         funcs = S.parse_sass(S.disassemble(nv.compile(src, arch, [], "cubin")))
         instrs, labels = funcs["k"]
@@ -194,6 +226,53 @@ def run_gpu(args):
                 print(f"  {nm:34s} {v:18.2f}   (minus address generation: {max(v - (ref or 0), 0):.2f})")
 
 
+def run_gpu_global(args):
+    import cupy as cp
+    import numpy as np
+    dev = cp.cuda.Device()
+    nsm = dev.attributes["MultiProcessorCount"]
+    free, total = cp.cuda.runtime.memGetInfo()
+    print("\npart 3: global memory, scattered marks.  G ops/s over the whole GPU (1 / that = ns an operation); 8 chains x 256 threads x 8 CTAs an SM")
+    print(f"  {'operation':42s} " + " ".join(f"{s:>12s}" for s in ("64 MB", "512 MB", "4 GB")))
+    threads, ctas = 256, nsm * 8
+    iters = 200
+    for nm, body in GLOBAL_BODIES.items():
+        mod = cp.RawModule(code=global_kernel(nm, body))
+        k = mod.get_function("k")
+        row = []
+        for nbytes in (64 << 20, 512 << 20, 4 << 30):
+            if nbytes + (256 << 20) > free:
+                row.append("(no memory)")
+                continue
+            A = cp.zeros(nbytes // 4, dtype=cp.uint32)
+            out = cp.empty(ctas * threads, dtype=cp.uint32)
+            k((ctas,), (threads,), (A, out, np.uint32(nbytes // 4 - 1), np.int32(4)))
+            best = None
+            for _ in range(3):
+                cp.cuda.Device().synchronize()
+                e0, e1 = cp.cuda.Event(), cp.cuda.Event()
+                e0.record()
+                k((ctas,), (threads,), (A, out, np.uint32(nbytes // 4 - 1), np.int32(iters)))
+                e1.record(); e1.synchronize()
+                ms = cp.cuda.get_elapsed_time(e0, e1)
+                best = ms if best is None else min(best, ms)
+            ops = ctas * threads * NCH * iters
+            row.append(f"{ops / best / 1e6:9.1f} G/s")
+            del A
+        print(f"  {nm:42s} " + " ".join(f"{x:>12s}" for x in row), flush=True)
+    nb = 1 << 30
+    if nb * 2 + (256 << 20) < free:
+        X = cp.zeros(nb // 4, dtype=cp.uint32); Y = cp.empty_like(X)
+        Y[:] = X
+        e0, e1 = cp.cuda.Event(), cp.cuda.Event()
+        cp.cuda.Device().synchronize(); e0.record()
+        for _ in range(5):
+            Y[:] = X
+        e1.record(); e1.synchronize()
+        ms = cp.cuda.get_elapsed_time(e0, e1) / 5
+        print(f"  reference: device copy of 1 GB (read + write): {2 * nb / ms / 1e6:.0f} GB/s; a 32-byte sector of it is {32 / (2 * nb / ms / 1e6):.3f} ns")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", default=None, help="no GPU: compile for this arch (sm_80, sm_89, sm_120) and print each kernel's loop")
@@ -202,6 +281,7 @@ def main():
         run_check(a.check)
     else:
         run_gpu(a)
+        run_gpu_global(a)
 
 
 if __name__ == "__main__":
