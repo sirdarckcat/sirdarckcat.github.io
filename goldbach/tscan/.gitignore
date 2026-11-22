@@ -1,0 +1,4 @@
+tscan[0-9]*
+*.tmp
+*.job
+__pycache__/

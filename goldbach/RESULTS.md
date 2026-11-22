@@ -1,5 +1,39 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22): g(N) > 10,000 at 27 digits
+
+**g(N) = 10,111** for N = 301232067011489734233412892 (27 digits,
+`records/threshold_27digit_g10111/`). It is 646 times smaller than the
+30-digit N of the next section and replaces it as the smallest N known to
+us whose g exceeds everything in the exhaustive range (9,781).
+
+- **Closeness.** g is 47.3% of the conjectural ceiling for a 27-digit
+  number (`closeness.py`); the 30-digit record has 39.0%.
+- **What changed.** The scan step was rewritten in C (`tscan/`, see its
+  README). Two things make it fast:
+  - A bit sieve over the table (residual prime q, member k) removes every
+    N − q with a prime factor below 131,072.
+  - Only the k with the fewest surviving complements are tested. Here that
+    was 1.26% of the k (at most 49 of 188 complements left), and by the
+    survivor histogram they hold 61–66% of the expected successes.
+  - Speed on 4 cores: 16–19 million k per second. `search.py`, which
+    tests every k, did 0.3 million per second on the 30-digit job.
+- **Search.** N mod r is fixed for the 13 primes r ≤ 43
+  (`cover.py 10007 23`), which leaves 188 primes below 10,007 uncovered.
+  The members k < 2.38·10^10 of that one progression were scanned in 24
+  minutes. The success is at k = 23,025,113,687; the model put the
+  expected number of successes up to there at 0.7.
+- **Proof.** Nothing in it depends on the scanner. `evidence.json` has a
+  compositeness witness for N − q for each of the 1,241 primes q < g: a
+  cover prime (1,049), a prime below 10^5 (137), a failed strong base-2
+  test (54), or parity (q = 2). N − g is proved prime by a PARI ECPP
+  certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The 30-digit N keeps its place on the frontier: its g = 10,459 is larger,
+and no smaller N with a g that large is known.
+
 ## The low end of the threshold game (2026-11-21, night): g(N) > 10,000 at 30 digits
 
 **g(N) = 10,459** for N = 194465365536282197945444045558 (30 digits,
@@ -9,8 +43,9 @@
   N ≤ 4·10^18 (Oliveira e Silva, Herzog & Pardi), so T(10,000), the
   smallest N with g(N) > 10,000, lies above 4·10^18 and is not known. The
   conjectural ceiling first reaches 10,000 near 10^19, so the true value
-  is expected not far above that. This N is the smallest known to us
-  whose g exceeds everything in the exhaustive range.
+  is expected not far above that. This N was the smallest known to us
+  whose g exceeds everything in the exhaustive range, until the 27-digit
+  N of the section above.
 - **Closeness.** g is 39.0% of the conjectural ceiling for a 30-digit
   number (`closeness.py`). Our next best is the 150-digit record at 10.7%.
 - **Search.** N mod r is fixed for the 16 primes r ≤ 59 (greedy residues),
@@ -605,6 +640,7 @@ g ≤ N/2 is attained only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | ~100% (it fixes the constant) | 132 | 19 |
+| `threshold_27digit_g10111` | 10,111 | 27 | ~21,400 | 47.3% | 81 | 19 |
 | `threshold_30digit_g10459` | 10,459 | 30 | ~26,800 | 39.0% | 73 | 19 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~975,000 | 10.7% | 91 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~1.8M | 6.2% | 70 | 56 |
