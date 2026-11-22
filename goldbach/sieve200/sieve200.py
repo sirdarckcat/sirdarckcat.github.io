@@ -18,6 +18,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "sieve200.c")
 
 
+def _outdir():
+    """where the compiled library goes: next to the source, or a per-user temporary directory if that is read-only"""
+    import tempfile
+    if os.access(HERE, os.W_OK):
+        return HERE
+    d = os.path.join(tempfile.gettempdir(), "sieve200-%d" % os.getuid())
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
 def _cpu_tag():
     """short hash of this CPU's model and flags: a -march=native build is only valid on the CPU that made it"""
     import hashlib
@@ -31,7 +41,7 @@ def _cpu_tag():
 def build(march=None, force=False):
     march = march or os.environ.get("SIEVE200_MARCH", "native")
     tag = march.replace("=", "_") + ("-" + _cpu_tag() if march == "native" else "")
-    out = os.path.join(HERE, f"libsieve200_{tag}.so")
+    out = os.path.join(_outdir(), f"libsieve200_{tag}.so")
     if force or not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(SRC):
         flags = [] if march == "generic" else [f"-march={march}"]
         tmp = f"{out}.{os.getpid()}.tmp"

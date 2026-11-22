@@ -23,6 +23,15 @@ def _flags():
     return set()
 
 
+def _outdir():
+    import tempfile
+    if os.access(HERE, os.W_OK):
+        return HERE
+    d = os.path.join(tempfile.gettempdir(), "fm13-%d" % os.getuid())
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
 def available():
     f = _flags()
     return {"avx512f", "avx512ifma", "avx512dq", "avx512bw", "avx512vl"} <= f
@@ -30,7 +39,7 @@ def available():
 
 def build(force=False):
     tag = hashlib.sha1(("".join(l for l in open("/proc/cpuinfo") if l.startswith("model name"))).encode()).hexdigest()[:8]
-    out = os.path.join(HERE, f"libfm13-{tag}.so")
+    out = os.path.join(_outdir(), f"libfm13-{tag}.so")
     newest = max(os.path.getmtime(SRC), os.path.getmtime(HDR))
     if force or not os.path.exists(out) or os.path.getmtime(out) < newest:
         tmp = f"{out}.{os.getpid()}.tmp"
