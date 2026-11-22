@@ -28,6 +28,18 @@ from search import G, mpz, powmod  # noqa: E402
 import sieve200  # noqa: E402
 from sieve200 import Sieve200  # noqa: E402
 
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "fermat661"))
+FERMAT = os.environ.get("SEARCH_C_FERMAT", "auto")          # auto | gmpy2 | fm13
+try:
+    import fm13  # noqa: E402
+    HAVE_FM13 = FERMAT != "gmpy2" and (fm13.available() or FERMAT == "fm13")
+    if HAVE_FM13:
+        fm13.load()
+except Exception as e:                                       # no IFMA, no compiler: gmpy2 does the tests
+    if FERMAT == "fm13":
+        raise
+    HAVE_FM13 = False
+
 try:
     sieve200.load()                                               # compiles the C file on first use (needs gcc)
     HAVE_C = True
@@ -49,7 +61,7 @@ def init_spec(spec, sieve_b, block):
     sv = Sieve200(int(N0), int(M), U, sieve_b, logK=logK, exclude=cover)
     G.clear()
     G.update(N0=N0, M=M, U=U, block=block, Q=spec["Q"], cq=[N0 - q for q in U], sv=sv, cache=None,
-             chunk=max(1, sv.K // block))
+             chunk=max(1, sv.K // block), fm=fm13.Members(N0, M, U) if HAVE_FM13 else None)
 
 
 def _window(k0):
@@ -86,6 +98,21 @@ def run_block(k0):
     for g in range(0, len(order), MEMBER_GROUP):
         js = np.ascontiguousarray(order[g:g + MEMBER_GROUP] + off, dtype=np.uint32)
         rows, offs = sv.survivors(bits, js)
+        if G["fm"] is not None:                                    # all the Fermat tests of the group in C (IFMA)
+            fp = G["fm"].first_pass(js.astype(np.uint64) + (k0 - off), rows, offs)
+            fp = fp.tolist()
+            offs = offs.tolist()
+            for t in range(len(js)):
+                a, b = offs[t], offs[t + 1]
+                if a == b:
+                    successes.append(k0 + int(order[g + t]))
+                elif fp[t] >= 0:
+                    tests += fp[t] + 1
+                    prps += 1
+                else:
+                    tests += b - a
+                    successes.append(k0 + int(order[g + t]))
+            continue
         rows = rows.tolist()
         offs = offs.tolist()
         for t in range(len(js)):
