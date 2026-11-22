@@ -227,6 +227,28 @@ For the 16,045,849 rung a CPU fleet runs beside the GPU:
 - The A100 host's CPUs join once their sieve range is done. PRP tests then
   save more GPU time than sieving [3·10¹¹, 10¹²) would (~180 against
   ~100 tests).
+- Since ~07:50Z on 22 Nov the fleet runs `pfgw_search.py`: the same
+  slices, queue, kill lists and logs, but each test is a base-3 Fermat PRP
+  test by OpenPFGW 4.1.8 (gwnum FFT arithmetic) instead of GMP.
+  - Speed: on a 4-core EPYC 7B12 a 16M candidate takes 56 s alone and
+    ~60 s with four running at once (one per core), ~240 tests/h per
+    runtime against ~29 with GMP. Eight at once (hyperthreads) take 160 s
+    each, ~180 tests/h, so it runs four.
+  - Like the GPU, PFGW is only a screen: a PRP is re-proved by
+    `desert.bls_prove` (GMP Euler test with the spec's base, then BLS)
+    before any hit is written.
+  - Checks before the switch: the 10⁷ record's P is 3-PRP (23 s); eight
+    t that the GPU had found composite come out composite; the five run
+    twice gave identical residues.
+  - The binary is not in this repository. It is `pfgw_linux_4.1.8.7z` from
+    the OpenPFGW SourceForge project (md5 646e006e9b20a99416c12b68bfd97e1b,
+    sha256 aadf885e2d6489866bb7eeea2ba3f75a3fa02e679f1d6a86fd2632e042a99c99),
+    unpacked to `pfgw64` (sha256
+    ebd9357b769c73b62e1e7b35620d6a1ea84e068c6284b23b463378cadf771b5b,
+    "4.1.8.64BIT.20260508.x86_Dev [GWNUM 31.5]").
+- A relay copies every t tested anywhere to every machine as one more
+  `*.kills.json` list. So the GPU and the fleet stop at each other's work
+  where they meet, instead of re-testing it.
 
 Known constant factors not taken: a Montgomery reduction specialised to
 P = m·2ⁿ+1 (P⁻¹ ≡ 1 mod 2ⁿ, so the quotient word is free; prototyped and
@@ -296,6 +318,9 @@ this is a few-hundred-line development plus a data file generated from
 - `ladder.py` — the cost ladder above, from lazy covers and measured timings
 - `gpu_screen.py`, `gpu_search.py`, `gpu_hit.py` — GPU screen (CuPy),
   batch driver, and hit → CPU proof → packaged record
+- `cpu_search.py`, `pfgw_search.py` — the CPU fleet's top-down slice
+  search, with GMP or with OpenPFGW as the screen (a pass is re-proved
+  with GMP)
 - `gpu_validate.py`, `gpu_validate_v2.py`, `gpu_validate_v3.py`,
   `gpu_bench*.py` — engine validation against gmpy2 and timings
 - `deepsieve.c`, `deep_sieve.py` — deeper sieve (C, GMP), streamed into a

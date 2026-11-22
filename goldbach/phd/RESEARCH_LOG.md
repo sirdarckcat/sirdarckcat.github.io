@@ -109,6 +109,34 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
     file. Neither resumed from it, so each computed it in full. The
     checkpoint key now includes the verifier's name, and a finished run
     deletes its checkpoint.
+- **Time limit, relay and a fallback range (05:45Z).** The alarm and the
+  local slice 6/8 reached the harness's 2 h limit for background tasks.
+  They were not restarted: the alarm now runs under the Monitor tool
+  (30-min re-arms), and the local cores went to the fallback below.
+  - After 5,517 tests with no hit, the chance that the remaining 9,062
+    survivors below 32768 hold no prime is e^(−9062/4488) ≈ 13%. The spec
+    allows t < 2^20, so the local cores sieve t ∈ [32768, 131072) by the
+    same chain.
+  - That sieve reproduced the main 10⁹ pool exactly below 32768. The
+    local `deepsieve` build matched the Colab kills on [10⁹, 2·10⁹)
+    exactly (607 of 607). [10⁹, 10¹¹) took 56,187 → 45,994 survivors
+    (−18.1%; the main pool lost 18.0%).
+  - A relay now puts every tested t on every machine as a `*.kills.json`
+    list, so the GPU (bottom-up) and the fleet (top-down) stop at each
+    other's work. gold-cpu3's first reload dropped exactly the 516
+    GPU-tested t of its slice.
+- **PFGW (~07:50Z, approved by the user).** OpenPFGW 4.1.8 (gwnum)
+  replaced GMP on all six CPU runtimes, as a screen only; a pass is
+  re-proved by `desert.bls_prove`.
+  - On gold-cpu5, with its GMP search paused, the 10⁷ record's P was
+    3-PRP in 23 s, and eight known composites came out composite with
+    reproducible residues.
+  - A 16M test took ~60 s with four in parallel, against ~1,000 s for one
+    GMP test with eight in parallel: ~240 tests/h per runtime instead of
+    ~29.
+  - The fleet goes from ~170 to ~1,450 tests/h, beside the GPU's ~590.
+  - gold-gpu runs five at nice 19 so the GPU's host process keeps
+    priority.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.
