@@ -5,3 +5,6 @@ __pycache__/
 fscan_avx2*
 test_fermat_avx2
 runs/old/
+cover/ptcover
+cover/__pycache__/
+runs/calib/*.done
