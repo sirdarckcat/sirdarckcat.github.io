@@ -1,0 +1,2 @@
+7,000 shifts d = 30 j: fewest new rows 1497 at d = -2730 (2131 rows in all); next [(1504, 2730), (1505, 2310), (1507, 4620), (1517, 9240)]
+sum over the shifts of P(success | N is a success) = 4.15e-15  (best single shift 1.86e-16); a fresh member of the best cover: 6.77e-18

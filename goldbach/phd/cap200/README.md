@@ -32,7 +32,7 @@ All scripts take a cover spec in the schema of `goldbach/phd/campaign3/base_spec
   modulus; the next prime outside the cover is worth 0.12 nats for 6.1.
 - Pair term for the 867 rows of the campaign cover: -0.013 nats.
 
-## Other targets, same 88 moduli (one run of 4,000 sweeps each)
+## Other targets, same 88 moduli (runs of 4,000 sweeps)
 
 `E` is `-k ln(1 - p)` with `p = 0.02390` (cap `10^200`); `ln(members per vector)` is 22.42
 below `10^200`, 22.18 with `k < 2^32`.
@@ -42,13 +42,39 @@ below `10^200`, 22.18 with `k < 2^32`.
 | 122,000 | 850 | 20.57 | `specs_q122000_top64.json` (64 vectors: 850, 851) |
 | 130,000 | 923 | 22.33 | `specs_q130000_top128.json` (923, 924) |
 | 135,000 | 967 | 23.40 | `specs_q135000_top128.json` (967, 968) |
-| 140,000 | 1,011 | 24.46 | `specs_q140000_top128.json` (1011 to 1013) |
+| 140,000 | 1,007 | 24.36 | `specs_q140000_top128.json` (1007, 1008; second run, the first gave 1011) |
+| 145,000 | 1,051 | 25.43 | `specs_q145000_top128.json` (1051, 1052) |
 | 150,000 | 1,098 | 26.57 | `specs_q150000_top128.json` (1098, 1099) |
 
-So `E` grows by 0.216 nats per 1,000 in `Q` with re-optimised covers. Beyond the `Q` a cover
+So `E` grows by about 0.21 nats per 1,000 in `Q` with re-optimised covers. The research
+session's sampler (`goldbach/fscan/cover/` on `ccr-d4a17dd0-7uu03r`) reports 851, 921, 1,011,
+1,050 and 1,093 for 122,000, 130,000, 140,000, 145,000 and 150,000: the two agree to a few rows. Beyond the `Q` a cover
 was built for, a further prime is left with probability 0.12 (the random-class rate) and
 costs `p` each, which is 0.245 nats per 1,000: surviving past the design value by luck is
 nearly as cheap as designing for it.
 
 With the three primes 443, 449, 457 added to the moduli the best at `Q = 122,000` is 831 rows
 (`E` = 20.24), but a vector then has only about 60 members: no gain in practice.
+
+## More vectors for a running target
+
+The fleet uses a vector in minutes, so 128 are not enough. `neighbours.py` lists every vector
+that differs from the best one in one or two classes and stays within a few rows of it:
+
+    python3 -I neighbours.py dos_Q150000_m88_seed1.json 3 pool.json 100000
+    python3 -I mkspecs.py specs.json r200_q150k_c 2415 200 pool_q150000_le1100.json
+
+At `Q = 150,000` that is 12,619 vectors: 23 with 1,098 rows, 282 with 1,099, 2,110 with 1,100
+and 10,204 with 1,101. `pool_q150000_le1100.json` holds the 2,415 with at most 1,100 rows, in
+the order `mkspecs.py` names them, so its first 128 are exactly `specs_q150000_top128.json`
+(`r200_q150k_c_v0` to `v127`) and the new ones are `v128` to `v2414`. One more row costs 2.4%
+of the hit rate. The same two commands work for any `dos_Q*.json` here.
+
+## Brainstorm of 2026-11-22
+
+`brainstorm/` holds the measurements made to test the research session's 100 ideas for reaching
+10% of the ceiling (`Q = 213,070`): the cover there (1,634 rows, `E` = 39.53), an exhaustive
+check of the sampler on a small instance, mixed crystals, an explicit family below the claimed
+information floor, pair correlations, shifted candidates, and the design threshold that
+maximises the expected record. See `brainstorm/README.md`; the statements with a proof are in
+`goldbach/lean/GoldbachGaps/Cap/Brainstorm.lean`.
