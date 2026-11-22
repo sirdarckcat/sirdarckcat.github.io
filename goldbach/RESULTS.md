@@ -1,5 +1,20 @@
 # Goldbach Desert Records
 
+## The low end of the threshold game (2026-11-22, later that evening): g(N) = 10,399 at 23 digits
+
+**g(N) = 10,399** for N = 78209882584085138254532 (23 digits, 7.8·10^22,
+`records/threshold_23digit_g10399/`). It is smaller than the 23-digit N
+found an hour earlier and has a larger g, so it beats that one and the
+25-digit N (g = 10,357) on both counts; both leave the frontier. Only the
+30-digit N (g = 10,459) still has a larger g at a size below 46 digits.
+
+- **Closeness.** 65.0% of the largest g expected at that size.
+- **How.** The same scan as the record below: `fscan` on the progressions
+  with 197 residual primes, this time on the slice run by the finding
+  session's own container; member k = 5,978,086 of one of them.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,273 primes below g).
+
 ## The low end of the threshold game (2026-11-22, evening): g(N) > 10,000 at 23 digits
 
 **g(N) = 10,159** for N = 83668534093338795647672 (23 digits,
@@ -945,6 +960,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
 |---|---|---|---|---|---|---|
 | exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_23digit_g10399` | 10,399 | 23 | ~16,000 | 65.0% | 103 | 19 |
 | `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
 | `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
 | `threshold_27digit_g10111` | 10,111 | 27 | ~22,600 | 44.7% | 81 | 19 |
