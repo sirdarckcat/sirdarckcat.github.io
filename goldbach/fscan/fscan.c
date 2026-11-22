@@ -65,6 +65,12 @@ typedef __m512i vw_t;
 #define vw_mulhi(a, b) _mm512_mulhi_epu16(a, b)
 #define vw_mullo(a, b) _mm512_mullo_epi16(a, b)
 #define vw_min(a, b) _mm512_min_epu16(a, b)
+#define VWD 16                        /* u32 lanes per vector */
+typedef __m512i vd_t;
+#define vd_loadu(p) _mm512_loadu_si512(p)
+#define vd_store(p, v) _mm512_storeu_si512(p, v)
+#define vd_row(x, h) _mm512_slli_epi32(_mm512_cvtepu16_epi32((h) ? _mm512_extracti64x4_epi64(x, 1) : _mm512_castsi512_si256(x)), 5)   /* 32 * class of the 16 lanes of half h */
+#define vd_add(a, b) _mm512_add_epi32(a, b)
 #else
 #define VB 32
 typedef __m256i vb_t;
@@ -84,6 +90,12 @@ typedef __m256i vw_t;
 #define vw_mulhi(a, b) _mm256_mulhi_epu16(a, b)
 #define vw_mullo(a, b) _mm256_mullo_epi16(a, b)
 #define vw_min(a, b) _mm256_min_epu16(a, b)
+#define VWD 8
+typedef __m256i vd_t;
+#define vd_loadu(p) _mm256_loadu_si256((const __m256i *)(p))
+#define vd_store(p, v) _mm256_storeu_si256((__m256i *)(p), v)
+#define vd_row(x, h) _mm256_slli_epi32(_mm256_cvtepu16_epi32((h) ? _mm256_extracti128_si256(x, 1) : _mm256_castsi256_si128(x)), 5)
+#define vd_add(a, b) _mm256_add_epi32(a, b)
 #endif
 #define NB 8                          /* score vectors per chunk, all kept in registers */
 #define CK (NB * VB)                  /* members per chunk */
@@ -91,6 +103,7 @@ typedef __m256i vw_t;
 typedef uint64_t u64;
 typedef uint16_t u16;
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 #define NW 24                         /* words of the alive bitset over the rows (odd primes < Q) */
 #define NR 13
@@ -108,6 +121,7 @@ static int SP[MAXS], coff[MAXS], moff[MAXS], ckm[MAXS];
 /* the score window of prime s for block b starts at offs[s][b] = (kc + VB*b) mod s; all of them advance by CK mod s a
    chunk, which is one SIMD add and wrap over the flat array.  The tables are then only s + VB bytes long (16 KB in all
    instead of 44 KB with the periodic extension by CK), so the exact stage's traffic does not push them out of L1. */
+static u32 MOFB[MAXS + 64] __attribute__((aligned(64)));            /* byte offset of the mask rows of prime p in mbuf */
 #define NOFF (MAXS * NB)
 static u16 DLT[NOFF + 64] __attribute__((aligned(64))), SPB[NOFF + 64] __attribute__((aligned(64))), CKMv[MAXS + 32] __attribute__((aligned(64)));
 static u16 *qM[MAXS];                 /* qM[p][x] = qs[x] * M^-1 mod s */
@@ -211,29 +225,31 @@ static void fermat_drain(tls_t *T, int need) {
 /* ---------------------------------------------------------------- one vector */
 
 static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
-    u16 c[MAXS + 32] __attribute__((aligned(64)));
+    u32 off[MAXS + 64] __attribute__((aligned(64)));
     extern u16 SPv[MAXS + 32], RECv[MAXS + 32];
     const vw_t dv = vw_set1(d);
-    for (int p = 0; p < ns; p += VW) {
+    for (int p = 0; p < ns; p += VW) {                    /* class c = (phi + d) mod s of every prime, then the byte offset of its row */
         vw_t x = vw_add(vw_loadu(phi + p), dv);
         vw_t s = vw_loadu(SPv + p);
         vw_t q = vw_mulhi(x, vw_loadu(RECv + p));
         x = vw_sub(x, vw_mullo(q, s));
         x = vw_min(x, vw_sub(x, s));
-        vw_store(c + p, x);
+        vd_store(off + p, vd_add(vd_row(x, 0), vd_loadu(MOFB + p)));
+        vd_store(off + p + VWD, vd_add(vd_row(x, 1), vd_loadu(MOFB + p + VWD)));
     }
-    const u64 *mb = T->mbuf;
-    __m256i a0 = _mm256_loadu_si256((const __m256i *)T->rowmask), a1 = _mm256_set1_epi64x(-1), a2 = a1, a3 = a1;
+    /* the rows that some prime kills, OR-ed (the load folds into the vpor), four accumulators */
+    const u8 *mb = (const u8 *)T->mbuf;
+    __m256i k0 = _mm256_setzero_si256(), k1 = k0, k2 = k0, k3 = k0;
     int p = 0;
     for (; p + 4 <= ns; p += 4) {
-        a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
-        a1 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 1] + 4 * c[p + 1])), a1);
-        a2 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 2] + 4 * c[p + 2])), a2);
-        a3 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 3] + 4 * c[p + 3])), a3);
+        k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
+        k1 = _mm256_or_si256(k1, _mm256_load_si256((const __m256i *)(mb + off[p + 1])));
+        k2 = _mm256_or_si256(k2, _mm256_load_si256((const __m256i *)(mb + off[p + 2])));
+        k3 = _mm256_or_si256(k3, _mm256_load_si256((const __m256i *)(mb + off[p + 3])));
     }
-    for (; p < ns; p++) a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
-    a0 = _mm256_and_si256(_mm256_and_si256(a0, a1), _mm256_and_si256(a2, a3));
-    _mm256_storeu_si256((__m256i *)mask, a0);
+    for (; p < ns; p++) k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
+    k0 = _mm256_or_si256(_mm256_or_si256(k0, k1), _mm256_or_si256(k2, k3));
+    _mm256_storeu_si256((__m256i *)mask, _mm256_andnot_si256(k0, _mm256_loadu_si256((const __m256i *)T->rowmask)));
     return __builtin_popcountll(mask[0]) + __builtin_popcountll(mask[1]) + __builtin_popcountll(mask[2]) + __builtin_popcountll(mask[3]);
 }
 u16 SPv[MAXS + 32] __attribute__((aligned(64))), RECv[MAXS + 32] __attribute__((aligned(64)));
@@ -442,6 +458,7 @@ int main(int argc, char **argv) {
         ns++;
     }
     for (int p = ns; p < MAXS + 32; p++) { SPv[p] = 1; RECv[p] = 0; }
+    for (int p = 0; p < ns; p++) MOFB[p] = (u32)moff[p] * 8;
     for (int i = 0; i < NOFF + 64; i++) { DLT[i] = 0; SPB[i] = 1; }       /* padding lanes stay at 0 */
     for (int p = 0; p < ns; p++) {
         CKMv[p] = (u16)ckm[p];
