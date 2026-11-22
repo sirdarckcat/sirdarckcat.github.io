@@ -7,7 +7,7 @@ FAM = {"/content/c3g_g4": "Q = 122,000, 867-872 rows (v, w families), N < 10^199
        "/content/c850": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200",
        "/content/c140": "Q = 140,000, 1,011 rows (research cover), N < 10^200",
        "/content/c150": "Q = 150,000, 1,093-1,094 rows (research cover), N < 10^200"}
-GPU = {"gold-g4": "RTX PRO 6000 (gold-g4)", "gold-g4b": "RTX PRO 6000 (gold-g4b)", "gold-g4c": "RTX PRO 6000 (gold-g4c)",
+GPU = {"gold-g4": "RTX PRO 6000 (gold-g4)", "gold-g4b": "RTX PRO 6000 (gold-g4b)", "gold-g4c": "RTX PRO 6000 (gold-g4c)", "gold-a100": "A100 (gold-a100)",
        "gold-gpu": "L4 (gold-gpu)", "gold-gpu_c3g": "L4 (gold-gpu)"}
 rows = []
 for f in sorted(glob.glob(SP + "/tally/gold-*.json")):
