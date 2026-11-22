@@ -5,6 +5,8 @@ import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
 import GoldbachGaps.Record150
 import GoldbachGaps.Record199
+import GoldbachGaps.Record199_g125269
+import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -45,7 +47,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
-* `Records`  – the two bounded record games as closed theorems.
+* `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
+               2026-11-22 below `10^199` (`goldbach/records/budget_1e200_199digit_g*` on
+               branch `ccr-2ce9e63a-hn0fuw`): `g = 125269` and the standing `g = 133981`.
+* `Records`  – the bounded record games as closed theorems.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
@@ -86,10 +91,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 
 ## Building
 
-`lake exe cache get && lake build`. The two record files dominate: the kernel replays the
-full certificates, which took about 8 minutes on 4 cores with a peak of about 9 GB of
-memory. No `sorry`, no `native_decide`, no extra axioms: `#print axioms` on any theorem
-here lists only `propext`, `Classical.choice` and `Quot.sound`.
+`lake exe cache get && lake build`. The record files with about 200 digits dominate: the
+kernel replays the full certificates, several minutes and about 6 GB of memory for each.
+No `sorry`, no `native_decide`, no extra axioms: `#print axioms` on any theorem here lists
+only `propext`, `Classical.choice` and `Quot.sound`.
 
 ## Regenerating the record files
 
