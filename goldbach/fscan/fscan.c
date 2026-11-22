@@ -380,14 +380,14 @@ int main(int argc, char **argv) {
     for (int p = ns; p < MAXS + 32; p++) { SPv[p] = 1; RECv[p] = 0; }
     if (L + CK >= 65536) { fprintf(stderr, "L too large\n"); return 2; }
 
-    /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17.  They are very unequal (the
+    /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17, 19.  They are very unequal (the
        small vectors share the best classes of the small primes), so the threads share the subtrees SPLIT
        primes deep of a batch of units; a unit is written to the done file when its batch is finished. */
-    int nsub = 2 * 4 * 6 * 10 * 12 * 16;
+    int nsub = 2 * 4 * 6 * 10 * 12 * 16 * 18;
     char *done = calloc(nsub, 1);
     stats_t total; memset(&total, 0, sizeof total);
     char tag[256];
-    snprintf(tag, sizeof tag, "Q=%d L=%d R=%d..%d Xmax=%s theta=%d rref=%d Ta=%d", Q, L, Rlo, Rhi, argv[6], theta0, rref, Ta);
+    snprintf(tag, sizeof tag, "Q=%d L=%d R=%d..%d Xmin=%s Xmax=%s theta=%d rref=%d Ta=%d units=7", Q, L, Rlo, Rhi, argv[5], argv[6], theta0, rref, Ta);
     if (donefile) {
         FILE *f = fopen(donefile, "r");
         if (f) {
@@ -416,15 +416,15 @@ int main(int argc, char **argv) {
         T->qcap = 256; T->queue = malloc(T->qcap * sizeof(member_t));
         TT[t] = T;
     }
-    static const int UM[6] = {2, 4, 6, 10, 12, 16};
-    int *batch_units = malloc(nsub * sizeof(int)), nbatch = 0;
+    static const int UM[7] = {2, 4, 6, 10, 12, 16, 18};
+    int *batch_units = NULL, nbatch = 0, capbatch = 0;
     nnodes = 0;
     for (int id = 0; id <= nsub; id++) {
         if (id < nsub) {
             if (done[id] || id % slice_n != slice_i) continue;
             u64 al[NW]; u128 n0 = 0;
             for (int w = 0; w < NW; w++) al[w] = all[w];
-            for (int j = 0, x = id; j < 6; j++) {
+            for (int j = 0, x = id; j < 7; j++) {
                 int a = 1 + x % UM[j]; x /= UM[j];
                 for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
                 n0 += (u128)a * Ebasis[j];
@@ -432,10 +432,13 @@ int main(int argc, char **argv) {
             int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
             /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
             int later = 0;
-            for (int j = 6; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
+            for (int j = 7; j < NR; j++) { int best = 0; for (int a = 1; a < RS[j]; a++) { int c = pcw(al, cls[j][a]); if (c > best) best = c; } later += best; }
             if (n - later > Rhi) continue;
             cur_unit = id;
-            collect(6, al, n, n0);
+            int before = nnodes;
+            collect(7, al, n, n0);
+            if (nnodes == before) continue;
+            if (nbatch == capbatch) { capbatch = capbatch ? 2 * capbatch : 4096; batch_units = realloc(batch_units, capbatch * sizeof(int)); }
             batch_units[nbatch++] = id;
             if (nnodes < 16384) continue;                  /* gather enough subtrees to keep every thread busy */
         }
@@ -450,7 +453,7 @@ int main(int argc, char **argv) {
             stats_t us; memset(&us, 0, sizeof us);
             for (; i < nnodes && nodes[i].unit == batch_units[u]; i++) add_stats(&us, &nodes[i].st);
             add_stats(&total, &us);
-            if (df && (us.vectors || !do_dump)) {
+            if (df && us.vectors && !do_dump) {
                 fprintf(df, "W %d %lu %lu %lu %lu %lu %lu %lu %lu %.9g %.9g %.9g %.9g | %s\n", batch_units[u], us.vectors, us.members, us.sel, us.kept,
                         us.tests, us.prps, us.found, us.samples, us.exp_tested, us.exp_corr, us.mass_all, us.mass_cap, tag);
             }

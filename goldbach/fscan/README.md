@@ -133,11 +133,12 @@ grep -h '^S ' runs/*.log | python3 check.py -                      # g(N) for ev
 
 Arguments: Q, L, the range of residual sizes, the range of N, the score
 threshold θ for residual size `rref` (default: the first size), and Ta.
-`slice=i/n` takes every n-th of the 92,160 work units (the residues mod 3, 5,
-7, 11, 13, 17), so several machines can share a class; `done=FILE` records
-each finished unit with its counts and skips it on a restart. The units are
-very unequal, because the small vectors share the best classes of the small
-primes; inside a unit the threads share the subtrees nine primes deep. The classes up to
+`slice=i/n` takes every n-th of the 1,658,880 work units (the residues mod
+3, 5, 7, 11, 13, 17, 19), so several machines can share a class; `done=FILE`
+records each finished unit that holds vectors, with its counts, and skips it
+on a restart. The units are very unequal, because the small vectors share the
+best classes of the small primes, so the threads share the subtrees eleven
+primes deep of a batch of units (measured: 3.95 of 4 cores busy). The classes up to
 192 are what the `vscan.py` runs cover, so the production runs here start
 at 193.
 
