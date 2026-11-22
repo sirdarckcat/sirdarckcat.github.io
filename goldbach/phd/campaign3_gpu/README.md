@@ -94,6 +94,25 @@ Version 3 (22 Nov):
   - Speed: RTX PRO 6000 13.16M tests/s against 8.89M (1.48×); L4 3.97M against 2.23M (1.78×). A batch of 32 slices takes 2.8 s
     on the RTX PRO 6000, against 3.6 s before.
   - The Lean proof (goldbach/lean/GoldbachGaps/Gpu, ccr-36ca7b46-8twf14) covers the default kernel 2; kernel 3 rests on the tests above.
+- `search_gpu5.py` (22 Nov 22:17-22:33Z, production on all five GPUs): the uarch session's all-GPU sieve (branch ccr-b8c25887-i6tn9f at
+  6e01704, goldbach/sieve200/cuda: `GpuFeeder`). It has one CTA per row with the window's bit map in shared memory, Barrett
+  reduction, a bit-sliced counter, selection by histogram (exactly np.argsort(counts, kind="stable")[:keep]), and the kept rows
+  read straight from the bit matrix. Windows are 2^19 members, L = 2^15.
+  - Its own test (`test_gpu_sieve.py`): identical to the CPU feeder on 3 windows on each of the RTX PRO 6000, the A100 and the L4.
+    `check_v5.sh`: slice lines identical to search_gpu3.py's on the 12 production slices (f = 0.97 and f = 0), and on 4 more on
+    the A100 and the L4 with kernel 3.
+  - Sieve + count + select + rows per member: RTX PRO 6000 2.7 ns (372M members/s), A100 16.6 ns, L4 24.4 ns. The old GPU
+    sieve was ~32 ns (RTX PRO 6000) to ~140 ns (L4).
+  - Production batch of 32 slices (33.5M members) at f = 0.97:
+
+    | GPU | before | search_gpu5.py | full-weight members/s |
+    |---|---|---|---|
+    | RTX PRO 6000, kernel 28 | 1.1 s (CPU feeder) | 1.1 s, host CPUs free | ~4.8-5.0M |
+    | A100, kernel 3 | 6.5 s | 3.5 s | 1.56M |
+    | L4, kernel 3 | 9.6 s | 6.1 s | 0.86M |
+
+  - f = 0.99 on an RTX PRO 6000: 0.5 s a batch but less than half the hit mass. That gives 1.56e-5 against 1.50e-5 expected hits
+    a second, i.e. +4%, for 2.2x the k-range, so production stays at f = 0.97 while vectors are the constraint.
 - `search_gpu4.py` (22 Nov 21:57Z, production on the three RTX PRO 6000s): the sieve, counts and selection run on the host's
   CPUs with the uarch session's `sieve200.Feeder` (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/sieve200; C with AVX-512,
   46 threads on the G4's 48 Zen 5 vCPUs), and the GPU only tests. The CPU prepares batch b+1 while the GPU tests batch b.
