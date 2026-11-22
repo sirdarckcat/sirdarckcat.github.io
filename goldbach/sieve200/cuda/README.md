@@ -39,3 +39,20 @@ the variant's row offset to `w.rows` as it does for `nonzero`'s columns.  Run `p
 ## Tests on the CPU
 
     python3 test_gsieve.py        # bits, counts, selection (nkeep from 1 to L), statistics and rows equal sieve200's / numpy's
+
+## Looking at what a GPU would run, without a GPU
+
+    python3 sass.py gsieve_kernels.cuh --arch sm_80 --kernel s200g_sieve -D KLOG=19 -D LLOG=15 -D NTHREADS=256 \
+            -D 'S200G_DYNSHARED(type,name)=extern __shared__ type name[]' --loops
+
+`sass.py` compiles a source with NVRTC for a real architecture (sm_80 A100, sm_89 L4, sm_120 RTX PRO 6000), disassembles the cubin with `nvdisasm` and prints the
+instruction counts of every kernel and of every loop, with the registers and spills `ptxas -v` reports (the docstring says where the three tools come from:
+two PyPI wheels and one NVIDIA redistributable, all downloadable on a CPU box).  What it showed so far:
+
+* `s200g_sieve` is 31-33 registers, no spills, so shared memory (64 KB a CTA at klog 19) sets its occupancy: 2 CTAs an SM on an A100, 1 on an L4 and an RTX PRO 6000.
+  A prime costs about 85 instructions (the `q % s` division, a 64-bit Barrett with 7 IMAD.WIDE) and a mark 8 (shift, mask, rotate, `ATOMS.AND`, add, compare, branch).
+* the Fermat step loops of `fermat28`, `fermat3`: see `../../fermat661/cuda/FERMAT28.md`, "Where the time goes".
+
+`bench_pipes.py` measures, on a GPU, how many cycles a warp-level `IMAD.WIDE.U32`, `IMAD`, `IADD3`, `IADD3.X`, `LOP3`, `SHF` occupy a scheduler for, how many adds fit beside one
+`IMAD.WIDE` for free, and what `ATOMS.AND`, `STS.32`, `STS.U8`, `LDS` and a plain read-modify-write cost with random and with conflict-free addresses at the shared-memory
+sizes of klog 17, 18 and 19.  `python3 bench_pipes.py --check sm_80` (no GPU) prints the SASS loop of every kernel, to see that it measures what it names.
