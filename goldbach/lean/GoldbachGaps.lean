@@ -7,6 +7,11 @@ import GoldbachGaps.Record150
 import GoldbachGaps.Record199
 import GoldbachGaps.Records
 import GoldbachGaps.Fscan.Fermat52
+import GoldbachGaps.Fscan.Fermat26
+import GoldbachGaps.Fscan.Schedule
+import GoldbachGaps.Fscan.Kernel52
+import GoldbachGaps.Fscan.Kernel26
+import GoldbachGaps.Fscan.ClassStage
 
 /-!
 # Least Goldbach summands in Lean
@@ -26,8 +31,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Records`  – the two bounded record games as closed theorems.
-* `Fscan.*`  – correctness of arithmetic kernels of the `goldbach/fscan` scanner (code on
-               branch `ccr-d4a17dd0-7uu03r`): `Fermat52` is the `F52_STEP` Montgomery step.
+* `Fscan.*`  – correctness of the arithmetic kernels of the `goldbach/fscan` scanner (code
+               at commit `a3ab69c` on branch `ccr-d4a17dd0-7uu03r`), one lane at a time:
+               `Fermat52` / `Fermat26` are the Montgomery squaring steps `F52_STEP` and
+               `FM_STEP` (relation, bounds, no 64-bit overflow); `Schedule` is the exponent
+               schedule; `Kernel52` / `Kernel26` combine them into "the lane reports 1 iff
+               `2^(n-1) ≡ 1 (mod n)`"; `ClassStage` is the division-free residue of
+               `exact_stage`.
 
 ## Building
 
