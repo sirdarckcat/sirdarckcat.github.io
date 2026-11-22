@@ -137,6 +137,24 @@ its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
   - The fleet goes from ~170 to ~1,450 tests/h, beside the GPU's ~590.
   - gold-gpu runs five at nice 19 so the GPU's host process keeps
     priority.
+- **g = 16,046,137 at 91,752 digits (hit 10:52Z on 11-22).** It was found
+  on gold-gpu's fallback slice 4/6, at t = 127,534: PFGW 3-PRP in 45.5 s,
+  then `desert.bls_prove` on the runtime. All searches stopped at 10:53Z.
+  - Tests run: 13,124 distinct t. 12,470 of the 14,579 survivors below
+    32768 were tested (7,168 GPU, the rest CPU), and 643 of the 44,130 in
+    the fallback range.
+  - 191 t were tested by both the GPU and the fleet, where they met; all
+    were composite both times.
+  - At ~4,488 expected tests per prime, a first prime this late has a
+    probability of ~5%. The hit came from the fallback range while 2,109
+    survivors below 32768 were still untested. Those had about a 37%
+    chance of holding a prime; that range is now left unsearched.
+  - Proved again here with `desert.bls_prove` (759 s). F = 2^101604, since
+    m = m0 + t·Mc is divisible by 16; P has 304,793 bits.
+  - The second session rebuilt N from `spec.json` and t alone and got the
+    same sha256. Its `verify.py` passed in 632 s.
+  - Still running: PARI and both `bls/` legs here, and its PARI and
+    `xverify` legs.
 - **Not available.** A second GPU (TooManyAssignments) and a TPU host
   (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
   is not a constraint.
