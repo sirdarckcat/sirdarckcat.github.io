@@ -54,6 +54,25 @@ theorem exists_even_forall_not_isSummand {X z : ℕ}
   rw [card_image_of_injective _ hinj, Nat.card_Ioc] at key
   omega
 
+/-- The same pigeonhole on `[4, X]`: if `π(z) · π(X) < ⌊X/2⌋ - 1`, some even `n` with
+`4 ≤ n ≤ X` has no Goldbach summand `≤ z`. (This is the form used for the extremal bound
+in Shi, arXiv:2605.21529v6, Theorem 6.22.) -/
+theorem exists_even_le_forall_not_isSummand {X z : ℕ}
+    (h : Nat.primeCounting z * Nat.primeCounting X < X / 2 - 1) :
+    ∃ n, 4 ≤ n ∧ n ≤ X ∧ Even n ∧ ∀ p ≤ z, ¬ IsSummand n p := by
+  by_contra hcon
+  push Not at hcon
+  have hinj : Function.Injective fun m : ℕ => 2 * m := fun a b hab => by
+    simp only at hab
+    omega
+  have key := card_le_of_forall_exists_summand X z ((Icc 2 (X / 2)).image fun m => 2 * m)
+    (fun n hn => by
+      obtain ⟨m, hm, rfl⟩ := mem_image.mp hn
+      rw [mem_Icc] at hm
+      exact ⟨by omega, hcon (2 * m) (by omega) (by omega) (even_two_mul m)⟩)
+  rw [card_image_of_injective _ hinj, Nat.card_Icc] at key
+  omega
+
 /-- Rate form of the counting bound: for all sufficiently large `X` there is an even `n`
 with `X < n ≤ 2X` none of whose Goldbach summands is `≤ log X · log log X / 48`.
 (The constant is far from optimal; the counting argument gives `1/2 + o(1)` for `n ≤ X`.) -/
