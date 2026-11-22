@@ -5,13 +5,15 @@ g(N) > 10,000). It searches the same space as `tscan/vscan.py`, the
 progressions N = N0 + k·M with M = 2·3·…·43 and one progression per residue
 vector on the 13 cover primes, but spends the work differently. On the same
 progression and the same range it gives about 4.5 times as many expected
-successes per core-second as `tscan`. It needs a CPU with AVX-512 IFMA (Ice
-Lake or later, Zen 4 or later).
+successes per core-second as `tscan`, and about 6 times on the residual
+classes it is run on. It needs AVX2. With AVX-512 BW and IFMA (Ice Lake or
+later, Zen 4 or later) it uses them and is about twice as fast as without.
 
 | file | what it is |
 |---|---|
 | `fscan.c` | the scanner: enumerates the residue vectors and scans each one |
 | `fermat52.h` | base-2 Fermat test, 24 numbers at a time, 52-bit limbs (AVX-512 IFMA) |
+| `fermat26.h` | the same test, 12 numbers at a time, 26-bit limbs (AVX2), used when the CPU has no IFMA |
 | `test_fermat.c`, `test_fermat.py` | check of `fermat52.h` against Python on 150,000 numbers of 41 to 100 bits |
 | `check_small.py` | end-to-end check against brute force on a small threshold |
 | `check.py` | recomputes g(N) from N alone with gmpy2 |
@@ -79,6 +81,19 @@ below 10^23, every setting between (L, θ, Ta) = (293, 91, 118), (383, 99,
 successes per core-second, with shares from 4.5% to 10% (`tune.py`). The
 threshold θ moves by one per residual class, Ta does not move.
 
+## Without AVX-512
+
+On a CPU with AVX2 only (the Colab machines are EPYC 7B12, Zen 2) the byte
+score runs 32 members to a vector instead of 64 and the Fermat test is
+`fermat26.h`: four 26-bit limbs, the 32×32→64 multiply, 12 numbers at a
+time. Built with `-march=haswell` on the Sapphire Rapids machine it costs
+about 450 cycles a test (119 with IFMA, about 2,500 for the scalar test of
+`tscan`), and the whole scanner is 1.85 times slower than the AVX-512 build
+with the same thresholds. Both builds give the same counts to the last
+digit on a whole class (class 192 below 2·10^21: 47,484 vectors,
+7,244,499,944 members, 89,439,031 selected, 38,733,221 kept, 174,078,592
+tests).
+
 ## What "expected" means, and its correction
 
 `fscan` adds (1 − ε)^a over the members it tests, a = rows left by the
@@ -110,11 +125,14 @@ the whole range (N doubles over that range, which changes the sum by about
 
 - `python3 test_fermat.py`: 152,907 numbers, 43,097 probable primes, no
   mismatch with `pow(2, n-1, n)`.
-- `python3 check_small.py` (Q = 3,001, 168 vectors, 1.23 million members
-  below 10^20): brute force with gmpy2 finds 190 successes; `fscan` with the
-  thresholds off reports exactly those 190; with thresholds that test 14% of
-  the members it reports 82, all among the 190, where its own expectation
-  was 83.8.
+- `python3 check_small.py` (Q = 3,001, the 1,803 vectors with at most 51
+  residual primes, 13.2 million members below 10^20): brute force with gmpy2
+  on 168 of the vectors finds 190 successes; `fscan` with the thresholds off
+  reports exactly those on each of the 168 vectors (2,214 on all vectors);
+  with thresholds that test 14% of the members it reports 908, all true on
+  the checked vectors, where its own expectation was 884 (904 in the AVX2
+  build, which sums it over shorter chunks). Both builds report the same
+  members.
 - The vector enumeration gives the same N0 and residual list as
   `variants.py` for all 18,208 vectors up to 191 residual primes.
 - A reported member has every row left by the primes ≤ L proved composite by
@@ -124,21 +142,25 @@ the whole range (N doubles over that range, which changes the sum by about
 
 ```
 gcc -O3 -march=native -fopenmp -o fscan fscan.c -lm
-gcc -O3 -march=native -o test_fermat test_fermat.c && python3 test_fermat.py
-python3 check_small.py
+gcc -O3 -march=native -o test_fermat test_fermat.c && python3 test_fermat.py 1 ./test_fermat 12
+python3 check_small.py                                             # needs gmpy2; a few minutes
 ./fscan 10007 383 193 193 4e18 1e23 98 113 done=runs/R193.done    # one residual class, resumable
-./run_classes.sh 1e23 193 194 195                                  # the same, class after class
+./run_range.sh 4e18 1e23 193 194 195                               # the same, class after class
+./fscan 10007 383 196 196 4e18 1e23 101 113 slice=2/6 done=R196_2.done   # machine 2 of 6 on class 196
 grep -h '^S ' runs/*.log | python3 check.py -                      # g(N) for everything reported
 ```
 
 Arguments: Q, L, the range of residual sizes, the range of N, the score
 threshold θ for residual size `rref` (default: the first size), and Ta.
-`slice=i/n` takes every n-th of the 1,658,880 work units (the residues mod
-3, 5, 7, 11, 13, 17, 19), so several machines can share a class; `done=FILE`
-records each finished unit that holds vectors, with its counts, and skips it
-on a restart. The units are very unequal, because the small vectors share the
-best classes of the small primes, so the threads share the subtrees eleven
-primes deep of a batch of units (measured: 3.95 of 4 cores busy). The classes up to
+`slice=i/n` takes one n-th of the vectors (by a hash of N0, so the shares are
+equal: 618,244 to 619,545 vectors for the six slices of class 196), for
+several machines sharing a class. `done=FILE` records each finished work
+unit that holds vectors (a unit is a choice of residues mod 3, 5, 7, 11, 13,
+17, 19), with its counts, and skips it on a restart; the file is tied to the
+arguments, the slice included. The units are very unequal, because the small
+vectors share the best classes of the small primes, so the threads share the
+subtrees eleven primes deep of a batch of units (measured: 3.95 of 4 cores
+busy). The classes up to
 192 are what the `vscan.py` runs cover, so the production runs here start
 at 193.
 

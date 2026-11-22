@@ -19,7 +19,7 @@
  * A member is reported only when every row left by the primes <= L failed the base-2 Fermat test,
  * i.e. is proved composite; the other rows are divisible by a prime <= L.  check.py re-derives g(N).
  *
- *   gcc -O3 -march=native -fopenmp -o fscan fscan.c -lm
+ *   gcc -O3 -march=native -fopenmp -o fscan fscan.c -lm      (needs AVX2; uses AVX-512 BW and IFMA when present)
  *   ./fscan Q L Rlo Rhi Xmin Xmax theta Ta [key=value ...]
  *       Q          threshold (rows are the odd primes below Q)
  *       L          score primes are the primes in (43, L]
@@ -27,7 +27,7 @@
  *       Xmin Xmax  members with Xmin < N <= Xmax (decimal or 1e23 style)
  *       theta      score threshold for residual size rref; a vector of size R uses theta + R - rref
  *       Ta         keep members with at most Ta rows left after the primes <= L
- *     keys: rref=R (default Rlo)   slice=i/n (every n-th work unit)   done=FILE (resume/progress log)
+ *     keys: rref=R (default Rlo)   slice=i/n (one n-th of the vectors, by a hash of N0)   done=FILE (resume/progress log)
  *           sample=S (exact stage on every 2^S-th member for the mass estimate, default 12)
  *           dump=1 (print the vectors, no scan)   one=N0 (scan only the vector with this N0)
  *           hist=1 (print the score and a histograms)   threads=T   c2=X (pair term, see README)
@@ -39,7 +39,54 @@
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
-#include "fermat52.h"
+#ifdef __AVX512IFMA__
+#include "fermat52.h"                 /* Fermat tests 24 at a time, 52-bit multiply-adds */
+#else
+#include "fermat26.h"                 /* Fermat tests 12 at a time, AVX2 only */
+#endif
+
+/* byte scores (VB lanes per vector) and 16-bit class arithmetic (VW lanes), AVX-512BW or AVX2 */
+#ifdef __AVX512BW__
+#define VB 64
+typedef __m512i vb_t;
+#define vb_zero() _mm512_setzero_si512()
+#define vb_set1(x) _mm512_set1_epi8((char)(x))
+#define vb_loadu(p) _mm512_loadu_si512(p)
+#define vb_storeu(p, v) _mm512_storeu_si512(p, v)
+#define vb_adds(a, b) _mm512_adds_epu8(a, b)
+#define vb_ge(v, th) ((u64)_mm512_cmpge_epu8_mask(v, th))
+#define VW 32
+typedef __m512i vw_t;
+#define vw_set1(x) _mm512_set1_epi16((short)(x))
+#define vw_loadu(p) _mm512_loadu_si512(p)
+#define vw_store(p, v) _mm512_store_si512(p, v)
+#define vw_add(a, b) _mm512_add_epi16(a, b)
+#define vw_sub(a, b) _mm512_sub_epi16(a, b)
+#define vw_mulhi(a, b) _mm512_mulhi_epu16(a, b)
+#define vw_mullo(a, b) _mm512_mullo_epi16(a, b)
+#define vw_min(a, b) _mm512_min_epu16(a, b)
+#else
+#define VB 32
+typedef __m256i vb_t;
+#define vb_zero() _mm256_setzero_si256()
+#define vb_set1(x) _mm256_set1_epi8((char)(x))
+#define vb_loadu(p) _mm256_loadu_si256((const __m256i *)(p))
+#define vb_storeu(p, v) _mm256_storeu_si256((__m256i *)(p), v)
+#define vb_adds(a, b) _mm256_adds_epu8(a, b)
+#define vb_ge(v, th) ((u64)(uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(_mm256_max_epu8(v, th), v)))
+#define VW 16
+typedef __m256i vw_t;
+#define vw_set1(x) _mm256_set1_epi16((short)(x))
+#define vw_loadu(p) _mm256_loadu_si256((const __m256i *)(p))
+#define vw_store(p, v) _mm256_store_si256((__m256i *)(p), v)
+#define vw_add(a, b) _mm256_add_epi16(a, b)
+#define vw_sub(a, b) _mm256_sub_epi16(a, b)
+#define vw_mulhi(a, b) _mm256_mulhi_epu16(a, b)
+#define vw_mullo(a, b) _mm256_mullo_epi16(a, b)
+#define vw_min(a, b) _mm256_min_epu16(a, b)
+#endif
+#define NB 8                          /* score vectors per chunk, all kept in registers */
+#define CK (NB * VB)                  /* members per chunk */
 
 typedef uint64_t u64;
 typedef uint16_t u16;
@@ -48,7 +95,6 @@ typedef uint8_t u8;
 #define NW 24                         /* words of the alive bitset over the rows (odd primes < Q) */
 #define NR 13
 #define MAXS 256                      /* score primes */
-#define CK 512                        /* members per chunk (8 zmm of byte scores) */
 #define MAXROWS 256
 static const int RS[NR] = {3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43};
 
@@ -81,7 +127,7 @@ typedef struct {
     int rowq[MAXROWS];                /* the prime of each row */
     u64 n0;
     member_t *queue; int qn, qcap;
-    member_t slot[F52_LANES]; int act[F52_LANES];
+    member_t slot[FM_LANES]; int act[FM_LANES];
     stats_t st;
     u64 hs[256], ha[257];
 } tls_t;
@@ -123,13 +169,13 @@ static void success(tls_t *T, const member_t *m) {
 static void fermat_drain(tls_t *T, int need) {
     for (;;) {
         int nact = 0;
-        for (int i = 0; i < F52_LANES; i++) {
+        for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i] && T->qn) { T->slot[i] = T->queue[--T->qn]; T->act[i] = 1; }
             nact += T->act[i];
         }
         if (nact < need || nact == 0) return;
-        u128 n[F52_LANES], mx = 0; int row[F52_LANES], first = -1;
-        for (int i = 0; i < F52_LANES; i++) {
+        u128 n[FM_LANES], mx = 0; int row[FM_LANES], first = -1;
+        for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i]) continue;
             member_t *m = &T->slot[i];
             int w = 0; while (!m->m[w]) w++;
@@ -140,13 +186,13 @@ static void fermat_drain(tls_t *T, int need) {
         }
         int b = 0; for (u128 x = mx; x; x >>= 1) b++;
         int t = b - 6;
-        f52_lanes LL[3];
-        for (int i = 0; i < F52_LANES; i++) {
+        fm_lanes_t LL[FM_GROUPS];
+        for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i]) n[i] = n[first];
-            f52_setup(&LL[i >> 3], i & 7, n[i], t);
+            fm_setup(&LL[i / FM_W], i % FM_W, n[i], t);
         }
-        unsigned res = f52_run(LL, n, F52_LANES, t);
-        for (int i = 0; i < F52_LANES; i++) {
+        unsigned res = fm_run(LL, n, FM_LANES, t);
+        for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i]) continue;
             member_t *m = &T->slot[i];
             T->st.tests++;
@@ -162,14 +208,14 @@ static void fermat_drain(tls_t *T, int need) {
 static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
     u16 c[MAXS + 32] __attribute__((aligned(64)));
     extern u16 SPv[MAXS + 32], RECv[MAXS + 32];
-    const __m512i dv = _mm512_set1_epi16((short)d);
-    for (int p = 0; p < ns; p += 32) {
-        __m512i x = _mm512_add_epi16(_mm512_loadu_si512(phi + p), dv);
-        __m512i s = _mm512_load_si512(SPv + p);
-        __m512i q = _mm512_mulhi_epu16(x, _mm512_load_si512(RECv + p));
-        x = _mm512_sub_epi16(x, _mm512_mullo_epi16(q, s));
-        x = _mm512_min_epu16(x, _mm512_sub_epi16(x, s));
-        _mm512_store_si512(c + p, x);
+    const vw_t dv = vw_set1(d);
+    for (int p = 0; p < ns; p += VW) {
+        vw_t x = vw_add(vw_loadu(phi + p), dv);
+        vw_t s = vw_loadu(SPv + p);
+        vw_t q = vw_mulhi(x, vw_loadu(RECv + p));
+        x = vw_sub(x, vw_mullo(q, s));
+        x = vw_min(x, vw_sub(x, s));
+        vw_store(c + p, x);
     }
     const u64 *mb = T->mbuf;
     __m256i a0 = _mm256_loadu_si256((const __m256i *)T->rowmask), a1 = _mm256_set1_epi64x(-1), a2 = a1, a3 = a1;
@@ -225,29 +271,29 @@ static void scan_vector(tls_t *T) {
     u16 phi[MAXS + 32] __attribute__((aligned(64)));
     memset(phi, 0, sizeof phi);
     for (int p = 0; p < ns; p++) phi[p] = (u16)(kc % SP[p]);
-    const __m512i thv = _mm512_set1_epi8((char)th);
+    const vb_t thv = vb_set1(th);
     const u64 smask = ((u64)1 << sample_bits) - 1;
     for (; kc <= kmax; kc += CK) {
-        __m512i sc[8];
-        for (int b = 0; b < 8; b++) sc[b] = _mm512_setzero_si512();
+        vb_t sc[NB];
+        for (int b = 0; b < NB; b++) sc[b] = vb_zero();
         for (int p = 0; p < ns; p++) {
             const u8 *t = T->cbuf + coff[p] + phi[p];
-            for (int b = 0; b < 8; b++) sc[b] = _mm512_adds_epu8(sc[b], _mm512_loadu_si512(t + 64 * b));
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + VB * b));
         }
         double lnN = log((double)((u128)n0 + (u128)kc * Mmod)), eps = eps_at(lnN), l1 = log1p(-eps);
         double odds2 = (eps / (1 - eps)) * (eps / (1 - eps));
         u16 todo_d[CK + 8]; int ntodo = 0;
-        for (int b = 0; b < 8; b++) {
-            u64 bk = kc + 64 * b;
-            if (do_hist) { u8 tmp[64]; _mm512_storeu_si512(tmp, sc[b]); for (int j = 0; j < 64; j++) if (bk + j >= kmin && bk + j <= kmax) T->hs[tmp[j]]++; }
-            u64 mm = _mm512_cmpge_epu8_mask(sc[b], thv);
+        for (int b = 0; b < NB; b++) {
+            u64 bk = kc + VB * b;
+            if (do_hist) { u8 tmp[VB]; vb_storeu(tmp, sc[b]); for (int j = 0; j < VB; j++) if (bk + j >= kmin && bk + j <= kmax) T->hs[tmp[j]]++; }
+            u64 mm = vb_ge(sc[b], thv);
             /* every 2^sample_bits-th member also goes through the exact stage, for the mass estimate */
             u64 sm = 0;
-            if (((bk + 63) & ~smask) >= bk) sm = 1ull << (((bk + 63) & ~smask) - bk);
+            if (((bk + VB - 1) & ~smask) >= bk) sm = 1ull << (((bk + VB - 1) & ~smask) - bk);
             u64 todo = mm | sm;
             while (todo) {
                 int j = __builtin_ctzll(todo); todo &= todo - 1;
-                todo_d[ntodo++] = (u16)(64 * b + j) | (u16)(((mm >> j) & 1) << 14) | (u16)(((sm >> j) & 1) << 15);
+                todo_d[ntodo++] = (u16)(VB * b + j) | (u16)(((mm >> j) & 1) << 14) | (u16)(((sm >> j) & 1) << 15);
             }
         }
         for (int i = 0; i < ntodo; i++) {
@@ -267,7 +313,7 @@ static void scan_vector(tls_t *T) {
             member_t *m = &T->queue[T->qn++];
             m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
-        if (T->qn >= 96) fermat_drain(T, F52_LANES);
+        if (T->qn >= 4 * FM_LANES) fermat_drain(T, FM_LANES);
         for (int p = 0; p < ns; p++) { int f = phi[p] + ckm[p]; if (f >= SP[p]) f -= SP[p]; phi[p] = (u16)f; }
     }
     st->members += kmax - kmin + 1;
@@ -281,6 +327,7 @@ static void dfs(tls_t *T, int i, const u64 *alive, int n, u128 n0) {
         if (n < Rlo) return;
         u64 v = (u64)(n0 % Mmod);
         if (have_one && v != one_n0) return;
+        if (slice_n > 1 && (int)((v * 0x9E3779B97F4A7C15ull >> 32) % (u64)slice_n) != slice_i) return;   /* slices by vector: equal shares */
         T->n0 = v; T->nrows = 0;
         for (int w = 0; w < NW; w++) { u64 x = alive[w]; while (x) { T->rows[T->nrows++] = 64 * w + __builtin_ctzll(x); x &= x - 1; } }
         scan_vector(T);
@@ -387,7 +434,7 @@ int main(int argc, char **argv) {
     char *done = calloc(nsub, 1);
     stats_t total; memset(&total, 0, sizeof total);
     char tag[256];
-    snprintf(tag, sizeof tag, "Q=%d L=%d R=%d..%d Xmin=%s Xmax=%s theta=%d rref=%d Ta=%d units=7", Q, L, Rlo, Rhi, argv[5], argv[6], theta0, rref, Ta);
+    snprintf(tag, sizeof tag, "Q=%d L=%d R=%d..%d Xmin=%s Xmax=%s theta=%d rref=%d Ta=%d units=7 slice=%d/%d", Q, L, Rlo, Rhi, argv[5], argv[6], theta0, rref, Ta, slice_i, slice_n);
     if (donefile) {
         FILE *f = fopen(donefile, "r");
         if (f) {
@@ -421,7 +468,7 @@ int main(int argc, char **argv) {
     nnodes = 0;
     for (int id = 0; id <= nsub; id++) {
         if (id < nsub) {
-            if (done[id] || id % slice_n != slice_i) continue;
+            if (done[id]) continue;
             u64 al[NW]; u128 n0 = 0;
             for (int w = 0; w < NW; w++) al[w] = all[w];
             for (int j = 0, x = id; j < 7; j++) {

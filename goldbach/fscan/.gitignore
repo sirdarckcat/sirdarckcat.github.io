@@ -2,3 +2,6 @@ fscan
 enumv
 test_fermat
 __pycache__/
+fscan_avx2*
+test_fermat_avx2
+runs/old/

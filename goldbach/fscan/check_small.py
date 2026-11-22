@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
 """End-to-end check of fscan on a small threshold, where successes are frequent.
 
-    python3 check_small.py [Q [Rmax [Xmax [nvec]]]]      default 3001 51 1e20 150
+    python3 check_small.py [Q [Rmax [Xmax [nvec [theta [Ta]]]]]]      default 3001 51 1e20 150 24 30
+    FSCAN=./other_build python3 check_small.py ...
 
 1. Brute force (gmpy2.is_prime on every row of every member) on nvec vectors gives the true successes.
-2. fscan with the thresholds off (theta 0, Ta 255) must report exactly those members.
-3. fscan with selective thresholds must report a subset of them, and its "expected" figure (the sum of
-   (1 - eps)^a over the members it tested) must agree with the number it found.
+2. fscan with the thresholds off (theta 0, Ta 255) must report exactly those members on those vectors.
+3. fscan with selective thresholds must report a subset of the truth, and over ALL vectors its
+   "expected" figure must agree with the number it found.
 """
-import random, subprocess, sys
+import os
+import random
+import subprocess
+import sys
+
 import gmpy2
 
-Q = int(sys.argv[1]) if len(sys.argv) > 1 else 3001
-RMAX = int(sys.argv[2]) if len(sys.argv) > 2 else 51
-XMAX = int(float(sys.argv[3])) if len(sys.argv) > 3 else 10**20
-NVEC = int(sys.argv[4]) if len(sys.argv) > 4 else 150
+A = sys.argv[1:]
+Q = int(A[0]) if len(A) > 0 else 3001
+RMAX = int(A[1]) if len(A) > 1 else 51
+XMAX = int(float(A[2])) if len(A) > 2 else 10**20
+NVEC = int(A[3]) if len(A) > 3 else 150
+THETA = int(A[4]) if len(A) > 4 else 24
+TA = int(A[5]) if len(A) > 5 else 30
 XMIN = 4 * 10**18
 L = 383
-EXE = __import__("os").environ.get("FSCAN", "./fscan")
+EXE = os.environ.get("FSCAN", "./fscan")
 COVER = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43]
 M = 2
 for r in COVER:
@@ -27,23 +35,30 @@ rows_all = [q for q in range(3, Q, 2) if gmpy2.is_prime(q)]
 
 def run(*args):
     out = subprocess.run([EXE, str(Q), str(L)] + [str(a) for a in args], capture_output=True, text=True, check=True).stdout
-    return out.splitlines()
+    lines = out.splitlines()
+    succ = {}
+    for l in lines:
+        if l.startswith("S "):
+            f = l.split()
+            succ.setdefault(int(f[3]), set()).add(int(f[1]))
+    st = [l for l in lines if l.startswith("STATS")]
+    stats = dict(kv.split("=") for kv in st[0].split(" | ")[1].split()) if st else {}
+    return lines, succ, stats
 
 
 vecs = {}
-for line in run(0, RMAX, 0, 0, 0, 0, "dump=1"):
+for line in run(0, RMAX, 0, 0, 0, 0, "dump=1")[0]:
     if line.startswith("V "):
         f = line.split()
         vecs[int(f[1])] = list(map(int, f[3:]))
-print(f"Q={Q}: {len(vecs)} vectors with at most {RMAX} residual primes; M={M}")
+print(f"{EXE}, Q={Q}: {len(vecs)} vectors with at most {RMAX} residual primes; M={M}")
 random.seed(7)
 pick = sorted(vecs, key=lambda n0: (len(vecs[n0]), n0))[:20] + random.sample(sorted(vecs), min(NVEC, len(vecs)))
 pick = sorted(set(pick))
 truth, bad_cover = {}, 0
 for n0 in pick:
     res = vecs[n0]
-    # every non-residual row must be killed by a cover prime
-    for q in rows_all:
+    for q in rows_all:                   # every non-residual row must be killed by a cover prime
         if q not in set(res) and not any((n0 - q) % r == 0 for r in COVER):
             bad_cover += 1
     k0 = (XMIN - n0) // M + 1
@@ -58,30 +73,27 @@ for n0 in pick:
 ntrue = sum(len(t) for t in truth.values())
 members = sum((XMAX - n0) // M - (XMIN - n0) // M for n0 in pick)
 print(f"brute force on {len(pick)} vectors, {members} members: {ntrue} successes; rows not covered and not residual: {bad_cover}")
-
 ok = bad_cover == 0
-got_all = set()
-for n0 in pick:
-    lines = run(0, RMAX, XMIN, XMAX, 0, 255, f"one={n0}", "threads=1", f"rref={len(vecs[n0])}")
-    got = {int(l.split()[1]) for l in lines if l.startswith("S ")}
-    got_all |= got
-    if got != truth[n0]:
-        ok = False
-        print(f"  MISMATCH n0={n0}: fscan {len(got)}, truth {len(truth[n0])}, missing {sorted(truth[n0] - got)[:3]}, extra {sorted(got - truth[n0])[:3]}")
-print(f"thresholds off: fscan reports {len(got_all)} members; identical to brute force on every vector: {ok}")
 
-# selective thresholds on the same vectors
-for theta, ta in ((int(sys.argv[5]) if len(sys.argv) > 5 else 24, int(sys.argv[6]) if len(sys.argv) > 6 else 30),):
-    found, exp, kept, mem = set(), 0.0, 0, 0
-    for n0 in pick:
-        lines = run(0, RMAX, XMIN, XMAX, theta, ta, f"one={n0}", "threads=1", f"rref={len(vecs[n0])}")
-        found |= {int(l.split()[1]) for l in lines if l.startswith("S ")}
-        st = dict(kv.split("=") for kv in [l for l in lines if l.startswith("STATS")][0].split(" | ")[1].split())
-        exp += float(st["expected"]); kept += int(st["kept"]); mem += int(st["members"])
-    alltrue = set().union(*truth.values())
-    sub = found <= alltrue
-    ok &= sub
-    print(f"theta={theta} Ta={ta}: tested {kept} of {mem} members ({100 * kept / mem:.2f}%), found {len(found)} "
-          f"({100 * len(found) / max(ntrue, 1):.1f}% of all), expected {exp:.1f}; subset of the truth: {sub}")
+# thresholds off, all vectors in one run; theta is relative to the residual size, so rref = RMAX and theta = -RMAX gives 0
+_, succ, st = run(0, RMAX, XMIN, XMAX, -RMAX, 255, f"rref={RMAX}")
+same = all(succ.get(n0, set()) == truth[n0] for n0 in pick)
+ok &= same
+for n0 in pick:
+    if succ.get(n0, set()) != truth[n0]:
+        print(f"  MISMATCH n0={n0}: fscan {len(succ.get(n0, set()))}, truth {len(truth[n0])}")
+print(f"thresholds off: {st['found']} reported on all vectors ({st['members']} members, expected {float(st['expected']):.1f}); "
+      f"identical to brute force on each of the {len(pick)} checked vectors: {same}")
+
+# selective thresholds, all vectors
+_, succ, st = run(0, RMAX, XMIN, XMAX, THETA, TA, f"rref={RMAX}")
+sub = all(succ.get(n0, set()) <= truth[n0] for n0 in pick)
+ok &= sub
+found, exp = int(st["found"]), float(st["expected"])
+agree = abs(found - exp) < 4 * exp ** 0.5 + 0.1 * exp
+ok &= agree
+print(f"theta={THETA} (at {RMAX} residual primes) Ta={TA}: tested {st['kept']} of {st['members']} members "
+      f"({100 * int(st['kept']) / int(st['members']):.2f}%), found {found}, expected {exp:.1f} (raw {float(st['expected_raw']):.1f}); "
+      f"subset of the truth on the checked vectors: {sub}")
 print("OK" if ok else "FAILED")
 sys.exit(0 if ok else 1)

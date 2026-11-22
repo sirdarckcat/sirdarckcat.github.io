@@ -108,3 +108,12 @@ static inline unsigned f52_test(const u128 *n, int cnt) {
     for (int i = 0; i < F52_LANES; i++) f52_setup(&LL[i >> 3], i & 7, i < cnt ? n[i] : n[0], t);
     return f52_run(LL, n, cnt, t);
 }
+
+/* the names fscan.c and test_fermat.c use for whichever kernel is compiled in */
+#define FM_W 8
+#define FM_GROUPS 3
+#define FM_LANES F52_LANES
+typedef f52_lanes fm_lanes_t;
+#define fm_setup f52_setup
+#define fm_run f52_run
+#define fm_test f52_test
