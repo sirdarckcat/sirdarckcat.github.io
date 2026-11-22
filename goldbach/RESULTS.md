@@ -5,8 +5,8 @@
 **g(N) = 10,399** for N = 78209882584085138254532 (23 digits, 7.8·10^22,
 `records/threshold_23digit_g10399/`). It is smaller than the 23-digit N
 found an hour earlier and has a larger g, so it beats that one and the
-25-digit N (g = 10,357) on both counts; both leave the frontier. Only the
-30-digit N (g = 10,459) still has a larger g at a size below 46 digits.
+25-digit N (g = 10,357) on both counts; both leave the frontier. The
+30-digit N (g = 10,459) stays on it.
 
 - **Closeness.** 65.0% of the largest g expected at that size.
 - **How.** The same scan as the record below: `fscan` on the progressions
