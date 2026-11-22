@@ -14,6 +14,11 @@ import GoldbachGaps.Fscan.Kernel26
 import GoldbachGaps.Fscan.Fermat30
 import GoldbachGaps.Fscan.Kernel30
 import GoldbachGaps.Fscan.ClassStage
+import GoldbachGaps.Cap.Rows
+import GoldbachGaps.Cap.Budget
+import GoldbachGaps.Cap.FirstMoment
+import GoldbachGaps.Cap.Poly
+import GoldbachGaps.Cap.Transfer
 
 /-!
 # Least Goldbach summands in Lean
@@ -41,6 +46,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `2^(n-1) ≡ 1 (mod n)`"; `ClassStage` is the division-free residue of
                `exact_stage`. `Fermat30` / `Kernel30` do the same for the 3-limb, 30-bit
                step `FM3_STEP` added at commit `1d8ab96` on branch `ccr-b8c25887-i6tn9f`.
+
+* `Cap.*`    – the exact laws under the cost model of the capped game (largest `g(N)` for
+               `N < 10^200`): `Rows` (a row `N - q` is composite iff `q ≡ N` modulo a prime
+               `≤ √(N - q)`; prime moduli suffice; two rows share only divisors below `Q`),
+               `Budget` (`N < X` with residues in prescribed sets `A r`: at most
+               `∏ |A r| · (X / ∏ r + 1)`), `FirstMoment` (averaged over nonzero residue
+               vectors exactly `|P| · ∏ (r - 2)/(r - 1)` rows are left, and the average of
+               rows × boost is at least `|P| / 2` for every modulus set), `Poly` (`N = f(u)`
+               makes the rows `f(c)` composite; at most `√Q + 1` of them and `√X + 1`
+               members for degree `≥ 2`), `Transfer` (a prime desert gives a Goldbach gap).
 
 ## Building
 
