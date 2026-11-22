@@ -6,7 +6,7 @@
 #      complement_cert.gp (PARI primecert of N - g) and check_cert.log (primecertisvalid);
 #   3. goldbach/ecpp_check.py: the certificate re-verified without PARI;
 #   4. slop/goldbach/records/verify_record.py (stdlib only): N from the congruences and t = k, every p < g,
-#      the certificate again, and the claims g > 119,419 and digits <= 199;
+#      the certificate again, and the claims g > CLAIM_Q (default 119,419), digits <= CLAIM_DIGITS (default 200), N < 10^200;
 #   5. a direct gmpy2 check and a direct PARI check (ispseudoprime for p < g, isprime(N - g));
 #   6. MANIFEST.sha256.
 # Output: OUTROOT/budget_1e200_<digits>digit_g<g>/ (OUTROOT defaults to goldbach/records).
@@ -34,7 +34,7 @@ D = len(str(N))
 json.dump(f, open(sys.argv[3] + "/found.json", "w"))
 json.dump([sp], open(sys.argv[3] + "/spec.json", "w"))
 open(sys.argv[3] + "/dir", "w").write(f"budget_1e200_{D}digit_g{f['g']}")
-print(f"[cert] {f['name']} k={f['k']} digits={D} g={f['g']} below 10^199: {N < 10**199}")
+print(f"[cert] {f['name']} k={f['k']} digits={D} g={f['g']} below 10^199: {N < 10**199}, below 10^200: {N < 10**200}")
 EOF
 OUT=$OUTROOT/$(cat $W/dir)
 mkdir -p $OUT
@@ -46,12 +46,13 @@ echo "[cert] 3. ecpp_check.py"
 python3 ecpp_check.py $OUT/complement_cert.gp $OUT/N_minus_g.txt > $OUT/ecpp_check.log 2>&1; tail -n 1 $OUT/ecpp_check.log
 echo "[cert] 4. slop verify_record.py (stdlib only)"
 python3 - "$W" "$OUT" <<'EOF'
-import json, re, sys
+import json, os, re, sys
 W, OUT = sys.argv[1], sys.argv[2]
 f = json.load(open(W + "/found.json")); sp = json.load(open(W + "/spec.json"))[0]
 cert = json.loads(re.sub(r"\s+", "", open(OUT + "/complement_cert.gp").read()))
 pkg = {"N": str(f["N"]), "q": int(f["g"]), "classes": sp["cover"], "t": int(f["k"]), "ecpp_cert": cert,
-       "claims": {"q_exceeds": 119419, "digits_at_most": 199}}
+       "claims": {"q_exceeds": int(os.environ.get("CLAIM_Q", "119419")), "digits_at_most": int(os.environ.get("CLAIM_DIGITS", "200")),
+                  "N_below": str(10 ** 200)}}
 json.dump(pkg, open(OUT + "/package_stdlib.json", "w"))
 EOF
 python3 $R/slop/goldbach/records/verify_record.py $OUT/package_stdlib.json > $OUT/verify_stdlib.log 2>&1; echo "rc=$?" >> $OUT/verify_stdlib.log; tail -n 3 $OUT/verify_stdlib.log

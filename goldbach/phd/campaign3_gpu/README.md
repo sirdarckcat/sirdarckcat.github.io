@@ -76,6 +76,15 @@ Version 3 (22 Nov):
   (witnesses, PARI primecert), `ecpp_check.py`, slop's stdlib `verify_record.py` with the claims
   g > 119,419 and ≤ 199 digits, and direct gmpy2 and PARI checks. Rehearsed on the g = 119,419 record:
   every check passes except, by construction, the claim g > 119,419.
+- Since 20:43-20:45Z all three GPUs scan the Lean session's 850-row cover for Q = 122,000. Its spec is
+  `../campaign3/base_spec_k850.json`, = goldbach/phd/cap200/spec_q122000_k850.json at 3922f8e on ccr-36ca7b46-8twf14,
+  with the same 88 moduli and M. Checked here: cover.crt reproduces N0 and M, and the residual list is exactly the 850
+  uncovered primes. There are 3,000 residue-swap variants of it (`mint850.py`, |U| 850-862, each checked the same way;
+  index `../campaign3/variants850_index.json`, full list sha256 4c22a9d6b6e09be4faece7b734c504e0d8a45569a6bc8e1c601623e2beed95e5).
+  They run for N < 10^200 with k in [2^31, 2^32), top first (`run_v3_camp850.sh`), because the kernel takes k as u32.
+  E^ measured there is ≈ 20.3-20.4, against ≈ 20.8-21.0 for the 867-row family.
+- `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,
+  2^32 − 1 and random: 0 mismatches against pow(2, n − 1, n).
 - Order: E falls as N grows (p ∝ 1/ln N): E^ is ≈ 20.8 just below 10^199 and ≈ 21.05 at k ≈ 10^7, so the
   GPUs scan k ∈ [2.73·10^8, kcap] from the top down (`--desc --klo 272629760 --kmax 543859952`).
 

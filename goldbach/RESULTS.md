@@ -11,6 +11,10 @@ the frontier, since each larger g comes with a larger N.
 
 - **Closeness.** 133,981: 6.36% of the largest g expected at 199 digits, 83× a
   typical number of that size. 125,269: 5.94%, 78×. 119,419: 5.70%.
+- **A third hit**, 7 minutes after the second: **g(N) = 132,103**
+  (`records/budget_1e200_199digit_g132103/`), variant `r200b_q122k_v851`,
+  k = 538,125,153, closeness 6.27%. Its N falls between the other two, and so
+  does its g, so it is a frontier point as well. Same five checks.
 - **The second hit.** Variant `r200b_q122k_w175` (870 residual primes) of a second
   family of residue swaps, at member k = 541,000,854. Found by the second RTX PRO 6000
   after 3.90·10^9 members (the model expected 0.4), 9 minutes into its run. Checked the
@@ -1092,6 +1096,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
 | `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
+| `budget_1e200_199digit_g132103` | 132,103 | 199 | ~2.1M | 6.3% | 82 | 57 |
 | `budget_1e200_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
 | `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
