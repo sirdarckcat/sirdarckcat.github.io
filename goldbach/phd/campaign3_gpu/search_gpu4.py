@@ -98,13 +98,15 @@ def feed(si, spec, w0):
     blocks = fd.window(w0)
     k = np.concatenate([np.asarray(fb.k, dtype=np.int64) for fb in blocks])
     cnt = np.concatenate([np.asarray(fb.cnt, dtype=np.int64) for fb in blocks])
-    rows = np.concatenate([np.asarray(fb.rows, dtype=np.int32) for fb in blocks])
+    rows = np.concatenate([np.asarray(fb.rows, dtype=np.uint16) for fb in blocks])
     return (si, k, cnt, rows, sum(int(fb.alive_total) for fb in blocks), sum(float(fb.hm_all) for fb in blocks),
             sum(float(fb.hm_kept) for fb in blocks), sv.K)
 
 
 def produce(batch):
-    """CPU side of a batch: every window of every slice through the thread pool. Returns per-slice chunks and statistics."""
+    """CPU side of a batch: every window of every slice through the thread pool. Returns per-slice chunks and statistics,
+    and the seconds it took."""
+    t0 = time.time()
     tasks = []
     per = [dict(chunks=[], alive=0, hma=0.0, hmk=0.0, kdone=0, kmax=0) for _ in batch]
     for si, spec in enumerate(batch):
@@ -119,7 +121,7 @@ def produce(batch):
     for si, k, cnt, rows, al, ha, hk, K in EXEC.map(lambda t: feed(*t), tasks):
         p = per[si]
         p["chunks"].append((k, cnt, rows)); p["alive"] += al; p["hma"] += ha; p["hmk"] += hk; p["kdone"] += K
-    return per
+    return per, time.time() - t0
 
 
 class MultiTester:
@@ -194,9 +196,10 @@ def run_pool(tester, kv, cnt, cols):
     return tests_m, prp_m, succ_m, gtests, launches
 
 
-def run_batch(batch, out, per, wall):
+def run_batch(batch, out, per, wall, t_cpu=0.0):
     """GPU side of a batch: test the members the CPU selected (per, from produce), as one pool in chunks of --pool members.
     wall: seconds the batch took end to end (shared out over its slices in the log line). Returns (lines, found, stats)."""
+    t_g0 = time.time()
     tester = MultiTester(batch)
     st = [dict(alive=p["alive"], hmk=p["hmk"], hma=p["hma"], kdone=p["kdone"], kmax=p["kmax"], tests=0, prps=0, succ=[]) for p in per]
     gt = [0, 0, 0.0]                                             # tests computed, launches, expected hits
@@ -206,10 +209,10 @@ def run_batch(batch, out, per, wall):
         grp, n = [], 0
         while i < len(chunks) and (not grp or n + len(chunks[i][1]) <= args.pool):
             grp.append(chunks[i]); n += len(chunks[i][1]); i += 1
-        sid = cp.asarray(np.concatenate([np.full(len(c[1]), c[0], dtype=np.int32) for c in grp]))
-        kv = cp.asarray(np.concatenate([c[1] for c in grp]))
-        cnt = cp.asarray(np.concatenate([c[2] for c in grp]))
-        cols = cp.asarray(np.concatenate([c[3] + tester.off[c[0]] for c in grp]).astype(np.int32))
+        sid = cp.concatenate([cp.full(len(c[1]), c[0], dtype=cp.int32) for c in grp])
+        kv = cp.concatenate([cp.asarray(c[1]) for c in grp])
+        cnt = cp.concatenate([cp.asarray(c[2]) for c in grp])
+        cols = cp.concatenate([cp.asarray(c[3]).astype(cp.int32) + np.int32(tester.off[c[0]]) for c in grp])
         if int(kv.size) == 0:
             continue
         tests_m, prp_m, succ_m, g, nl = run_pool(tester, kv, cnt, cols)
@@ -244,7 +247,8 @@ def run_batch(batch, out, per, wall):
     tests = sum(s["tests"] for s in st)
     stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch {batch[0]['name']}..{batch[-1]['name']} "
              f"({len(batch)} slices) {wall:.1f}s: tests {tests} counted, {gt[0]} computed "
-             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)} [v4 cpu-fed]")
+             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)} "
+             f"[v4 cpu-fed: cpu {t_cpu:.2f}s, gpu {time.time() - t_g0:.2f}s]")
     return lines, found, stats
 
 
@@ -282,10 +286,10 @@ def campaign(D):
         if not cur:
             print("C3GPU-EXHAUSTED", flush=True)
             return 2
-        per = fut.result()
+        per, t_cpu = fut.result()
         nxt = next_batch(set(b["name"] for b in cur))
         fut = PRODUCER.submit(produce, nxt) if nxt else None        # the CPU sieves the next batch while the GPU tests this one
-        lines, found, stats = run_batch(cur, out, per, 0.0)
+        lines, found, stats = run_batch(cur, out, per, 0.0, t_cpu)
         wall = time.time() - t_last; t_last = time.time()
         lines = [re.sub(r"\) 0s \(\d+ k/s\)", f") {wall/len(cur):.0f}s ({(args.slice*len(cur))/max(wall,1e-9):.0f} k/s)", l) for l in lines]
         stats = stats.replace(" 0.0s: tests", f" {wall:.1f}s: tests")
@@ -305,8 +309,8 @@ def main():
     for i in range(0, len(specs), args.batch):
         batch = specs[i:i + args.batch]
         t0 = time.time()
-        per = produce(batch)
-        lines, found, stats = run_batch(batch, out, per, 0.0)
+        per, t_cpu = produce(batch)
+        lines, found, stats = run_batch(batch, out, per, 0.0, t_cpu)
         wall = time.time() - t0
         lines = [re.sub(r"\) 0s \(\d+ k/s\)", f") {wall/len(batch):.0f}s ({sum(p['kdone'] for p in per)/max(wall,1e-9):.0f} k/s)", l) for l in lines]
         print("\n".join(lines), flush=True)

@@ -2,7 +2,7 @@
 # search_gpu4.py (CPU feeder + GPU tests) against search_gpu3.py on the slices of check_k28.sh: identical slice lines.
 cd /content && tar -xzf /content/sieve200.tgz
 cd /content/c3g
-P=$(pgrep -f "search_gpu3[.]py --campaign" | head -n 1)
+P=$(pgrep -f "search_gpu[34][.]py --campaign" | head -n 1)
 [ -n "$P" ] && kill -STOP $P
 python3 search_gpu4.py k28_slices.json --goldbach /content/c3g --out k4_found.jsonl --skip-frac 0.97 --batch 8 --kernel 28 --threads 46 > k4_out.txt 2>&1
 python3 search_gpu4.py k28_slices_f0.json --goldbach /content/c3g --out k4_found0.jsonl --skip-frac 0 --batch 4 --kernel 28 --threads 46 > k4_out0.txt 2>&1
