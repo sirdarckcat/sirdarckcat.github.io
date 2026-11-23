@@ -1,0 +1,6 @@
+# RTX production after the flat flush and grid order (prod_rate2.py on each card's gpu3_stats.log, 13:52:30-14:08:00Z): 0.7815 s a batch on all three (0.814-0.817 s before);
+# design hits a second 8.67-8.81e-7 (8.45e-7 before); near-misses >= 158,209 a second 5.60-5.68e-6.
+
+gold-g4 [ab] batches 1191 | span 930 s | batch 0.7815 s | near/batch 4.4383e-06 | near/s 5.6792e-06 | hits/s 8.8096e-07 | tests/batch 14117619 | slices/batch 4.000 | first 13:52:30 last 14:08:00
+gold-g4b [ab] batches 1191 | span 930 s | batch 0.7815 s | near/batch 4.3739e-06 | near/s 5.5967e-06 | hits/s 8.6711e-07 | tests/batch 14117612 | slices/batch 4.000 | first 13:52:30 last 14:08:00
+gold-g4c [ab] batches 1191 | span 930 s | batch 0.7815 s | near/batch 4.4425e-06 | near/s 5.6845e-06 | hits/s 8.8119e-07 | tests/batch 14117755 | slices/batch 4.000 | first 13:52:30 last 14:08:00
