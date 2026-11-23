@@ -1,0 +1,45 @@
+# Fused Fermat rounds (--fused-rounds 1) with DEEP_RCTA=8 and --deep-gen-threads 512 on the three RTX PRO 6000s at f = 0.985 (comb.sh, then deploy_comb.py), 2026-11-23
+# 12:29-12:31Z: per card, the 24 test windows (base = production, comb = the new settings, alternating) and the vector known case with the new settings; deployed
+# only if all identical, the known case's 23 (k, q), and comb >= 1% faster.
+
+=== gold-g4
+/content/comb/status.txt 2026-11-23T12:29:28Z paused pid 1975369
+2026-11-23T12:30:36Z resumed pid 1975369
+/content/comb/result.txt base  : gaps [0.957, 0.939, 0.953, 0.924, 0.692] | mean of batches 2-5 0.943 s | slice lines vs base: IDENTICAL (24) | []
+comb  : gaps [0.804, 0.825, 0.955, 0.808, 0.687] | mean of batches 2-5 0.848 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.941, 0.963, 0.951, 0.964, 0.664] | mean of batches 2-5 0.955 s | slice lines vs base: IDENTICAL (24) | []
+comb_b: gaps [0.792, 0.874, 0.886, 0.826, 0.688] | mean of batches 2-5 0.844 s | slice lines vs base: IDENTICAL (24) | []
+comb against base at f = 0.985: 0.846 s against 0.949 s a batch (x0.8918)
+known case (fused rounds, DEEP_RCTA=8, gen 512): 23 near-misses >= 46171, identical to the CPU brute force's 23: True | []
+COMB-GATE PASSED
+COMB-DONE
+/content/combd.log [dc] 12:30:45Z | driver 13e19e57aa0f | procs 1 | ['SKIPF=0.985', 'FERMAT28_DIR=/content/f29fr', 'DEEP_RCTA=8'] | --deep 1 --klog 24 --slice 16777216 --sieve-b 100000000 --p-est 0.0715 --deep-max-rows 1300 --pool-threads 2 --pipeline 1 --pipeline-depth 4 --trace-pipeline 1 --deep-tile-threads 512 --log-near-exp 1 --deep-rg 32 --fused-rounds 1 --deep-gen-threads 512
+COMBD-DONE
+
+=== gold-g4b
+/content/comb/status.txt 2026-11-23T12:29:45Z paused pid 2057675
+2026-11-23T12:30:54Z resumed pid 2057675
+/content/comb/result.txt base  : gaps [0.971, 0.963, 0.923, 0.96, 0.7] | mean of batches 2-5 0.954 s | slice lines vs base: IDENTICAL (24) | []
+comb  : gaps [0.863, 0.884, 0.847, 0.846, 0.676] | mean of batches 2-5 0.860 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.938, 0.923, 0.949, 0.954, 0.677] | mean of batches 2-5 0.941 s | slice lines vs base: IDENTICAL (24) | []
+comb_b: gaps [0.843, 0.831, 0.858, 0.865, 0.654] | mean of batches 2-5 0.849 s | slice lines vs base: IDENTICAL (24) | []
+comb against base at f = 0.985: 0.855 s against 0.948 s a batch (x0.9019)
+known case (fused rounds, DEEP_RCTA=8, gen 512): 23 near-misses >= 46171, identical to the CPU brute force's 23: True | []
+COMB-GATE PASSED
+COMB-DONE
+/content/combd.log [dc] 12:31:03Z | driver 13e19e57aa0f | procs 1 | ['SKIPF=0.985', 'FERMAT28_DIR=/content/f29fr', 'DEEP_RCTA=8'] | --deep 1 --klog 24 --slice 16777216 --sieve-b 100000000 --p-est 0.0715 --deep-max-rows 1300 --pool-threads 2 --pipeline 1 --pipeline-depth 4 --trace-pipeline 1 --deep-tile-threads 512 --log-near-exp 1 --deep-rg 32 --fused-rounds 1 --deep-gen-threads 512
+COMBD-DONE
+
+=== gold-g4c
+/content/comb/status.txt 2026-11-23T12:29:52Z paused pid 2085016
+2026-11-23T12:31:00Z resumed pid 2085016
+/content/comb/result.txt base  : gaps [0.927, 0.974, 0.947, 0.926, 0.699] | mean of batches 2-5 0.943 s | slice lines vs base: IDENTICAL (24) | []
+comb  : gaps [0.822, 0.862, 0.862, 0.818, 0.682] | mean of batches 2-5 0.841 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.956, 0.921, 0.951, 0.973, 0.646] | mean of batches 2-5 0.950 s | slice lines vs base: IDENTICAL (24) | []
+comb_b: gaps [0.793, 0.889, 0.846, 0.88, 0.665] | mean of batches 2-5 0.852 s | slice lines vs base: IDENTICAL (24) | []
+comb against base at f = 0.985: 0.847 s against 0.947 s a batch (x0.8942)
+known case (fused rounds, DEEP_RCTA=8, gen 512): 23 near-misses >= 46171, identical to the CPU brute force's 23: True | []
+COMB-GATE PASSED
+COMB-DONE
+/content/combd.log [dc] 12:31:09Z | driver 13e19e57aa0f | procs 1 | ['SKIPF=0.985', 'FERMAT28_DIR=/content/f29fr', 'DEEP_RCTA=8'] | --deep 1 --klog 24 --slice 16777216 --sieve-b 100000000 --p-est 0.0715 --deep-max-rows 1300 --pool-threads 2 --pipeline 1 --pipeline-depth 4 --trace-pipeline 1 --deep-tile-threads 512 --log-near-exp 1 --deep-rg 32 --fused-rounds 1 --deep-gen-threads 512
+COMBD-DONE

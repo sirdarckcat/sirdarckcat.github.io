@@ -37,6 +37,9 @@ ap.add_argument("--near-miss", type=int, default=int(os.environ.get("NEAR_MISS",
 ap.add_argument("--goldbach", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one launch")
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
+ap.add_argument("--fused-rounds", type=int, default=0, choices=(0, 1),
+                help="1: the bookkeeping of the Fermat rounds on the device (fermat661/cuda/fround.py + fround_kernels.cuh, next to gpu_fermat28.py in FERMAT28_DIR): ~10 launches and one host read a round "
+                     "instead of ~100 small cupy kernels and ~6 syncs, the same test lists and per-member results as run_pool (--profile-pool prints the same line for them)")
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
 ap.add_argument("--klog", type=int, default=19, help="members per GPU sieve window: 2^klog")
 ap.add_argument("--sieve-threads", type=int, default=256, help="GpuFeeder threads per CTA (1024 is faster on sm_80/89)")
@@ -269,6 +272,9 @@ def run_pool(tester, kv, cnt, cols, target=None):
     above the member's previous tested row (rows strictly ascending, so q ascending: the rows of a variant are its residual
     list, checked ascending in MultiTester), and a round's first PRP is the lowest offset with flag 1: the first-PRP row is
     the first probable prime over the member's fully tested prefix."""
+    if args.fused_rounds:
+        import fround                                           # noqa: E402  (FERMAT28_DIR: next to gpu_fermat28.py)
+        return fround.run_pool_fused(tester, kv, cnt, cols, target=args.target if target is None else target, dmax=args.dmax, check_range=(args.kernel == 28), profile=bool(args.profile_pool))
     n = int(kv.size)
     prof = [] if args.profile_pool else None
     t_prof = time.perf_counter()

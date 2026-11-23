@@ -493,6 +493,28 @@ Version 3 (22 Nov):
     for a plain read-modify-write.
   - So a race-free marking scheme would not speed the tile kernel. That kernel runs at about 0.8 marks a clock an SM, far
     below the unit's rate.
+- Fused Fermat rounds and rcta 8 (23 Nov; files in `fround/`), deployed under the standing rule on the three RTX cards at
+  12:30:45-12:31:09Z.
+  - Fused rounds: uarch 4639f17, `--fused-rounds 1`.
+    - `run_pool`'s ~100 small cupy kernels and ~6 host syncs a round become ~10 launches and one host read.
+    - The Fermat kernel and the test lists are unchanged.
+    - The driver is k29 plus `search_gpu5_fround.patch` (13e19e57aa0f, now `search_gpu5.py`).
+    - `FERMAT28_DIR=/content/f29fr` is `/content/f29` with `fround.py` and `fround_kernels.cuh`.
+  - rcta 8: `DEEP_RCTA=8` with `--deep-gen-threads 512`, so a generate CTA takes 8 rows at once with 512 threads.
+  - They pay at f = 0.985 because the sieve is busy about 92% of a batch, so both sides of the pipeline are on the critical
+    path.
+  - Measured at f = 0.985 on the 24 test windows, alternating with production; every run had identical slice lines.
+
+    | change | batch | production | factor |
+    |---|---|---|---|
+    | fused rounds alone (`frab_rtxpro6000.txt`) | 0.869 s | 0.940 s | ×0.924 |
+    | rcta 8 alone (`uarch_measure/r8f_rtxpro6000.txt`) | 0.930 s | 0.946 s | ×0.983 |
+    | both, gold-g4 (`comb_rtxpro6000.txt`) | 0.846 s | 0.949 s | ×0.892 |
+    | both, gold-g4b | 0.855 s | 0.948 s | ×0.902 |
+    | both, gold-g4c | 0.847 s | 0.947 s | ×0.894 |
+
+  - Each card's vector known case with the new settings gave the same 23 (k, q) as the CPU brute force.
+  - With `--profile-pool`, the gap a pool beside the sieve fell from 0.33-0.35 s (about half of `run_pool`) to 0.24-0.30 s.
 - uarch's E5 (`uarch_measure/e5_ffma_rtxpro6000.txt`): a dummy FFMA inside the real Fermat step adds about 1.2 ticks, close
   to an IADD3 (1.1-1.6), not the ~0 of a free pipe. So the FP32 pipe does not run free beside the multiplier.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
