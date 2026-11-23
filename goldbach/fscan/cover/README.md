@@ -163,10 +163,23 @@ over half a sieve window. On the first 89 odd primes (3 to 463; M has 192.7
 digits, 2.14·10^7 members a vector) the optimiser reaches 1,248 rows at
 Q = 170,000 and 1,609 at 213,070, against 1,262 and 1,623 on the campaign's
 88 moduli; after the larger boost that is E = 30.30 against 30.53 and 39.06
-against 39.27, i.e. 1.27 and 1.23 times the success rate. (The plain first 88
-odd primes give 1,259 to 1,261 and 1,619: equal or slightly better than the
-campaign's set, with a longer progression.) `./gen_vectors.sh Q cap count
-name seed m89` uses `starts/q<Q>_m89.txt` and sets kmax per vector.
+against 39.27, i.e. 1.27 and 1.23 times the success rate. `./gen_vectors.sh
+Q cap count name seed m89` uses `starts/q<Q>_m89.txt` and sets kmax per
+vector.
+
+**The first 88 odd primes** (3 to 461, in place of the campaign's 3 to 439
+with 467, 487, 491 and 683). M has 190.00 digits, so a vector has 9.9·10^9
+members below 10^200, more than the campaign's 5.4·10^9, and the engine needs
+no change. At Q = 170,000 four tempering runs ended at 1,261, 1,259, 1,259
+and 1,257 rows, so the optimum is at most 1,257 and has not been pinned down;
+a capped walk from the 76 covers found at 1,257 finds nothing lower. With
+the slightly larger boost (11.021 against 11.008) that is E = 30.08 against
+30.17 for the campaign's 1,262, about 9% more successes per member; at
+213,070 the same set gives 1,619 against 1,623. Supply: 2,100 distinct covers
+at ≤ 1,258 rows and 19,800 at ≤ 1,259 in 40 seconds. `./gen_vectors.sh
+170000 1259 count name seed m88f` uses `starts/q170000_m88f.txt` (76 covers
+at 1,257, 45 at 1,258, 664 at 1,259, 310 at 1,260) and sets kmax per vector
+(9,898,466,666 for these; cap it at 2^32 if the kernel needs 32-bit k).
 
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
