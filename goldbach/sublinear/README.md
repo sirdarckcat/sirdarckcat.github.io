@@ -599,16 +599,19 @@ there). With "p is a summand of N" meaning p and N − p both prime:
   there is an even N ≤ X, N > 0.73·ln X·ln ln X, with no summand below
   0.73·ln X·ln ln X. The constant comes from an elementary bound for the
   product, ∏_{3≤r≤w}(r−2)/(r−1) ≤ (1575/1152)/ln(w+1).
-- `eventually_exists_even_le_of_mertensThird`: the same with every constant
-  below e^γ/(2·C₂) = 1.349, assuming Mertens' third theorem, which is
-  classical and formalised in the PNT+ project but is not in Mathlib and was
-  not compiled in this library.
+- `eventually_exists_even_le_of_mul_lt_one` (commit a4c5d0f): the same with
+  every constant below e^γ/(2·C₂) = 1.349, with no hypothesis; and
+  `eventually_exists_even_le_no_summand_six_fifths` with the explicit constant
+  1.2. This rests on Mertens' third theorem, ln w · ∏_{p≤w}(1 − 1/p) → e^(−γ),
+  which was not in Mathlib and which the Lean session proved from Mathlib alone
+  (`Mertens.lean`, `mertens_third`, by the route of Hardy and Wright §22.7–8;
+  an independent formal proof exists in the PNT+ project).
 - The order ln X · ln ln X by counting was already there (`Counting.lean`,
   constant 1/48).
 
 So the state of the question, as far as we can tell: order ln X · ln ln X with
-constant 1/2 by counting (one unrefereed preprint); 0.73 unconditionally and
-1.349 with Mertens' third theorem by covering (here, formal). At y = 463 the
+constant 1/2 by counting (one unrefereed preprint); every constant below
+1.349 by covering (here, formal and unconditional). At y = 463 the
 theorem's count gives 3,830, a greedy choice of classes covers every prime
 below 6,000, and tempering reaches 15,907: the factor 4 is rows sharing a
 mop-up prime, the improvement the theorem leaves as a remark. The finite
