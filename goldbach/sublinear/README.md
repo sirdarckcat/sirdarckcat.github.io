@@ -77,8 +77,36 @@ in the field, d < n, and every irreducible factor of Q′ dividing N,
     discr(N − Q) = (−1)^(n(n−1)/2 + nd + (d−1) + d(d−1)/2) · λ^(n−d−1) · d^(n−d) · discr(Q),
 
 from which the parity formula follows by Stickelberger's theorem on both
-sides. It is formalising this (Mathlib has resultants and discriminants but
-not Stickelberger–Swan, which it will prove separately).
+sides.
+
+**Formal status (23 November).** Everything in this section is proved in Lean
+on the Lean session's branch `ccr-36ca7b46-8twf14`, standard axioms only:
+`goldbach/lean/GoldbachGaps/FunctionField/ParityDesert.lean` (the identity,
+squarefreeness, the parity formula, the deserts) and `Stickelberger.lean`
+(commit c0e3fb4): for a finite field of odd characteristic and every
+squarefree g, χ(discr g) = (−1)^(deg g + number of irreducible factors). The
+latter was not in Mathlib; as far as either session knows it is the first
+formal proof of Stickelberger–Swan. So the theorem and the corollary below
+carry no hypothesis.
+
+**Two extensions found by the Lean session** (proved there, commits 4d62189
+and d3d39ea; checked here by factorisation, `parity_rule.py`):
+
+- *Any degree, including p | d.* With e = deg Q′ and l its leading
+  coefficient, discr(N − Q) = ± λ^(n−2−e) · l^(n−d) · discr(Q) with an explicit
+  sign, and for q a square and λ a non-square the number of irreducible
+  factors of N − Q is even exactly when (−1)^(d+1+e) · χ(l)^(n−d) = 1. For
+  p ∤ d (e = d − 1, l = d) this always holds. Checked on all 240 irreducible
+  cubics over F_9, for n − d even and odd, without exception
+  (`parity_rule.txt`).
+- *The hypothesis is about Q′ only.* What the proof uses is that every
+  irreducible factor of Q′ divides N. So N = λ·V_J^p makes N − Q reducible for
+  every monic irreducible Q of *any* degree below deg N whose derivative is
+  J-smooth: all rows of degree ≤ J + 1, all but about 1/(J+1) of degree J + 2,
+  and a Dickman proportion ρ((d−1)/J) beyond. In the F_9 example below
+  (J = 3, deg N = 2,403) that is every quartic, about three quarters of the
+  11,808 quintics and 38% of the 683,280 rows of degree 7, with no congruence
+  and no luck.
 
 **Corollary (deserts).** Let q be a square (q = p^(2e)), V_J the product of
 all monic irreducibles of degree ≤ J, λ a non-square, and N = λ·V_J^p. Then
@@ -98,7 +126,7 @@ both kinds of λ, n ≡ 0 and p (mod 2p); for instance all 300 irreducible
 quadratics over F_25 and 150 quartics over F_5 give a reducible N − Q, and so
 do samples of the 1,620 quartics over F_9 (deg N = 2,403) and of the 5,200
 cubics over F_25 (deg N = 3,125) in `parity_desert_big.txt`. For rows with
-p | d (not covered by the theorem) the parity is mixed, as it should be.
+p | d the parity is mixed, and follows the sign rule above row by row.
 
 **What this is and is not.** It is a compositeness mechanism that is not a
 small factor and not luck: the parity of the number of prime factors, which
@@ -238,18 +266,20 @@ known minimum of 1,609 rows.
 | ≤ 2,000 | e^33.4 | 1,116 | 1,309 ± 14 | 0.08 |
 | ≤ 5,000 | e^30.5 | 910 | 1,170 ± 17 | 1.3 |
 | ≤ 20,000 | e^26.7 | 685 | 1,007 ± 18 | 50 |
-| ≤ 10^8, rows beyond 20,000 treated as independent | about e^11.7 | 160 | 542 | — |
+| ≤ 50,000 | e^24.5 | 574 | 922 ± 19 | 400 |
+| ≤ 10^8, rows beyond 50,000 treated as independent | about e^11.8 | 160 | 542 | — |
 
 So the prize is 3.5 nats for the primes up to 1,000, 5.9 to 2,000, 8.8 to
-5,000 and 12.6 to 20,000, roughly 3 to 4.5 nats per factor e in depth. An
-ideal search to depth 5,000 would bring the 10% record within the Colab units
-that remain; to 20,000 it would bring fifty of them. The last line shows where
+5,000, 12.6 to 20,000 and 14.8 to 50,000, from 4.5 nats per factor e in depth
+at the start to 2.4 at the end. An ideal search to depth 5,000 would bring the
+10% record within the Colab units that remain; to 20,000 it would bring fifty
+of them. The last line shows where
 the count goes with the whole sieve: it is the statement, already in the
 brainstorm notes, that the best N for the primes up to 10^7 or 10^8 is
 enormously better than anything the search can afford to find.
 
 The fourth column is measured on 20,000 random members of a cover with 1,609
-rows (mean ± standard deviation). The ideal N are *not* members of the best
+rows (mean ± standard deviation; `member_depth.py`). The ideal N are *not* members of the best
 covers: 1,319 rows at depth 1,000 is 10.6 standard deviations below the mean
 of such members, 685 at depth 20,000 is 17.5 below, and the e^39 members of
 all the covers within a few rows of 1,609 reach about 9 standard deviations.
@@ -321,6 +351,19 @@ line, and the line is sharp for a structural reason.
    worth at most 4.3 to 5.3 nats over the 3% rule) is this statement for a
    population of e^22.
 
+The Lean session tried independently to break this (lattices of moves,
+additive and multiplicative splittings of t, tree search with bounds,
+polynomial parametrisations, sharing rows between consecutive N by a
+convolution) and could not; the formal parts of its answer are the Lean files
+named in rung 4 of the ladder. Two of its remarks belong here. For
+arbitrary lists the question "does any N below a bound meet every list" is
+NP-complete already with two classes per modulus (Manders–Adleman 1978;
+Garey–Johnson AN1), so nothing that treats the lists as arbitrary can be both
+exact and fast. And for our lists the problem is the search for intervals
+(N − Q, N] poor in rough numbers at fixed offsets, the same problem as record
+prime gaps, where the state of the art is also covering congruences followed
+by a sieve over the members.
+
 In the language of the literature: collecting the prize means solving *noisy
 Chinese remaindering with dense lists* on average — rate 460/1,940 and lists of
 about a third of the classes for depth 2,000 — or equivalently maximum-
@@ -343,13 +386,13 @@ target, and the same question at depth 5,000 (910 rows) is worth 8.8.
 
 | rung | what | who | state |
 |---|---|---|---|
-| 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | proved in Lean with Stickelberger–Swan as the one named hypothesis (`FunctionField/ParityDesert.lean`, commit 3b03ff8 on the Lean branch); the hypothesis itself in progress |
+| 1 | Toy theorem (parity) and corollary, formal proof, Stickelberger–Swan included | Lean | done: proved without hypotheses (`FunctionField/ParityDesert.lean`, `Stickelberger.lean`, commit c0e3fb4 on the Lean branch), with two extensions (any degree; smooth derivative) |
 | 2 | Toy search with the parity filter: measure the factor against the model | research | done: 4 to 5 times (Result 2) |
 | 3 | Toy instance small enough to enumerate every member: does anything besides parity and the symmetries of F_q[x] predict the best members? | research | to do |
-| 4 | Barrier statements for the integer search, formal: black-box lower bound (m queries find one of the g best of K with probability at most m·g/(K − m)); decoding-radius inequality for our parameters (agreement must exceed sqrt(e·ln K/4) = 3.88 times the typical one for K = 2^32); the meet-in-the-middle condition H ≤ 2(F − C) | Lean | statements agreed; formal proofs queued behind rung 1 |
+| 4 | Barrier statements for the integer search, formal | Lean | done (Lean branch, `Cap/BlackBox.lean`, `Cap/Radius.lean`, `Cap/Population.lean`): black-box bound (m questions reach the fraction m·g/K); inside the decoding radius only one-class lists pay for themselves, which is the cover (`list_deficit`, `johnson_leaves_the_cover`), and the radius is at least 3.88 times the typical agreement for K = 2^32; the population bound in Chernoff form (`hitMass_selected_le`: m tests on a population of e^F expect at most m·y^k + e^F·u^(−k)·∏(1 − s_j + s_j·y·u) successes however the members were found); the meet-in-the-middle condition ln P ≤ 2F − C (`mitm_condition_log`) |
 | 5 | Integer candidates for information that is not a residue (anything cheaper than a Fermat test that correlates with primality of a rough number, in a special family of N) | both | open; no candidate yet |
 | 6 | Constants: wheel and list merges inside the production sieve | research | costed at 0.1 to 0.4 nats, not started |
-| 7 | The prize: number of N by rows left at depth z, and the cost of an ideal search | research | done for z up to 20,000 at the 10% target (Result 3): 3.5, 5.9, 8.8, 12.6 nats |
+| 7 | The prize: number of N by rows left at depth z, and the cost of an ideal search | research | done for z up to 50,000 at the 10% target (Result 3): 3.5, 5.9, 8.8, 12.6, 14.8 nats |
 | 8 | Problem (P′): any method that reaches beyond the Chinese-remainder line at less than the cost of scoring every member | both | open; lattices, meet in the middle, birthday trees and hashing ruled out with numbers (above) |
 
 ## References
@@ -364,6 +407,8 @@ target, and the same question at depth 5,000 (910 rows) is worth 8.8.
 - V. Guruswami, A. Vardy, Maximum-likelihood decoding of Reed–Solomon codes
   is NP-hard (2005). Q. Cheng, D. Wan, on the decodability of Reed–Solomon
   codes and discrete logarithms.
+- K. Manders, L. Adleman, NP-complete decision problems for binary quadratics,
+  J. Comput. System Sci. 16 (1978) (Garey–Johnson problem AN1).
 - M. Naor, B. Pinkas, Oblivious transfer and polynomial evaluation, STOC 1999
   (noisy polynomial interpolation as a hardness assumption). D. Wagner, A
   generalized birthday problem, CRYPTO 2002.

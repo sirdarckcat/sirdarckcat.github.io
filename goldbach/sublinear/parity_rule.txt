@@ -1,0 +1,16 @@
+F_9 (p = 3), J = 2, N = lam * V_J^3 * x^0, deg N = 243, lam non-square; rows: monic irreducible of degree 3 with a 2-smooth derivative [p divides d]
+  deg Q' = 0, chi(lc Q') = +1: 24 rows, r even for 24, rule predicts even for 24
+  deg Q' = 1, chi(lc Q') = -1: 108 rows, r even for 0, rule predicts even for 0
+  deg Q' = 1, chi(lc Q') = +1: 108 rows, r even for 0, rule predicts even for 0
+  240 rows checked, 0 disagreements with the rule
+F_9 (p = 3), J = 2, N = lam * V_J^3 * x^3, deg N = 246, lam non-square; rows: monic irreducible of degree 3 with a 2-smooth derivative [p divides d]
+  deg Q' = 0, chi(lc Q') = +1: 24 rows, r even for 24, rule predicts even for 24
+  deg Q' = 1, chi(lc Q') = -1: 108 rows, r even for 108, rule predicts even for 108
+  deg Q' = 1, chi(lc Q') = +1: 108 rows, r even for 0, rule predicts even for 0
+  240 rows checked, 0 disagreements with the rule
+F_9 (p = 3), J = 1, N = lam * V_J^3 * x^0, deg N = 27, lam non-square; rows: monic irreducible of degree 4 with a 1-smooth derivative
+  deg Q' = 3, chi(lc Q') = +1: 396 rows, r even for 396, rule predicts even for 396
+  396 rows checked, 0 disagreements with the rule
+F_9 (p = 3), J = 2, N = lam * V_J^3 * x^0, deg N = 243, lam non-square; rows: monic irreducible of degree 4 with a 2-smooth derivative
+  deg Q' = 3, chi(lc Q') = +1: 1188 rows, r even for 1188, rule predicts even for 1188
+  1188 rows checked, 0 disagreements with the rule
