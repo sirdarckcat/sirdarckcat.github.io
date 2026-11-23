@@ -46,6 +46,13 @@ ap.add_argument("--deep", type=int, default=0, choices=(0, 1),
 ap.add_argument("--deep-split", type=int, default=1000000, help="--deep: primes above this go through the large-prime stage")
 ap.add_argument("--deep-rg", type=int, default=16, help="--deep: rows a group of the large-prime stage")
 ap.add_argument("--deep-max-rows", type=int, default=1100, help="--deep: rows of the bit matrix (the most rows of any variant)")
+ap.add_argument("--deep-tile-threads", type=int, default=256, help="--deep: CTA size of the tile kernel (128 leaves registers for co-resident Fermat CTAs with --overlap)")
+ap.add_argument("--deep-gen-threads", type=int, default=256, help="--deep: CTA size of the large-prime generate kernel")
+ap.add_argument("--fermat-cta-sm", type=int, default=0,
+                help="with --overlap: launch the Fermat kernel in chunks of this many CTAs an SM (e.g. 3 of the 5 that fit), leaving registers and shared memory free on every SM "
+                     "for the sieve's CTAs to sit beside them; 0 = one launch a round, as before")
+ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
+                help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
 ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
@@ -64,6 +71,8 @@ from gpu_fermat import kernel as kernel2, to_limbs   # noqa: E402
 from gpu_fermat3 import kernel as kernel3      # noqa: E402
 sys.path.insert(0, os.path.join(args.sieve200, "cuda"))
 from gpu_sieve import GpuFeeder               # noqa: E402
+if args.overlap:
+    from overlap import overlapped               # noqa: E402  (sieve200/cuda, uarch b344e85)
 if args.kernel == 28:
     sys.path.insert(0, os.environ.get("FERMAT28_DIR", "/content/f28"))
     import gpu_fermat28                       # noqa: E402
@@ -90,7 +99,8 @@ def feeder_for(spec):
     if args.deep:
         from deep_feeder import deep_feeder_for                  # noqa: E402  (sieve200/cuda)
         return deep_feeder_for(_DEEP, spec, B=args.sieve_b, ks_log=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
-                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True))
+                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True),
+                               **({k: v for k, v in (("gen_threads", args.deep_gen_threads), ("tile_threads", args.deep_tile_threads)) if v != 256}))   # older trees take neither
     key = (spec["name"].split("@")[0], spec["N0"])
     if key not in _VAR:
         search.init_spec(spec, args.sieve_b, args.block)       # S, M^-1 mod s cached per M; N0 mod s per call
@@ -110,20 +120,35 @@ def feeder_for(spec):
     return fd
 
 
+_NSM = cp.cuda.Device().attributes["MultiProcessorCount"]
+_CQ = {}                            # (N0, rows, limbs) -> the device array of N0 - q (the same variants come back in every batch; exact keys)
+
+
+def _cq_rows(N0, residual, limbs):
+    key = (N0, tuple(int(q) for q in residual), limbs)
+    a = _CQ.get(key)
+    if a is None:
+        if len(_CQ) >= 512:
+            _CQ.pop(next(iter(_CQ)))
+        a = _CQ[key] = cp.asarray(np.stack([to_limbs(N0 - int(q), limbs) for q in residual]))
+    return a
+
+
 class MultiTester:
     """cq rows N0_v - q of every variant in the batch (shared M); test(idx, k) -> uint8 flags."""
     def __init__(self, specs, limbs=21):
         M = int(specs[0]["M"])
         assert all(int(s["M"]) == M for s in specs), "a pool needs one M"
-        rows, self.off, qs = [], [], []
+        parts, self.off, qs, n = [], [], [], 0
         for s in specs:
             N0 = int(s["N0"])
             assert N0 > max(s["residual"]), "N0 - q must be positive"
             assert all(int(a) < int(b) for a, b in zip(s["residual"], s["residual"][1:])), "residual rows must be ascending"
-            self.off.append(len(rows))
-            rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
+            self.off.append(n)
+            part = _cq_rows(N0, s["residual"], limbs)
+            parts.append(part); n += int(part.shape[0])
             qs.extend(int(q) for q in s["residual"])
-        self.cq = cp.asarray(np.stack(rows))
+        self.cq = parts[0] if len(parts) == 1 else cp.concatenate(parts)
         self.qrow = cp.asarray(np.array(qs, dtype=np.int64))      # q of every global row (for the first-PRP row of a member)
         self.M = cp.asarray(to_limbs(M, limbs))
         if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
@@ -142,7 +167,10 @@ class MultiTester:
         T = int(idx.size)
         out = cp.empty(T, dtype=cp.uint8)
         if T:
-            self.k(((T + threads - 1) // threads,), (threads,), (self.cq, self.M, idx, kv, out, np.int32(T)))
+            step = args.fermat_cta_sm * _NSM * threads if args.fermat_cta_sm else T          # chunks of fermat_cta_sm CTAs an SM: room on every SM for a sieve CTA
+            for lo in range(0, T, step):
+                hi = min(T, lo + step)
+                self.k(((hi - lo + threads - 1) // threads,), (threads,), (self.cq, self.M, idx[lo:hi], kv[lo:hi], out[lo:hi], np.int32(hi - lo)))
         return out
 
 
@@ -163,17 +191,14 @@ def verify_near_miss(spec, k, q):
 def run_pool(tester, kv, cnt, cols):
     """Members kv[m] with survivors cols[indptr[m]:indptr[m+1]] (global cq rows, ascending q).
     Returns per member: tests counted up to the first PRP, whether a PRP was found, success, the global row of the first
-    PRP (-1 if none); and the tests computed on the GPU.  A member's rows are tested in the order of cols, which is checked
-    here to be strictly ascending (so ascending q), and a round's first PRP is the lowest offset with flag 1: the first-PRP
-    row is the first probable prime over the member's fully tested prefix."""
+    PRP (-1 if none); and the tests computed on the GPU.  Every row a member is tested on is checked, as it is tested, to be
+    above the member's previous tested row (rows strictly ascending, so q ascending: the rows of a variant are its residual
+    list, checked ascending in MultiTester), and a round's first PRP is the lowest offset with flag 1: the first-PRP row is
+    the first probable prime over the member's fully tested prefix."""
     n = int(kv.size)
     indptr = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
-    if int(cols.size) > 1:                                     # every member's survivor rows strictly ascending
-        start = cp.zeros(int(cols.size), cp.bool_)
-        start[indptr[:-1][cnt > 0]] = True
-        if not bool(((cols[1:] > cols[:-1]) | start[1:]).all()):
-            raise RuntimeError("survivor rows of a member are not in ascending order")
     frow = cp.full(n, -1, cp.int64)
+    last = cp.full(n, -1, cp.int64)                            # the last row each member was tested on
     tests_m = cp.zeros(n, cp.int64)
     prp_m = cp.zeros(n, cp.bool_)
     succ_m = cnt == 0
@@ -189,16 +214,28 @@ def run_pool(tester, kv, cnt, cols):
         m_of = cp.searchsorted(csum, cp.arange(total), side="right")
         off = cp.arange(total) - (csum - take)[m_of]
         ip = (indptr[act] + pos[act])[m_of] + off
-        flags = tester.test(cols[ip], kv[act][m_of].astype(cp.uint32))
-        if args.kernel == 28 and bool((flags > 1).any()):
+        rowsv = cols[ip]
+        flags = tester.test(rowsv, kv[act][m_of].astype(cp.uint32))
+        prev = last[act][m_of]                                  # the row before each tested row: the member's last row, or the one before it here
+        if total > 1:
+            same = m_of[1:] == m_of[:-1]
+            prev[1:] = cp.where(same, rowsv[:-1].astype(cp.int64), prev[1:])
+        bad = (rowsv.astype(cp.int64) <= prev).any()
+        if args.kernel == 28:
+            bad = bad | ((flags > 1).any() * 2)
+        bad = int(bad)
+        if bad & 1:
+            raise RuntimeError("a member's rows are not tested in ascending order")
+        if bad & 2:
             raise RuntimeError("kernel 28 flagged an n outside its range")
+        last[act] = rowsv[csum - 1].astype(cp.int64)
         big = D + 1
         first = cp.full(int(act.size), big, dtype=cp.int32)          # scatter_min: no int64
         cupyx.scatter_min(first, m_of, cp.where(flags == 1, off, big).astype(cp.int32))
         hit = first < big
         tests_m[act] += cp.where(hit, first.astype(cp.int64) + 1, take)
         prp_m[act[hit]] = True
-        frow[act[hit]] = cols[(indptr[act] + pos[act])[hit] + first[hit].astype(cp.int64)]
+        frow[act[hit]] = rowsv[(csum - take)[hit] + first[hit].astype(cp.int64)].astype(cp.int64)
         pos[act] += take
         done = (~hit) & (pos[act] == cnt[act])
         succ_m[act[done]] = True
@@ -225,6 +262,8 @@ def run_batch(batch, out):
         kv = cp.concatenate([c[1] for c in pool])
         cnt = cp.concatenate([c[2] for c in pool])
         cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])      # (a deep window is a pool of its own: no 1.5 GB copy)
+        if args.overlap:
+            cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
         pool.clear(); npool[0] = 0
         tests_m, prp_m, succ_m, frow, g, nl = run_pool(tester, kv, cnt, cols)
         gt[0] += g; gt[1] += nl
@@ -243,26 +282,35 @@ def run_batch(batch, out):
                 st[si]["near"].append((int(k), int(q)))
 
     K = 1 << args.klog
+    plan = []                                                    # (si, spec, kstart, kmax), checked before any GPU work
     for si, spec in enumerate(batch):
-        fd = feeder_for(spec)
         kstart, kmax = spec["kstart"], spec["kmax"]
         if spec.get("ceiling_digits"):
             kcap = int((mpz(10) ** spec["ceiling_digits"] - mpz(spec["N0"])) // mpz(spec["M"]))
             kmax = min(kmax, kcap + 1)
         assert kstart % K == 0 and (kmax - kstart) % K == 0, "slices must be whole GPU sieve windows"
         st[si]["kmax"] = kmax
-        for w0 in range(kstart, kmax, K):
-            w = fd.window(w0)
-            st[si]["alive"] += int(w.alive_total.sum())
-            st[si]["kdone"] += K
-            st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
-            rows32 = w.rows.astype(cp.int32)
-            rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
-            w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
-            pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
-            npool[0] += int(w.k.size)
-            if npool[0] >= args.pool:
-                flush()
+        plan.append((si, spec, kstart, kmax))
+
+    def windows():                                               # the sieve: (slice index, window) in order
+        for si, spec, kstart, kmax in plan:
+            fd = feeder_for(spec)
+            for w0 in range(kstart, kmax, K):
+                yield si, fd.window(w0)
+
+    for si, w in (overlapped(cp, windows()) if args.overlap else windows()):
+        st[si]["alive"] += int(w.alive_total.sum())
+        st[si]["kdone"] += K
+        st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
+        rows32 = w.rows.astype(cp.int32)
+        rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
+        w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
+        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
+        if args.overlap:
+            cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
+        npool[0] += int(w.k.size)
+        if npool[0] >= args.pool:
+            flush()
     flush()
     dt = (time.time() - t0) / len(batch)
     lines, found = [], []

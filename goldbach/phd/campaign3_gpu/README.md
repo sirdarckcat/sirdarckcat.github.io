@@ -270,6 +270,18 @@ Version 3 (22 Nov):
     - The final driver, with near-misses and the uarch session's in-place row offset that frees ~4.5 GB a deep window, gives
       lines identical to the earlier driver.
   - Rows above 1,100 need `--deep-max-rows` (1,200 for Q = 160,000).
+  - Cost: the first version checked the order over the whole survivor array of a pool (~7·10^8 rows) and cost 0.5 s a
+    batch (2.60 against 2.10 s). The check now runs on the rows actually tested, as they are tested: each row above the
+    member's previous one, about 3·10^7 a batch, sharing the kernel-28 range check's sync.
+- Staged large-prime kernel and the overlap (23 Nov 03:00Z, uarch tree b344e85; `uarch_measure/overlap_trial_rtxpro6000.txt`,
+  `driver_tree_staged_ab_rtxpro6000.txt`). Steady batches of 2 × 2^25 members on an RTX PRO 6000, tests and PRPs identical
+  in every case:
+  - production driver f43e7f9 with the old tree: 2.10 s;
+  - this driver with the new tree: 2.00 s;
+  - plus `DEEP_STAGED=1` (marks sorted by bin in shared memory, written as whole lines): 1.70 s, ×1.24.
+  - `--overlap 1` (the next window's sieve on a second stream) gave no gain: 2.50 → 2.50 s on the slow-check driver.
+    `--fermat-cta-sm 3/4` made it worse (2.60-2.85 s), and so did 128-thread tile CTAs.
+  - In production on the three RTX PRO 6000s since 03:07Z (`deploy_staged.py`): 1.7-1.8 s a batch, from 2.1 s.
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is

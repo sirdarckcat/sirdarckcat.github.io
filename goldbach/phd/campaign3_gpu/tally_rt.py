@@ -3,7 +3,7 @@ import glob, json, math, os, re
 # gpu3_stats.log has it, else the model 2^20-slice estimate members * hit% * exp(-1.0275 E^ + 0.33)), found and g.
 out = []
 pat = re.compile(r"^\[(\S+)\] k=\[(\d+),(\d+)\) \S+ \(\S+ k/s\) tests=(\d+) prp=(\d+) p\^=(\S+) alive/k=(\S+) E\^=(\S+) hit%=(\S+) found=(\d+)")
-for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
+for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", "/content/c160"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
     if not os.path.exists(d + "/search.log"):
         continue
     logged = {}                                         # slice name -> expected share of its batch
@@ -12,11 +12,14 @@ for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150"):
             m = re.search(r"batch (\S+)\.\.(\S+) \((\d+) slices\).*expected hits ([\d.e+-]+)", l)
             if m:
                 logged[m.group(2)] = (int(m.group(3)), float(m.group(4)))   # keyed by the batch's last slice
-    rows, cur = [], []
+    rows, cur, seen = [], [], set()
     for l in open(d + "/search.log"):
         m = pat.match(l)
         if m:
             name, a, b = m.group(1), int(m.group(2)), int(m.group(3))
+            if name in seen:                                       # a slice logged twice (two processes for a few minutes, 23 Nov 03:07Z): count it once
+                continue
+            seen.add(name)
             rows.append(dict(name=name, k=b - a, tests=int(m.group(4)), prps=int(m.group(5)), E=float(m.group(8)), hit=float(m.group(9)) / 100))
     # attribute logged batch expectations to their slices: a batch ends at its last slice name
     exp_logged = 0.0; n_logged = 0; exp_model = 0.0; n_model = 0
