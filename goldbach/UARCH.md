@@ -14,8 +14,11 @@ was written and verified on a CPU (the same source compiled as C++), then timed 
 | `fermat661/cuda/` (`fermat31`) | `fermat28` | 22 limbs of 31 bits, 737 IMAD.WIDE a step instead of 876: correct (CPU-verified); the refitted model (`costmodel.py`) predicts +4.6% on an A100, -3% on an L4 and 21% slower on an RTX PRO 6000: not worth deploying; negative result | `test_step31.py`, `test_fermat31.py` |
 | `sieve200/cuda/` | `search_gpu3.py`'s sieve3, `alive.sum`, `lexsort`, gather, `nonzero` | in production on 5 GPUs (2.3 ns a member on an RTX PRO 6000, 10-15 on an A100, 15-22 on an L4); next version: 32-bit Shoup setup (35 instead of 85 SASS instructions a prime, 20 registers), separate sieve CTA size, per-phase timings | `test_gsieve.py`, `test_gpu_sieve_cpu.py` (CPU), `test_gpu_sieve.py` (GPU) |
 
+| `sieve200/cuda/` (deep sieve: `gbig`, `gbatch`, `deep_feeder.py`) | `GpuFeeder` at a deeper bound B | a bound of 1e7 .. 1e9 is worth x1.4 .. x2.45 hit mass per Fermat test (the GPU session's measurement) but `GpuFeeder` charges every (prime, row, 2^19-window) pair: a loss.  The bucketed large-prime stage visits each (row, prime) pair once per 2^25-member batch (64x fewer visits), bins the marks by (row, tile) and applies them to the tile's shared bitmap; estimate 0.2-0.4 s a batch at B = 1e8 on an RTX PRO 6000 (**unmeasured**; break-even ~1.25 s, +40% at ~0.4 s).  CPU-verified identical to sieve200's Feeder; integration (`--deep` patch for search_gpu5) written | `test_gbig.py`, `test_gbatch_cpu.py`, `test_deep_feeder_cpu.py` (CPU); `bench_bigprimes.py`, `bench_batch.py` via `measure_all.sh` (GPU) |
+| `sieve200/cuda/` (tools) | guesses about instruction costs | `sass.py` (NVRTC + nvdisasm: the SASS a GPU runs, no GPU), `bench_pipes.py` (instruction and memory costs on a GPU), `costmodel.py` (cycles a step from SASS and those costs: six A100 timings within 1.5% with one parameter), `measure_all.sh` (everything that needs a GPU, one command a GPU type) | `python3 costmodel.py` |
+
 `sieve200/balance.py` answers "which sieve bound B": with a CPU feeder and a GPU tester of a few tens of million tests a second the best
-B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` stays.
+B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` stays *for a CPU feeder*; for the GPU feeder a deeper bound is worth x1.4 (1e7) to x1.9 (1e8) hit mass per test and the question is the cost of the primes above 1e6: `sieve200/cuda/DEEPSIEVE.md`.
 
 ## What was learned (and what it cost to find out)
 
