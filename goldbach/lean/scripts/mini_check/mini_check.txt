@@ -1,0 +1,14 @@
+Independent re-enumeration of the research session's miniature (goldbach/sublinear, commit c98ca25 on
+ccr-d4a17dd0-7uu03r): X = 10^9, Q = 1000 (167 rows), Chinese-remainder line 23, deeper sieve to 200.
+
+  gcc -O3 -march=native -fopenmp -o mini_check mini_check.c
+  ./mini_check 1000000000 1000 23 200 > mini_hist.txt        (10.5 s on 4 cores, 2026-11-23)
+
+Result: 157947020 even N in [1200, 10^9) with no prime factor in 3..29; 256 of them have N - q composite
+for every odd prime q < 1000.  The joint histogram (rows left at depth 23, rows left at depth 200, failures,
+successes; 622 lines) is byte-identical to research's toy_exact_1e9_1000.txt:
+  sha256 5775e6ee6faeead1e08df367d3e787ec43671cfb977f1099f6b0980f6ea79aa1
+
+The method differs from research's toy_exact.c: the rows killed at a depth are the union of one row-bitmask
+per residue class of N modulo each prime (no array of flags over the integers below X), and primality of
+N - q is read from an odd-only prime bitmap.

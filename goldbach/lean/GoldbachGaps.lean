@@ -38,6 +38,7 @@ import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
+import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -148,7 +149,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                population are tested, their hit mass is at most `m y^k` plus that of the
                members with fewer than `k` rows; a merge of two lists of residue combinations
                costs at least `2 P / (K √(a b))` per member found, so the constrained primes
-               can exceed the population by `F - C` nats and no more).
+               can exceed the population by `F - C` nats and no more), `ListGain` (restricting
+               `N` modulo one prime to a list of classes buys at most `(W - μ) / ln (W / μ)`
+               rows for each nat it costs, `W` the most rows in a class and `μ` the average;
+               for a prime above `Q = 213070` with at most 1609 rows left that is 0.207 rows a
+               nat whatever the shape of the list).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
