@@ -1,0 +1,73 @@
+# --vector-place top (the lead's decision of 23 Nov 16:36Z) on gold-g4b (RTX PRO 6000), 2026-11-23 17:01:33-17:03:41Z; production paused 17:01:33-17:03:18Z and 17:03:25-17:03:38Z.
+# Patched driver search_gpu5_vtop.py (sha f4a85df2f2d5) = production search_gpu5.py (13e19e57aa0f) + search_gpu5_vtop.patch (22 changed lines in VectorSource and the options).
+# The lead's conditions:
+#   1. every member of a top window has 200 digits: asserted in the loader; vtop_loader.py on all 228 chunk files (112,931 vectors): N from 2.1525e199 to just below 1e200;
+#   2. one top-placed window, GPU against search_c.py: the normal path (B = 10^6, block 32768) on the top 2^19 of q170000_m89_p1c00227_v0 (vtop2.sh): IDENTICAL at f = 0.97 and 0.9
+#      (vtop.sh's first try with --klog 20 failed: the normal path's GPU sieve kernel cannot take a 2^20 window, CUDA_ERROR_INVALID_VALUE on its shared memory size);
+#   3. the vector known case with the patched driver (default placement): the same 23 (k, q) as the CPU brute force;
+#   4. names: a top window is name@kend-2^24 (4601761 or 4601762 for the 89-moduli vectors), a bottom one name@k_lo (2137898); the loader skips a vector whose name is in the
+#      done set under either placement: no vector twice, none skipped (the not-done vectors at the bottom = those at the top, 12,579 of them), restart tests pass.
+# Extra: kc_top, the known case at the top (k in [20854690, 21378978) of q170000_m89_t1_v0, f = 0, near-misses >= 46,171): 25 members, for the CPU brute force (knowncase_top_cpu_brute.txt).
+# Expected near-misses >= 158,209 at the top x1.0113, expected hits x1.0122 (the same 24 test vectors); batch time x1.0026 against the patched driver at the bottom (noise: base vs bot x1.0046).
+
+=== vtop.sh (result.txt)
+2026-11-23T17:01:33Z paused pid 2459295
+2026-11-23T17:01:53Z known cases done
+2026-11-23T17:01:56Z normal path done
+2026-11-23T17:03:18Z resumed pid 2459295
+2026-11-23T17:03:23Z CPU slices done
+[ld] 228 chunk files, 112931 vectors (112931 distinct names), done set 100352 slices (100352 vectors) | 58 s
+[ld] bottom (patched) == production on 228 of 228 chunks | skipped: production 0, bottom 0, top 0
+[ld] top: 12579 windows, 12579 distinct vectors | the same vectors as bottom: True | done vectors among them: 0 | not done and not taken: 0 | kstart values {4601762: 8553, 4601761: 4026} | window = bottom's for 0
+[ld] top N range: 2.1525e+199 .. 1.0000000000e+200 (10^200 = 1e200: below: True; 200 digits: True)
+[ld] restart with 1000 top windows done: top takes 11579 (11579 expected), 0 of the 1000 again; bottom takes 0 of them
+[ld] problems: []
+[ld] LOADER PASSED
+LOADER-EXIT
+kc_bot (patched driver, default placement): 23 near-misses >= 46171, identical to the CPU brute force's 23: True | {'q170000_m89_t1_v0@2137898': (2137898, 2662186, 'tests=7320248 prp=524288 p^=0.0716 alive/k=420.1 E^=30.09 hit%=100.0 found=0')} | []
+kc_top (--vector-place top): 25 near-misses >= 46171 | slice {'q170000_m89_t1_v0@20854690': (20854690, 21378978, 'tests=7353791 prp=524288 p^=0.0713 alive/k=420.1 E^=29.95 hit%=100.0 found=0')} | []
+GPU k=20899461 q=48589
+GPU k=20903013 q=52237
+GPU k=20909356 q=46327
+GPU k=20914784 q=51001
+GPU k=20922075 q=56809
+GPU k=20924406 q=47389
+GPU k=20928592 q=49669
+GPU k=20929390 q=50131
+GPU k=20938947 q=48589
+GPU k=21044951 q=56377
+GPU k=21050303 q=52021
+GPU k=21138137 q=49477
+GPU k=21148982 q=47221
+GPU k=21154485 q=47317
+GPU k=21163509 q=46327
+GPU k=21193180 q=52627
+GPU k=21200833 q=54181
+GPU k=21214016 q=49639
+GPU k=21230683 q=51607
+GPU k=21233580 q=48871
+GPU k=21234843 q=46441
+GPU k=21246122 q=55381
+GPU k=21276261 q=50821
+GPU k=21314491 q=46441
+GPU k=21331195 q=48049
+normal path f = 0.97: GPU {} | CPU {'q170000_m89_p1c00227_v0@20330402': (20330402, 21378978, 'tests=583201 prp=31488 p^=0.0540 alive/k=561.5 E^=30.32 hit%=18.0 found=0')} | DIFFERENT | ['Traceback (most recent call last):', 'cupy_backends.cuda.api.driver.CUDADriverError: CUDA_ERROR_INVALID_VALUE: invalid argument'] []
+normal path f = 0.90: GPU {} | CPU {} | DIFFERENT | [] []
+base  : gaps [0.717, 0.789, 0.769, 0.744, 0.629] | mean of batches 2-5 0.754 s | slice lines: reference (24) | expected near>=158209 2.7730e-05, hits 4.4216e-06 over 6 batches | []
+bot   : gaps [0.767, 0.765, 0.745, 0.763, 0.631] | mean of batches 2-5 0.760 s | slice lines: IDENTICAL (24) | expected near>=158209 2.7730e-05, hits 4.4216e-06 over 6 batches | []
+top   : gaps [0.763, 0.773, 0.74, 0.762, 0.639] | mean of batches 2-5 0.759 s | slice lines: 24 slices, kstart [4601761, 4601762], names ['q170000_m89_t1_v10@4601761'] (24) | expected near>=158209 2.8043e-05, hits 4.4756e-06 over 6 batches | []
+base_b: gaps [0.771, 0.765, 0.761, 0.733, 0.626] | mean of batches 2-5 0.758 s | slice lines: reference (24) | expected near>=158209 2.7730e-05, hits 4.4216e-06 over 6 batches | []
+bot_b : gaps [0.743, 0.778, 0.753, 0.762, 0.616] | mean of batches 2-5 0.759 s | slice lines: IDENTICAL (24) | expected near>=158209 2.7730e-05, hits 4.4216e-06 over 6 batches | []
+top_b : gaps [0.773, 0.772, 0.763, 0.755, 0.62] | mean of batches 2-5 0.766 s | slice lines: 24 slices, kstart [4601761, 4601762], names ['q170000_m89_t1_v10@4601761'] (24) | expected near>=158209 2.8043e-05, hits 4.4756e-06 over 6 batches | []
+batch: base 0.756 s, bottom (patched) 0.760 s (x1.0046), top 0.762 s (x1.0086) | expected near-misses top / bottom x1.0113, expected hits x1.0122 (the same 24 vectors)
+VTOP-GPU FAILED (loader True, kc_bot True, normal path False, bottom identity True; kc_top to compare with the CPU brute force)
+VTOP-DONE
+
+=== vtop2.sh (result2.txt)
+2026-11-23T17:03:25Z paused pid 2459295
+2026-11-23T17:03:38Z resumed pid 2459295
+2026-11-23T17:03:41Z CPU slices done
+normal path, top 2^19, f = 0.97: GPU {'q170000_m89_p1c00227_v0@20854690': (20854690, 21378978, 'tests=291805 prp=15744 p^=0.0540 alive/k=561.5 E^=30.30 hit%=18.0 found=0')} | CPU {'q170000_m89_p1c00227_v0@20854690': (20854690, 21378978, 'tests=291805 prp=15744 p^=0.0540 alive/k=561.5 E^=30.30 hit%=18.0 found=0')} | IDENTICAL | [] []
+normal path, top 2^19, f = 0.90: GPU {'q170000_m89_p1c00227_v0@20854690': (20854690, 21378978, 'tests=981356 prp=52432 p^=0.0534 alive/k=561.5 E^=30.00 hit%=37.7 found=0')} | CPU {'q170000_m89_p1c00227_v0@20854690': (20854690, 21378978, 'tests=981356 prp=52432 p^=0.0534 alive/k=561.5 E^=30.00 hit%=37.7 found=0')} | IDENTICAL | [] []
+VTOP-NORMAL PASSED
+VTOP2-DONE

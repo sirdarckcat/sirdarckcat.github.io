@@ -1,0 +1,26 @@
+# The m88f switch (the lead's decision of 23 Nov 15:58Z, after the four conditions: 1 prime tables from the spec's cover and M; 2 GPU normal path = search_c.py at f = 0.97 / 0.9;
+# 3 the known case, GPU's 40 (k, q) = cpu_brute_k0.py's (knowncase_cpu_brute_m88f.txt); 4 first 20 vectors at 1,257 rows, members a second x1.0114 on gold-l4b).
+# deploy_m88f.py on each card (its share of the 2,040 vectors, 510 each, as /content/c170f/my_specs.json; /content/c170 kept for a one-restart revert), at a batch end:
+#   gold-gpu  (L4) 16:50:45Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-l4b  (L4) 16:50:59Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-l4c  (L4) 16:51:19Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-xt4  (T4) 16:51:24Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+# Every vector's N in [10^199, 10^200) on the campaign's k range [2^30, 2^32) (all 2,040 specs checked from N0 and M; spec kmax >= 9.9e9).
+# Measured (m88f_rate.py: gpu3_stats.log, c170 16:20-16:50Z against c170f from 16:52:30Z; residual rows from my_specs.json, alive/k from the last slice lines):
+#   === gold-gpu
+#   [mr] e9b5dd8fa41d | old c170 16:20-16:50: {'batches': 191, 'span': 1784, 'wall_per_batch': 9.3403, 'slices': 382, 'members_s': 7184861.5605, 'hits_s': 0.0, 'tests_s': 3026061.9232}
+#   [mr] new c170f 16:52:30-now: {'batches': 87, 'span': 807, 'wall_per_batch': 9.2759, 'slices': 174, 'members_s': 7234784.5948, 'hits_s': 0.0, 'tests_s': 3043933.9665}
+#   [mr] rows: old 496 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.6
+#   [mr] members/s x1.0069 | expected hits/s x1.0583 | hits/s old 9.2306e-08 new 9.7690e-08
+#   === gold-l4b
+#   [mr] bbd604eeb732 | old c170 16:20-16:50: {'batches': 187, 'span': 1788, 'wall_per_batch': 9.5615, 'slices': 374, 'members_s': 7018656.3579, 'hits_s': 0.0, 'tests_s': 2955764.3261}
+#   [mr] new c170f 16:52:30-now: {'batches': 86, 'span': 816, 'wall_per_batch': 9.4884, 'slices': 172, 'members_s': 7072747.9216, 'hits_s': 0.0, 'tests_s': 2975532.5502}
+#   [mr] rows: old 496 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.6
+#   [mr] members/s x1.0077 | expected hits/s x1.0608 | hits/s old 8.9903e-08 new 9.5367e-08
+#   === gold-l4c
+#   === gold-xt4
+#   [mr] b7653fe2ecfa | old c170 16:20-16:50: {'batches': 189, 'span': 1784, 'wall_per_batch': 9.4392, 'slices': 189, 'members_s': 3554813.704, 'hits_s': 0.0, 'tests_s': 1496972.912}
+#   [mr] new c170f 16:52:30-now: {'batches': 98, 'span': 922, 'wall_per_batch': 9.4082, 'slices': 98, 'members_s': 3566523.141, 'hits_s': 0.0, 'tests_s': 1500480.1551}
+#   [mr] rows: old 243 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.5
+#   [mr] members/s x1.0033 | expected hits/s x1.0633 | hits/s old 4.5484e-08 new 4.8365e-08
+#   gold-l4c (16:52:30-17:02Z): members/s x1.0075 | expected hits/s x1.0641 | hits/s old 9.1296e-08 new 9.7151e-08 | rows: residual mean 1263.0 -> 1258.6, alive/k 423.8 -> 422.5

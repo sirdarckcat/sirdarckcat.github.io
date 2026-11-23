@@ -1,0 +1,57 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 16:38:16.909031125 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 16:38:16.938067320 +0000
+@@ -79,6 +79,8 @@
+                      "appear), and every vector is ONE slice of 2^klog members from k_lo, the first k with --vector-digits digits (N0 + k M >= 10^(digits - 1)); a vector whose window "
+                      "does not fit below its kmax is skipped.  --klo / --kmax / --slice / --desc are not used then")
+ ap.add_argument("--vector-digits", type=int, default=200, help="--vector-dir: the digits every N must have (the window starts at the first such k)")
++ap.add_argument("--vector-place", default="bottom", choices=("bottom", "top"),
++                help="--vector-dir: the window from the first k with --vector-digits digits (bottom) or ending at the last k with N below 10^digits (top: larger N, slightly lower prime density, ~+1.5%% hits a vector); a vector whose name is in the done set under either placement is not taken again")
+ ap.add_argument("--vector-wait", type=int, default=900, help="--vector-dir: seconds to wait for a new chunk file before the campaign ends as exhausted")
+ ap.add_argument("--log-near-exp", type=int, default=0, choices=(0, 1),
+                 help="1: also log, per batch, the expected number of tested members whose first probable-prime row is at or above --near-miss (design hits included): "
+@@ -510,9 +512,9 @@
+ class VectorSource:
+     """--vector-dir: one slice per short vector, [k_lo, k_lo + K) with k_lo the first k at which N0 + k M has --vector-digits digits, from the chunk files
+     DIR/vec_*.json read in name order as they appear (a producer on the host writes them ahead of the campaign; one chunk is held in memory)"""
+-    def __init__(self, D, K, digits, wait):
+-        self.D, self.K, self.wait = D, K, wait
+-        self.lo = mpz(10) ** (digits - 1)
++    def __init__(self, D, K, digits, wait, place="bottom"):
++        self.D, self.K, self.wait, self.place = D, K, wait, place
++        self.lo, self.hi = mpz(10) ** (digits - 1), mpz(10) ** digits
+         self.seen, self.queue, self.skipped = set(), collections.deque(), 0
+ 
+     def _load_next(self, excluded):
+@@ -520,15 +522,19 @@
+             if f in self.seen:
+                 continue
+             self.seen.add(f)
++            bases = {x.split("@")[0] for x in excluded}          # a vector scanned under either placement is done (the windows of one vector overlap)
+             for s in load_specs(f):
+                 N0, M = mpz(s["N0"]), mpz(s["M"])
+                 k_lo = int((self.lo - N0 + M - 1) // M) if self.lo > N0 else 0
+-                if k_lo + self.K > int(s["kmax"]):             # the window must lie below the vector's kmax (N < 10^200)
++                kend = min(int(s["kmax"]), int((self.hi - 1 - N0) // M) + 1)   # first k with N >= 10^digits, or the spec's kmax
++                kstart = k_lo if self.place == "bottom" else kend - self.K
++                if kstart < k_lo or kstart + self.K > kend:     # the window must lie in the vector's range (N with --vector-digits digits)
+                     self.skipped += 1
+                     continue
+-                name = f"{s['name']}@{k_lo}"
+-                if name not in excluded:
+-                    self.queue.append(dict(s, name=name, kstart=k_lo, kmax=k_lo + self.K))
++                assert N0 + kstart * M >= self.lo and N0 + (kstart + self.K - 1) * M < self.hi, f"vector window outside [10^(d-1), 10^d): {s['name']}"
++                name = f"{s['name']}@{kstart}"
++                if name not in excluded and s["name"] not in bases:
++                    self.queue.append(dict(s, name=name, kstart=kstart, kmax=kstart + self.K))
+             return True
+         return False
+ 
+@@ -550,7 +556,7 @@
+ 
+ def campaign(D):
+     specs = load_specs(os.path.join(D, "my_specs.json")) if not args.vector_dir else []
+-    src = VectorSource(args.vector_dir, 1 << args.klog, args.vector_digits, args.vector_wait) if args.vector_dir else None
++    src = VectorSource(args.vector_dir, 1 << args.klog, args.vector_digits, args.vector_wait, args.vector_place) if args.vector_dir else None
+     LOG, FOUND, STATS = (os.path.join(D, f) for f in ("search.log", "found.jsonl", "gpu3_stats.log"))
+     done = set()
+     if os.path.exists(LOG):
