@@ -1,4 +1,5 @@
 import GoldbachGaps.Basic
+import GoldbachGaps.Effective
 import GoldbachGaps.Covering
 import GoldbachGaps.Counting
 import GoldbachGaps.ECPP
@@ -30,6 +31,8 @@ import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
 import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Cap.Tilt
+import GoldbachGaps.Cap.Radius
+import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -37,6 +40,8 @@ import GoldbachGaps.Gpu28.Conv
 import GoldbachGaps.Gpu28.Step
 import GoldbachGaps.Gpu28.Final
 import GoldbachGaps.Gpu28.Kernel
+import GoldbachGaps.FunctionField.Stickelberger
+import GoldbachGaps.FunctionField.ParityDesert
 
 /-!
 # Least Goldbach summands in Lean
@@ -46,6 +51,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 
 * `Basic`    – definitions; every odd prime is `g(N)` for arbitrarily large even `N`
                (paper Theorem `thm:dirichlet`), hence `g` is unbounded.
+* `Effective` – with Linnik's theorem as a hypothesis (it is not in Mathlib), every odd prime
+               `s` is `g(N)` for an even `N ≤ C · (primorial (s-1))^L + s`.
 * `Covering` – the covering certificate and its unconditional realisation
                (paper Proposition `prop:cover`, Theorem `thm:coverdirichlet`).
 * `Counting` – the counting bound: for large `X` some even `n` in `(X, 2X]` has no
@@ -101,7 +108,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `Tilt` (selection on a normal count of rows: weighting `N(μ, v)` by `e^{t x}`
                gives `e^{μ t + v t²/2} N(μ + v t, v)`, so the members with at most
                `μ - z √v` rows hold the fraction `Φ(λ - z)` of the successes,
-               `λ = -√v ln(1 - p)`).
+               `λ = -√v ln(1 - p)`; a member `z` standard deviations below the mean is
+               `e^(λ z - λ²/2)` times as likely to succeed as the average one, which caps what
+               any search inside a progression can gain), `Radius` (lattice decoding and the
+               search problem: reaching a smooth part `c` times the typical one needs
+               `c² ≥ e ln K / 4`, so `c ≥ 3.88` for `K = 2^32`; in list form, a list of
+               `2 ≤ ℓ ≤ r/2` classes modulo `r` carries `ln 2 - 2 ln r / r` more nats of
+               information than it contributes to the lattice condition, so inside the
+               Johnson radius only singleton lists, i.e. the cover, are left), `BlackBox` (a
+               method that only asks members whether they are good finds one of the `g` good
+               ones among `K` with `m` questions for at most the fraction `m g / K` of the
+               instances).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
@@ -127,6 +144,24 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                as the exact 32 × 32 → 64 product and multiply-add; `scripts/gpu28_check`
                compares the model with every generated step file compiled for the CPU, set-up
                included.
+* `FunctionField.*` – the toy setting `F_q[x]` of the research programme in
+               `goldbach/sublinear/` (branch `ccr-d4a17dd0-7uu03r`), where "`N - Q` is
+               reducible for every monic irreducible `Q` of small degree" replaces a Goldbach
+               gap. `Stickelberger`: Stickelberger's theorem in Swan's form (Pellet's formula),
+               which is not in Mathlib: over a finite field of odd characteristic,
+               `χ(discr g) = (-1)^(deg g - r)` for squarefree `g` with `r` irreducible factors
+               (`stickelbergerSwan`), from `discr (f g) = discr f · discr g · Res(f, g)²`
+               (`discr_mul`) and the action of the Frobenius on a Vandermonde determinant.
+               `ParityDesert`: over any field, if `N' = 0`, `Q` is monic of degree
+               `d < n = deg N` with `d ≠ 0` in the field and every irreducible factor of `Q'`
+               divides `N`, then `discr (N - Q) = ± λ^(n-d-1) d^(n-d) discr Q` (`discr_sub`) and
+               `N - Q` is squarefree; hence over a finite field the parity of the number of
+               irreducible factors of `N - Q` (`parity_card_factors`); over a field with a
+               square number of elements and for a non-square `λ`, `N - Q` is not irreducible
+               (`not_irreducible_sub_of_isSquare_card`); and `N = c · V^p` has `N - Q`
+               reducible for every monic irreducible `Q` of degree at most `J + 1` when `V` is
+               divisible by all irreducibles of degree at most `J` (`desert`): a desert with
+               no factor exhibited and no congruence paid for the top degree.
 
 ## Building
 
