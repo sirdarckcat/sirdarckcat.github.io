@@ -634,7 +634,12 @@ line (93 primes, to 491; the modulus exceeds 10^200 by a factor 2,500):
 60,437 complete covers at 16,850 and 16,950, of which 18 have their number
 below 10^200 (24 expected), the best certifying 16,981
 (`complete_cover_16981_93primes.txt`). Each further prime costs its own size
-in covers to enumerate and has bought about 235 in the target so far.
+in covers to enumerate and has bought about 235 in the target so far. A 94th
+prime (499; one complete cover in 1.25 million would fall below 10^200) was
+tried and did not pay: complete covers exist up to at least 17,250, but only
+a few hundred thousand could be enumerated at 17,000. So 16,981 is the best
+found. All four certificates (15,907; 16,381; 16,747; 16,981) are checked by
+the Lean kernel (`Records.lean` on the Lean branch, commit 9acf05d).
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
