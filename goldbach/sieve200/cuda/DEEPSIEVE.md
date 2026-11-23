@@ -201,3 +201,18 @@ two halves on two streams (two threads) so that one half's kernel runs while the
 streams (made once: cupy's pool is per stream, a stream per pool would strand its blocks), each half's rounds sized by half the target so that the rows a member gets per round, hence the waste, are those of one pool.  Checked on a numpy
 fake: identical counted tests, PRP flags, successes and first-PRP rows for four pool shapes; computed tests equal (109,957 = 109,957), rounds doubled.  The caller's stream is synchronized before the threads start and after the
 results are concatenated (the same free-list hazard as the overlap).  GPU timing: unmeasured; the profile line tells whether it is worth running.
+
+## Where things stand, 23 Nov 2026-11-23 04:30Z (RTX PRO 6000 at Q = 170,000, 2 x 2^25 members a batch)
+
+| step | batch | what |
+|---|---|---|
+| the deep sieve as first deployed (B = 1e8, plain large-prime kernel) | 2.10 s | |
+| + apply vectorised, staged large-prime kernel (`DEEP_STAGED=1`) | 1.70-1.80 s | x1.24 hits/s; identical tests and PRPs |
+| + `--pool-threads 2` (two halves of a pool on two streams) | 1.808 -> 1.761 s in steady state (-2.6%) | the profile said 0.08-0.10 s idle between rounds; about half is recovered, the rest is the host-bound tail rounds |
+| `--overlap 1` (sieve of the next window on its own stream) | no gain (and 4 / 3 CTAs of Fermat per SM cost +8% / +17% of the Fermat time) | likely an L1 / shared-memory split switch; carve-out re-run never done; ceiling ~-10% |
+| B = 2^28 / 1e9 | -3% / -31% expected hits a second | the staged kernel reads its 16-byte prime table rows / rcta x 2 times a window; B = 1e8 stays |
+| the Fermat step | at its multiplier floor | 3.64 cycles x 876 IMAD.WIDE + 2.79 x 223 other instructions; `FERMAT28.md` |
+
+Time of a 1.76 s batch: Fermat kernels ~1.27 s (72%), sieve ~0.35 s (20%: tile kernel ~0.15, staged large primes ~0.17, count / select / finalize / rows ~0.03), host work not hidden ~0.1 s.  What is left, each worth 1-2%: rcta 4 / 8 at the
+production bound (`run_experiments.sh` section H), a fused per-round update kernel for the tail rounds, the unroll-3 variant of the tile kernel, 24 doubling shifts as IADD in the Fermat step.  The estimates of the GPU session's
+timing granularity (0.1 s steady batches) cannot resolve them; batch-end timestamps over hundreds of batches can.
