@@ -122,6 +122,14 @@ the parity of the number of prime factors of N − q, the Liouville function
   unless rows share it, which they do only through small primes (the cover)
   or for at most √Q rows.
 
+- The integer shadow of "parity = character of a discriminant" does exist:
+  by genus theory the number of prime factors of n is the 2-rank of the class
+  group of Q(√−n) plus one (for n ≡ 3 mod 4 squarefree, n is prime exactly
+  when the class number h(−n) is odd). But reading it off means finding the
+  ambiguous forms of discriminant −4n, which is how the class-group factoring
+  methods of Shanks and Schnorr–Lenstra work: it is as hard as factoring n.
+  In F_q[x] the same invariant is one resultant.
+
 So the transfer needs new mathematics, and the programme does not assume it
 will be found.
 
