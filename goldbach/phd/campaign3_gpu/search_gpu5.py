@@ -35,10 +35,20 @@ ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one l
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
 ap.add_argument("--klog", type=int, default=19, help="members per GPU sieve window: 2^klog")
+ap.add_argument("--sieve-threads", type=int, default=256, help="GpuFeeder threads per CTA (1024 is faster on sm_80/89)")
+ap.add_argument("--deep", type=int, default=0, choices=(0, 1),
+                help="1: the uarch session's batch-level sieve (sieve200/cuda/deep_feeder.py): windows of 2^klog members (use --klog 25 --slice 33554432), primes up to --sieve-b, "
+                     "those above --deep-split through the bucketed large-prime stage; kernel launches and memory as DEEPSIEVE.md says")
+ap.add_argument("--deep-split", type=int, default=1000000, help="--deep: primes above this go through the large-prime stage")
+ap.add_argument("--deep-rg", type=int, default=16, help="--deep: rows a group of the large-prime stage")
+ap.add_argument("--deep-max-rows", type=int, default=1100, help="--deep: rows of the bit matrix (the most rows of any variant)")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
 ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
-                     "28: the uarch session's gpu_fermat28.py (24 x 28-bit limbs, 'step_s1' with PTX mad.wide; n in [2^642, 2^668))")
+                     "28: the uarch session's gpu_fermat28.py (24 x 28-bit limbs; n in [2^642, 2^668))")
+ap.add_argument("--k28-step", default=os.environ.get("K28_STEP", "fermat28_step_s1.cuh"),
+                help="kernel 28's step file: fermat28_step_s1.cuh or _s1r.cuh with --k28-asm 1 (sm_120), _s1rw.cuh or _s1w.cuh with --k28-asm 0 (sm_80/89)")
+ap.add_argument("--k28-asm", type=int, default=int(os.environ.get("K28_ASM", "1")), choices=(0, 1), help="kernel 28: PTX mad.wide (1) or plain C (0)")
 args = ap.parse_args()
 sys.path.insert(0, args.goldbach)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -68,8 +78,15 @@ def load_specs(path):
     return specs
 
 
+_DEEP = {}                          # --deep: the DeepSieve of the current M (one BatchFeeder, one bit matrix for every variant)
+
+
 def feeder_for(spec):
-    """The GpuFeeder for this spec's row count, pointed at this variant (its U and N0 mod s)."""
+    """The GpuFeeder for this spec's row count, pointed at this variant (its U and N0 mod s).  --deep: the one BatchFeeder of deep_feeder.py, retargeted."""
+    if args.deep:
+        from deep_feeder import deep_feeder_for                  # noqa: E402  (sieve200/cuda)
+        return deep_feeder_for(_DEEP, spec, B=args.sieve_b, ks_log=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True))
     key = (spec["name"].split("@")[0], spec["N0"])
     if key not in _VAR:
         search.init_spec(spec, args.sieve_b, args.block)       # S, M^-1 mod s cached per M; N0 mod s per call
@@ -78,7 +95,8 @@ def feeder_for(spec):
         if _SH.get("M") != spec["M"]:
             _FD.clear()
             _SH.clear(); _SH["M"] = spec["M"]
-            _SH["fd0"] = GpuFeeder.from_search_G(G, klog=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est)
+            _SH["fd0"] = GpuFeeder.from_search_G(G, klog=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+                                                 nthreads=args.sieve_threads)
         _VAR[key] = (cp.asarray(np.asarray(G["U"], dtype=np.uint32)), cp.asarray(np.asarray(G["n0m"], dtype=np.uint32)), len(G["U"]))
     U, N0M, nU = _VAR[key]
     fd = _FD.get(nU)
@@ -109,7 +127,7 @@ class MultiTester:
                 lo = int(sp["N0"]) - max(int(q) for q in sp["residual"]) + int(sp.get("kstart", 0)) * M
                 hi = int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M
                 assert lo >= 1 << 642 and hi < 1 << 668, f"kernel 28 needs 2^642 <= n < 2^668 ({sp['name']})"
-            self.k = gpu_fermat28.kernel(limbs, step_file="fermat28_step_s1.cuh", asm_mad=True)
+            self.k = gpu_fermat28.kernel(limbs, step_file=args.k28_step, asm_mad=bool(args.k28_asm))
         else:
             self.k = (kernel3 if args.kernel == 3 else kernel2)(limbs)
 

@@ -1,0 +1,6 @@
+f=0.95: batch 3.80s (first run 4.0s), tests 62.61M counted 64.36M computed, expected hits 4.1877e-05, alive/k 489.9, E^ 26.27 | expected x1.000, time x1.000, expected/s x1.000
+f=0.97: batch 2.70s (first run 2.6s), tests 37.59M counted 38.46M computed, expected hits 2.9911e-05, alive/k 489.9, E^ 26.26 | expected x0.714, time x0.711, expected/s x1.005
+f=0.98: batch 2.00s (first run 2.4s), tests 25.04M counted 25.89M computed, expected hits 2.2253e-05, alive/k 489.9, E^ 26.28 | expected x0.531, time x0.526, expected/s x1.010
+f=0.99: batch 1.50s (first run 1.6s), tests 12.52M counted 13.39M computed, expected hits 1.3592e-05, alive/k 489.9, E^ 26.29 | expected x0.325, time x0.395, expected/s x0.822
+f=0.995: batch 1.50s (first run 1.2s), tests 6.27M counted 7.07M computed, expected hits 8.6312e-06, alive/k 489.9, E^ 26.25 | expected x0.206, time x0.395, expected/s x0.522
+FBENCH-DONE

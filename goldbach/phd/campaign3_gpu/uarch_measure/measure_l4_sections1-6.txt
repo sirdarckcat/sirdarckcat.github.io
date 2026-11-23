@@ -1,0 +1,170 @@
+
+=================================================================== 1. GPU
+2026-11-23T01:08:15Z
+name, driver_version, memory.total [MiB], pstate, power.limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.max.memory [MHz]
+NVIDIA L4, 580.82.07, 23034 MiB, P0, 72.00 W, 72.00 W, 2040 MHz, 6251 MHz
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Nov 23 01:08:15 2026
+Driver Version                            : 580.82.07
+CUDA Version                              : 13.0
+
+Attached GPUs                             : 1
+GPU 00000000:00:03.0
+    GPU Power Readings
+        Average Power Draw                : 22.67 W
+        Instantaneous Power Draw          : 22.58 W
+        Current Power Limit               : 72.00 W
+        Requested Power Limit             : 72.00 W
+        Default Power Limit               : 72.00 W
+        Min Power Limit                   : 40.00 W
+        Max Power Limit                   : 72.00 W
+    Power Samples
+        Duration                          : 5.30 sec
+        Number of Samples                 : 119
+        Max                               : 76.76 W
+        Min                               : 22.58 W
+        Avg                               : 34.77 W
+    GPU Memory Power Readings 
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+    Module Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+        Current Power Limit               : N/A
+        Requested Power Limit             : N/A
+        Default Power Limit               : N/A
+        Min Power Limit                   : N/A
+        Max Power Limit                   : N/A
+    Clocks
+        Graphics                          : 210 MHz
+        SM                                : 210 MHz
+        Memory                            : 6251 MHz
+        Video                             : 840 MHz
+    Applications Clocks
+        Graphics                          : 2040 MHz
+        Memory                            : 6251 MHz
+    Default Applications Clocks
+        Graphics                          : 2040 MHz
+        Memory                            : 6251 MHz
+    Deferred Clocks
+        Memory                            : N/A
+    Max Clocks
+        Graphics                          : 2040 MHz
+        SM                                : 2040 MHz
+        Memory                            : 6251 MHz
+        Video                             : 1770 MHz
+    Max Customer Boost Clocks
+        Graphics                          : 2040 MHz
+    SM Clock Samples
+        Duration                          : Not Found
+        Number of Samples                 : Not Found
+        Max                               : Not Found
+        Min                               : Not Found
+        Avg                               : Not Found
+    Memory Clock Samples
+        Duration                          : Not Found
+        Number of Samples                 : Not Found
+        Max                               : Not Found
+        Min                               : Not Found
+        Avg                               : Not Found
+    Clock Policy
+        Auto Boost                        : N/A
+        Auto Boost Default                : N/A
+
+cupy 14.0.1 numpy 2.4.6 cuda runtime 13000
+
+=================================================================== 2. Fermat kernels with the SM clock and power sampled beside them (20 s each)
+2026-11-23T01:08:15Z
+--- s1r_asm
+device: NVIDIA L4  batch 1048576  threads 128  20 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (51 base-2 PRPs)
+  s1r_asm  regs  96 local  88 B: median    3,850,380 tests/s  best    4,084,644  (74 loops)
+  SM clock MHz: median 1455  min 1440  max 2040  (max allowed 2040)   [40 samples]
+  power W: median 72  max 72  (limit 72.00)   temperature C: median 75
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 1, '0x0000000000000004': 39}
+--- s1rw
+device: NVIDIA L4  batch 1048576  threads 128  20 s a variant
+  s1rw: 0 mismatches against gmpy2 in 2000 candidates (51 base-2 PRPs)
+  s1rw     regs  94 local  88 B: median    4,579,905 tests/s  best    4,812,299  (88 loops)
+  SM clock MHz: median 1575  min 1530  max 1620  (max allowed 2040)   [40 samples]
+  power W: median 72  max 72  (limit 72.00)   temperature C: median 76
+  throttle/event reasons (bit mask: count): {'0x0000000000000004': 40}
+
+=================================================================== 3. bench_pipes.py part 3: scattered marks in global memory
+2026-11-23T01:08:59Z
+
+part 3: global memory, scattered marks.  G ops/s over the whole GPU (1 / that = ns an operation); 8 chains x 256 threads x 8 CTAs an SM
+  operation                                         64 MB       512 MB         4 GB
+  scattered atomicAnd (random word)                2.3 G/s       1.5 G/s       1.4 G/s
+  scattered plain store (random word)              2.3 G/s       1.3 G/s       1.3 G/s
+  scattered load (random word)                     5.7 G/s       3.3 G/s       3.2 G/s
+  128 B runs at random places (bin writes)        99.1 G/s      61.3 G/s      58.3 G/s
+  reference: device copy of 1 GB (read + write): 231 GB/s; a 32-byte sector of it is 0.139 ns
+
+=================================================================== 4. bench_bigprimes.py: the large-prime stage of a deeper sieve bound
+2026-11-23T01:09:02Z
+NVIDIA L4: 40 rows, primes in (2^20, 2^22]: 213,922 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 55,360 entries a bin (227 MB of bins)   (setup 0.4 s)
+expected marks a row 3,197,269 = 0.1 a member; pair visits a row 213,922
+40 rows timed (3 groups), scaled to 40 rows: gen 6.7 ms, apply 3.9 ms, total 10.6 ms; marks 0.13 G (3,197,278 a row = 0.1 a member); capacity retries 0; wall 144.7 ms
+  ns a mark: gen 0.0522   apply 0.0308   TOTAL 0.0829   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 0.316  (40 rows, 0.3 pair visits a member: 0.77953 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 0.5 ms = 0.0038 ns a mark, 0.05684 ns a pair visit; pass B (the writes) ~ 6.2 ms = 0.0484 ns a mark
+  bins written + read: 1.0 GB in 10.6 ms = 96 GB/s; bit tiles written: 0.2 GB
+  check against numpy (first 2 rows): identical
+NVIDIA L4: 1093 rows, primes in (2^20, 2^24]: 995,846 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 105,152 entries a bin (431 MB of bins)   (setup 0.4 s)
+expected marks a row 6,116,178 = 0.2 a member; pair visits a row 995,846
+128 rows timed (8 groups), scaled to 1093 rows: gen 483.9 ms, apply 192.5 ms, total 676.4 ms; marks 6.68 G (6,116,167 a row = 0.2 a member); capacity retries 0; wall 890.7 ms
+  ns a mark: gen 0.0724   apply 0.0288   TOTAL 0.1012   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 20.157  (1093 rows, 32.4 pair visits a member: 0.44456 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 21.4 ms = 0.0032 ns a mark, 0.01967 ns a pair visit; pass B (the writes) ~ 462.5 ms = 0.0692 ns a mark
+  bins written + read: 53.5 GB in 676.4 ms = 79 GB/s; bit tiles written: 4.6 GB
+NVIDIA L4: 1093 rows, primes in (2^20, 2^26]: 3,875,784 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 150,848 entries a bin (618 MB of bins)   (setup 1.2 s)
+expected marks a row 8,801,810 = 0.3 a member; pair visits a row 3,875,784
+64 rows timed (4 groups), scaled to 1093 rows: gen 722.6 ms, apply 268.5 ms, total 991.2 ms; marks 9.62 G (8,801,810 a row = 0.3 a member); capacity retries 0; wall 1308.6 ms
+  ns a mark: gen 0.0751   apply 0.0279   TOTAL 0.1030   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 29.539  (1093 rows, 126.2 pair visits a member: 0.17058 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 45.6 ms = 0.0047 ns a mark, 0.01077 ns a pair visit; pass B (the writes) ~ 677.0 ms = 0.0704 ns a mark
+  bins written + read: 77.0 GB in 991.2 ms = 78 GB/s; bit tiles written: 4.6 GB
+NVIDIA L4: 1093 rows, primes in (2^20, 2^28]: 14,548,818 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 193,088 entries a bin (791 MB of bins)   (setup 4.6 s)
+expected marks a row 11,288,352 = 0.3 a member; pair visits a row 14,548,818
+32 rows timed (2 groups), scaled to 1093 rows: gen 992.5 ms, apply 338.7 ms, total 1331.2 ms; marks 12.34 G (11,288,590 a row = 0.3 a member); capacity retries 0; wall 2295.1 ms
+  ns a mark: gen 0.0804   apply 0.0275   TOTAL 0.1079   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 39.673  (1093 rows, 473.9 pair visits a member: 0.06241 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 124.8 ms = 0.0101 ns a mark, 0.00785 ns a pair visit; pass B (the writes) ~ 867.7 ms = 0.0703 ns a mark
+  bins written + read: 98.7 GB in 1331.2 ms = 74 GB/s; bit tiles written: 4.6 GB
+
+=================================================================== 5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)
+2026-11-23T01:09:12Z
+window k0=4293656576: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294180864: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294705152: 16 blocks, 15744 members selected: identical to the CPU feeder
+window of 524288 members: 8.65 ms = 16.50 ns a member = 60.6 M members/s (1093 rows, 78409 primes, f=0.97)
+sweep: 1093 rows, 78409 primes, K = 2^19, f = 0.97; ms a window (mean of 5), the GPU phases from events; ns/member
+  config                                          wall   ns/m |   prep   sieve  count  select  final  wait1   rows  wait2   host  output
+  {'shoup': False, 'sieve_threads': 256}         11.65  22.23 |  0.055  10.304  0.357   0.169  0.079  0.088  0.576  0.562  0.025  same
+  {'shoup': False, 'sieve_threads': 1024}         7.90  15.08 |  0.049   6.614  0.360   0.171  0.079  0.036  0.571  0.564  0.024  same
+  {'shoup': True, 'sieve_threads': 256}           8.60  16.41 |  0.034   7.340  0.355   0.167  0.078  0.035  0.569  0.562  0.023  same
+  {'shoup': True, 'sieve_threads': 512}           6.34  12.10 |  0.035   5.079  0.360   0.166  0.078  0.037  0.567  0.560  0.022  same
+  {'shoup': True, 'sieve_threads': 1024}          5.28  10.06 |  0.038   4.005  0.358   0.166  0.078  0.038  0.568  0.562  0.025  same
+  {'shoup': True, 'sieve_threads': 1024, 'unroll': 3}    3.88   7.40 |  0.040   2.613  0.360   0.165  0.077  0.035  0.567  0.559  0.024  same
+  {'shoup': True, 'sieve_threads': 512, 'unroll': 3}    4.37   8.33 |  0.041   3.102  0.358   0.165  0.077  0.034  0.569  0.562  0.023  same
+ALL IDENTICAL
+  SM clock MHz: median 2040  min 2025  max 2040  (max allowed 2040)   [13 samples]
+  power W: median 31  max 37  (limit 72.00)   temperature C: median 63
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 11, '0x0000000000000001': 1, '0x0000000000000004': 1}
+
+=================================================================== 6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 100000000, a batch of 2^25 members)
+2026-11-23T01:09:20Z
+NVIDIA L4
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2147483648: identical to the CPU feeder
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2149580800: identical to the CPU feeder
+1093 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.27 GB of 21.8 GB free (tables 13.5 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 1766.5 ms = 52.647 ns a member (19.0 M members/s); kept 335,872 members, 109,525,167 survivor rows; bin cap 165,280, gen retries 0
+    prep 1.07  sieve (gen + tiles) 1707.1  count 19.97  select 1.17  finalize 2.04  wait1 0.34  rows 34.82  wait2 34.81  host 0.04   (ms a batch)
+
+=================================================================== done
+2026-11-23T01:09:43Z
+output file: /content/measure_out.txt
+MEASURE-DONE 2026-11-23T01:09:48Z campaign restarted: 1

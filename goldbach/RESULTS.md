@@ -1,5 +1,30 @@
 # Goldbach Desert Records
 
+## The 200-digit budget game (2026-11-23, 02:08 UTC): g(N) = 157,837 below 10^200
+
+**g(N) = 157,837** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g157837/`). It is the largest g known
+below 10^200, 11,646 above the 146,191 of three hours earlier, whose smaller N stays on the frontier.
+
+- **Closeness.** 7.42% of the largest g expected at 200 digits, 97× a typical number of that size (146,191: 6.88%).
+- **How.** The first hit of the Q = 150,000 run, after ≈0.75 expected. Every success there has g ≥ 150,001.
+  - Vector: `pt_q150k_t528`, a residue-swap variant of the research session's 1,092-row cover `pt_q150k_b_v0`
+    (1,094 residual primes on campaign 3's 88 moduli, checked here independently). It survived 91 more uncovered rows
+    above 150,000.
+  - Member: k = 4,224,399,187.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py --deep 1` on an RTX PRO 6000 (Colab G4): the uarch session's deep sieve
+    (primes up to 10^8, a bucketed large-prime stage) and Fermat kernel 28 (redundant-limb step), skip-frac 0.97.
+- **The engine since the last record.** Per GPU-second the expected hits rose ×1.37 on the RTX PRO 6000s and ×1.40 on the
+  L4s:
+  - the deep sieve (from 01:14 UTC): tests ×0.75, kept hit mass ×1.43, identical to the old path at B = 10^6;
+  - new Fermat step files (+2.5% to +14% by GPU).
+  The fleet went from five GPUs to seven: three RTX PRO 6000s, three L4s and a T4 in the A100's place. Its rate at
+  Q = 150,000 is ≈7.5 expected hits a day. `phd/campaign3_gpu/TALLY.md` tracks expected against found.
+- **Checked** the five usual ways (`certify_c3.sh`):
+  - 14,508 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 146,191, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
 ## The 200-digit budget game (2026-11-22, 23:08 UTC): g(N) = 146,191 below 10^200
 
 **g(N) = 146,191** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g146191/`). It is the largest g known
@@ -1120,6 +1145,7 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e200_200digit_g157837` | 157,837 | 200 | ~2.1M | 7.4% | 97 | 62 |
 | `budget_1e200_200digit_g146191` | 146,191 | 200 | ~2.1M | 6.9% | 90 | 60 |
 | `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
 | `budget_1e200_199digit_g132103` | 132,103 | 199 | ~2.1M | 6.3% | 82 | 57 |

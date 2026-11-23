@@ -131,6 +131,33 @@ Version 3 (22 Nov):
 - Q = 150,000 supply: 4,462 residue-swap variants of the research vectors pt_q150k_v0..v3 (`gen_variants.variants(base, 1500, pair_pool=80)` per base, |U| ≤ 1,097 kept; |U| 1,094-1,097 against the best 1,093). Each was checked independently
   (congruences, M, residual list, ceiling 200), and N0 is distinct from the research 128. Index:
   `../campaign3/variants_q150k_minted_index.json`; full list sha256 b864f9f8915b0fe196282d5bb617b96c3a4ad34a885762eee6e866fb99d436ac.
+- More Q = 150,000 supply (23 Nov 00:06Z): 10,134 residue-swap variants pt_q150k_t0..t10133 of the 1,092-row research vectors
+  pt_q150k_b_v0..v7 (same call, |U| ≤ 1,096 kept; |U| 1,092-1,096, mean 1,094.0). `check_specs.py` (rows covered exactly when
+  gcd(N0 − q, M) > 1, from the integers) passes on all of them, and every N0 is distinct from the 4,974 earlier Q = 140,000 and
+  150,000 vectors. Index: `../campaign3/variants_q150k_minted_t_index.json`; full list sha256
+  ebdb6d0f04bcbf38fb394d15e9f027b8234f1989796f729fbe25f837dca90d8a.
+  - gold-g4c: t0..t1999 since 00:09Z, after its share of the research 128 ran out at 00:08Z.
+  - gold-a100: t2000..t2699 when it finishes the research 128 in [2^30, 2^31) (`chain_next.sh`).
+  - gold-l4b, a second L4 (23 Nov 00:45Z): t2700..t3099 (`run_l4b.sh` checks the kernels against gmpy2 and kernel 3 against kernel
+    28 on 12 production slices on that GPU first).
+  - gold-l4c, a third L4 (00:48Z, same checks): t3100..t3499.
+  - t3500..t10133 are in reserve.
+- The research generator (`gen_vectors.sh` on ccr-d4a17dd0-7uu03r at 5bc33a1, with every vector above added to its ledger first)
+  gives 1,092-row vectors, 2-4 rows better than the minted ones (≈ +5-10% hit rate). Batch g8ffe1 (23 Nov 01:00Z): 400 at
+  1,092 rows, checked again here with `check_specs.py` and against the 15,108 earlier vectors. Index:
+  `../campaign3/variants_q150k_g8ffe1_index.json`; sha256 54d87d6c751da532f7d3c35efebde1f5dbd9ac7f86ef697f1cbc0bc55d14e755.
+  - k ≥ 2^32 (CPU shares): v0..v63 the lead's container (`../campaign3/q150k_cpu/specs_lead.json`), v64..v127 the helper
+    session (`specs_helper.json`), v128..v191 this session's container.
+  - k in [2^30, 2^32): v0..v399 for the L4 that was to replace the A100. The A100 was stopped at 01:40Z, after its share of the
+    research 128 and the uarch measurements (`uarch_measure/measure_a100_sections1-6.txt`). Colab then refused an L4 and a G4
+    ("precondition failed") and had no A100 ("Service Unavailable"). It granted a T4 (gold-xt4, 1.15 units an hour), which took
+    v0..v399 at 02:03Z in deep mode, after test28_prod (s1rw 2.5M tests/s), check_v5w and check_deep. With two slices a batch,
+    deep mode ran out of the T4's 15 GB after three batches. With one slice a batch (BATCH=1) it holds steady at 12.7 GB:
+    10.5 s per 2^25 members, 2.45e-5 expected hits.
+    That is ≈0.76M full-weight members/s per unit-hour, as the L4 (0.79M) and RTX PRO 6000 (0.74M) with deep.
+- Cost per GPU type, from the Colab usage rate as runtimes were added (22 Nov): RTX PRO 6000 10.05 compute units an hour, A100
+  6.73, L4 1.94, CPU runtime 0.26. Full-weight members/s per unit an hour: L4 0.57M, RTX PRO 6000 0.54M, A100 0.27M. A fourth
+  RTX PRO 6000 is refused ("precondition failed"); a second and a third L4 were granted, a fourth refused (seven GPUs in all).
 - Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
   (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
   so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
@@ -150,6 +177,86 @@ Version 3 (22 Nov):
     and at f = 0.
   - Production batch of 32 slices on an RTX PRO 6000: 2.2 s.
   - search_gpu3.py asserts 2^642 ≤ n < 2^668 for kernel 28 (it flags 2 outside), and counts only flag == 1 as a PRP.
+- Kernel 28 step files (22 Nov 23:34-23:52Z, production on all five GPUs): the uarch session's a641ecc (same directory; files used in
+  `fermat28_used_a641ecc.sha256`), chosen with `--k28-step` / `--k28-asm` (env `K28_STEP`, `K28_ASM`, `FERMAT28_DIR`).
+  - The RTX PRO 6000s run `fermat28_step_s1r.cuh` with PTX mad.wide.
+  - The A100 and the L4 run `fermat28_step_s1rw.cuh` in plain C. The "w" files drop the dead IADD3s that sm_80/89 executed.
+  - `test28_prod.py ... w` (production range, campaign paused): 0 mismatches against gmpy2 on 40,000 for every variant, and flags
+    identical to fermat2's on 2M. Tests/s at 128 threads, best single launch:
+
+    | GPU | fermat3 | s1 asm | s1 plain | s1 plain+w | s2 plain+w | s1r plain+w | s1r asm |
+    |---|---|---|---|---|---|---|---|
+    | RTX PRO 6000 | 13.08M | 22.85M | 22.23M | 22.27M | 22.58M | 22.74M | **23.39M** |
+    | A100 | 6.94M | 6.60M | 6.95M | 7.55M | 7.51M | **7.63M** | 6.95M |
+    | L4 | 3.92M | 3.74M | 4.00M | 4.57M | 4.54M | **4.62M** | 3.89M |
+
+  - The L4 runs at its 72 W cap in production, at 1,440-1,600 MHz of 2,040. `ab_sustained.py` (interleaved rounds of 6 × 2^20
+    tests after a 15 s warm-up) measures it there: fermat3 3.92M tests/s (54.6k tests/J), s1rw 4.59M (63.8k), s1w 4.53M,
+    s1 plain 3.98M, s1r asm 3.87M.
+  - `check_v5w.sh`: on each of the five GPUs, the production configuration and the new step file give identical slice lines on the
+    12 production slices (f = 0.97 and f = 0).
+  - Production, steady state, batches of 64 slices:
+
+    | GPU | before | after |
+    |---|---|---|
+    | RTX PRO 6000 (×3) | 31.1-31.8M members/s | 31.9-32.7M (+2.5-3.1%) |
+    | A100 | 9.77M | 11.09M (+13.5%) |
+    | L4 | 11.4 s a batch | 10.0 s (+14%) |
+
+  - Restarts: compare steady states, not the first batches. After a restart, the first pass over the variants carries the
+    per-variant setup. On the L4 (1,462 variants, 23 batches a round) that is ~2 s a batch: 13.4 s against 11.4 s on kernel 3.
+- Sieve bound B (23 Nov 00:20-00:45Z; production stays at B = 10^6). A deeper bound makes the f = 0.97 selection sharper and
+  leaves fewer tests per kept member.
+  - `deep_sieve_bound.py` (uarch `Sieve200`, CPU) gives each member's alive count at several B. The model: an alive row is prime
+    with p_B, and Σ_k c_B p_B is independent of B. That gives p_B = 0.0536, 0.0625, 0.0715, 0.0804 at 10^6 … 10^9; Mertens gives
+    0.0801 at 10^9. Each member's weight is (1 − p_Bmax)^c_Bmax.
+  - At f = 0.97, on 4M members of each of two vectors (`sieve_bound/cpu_*.txt`):
+
+    | selection bound | hit mass kept | tests per kept member | hit mass per test |
+    |---|---|---|---|
+    | 10^6 (production) | 15.9-16.0% | 18.66 | ×1 |
+    | 2·10^6 | 17.0% | 17.77 | ×1.12 |
+    | 4·10^6 | 18.0% | 16.96 | ×1.24 |
+    | 10^7 | 19.3% | 15.99 | ×1.41 |
+    | 10^8 | 22.65% | 13.99 | ×1.89-1.90 |
+    | 10^9 | 25.95% | 12.44 | ×2.45 |
+
+    That is ≈ (ln B / ln 10^6)^2.2: tests fall as 1 / ln B and kept mass rises as (ln B)^1.2.
+  - On the GPU (`bench_sieveb.sh`, the same 64 production-range slices at each B on an RTX PRO 6000,
+    `sieve_bound/gpu_rtxpro6000_64slices.txt`), the logged expected hits rise ×1.041, ×1.085, ×1.206 and ×1.254 at
+    2·10^6, 4·10^6, 10^7 and 2·10^7. Tests fall ×0.857 at 10^7, which is the model's figure.
+  - The batch time rises 2.70 → 3.50, 4.60, 7.60 and 14.7 s, so expected hits/s fall to ×0.80, ×0.64, ×0.43 and ×0.23.
+  - The cause is that `GpuFeeder` does one step per (prime, row, window) even when s > K and the pair hits at most once:
+    ≈0.08 ns a pair, linear in π(B).
+  - Break-even on a G4 batch of 64 slices (2.03 s, ~1.6 s of it Fermat): the primes above 10^6 must cost under ~0.65 s for
+    B = 10^7 and under ~1.25 s for B = 10^8. At 10^8 and K = 2^19 that is 7.9·10^11 pair-steps a batch, so a
+    large-prime path near 0.5 ps a pair (one Shoup modmul, a shift by k_start mod s, a compare) would give ~+40%. With
+    K = 2^21, near +65%.
+  - The CPU shares (search_c.py, f = 0.92) stay at B = 10^6 too. At f = 0.92 the model gives kept mass ×1.15 / ×1.23 / ×1.30
+    and tests ×0.86 / ×0.80 / ×0.75 at 10^7 / 3·10^7 / 10^8. The engine on 4 slices with 4 processes
+    (`sieve_bound/cpu_engine_search_c_4slices.txt`) takes 26.3 s at 10^6, 34.6 s at 10^7 (window 2^20), 46.4 s at 3·10^7 and
+    110.6 s at 10^8, so even 10^7 is a net ×0.87.
+- Deep sieve, B = 10^8 (23 Nov 01:30Z on, production on the three RTX PRO 6000s). This is the uarch session's bucketed
+  large-prime stage: each (row, prime) pair is visited once per 2^25-member window, and marks are binned by (row, 2^19-bit tile).
+  It runs through `search_gpu5.py --deep 1` (`search_gpu5_deep.patch`, `deep_feeder.py`, `gbatch.py`, `gbig.py` on
+  ccr-b8c25887-i6tn9f at eecb551, plus two one-line fixes in `uarch_measure/fixes_8ffe.patch`).
+  - `uarch_measure/measure_*.txt` (`measure_all.sh` on an RTX PRO 6000 and an L4): the large-prime stage costs 0.030 ns a
+    mark on the RTX PRO 6000 and 0.10 ns on the L4. A whole 2^25 window at B = 10^8 takes 11.5 / 52.6 ns a member, and
+    `--check` shows it identical to the CPU feeder.
+  - `check_deep.sh` on an RTX PRO 6000 (2 variants × 2^25 members below 2^30), `uarch_measure/deepcheck_rtxpro6000.txt`:
+    - the new sieve tree gives slice lines identical to the production sieve;
+    - `--deep` at B = 10^6 gives tests and PRPs identical to the normal path;
+    - at B = 10^8, expected hits ×1.434 and tests ×0.750.
+  - Steady batches of 2^26 members (`uarch_measure/deeptime_rtxpro6000.txt`): production 2.00 s and 3.23e-5 expected hits.
+    `--deep` at 10^6 takes 1.90 s. At 10^8 it takes 2.10 s for 4.46e-5 expected hits: ×1.32 hits/s.
+  - `switch_deep.sh` restarts a running campaign in deep mode exactly at a 2^25 boundary: it waits until every variant has
+    the row k0 = m·2^25 in search.log, then sets KMAX = k0. Nothing is skipped, and nothing is rescanned beyond the batches
+    in flight. `run_v5_campQ.sh` passes `DEEP_ARGS`
+    (`--deep 1 --klog 25 --slice 33554432 --sieve-b 100000000 --p-est 0.0715`, BATCH=2).
+- Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
+  `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
+  0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is
+  not Fermat), f = 0.98 is +1.4% and f = 0.99 is −3%. Production stays at f = 0.97.
 - Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
   gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,

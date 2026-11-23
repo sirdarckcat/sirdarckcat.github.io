@@ -9,7 +9,20 @@ Student log, year 3 — project kickoff with delegated subagent execution.
 |---|---|---|---|
 | Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py, PARI (N−1 certificate, isprime and the full scan) and both bls/ verifiers here. Cross-verified by the second session (verify.py, bls/xverify.py, the PARI scan and certificate: all pass). Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
-| Budget R(10^199)/R(10^200) (Game 3) | **199-digit** N (records/budget_1e200_199digit_g133981) | g = **133,981** | **new 2026-11-22**; campaign3 on Colab GPUs (search_gpu3.py), certified by certify_c3.sh: witnesses, PARI primecert, ecpp_check.py, slop's stdlib verify_record.py, direct gmpy2 and PARI. Same night: g = 132,103 and 125,269 (both 199 digits, also frontier points). Previous: g = 119,419 (r200 round 1) |
+| Budget R(10^199)/R(10^200) (Game 3) | **200-digit** N (records/budget_1e200_200digit_g157837) | g = **157,837** | **new 2026-11-23 02:08 UTC**; campaign3 at Q = 150,000 on Colab GPUs, `search_gpu5.py --deep 1` (the uarch session's deep sieve, B = 10^8), certified by certify_c3.sh (witnesses, PARI primecert, ecpp_check.py, slop's stdlib verify_record.py, direct gmpy2 and PARI). Before it: g = 146,191 (200 digits, 2026-11-22 23:08 UTC, Q = 140,000), 133,981 / 132,103 / 125,269 (199 digits). All are frontier points |
+
+### 2026-11-23 (early) — Game 3: g = 146,191 and 157,837 below 10^200 (`ccr-8ffe9d7a` session)
+
+- 146,191 at 23:08 UTC on 2026-11-22: the first hit of the Q = 140,000 run (Lean vector `r200_q140k_c_v77`).
+- 157,837 at 02:08 UTC: the first hit of the Q = 150,000 run (`pt_q150k_t528`, a residue-swap variant of the research
+  session's 1,092-row cover). It survived 91 uncovered rows past Q against 40.8 expected (tail 0.11).
+- Engine changes between the two, all checked for identical output first (`campaign3_gpu/README.md`):
+  - the uarch session's Fermat step files: +2.5% (RTX PRO 6000) to +14% (A100, L4);
+  - the deep sieve at B = 10^8: a bucketed large-prime stage, ×1.37 expected hits per GPU-second on the RTX PRO 6000s and
+    ×1.40 on the L4s (tests ×0.75, kept hit mass ×1.43 at f = 0.97).
+- The fleet grew from five GPUs to seven (three RTX PRO 6000s, three L4s, a T4) and runs ≈7.5 expected hits a day at
+  Q = 150,000. By the lead's plan it moves to Q = 160,000 (1,181-row covers) after four certified hits there or at
+  ~23:00 UTC.
 
 ### 2026-11-22 (night) — Game 3 on Colab GPUs (`ccr-8ffe9d7a` session): g = 125,269, 132,103, 133,981 below 10^199
 

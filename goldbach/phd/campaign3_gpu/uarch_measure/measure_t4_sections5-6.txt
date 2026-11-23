@@ -1,0 +1,33 @@
+
+=================================================================== 5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)
+2026-11-23T01:46:44Z
+window k0=4293656576: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294180864: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294705152: 16 blocks, 15744 members selected: identical to the CPU feeder
+window of 524288 members: 25.14 ms = 47.95 ns a member = 20.9 M members/s (1092 rows, 78409 primes, f=0.97)
+sweep: 1092 rows, 78409 primes, K = 2^19, f = 0.97; ms a window (mean of 5), the GPU phases from events; ns/member
+  config                                          wall   ns/m |   prep   sieve  count  select  final  wait1   rows  wait2   host  output
+  {'shoup': False, 'sieve_threads': 256}         20.11  38.36 |  0.047  17.977  0.319   0.243  0.111  0.103  1.282  1.262  0.029  same
+  {'shoup': False, 'sieve_threads': 1024}        10.59  20.21 |  0.038   8.543  0.318   0.234  0.106  0.043  1.290  1.281  0.024  same
+  {'shoup': True, 'sieve_threads': 256}          12.69  24.20 |  0.034  10.672  0.315   0.221  0.100  0.047  1.275  1.259  0.025  same
+  {'shoup': True, 'sieve_threads': 512}           9.37  17.87 |  0.030   7.361  0.315   0.220  0.100  0.042  1.279  1.269  0.023  same
+  {'shoup': True, 'sieve_threads': 1024}          8.28  15.79 |  0.041   6.266  0.315   0.220  0.100  0.039  1.277  1.266  0.022  same
+  {'shoup': True, 'sieve_threads': 1024, 'unroll': 3} FAILED: CUDA_ERROR_INVALID_VALUE: invalid argument
+  {'shoup': True, 'sieve_threads': 512, 'unroll': 3} FAILED: CUDA_ERROR_INVALID_VALUE: invalid argument
+ALL IDENTICAL
+  SM clock MHz: median 585  min 300  max 1575  (max allowed 1590)   [17 samples]
+  power W: median 28  max 67  (limit 70.00)   temperature C: median 54
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 12, '0x0000000000000001': 4, '0x0000000000000004': 1}
+
+=================================================================== 6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 100000000, a batch of 2^25 members)
+2026-11-23T01:46:55Z
+Tesla T4
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2147483648: identical to the CPU feeder
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2149580800: identical to the CPU feeder
+1092 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.27 GB of 14.4 GB free (tables 13.7 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 3431.8 ms = 102.277 ns a member (9.8 M members/s); kept 335,872 members, 109,416,119 survivor rows; bin cap 165,280, gen retries 0
+    prep 1.33  sieve (gen + tiles) 3243.2  count 21.99  select 2.54  finalize 2.62  wait1 0.32  rows 159.84  wait2 159.83  host -0.02   (ms a batch)
+
+=================================================================== done
+2026-11-23T01:47:23Z
+output file: /content/t4_measure.txt
