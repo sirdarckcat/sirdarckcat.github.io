@@ -6,6 +6,7 @@ import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15787
+import GoldbachGaps.Cover15877
 
 /-!
 # The bounded record games, as kernel-checked theorems
@@ -87,5 +88,29 @@ theorem exists_progression_complete_cover_15787 :
     norm_num
   · obtain ⟨h1, h2, h3⟩ := Cover15787.complete_cover_family t
     exact ⟨Cover15787.family_lt t ht, h1, h2, h3⟩
+
+/-- **The bound by divisibility alone, improved to `15877`** (the research session's cover of
+2026-11-23 13:08 UTC, `Cover15877`, on the same 89 odd primes up to `463`). Some even
+`N < 10^200` has, for every prime `q < 15877`, a divisor `r` of `N - q` with `2 ≤ r ≤ 463` and
+`r < N - q`; in particular no prime below `15877` is a Goldbach summand of `N`. -/
+theorem exists_lt_ten_pow_200_complete_cover_15877 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 15877, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 15877, ¬ IsSummand N q :=
+  ⟨Cover15877.N, lt_trans Cover15877.N_lt (by norm_num), Cover15877.complete_cover.2.1,
+    Cover15877.complete_cover.2.2.1, Cover15877.complete_cover.2.2.2⟩
+
+/-- The same for a whole arithmetic progression: `21378978` numbers `N + t M` below `10^200`,
+all even, all with every `N + t M - q` (`q < 15877` prime) divisible by some `r ≤ 463`. -/
+theorem exists_progression_complete_cover_15877 :
+    ∃ N M : ℕ, 0 < M ∧ ∀ t < 21378978, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
+      (∀ q < 15877, q.Prime →
+        ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
+      ∀ q < 15877, ¬ IsSummand (N + t * M) q := by
+  refine ⟨Cover15877.N, Cover15877.M, ?_, fun t ht => ?_⟩
+  · rw [Cover15877.M_eq]
+    norm_num
+  · obtain ⟨h1, h2, h3⟩ := Cover15877.complete_cover_family t
+    exact ⟨Cover15877.family_lt t ht, h1, h2, h3⟩
 
 end GoldbachGaps

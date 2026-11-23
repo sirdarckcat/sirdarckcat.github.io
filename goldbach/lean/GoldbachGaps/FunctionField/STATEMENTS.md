@@ -255,6 +255,26 @@ If `|F|` is a square, every element of the prime field (every integer cast) is a
                           ¬Irreducible (Polynomial.C c * V ^ ringChar F - Q)
 ```
 
+### `desert_of_one_le` (file `DesertDegree.lean`)
+
+The same for `J ≥ 1` without the hypothesis `deg Q < deg N`, which is then automatic: `V` is divisible by `x^(q^J) - x`, so `deg N ≥ p · q^J > J + 1` (`card_pow_le_natDegree`, `natDegree_lt_natDegree_desert`). For `J = 0` the statement is false (`V = 1`, `N = c`, and `c - Q` is linear for `Q` linear).
+
+```lean
+@desert_of_one_le : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] [DecidableEq F],
+  ringChar F ≠ 2 →
+    IsSquare (Fintype.card F) →
+      ∀ {V : Polynomial F} {J : ℕ} {c : F},
+        1 ≤ J →
+          V.Monic →
+            (∀ (π : Polynomial F), Irreducible π → π.natDegree ≤ J → π ∣ V) →
+              ¬IsSquare c →
+                ∀ {Q : Polynomial F},
+                  Q.Monic →
+                    Irreducible Q →
+                      Q.natDegree ≤ J + 1 →
+                        Q.natDegree ≤ J ∨ ↑Q.natDegree ≠ 0 → ¬Irreducible (Polynomial.C c * V ^ ringChar F - Q)
+```
+
 ### `desert_general`
 
 The same with the sign criterion: `deg Q ≤ J + 1`, `deg Q < deg N`, and (`deg Q ≤ J` or `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1`).

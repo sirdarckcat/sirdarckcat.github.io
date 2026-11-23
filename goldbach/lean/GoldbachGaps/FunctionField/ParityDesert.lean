@@ -38,10 +38,11 @@ irreducible factors of `N - Q` is even exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) 
 characteristic, where about half of the rows are killed (`desert_general`).
 
 The desert is larger than the degrees up to `J + 1`. The hypothesis is only that every
-irreducible factor of `Q'` divides `N`, so `N = c · V^p` kills every row, of any degree below
-`deg N`, whose derivative has no irreducible factor of degree above `J` (`desert_smooth`,
-`desert_smooth_general`): a positive proportion of the rows of each degree, and all but about
-`1 / (J + 1)` of those of degree `J + 2`.
+irreducible factor of `Q'` divides `N`, so `N = c · V^p` kills every row, of any degree `d`
+below `deg N` with `p ∤ d`, whose derivative has no irreducible factor of degree above `J`
+(`desert_smooth`): a positive proportion of the rows of each such degree, and all but about
+`1 / (J + 1)` of those of degree `J + 2`. For `p ∣ d` the rows killed are those that also meet
+the sign criterion above (`desert_smooth_general`).
 
 The statement and its numerical confirmation are the research session's
 (`goldbach/sublinear/README.md`, Result 1).

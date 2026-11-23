@@ -14,6 +14,7 @@ import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15787
+import GoldbachGaps.Cover15877
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -48,6 +49,7 @@ import GoldbachGaps.Gpu28.Final
 import GoldbachGaps.Gpu28.Kernel
 import GoldbachGaps.FunctionField.Stickelberger
 import GoldbachGaps.FunctionField.ParityDesert
+import GoldbachGaps.FunctionField.DesertDegree
 
 /-!
 # Least Goldbach summands in Lean
@@ -84,6 +86,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the 89 odd primes up to 463 found by the research session
                (`goldbach/sublinear/complete_cover_15787.txt`, branch `ccr-d4a17dd0-7uu03r`);
                closed statements in `Records`.
+* `Cover15877` – the same for the research session's later cover on the same 89 primes
+               (`complete_cover_15877.txt`, commit `1658574`): another 193-digit even `N` (and
+               the 21,378,978 members of its progression below `10^200`) with `N - q`
+               divisible by a prime `r ≤ 463` for each of the 1,848 primes `q < 15877`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
@@ -203,9 +209,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` (`even_card_factors_iff`), which
                decides every row, also of a degree divisible by the characteristic
                (`desert_general`). The desert is not confined to the degrees up to `J + 1`:
-               `N = c · V^p` kills every row of any degree whose derivative has no
-               irreducible factor of degree above `J` (`desert_smooth`), a positive proportion
-               of the rows of each degree. `scripts/parity_check/` compares the general formula
+               `N = c · V^p` kills every row of any degree `d < deg N` with `p ∤ d` whose
+               derivative has no irreducible factor of degree above `J` (`desert_smooth`), a
+               positive proportion of the rows of each such degree; for `p ∣ d`, those that
+               also meet the sign criterion (`desert_smooth_general`). `DesertDegree`: for
+               `J ≥ 1` the condition `deg Q < deg N` of `desert` is automatic, because
+               `x^(q^J) - x` divides `V` (`desert_of_one_le`); for `J = 0` the statement is
+               false. `scripts/parity_check/` compares the general formula
                with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
                the rows of higher degree with a smooth derivative (`smooth_rows.py`).
 
