@@ -1,0 +1,15 @@
+# Re-tune after the fused rounds on gold-g4 (RTX PRO 6000), tune2.sh, 2026-11-23 12:44:46-12:49:06Z (campaign paused): the production vector config at f = 0.985 on the 24 test
+# windows, each variant twice in interleaved passes. Nothing beats production beyond the noise (the two base runs differ by 2.7%); flat-out sync (0) and pipeline depth 2 are
+# worse. --target 524288 (x0.986, waste 3.1% against 5.7%) goes to a production A/B on gold-g4 (dtgt.sh: the known case first).
+
+base    : batch 0.865 / 0.842 s, mean 0.854 | waste 5.7% | slice lines vs base: IDENTICAL | []
+sync2   : batch 0.856 / 0.863 s, mean 0.859 | waste 5.7% | slice lines vs base: IDENTICAL | []
+sync4   : batch 0.852 / 0.848 s, mean 0.850 | waste 5.7% | slice lines vs base: IDENTICAL | []
+sync0   : batch 0.931 / 0.940 s, mean 0.935 | waste 5.7% | slice lines vs base: IDENTICAL | []
+dmax4   : batch 0.849 / 0.854 s, mean 0.852 | waste 3.8% | slice lines vs base: IDENTICAL | []
+dmax6   : batch 0.849 / 0.856 s, mean 0.852 | waste 5.0% | slice lines vs base: IDENTICAL | []
+tgt512k : batch 0.822 / 0.860 s, mean 0.841 | waste 3.1% | slice lines vs base: IDENTICAL | []
+depth2  : batch 0.902 / 0.899 s, mean 0.901 | waste 5.7% | slice lines vs base: IDENTICAL | []
+depth3  : batch 0.862 / 0.855 s, mean 0.858 | waste 5.7% | slice lines vs base: IDENTICAL | []
+against base: sync2 x1.0067, sync4 x0.9959, sync0 x1.0956, dmax4 x0.9977, dmax6 x0.9987, tgt512k x0.9856, depth2 x1.0551, depth3 x1.0057
+TUNE2-DONE
