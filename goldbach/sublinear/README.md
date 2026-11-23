@@ -298,6 +298,31 @@ that is, with the fleet's deep sieve and 3% rule behind each tested N in every
 line. That selection is worth 2.0 nats today and about 1.8 after an ideal
 search to 20,000, which has already used part of the same information.
 
+**The same thing in miniature, exactly** (`toy_exact.c`, `toy_compare.py`,
+`toy_exact_1e9_1000.txt`). Take X = 10^9 instead of 10^200, target Q = 1,000
+(167 rows), and enumerate every even N below X with no prime factor from 3 to
+29: 157,947,020 numbers, of which exactly 256 have g(N) ≥ 1,000. Here the
+Chinese-remainder line is at 23 (2·3·5···23 ≤ 10^9), so "cover first" means
+ordering N by the rows left at depth 23, and the deeper sieve is taken to 200.
+No model is involved, only counting:
+
+| successes wanted | N examined, cover first | N examined, ideal to depth 200 | ratio |
+|---|---|---|---|
+| 1 | 2,982 | 13 | 229 (5.4 nats) |
+| 3 | 63,350 | 401 | 158 |
+| 10 | 253,380 | 10,811 | 23 |
+| 30 | 1,205,425 | 73,849 | 16 |
+| all 256 | 151 million | 154 million | 1 |
+
+The 62 numbers with at most 8 rows left at depth 200 have 24 to 34 rows left
+at depth 23, where the best covers have 22; one of the 62 lies in the 888
+members of the best covers. The 256 true successes have 25 to 41 rows at depth
+23 (the average N has 36.8). So in the miniature, as in the count above, the
+best numbers are luckily aligned members of mediocre covers, and an order that
+could see the deeper residues would reach the first success two hundred times
+sooner. The miniature is also where any proposed method for (P′) below can be
+tested against the truth in seconds.
+
 ## Why nothing known collects the prize
 
 The 460.5 nats of 10^200 are exactly enough to *choose* the residues of N
