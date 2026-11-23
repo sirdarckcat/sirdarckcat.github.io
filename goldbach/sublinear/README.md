@@ -103,6 +103,27 @@ selection identity is worth a factor of about 4 (1.4 nats; an estimate, to
 be measured in rung 2), and more if the cover is chosen with parity in mind.
 It does not find members with few rows left without enumeration even there.
 
+## Result 2: what the parity filter is worth in a toy search
+
+`toy_search.py` is the whole search in miniature over F_3[x]: a greedy cover
+on the 14 irreducibles of degree ≤ 3, the 1,318 monic irreducible rows of
+degree ≤ 8 (42 left by the cover), members N0 + T·M of degree 93, a sieve to
+degree 6, selection, tests. 30,000 members, 1,426 successes (the model's
+(1 − p)^k predicts 1,431). Parity is read off the discriminant of N − Q:
+
+- half of the rows have odd parity (0.4984 of all, 0.5000 of those that
+  survive the sieve); no irreducible N − Q has even parity; among odd
+  survivors the irreducible ones are 0.2505 against 0.1252 among all
+  survivors: exactly twice;
+- successes per 1,000 tests, keeping the best 3% of members: 14.6 when
+  members are ranked by rows left and every row is tested (the production
+  scheme), 65.2 when they are ranked by *odd* rows left and only odd rows are
+  tested: 4.5 times (5.1 at 1% kept, 3.8 at 10%, 2.0 with no selection).
+
+So in the toy setting the filter is worth a factor 4 to 5 (1.4 to 1.6 nats),
+as the selection identity predicts. It remains a constant factor: every
+member is still looked at (`toy_search_m3_g8.txt`).
+
 ## Why the integers are harder (the gap to close)
 
 The integer counterpart of Result 1 would be a way to compute, or to force,
@@ -163,7 +184,7 @@ is the only place left to look.
 | rung | what | who | state |
 |---|---|---|---|
 | 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | statement sent 23 Nov; numerics done here |
-| 2 | Toy search with the parity filter: measure the factor against the model | research | to do |
+| 2 | Toy search with the parity filter: measure the factor against the model | research | done: 4 to 5 times (Result 2) |
 | 3 | Toy instance small enough to enumerate every member: does anything besides parity and the symmetries of F_q[x] predict the best members? | research | to do |
 | 4 | Barrier statements for the integer search, formal: black-box lower bound; decoding-radius inequality for our parameters; what residue information can never give | Lean | to do |
 | 5 | Integer candidates for information that is not a residue (anything cheaper than a Fermat test that correlates with primality of a rough number, in a special family of N) | both | open; no candidate yet |

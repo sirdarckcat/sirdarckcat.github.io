@@ -1,0 +1,16 @@
+F_3: 1318 rows of degree <= 8; cover on the 14 irreducibles of degree <= 3 (deg M = 33) leaves 42 rows; members N0 + T*M, T monic of degree 60: 30000 members of degree 93; p0 = boost/n = 0.0699, E = 2.94
+30000 members in 229 s; successes 1426 (0.04753; (1-p0)^k = 0.04771)
+rows surviving the sieve to degree 6: 0.560 of the uncovered rows; irreducible among survivors p_z = 0.1252
+odd parity among all uncovered rows 0.4984, among survivors 0.5000; irreducible with even parity: 0 (must be 0); P(irreducible | survivor, odd) = 0.2505; not squarefree 4775
+selection by rows left after the sieve (as in production), testing all survivors: fraction kept | share of all successes | tests per kept member | successes per 1000 tests
+    0.01 | 0.025 |   6.64 | 17.579
+    0.03 | 0.063 |   6.83 | 14.641
+    0.10 | 0.180 |   7.22 | 11.859
+    0.30 | 0.426 |   7.32 | 9.228
+    1.00 | 1.000 |   7.62 | 6.238
+selection by ODD rows left after the sieve, testing only the odd ones: fraction kept | share of all successes | tests per kept member | successes per 1000 tests
+    0.01 | 0.055 |   2.92 | 90.183
+    0.03 | 0.128 |   3.10 | 65.186
+    0.10 | 0.317 |   3.38 | 44.567
+    0.30 | 0.598 |   3.60 | 26.291
+    1.00 | 1.000 |   3.81 | 12.483
