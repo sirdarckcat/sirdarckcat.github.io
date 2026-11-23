@@ -1,0 +1,20 @@
+# uarch splitab.sh (8558276: + DEEP_GEN_FLUSH2, DEEP_GEN_ORDER) on gold-g4c, splitab_run6.sh, 2026-11-23 13:42:38-13:44:08Z (campaign paused), ms a 2^24 vector window, in /content/ua_v6.
+
+2026-11-23T13:42:38Z paused pid 2244545
+base (rcta 8, 512)                 gen   49.67 (A  15.58 B  34.09)  tile   32.77 (small  14.46 apply  19.81)  bench_batch sieve   83.7
+DEEP_BIN_PACK=1                    gen   48.60 (A  15.61 B  32.99)  tile   28.77 (small  16.17 apply  15.77)  bench_batch sieve   78.1
+DEEP_GEN_HOIST=1                   gen   47.26 (A  14.30 B  32.96)  tile   32.68 (small  14.38 apply  19.69)  bench_batch sieve   81.1
+PACK + HOIST                       gen   45.91 (A  14.31 B  31.60)  tile   28.73 (small  16.12 apply  15.72)  bench_batch sieve   75.1
+DEEP_TILE_UNROLL=2                 gen   49.69 (A  15.58 B  34.11)  tile   29.42 (small  11.12 apply  16.30)  bench_batch sieve   80.2
+DEEP_TILE_UNROLL=4                 gen   49.69 (A  15.58 B  34.11)  tile   26.01 (small   7.71 apply  14.17)  bench_batch sieve   76.9
+DEEP_TILE_PREFETCH=256             gen   49.69 (A  15.58 B  34.11)  tile   32.10 (small  13.80 apply  19.07)  bench_batch sieve   82.9
+PACK + HOIST + UNROLL=4            gen   45.88 (A  14.32 B  31.55)  tile   22.57 (small   9.97 apply  10.73)  bench_batch sieve   69.2
+PACK + HOIST + UNROLL=4 + PF       gen   45.85 (A  14.37 B  31.48)  tile   20.87 (small   8.20 apply   8.97)  bench_batch sieve   67.7
+DEEP_GEN_FLUSH2=1                  gen   45.35 (A  15.67 B  29.69)  tile   32.74 (small  14.44 apply  19.76)  bench_batch sieve   79.2
+DEEP_GEN_ORDER=1                   gen   49.14 (A  14.91 B  34.23)  tile   32.72 (small  14.42 apply  19.74)  bench_batch sieve   82.8
+HOIST + FLUSH2                     gen   43.07 (A  14.53 B  28.54)  tile   32.67 (small  14.38 apply  19.66)  bench_batch sieve   77.1
+PACK + HOIST + FLUSH2              gen   42.34 (A  14.48 B  27.86)  tile   28.77 (small  16.17 apply  15.78)  bench_batch sieve   72.2
+PACK + HOIST + FLUSH2 + ORDER      gen   40.32 (A  13.67 B  26.65)  tile   28.67 (small  16.07 apply  15.67)  bench_batch sieve   70.9
+ALL (+ UNROLL=4 + PF)              gen   40.33 (A  13.76 B  26.57)  tile   20.86 (small   8.19 apply   8.99)  bench_batch sieve   63.5
+2026-11-23T13:44:08Z resumed pid 2244545
+SPLITAB6-DONE
