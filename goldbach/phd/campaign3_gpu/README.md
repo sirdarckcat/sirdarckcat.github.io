@@ -213,6 +213,14 @@ Version 3 (22 Nov):
     B = 10^7 and under ~1.25 s for B = 10^8. At 10^8 and K = 2^19 that is 7.9·10^11 pair-steps a batch, so a
     large-prime path near 0.5 ps a pair (one Shoup modmul, a shift by k_start mod s, a compare) would give ~+40%. With
     K = 2^21, near +65%.
+  - The CPU shares (search_c.py, f = 0.92) stay at B = 10^6 too. At f = 0.92 the model gives kept mass ×1.15 / ×1.23 / ×1.30
+    and tests ×0.86 / ×0.80 / ×0.75 at 10^7 / 3·10^7 / 10^8. The engine on 4 slices with 4 processes
+    (`sieve_bound/cpu_engine_search_c_4slices.txt`) takes 26.3 s at 10^6, 34.6 s at 10^7 (window 2^20), 46.4 s at 3·10^7 and
+    110.6 s at 10^8, so even 10^7 is a net ×0.87.
+- Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
+  `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
+  0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is
+  not Fermat), f = 0.98 is +1.4% and f = 0.99 is −3%. Production stays at f = 0.97.
 - Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
   gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,

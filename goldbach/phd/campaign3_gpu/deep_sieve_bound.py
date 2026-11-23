@@ -7,7 +7,7 @@ does not depend on how far one sieves), so p_B = p_B0 * sum c_B0 / sum c_B with 
 A member's success probability is best estimated with the deepest bound: w = (1 - p_Bmax)^c_Bmax. Tests per kept member
 until its first PRP: (1 - (1 - p_B)^c) / p_B.
 
-    python3 deep_sieve_bound.py SPECS.json NAME K0 LOGK NWIN B1,B2,... [SIEVE200_DIR]   (the uarch goldbach/sieve200)
+    python3 deep_sieve_bound.py SPECS.json NAME K0 LOGK NWIN B1,B2,... [SIEVE200_DIR]   (the uarch goldbach/sieve200; FLIST=f1,f2,...)
 """
 import json, math, sys, time
 import numpy as np
@@ -34,7 +34,7 @@ lw = C[Bm] * math.log1p(-p[Bm]); lw -= lw.max(); w = np.exp(lw); W = w.sum()
 Lb = 1 << 15; nb = len(w) // Lb
 print(f"members {len(w)}, p_B: " + ", ".join(f"{B:.0e}: {p[B]:.4f}" for B in Bs))
 print("hit mass kept (weights from B = %.0e) and tests per kept member, by selection bound and f:" % Bm)
-for f in (0.95, 0.97, 0.98, 0.99, 0.995):
+for f in [float(x) for x in __import__("os").environ.get("FLIST", "0.95,0.97,0.98,0.99,0.995").split(",")]:
     keep = int(math.ceil(Lb * (1 - f))); row = []
     for B in Bs:
         hm = 0.0; tests = 0.0

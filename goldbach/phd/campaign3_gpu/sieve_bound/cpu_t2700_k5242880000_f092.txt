@@ -1,0 +1,4 @@
+hit mass kept (weights from B = 1e+08) and tests per kept member, by selection bound and f:
+  f=0.92: B=1e+06 kept 30.18% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 34.84% tests 15.99 -> mass/test x1.347 | B=3e+07 kept 36.99% tests 14.97 -> mass/test x1.527 | B=1e+08 kept 39.27% tests 13.99 -> mass/test x1.735
+  f=0.95: B=1e+06 kept 22.38% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 26.47% tests 15.99 -> mass/test x1.380 | B=3e+07 kept 28.37% tests 14.97 -> mass/test x1.579 | B=1e+08 kept 30.41% tests 13.99 -> mass/test x1.812
+  f=0.97: B=1e+06 kept 16.00% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 19.36% tests 15.99 -> mass/test x1.412 | B=3e+07 kept 20.96% tests 14.97 -> mass/test x1.633 | B=1e+08 kept 22.71% tests 13.99 -> mass/test x1.892
