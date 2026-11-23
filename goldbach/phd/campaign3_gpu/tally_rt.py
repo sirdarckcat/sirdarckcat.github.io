@@ -35,7 +35,9 @@ for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150"):
         exp_model += r["k"] * r["hit"] * math.exp(-1.0275 * r["E"] + 0.33); n_model += 1
         i += 1
     mem = sum(r["k"] for r in rows)
-    fl = [json.loads(l) for l in open(d + "/found.jsonl") if l.strip()] if os.path.exists(d + "/found.jsonl") else []
+    fa = [json.loads(l) for l in open(d + "/found.jsonl") if l.strip()] if os.path.exists(d + "/found.jsonl") else []
+    fl = [f for f in fa if not f.get("near_miss")]                       # design-Q successes (what "expected" predicts)
+    near = [{k: f[k] for k in ("name", "k", "g", "digits")} for f in fa if f.get("near_miss")]   # first-PRP rows above the record
     fams = sorted(set(re.sub(r"_v\d+$|_w\d+$", "", r["name"].split("@")[0]) for r in rows))
     Q = json.load(open(d + "/my_specs.json"))[0]["Q"] if os.path.exists(d + "/my_specs.json") else None
     out.append(dict(dir=d, Q=Q, families=fams[:6], slices=len(rows), members=mem,
@@ -43,5 +45,5 @@ for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150"):
                     mean_E=sum(r["k"] * r["E"] for r in rows) / max(mem, 1),
                     tests=sum(r["tests"] for r in rows), prps=sum(r["prps"] for r in rows),
                     expected_logged=exp_logged, slices_logged=n_logged, expected_model=max(exp_model, 0.0), slices_model=n_model,
-                    found=len(fl), g=[f["g"] for f in fl], hits=[{k: f[k] for k in ("name", "k", "g", "digits")} for f in fl]))
+                    found=len(fl), g=[f["g"] for f in fl], hits=[{k: f[k] for k in ("name", "k", "g", "digits")} for f in fl], near_misses=near))
 print("[ty]", json.dumps(out))

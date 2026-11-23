@@ -41,6 +41,10 @@ for fam in fams:
                      f"{e:.3f} ({r['expected_logged']:.3f} + {r['expected_model']:.3f}) | {r['found']} | {', '.join(f'{g:,}' for g in r['g']) or '-'} |")
         fe += e; ff += r["found"]; fm += r["members"]; fh += r["hit_mass_members"]; gs += r["g"]
     lines += [f"| **all** | | {fm/1e9:.2f}e9 | {fh/1e9:.3f}e9 | | **{fe:.3f}** | **{int(ff)}** | {', '.join(f'{g:,}' for g in sorted(gs, reverse=True)) or '-'} |", ""]
+    nms = [x for r in rs for x in r.get("near_misses", [])]
+    if nms:
+        lines += ["Near-misses (a tested member's first probable-prime row above the record, so g(N) is that row; not counted in found): "
+                  + ", ".join(f"g = {x['g']:,} ({x['name']}, k = {x['k']:,})" for x in sorted(nms, key=lambda x: -x["g"])), ""]
     tot_e += fe; tot_f += ff
     summary.append(dict(family=fam, members=fm, hit_mass_members=fh, expected=fe, found=int(ff), g=sorted(gs, reverse=True)))
 lines += [f"**All covers: expected {tot_e:.2f}, found {int(tot_f)}.**", ""]

@@ -30,6 +30,10 @@ ap.add_argument("--sieve-b", type=int, default=1000000)
 ap.add_argument("--skip-frac", type=float, default=0.0)
 ap.add_argument("--p-est", type=float, default=0.055)
 ap.add_argument("--out", default="found.jsonl")
+ap.add_argument("--near-miss", type=int, default=int(os.environ.get("NEAR_MISS", "0")),
+                help="report a tested member whose FIRST probable-prime row q (rows ascending, every earlier row composite) is >= this: "
+                     "then g(N) = q whatever the design Q. Verified on the CPU (every prime below q composite, N - q prime) and written to "
+                     "--out with near_miss = true. 0: off. It changes nothing about which members are tested or how")
 ap.add_argument("--goldbach", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one launch")
 ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
@@ -111,13 +115,16 @@ class MultiTester:
     def __init__(self, specs, limbs=21):
         M = int(specs[0]["M"])
         assert all(int(s["M"]) == M for s in specs), "a pool needs one M"
-        rows, self.off = [], []
+        rows, self.off, qs = [], [], []
         for s in specs:
             N0 = int(s["N0"])
             assert N0 > max(s["residual"]), "N0 - q must be positive"
+            assert all(int(a) < int(b) for a, b in zip(s["residual"], s["residual"][1:])), "residual rows must be ascending"
             self.off.append(len(rows))
             rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
+            qs.extend(int(q) for q in s["residual"])
         self.cq = cp.asarray(np.stack(rows))
+        self.qrow = cp.asarray(np.array(qs, dtype=np.int64))      # q of every global row (for the first-PRP row of a member)
         self.M = cp.asarray(to_limbs(M, limbs))
         if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
             nmax = max(int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M for sp in specs)
@@ -139,12 +146,34 @@ class MultiTester:
         return out
 
 
+def verify_near_miss(spec, k, q):
+    """g(N) = q for N = N0 + k M?  Every prime p < q has N - p composite (is_prime: BPSW + Miller-Rabin; a False is definite)
+    and N - q is a probable prime (the certifier proves it).  Returns the found.jsonl record or None."""
+    from sympy import primerange                           # noqa: E402
+    import gmpy2                                           # noqa: E402
+    N = mpz(spec["N0"]) + k * mpz(spec["M"])
+    if not gmpy2.is_prime(q) or not gmpy2.is_prime(N - q, 30):
+        return None
+    for p in primerange(2, q):
+        if gmpy2.is_prime(N - p, 25):
+            return None
+    return {"k": k, "N": str(N), "digits": len(str(N)), "g": int(q), "near_miss": True, "Q": int(spec["Q"])}
+
+
 def run_pool(tester, kv, cnt, cols):
     """Members kv[m] with survivors cols[indptr[m]:indptr[m+1]] (global cq rows, ascending q).
-    Returns per member: tests counted up to the first PRP, whether a PRP was found, success; and the
-    tests computed on the GPU."""
+    Returns per member: tests counted up to the first PRP, whether a PRP was found, success, the global row of the first
+    PRP (-1 if none); and the tests computed on the GPU.  A member's rows are tested in the order of cols, which is checked
+    here to be strictly ascending (so ascending q), and a round's first PRP is the lowest offset with flag 1: the first-PRP
+    row is the first probable prime over the member's fully tested prefix."""
     n = int(kv.size)
     indptr = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
+    if int(cols.size) > 1:                                     # every member's survivor rows strictly ascending
+        start = cp.zeros(int(cols.size), cp.bool_)
+        start[indptr[:-1][cnt > 0]] = True
+        if not bool(((cols[1:] > cols[:-1]) | start[1:]).all()):
+            raise RuntimeError("survivor rows of a member are not in ascending order")
+    frow = cp.full(n, -1, cp.int64)
     tests_m = cp.zeros(n, cp.int64)
     prp_m = cp.zeros(n, cp.bool_)
     succ_m = cnt == 0
@@ -169,13 +198,14 @@ def run_pool(tester, kv, cnt, cols):
         hit = first < big
         tests_m[act] += cp.where(hit, first.astype(cp.int64) + 1, take)
         prp_m[act[hit]] = True
+        frow[act[hit]] = cols[(indptr[act] + pos[act])[hit] + first[hit].astype(cp.int64)]
         pos[act] += take
         done = (~hit) & (pos[act] == cnt[act])
         succ_m[act[done]] = True
         act = act[(~hit) & (~done)]
         gtests += total
         launches += 1
-    return tests_m, prp_m, succ_m, gtests, launches
+    return tests_m, prp_m, succ_m, frow, gtests, launches
 
 
 def run_batch(batch, out):
@@ -183,7 +213,7 @@ def run_batch(batch, out):
     t0 = time.time()
     tester = MultiTester(batch)
     L = args.block
-    st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], kmax=0) for _ in batch]
+    st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], near=[], kmax=0) for _ in batch]
     pool = []                                                    # (sid, kv, cnt, cols) chunks
     npool = [0]
     gt = [0, 0, 0.0]                                             # tests computed, launches, expected hits
@@ -194,9 +224,9 @@ def run_batch(batch, out):
         sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
         kv = cp.concatenate([c[1] for c in pool])
         cnt = cp.concatenate([c[2] for c in pool])
-        cols = cp.concatenate([c[3] for c in pool])
+        cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])      # (a deep window is a pool of its own: no 1.5 GB copy)
         pool.clear(); npool[0] = 0
-        tests_m, prp_m, succ_m, g, nl = run_pool(tester, kv, cnt, cols)
+        tests_m, prp_m, succ_m, frow, g, nl = run_pool(tester, kv, cnt, cols)
         gt[0] += g; gt[1] += nl
         tt, pp = int(tests_m.sum()), int(prp_m.sum())
         if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count
@@ -206,6 +236,11 @@ def run_batch(batch, out):
             st[si]["tests"] += int(tests_m[m].sum())
             st[si]["prps"] += int(prp_m[m].sum())
             st[si]["succ"].extend(int(k) for k in kv[m & succ_m].tolist())
+        if args.near_miss:                                       # first-PRP row >= the threshold: g(N) = that q
+            qf = cp.where(frow >= 0, tester.qrow[cp.maximum(frow, 0)], -1)
+            nm = cp.nonzero(qf >= args.near_miss)[0]
+            for i, si, k, q in zip(nm.tolist(), sid[nm].tolist(), kv[nm].tolist(), qf[nm].tolist()):
+                st[si]["near"].append((int(k), int(q)))
 
     K = 1 << args.klog
     for si, spec in enumerate(batch):
@@ -221,7 +256,10 @@ def run_batch(batch, out):
             st[si]["alive"] += int(w.alive_total.sum())
             st[si]["kdone"] += K
             st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
-            pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), w.rows.astype(cp.int32) + np.int32(tester.off[si])))
+            rows32 = w.rows.astype(cp.int32)
+            rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
+            w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
+            pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
             npool[0] += int(w.k.size)
             if npool[0] >= args.pool:
                 flush()
@@ -238,6 +276,15 @@ def run_batch(batch, out):
                 found.append(res); nf += 1
                 lines.append(f"  SUCCESS {spec['name']} k={k} digits={res['digits']} g={res['g']}")
                 out.write(json.dumps(res) + "\n"); out.flush()
+        for k, q in sorted(s["near"]):
+            res = verify_near_miss(spec, int(k), int(q))
+            if res:                                              # not counted in found= (that is design-Q successes)
+                res["name"] = spec["name"]
+                found.append(res)
+                lines.append(f"  SUCCESS-NEARMISS {spec['name']} k={k} digits={res['digits']} g={res['g']} (first PRP row, design Q={spec['Q']})")
+                out.write(json.dumps(res) + "\n"); out.flush()
+            else:
+                lines.append(f"  NEARMISS-REJECTED {spec['name']} k={k} q={q} (CPU check failed)")
         kd = max(s["kdone"], 1)
         phat = s["prps"] / s["tests"] if s["tests"] else 0.0
         e_hat = (s["alive"] / kd) * phat
@@ -248,7 +295,7 @@ def run_batch(batch, out):
     tests = sum(s["tests"] for s in st)
     stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch {batch[0]['name']}..{batch[-1]['name']} "
              f"({len(batch)} slices) {dt*len(batch):.1f}s: tests {tests} counted, {gt[0]} computed "
-             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)} [v5 gpu-sieve]")
+             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)} [v5 gpu-sieve]" + (f" [near-miss >= {args.near_miss}]" if args.near_miss else ""))
     return lines, found, stats
 
 

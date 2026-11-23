@@ -253,6 +253,23 @@ Version 3 (22 Nov):
     the row k0 = m·2^25 in search.log, then sets KMAX = k0. Nothing is skipped, and nothing is rescanned beyond the batches
     in flight. `run_v5_campQ.sh` passes `DEEP_ARGS`
     (`--deep 1 --klog 25 --slice 33554432 --sieve-b 100000000 --p-est 0.0715`, BATCH=2).
+- Near-misses (`search_gpu5.py --near-miss G`, env `NEAR_MISS`; 23 Nov 02:40Z, verified; live from the move to Q = 160,000).
+  - Why: each tested member is tested row by row with q ascending until its first probable prime. Every earlier row is
+    composite (by the cover's class, by the sieve, or by a failed Fermat test), so that first-PRP row is g(N) whatever the
+    design Q. A member that dies at a row above the record in hand is a new record.
+  - What changed: `run_pool` now records each member's first-PRP row. It also checks explicitly that every member's
+    survivor rows are strictly ascending, and the tester checks that each residual list is ascending. After a batch, a
+    member with first-PRP q ≥ G is verified on the CPU (`verify_near_miss`: every prime p < q gives a composite N − p,
+    N − q is a probable prime) and written to found.jsonl with `near_miss: true`. It counts toward found= and the tally's
+    found only as a near-miss. Which members are tested, and how, is unchanged.
+  - `check_nearmiss.sh` on an RTX PRO 6000 (`nearmiss_check/`). The known case is 146,191's member
+    (r200_q140k_c_v77, k = 3,101,585,871) with its vector's residual list taken to Q = 150,000 (1,120 rows).
+    - The normal path with all members tested reports it as a near-miss at g = 146,191, and so does the deep path at
+      f = 0.97.
+    - Slice lines are identical with reporting on and off, on that slice and on two deep production slices.
+    - The final driver, with near-misses and the uarch session's in-place row offset that frees ~4.5 GB a deep window, gives
+      lines identical to the earlier driver.
+  - Rows above 1,100 need `--deep-max-rows` (1,200 for Q = 160,000).
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is
