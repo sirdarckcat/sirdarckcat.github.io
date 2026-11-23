@@ -301,6 +301,30 @@ that is, with the fleet's deep sieve and 3% rule behind each tested N in every
 line. That selection is worth 2.0 nats today and about 1.8 after an ideal
 search to 20,000, which has already used part of the same information.
 
+**How far an ideal search would go** (`ideal_tilt_targets.txt`). The same
+count at higher targets, as the natural logarithm of the number of N tested
+per success:
+
+| target (share of the ceiling) | today (≤ 463) | ideal to 5,000 | to 20,000 | to 50,000 | to 10^8, rows independent beyond 20,000 |
+|---|---|---|---|---|---|
+| 213,070 (10%) | 39.3 | 30.5 | 26.7 | 24.5 | 11.7 |
+| 245,000 (11.5%) | | | 32.5 | | 16.1 |
+| 265,000 (12.4%) | | | | 33.7 | 19.0 |
+| 300,000 (14.1%) | | | 42.7 | | 24.1 |
+| 350,000 (16.4%) | | | 52.3 | | 31.9 |
+| 500,000 (23.5%) | | | 81.4 | | 56.8 |
+| reached with the remaining budget of e^30.75 | 172,000 (8.1%) | 214,000 (10.0%) | 235,000 (11.0%) | 249,000 (11.7%) | 343,000 (16.1%) |
+
+Two readings. First, even a perfect search over everything the fleet's sieve
+sees (depth 10^8) would end near 16% with the Colab units that remain, and
+20% (426,140) would still cost it about e^44 tests, e^13 times the budget;
+with today's method 20% costs about e^87. Deeper residues would give more
+(at 213,070 the expected successes of an ideal search go from e^18 at depth
+10^8 to e^27 at depth 10^12), but nobody can sieve them. Second, each line of
+the table is steep: the cost grows like the 1.4th to 1.8th power of the
+target, so a factor e in tests moves any of these methods by about 0.2
+percentage points near 10%.
+
 **The same thing in miniature, exactly** (`toy_exact.c`, `toy_compare.py`,
 `toy_exact_1e9_1000.txt`). Take X = 10^9 instead of 10^200, target Q = 1,000
 (167 rows), and enumerate every even N below X with no prime factor from 3 to
