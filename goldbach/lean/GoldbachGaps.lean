@@ -211,7 +211,9 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                one row per modulus, so the sum over class vectors of `y^(rows left)` is at
                most `∏ m · (1 - (1 - y) θ)^k`, `θ = ∏ (1 - 1/m)`, the value for rows killed
                independently; hence the class vectors leaving at most `K` of `k` rows are at
-               most the binomial Chernoff bound. The research session's continuation of its
+               most the binomial Chernoff bound, and those leaving no row at most
+               `∏ m · (1 - θ)^k`: inside the residue model the cost model's independence of
+               the rows left is an inequality above `Q`. The research session's continuation of its
                prize table to depth `10^8` by independent rows is therefore a bound in a known
                direction above `Q`; `scripts/thinning_check/` tests the same law below `Q` on
                that session's tables and derives its `1/ln² z` regularity from it).
