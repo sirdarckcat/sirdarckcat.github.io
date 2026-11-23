@@ -8,12 +8,13 @@
 # C. the Fermat step inside the real kernel: bench_fm28_step.py (loop-body size, extra IADD3 / IMAD.WIDE, occupancy) for the RTX's and the A100 / L4's step styles
 # D. bench_pipes.py --warps: do the instruction costs shrink with more warps a scheduler?
 # E. Nsight Compute on the Fermat kernel, if `ncu` works on this host (stall reasons, issue slots, pipe utilisation)
+# F. bench_clock.py: does clock64() tick at the SM clock?  (5 seconds; every "cycle" of the pipe benchmarks is a clock64 difference)
 # SECTIONS="B C" runs only those; every section is time-limited and a failure does not stop the next one.  Then: summarize / commit the file and tell the uarch session.
 set -u
 SPEC=${1:?usage: GPU=0 bash run_experiments.sh SPEC.json [OUT.txt]}
 GPU=${GPU:-0}
 OUT=${2:-experiments_$(hostname)_gpu${GPU}.txt}
-SECTIONS=${SECTIONS:-"A B C D E"}
+SECTIONS=${SECTIONS:-"F A B C D E"}
 export CUDA_VISIBLE_DEVICES=$GPU
 HERE=$(cd "$(dirname "$0")" && pwd)
 FC=$HERE/../../fermat661/cuda
@@ -23,6 +24,22 @@ exec > >(tee "$OUT") 2>&1
 want() { case " $SECTIONS " in *" $1 "*) return 0;; *) return 1;; esac; }
 section() { echo; echo "=================================================================== $*"; date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 nvidia-smi -i "$GPU" --query-gpu=name,driver_version,power.limit,clocks.max.sm --format=csv
+
+if want F; then
+  section "F. is clock64() the SM clock?  (ticks per ns of %globaltimer, ticks per dependent IMAD: 4 expected; the SM clock is sampled beside it)"
+  nvidia-smi -i "$GPU" --query-gpu=clocks.sm --format=csv,noheader,nounits -lms 200 > /tmp/exp_clk_$$.csv 2>/dev/null &
+  SAMP=$!
+  timeout 300 python3 bench_clock.py || echo "FAILED: bench_clock"
+  kill $SAMP 2>/dev/null; wait $SAMP 2>/dev/null
+  python3 - /tmp/exp_clk_$$.csv <<'PY'
+import sys, statistics
+v = [float(x) for x in open(sys.argv[1]).read().split() if x.replace('.', '', 1).isdigit()]
+if len(v) > 4:
+    v = v[1:-1]
+    print(f"  nvidia-smi SM clock during the run: median {statistics.median(v):.0f} MHz, min {min(v):.0f}, max {max(v):.0f}")
+PY
+  rm -f /tmp/exp_clk_$$.csv
+fi
 
 if want A; then
   section "A. large-prime stage: plain against staged (B = 2^24, 1,093 rows, 8 groups of 16 rows, batch 2^25)"
