@@ -70,6 +70,16 @@ Stickelberger's theorem (Swan 1962; Pellet's formula) says
 χ(disc g) = (−1)^(deg g − number of irreducible factors of g) for squarefree
 g; apply it to f and to the irreducible Q. ∎
 
+The Lean session derived the same statement independently from resultants
+alone, as one identity over any field: for Q monic of degree d, N′ = 0, d ≠ 0
+in the field, d < n, and every irreducible factor of Q′ dividing N,
+
+    discr(N − Q) = (−1)^(n(n−1)/2 + nd + (d−1) + d(d−1)/2) · λ^(n−d−1) · d^(n−d) · discr(Q),
+
+from which the parity formula follows by Stickelberger's theorem on both
+sides. It is formalising this (Mathlib has resultants and discriminants but
+not Stickelberger–Swan, which it will prove separately).
+
 **Corollary (deserts).** Let q be a square (q = p^(2e)), V_J the product of
 all monic irreducibles of degree ≤ J, λ a non-square, and N = λ·V_J^p. Then
 N − Q is reducible for every monic irreducible Q of degree ≤ J + 1 (p ∤ J+1):
@@ -93,8 +103,17 @@ p | d (not covered by the theorem) the parity is mixed, as it should be.
 **What this is and is not.** It is a compositeness mechanism that is not a
 small factor and not luck: the parity of the number of prime factors, which
 over F_q[x] is the quadratic character of a discriminant and, for N a p-th
-power, depends only on N modulo the *derivative of the row* (the idea behind
-Sawin and Shusterman's proof of the twin prime conjecture over F_q[x]). It
+power, depends only on N modulo the *derivative of the row*. The mechanism is
+known: Swan (1962) already has families with an even number of factors
+throughout (x^(8k) + x^m + 1 over F_2); Conrad, Conrad and Gross (2008) give
+the general theory of the Möbius function of f(g) for f a polynomial in T^p,
+including irreducible polynomials with no local obstruction and no
+irreducible value at all; Sawin and Shusterman (2022) use it to break the
+parity barrier for twin primes over F_q[T]. The Goldbach-shaped corollary
+above (N fixed and inseparable, the row varying) is an instance; we have not
+found it stated. K. Conrad's survey of the phenomenon is titled "Irreducible
+values of polynomials: a non-analogy": it is the standard example of
+something true over F_q[T] with no counterpart over the integers. It
 is not a search algorithm. In the toy setting it buys (i) one more degree at
 the deterministic frontier, a factor q/p in the number of rows; (ii) in the
 regime where luck dominates, a cheap exact filter: half of the rows of any
@@ -183,7 +202,7 @@ is the only place left to look.
 
 | rung | what | who | state |
 |---|---|---|---|
-| 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | statement sent 23 Nov; numerics done here |
+| 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | statement confirmed by an independent derivation (23 Nov); Lean proof in progress |
 | 2 | Toy search with the parity filter: measure the factor against the model | research | done: 4 to 5 times (Result 2) |
 | 3 | Toy instance small enough to enumerate every member: does anything besides parity and the symmetries of F_q[x] predict the best members? | research | to do |
 | 4 | Barrier statements for the integer search, formal: black-box lower bound; decoding-radius inequality for our parameters; what residue information can never give | Lean | to do |
@@ -196,6 +215,9 @@ is the only place left to look.
   F_q[T], Annals of Math. 196 (2022).
 - R. G. Swan, Factorization of polynomials over finite fields, Pacific J.
   Math. 12 (1962) (Stickelberger's theorem; Pellet's formula).
+- B. Conrad, K. Conrad, R. Gross, Prime specialization in genus 0, Trans.
+  Amer. Math. Soc. 360 (2008); K. Conrad, Irreducible values of polynomials:
+  a non-analogy.
 - V. Guruswami, A. Vardy, Maximum-likelihood decoding of Reed–Solomon codes
   is NP-hard (2005). Q. Cheng, D. Wan, on the decodability of Reed–Solomon
   codes and discrete logarithms.
