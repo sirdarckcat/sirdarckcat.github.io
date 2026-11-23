@@ -665,6 +665,29 @@ Version 3 (22 Nov):
     the tests only removes the Fermat half.
 - At 18:34-18:35Z the four L4/T4 cards switched to 6,000 m88f vectors from research's 3bcdbf6 starting file at cap 1,258
   (1,800 a card on the L4s, 600 on the T4; `m88f/deploy_l4_t4.txt`).
+- The RTX sieve options and the one-pass kernel on the L4s (`l4op/`), under the standing rule. Until now the L4s and the
+  T4 ran the old tree uaB with only `DEEP_STAGED` and the driver's defaults (rg 16, 256-thread CTAs, rcta 2).
+  - bench_split on gold-l4b (`opl4b_l4.txt`), ms a 2^25 window:
+    - production 1,455.1; with the RTX option stack 1,171.5; with the stack at the RTX's rg 32 / 512 / 512 / rcta 8,
+      982.4;
+    - with one-pass: 832.5 (20 slots, rcta 8), 785.4 (40 slots, rcta 4), and 783.1 at 75 slots, rcta 2, rg 32,
+      512 / 512.
+    - uarch sized the slots: about 3/4 of the stage's marks over rcta × 64 tiles bins a CTA.
+  - The gate (`gate_deploy_l4.txt`):
+    - Batch 9.520 → 8.094 s (×0.850), with slice lines identical.
+    - On a production window at f = 0.97, the near-misses from 45,061 were 129 = 129 member by member.
+    - The known case gave 40/40 with the new options and parameters. The 2^19 window runs with one-pass off, because
+      on one tile uarch's host-side check (fc12768) refuses it.
+    - A 2^25 window at f = 0 needs 28 GB of survivor rows, more than an L4 has.
+  - Deployed at 18:55:40-18:56:28Z on gold-l4b, gold-gpu and gold-l4c, together with the lead's item 8: `KLO =
+    3,758,096,384`.
+    - So each vector is scanned only on the top 16 levels of 2^25, and the card then moves on to fresh vectors.
+    - Hits a slice at the top level run ~9% above the bottom level, so this is about +3% against the full
+      [2^30, 2^32).
+    - Each campaign's `search.log` (one name@k0 line a slice) is the record of the levels done;
+      `l4op/levels_done.py` tallies it.
+  - On the T4, bench_split gives 2,553 → 1,739 ms with the same row. The stack alone is slower there (2,715). Its own
+    gate is next.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

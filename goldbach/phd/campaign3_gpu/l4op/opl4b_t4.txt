@@ -1,0 +1,17 @@
+# The same rows on gold-xt4 (Tesla T4, power-capped at 70 W), opl4b.sh, 2026-11-23 18:47:56-18:53:51Z, campaign stopped; ms a 2^25 window of q170000_m88f_top2_v9.
+q170000_m88f_top2_v9
+2026-11-23T18:47:56Z stopping the campaign in /content/c170f
+2026-11-23T18:47:57Z stopped
+L4 production params (rg 16, 256/256, rcta 2), no options  gen 1396.58 (A  590.06 B  806.53)  tile 1033.88  sieve  2553.2  rc 0
++ RTX option stack                                         gen 1054.32 (A  434.62 B  619.70)  tile 1442.28  sieve  2715.0  rc 0
++ stack, rg 32, gen 512, tile 512, rcta 8                  gen 1155.84 (A  347.68 B  808.17)  tile  964.06  sieve  2300.4  rc 0
++ stack, rg 16, gen 512, tile 512, rcta 8                  gen 1186.47 (A  364.00 B  822.47)  tile 1034.84  sieve  2360.6  rc 0
++ stack + LEAN, rg 32, 512/512, rcta 8                     gen 1122.90 (A  571.77 B  551.13)  tile  966.66  sieve  2304.9  rc 0
++ stack + ONEPASS 20 slots, rg 32, 512/512, rcta 8         gen  871.45 (A  365.72 B  505.73)  tile  975.48  sieve  2003.5  rc 0
++ stack + ONEPASS 40 slots, rg 32, 512/512, rcta 4         gen  692.46 (A  356.29 B  336.17)  tile  964.83  sieve  1893.0  rc 0
++ stack + ONEPASS 40 slots, rg 16, 512/512, rcta 4         gen  690.77 (A  366.74 B  324.02)  tile 1024.95  sieve  1786.0  rc 0
++ stack + ONEPASS 75 slots, rg 32, 512/512, rcta 2         gen  623.63 (A  363.39 B  260.24)  tile  965.35  sieve  1738.6  rc 0
++ stack + ONEPASS 75 slots, L4 params (rg 16, 256/256, rcta 2) gen  730.68 (A  510.82 B  219.86)  tile 1436.75  sieve  2388.9  rc 0
+L4 production params again                                 gen 1408.99 (A  590.94 B  818.05)  tile 1035.90  sieve  2549.9  rc 0
+2026-11-23T18:53:51Z campaign restarted in /content/c170f (unchanged)
+OPL4B-DONE
