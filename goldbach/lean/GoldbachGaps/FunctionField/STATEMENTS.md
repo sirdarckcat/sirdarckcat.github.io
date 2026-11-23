@@ -65,6 +65,37 @@ The same without `d ≠ 0`: `Q` monic with `Q' ≠ 0`, `e = deg Q'`, `ℓ = lc(Q
                 Q.discr
 ```
 
+### `discr_sub_eq_resultant`
+
+No condition on the roots of `Q'`. `N' = 0`, `Q' ≠ 0`, `deg Q < n = deg N`, `e = deg Q'`: `discr (N - Q) = (-1)^(n(n-1)/2 + n + ne) · λ^(n-2-e) · Res(Q', N - Q)`.
+
+```lean
+@discr_sub_eq_resultant : ∀ {F : Type u_1} [inst : Field F] {N Q : Polynomial F},
+  Polynomial.derivative N = 0 →
+    Polynomial.derivative Q ≠ 0 →
+      Q.natDegree < N.natDegree →
+        (N - Q).discr =
+          (-1) ^
+                (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree +
+                  N.natDegree * (Polynomial.derivative Q).natDegree) *
+              N.leadingCoeff ^ (N.natDegree - 2 - (Polynomial.derivative Q).natDegree) *
+            (Polynomial.derivative Q).resultant (N - Q) (Polynomial.derivative Q).natDegree N.natDegree
+```
+
+### `discr_sub_congr`
+
+For `N₁`, `N₂` with zero derivative, the same degree above `deg Q` and the same leading coefficient: if `Q'` divides `N₁ - N₂` then `discr (N₁ - Q) = discr (N₂ - Q)`. The discriminant depends on `N` only through its degree, its leading coefficient and its residue modulo `Q'`.
+
+```lean
+@discr_sub_congr : ∀ {F : Type u_1} [inst : Field F] {N₁ N₂ Q : Polynomial F},
+  Polynomial.derivative N₁ = 0 →
+    Polynomial.derivative N₂ = 0 →
+      Polynomial.derivative Q ≠ 0 →
+        Q.natDegree < N₁.natDegree →
+          N₁.natDegree = N₂.natDegree →
+            N₁.leadingCoeff = N₂.leadingCoeff → Polynomial.derivative Q ∣ N₁ - N₂ → (N₁ - Q).discr = (N₂ - Q).discr
+```
+
 ### `squarefree_sub`
 
 `Q` irreducible, `N' = 0`, `Q' ≠ 0`, every irreducible factor of `Q'` divides `N`: `N - Q` is squarefree.
@@ -184,6 +215,48 @@ Hypotheses of `discr_sub_general` with `Q` irreducible (then `Q' ≠ 0` is autom
                           (quadraticChar F) N.leadingCoeff ^ (N.natDegree - 2 - (Polynomial.derivative Q).natDegree) *
                         (quadraticChar F) (Polynomial.derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree) *
                       (-1) ^ (Q.natDegree + 1)
+```
+
+### `parity_card_factors_resultant`
+
+The parity for any `N` with `N' = 0`, with no condition on the roots of `Q'`: `Q' ≠ 0`, `deg Q < n`, `N - Q` squarefree. `(-1)^(n + r) = χ(-1)^(n(n-1)/2 + n + ne) · χ(λ)^(n-2-e) · χ(Res(Q', N - Q))`. The last factor is a quadratic symbol of `N - Q` modulo `Q'`.
+
+```lean
+@parity_card_factors_resultant : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {N Q : Polynomial F},
+      Polynomial.derivative N = 0 →
+        Polynomial.derivative Q ≠ 0 →
+          Q.natDegree < N.natDegree →
+            Squarefree (N - Q) →
+              (-1) ^ (N.natDegree + (UniqueFactorizationMonoid.normalizedFactors (N - Q)).card) =
+                (quadraticChar F) (-1) ^
+                      (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree +
+                        N.natDegree * (Polynomial.derivative Q).natDegree) *
+                    (quadraticChar F) N.leadingCoeff ^ (N.natDegree - 2 - (Polynomial.derivative Q).natDegree) *
+                  (quadraticChar F)
+                    ((Polynomial.derivative Q).resultant (N - Q) (Polynomial.derivative Q).natDegree N.natDegree)
+```
+
+### `parity_card_factors_congr`
+
+`N₁`, `N₂` as in `discr_sub_congr`, both `N₁ - Q` and `N₂ - Q` squarefree: their numbers of irreducible factors have the same parity.
+
+```lean
+@parity_card_factors_congr : ∀ {F : Type u_1} [inst : Field F] [Fintype F] [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {N₁ N₂ Q : Polynomial F},
+      Polynomial.derivative N₁ = 0 →
+        Polynomial.derivative N₂ = 0 →
+          Polynomial.derivative Q ≠ 0 →
+            Q.natDegree < N₁.natDegree →
+              N₁.natDegree = N₂.natDegree →
+                N₁.leadingCoeff = N₂.leadingCoeff →
+                  Polynomial.derivative Q ∣ N₁ - N₂ →
+                    Squarefree (N₁ - Q) →
+                      Squarefree (N₂ - Q) →
+                        (-1) ^ (UniqueFactorizationMonoid.normalizedFactors (N₁ - Q)).card =
+                          (-1) ^ (UniqueFactorizationMonoid.normalizedFactors (N₂ - Q)).card
 ```
 
 ### `isSquare_intCast_of_isSquare_card`

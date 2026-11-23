@@ -218,7 +218,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `N = c · V^p` kills every row of any degree `d < deg N` with `p ∤ d` whose
                derivative has no irreducible factor of degree above `J` (`desert_smooth`), a
                positive proportion of the rows of each such degree; for `p ∣ d`, those that
-               also meet the sign criterion (`desert_smooth_general`). `DesertDegree`: for
+               also meet the sign criterion (`desert_smooth_general`). Without any condition
+               on the roots of `Q'`: `discr (N - Q) = ± λ^(n-2-e) Res(Q', N - Q)` for every
+               `N` with `N' = 0` (`discr_sub_eq_resultant`), so the parity of the number of
+               factors of `N - Q` is a quadratic symbol of `N - Q` modulo `Q'`
+               (`parity_card_factors_resultant`) and depends on `N` only through its degree,
+               its leading coefficient and `N mod Q'` (`parity_card_factors_congr`).
+               `DesertDegree`: for
                `J ≥ 1` the condition `deg Q < deg N` of `desert` is automatic, because
                `x^(q^J) - x` divides `V` (`desert_of_one_le`); for `J = 0` the statement is
                false. `scripts/parity_check/` compares the general formula
