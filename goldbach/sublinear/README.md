@@ -33,7 +33,7 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419 for n = 1 to 13 (`desert.c`). It grows faster than
+  181, 223, 271, 331, 419, 499 for n = 1 to 14 (`desert.c`). It grows faster than
   the r·ln r of the theorem and sits at 40 to 50% of a first-moment estimate
   of order r·ln² r, as do the certified covers at 89 to 93 primes.
 - For the campaign itself the day's gains are in `../fscan/cover/`: the
@@ -717,11 +717,11 @@ fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values (n ≤ 7
 also by brute force over all vectors):
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 |
 
 At n = 89 and 93 the ratio is at least 5.6. So what can be had without luck
 grows faster than the r·ln r of the theorem. A first-moment count says how
