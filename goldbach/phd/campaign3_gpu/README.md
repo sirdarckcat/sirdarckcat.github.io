@@ -548,6 +548,26 @@ Version 3 (22 Nov):
     - Batch: gold-g4 ×0.970 (it took the variant without prefetch), gold-g4b ×0.969, gold-g4c ×0.959.
   - The batch gains less than the sieve does: with the sieve 17% faster, the Fermat side (pool wall ~0.65 s) becomes the
     floor.
+  - In production, 13:18:30-13:34Z: 0.814-0.817 s a batch (`sievepack/production_1318_1334.txt`). Design hits a second
+    rose ×1.04-1.05.
+- uarch's flat flush and grid order (8558276; `DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1`), deployed on the three RTX cards at
+  13:48:32-13:51:31Z on top of the four options above.
+  - The tree is `/content/ua_v6`: `ua_v3` with 8558276's whole `sieve200/cuda`.
+  - Per the instruction accounting, the generate kernel was issue-bound on its warp-a-bin flush, which was half its
+    instructions. FLUSH2 makes the flush one flat loop, a thread a word.
+  - ORDER runs the 4 row slices of a prime chunk together, so they read the prime table from L2.
+  - splitab6 (`sievepack/splitab6_rtxpro6000.txt`): all six options 63.5 ms a window, against 67.7 for production's four.
+    Generate fell from 45.9 to 40.3 ms.
+  - Each card's own check (`flushab.sh`, `flushab_rtxpro6000.txt`) ran production, ua_v6 with production's options,
+    +FLUSH2, and +FLUSH2+ORDER, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs on every card.
+    - The known case with all six options gave the 23 (k, q).
+    - Batch: gold-g4c ×0.967, gold-g4 ×0.957, gold-g4b ×0.963, all with both options.
+  - In this regime the sieve thread is busy about 100% of a batch, and beside the Fermat kernels it runs about 3× slower
+    than alone.
+- The keep fraction, re-swept with the 13:17Z engine (`v89/vsweep3_rtxpro6000.txt`, near-misses from 158,209): ×0.903 /
+  ×0.926 / ×0.942 / ×0.975 / ×1.006 at f = 0.975 / 0.9775 / 0.98 / 0.9825 / 0.9875 against 0.985, and a repeat at 0.985
+  gave ×0.985. f = 0.985 stays.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
