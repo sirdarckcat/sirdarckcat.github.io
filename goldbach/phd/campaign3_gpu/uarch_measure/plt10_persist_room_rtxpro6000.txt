@@ -10,3 +10,13 @@ device NVIDIA RTX PRO 6000 Blackwell Server Edition: 400000 members x 300 rows f
 BENCH-PERSIST-DONE
 (--cta-sm 3 and 2: see above in the run's bench.txt; 0.98x and 0.92x)
 
+--- driver runs --- (mean of all but the last batch; slice lines IDENTICAL to base in every run)
+base : gaps [1.853, 1.826, 1.911, 1.819, 1.839] | mean 1.852 s
+a2   : gaps [1.541, 1.511, 1.591, 1.545, 1.313] | mean 1.547 s
+ps3  : gaps [1.622, 1.669, 1.67, 1.677, 1.634] | mean 1.659 s   (persistent, 3 CTAs an SM, tail rule, a2 sieve, carve-outs)
+ps3f : gaps [1.635, 1.622, 1.633, 1.616, 1.264] | mean 1.627 s  (ps3 with the sieve flat out: GBATCH_SYNC_EVERY=0, no bubble)
+ps2  : gaps [1.915, 1.756, 1.886, 1.737, 1.711] | mean 1.824 s  (2 CTAs an SM)
+ps4t : gaps [1.636, 1.738, 1.725, 1.744, 1.676] | mean 1.711 s  (4 CTAs an SM, 256-thread tile CTAs)
+ps5c : gaps [1.616, 1.692, 1.658, 1.661, 1.608] | mean 1.657 s  (5 CTAs an SM + carve-outs)
+a2b  : gaps [1.502, 1.549, 1.508, 1.529, 1.307] | mean 1.522 s
+# Reading: every persistent configuration is slower than the a2 control (1.522-1.547 s) beside the sieve: +5% (ps3f) to +19% (ps2). Production unchanged.
