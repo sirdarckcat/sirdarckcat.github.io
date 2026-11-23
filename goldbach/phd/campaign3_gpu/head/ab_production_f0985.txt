@@ -1,0 +1,8 @@
+# Deep head, production A/B at f = 0.985 (ab_head.py on each RTX card's gpu3_stats.log, 12:08:00-12:24:00Z): gold-g4c with the head (deployed 12:06:49Z) against gold-g4 and
+# gold-g4b without it. The head is +0.7% a batch (tests -8.4%, expected near-misses a batch the same): taken off gold-g4c at 12:24:38Z (revert_head.py).
+
+gold-g4c [ab] batches 1010 | span 960 s | batch 0.9514 s | near/batch 4.8942e-06 | near/s 5.1441e-06 | hits/s 7.2252e-07 | tests/batch 12933597 | slices/batch 4.000 | first 12:08:00 last 12:24:00
+gold-g4 [ab] batches 1017 | span 960 s | batch 0.9449 s | near/batch 4.8877e-06 | near/s 5.1728e-06 | hits/s 7.2787e-07 | tests/batch 14116875 | slices/batch 4.000 | first 12:08:00 last 12:24:00
+gold-g4b [ab] batches 1017 | span 960 s | batch 0.9449 s | near/batch 4.8950e-06 | near/s 5.1805e-06 | hits/s 7.2967e-07 | tests/batch 14118295 | slices/batch 4.000 | first 12:08:00 last 12:24:00
+
+pipeline traces, last 60 batches at ~12:10Z: gold-g4c (head) sieve busy 0.904 s idle 0.045 s; gold-g4 busy 0.874 s idle 0.070 s; gold-g4b busy 0.870 s idle 0.073 s; consumer waited 0.000 s on all

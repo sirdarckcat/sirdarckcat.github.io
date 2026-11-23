@@ -481,8 +481,18 @@ Version 3 (22 Nov):
     - With and without the head, the per-member dumps were identical for all 12,091,392 members (k, first-PRP row,
       success), and tests fell 8.42%. The logged expected near-misses and design hits were ×0.9998.
     - The dump runs are slow (`savez_compressed`), so they give no timing.
-  - Deployed on gold-g4c at 12:06:49Z, together with f = 0.985. gold-g4c against gold-g4 and gold-g4b (no head, also at
-    f = 0.985) is the production A/B for its batch time.
+  - Deployed on gold-g4c at 12:06:49Z together with f = 0.985, for a production A/B against gold-g4 and gold-g4b (no head,
+    also at f = 0.985).
+    - The A/B (`head/ab_production_f0985.txt`) ran 960 s, about 1,010 batches a card. With the head a batch took 0.9514 s,
+      against 0.9449 s on both other cards: +0.7%. Tests fell 8.4%, and the expected near-misses a batch were the same.
+    - At f = 0.985 the sieve is busy about 92% of a batch: 0.87 s of 0.945 s. So the head's extra sieve work, about 13.6 ms a
+      window beside the Fermat kernel, costs more than the 8.4% of tests save.
+    - The head came off gold-g4c at 12:24:38Z (`head/revert_head.py`).
+- uarch's bench_pipes, parts 1-3 (`uarch_measure/bench_pipes_rtxpro6000.txt`).
+  - A random-address ATOMS.AND costs what a random STS.32 or LDS.32 does: about 2.6 cycles a warp-op an SM, against 5.3-6.7
+    for a plain read-modify-write.
+  - So a race-free marking scheme would not speed the tile kernel. That kernel runs at about 0.8 marks a clock an SM, far
+    below the unit's rate.
 - uarch's E5 (`uarch_measure/e5_ffma_rtxpro6000.txt`): a dummy FFMA inside the real Fermat step adds about 1.2 ticks, close
   to an IADD3 (1.1-1.6), not the ~0 of a free pipe. So the FP32 pipe does not run free beside the multiplier.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
