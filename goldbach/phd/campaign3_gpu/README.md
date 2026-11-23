@@ -282,6 +282,23 @@ Version 3 (22 Nov):
   - `--overlap 1` (the next window's sieve on a second stream) gave no gain: 2.50 → 2.50 s on the slow-check driver.
     `--fermat-cta-sm 3/4` made it worse (2.60-2.85 s), and so did 128-thread tile CTAs.
   - In production on the three RTX PRO 6000s since 03:07Z (`deploy_staged.py`): 1.7-1.8 s a batch, from 2.1 s.
+- Q = 170,000 (23 Nov 03:55-04:04Z on all seven GPUs; the lead's decision, from the research session's table with near-misses
+  counted: expected final record 172,300 against 171,200 at 160,000, flat optimum 167,500-175,000).
+  - Vectors: 9,000 from the research generator (, starting covers of 07ff825; 71 at 1,262
+    rows, 8,929 at 1,263), checked here with . Index: . Split by GPU
+    speed, about 2.4 days of work; more at cap 1,264 to follow. The 12,827 Q = 160,000 vectors stay staged, unused.
+  - Each GPU switched with : , the staged kernel, B = 10^8, NEAR_MISS = 157,837. The
+    script waits for the old campaign process to exit before it starts the new one.
+  - The lead's four conditions:
+    - (1) the vectors above, checked;
+    - (2) 1,300 matrix rows;
+    - (3) memory at 1,262-1,263 rows: L4 16-20 GB of 23 GB, T4 13.2 of 15.4 GB ( returns a card to
+      Q = 150,000 if it runs short);
+    - (4) a Q = 170,000 check slice with identical lines with near-misses on and off ().
+  - Batches: RTX PRO 6000 1.8 s, L4 9.9-10.1 s, T4 10.0-10.2 s a slice: +3-7% over Q = 150,000 from the extra rows. Alive
+    rows 424 a member, E^ 30.2.
+  - Sieve bound with the staged kernel (): 10^8 1.70 s, 2.623e-5 expected hits
+    a second; 2^28 1.90 s, 2.543e-5; 10^9 2.80 s, 1.817e-5. So B stays at 10^8.
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is

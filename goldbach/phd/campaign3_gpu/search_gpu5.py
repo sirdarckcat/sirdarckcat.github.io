@@ -304,10 +304,10 @@ def run_batch(batch, out):
         st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
         rows32 = w.rows.astype(cp.int32)
         rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
-        w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
         pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
         if args.overlap:
             cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
+        w.rows = None                                            # after the synchronize (uarch 5499787): the u16 rows go back to the pool only once read
         npool[0] += int(w.k.size)
         if npool[0] >= args.pool:
             flush()
