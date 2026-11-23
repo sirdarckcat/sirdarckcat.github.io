@@ -198,16 +198,159 @@ large lists, and:
 The instance is special (all lists are images of one set of rows), and that
 is the only place left to look.
 
+## Result 3: what a perfect search would be worth
+
+The numbers wanted exist in abundance; this section counts them. It answers
+"how much would an algorithm be worth that finds members with few rows left
+without trying them", as a function of how far up the primes it can reach.
+
+**Setting.** Fix the target Q = 213,070 (10% of the ceiling). For a depth z,
+call k_z(N) the number of rows q < Q for which N − q has no prime factor ≤ z.
+An N with k_z rows left succeeds with probability (1 − p_z)^k_z, with
+p_z = 2·∏_{3≤s≤z} s/(s−1) / ln N, if nothing is known about N beyond its
+residues modulo the primes up to z. An *ideal search to depth z* tests the even
+N < 10^200 in increasing order of k_z; its cost is the number of N tested
+when the expected number of successes reaches one.
+
+**Method.** The residue vector of N modulo all odd primes up to z is a state;
+its energy is k_z. `ideal_tilt.c` samples the states at 108 temperatures by
+parallel tempering (it is the cover problem with every prime up to z as a
+modulus, at all temperatures instead of only at the bottom), and
+`ideal_tilt.py` turns the histograms into the number of states g(k) at each
+energy by multi-histogram reweighting, normalised by the total ∏ s. The number
+of even N < 10^200 with k rows left is g(k)·(10^200/2)/∏ s, on the assumption
+that the N below 10^200 are a fair sample of the residue vectors, which is the
+assumption every part of the campaign already rests on.
+
+**Check.** For z = 463 (the 89 primes of the best covers) the ideal search *is*
+the present design: best covers first, every member tested. The program gives
+one success per e^39.31 members, and e^−8.49 expected successes for the
+remaining budget of e^30.75 members; the direct calculation from the covers
+(`../fscan/cover/brainstorm/`) gives e^39.2 and 0.02%. The sampler reached the
+known minimum of 1,609 rows.
+
+**Result** (`ideal_tilt_213070.txt`):
+
+| primes used ideally | N tested for one success at 213,070 | rows left at that depth, ideal N | same, typical member of the best cover | expected successes in the remaining budget (e^30.75) |
+|---|---|---|---|---|
+| ≤ 463 (today) | e^39.3 | 1,620 | 1,609 to 1,620 | 0.0002 |
+| ≤ 1,000 | e^35.8 | 1,319 | 1,439 ± 11 | 0.007 |
+| ≤ 2,000 | e^33.4 | 1,116 | 1,309 ± 14 | 0.08 |
+| ≤ 5,000 | e^30.5 | 910 | 1,170 ± 17 | 1.3 |
+| ≤ 20,000 | e^26.7 | 685 | 1,007 ± 18 | 50 |
+| ≤ 10^8, rows beyond 20,000 treated as independent | about e^11.7 | 160 | 542 | — |
+
+So the prize is 3.5 nats for the primes up to 1,000, 5.9 to 2,000, 8.8 to
+5,000 and 12.6 to 20,000, roughly 3 to 4.5 nats per factor e in depth. An
+ideal search to depth 5,000 would bring the 10% record within the Colab units
+that remain; to 20,000 it would bring fifty of them. The last line shows where
+the count goes with the whole sieve: it is the statement, already in the
+brainstorm notes, that the best N for the primes up to 10^7 or 10^8 is
+enormously better than anything the search can afford to find.
+
+The fourth column is measured on 20,000 random members of a cover with 1,609
+rows (mean ± standard deviation). The ideal N are *not* members of the best
+covers: 1,319 rows at depth 1,000 is 10.6 standard deviations below the mean
+of such members, 685 at depth 20,000 is 17.5 below, and the e^39 members of
+all the covers within a few rows of 1,609 reach about 9 standard deviations.
+The ideal N give up a few rows on the small primes and are aligned, mildly,
+with all the primes above: at the temperature that matters, a class change is
+accepted with
+probability below 0.01 for moduli under 128, about 0.1 for 128 to 512, 0.4 for
+512 to 2,048, 0.7 for 2,048 to 8,192 and 0.9 above. No prime beyond 512 is
+pinned to its best class; each is in a better-than-average one.
+
+Caveats. (i) Tempering at low temperature is not fully in equilibrium (the
+bottom of the z = 463 table is 20 nats low against direct counts); the error
+moves the cost by about p_z·ΔS/β, 0.2 to 0.5 nats, in the direction of
+understating the prize. (ii) The budget is counted in full-weight members,
+that is, with the fleet's deep sieve and 3% rule behind each tested N in every
+line. That selection is worth 2.0 nats today and about 1.8 after an ideal
+search to 20,000, which has already used part of the same information.
+
+## Why nothing known collects the prize
+
+The 460.5 nats of 10^200 are exactly enough to *choose* the residues of N
+modulo the primes up to 463 (their product is 10^192.7). That choice is the
+cover, and enumerating covers best-first is an ideal search to depth 463: this
+part of the problem is solved. Everything in the table above lies beyond that
+line, and the line is sharp for a structural reason.
+
+1. *Free coordinates stop at ∏ s ≤ X.* By the Chinese remainder theorem the
+   residues modulo any primes with product at most X = 10^200 can be
+   prescribed, and N is then determined. The residue modulo any further prime
+   is a sum of one term per free coordinate, reduced modulo that prime
+   (N = Σ a_r e_r − jM), so changing a single coordinate changes every
+   further residue. Two different N < X agree modulo primes of total size
+   below ln X only (`move_budget`, proved in Lean). There are no local moves:
+   beyond the line the landscape is that of a random-energy model.
+2. *Lattices.* Chinese remaindering with errors or with lists (Goldreich–Ron–
+   Sudan, Boneh, Guruswami–Sahai–Sudan, Bleichenbacher–Nguyen) finds N from
+   residues when the lists are short and the agreement high: the weighted
+   agreement must exceed about sqrt(ln X · Σ w²/ln s). Here the constraint
+   available per prime beyond the line is about one nat (if the primes up to
+   about 400 are pinned, some 80 nats are left for the 79 primes from 467 to
+   997, and less per prime further up), which means lists holding a third of
+   all classes. For the 580 primes from 467 to 5,000 with one-class lists, in
+   a population of e^83, the best agreement that *exists* is about 22 against
+   a decoding radius of 78; with lists of a third the radius exceeds the
+   number of primes.
+3. *Meet in the middle and generalised birthday.* The linear form of the
+   residues does allow these. With population e^F, constraint cost
+   C = Σ ln(s/l_s) and list entropy H = Σ ln l_s, the solutions number
+   e^(F−C) and a meet in the middle produces them at constant cost each only
+   when H ≤ 2(F − C), with lists of e^(H/2) in memory. For the whole problem
+   (F = 460, C ≈ 425) and a memory of e^21 entries that extends the reach by
+   one prime; Wagner's tree needs more slack, not less. The equivalent
+   statement in the design: covers on 90 or more primes (fewer than one member
+   each) are usable in principle and worth about 0.2 nats per extra prime,
+   and that is all.
+4. *Hashing for near neighbours.* Writing N = u + v, the agreement of a pair
+   is an inner product of a one-hot vector with a set indicator, block by
+   block. The sets are sum-sets of random-looking class lists, so any
+   locality-sensitive scheme collides on a good pair at most about twice as
+   often as on a random one for a bucket of the same size; the exponent is
+   0.88, i.e. K^0.94 work for a population K. Populations here are e^80 and
+   more against e^33 operations available.
+5. *Linear-time scoring.* What remains is to score every member, which is
+   what the fleet's sieve does at 23 ns a member. Under that cost the present
+   design is at its optimum: the gain of selection depends only on the kept
+   fraction, the kept fraction is fixed by sieve cost against test cost, and
+   the sieve cannot skip members (marks are generated along progressions).
+   The Lean session's bound (a perfect solver on the present progressions is
+   worth at most 4.3 to 5.3 nats over the 3% rule) is this statement for a
+   population of e^22.
+
+In the language of the literature: collecting the prize means solving *noisy
+Chinese remaindering with dense lists* on average — rate 460/1,940 and lists of
+about a third of the classes for depth 2,000 — or equivalently maximum-
+likelihood decoding of a Chinese-remainder code far below the Johnson radius.
+The polynomial version was proposed as a hardness assumption (Naor–Pinkas) and
+lattice attacks are known only for short lists (Bleichenbacher–Nguyen). Nothing
+here proves that no algorithm exists. The claim is narrower: the prize is
+real and of known size, the cover collects all of it that lies below the
+Chinese-remainder line, and beyond the line every method we know of costs more
+than scoring the members one by one.
+
+**Open problem (P′).** Find even N < 10^200 for which at most 1,320 of the
+primes q < 213,070 have N − q free of prime factors up to 1,000, at a cost of
+fewer than e^30 operations in all for e^30 such N. About e^36 such N exist; the
+best covers give 1,439 ± 11 and nothing below about 1,340 within any budget
+considered here. A solution is worth 3.5 nats (a factor of 30) at the 10%
+target, and the same question at depth 5,000 (910 rows) is worth 8.8.
+
 ## Ladder
 
 | rung | what | who | state |
 |---|---|---|---|
-| 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | statement confirmed by an independent derivation (23 Nov); Lean proof in progress |
+| 1 | Toy theorem (parity) and corollary, formal proof; Stickelberger–Swan as a hypothesis or proved | Lean | proved in Lean with Stickelberger–Swan as the one named hypothesis (`FunctionField/ParityDesert.lean`, commit 3b03ff8 on the Lean branch); the hypothesis itself in progress |
 | 2 | Toy search with the parity filter: measure the factor against the model | research | done: 4 to 5 times (Result 2) |
 | 3 | Toy instance small enough to enumerate every member: does anything besides parity and the symmetries of F_q[x] predict the best members? | research | to do |
-| 4 | Barrier statements for the integer search, formal: black-box lower bound; decoding-radius inequality for our parameters; what residue information can never give | Lean | to do |
+| 4 | Barrier statements for the integer search, formal: black-box lower bound (m queries find one of the g best of K with probability at most m·g/(K − m)); decoding-radius inequality for our parameters (agreement must exceed sqrt(e·ln K/4) = 3.88 times the typical one for K = 2^32); the meet-in-the-middle condition H ≤ 2(F − C) | Lean | statements agreed; formal proofs queued behind rung 1 |
 | 5 | Integer candidates for information that is not a residue (anything cheaper than a Fermat test that correlates with primality of a rough number, in a special family of N) | both | open; no candidate yet |
 | 6 | Constants: wheel and list merges inside the production sieve | research | costed at 0.1 to 0.4 nats, not started |
+| 7 | The prize: number of N by rows left at depth z, and the cost of an ideal search | research | done for z up to 20,000 at the 10% target (Result 3): 3.5, 5.9, 8.8, 12.6 nats |
+| 8 | Problem (P′): any method that reaches beyond the Chinese-remainder line at less than the cost of scoring every member | both | open; lattices, meet in the middle, birthday trees and hashing ruled out with numbers (above) |
 
 ## References
 
@@ -221,6 +364,9 @@ is the only place left to look.
 - V. Guruswami, A. Vardy, Maximum-likelihood decoding of Reed–Solomon codes
   is NP-hard (2005). Q. Cheng, D. Wan, on the decodability of Reed–Solomon
   codes and discrete logarithms.
+- M. Naor, B. Pinkas, Oblivious transfer and polynomial evaluation, STOC 1999
+  (noisy polynomial interpolation as a hardness assumption). D. Wagner, A
+  generalized birthday problem, CRYPTO 2002.
 - D. Bleichenbacher, P. Nguyen, Noisy polynomial interpolation and noisy
   Chinese remaindering, EUROCRYPT 2000. O. Goldreich, D. Ron, M. Sudan,
   Chinese remaindering with errors (1999). D. Boneh, Finding smooth integers
