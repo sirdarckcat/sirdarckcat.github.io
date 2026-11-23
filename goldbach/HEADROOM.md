@@ -41,9 +41,13 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
    projection is ~1.5 s (x1.17), untested.  Not yet a production number: the driver needs the cross-batch sieve thread, because a batch of 2 windows exposes the first sieve and the last Fermat.  The L4 / T4 (sieve ~36% of their batch) should gain more, ~x1.4-1.5
    (`run_overlap_probe.sh` with `VARIANT=s1rw MODE=fleet`); the fleet in all ~ +22-26% (3 RTX x1.20 + 0.7 RTX-equivalents of L4 / T4 x ~1.4).  Before the measurement this was a guess (x1.3 / +33%); the 03:10Z trial
    that seemed to say it does not work had one flush a batch and could not have shown anything.
-2. **More GPUs.**  The fleet is ~3.7 RTX-PRO-6000 equivalents of Fermat throughput (3 RTX + 3 L4 at 0.20 + a T4 at 0.11).  An RTX 5090 is 0.9 of one.  Marketplace prices of November 2026: a 5090
-   $0.49-1.12 an hour (median ~$0.75), RunPod $0.69-1.19, market median $0.72 over 18 providers; Colab's G4 (the RTX PRO 6000) ~8.7 compute units an hour, ~$0.87.  So an RTX-equivalent costs ~$0.8-0.9
-   an hour, ~$20 a day: **x2 = +3.7 of them = ~$75 a day, x3 ~$150, x5 ~$300** (2.4 days of campaign: ~$180 / ~$360 / ~$720).  Consumer cards are the cheapest integer multipliers there are.  The software
+2. **More GPUs.**  The fleet is ~3.7 RTX-PRO-6000 equivalents of Fermat throughput (3 RTX + 3 L4 at 0.20 + a T4 at 0.11).  An RTX 5090 is ~0.9 of one, an RTX 4090 ~0.55-0.7 (an estimate from the L4's measured 0.20,
+   SM count x clock).  Prices are third-party aggregator figures of Oct-Nov 2026 (live prices move by the hour): RTX 5090 on Vast.ai median ~$0.78 an hour, range $0.49-1.12
+   ([ThunderCompute](https://www.thundercompute.com/blog/nvidia-rtx-5090-pricing)); market median $0.72 over 18 providers ([Getdeploying](https://getdeploying.com/reference/cloud-gpu/nvidia-rtx-5090)), $0.50-1.25 with median $0.72
+   ([AmCompute](https://www.amcompute.com/gpu-cloud-prices/rtx-5090)); [RunPod](https://www.runpod.io/gpu-models/rtx-5090) $0.69-1.19.  RTX 4090: median on-demand ~$0.48-0.49
+   ([Getdeploying](https://getdeploying.com/reference/cloud-gpu/nvidia-rtx-4090), [AmCompute](https://www.amcompute.com/gpu-cloud-prices/rtx-4090)).  Colab's G4 (the RTX PRO 6000): ~8.7 compute units an hour, ~$0.87 - a third-party
+   figure ([ThunderCompute](https://thundercompute.com/blog/colab-alternatives-for-cheap-deep-learning-in-2025)); Google's own pricing page did not come up.  So an RTX-equivalent costs ~$0.7-0.9 an hour whichever card is
+   rented (the 4090's lower price buys proportionally less multiplier), ~$20 a day: **x2 = +3.7 of them = ~$75 a day, x3 ~$150, x5 ~$300** (2.4 days of campaign: ~$180 / ~$360 / ~$720).  The software
    runs unchanged on any sm_75 / 80 / 86 / 89 / 120 card (NVRTC builds for the device); what a rented box needs is the staging the GPU session already does for Colab.
 3. **The return on compute is logarithmic**: raising the target by 1,000 costs 0.21 nats (8.7 more uncovered rows), so x2 compute = +0.69 nats = +3,300 on the expected final record (172,300 -> ~175,600), x5 = +7,700
    (~180,000).  Speed is worth having; it does not change the order of magnitude of the answer.
