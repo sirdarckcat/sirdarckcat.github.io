@@ -174,7 +174,13 @@ came from this set at 170,000. With 8.5 fleet-days left and that record in
 hand, `brainstorm/portfolio_budget.py 8.5 29e6 158209 0 m89` gives an expected
 final record of 172,700 at design 170,000, 173,000 at 175,000 and 171,200 at
 180,000: 170,000 to 175,000 are equivalent, and the design need not move
-before the record does.
+before the record does. (The 29 million members a second in that command was
+the planning figure of the morning. The fleet's measured expected design hits
+of the evening, checked against its tally of expected and found successes at
+earlier design levels (about 9 expected, 9 found), correspond to 52 million in
+the model's units; with that rate the expected final record is about 175,000
+to 176,000, and what matters most is the family of the cover: see "Rows above
+the design level" below.)
 
 **Which 89th prime.** The 89th modulus need not be 463. Extending each
 first-88 cover (below) by the best class of a candidate prime r screens all
