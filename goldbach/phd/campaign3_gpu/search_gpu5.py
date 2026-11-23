@@ -13,7 +13,7 @@ Selection, accounting and log lines are search_gpu3.py's:
 - tests counted up to each member's first base-2 PRP.
 check_v5.sh compares the slice lines with search_gpu3.py's on production slices. Slices must be whole windows of 2^klog members.
 """
-import argparse, json, math, os, re, sys, time
+import argparse, json, math, os, re, sys, threading, time
 import numpy as np
 
 ap = argparse.ArgumentParser()
@@ -51,6 +51,12 @@ ap.add_argument("--deep-gen-threads", type=int, default=256, help="--deep: CTA s
 ap.add_argument("--fermat-cta-sm", type=int, default=0,
                 help="with --overlap: launch the Fermat kernel in chunks of this many CTAs an SM (e.g. 3 of the 5 that fit), leaving registers and shared memory free on every SM "
                      "for the sieve's CTAs to sit beside them; 0 = one launch a round, as before")
+ap.add_argument("--profile-pool", type=int, default=0, choices=(0, 1),
+                help="1: time the Fermat kernels of every round of every pool with CUDA events and print, per pool, the rounds, the kernels' GPU seconds, the wall seconds of run_pool and the gap "
+                     "between them (the GPU idle between rounds: the host's syncs and cupy calls), and the wall of the whole flush; no change to the results")
+ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2),
+                help="2: a pool's members are tested as two halves in two threads, each on its own CUDA stream (run_pool_split): while one half's host code runs between its Fermat rounds (syncs, ~40 small "
+                     "cupy launches) the other half's kernel keeps the GPU busy; the same per-member results as 1 (counted tests, PRP flags, successes, first-PRP rows)")
 ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
                 help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
@@ -188,7 +194,7 @@ def verify_near_miss(spec, k, q):
     return {"k": k, "N": str(N), "digits": len(str(N)), "g": int(q), "near_miss": True, "Q": int(spec["Q"])}
 
 
-def run_pool(tester, kv, cnt, cols):
+def run_pool(tester, kv, cnt, cols, target=None):
     """Members kv[m] with survivors cols[indptr[m]:indptr[m+1]] (global cq rows, ascending q).
     Returns per member: tests counted up to the first PRP, whether a PRP was found, success, the global row of the first
     PRP (-1 if none); and the tests computed on the GPU.  Every row a member is tested on is checked, as it is tested, to be
@@ -196,6 +202,8 @@ def run_pool(tester, kv, cnt, cols):
     list, checked ascending in MultiTester), and a round's first PRP is the lowest offset with flag 1: the first-PRP row is
     the first probable prime over the member's fully tested prefix."""
     n = int(kv.size)
+    prof = [] if args.profile_pool else None
+    t_prof = time.perf_counter()
     indptr = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
     frow = cp.full(n, -1, cp.int64)
     last = cp.full(n, -1, cp.int64)                            # the last row each member was tested on
@@ -207,7 +215,7 @@ def run_pool(tester, kv, cnt, cols):
     gtests = launches = 0
     while act.size:
         rem = cnt[act] - pos[act]
-        D = int(max(1, min(args.dmax, int(rem.max()), args.target // int(act.size))))
+        D = int(max(1, min(args.dmax, int(rem.max()), (args.target if target is None else target) // int(act.size))))
         take = cp.minimum(rem, D)
         csum = cp.cumsum(take)
         total = int(csum[-1])
@@ -215,7 +223,11 @@ def run_pool(tester, kv, cnt, cols):
         off = cp.arange(total) - (csum - take)[m_of]
         ip = (indptr[act] + pos[act])[m_of] + off
         rowsv = cols[ip]
+        if prof is not None:
+            e0 = cp.cuda.Event(); e1 = cp.cuda.Event(); e0.record()
         flags = tester.test(rowsv, kv[act][m_of].astype(cp.uint32))
+        if prof is not None:
+            e1.record(); prof.append((e0, e1, total))
         prev = last[act][m_of]                                  # the row before each tested row: the member's last row, or the one before it here
         if total > 1:
             same = m_of[1:] == m_of[:-1]
@@ -242,7 +254,53 @@ def run_pool(tester, kv, cnt, cols):
         act = act[(~hit) & (~done)]
         gtests += total
         launches += 1
+    if prof is not None:
+        cp.cuda.Device().synchronize()
+        wall = time.perf_counter() - t_prof
+        kern = sum(cp.cuda.get_elapsed_time(a, b) for a, b, _ in prof) / 1e3          # (cupy has no Event.elapsed_time: the module function)
+        print(f"[profile-pool] {n} members, {launches} rounds, {gtests} tests: Fermat kernels {kern:.3f} s on the GPU, run_pool wall {wall:.3f} s, gap {wall - kern:.3f} s "
+              f"({100 * (wall - kern) / max(wall, 1e-9):.1f}% of run_pool); {gtests / max(kern, 1e-9) / 1e6:.1f}M tests/s while a kernel runs, {gtests / max(wall, 1e-9) / 1e6:.1f}M over the pool", flush=True)
     return tests_m, prp_m, succ_m, frow, gtests, launches
+
+
+_SPLIT_STREAMS = []             # two long-lived streams: cupy's pool keeps a free list per stream, so a stream made for every pool would strand its blocks
+
+
+def run_pool_split(tester, kv, cnt, cols):
+    """run_pool on two halves of the members (split at a member boundary) in two threads, each on its own non-blocking stream.  Same results per member as run_pool; the numbers of computed tests and launches
+    differ a little (a half's rounds are sized by its own active members)."""
+    n = int(kv.size)
+    if n < 4096:
+        return run_pool(tester, kv, cnt, cols)
+    if not _SPLIT_STREAMS:
+        _SPLIT_STREAMS.extend(cp.cuda.Stream(non_blocking=True) for _ in range(2))
+    offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])          # (also waits for the caller's stream: kv, cnt and cols are complete before the threads read them)
+    mid = n // 2
+    cut, end = int(offs[mid]), int(offs[n])
+    parts = [(0, mid, 0, cut), (mid, n, cut, end)]
+    res, err = [None, None], []
+    dev = cp.cuda.Device().id
+
+    def work(i):
+        try:
+            cp.cuda.Device(dev).use()
+            a, b, ca, cb = parts[i]
+            with _SPLIT_STREAMS[i]:
+                res[i] = run_pool(tester, kv[a:b], cnt[a:b], cols[ca:cb], target=args.target // 2)         # half the tests a round: the same rows a member per round (the same waste) as one pool
+                _SPLIT_STREAMS[i].synchronize()
+        except BaseException as e:                                          # handed to the caller
+            err.append(e)
+    ths = [threading.Thread(target=work, args=(i,)) for i in range(2)]
+    for t in ths:
+        t.start()
+    for t in ths:
+        t.join()
+    if err:
+        raise err[0]
+    (t0, p0, s0, f0, g0, l0), (t1, p1, s1, f1, g1, l1) = res
+    out = (cp.concatenate([t0, t1]), cp.concatenate([p0, p1]), cp.concatenate([s0, s1]), cp.concatenate([f0, f1]), g0 + g1, l0 + l1)
+    cp.cuda.get_current_stream().synchronize()                              # the concatenations are done before the halves' arrays go back to their streams' free lists
+    return out
 
 
 def run_batch(batch, out):
@@ -258,6 +316,7 @@ def run_batch(batch, out):
     def flush():
         if not pool:
             return
+        t_flush = time.perf_counter()
         sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
         kv = cp.concatenate([c[1] for c in pool])
         cnt = cp.concatenate([c[2] for c in pool])
@@ -265,7 +324,7 @@ def run_batch(batch, out):
         if args.overlap:
             cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
         pool.clear(); npool[0] = 0
-        tests_m, prp_m, succ_m, frow, g, nl = run_pool(tester, kv, cnt, cols)
+        tests_m, prp_m, succ_m, frow, g, nl = (run_pool_split if args.pool_threads > 1 else run_pool)(tester, kv, cnt, cols)
         gt[0] += g; gt[1] += nl
         tt, pp = int(tests_m.sum()), int(prp_m.sum())
         if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count
@@ -280,6 +339,8 @@ def run_batch(batch, out):
             nm = cp.nonzero(qf >= args.near_miss)[0]
             for i, si, k, q in zip(nm.tolist(), sid[nm].tolist(), kv[nm].tolist(), qf[nm].tolist()):
                 st[si]["near"].append((int(k), int(q)))
+        if args.profile_pool:
+            print(f"[profile-pool] flush wall {time.perf_counter() - t_flush:.3f} s (the pool's Fermat rounds, its concatenations and the per-slice statistics)", flush=True)
 
     K = 1 << args.klog
     plan = []                                                    # (si, spec, kstart, kmax), checked before any GPU work

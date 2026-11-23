@@ -299,6 +299,18 @@ Version 3 (22 Nov):
     rows 424 a member, E^ 30.2.
   - Sieve bound with the staged kernel (`uarch_measure/bsweep_staged_rtxpro6000.txt`): 10^8 1.70 s, 2.623e-5 expected hits
     a second; 2^28 1.90 s, 2.543e-5; 10^9 2.80 s, 1.817e-5. So B stays at 10^8.
+- Pool split and round profile (23 Nov 04:15Z, the uarch session's `search_gpu5_roundprof.patch` and `search_gpu5_poolsplit.patch`).
+  - `--profile-pool 1` on an RTX PRO 6000 at Q = 170,000 (`uarch_measure/profile_pool_rtxpro6000.txt`): 44-45 Fermat
+    rounds a pool take 1.27 s on the GPU, and the GPU idles 0.08-0.10 s between rounds, ≈5% of a 1.8 s batch.
+  - `--pool-threads 2` tests a pool as two halves (split at a member boundary) in two threads on two streams.
+    `uarch_measure/poolsplit_check_rtxpro6000.txt`: slice lines identical to the production driver, steady batches 1.80 →
+    1.70 s, and the 146,191 near-miss is still reported.
+  - In production on the three RTX PRO 6000s since 04:16Z (`restart_ps.py`). Not on the L4s or the T4, whose ~10 s batches
+    leave proportionally less idle time.
+- Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
+  - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
+  - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
+  - s2r_asm (−3.5%) and s4r_asm (−7.9%) only add cost, so production stays on s1r_asm.
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is
