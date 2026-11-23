@@ -1,0 +1,20 @@
+# The bundle of small sieve items (uarch 88fe93c..b4e60df) on gold-g4c, bundle8.sh, 2026-11-23 14:31:43-14:33:02Z (campaign paused), ms a 2^24 window on production's stack.
+# None reaches 1% of a batch: the tile kernel's clamped loads no change; PF 384 / 512, the split points and tile 18 slower; the pipelined tile kernel at AT=64 -1.5 ms (~0.5% of a batch).
+
+2026-11-23T14:31:43Z paused pid 2426669
+ua_v7 (production tree) PF=256           gen   28.74 (A  10.80 B  17.95)  tile   20.78 (small   8.12 apply   8.95)  sieve   50.7  rc 0
+ua_v8 PF=256 (reference)                 gen   28.79 (A  10.82 B  17.98)  tile   20.79 (small   8.12 apply   9.02)  sieve   50.6  rc 0
+ua_v8 PF=384                             gen   28.77 (A  10.80 B  17.97)  tile   21.83 (small   8.98 apply  10.08)  sieve   52.3  rc 0
+ua_v8 PF=512                             gen   28.80 (A  10.81 B  17.98)  tile   21.88 (small   9.01 apply  10.10)  sieve   52.0  rc 0
+ua_v8 PF=256 split 524288                gen   32.75 (A  12.16 B  20.60)  tile   19.88 (small   5.47 apply  10.54)  sieve   53.8  rc 0
+ua_v8 PF=256 split 700000                gen   30.88 (A  11.52 B  19.36)  tile   20.18 (small   6.56 apply  10.01)  sieve   52.2  rc 0
+ua_v8 PF=256 split 1500000               gen   26.67 (A  10.00 B  16.67)  tile   23.59 (small  11.91 apply   8.36)  sieve   51.6  rc 0
+ua_v8 tile 18 PF=128                     gen   31.58 (A  11.11 B  20.47)  tile   24.44 (small  10.85 apply  10.50)  sieve   57.2  rc 0
+ua_v8 tile 18 no PF                      gen   31.60 (A  11.12 B  20.48)  tile   20.65 (small   7.40 apply   6.76)  sieve   53.8  rc 0
+ua_v8 TILE_PIPE AT=128 CH=4092           gen   28.75 (A  10.78 B  17.96)  tile   20.35 (small   7.77 apply   7.58)  sieve   50.2  rc 0
+ua_v8 TILE_PIPE AT=64                    gen   28.75 (A  10.79 B  17.96)  tile   19.18 (small   6.38 apply   6.81)  sieve   49.2  rc 0
+ua_v8 TILE_PIPE AT=192                   gen   28.74 (A  10.78 B  17.96)  tile   21.80 (small   9.20 apply   7.84)  sieve   51.6  rc 0
+ua_v8 TILE_PIPE AT=128 CH=2040           gen   28.75 (A  10.79 B  17.97)  tile   19.76 (small   6.94 apply   7.02)  sieve   49.6  rc 0
+ua_v8 PF=256 (reference again)           gen   28.74 (A  10.79 B  17.95)  tile   20.79 (small   8.12 apply   9.03)  sieve   50.9  rc 0
+2026-11-23T14:33:02Z resumed pid 2426669
+BUNDLE8-DONE
