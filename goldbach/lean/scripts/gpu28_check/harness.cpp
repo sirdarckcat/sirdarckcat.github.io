@@ -1,9 +1,11 @@
 // The fermat28 kernel source compiled for the CPU, driven by test lines on stdin.
 //   g++ -O2 -DSTEPFILE='"fermat28_step_s1.cuh"' -I path/to/goldbach/fermat661/cuda -o harness harness.cpp
-// Lines:  step X N b     -> "step Y"     x = limbs of X, n = limbs of N, np = fm28_inv_neg28(low word of N)
+// Lines:  step X N b     -> "step Y23..Y0"   x = the 28-bit limbs of X, n = limbs of N, np = fm28_inv_neg28(low word of N)
+//         rstep X23..X0 N b -> "rstep Y23..Y0"  x given limb by limb (8 hexadecimal digits each, top limb first): limbs up to 2^29 - 1
 //         inv LO         -> "inv NP"
-//         fermat N       -> "fermat F"   the whole kernel on cq = N, M = 0, k = 0
-// Numbers in hexadecimal.
+//         fermat N       -> "fermat F"       the whole kernel on cq = N, M = 0, k = 0
+// Numbers in hexadecimal. Output limbs are printed raw, 8 digits each, top limb first, so that
+// the redundant steps (limbs below 2^29, no carry chain) can be compared limb for limb.
 #include <cstdint>
 #include <cstddef>
 #include <cstdio>
@@ -17,6 +19,8 @@ typedef unsigned long long u64;
 #define __global__
 static inline int __clz(u32 x) { return __builtin_clz(x); }
 struct { unsigned x; } blockIdx, blockDim, threadIdx;
+// the "mulw" steps write m_i n_j with the PTX instruction mul.wide.u32; on the CPU it is the plain 32 x 32 -> 64 product
+#define FM28_MADN(acc, a, b) ((acc) += (u64)(u32)(a) * (u32)(b))
 #include STEPFILE
 #include "fermat28_kernel.cuh"
 
@@ -30,19 +34,25 @@ static u32 bits_of(const std::string &s, int lo, int width) {
     }
     return v;
 }
+static void print_limbs(const char *tag, const u32 *x) {
+    printf("%s ", tag);
+    for (int i = NL - 1; i >= 0; i--) printf("%08x", x[i]);
+    printf("\n");
+}
 int main() {
-    char op[16], a[400], b[400]; unsigned bb;
+    static char op[16], a[400], b[400]; unsigned bb;
     blockDim.x = 1; blockIdx.x = 0; threadIdx.x = 0;
     while (scanf("%15s", op) == 1) {
-        if (!strcmp(op, "step")) {
+        if (!strcmp(op, "step") || !strcmp(op, "rstep")) {
             if (scanf("%399s %399s %u", a, b, &bb) != 3) return 1;
             std::string X(a), N(b);
             u32 x[NL], n[NL];
-            for (int i = 0; i < NL; i++) { x[i] = bits_of(X, 28 * i, 28); n[i] = bits_of(N, 28 * i, 28); }
+            for (int i = 0; i < NL; i++) {
+                x[i] = op[0] == 'r' ? bits_of(X, 32 * i, 32) : bits_of(X, 28 * i, 28);
+                n[i] = bits_of(N, 28 * i, 28);
+            }
             fm28_step(x, n, fm28_inv_neg28(bits_of(N, 0, 32)), bb);
-            printf("step ");
-            for (int i = NL - 1; i >= 0; i--) printf("%07x", x[i]);
-            printf("\n");
+            print_limbs(op, x);
         } else if (!strcmp(op, "inv")) {
             if (scanf("%399s", a) != 1) return 1;
             printf("inv %07x\n", fm28_inv_neg28((u32)strtoul(a, 0, 16)));

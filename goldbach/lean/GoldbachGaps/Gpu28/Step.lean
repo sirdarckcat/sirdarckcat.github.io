@@ -18,10 +18,24 @@ variants with 2 or 4 accumulators per column add the same products in another gr
 wrapping addition is commutative, so they compute the same `acc` and the theorem applies to
 them as well.
 
-`step_spec` (with `B = 2^28`, `R = B^L`, `X`, `N` the values of `x`, `n`): if all limbs are
-below `B`, `X < 4N`, `16 N < R`, `n_0 · np ≡ -1 (mod B)`, `b ≤ 1` and `L ≤ 24`, then the output
-limbs are below `B`, `R · Y = 2^b (X² + μ N)` for some `μ < R`, and `Y < 4N`. No accumulator
-wraps on the way (`colAcc_eq`: every column sum is below `2^62`).
+`pre_spec` (with `B = 2^28`, `R = B^L`, `X`, `N` the values of `x`, `n`): if the limbs of `x`
+are below `2^29`, those of `n` below `B`, `X < 4N`, `16 N < R`, `n_0 · np ≡ -1 (mod B)` and
+`L ≤ 24`, then the limbs `y_i` are below `B` and their value `Y` satisfies `R · Y = X² + μ N`
+for some `μ < R`, with `Y < 2N`. No accumulator wraps on the way (`colAcc_eq`: every column
+sum is below `2^63`).
+
+Two endings of the step follow from it, for `b ≤ 1`:
+
+* `step_spec`, the carry chain above (`stepF`): output limbs below `B`, `R · Y' = 2^b (X² + μ N)`,
+  `Y' < 4N`.
+* `stepR_spec`, the redundant step of `fermat28_step_s1r.cuh`, `_r.cuh`, `_s1rw.cuh` (commit
+  `fa7d9d1`), which ends with `x_i = y_i << b` and no carry chain (`stepR`): output limbs below
+  `2^29`, the same relation and `Y' < 4N`. So "limbs below `2^29`, value below `4N`" is an
+  invariant of the loop.
+
+The files with `FM28_MADN` (`mul.wide.u32`) or `FM28_ASM` (`mad.wide.u32`) write the same
+products with PTX instructions; the model takes those at their documented meaning, the exact
+32 × 32 → 64 bit product and multiply-add.
 -/
 
 namespace Gpu28
@@ -131,7 +145,7 @@ theorem prodSum_redTerms (m n : ℕ → ℕ) (L k : ℕ) : prodSum (redTerms m n
   refine Finset.sum_congr rfl fun i _ => ?_
   simp only [decide_eq_true_eq, Function.comp]
 
-theorem prodSum_sqTerms {x : ℕ → ℕ} (hx : ∀ i, x i < B) (L k : ℕ) :
+theorem prodSum_sqTerms {x : ℕ → ℕ} (hx : ∀ i, x i < 2 * B) (L k : ℕ) :
     prodSum (sqTerms x L k) = conv x x L k := by
   unfold sqTerms
   rw [prodSum_append, conv_self]
@@ -196,22 +210,26 @@ theorem conv_update_self (m n : ℕ → ℕ) {L k : ℕ} (v : ℕ) (hk : k < L) 
     conv (Function.update m k v) n L k = redSum m n L k + v * n 0 := by
   rw [← redSum_add (m := Function.update m k v) hk, redSum_update m n v hk, Function.update_self]
 
-/-- **No accumulator wraps (C3).** With limbs below `2^28`, at most 24 limbs and a carry below
-`2^36`, the accumulator of a column is the exact sum, and the two sums are at most
-`48 · 2^56`. -/
-theorem colAcc_eq {x n m : ℕ → ℕ} {L c : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < B)
+/-- **No accumulator wraps (C3).** With limbs of `x` below `2^29` (below `2^28` in the plain
+step, below `2^29` in the redundant one), limbs of `n` and `m` below `2^28`, at most 24 limbs
+and a carry below `2^36`, the accumulator of a column is the exact sum, and the two sums are
+at most `120 · 2^56 < 2^63`. -/
+theorem colAcc_eq {x n m : ℕ → ℕ} {L c : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < 2 * B)
     (hn : ∀ i, n i < B) (hm : ∀ i, m i < B) (hc : c < 2 ^ 36) (k : ℕ) :
     colAcc x n m L k c = c + conv x x L k + redSum m n L k ∧
-      conv x x L k + redSum m n L k ≤ 48 * 2 ^ 56 := by
-  have hb1 : conv x x L k ≤ L * (B * B) :=
+      conv x x L k + redSum m n L k ≤ 120 * 2 ^ 56 := by
+  have hb1 : conv x x L k ≤ L * (2 * B * (2 * B)) :=
     conv_le (fun i j => Nat.mul_le_mul (hx i).le (hx j).le) L k
   have hb2 : conv m n L k ≤ L * (B * B) :=
     conv_le (fun i j => Nat.mul_le_mul (hm i).le (hn j).le) L k
   have hb3 := redSum_le_conv m n L k
-  have hb4 : L * (B * B) ≤ 24 * 2 ^ 56 := by
+  have hb4 : L * (2 * B * (2 * B)) ≤ 96 * 2 ^ 56 := by
+    have := Nat.mul_le_mul_right (2 * B * (2 * B)) hL
+    omega
+  have hb5 : L * (B * B) ≤ 24 * 2 ^ 56 := by
     have := Nat.mul_le_mul_right (B * B) hL
     omega
-  have hbound : conv x x L k + redSum m n L k ≤ 48 * 2 ^ 56 := by omega
+  have hbound : conv x x L k + redSum m n L k ≤ 120 * 2 ^ 56 := by omega
   refine ⟨?_, hbound⟩
   unfold colAcc
   rw [madFold_eq, prodSum_append, prodSum_sqTerms hx, prodSum_redTerms]
@@ -238,7 +256,8 @@ theorem Ssum_update (x n m : ℕ → ℕ) (L : ℕ) {j k : ℕ} (v : ℕ) (h : k
 /-- **The lower columns.** After columns `0 .. k-1` (`k ≤ L`): the carry is below `2^36`, the
 multipliers are below `2^28`, and `c · B^k` is exactly the sum of those columns: every lower
 column leaves its low 28 bits zero (C1). -/
-theorem lower_inv {x n : ℕ → ℕ} {np L : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < B) (hn : ∀ i, n i < B)
+theorem lower_inv {x n : ℕ → ℕ} {np L : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < 2 * B)
+    (hn : ∀ i, n i < B)
     (hinv : (n 0 * np + 1) % B = 0) : ∀ k, k ≤ L →
     (lower x n np L k).1 < 2 ^ 36 ∧ (∀ i, (lower x n np L k).2 i < B) ∧
       (lower x n np L k).1 * B ^ k = Ssum x n (lower x n np L k).2 L k
@@ -294,7 +313,8 @@ theorem lower_inv {x n : ℕ → ℕ} {np L : ℕ} (hL : L ≤ 24) (hx : ∀ i, 
 /-- **The upper columns.** After columns `L .. L+j-1`: the limbs written so far are below
 `2^28` and `c · B^(L+j) + B^L · (y_0 + … + y_{j-1} B^(j-1))` is the sum of all columns so
 far. -/
-theorem upper_inv {x n m : ℕ → ℕ} {L c0 : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < B) (hn : ∀ i, n i < B)
+theorem upper_inv {x n m : ℕ → ℕ} {L c0 : ℕ} (hL : L ≤ 24) (hx : ∀ i, x i < 2 * B)
+    (hn : ∀ i, n i < B)
     (hm : ∀ i, m i < B) (hc0 : c0 < 2 ^ 36) (hS0 : c0 * B ^ L = Ssum x n m L L) : ∀ j,
     (upper x n m L c0 j).1 < 2 ^ 36 ∧ (∀ i, (upper x n m L c0 j).2 i < B) ∧
       (upper x n m L c0 j).1 * B ^ (L + j) + B ^ L * V B j (upper x n m L c0 j).2 =
@@ -395,17 +415,59 @@ theorem chain_spec {y : ℕ → ℕ} {b : ℕ} (hy : ∀ i, y i < B) (hb : b ≤
       generalize 2 ^ b * V B i y = t6 at hV ⊢
       omega
 
-/-- **One step of `fermat28` (C1, C2, C3).** Let `x`, `n` be arrays of `L ≤ 24` limbs below
-`2^28` with values `X < 4N` and `16 N < R = 2^(28 L)`, let `n_0 · np ≡ -1 (mod 2^28)` and
-`b ≤ 1`. Then the limbs written by `fm28_step` are below `2^28`, their value `Y` satisfies
-`R · Y = 2^b (X² + μ N)` for some `μ < R`, and `Y < 4N`. -/
-theorem step_spec {x n : ℕ → ℕ} {np b L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤ 24) (hx : ∀ i, x i < B)
+/-- The carry chain for wider limbs: if `y_i · 2^b < 2^31` for every limb, the limbs written
+plus the carry are `2^b` times the limbs read, and the carry is at most 8. With `b = 0` and
+limbs below `2^29` this is the normalisation block of the redundant kernel. -/
+theorem chain_spec' {y : ℕ → ℕ} {b : ℕ} (hy : ∀ i, y i * 2 ^ b < 2 ^ 31) : ∀ i,
+    cyAt y b i ≤ 8 ∧ V B i (chainLimb y b) + cyAt y b i * B ^ i = 2 ^ b * V B i y
+  | 0 => by simp [cyAt, V]
+  | i + 1 => by
+    obtain ⟨hcy, hV⟩ := chain_spec' hy i
+    have hyi := hy i
+    have hv : ((y i <<< b) % 2 ^ 32 + cyAt y b i) % 2 ^ 32 = 2 ^ b * y i + cyAt y b i := by
+      rw [Nat.shiftLeft_eq, mul_comm (2 ^ b) (y i)]
+      generalize y i * 2 ^ b = w at hyi ⊢
+      omega
+    have hlimb : chainLimb y b i = (2 ^ b * y i + cyAt y b i) % B := by
+      unfold chainLimb
+      rw [hv, and_mask]
+    have hcy' : cyAt y b (i + 1) = (2 ^ b * y i + cyAt y b i) / B := by
+      show (((y i <<< b) % 2 ^ 32 + cyAt y b i) % 2 ^ 32) >>> 28 = _
+      rw [hv, Nat.shiftRight_eq_div_pow]
+    refine ⟨?_, ?_⟩
+    · rw [hcy', mul_comm (2 ^ b) (y i)]
+      generalize y i * 2 ^ b = w at hyi ⊢
+      omega
+    · rw [V_succ, V_succ, hlimb, hcy', pow_succ (2 ^ 28) i]
+      generalize hw : 2 ^ b * y i + cyAt y b i = w
+      have e1 : w % B * B ^ i + w / B * (B ^ i * B) = w * B ^ i := by
+        have := Nat.mod_add_div w B
+        calc w % B * B ^ i + w / B * (B ^ i * B) = (w % B + B * (w / B)) * B ^ i := by ring
+          _ = w * B ^ i := by rw [this]
+      have e2 : w * B ^ i = 2 ^ b * (y i * B ^ i) + cyAt y b i * B ^ i := by
+        rw [← hw]
+        ring
+      rw [mul_add]
+      generalize w % B * B ^ i = t1 at e1 ⊢
+      generalize w / B * (B ^ i * B) = t2 at e1 ⊢
+      generalize w * B ^ i = t3 at e1 e2
+      generalize 2 ^ b * (y i * B ^ i) = t4 at e2 ⊢
+      generalize cyAt y b i * B ^ i = t5 at e2 hV
+      generalize 2 ^ b * V B i y = t6 at hV ⊢
+      omega
+
+/-- **The limbs before the final shift (C1, C2, C3).** Let `x` be an array of `L ≤ 24` limbs
+below `2^29` and `n` one of limbs below `2^28`, with values `X < 4N` and `16 N < R = 2^(28 L)`,
+and let `n_0 · np ≡ -1 (mod 2^28)`. Then the limbs `y_0 .. y_{L-1}` computed by the columns
+are below `2^28`, and their value `Y` satisfies `R · Y = X² + μ N` for some `μ < R`, and
+`Y < 2N`. -/
+theorem pre_spec {x n : ℕ → ℕ} {np L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤ 24) (hx : ∀ i, x i < 2 * B)
     (hn : ∀ i, n i < B) (hinv : (n 0 * np + 1) % B = 0) (hX : V B L x < 4 * V B L n)
-    (hN : 16 * V B L n < B ^ L) (hb : b ≤ 1) :
-    (∀ i, stepF x n np b L i < B) ∧
+    (hN : 16 * V B L n < B ^ L) :
+    (∀ i, preLimbs x n np L i < B) ∧
       (∃ μ, μ < B ^ L ∧
-        B ^ L * V B L (stepF x n np b L) = 2 ^ b * (V B L x * V B L x + μ * V B L n)) ∧
-      V B L (stepF x n np b L) < 4 * V B L n := by
+        B ^ L * V B L (preLimbs x n np L) = V B L x * V B L x + μ * V B L n) ∧
+      V B L (preLimbs x n np L) < 2 * V B L n := by
   obtain ⟨hc0, hm, hS0⟩ := lower_inv hL hx hn hinv L le_rfl
   obtain ⟨hc, hy, hS⟩ := upper_inv hL hx hn hm hc0 hS0 (L - 1)
   have hpre : preLimbs x n np L = Function.update
@@ -476,17 +538,33 @@ theorem step_spec {x n : ℕ → ℕ} {np b L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤
     rw [e, V_succ, hpre, Function.update_self]
     congr 1
     exact V_congr fun i hi => Function.update_of_ne (by omega) _ _
+  refine ⟨hpre_lt, ⟨μ, hμ, ?_⟩, ?_⟩
+  · rw [hpreV]
+    exact hY
+  · rw [hpreV]
+    exact hYlt
+
+/-- **One step of `fermat28`, plain limbs.** Under the hypotheses of `pre_spec` and `b ≤ 1`,
+the limbs written by `fm28_step` (carry chain of `× 2^b`) are below `2^28`, their value `Y`
+satisfies `R · Y = 2^b (X² + μ N)` for some `μ < R`, and `Y < 4N`. -/
+theorem step_spec {x n : ℕ → ℕ} {np b L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤ 24) (hx : ∀ i, x i < 2 * B)
+    (hn : ∀ i, n i < B) (hinv : (n 0 * np + 1) % B = 0) (hX : V B L x < 4 * V B L n)
+    (hN : 16 * V B L n < B ^ L) (hb : b ≤ 1) :
+    (∀ i, stepF x n np b L i < B) ∧
+      (∃ μ, μ < B ^ L ∧
+        B ^ L * V B L (stepF x n np b L) = 2 ^ b * (V B L x * V B L x + μ * V B L n)) ∧
+      V B L (stepF x n np b L) < 4 * V B L n := by
+  obtain ⟨hpre_lt, ⟨μ, hμ, hY⟩, hYlt⟩ := pre_spec hL1 hL hx hn hinv hX hN
   obtain ⟨hcy, hch⟩ := chain_spec hpre_lt hb L
-  rw [hpreV] at hch
   have hstep : stepF x n np b L = chainLimb (preLimbs x n np L) b := rfl
   rw [hstep]
-  -- the last carry is zero
-  have h2b : 2 ^ b * (V B (L - 1) y + c * B ^ (L - 1)) < 4 * N := by
-    interval_cases b <;> omega
   have hVlt := V_lt (Bs := B) (f := chainLimb (preLimbs x n np L) b) L fun i _ => by
     unfold chainLimb
     rw [and_mask]
     exact Nat.mod_lt _ (by norm_num)
+  generalize V B L (preLimbs x n np L) = Y at hY hYlt hch
+  have h2b : 2 ^ b * Y < 4 * V B L n := by
+    interval_cases b <;> omega
   have hcy0 : cyAt (preLimbs x n np L) b L = 0 := by
     by_contra hne
     have h1 : cyAt (preLimbs x n np L) b L = 1 := by omega
@@ -501,5 +579,43 @@ theorem step_spec {x n : ℕ → ℕ} {np b L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤
     ring
   · rw [hch]
     exact h2b
+
+/-! ### The redundant step -/
+
+/-- **The redundant step** (`fermat28_step_s1r.cuh`, `_r.cuh`, `_s1rw.cuh`): the same columns,
+then `x[i] = y_i << b` in 32 bits, with no carry chain. -/
+def stepR (x n : ℕ → ℕ) (np b L : ℕ) (i : ℕ) : ℕ := (preLimbs x n np L i <<< b) % 2 ^ 32
+
+/-- **One step of `fermat28`, redundant limbs (C1, C2, C3').** For input limbs below `2^29`
+with value `X < 4N`: the output limbs are below `2^29`, their value `Y` satisfies
+`R · Y = 2^b (X² + μ N)` for some `μ < R`, and `Y < 4N`. The invariant "limbs below `2^29`,
+value below `4N`" is preserved. -/
+theorem stepR_spec {x n : ℕ → ℕ} {np b L : ℕ} (hL1 : 1 ≤ L) (hL : L ≤ 24)
+    (hx : ∀ i, x i < 2 * B) (hn : ∀ i, n i < B) (hinv : (n 0 * np + 1) % B = 0)
+    (hX : V B L x < 4 * V B L n) (hN : 16 * V B L n < B ^ L) (hb : b ≤ 1) :
+    (∀ i, stepR x n np b L i < 2 * B) ∧
+      (∃ μ, μ < B ^ L ∧
+        B ^ L * V B L (stepR x n np b L) = 2 ^ b * (V B L x * V B L x + μ * V B L n)) ∧
+      V B L (stepR x n np b L) < 4 * V B L n := by
+  obtain ⟨hpre_lt, ⟨μ, hμ, hY⟩, hYlt⟩ := pre_spec hL1 hL hx hn hinv hX hN
+  have hlimb : ∀ i, stepR x n np b L i = 2 ^ b * preLimbs x n np L i := by
+    intro i
+    have := hpre_lt i
+    unfold stepR
+    rw [Nat.shiftLeft_eq]
+    interval_cases b <;> omega
+  have hV : V B L (stepR x n np b L) = 2 ^ b * V B L (preLimbs x n np L) := by
+    unfold V
+    rw [Finset.mul_sum]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [hlimb, mul_assoc]
+  refine ⟨fun i => ?_, ⟨μ, hμ, ?_⟩, ?_⟩
+  · rw [hlimb]
+    have := hpre_lt i
+    interval_cases b <;> omega
+  · rw [hV, ← hY]
+    ring
+  · rw [hV]
+    interval_cases b <;> omega
 
 end Gpu28

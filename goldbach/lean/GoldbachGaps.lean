@@ -8,6 +8,7 @@ import GoldbachGaps.Record199
 import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
+import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -28,6 +29,7 @@ import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
 import GoldbachGaps.Cap.Brainstorm
+import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -56,9 +58,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
                2026-11-22 below `10^199` (`goldbach/records/budget_1e200_199digit_g*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g = 125269` and `g = 133981`.
-* `Record200_g146191` – generated certificate for the standing record below `10^200`
-               (`goldbach/records/budget_1e200_200digit_g146191` on the same branch):
-               a 200-digit `N` with `g(N) = 146191`.
+* `Record200_g146191`, `Record200_g157837` – generated certificates for two records below
+               `10^200` (`goldbach/records/budget_1e200_200digit_g146191` and `…_g157837` on
+               the same branch): 200-digit `N` with `g(N) = 146191` and, the standing record,
+               `g(N) = 157837`.
 * `Records`  – the bounded record games as closed theorems.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
@@ -94,7 +97,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                a move that keeps known factors pays for them in modulus; one exponent serves
                every row in a Fermat test; abandoning members never lowers the tests per
                success; faulty arithmetic costs false alarms, not successes; powers are
-               sparse in a window; prescribed large divisors for 38 rows fix `N < 10^200`).
+               sparse in a window; prescribed large divisors for 38 rows fix `N < 10^200`),
+               `Tilt` (selection on a normal count of rows: weighting `N(μ, v)` by `e^{t x}`
+               gives `e^{μ t + v t²/2} N(μ + v t, v)`, so the members with at most
+               `μ - z √v` rows hold the fraction `Φ(λ - z)` of the successes,
+               `λ = -√v ln(1 - p)`).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
@@ -103,17 +110,23 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the word and bit loop, and `fermat2_correct`: the flag is `1` iff
                `2^(n-1) ≡ 1 (mod n)`, for `n = cq + k·M` odd, `> 1`, below `2^(32 L)`,
                `k < 2^32`).
-* `Gpu28.*`  – the GPU Fermat kernel `fermat28` of `goldbach/fermat661/cuda/` (commit
-               `560a2cf`, branch `ccr-b8c25887-i6tn9f`): 24 limbs of 28 bits, Montgomery
-               squaring by columns with lazy 64-bit accumulators, values kept below `4n`, no
-               `R mod n`. `Conv` (the column sums of a square), `Step` (`fm28_step`: exact
-               accumulators, `R · Y = 2^b (X² + μ N)`, `Y < 4N`), `Final` (the comparison
-               loop, the borrow chain, the two conditional subtractions and the test against
-               1), `Kernel` (the Newton inverse with seed `(3·lo) xor 2`, the loop, and
-               `fermat28_correct`: the lane reports `1` iff `2^(n-1) ≡ 1 (mod n)`, for odd
-               `n` of 642 to 668 bits). The set-up that derives the limbs, `c` and the bits
-               of the schedule from `n` is a hypothesis; `scripts/gpu28_check` compares the
-               model with the kernel source compiled for the CPU, set-up included.
+* `Gpu28.*`  – the GPU Fermat kernel `fermat28` of `goldbach/fermat661/cuda/` (commits
+               `560a2cf` and `fa7d9d1`, branch `ccr-b8c25887-i6tn9f`): 24 limbs of 28 bits,
+               Montgomery squaring by columns with lazy 64-bit accumulators, values kept below
+               `4n`, no `R mod n`. `Conv` (the column sums of a square), `Step` (the columns
+               for input limbs below `2^29`: exact accumulators, `R · Y = X² + μ N`, `Y < 2N`;
+               then the plain step with its carry chain and the redundant step
+               `x_i = y_i << b`, both with `R · Y' = 2^b (X² + μ N)`, `Y' < 4N`), `Final` (the
+               comparison loop, the borrow chain, the two conditional subtractions and the
+               test against 1), `Kernel` (the Newton inverse with seed `(3·lo) xor 2`, the
+               loop, and `fermat28_correct`: the lane reports `1` iff `2^(n-1) ≡ 1 (mod n)`,
+               for odd `n` of 642 to 668 bits; `fermat28r_correct`: the same for the
+               redundant-limb kernel in production, with its normalisation block). The set-up
+               that derives the limbs, `c` and the bits of the schedule from `n` is a
+               hypothesis, and the PTX instructions `mul.wide.u32`, `mad.wide.u32` are taken
+               as the exact 32 × 32 → 64 product and multiply-add; `scripts/gpu28_check`
+               compares the model with every generated step file compiled for the CPU, set-up
+               included.
 
 ## Building
 
