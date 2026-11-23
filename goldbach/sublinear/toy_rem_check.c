@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     }
     double n[256] = {0}, sa[256] = {0}, sb[256] = {0}, sab[256] = {0}, saa[256] = {0}, sbb[256] = {0};
     for (long N = (Q + z + 1) & ~1L; N + L < X; N += 2) {
-        if (!(f[N] & 8)) continue;
+        if (!(f[N] & 8) || !(f[N + L] & 8)) continue;          // both numbers in the miniature (no prime factor 3..29)
         int k1 = 0, a = 0, b = 0;
         for (int i = 0; i < nrows; i++) { uint8_t v = f[N - row[i]], w = f[N + L - row[i]]; k1 += v & 1; a += (v >> 1) & 1; b += (w >> 1) & 1; }
         n[k1]++; sa[k1] += a; sb[k1] += b; sab[k1] += (double)a * b; saa[k1] += (double)a * a; sbb[k1] += (double)b * b;

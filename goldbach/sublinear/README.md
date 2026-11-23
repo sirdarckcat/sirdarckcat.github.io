@@ -100,19 +100,24 @@ and d3d39ea; checked here by factorisation, `parity_rule.py`):
   cubics over F_9, for n − d even and odd, without exception
   (`parity_rule.txt`).
 - *The hypothesis is about Q′ only.* What the proof uses is that every
-  irreducible factor of Q′ divides N. So N = λ·V_J^p makes N − Q reducible for
-  every monic irreducible Q of *any* degree below deg N whose derivative is
-  J-smooth: all rows of degree ≤ J + 1, all but about 1/(J+1) of degree J + 2,
-  and a Dickman proportion ρ((d−1)/J) beyond. In the F_9 example below
-  (J = 3, deg N = 2,403) that is every quartic, about three quarters of the
-  11,808 quintics and 38% of the 683,280 rows of degree 7, with no congruence
-  and no luck.
+  irreducible factor of Q′ divides N. So, with q an odd square and λ a
+  non-square as in the corollary below, N = λ·V_J^p makes N − Q reducible for
+  every monic irreducible Q of *any* degree d below deg N with p ∤ d whose
+  derivative is J-smooth (for p | d, exactly for the rows that meet the sign
+  rule above). Exact counts by the Lean session over F_9 with J = 3
+  (deg N = 2,403): every quartic, 8,928 of the 11,808 quintics (75.6%) and
+  282,672 of the 683,280 rows of degree 7 (41.4%), with no congruence and no
+  luck. The derivative of a row is smooth a little more often than a random
+  polynomial of its degree (38.7% at degree 6), because some of its
+  coefficients vanish; for larger degrees the proportion falls roughly like
+  Dickman's function of (d − 1)/J, which is an estimate and not a count.
 
-**Corollary (deserts).** Let q be a square (q = p^(2e)), V_J the product of
-all monic irreducibles of degree ≤ J, λ a non-square, and N = λ·V_J^p. Then
-N − Q is reducible for every monic irreducible Q of degree ≤ J + 1 (p ∤ J+1):
-those of degree ≤ J divide N, and for degree J + 1 the formula gives r even.
-deg N ≈ p·q^J. Forcing the same by congruences needs a degree of order
+**Corollary (deserts).** Let q be an odd square (q = p^(2e)), J ≥ 1, V_J the
+product of all monic irreducibles of degree ≤ J, λ a non-square, and
+N = λ·V_J^p. Then N − Q is reducible for every monic irreducible Q of degree
+≤ J + 1 (p ∤ J+1): those of degree ≤ J divide N, and for degree J + 1 the
+formula gives r even. deg N = p·deg V_J, a little above p·q^J (2,403 against
+2,187 for F_9 and J = 3). Forcing the same by congruences needs a degree of order
 q^(J+1)/J (primes of degree ≤ J always leave a fraction of order 1/J of the
 rows of degree J + 1, and each of those then needs a prime of its own), and
 a cover of degree p·q^J followed by luck succeeds with probability about
@@ -350,7 +355,10 @@ members of the best covers. The 256 true successes have 25 to 41 rows at depth
 best numbers are luckily aligned members of mediocre covers, and an order that
 could see the deeper residues would reach the first success two hundred times
 sooner. The miniature is also where any proposed method for (P′) below can be
-tested against the truth in seconds.
+tested against the truth in seconds. The Lean session re-enumerated it with a
+different program and obtained the same joint histogram byte for byte, and
+recomputed the success law and the pair correlation quoted below
+(`goldbach/lean/scripts/mini_check/` on its branch).
 
 The miniature also checks the method of this section. The count of N by rows
 left at depth 200 predicted from residue vectors alone (tempering,
@@ -403,10 +411,10 @@ line, and the line is sharp for a structural reason.
    further residue. Two different N < X agree modulo primes of total size
    below ln X only (`move_budget`, proved in Lean). There are no local moves:
    beyond the line the landscape is that of a random-energy model. Measured
-   in the miniature (`toy_rem_check.c`): over 123 million pairs of members of
+   in the miniature (`toy_rem_check.c`): over 118 million pairs of members of
    the same cover, N and N + 2·3·5···23, the rows left at depth 200 correlate
-   at −0.03 within each cover quality, the small negative value expected from
-   landing in a different class modulo every further prime.
+   at −0.029 within each cover quality, the small negative value expected
+   from landing in a different class modulo every further prime.
 2. *Lattices.* Chinese remaindering with errors or with lists (Goldreich–Ron–
    Sudan, Boneh, Guruswami–Sahai–Sudan, Bleichenbacher–Nguyen) finds N from
    residues when the lists are short and the agreement high: the weighted
@@ -457,6 +465,17 @@ exact and fast. And for our lists the problem is the search for intervals
 (N − Q, N] poor in rough numbers at fixed offsets, the same problem as record
 prime gaps, where the state of the art is also covering congruences followed
 by a sieve over the members.
+
+The Lean session proved the general form of this (`Cap/ListGain.lean`,
+`list_gain_le`): for one prime s, if w(a) is the number of rows killed when N
+is in class a, μ its average over the classes and W its maximum, then any
+list L of classes gains at most (W − μ)/ln(W/μ) · ln(s/|L|) rows over the
+average, i.e. a nat of constraint on s buys at most (W − μ)/ln(W/μ) rows,
+whatever the shape of the list. For every prime above Q (W = 1, at most 1,609
+rows) that is 0.207 rows, 0.005 nats of success, per nat
+(`list_gain_above_Q`), six times less than an extra covering prime; so
+nothing that enumerates a product of lists (lattices, meet in the middle,
+birthday trees) collects the part of the prize that lies above Q.
 
 One structure does exist and does not pay. For a prime s above Q the list is
 the set R of rows itself, a set of numbers below Q, so "N mod s is in the
@@ -522,7 +541,7 @@ the asymptotic count suggests. Tempering on the 89 smallest odd primes
 `complete_cover_15907.txt` gives a class for each of the 89 primes such that
 every one of the 1,852 odd primes q ≤ 15,901 lies in the class of some r,
 and `complete_cover.py` checks it and prints N0 (193 digits). For every even
-N = N0 + tM, of which 21,378,977 are below 10^200, each N − q with q an odd
+N = N0 + tM, of which 21,378,978 are below 10^200, each N − q with q an odd
 prime below 15,907 is divisible by a prime ≤ 463: no prime below 15,907 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
 is 0.7% of the ceiling, against 7.4% for the record found by search: as with
@@ -552,9 +571,11 @@ constant 1/2 by counting (one unrefereed preprint); 0.73 unconditionally and
 theorem's count gives 3,830, a greedy choice of classes covers every prime
 below 6,000, and tempering reaches 15,907: the factor 4 is rows sharing a
 mop-up prime, the improvement the theorem leaves as a remark. The finite
-instance has been checked by the Lean kernel from N0 alone, by divisibilities
-only, for the cover to 15,787 found first (`CompleteCover.lean`, commit
-8c061b4 on the Lean branch); the cover to 15,907 has been sent.
+instance is checked by the Lean kernel from N0 alone, by divisibilities only:
+`Cover15907.lean` and `Records.lean` on the Lean branch (commit c9591a7),
+`exists_lt_ten_pow_200_complete_cover_15907` and
+`exists_progression_complete_cover_15907` (all 21,378,978 members below
+10^200).
 
 ## Ladder
 
