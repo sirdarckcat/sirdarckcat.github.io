@@ -397,6 +397,17 @@ over the levels as count × (1 − p)^k with p = 0.485 (12, 18, 15, 29, 28, 36,
 31.1, 26.0, 19.7), and the density of primes among the 200-rough numbers
 below 10^9 is 0.489.
 
+Looking at the best numbers of the miniature directly, for any structure the
+argument might have missed (the 62 with at most 8 rows left, the 1,965 with at
+most 10, the 256 successes): they are spread evenly over [0, 10^9) (the
+successes lean to large N, where primes are rarer); modulo each small prime
+they sit in several good classes, not one (class 2 mod 5 for 73% of them,
+class 3 for 19%; no class above 30% modulo 7 or beyond); they have 1.3
+standard deviations more incidences with the primes from 31 to 199 than a
+random number, the successes 0.35; and two of the 62 best agree modulo 0.49 of
+those primes on average, against 0.45 by chance. They are independent
+needles: nothing ties one to another.
+
 What each prime beyond the line is worth, and costs, in the miniature (N
 ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
 100 successes; "overhead" is the number of residue vectors modulo the primes
