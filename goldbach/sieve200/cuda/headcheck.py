@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """On a GPU: the deep head (ghead.py) on one real window of a vector, against the same window without it.
 
-    python3 headcheck.py /content/m89_8.json [--klog 24] [--head-b 1000000000] [--head-rows 64] [--rg 32] [--rcta 2] [--reps 5] [--verify 8]
+    python3 headcheck.py /content/m89_8.json [--klog 24] [--head-b 1000000000] [--head-rows 64] [--rg 32] [--rcta 8] [--tile-threads 512] [--gen-threads 256] [--reps 5] [--verify 8]
 
 What it prints and checks:
   1. the window WITHOUT the head and WITH it (the same DeepSieve, the same k0 = the first 200-digit k of the vector): the kept members, alive_total, hm_all and hm_kept are IDENTICAL (the statistics stay on the B
@@ -33,13 +33,16 @@ def main(argv=None):
     ap.add_argument("--head-b", type=int, default=1_000_000_000, dest="head_b")
     ap.add_argument("--head-rows", type=int, default=64, dest="head_rows")
     ap.add_argument("--rg", type=int, default=32)
-    ap.add_argument("--rcta", type=int, default=2)
+    ap.add_argument("--rcta", type=int, default=8, help="generate-kernel CTAs a (row, tile) pair of the staged large-prime stage (DEEP_RCTA)")
     ap.add_argument("--split", type=int, default=1_000_000)
-    ap.add_argument("--threads", type=int, default=256, help="tile / generate / sieve CTA size (the CPU emulation test passes 64)")
+    ap.add_argument("--threads", type=int, default=256, help="CTA size of the count / select / rows kernels and of the head's kernels (the driver passes 256)")
+    ap.add_argument("--tile-threads", type=int, default=512, dest="tile_threads", help="CTA size of the tile kernel (production: --deep-tile-threads 512)")
+    ap.add_argument("--gen-threads", type=int, default=256, dest="gen_threads", help="CTA size of the large-prime generate kernel (production: --deep-gen-threads 256)")
     ap.add_argument("--staged", type=int, default=1)
     ap.add_argument("--k0", type=int, default=None, help="the window's first k (default: the first k with 200 digits)")
     ap.add_argument("--reps", type=int, default=5)
     ap.add_argument("--verify", type=int, default=8)
+    ap.add_argument("--rows", type=int, default=0, help="use only the first ROWS rows of the vector (0: all; for the CPU test)")
     a = ap.parse_args(argv)
     import cupy as cp
     import ghead
@@ -48,12 +51,14 @@ def main(argv=None):
     sp = sp[0] if isinstance(sp, list) else sp
     M, N0 = int(sp["M"]), int(sp["N0"])
     U = [int(q) for q in sp["residual"]]
+    if a.rows:
+        U = U[:a.rows]
     cover = [int(r) for r, _ in sp["cover"]]
     K = 1 << a.klog
     k0 = a.k0 if a.k0 is not None else -(-10 ** 199 // M)
     k0 -= k0 % 1                                                      # (a vector's window starts at its first 200-digit k, not at a multiple of 2^klog)
     t0 = time.time()
-    ds = DeepSieve(M, cover, a.B, ks_log=a.klog, tile_log=a.tile, llog=a.llog, f=a.f, p_est=a.p_est, split=a.split, rg=a.rg, nthreads=a.threads, gen_threads=a.threads, tile_threads=a.threads,
+    ds = DeepSieve(M, cover, a.B, ks_log=a.klog, tile_log=a.tile, llog=a.llog, f=a.f, p_est=a.p_est, split=a.split, rg=a.rg, nthreads=a.threads, gen_threads=a.gen_threads, tile_threads=a.tile_threads,
                    max_rows=len(U) + 8, staged=bool(a.staged), rcta=a.rcta, head_b=a.head_b, head_rows=a.head_rows, log=lambda m: print("  " + m, flush=True))
     fd = ds.feeder(N0, U)
     head = fd.head
@@ -103,7 +108,7 @@ def main(argv=None):
         print(f"    predicted Fermat tests of the window: {e0:,.0f} -> {e1:,.0f}: {100 * (1 - e1 / e0):.2f}% fewer", flush=True)
     # (3) factors
     if a.verify:
-        S2 = head.S.get().astype(np.int64)
+        S2 = np.asarray(head.S.get() if hasattr(head.S, "get") else head.S).astype(np.int64)
         removed_pairs, kept_pairs = [], []
         for i in sample:
             s0 = set(r0[o0[i]:o0[i + 1]].tolist())

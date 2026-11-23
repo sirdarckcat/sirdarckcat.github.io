@@ -391,7 +391,7 @@ successes and PRP flags are identical and the tests fall 8.40%.  `p^` of the sta
 **Tests (all CPU, `sieve200/cuda`)**: `test_ghead_cpu.py` - the head on the CPU emulation of the batch kernels against a numpy brute force (a head prime divides N0 - q + k M) for 3 geometries x 2 windows (staged / plain
 large-prime stage, rcta 2 / 4, rg 3 / 4 / 8, tile 2^11 / 2^12): kept members, `alive_total`, `hm_all`, `hm_kept` identical with and without the head, `cnt_acc` = the old `cnt`, `cnt` / `offs` / `rows` = the brute-force lists, CSR
 consistent, non-vacuous (removed rows > 0), a bin capacity far too small (overflow, repeat) gives the same window, a second call gives the same window; and through `DeepSieve(head_b, head_rows)` over the variants A B A C B and
-`deep_feeder_for` passing the arguments through; `test_head_accounting.py` - the accounting above; the earlier regression suites (`test_gbatch_cpu.py`, `test_gbatch_defer_cpu.py`, `test_gpu_sieve_cpu.py`,
+`deep_feeder_for` passing the arguments through; `test_head_accounting.py` - the accounting above; `test_headcheck_cpu.py` - the GPU script `headcheck.py` itself on the CPU emulation (it must print HEADCHECK-OK for a correct head and fail for a damaged one); the earlier regression suites (`test_gbatch_cpu.py`, `test_gbatch_defer_cpu.py`, `test_gpu_sieve_cpu.py`,
 `test_deep_feeder_cpu.py`) are unchanged by the hooks (ALL IDENTICAL).
 
 **What to run on a GPU, in this order** (the gate the GPU session set: first-PRP rows, successes and near-misses identical to production on the same windows; logged expected values within ~1%):
