@@ -309,12 +309,32 @@ the statement, already in the brainstorm notes, that the best N for the primes
 up to 10^7 or 10^8 is enormously better than anything the search can afford to
 find.
 
-An empirical regularity over this range (not a law; the last line of the
-table already departs from it): the cost times ln z is nearly constant, 241,
-248, 254, 260, 265, 265 for the six depths, and the rows left for the ideal N
-times ln² z likewise (61,000 to 67,200). A typical number loses rows like
-1/ln z as the sieve deepens (Mertens); the ideal ones lose them like 1/ln² z,
-as if every prime struck twice.
+A regularity, and its explanation. Over this range the cost times ln z is
+nearly constant (241, 248, 254, 260, 265, 265 for the six depths) and so are
+the rows left for the ideal N times ln² z (61,000 to 67,200): a typical
+number loses rows like 1/ln z as the sieve deepens (Mertens), the ideal ones
+like 1/ln² z. The Lean session traced this to a thinning law
+(`Cap/Thinning.lean` and `scripts/thinning_check/` on its branch). If the
+primes in (z, z′] kill the rows left at depth z independently, the table at
+depth z′ is the table at depth z read at another temperature,
+1 − e^(−β) = θ(1 − e^(−β′)) with θ = ∏(1 − 1/s), so the bottom of a deep table
+is the middle of a shallow one, and along the cutoff of the ideal search the
+rows fall like (ln z)^(−a) with a = (e^β − 1 − p)/(β − p), β the slope of
+ln g at the cutoff. Measured here that slope is 1.32, 1.23, 1.22, 1.25, 1.29
+at depths 1,000 to 50,000 (2.9 at 463, where the landscape is frozen), which
+gives a = 2.1, 2.0, 2.0, 2.0, 2.1. So the exponent 2 is not "every prime
+strikes twice": in the ideal population a new prime strikes about e^β = 3.5
+times its usual share, and (e^β − 1)/β happens to be 2 at β = 1.26. Three
+consequences. The ideal N of depth 50,000 have about 1,950 rows left at
+depth 463 (β = 0.53 there): ordinary good residue vectors, not the best
+covers, aligned with every later prime by a factor that grows from 1.7 to
+3.5. The whole table follows from one shallow table to within 0.4 nats from
+depth 5,000 and 1.4 from 463, always on the optimistic side, which is an
+independent check of the five deeper runs. And for primes above Q the
+independence used in the last line of the table is a proved inequality
+(`thinCount_le_of_lt`: a prime above Q divides at most one row, so
+independent thinning can only overstate the number of N with few rows); the
+slack is estimated at 0.3 nats.
 
 The fourth column is measured on 20,000 random members of a cover with 1,609
 rows (mean ± standard deviation; `member_depth.py`). The ideal N are *not*
