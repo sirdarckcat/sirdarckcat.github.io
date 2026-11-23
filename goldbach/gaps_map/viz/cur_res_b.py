@@ -146,7 +146,7 @@ RB = {
 "m_thm1": dict(group="res", status="paper", impact="bound",
   title="Theorem: covers reach 1.349 · x · ln x",
   gist="Residue classes modulo the odd primes up to x can cover every odd prime below (e^γ/(2C₂) − o(1))·x·ln x, so some explicit N has no Goldbach summand below 1.349·ln N·ln ln N.",
-  detail="Proved on paper by pigeonhole, Mertens and one survivor per prime in (x/ln x, x]. It beats the thesis's bound by ln₃N/ln₄N and the counting constant 1/2 (Shi). Greedy covers track 0.72·x·ln²x, one logarithm higher; proving any f(x) → ∞ times x·ln x is the named open next theorem, and an Erdős–Rankin style attempt is only partly formalised.",
+  detail="Proved on paper by pigeonhole, Mertens and one survivor per prime in (x/ln x, x]. It beats the thesis's bound by ln₃N/ln₄N and the counting constant 1/2 (Shi). Greedy covers track 0.72·x·ln²x, one logarithm higher; proving any f(x) → ∞ times x·ln x is the named open next theorem. Letting each mop-up prime cover two rows would double the constant, and several rows per prime would add a factor ln ln X / ln ln ln X; the research session states both only as remarks, proved neither there nor in Lean, which has the one-row-per-prime version.",
   note="Kernel-checked in Lean as the covering bound with c < 1.349 and no hypothesis, with Mertens' third theorem proved in the same library.",
   chips=["WP12", "Theorem 1"],
   where=[["Proof", "goldbach/phd/wp12_prime_covering_grh_ledger.md §2"]],

@@ -71,13 +71,16 @@ the lattice radius, the black-box and population bounds, the list-gain bound.
 
 ## 6. Things I noticed
 
-1. **The research documents lag.** The research branch does not mention 158,209 (its ledgers find the number in no
+1. **The research documents lagged.** The research branch did not mention 158,209 (its ledgers found the number in no
    file); its July verdict that greedy's 867 rows are near-optimal was superseded by tempering (850–851 rows, found
-   by both sessions independently); and `sublinear/README.md` says "about e^10 better" where its own table gives 27.5
-   nats at depth 10^8.
+   by both sessions independently); and `sublinear/README.md` said "about e^10 better" where its own table gives 27.5
+   nats at depth 10^8. After this review the research session fixed these (commit `02564fb` on `ccr-d4a17dd0-7uu03r`):
+   158,209 is named, the "e^10" sentence is corrected, the cost exponent between neighbouring targets is 1.2 to 2.3 (not 1.4
+   to 1.8), and the F_25 check was rerun on all 300 quadratics.
 2. **Lean and research converge.** The BLS construction, the tempering optimiser, the 100-idea list and the parity
    theorem were each found by both sessions; agreement is evidence the numbers are right.
-3. **Formalisation gaps.** The Erdős–Rankin style improvement is only partly in Lean (`Layers`); Linnik is a hypothesis;
+3. **Formalisation gaps.** The Erdős–Rankin style improvement is only a remark (research) plus the fixed-layer skeleton in
+   Lean (`Layers`); Linnik is a hypothesis;
    BLS certificates (the height game) are not formalised; the closure theorem and Theorem 2 are paper-only.
 4. **What would move the record.** Per the research models: a week of the fleet is worth about 167,000, the remaining
    budget (about 10 fleet-days at 29M members per second) about 169,000–172,500 expected; aiming at 213,070 needs about

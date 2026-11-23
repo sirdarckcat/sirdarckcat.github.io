@@ -94,7 +94,7 @@ RC = {
 "s_verdict": dict(group="res", status="open", impact="steer",
   title="Sublinear verdict so far: none known, none ruled out",
   gist="A third compositeness mechanism exists in the toy (worth 4–5×, or 1.4–1.6 nats). Over the integers a perfect search would win 3.5–14.8 nats. Beyond the Chinese-remainder line, lattices, list decoding, meet-in-the-middle, birthday trees and hashing are ruled out with numbers, and linear-time scoring is at its optimum.",
-  detail="Nothing proves that no sublinear algorithm exists. Still open: (P′), the fully enumerable toy, non-residue information (equal to H2) and constants worth 0.1–0.4 nats. One discrepancy to fix: the README's ‘about e^10 better’ disagrees with its own table (27.5 nats at depth 10^8).",
+  detail="Nothing proves that no sublinear algorithm exists. Still open: (P′), the fully enumerable toy, non-residue information (equal to H2) and constants worth 0.1–0.4 nats. The research session has since corrected the README (commit 02564fb): ‘about e^10’ now names an explicit family and points to the count of about e^27 at depth 10^8, and the cost exponent between neighbouring targets runs from 1.2 to 2.3, not 1.4 to 1.8.",
   note="As of 23 November: the prize is real and of known size, covers collect all of it below the line, and above it every known method costs more than scoring members one by one.",
   chips=["verdict"],
   where=[["Verdict", "goldbach/sublinear/README.md"]],

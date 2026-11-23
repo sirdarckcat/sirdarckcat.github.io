@@ -72,7 +72,7 @@ R_EDGES = {
 # ---------------- research claims and their Lean versions
 "m_thm1>l_cb_sharp": D("kernel-checked version", "The Lean library proves the covering bound with every constant below 1.349 and no hypothesis.", "CoverBound.lean; COVERBOUND_STATEMENTS.md"),
 "m_thm1>c_layers": D("the layered skeleton", "The finite layered-cover lemma is the kernel-checked skeleton of the research session's two lower bounds.", "Layers.lean header"),
-"m_thm1>c_smooth": D("fixed layer, Erdős–Rankin", "The structure of rows left by a fixed layer is step E4 of the Erdős–Rankin style improvement claimed on 2026-11-22. The improvement itself is not proved in Lean.", "Layers.lean header and docstring of smooth_or_large_prime_factor"),
+"m_thm1>c_smooth": D("fixed layer, Erdős–Rankin", "The structure of rows left by a fixed layer is step E4 of the Erdős–Rankin style improvement mentioned in Layers.lean. The research session says that improvement is only a remark, proved neither by it nor in Lean.", "Layers.lean header and docstring of smooth_or_large_prime_factor"),
 "m_thm1>l_counting": D("measured against", "Theorem 1 beats the counting constant 1/2 (Shi); the Lean library records the counting bound, with constant 1/48, as the baseline.", "Counting.lean; wp12 ledger"),
 "m_classical>l_primorial": D("proved in Lean", "The primorial-core lemma lem:primcore.", "Basic.lean docstring: Paper Lemma lem:primcore"),
 "m_classical>l_cover": D("proved in Lean", "The covering certificate prop:cover.", "Covering.lean docstring: Paper Proposition prop:cover"),
