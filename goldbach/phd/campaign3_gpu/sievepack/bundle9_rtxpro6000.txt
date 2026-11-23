@@ -1,0 +1,17 @@
+# The second bundle of small sieve items (uarch a606d5b..f58ff97) on gold-g4c, bundle9.sh, 2026-11-23 14:58:01-14:59:02Z (campaign paused), ms a 2^24 window on production's stack.
+# LEAN (GEN_SCAN2 + RESV_LATE + MINRED) -1.2 ms; + the pipelined tile at AT=64: 48.0 against ~50.8 (-2.8 ms). TILE_PROBE (timing only) made the tile kernel 575 ms: its
+# 256-prime sample puts every mark on the same few shared-memory words, so the atomics serialise; it says nothing about the table traffic. LEAN + TILE_PIPE AT=64 goes to a gate.
+
+2026-11-23T14:58:01Z paused pid 2426669
+ua_v7 (production tree) PF=256           gen   28.75 (A  10.79 B  17.96)  tile   20.80 (small   8.16 apply   8.97)  sieve   51.0  rc 0
+ua_v9 PF=256 (reference)                 gen   28.75 (A  10.79 B  17.96)  tile   20.83 (small   8.18 apply   9.06)  sieve   51.1  rc 0
+ua_v9 + SCAN2                            gen   28.44 (A  10.62 B  17.82)  tile   20.86 (small   8.20 apply   9.08)  sieve   50.8  rc 0
+ua_v9 + RESV_LATE                        gen   28.08 (A  20.65 B   7.42)  tile   20.83 (small   8.17 apply   9.04)  sieve   50.1  rc 0
+ua_v9 + MINRED                           gen   28.49 (A  10.67 B  17.83)  tile   20.85 (small   8.19 apply   9.05)  sieve   50.4  rc 0
+ua_v9 + LEAN (all three)                 gen   27.52 (A  19.98 B   7.54)  tile   20.83 (small   8.17 apply   9.02)  sieve   49.6  rc 0
+ua_v9 + LEAN + TILE_PIPE AT=64           gen   27.53 (A  19.98 B   7.55)  tile   19.15 (small   6.37 apply   6.77)  sieve   48.0  rc 0
+ua_v9 TILE_PIPE AT=64 alone              gen   28.77 (A  10.79 B  17.98)  tile   19.16 (small   6.37 apply   6.78)  sieve   49.4  rc 0
+PROBE: tile table from L1                gen   28.76 (A  10.79 B  17.97)  tile  575.36 (small 562.69 apply   3.25)  sieve  605.3  rc 0
+ua_v9 PF=256 (reference again)           gen   28.76 (A  10.78 B  17.97)  tile   20.85 (small   8.19 apply   9.06)  sieve   50.6  rc 0
+2026-11-23T14:59:02Z resumed pid 2426669
+BUNDLE9-DONE
