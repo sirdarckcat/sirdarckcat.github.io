@@ -40,10 +40,10 @@ def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt):
 
 class BatchFeeder(GpuFeeder):
     def __init__(self, S, INV, U, N0M, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, nthreads=256, split=None, rg=16, ppt=4, gen_threads=256, tile_threads=256,
-                 shared=None):
+                 shared=None, max_rows=None):
         assert ks_log >= tile_log and 1 <= rg <= 64
         super().__init__(S, INV, U, N0M, klog=ks_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, shared=shared, plain_sieve=False,
-                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt))
+                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt), max_rows=max_rows)
         self.tile_log, self.rg, self.tile_threads = tile_log, rg, tile_threads
         self.ntiles = 1 << (ks_log - tile_log)
         Sh = _np(self.sh["S64"])
@@ -65,15 +65,11 @@ class BatchFeeder(GpuFeeder):
                            tile_threads=self.tile_threads, shared=self.sh)
 
     def with_N0(self, N0, U):
-        """as GpuFeeder.with_N0: N0 mod s for every prime is computed on the GPU"""
-        limbs = cp.asarray(np.frombuffer(int(N0).to_bytes(4 * 24, "little"), dtype=np.uint32).copy())
-        sh = self.sh
-        n0m = cp.empty(sh["nS"], dtype=cp.uint32)
-        nt = 256
-        self.k["s200g_n0m"](((sh["nS"] + nt - 1) // nt,), (nt,), (limbs, np.int32(24), sh["S"], sh["MU"], np.int32(sh["nS"]), n0m))
+        """as GpuFeeder.with_N0: N0 mod s for every prime is computed on the GPU (a new feeder: its own bit matrix and large-prime stage; use retarget() to reuse this one)"""
+        n0m = self._n0m(N0)
         return BatchFeeder(None, None, U, n0m, ks_log=self.klog, tile_log=self.tile_log, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads,
-                           split=int(_np(sh["S64"])[self.n_small - 1]) if self.n_small else 0, rg=self.rg, gen_threads=self.big.threads if self.big else 256,
-                           tile_threads=self.tile_threads, shared=sh)
+                           split=int(_np(self.sh["S64"])[self.n_small - 1]) if self.n_small else 0, rg=self.rg, gen_threads=self.big.threads if self.big else 256,
+                           tile_threads=self.tile_threads, shared=self.sh)
 
     def _sieve_phase(self, k0, ev):
         sh = self.sh

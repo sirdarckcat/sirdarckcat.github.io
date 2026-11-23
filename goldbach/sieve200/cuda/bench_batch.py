@@ -19,44 +19,13 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, ".."))
 import gbig
 from gbatch import BatchFeeder
-
-
-def modinv_vec(a, m):
-    """a^-1 mod m for int64 arrays (a, m coprime): vectorised extended Euclid"""
-    a = a.astype(np.int64) % m
-    r0, r1 = m.astype(np.int64).copy(), a.copy()
-    t0, t1 = np.zeros_like(a), np.ones_like(a)
-    while np.any(r1 != 0):
-        nz = r1 != 0
-        q = np.where(nz, r0 // np.where(nz, r1, 1), 0)
-        r0, r1 = np.where(nz, r1, r0), np.where(nz, r0 - q * r1, r1)
-        t0, t1 = np.where(nz, t1, t0), np.where(nz, t0 - q * t1, t1)
-    return (t0 % m).astype(np.int64)
-
-
-def mod_big(n, S):
-    """n mod s for a Python integer n and an int64 array of primes below 2^31: Horner in 31-bit limbs"""
-    limbs = []
-    while n:
-        limbs.append(n & 0x7FFFFFFF)
-        n >>= 31
-    r = np.zeros(S.shape, dtype=np.int64)
-    for limb in reversed(limbs):
-        r = (r * (1 << 31) + limb) % S
-    return r
+from deep_feeder import mod_big, modinv_vec, prime_tables_M
 
 
 def prime_tables(spec, B):
-    S = gbig.primes_between(2, B - 1).astype(np.int64)
-    cover = {int(r) for r, _ in spec.get("cover", [])}
-    S = S[(S >= 3) & ~np.isin(S, list(cover))]
-    M, N0 = int(spec["M"]), int(spec["N0"])
-    mm = mod_big(M, S)
-    keep = mm != 0                                                      # an s dividing M cannot sieve
-    S, mm = S[keep], mm[keep]
-    INV = modinv_vec(mm, S)
-    N0M = mod_big(N0, S)
-    return S.astype(np.uint32), INV.astype(np.uint32), N0M.astype(np.uint32)
+    """(S, INV, N0M) of a spec: the primes below B (as search.init_spec), M^-1 mod s and N0 mod s (deep_feeder.py's numpy tables)"""
+    S, INV = prime_tables_M(int(spec["M"]), [int(r) for r, _ in spec.get("cover", [])], B)
+    return S, INV, mod_big(int(spec["N0"]), S.astype(np.int64)).astype(np.uint32)
 
 
 def window_equal(w, cb):

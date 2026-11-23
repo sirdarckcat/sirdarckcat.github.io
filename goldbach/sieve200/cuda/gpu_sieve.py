@@ -51,7 +51,8 @@ class Window:
 
 
 class GpuFeeder:
-    def __init__(self, S, INV, U, N0M, B=None, klog=18, llog=15, f=0.97, p_est=0.055, nthreads=256, shared=None, sieve_threads=None, shoup=True, unroll=1, plain_sieve=True, kernels=None):
+    def __init__(self, S, INV, U, N0M, B=None, klog=18, llog=15, f=0.97, p_est=0.055, nthreads=256, shared=None, sieve_threads=None, shoup=True, unroll=1, plain_sieve=True, kernels=None,
+                 max_rows=None):
         assert llog <= klog and llog <= 19 and (1 << llog) % nthreads == 0
         self.klog, self.llog, self.K, self.L = klog, llog, 1 << klog, 1 << llog
         self.f, self.p_est, self.nthreads = float(f), float(p_est), nthreads
@@ -71,7 +72,8 @@ class GpuFeeder:
         self.nU = int(self.U.size)
         assert self.nU < 4096
         self.k = kernels if kernels is not None else _kernels(klog, llog, nthreads, self.unroll)
-        self.bits = cp.empty((self.nU, self.K // 32), dtype=cp.uint32)
+        self._bits_root = cp.empty((max(self.nU, int(max_rows or 0)), self.K // 32), dtype=cp.uint32)     # room for max_rows rows: retarget() may point the feeder at a variant with more rows
+        self.bits = self._bits_root[:self.nU]
         self.counts = cp.empty(self.K, dtype=cp.uint16)
         self.smem = 4 * (self.K // 32 + (1 if self.unroll >= 3 else 0))           # the Shoup kernel with unroll 3 has a dummy word
         if plain_sieve and self.smem > 48 * 1024:                                  # (a BatchFeeder never launches the whole-window sieve kernels: 4 MB of shared memory)
@@ -85,14 +87,32 @@ class GpuFeeder:
         """After search.init_spec: G["S"], G["inv"] (M^-1 mod s), G["n0m"] (N0 mod s), G["U"] (the rows)."""
         return cls(G["S"], G["inv"], G["U"], G["n0m"], **kw)
 
-    def with_N0(self, N0, U):
-        """The feeder of the variant with this N0 (same M): N0 mod s for every prime is computed on the GPU, nothing on the host."""
-        limbs = cp.asarray(np.frombuffer(int(N0).to_bytes(4 * 24, "little"), dtype=np.uint32).copy())      # 24 limbs: N0 < 2^768
+    def _n0m(self, N0):
+        """N0 mod s for every prime, computed on the GPU (N0 < 2^768)"""
+        limbs = cp.asarray(np.frombuffer(int(N0).to_bytes(4 * 24, "little"), dtype=np.uint32).copy())      # 24 limbs
         sh = self.sh
         n0m = cp.empty(sh["nS"], dtype=cp.uint32)
         nt = 256
         self.k["s200g_n0m"](((sh["nS"] + nt - 1) // nt,), (nt,), (limbs, np.int32(24), sh["S"], sh["MU"], np.int32(sh["nS"]), n0m))
-        return GpuFeeder(None, None, U, n0m, klog=self.klog, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads, shared=sh,
+        return n0m
+
+    def retarget(self, N0, U):
+        """Point THIS feeder at another variant of the same M (same primes and M^-1 mod s): N0 mod s is computed on the GPU, the rows are replaced, and the bit matrix (room for
+        max_rows rows, allocated once) is shared, so a campaign with variants of 1,092-1,096 rows needs one feeder, one bit matrix and one large-prime stage.  Returns self."""
+        U = np.asarray(U, dtype=np.uint32)
+        assert 0 < U.size < 4096
+        if U.size > self._bits_root.shape[0]:
+            raise ValueError(f"{U.size} rows but the bit matrix was allocated for {self._bits_root.shape[0]} (max_rows)")
+        self.U = cp.asarray(U)
+        self.nU = int(U.size)
+        self.bits = self._bits_root[:self.nU]
+        self.N0M = self._n0m(N0)
+        return self
+
+    def with_N0(self, N0, U):
+        """The feeder of the variant with this N0 (same M): N0 mod s for every prime is computed on the GPU, nothing on the host."""
+        n0m = self._n0m(N0)
+        return GpuFeeder(None, None, U, n0m, klog=self.klog, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads, shared=self.sh,
                          sieve_threads=self.sieve_threads, shoup=self.shoup, unroll=self.unroll)
 
     def with_variant(self, n0m, U):

@@ -43,3 +43,34 @@ Pair visits at batch scale (K = 2^25, one pair visit per batch): rows x pi(B) = 
 4. An L4 stays at 1e6 (its DRAM is 300 GB/s: the bins would cost ~0.03 ns a mark).
 
 Exactness is not at risk: a deeper sieve only removes rows that have a prime factor, and the same identical-to-CPU tests (`test_gsieve.py` style, B up to 2^15 on small geometries) apply.
+
+## Integration with search_gpu5 (built 2026-11-23, CPU-tested; not run on a GPU)
+
+The GPU session measured (CPU model and `search_gpu5.py --sieve-b` on an RTX PRO 6000) that a deeper bound B is worth a hit mass per Fermat test of x1.41 at 10^7, x1.9 at 10^8, x2.45 at 10^9, but that
+`GpuFeeder` charges ~0.08 ns per (prime, row, 2^19-window) pair, so it is a loss today; they put the break-even of a large-prime path at ~1.6 ps a pair-step (primes above 10^6 x rows x windows of 2^19)
+and a +40% gain at B = 10^8 at ~0.5 ps.  The bucketed layout above is that path.  My estimate per batch of 2^25 members (64 windows) at B = 10^8, 1,093 rows, RTX PRO 6000 (**unmeasured**):
+1.0e10 marks by primes in (10^6, 10^8] (3.7e10 x sum of 1/s) at ~38 SASS instructions (~0.1 s), ~83 GB of bin traffic (~0.1 s), 6e9 pair visits (~5 ms): 0.2-0.4 s, i.e. 0.25-0.5 ps a pair-step
+(7.9e11 pair-steps), plus the rows kernel at batch scale (a bit matrix of 4.4 GB read at ~1M kept members x 1,093 rows: ~50 ms if the gather is the sector-bound kind).
+
+What is there:
+
+| file | what |
+|---|---|
+| `deep_feeder.py` | `DeepSieve(M, cover, B, ks_log=25, ...)`: the prime list and M^-1 mod s of all primes below B made once per M with numpy (5.7M primes at B = 10^8: a few seconds; `search.init_spec` loops in Python and would take minutes), one `BatchFeeder`, one bit matrix for `max_rows` rows; `.feeder(N0, rows)` retargets the feeder at a variant (N0 mod s computed on the GPU); `deep_feeder_for(state, spec, ...)` is search_gpu5's `feeder_for` for it |
+| `gpu_sieve.py` | `GpuFeeder(max_rows=)` allocates the bit matrix once for the largest variant; `retarget(N0, U)` points the same feeder at another variant of the same M; `BatchFeeder` inherits both |
+| `search_gpu5_deep.patch` | `git apply goldbach/sieve200/cuda/search_gpu5_deep.patch` on `goldbach/phd/campaign3_gpu/search_gpu5.py` (as of 990b23e): options `--deep 1 --deep-split 1000000 --deep-rg 16 --deep-max-rows 1100`; `run_batch`, `run_pool` and the accounting are untouched, because the Window is the same object |
+| `test_deep_feeder_cpu.py` | CPU: the numpy tables equal `search.init_spec`'s S and M^-1 mod s; one retargeted feeder over variants A B A C B (different N0 and numbers of rows) is identical to sieve200's CPU Feeder in every window; one DeepSieve per M; a new M (x7) builds a new one; too many rows are refused |
+
+How to run it (all of it needs a GPU run first: `measure_all.sh`, sections 3, 4, 6):
+
+    python3 search_gpu5.py --campaign DIR --deep 1 --klog 25 --slice 33554432 --batch 2 --sieve-b 100000000 --skip-frac F --p-est P --kernel 28 ...
+
+* a window is now 2^25 members, so a slice must be a multiple of 2^25 (`--slice 33554432`, `--klo` and `--kmax` multiples of it) and a batch of two slices is the same 2^26 members as today's 64 slices of 2^20; the pool is
+  flushed once a window (about 1M kept members at f = 0.97), so the sieve of a window and its Fermat rounds are serial as they are today.
+* `--p-est` only changes the hit-mass statistics, not the selection (the emptiest members of each block of 2^15 are kept by their survivor counts): use the GPU session's calibrated p_B (0.0625 at 10^7, 0.0715 at 10^8).
+* GPU memory at B = 10^8, 1,100 rows: bit matrix 4.4 GB, bins ~0.7 GB (`expected_cap`; a bin that overflows makes the stage repeat with the capacity it needs), prime tables ~0.4 GB, counts 64 MB: about 6 GB.  An L4 (24 GB) fits it too,
+  though its bin traffic (300 GB/s) makes a gain there unlikely: keep it at B = 10^6 until measured.
+* if `window()` fails to allocate, lower `--deep-max-rows` to the largest row count of the campaign.
+
+Not done: the sieve of window w+1 on a second stream beside the Fermat rounds of window w (the same idea as for the 2^19 windows); selection of f and B (the research session's model); the rows kernel's index ordering if
+`bench_batch.py` shows the rows phase above ~5% of the window.

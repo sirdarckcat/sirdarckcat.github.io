@@ -76,8 +76,11 @@ The next step only needs the limbs small enough that no 64-bit column overflows,
 carries are partly left in the limbs (limbs up to 2^29 - 1), among them the extremes of C3' (limbs 0..22 all at 2^29 - 1 and the top limb as large
 as X < 4n allows): wrong 0, largest Y/n 3.959 (< 4).
 `FM28_STEP=fermat28_step_s1r.cuh python3 test_fermat28.py` and `FM28_STEP=fermat28_step_r.cuh python3 test_fermat28.py` pass everything the
-other files pass (3,000 residues, primes, pseudoprimes, edge values, campaign-3 numbers).  **The proof in the section above is for the
-default files (limbs < 2^28); the redundant ones change the invariant and the bound C3, so they need the paragraph above to be checked too.**
+other files pass (3,000 residues, primes, pseudoprimes, edge values, campaign-3 numbers).  **Proved in Lean since 2026-11-23**
+(the Lean session, commit 0c6933f on branch ccr-36ca7b46-8twf14, `goldbach/lean/GoldbachGaps/Gpu28/`: `Step.lean` `pre_spec`, `stepR_spec`; `Kernel.lean` `normLimbs_spec`, `fermat28r_correct`):
+for limbs below 2^29 and value below 4n the step gives limbs below 2^29 and value below 4n, the FM28_REDUNDANT normalisation keeps the value, and the verdict is 1 iff 2^(n-1) = 1 mod n; their `gpu28_check/run.sh`
+also runs all eight step files through the CPU build against big integers and the Lean model.  Assumed there: the set-up between n32 and the loop, and that `mul.wide.u32` and `mad.wide.u32` are the exact
+32 x 32 -> 64 product and multiply-add (the PTX path itself is checked only on a GPU: the GPU session's `test28_prod.py`).  The proof of the default files (above) is unchanged.
 It removes the carry chain (24 adds, 24 masks, 24 shifts, replaced by 24 shifts): 46 of 1,798 SASS instructions on sm_80 / 89, 47 of 1,151 on sm_120 ("s1 asm").  By the cost model in the
 next section that is about +2% (not the +4% first guessed, not the 0% of the first retraction).  `test_gpu_fermat28.py` has the "s1r" and "s2r" rows.
 
