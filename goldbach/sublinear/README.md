@@ -412,12 +412,28 @@ Letting each large prime cover two rows (pairs q, q′ with r | q − q′, the
 Maier–Pomerance device) would double the constant but needs prime pairs with a
 prescribed difference on average; several rows per prime, as in the large-gap
 theorems of Ford, Green, Konyagin, Maynard and Tao, would give an extra factor
-ln ln X / ln ln ln X. Neither is attempted here. For 200 digits the provable
-bound is in the low thousands, against 157,837 found by search: as with prime
-gaps, constructions are far behind luck at any size one can compute.
+ln ln X / ln ln ln X. Neither is attempted here.
 
-Status: proposed to the Lean session on 23 November as the theorem to
-formalise next (needs Mertens' product in one direction and Chebyshev bounds).
+**At 200 digits, without luck.** Joint optimisation does much better than
+the asymptotic count suggests. Tempering on the 89 smallest odd primes
+(3 to 463) finds covers that leave *no row at all* up to Q = 15,607:
+`complete_cover_15607.txt` gives a class for each of the 89 primes such that
+every one of the 1,818 odd primes q ≤ 15,601 lies in the class of some r,
+and `complete_cover.py` checks it and prints N0 (193 digits). For every even
+N = N0 + tM, of which 21,378,977 are below 10^200, each N − q with q an odd
+prime below 15,607 is divisible by a prime ≤ 463: no prime below 15,607 is a
+Goldbach summand of N, with no primality or compositeness test involved. That
+is 0.7% of the ceiling, against 7.4% for the record found by search: as with
+prime gaps, what can be constructed is far behind what can be found. At
+16,000 the best cover found so far leaves 2 rows.
+
+Status with the Lean session (23 November): the order ln X · ln ln X by
+counting is already in its library (`Counting.lean`, constant 1/48); it is
+proving the covering theorem parametrised by the constant κ in
+∏_{3≤r≤w}(r−2)/(r−1) ≤ κ/ln w, to be instantiated unconditionally with an
+elementary κ = 1.37 (constant 0.73, already above the 1/2 of counting) and
+with Mertens' third theorem as a named hypothesis (1.349). The finite
+skeleton is its `Cap/Layers.lean` (`exists_even_le_of_layers`).
 
 ## Ladder
 
