@@ -686,8 +686,12 @@ Version 3 (22 Nov):
       [2^30, 2^32).
     - Each campaign's `search.log` (one name@k0 line a slice) is the record of the levels done;
       `l4op/levels_done.py` tallies it.
-  - On the T4, bench_split gives 2,553 → 1,739 ms with the same row. The stack alone is slower there (2,715). Its own
-    gate is next.
+  - On the T4, bench_split gives 2,553 → 1,739 ms with the same row; the stack alone is slower there (2,715).
+    - Its gate (`gate_deploy_t4.txt`): batch ×0.907 with slice lines identical; the same 129 per-member near-misses as
+      the L4 on that window; the known case 40/40.
+    - Deployed at 19:11:41Z with the top 16 levels.
+  - Measured on the L4s (`l4rate.py`, 18:57-19:08Z against 18:35-18:54Z): batch ×0.854 / ×0.852, expected design hits
+    a second ×1.166 / ×1.171 on gold-gpu / gold-l4c. gold-l4b's earlier window includes the test stops.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
