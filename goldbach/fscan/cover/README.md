@@ -176,6 +176,20 @@ final record of 172,700 at design 170,000, 173,000 at 175,000 and 171,200 at
 180,000: 170,000 to 175,000 are equivalent, and the design need not move
 before the record does.
 
+**Which 89th prime.** The 89th modulus need not be 463. Extending each
+first-88 cover (below) by the best class of a candidate prime r screens all
+r from 463 to 700 in seconds: 491 gives 1,245 rows, 557 gives 1,246, and 479,
+503, 523 and 613 give 1,247, against 1,248 for 463. For the first 88 primes
+with 491 a capped walk finds nothing below 1,245, and the levels fill two rows
+lower than with 463: 1,800 distinct covers at ≤ 1,247 rows, 26,000 at ≤ 1,248
+and 82,000 at ≤ 1,249 in 40 seconds, where the 463 family has 5,700 at
+≤ 1,249, 69,000 at ≤ 1,250 and 144,000 at ≤ 1,251 in a minute. With the boost
+11.043 that is E = 29.86 at the best cover against 29.93, and about 5 to 7%
+more successes per member at the level a large supply is drawn from; a vector
+has 2.016·10^7 members instead of 2.138·10^7. `./gen_vectors.sh 170000 1248
+count name seed m89r491` uses `starts/q170000_m89r491.txt` (2 covers at
+1,245, 93 at 1,246, 1,828 at 1,247, 2,077 at 1,248).
+
 **The first 88 odd primes** (3 to 461, in place of the campaign's 3 to 439
 with 467, 487, 491 and 683). M has 190.00 digits, so a vector has 9.9·10^9
 members below 10^200, more than the campaign's 5.4·10^9, and the engine needs
