@@ -30,3 +30,7 @@
 # 1,800 vectors each for gold-gpu, gold-l4b and gold-l4c (q170000_m88f_cap1_v0..v5399), 600 for gold-xt4 (v5400..v5999).
 # Consumption at f = 0.97: 96 slices of 2^25 a vector, ~194 vectors a day an L4, ~95 the T4 (~677 a day in all). 8,040 vectors last ~9-12 days even with
 # the L4s at f = 0.985, against ~9 days of compute units, so supply does not bind.
+# A better batch (research's 3bcdbf6 starting covers, 911 at 1,255-1,258 rows; cap 1,258 as research advised): gen_vectors.sh 170000 1258 6000 top2 13 m88f, 463 s: 20,000 covers written
+# (34 at 1,256, 1,875 at 1,257, 18,091 at 1,258), 6,000 specs at 1,255-1,258 rows (2 / 100 / 1,877 / 4,021; mean 1,257.65), 1,223 skipped as already handed out. Ledger 14,040.
+# Split round-robin (3 L4s : 1 T4 = 1,800 : 600, each card's mean 1,257.65) as /content/m88f_top2.json on each card; /content/m88f_topup1.json (cap 1,259, mean 1,258.8) is superseded
+# and stays unused. starts_q170000_m88f_3bcdbf6.txt is the starting file used.
