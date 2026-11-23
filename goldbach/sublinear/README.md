@@ -74,18 +74,21 @@ g; apply it to f and to the irreducible Q. ∎
 all monic irreducibles of degree ≤ J, λ a non-square, and N = λ·V_J^p. Then
 N − Q is reducible for every monic irreducible Q of degree ≤ J + 1 (p ∤ J+1):
 those of degree ≤ J divide N, and for degree J + 1 the formula gives r even.
-deg N ≈ p·q^J, where divisibility alone (N ≡ 0 modulo every irreducible of
-degree ≤ J + 1) needs degree ≈ q^(J+1), and a cover followed by luck succeeds
-with probability about exp(−0.7 q / (p (J+1))). Over a prime field the same
-N with a suitable (n mod 4, λ) handles the single top degree, at no saving.
+deg N ≈ p·q^J. Forcing the same by congruences needs a degree of order
+q^(J+1)/J (primes of degree ≤ J always leave a fraction of order 1/J of the
+rows of degree J + 1, and each of those then needs a prime of its own), and
+a cover of degree p·q^J followed by luck succeeds with probability about
+exp(−0.7 q / (p (J+1))). Over a prime field the same N with a suitable
+(n mod 4, λ) handles the single top degree, at no saving.
 
 **Checked** (`parity_desert.py`, python-flint; `parity_desert.txt`): the
 parity is constant over all rows of each degree, and equal to the formula, in
 every case tried: F_3, F_5, F_7, F_9, F_25, F_49, rows of degree 2, 3 and 4,
 both kinds of λ, n ≡ 0 and p (mod 2p); for instance all 300 irreducible
-quadratics over F_25 and 150 quartics over F_5 give a reducible N − Q. For
-rows with p | d (not covered by the theorem) the parity is mixed, as it
-should be.
+quadratics over F_25 and 150 quartics over F_5 give a reducible N − Q, and so
+do samples of the 1,620 quartics over F_9 (deg N = 2,403) and of the 5,200
+cubics over F_25 (deg N = 3,125) in `parity_desert_big.txt`. For rows with
+p | d (not covered by the theorem) the parity is mixed, as it should be.
 
 **What this is and is not.** It is a compositeness mechanism that is not a
 small factor and not luck: the parity of the number of prime factors, which
