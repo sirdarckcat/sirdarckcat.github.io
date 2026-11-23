@@ -74,16 +74,18 @@
          return out
  
  
-@@ -195,6 +214,8 @@
+@@ -194,7 +213,9 @@
+         sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
          kv = cp.concatenate([c[1] for c in pool])
          cnt = cp.concatenate([c[2] for c in pool])
-         cols = cp.concatenate([c[3] for c in pool])
+-        cols = cp.concatenate([c[3] for c in pool])
++        cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])      # (a deep window is a pool of its own: no 1.5 GB copy)
 +        if args.overlap:
 +            cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
          pool.clear(); npool[0] = 0
          tests_m, prp_m, succ_m, g, nl = run_pool(tester, kv, cnt, cols)
          gt[0] += g; gt[1] += nl
-@@ -208,23 +229,32 @@
+@@ -208,23 +229,35 @@
              st[si]["succ"].extend(int(k) for k in kv[m & succ_m].tolist())
  
      K = 1 << args.klog
@@ -117,7 +119,10 @@
 +        st[si]["alive"] += int(w.alive_total.sum())
 +        st[si]["kdone"] += K
 +        st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
-+        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), w.rows.astype(cp.int32) + np.int32(tester.off[si])))
++        rows32 = w.rows.astype(cp.int32)
++        rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows (1.5 GB a deep window), not two
++        w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
++        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
 +        if args.overlap:
 +            cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
 +        npool[0] += int(w.k.size)
