@@ -42,3 +42,8 @@
 #   cap1 (topup1, unused):           rows 1,258.804 | below 1,179.583 | above 79.221
 #   top2 (in use since 18:34Z):      rows 1,257.653 | below 1,182.746 | above 74.906
 # At ~0.024 expected PRPs a row: design hits about x1.024, near-misses >= 158,209 about x0.935. Put to the lead (18:41Z); kept for now.
+# Supply for the lead's item 8 (top 16 levels a vector, ~4,600 vectors a day on the four cards with the L4s' new engine): gen_vectors.sh 170000 1258 12000 top3 17 m88f
+# (18:48-19:04Z, 948 s): the walk wrote 38,000 covers at <= 1,258 (34 at 1,256, 2,123 at 1,257, 35,843 at 1,258), 5,318 of them already handed out (14%, against 6% for top2);
+# 12,000 specs at 1,257-1,258 rows (mean 1,258.0). Ledger 26,040. Weighted round-robin as /content/m88f_top3.json: 3,476 a card on the L4s, 1,572 on the T4 (each mean 1,257.98),
+# appended at each card's next restart (deploy_l4op.py). In hand: top2 (6,000) + top3 (12,000), ~3.9 days at top-16; research puts the <= 1,258 level set at tens of thousands.
+# If it thins, the plan is to widen KLO (24-32 levels keep most of the gain: ~+2.6% at 32 levels against ~+2.9% at 16) rather than raise the cap.
