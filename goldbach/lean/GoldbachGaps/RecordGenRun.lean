@@ -8,9 +8,10 @@ import GoldbachGaps.RecordGen
 terms are a theorem obtained by running the generator, with no input from any scan.
 
 Larger bounds are a matter of time and memory only: the kernel keeps every intermediate number
-of the prime sieve, about `0.6` GB at `2^20` and several times that at `2^22`. For more terms
-evaluate `records X` outside the kernel (`scripts/record_gen/Run.lean`), or use
-`RankSieve.isRecordHolder_iff`, which proves the table below `2^25` from certificates.
+of the prime sieve, about `0.5` GB at `2^20` and `2.3` GB at `2^22` (where the same statement
+with 24 terms checks in 6 s). For more terms evaluate `records X` outside the kernel
+(`scripts/record_gen/Run.lean`), or use `RankSieve.isRecordHolder_iff`, which proves the table
+below `2^25` from certificates.
 -/
 
 namespace GoldbachGaps.RecordGen

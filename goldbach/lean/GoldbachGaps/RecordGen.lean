@@ -190,23 +190,36 @@ theorem testBit_sieveBy {X : ℕ} {ds : List ℕ} (hds : ∀ d ∈ ds, 2 ≤ d)
     rintro ⟨hp, hlt⟩
     exact hj ⟨hp.two_le, hlt⟩
 
-/-- A power of two `D` with `X < D²`. -/
-def sqrtBound (X : ℕ) : ℕ := 2 ^ (X.log2 / 2 + 1)
+/-- Newton steps for `√X`. Only a guess: `sqrtBound` checks what it gets. -/
+def newtonSqrt (X : ℕ) : ℕ → ℕ → ℕ
+  | 0, s => s
+  | f + 1, s => newtonSqrt X f ((s + X / s) / 2)
+
+/-- A number `D ≥ 2` with `X < D²`: one more than the Newton guess for `√X` if that passes the
+test, and a power of two otherwise. -/
+def sqrtBound (X : ℕ) : ℕ :=
+  if 2 ≤ newtonSqrt X 40 (2 ^ (X.log2 / 2 + 1)) + 1 ∧
+      X < (newtonSqrt X 40 (2 ^ (X.log2 / 2 + 1)) + 1) *
+        (newtonSqrt X 40 (2 ^ (X.log2 / 2 + 1)) + 1) then
+    newtonSqrt X 40 (2 ^ (X.log2 / 2 + 1)) + 1
+  else 2 ^ (X.log2 / 2 + 1)
 
 theorem lt_sqrtBound_sq (X : ℕ) : X < sqrtBound X * sqrtBound X := by
-  have h1 : X < 2 ^ (X.log2 + 1) := Nat.lt_log2_self
-  have h2 : 2 ^ (X.log2 + 1) ≤ 2 ^ (X.log2 / 2 + 1 + (X.log2 / 2 + 1)) :=
-    Nat.pow_le_pow_right (by norm_num) (by omega)
-  have h3 : sqrtBound X * sqrtBound X = 2 ^ (X.log2 / 2 + 1 + (X.log2 / 2 + 1)) := by
-    unfold sqrtBound
+  unfold sqrtBound
+  split_ifs with h
+  · exact h.2
+  · have h1 : X < 2 ^ (X.log2 + 1) := Nat.lt_log2_self
+    have h2 : 2 ^ (X.log2 + 1) ≤ 2 ^ (X.log2 / 2 + 1 + (X.log2 / 2 + 1)) :=
+      Nat.pow_le_pow_right (by norm_num) (by omega)
     rw [← Nat.pow_add]
-  rw [h3]
-  exact lt_of_lt_of_le h1 h2
+    exact lt_of_lt_of_le h1 h2
 
 theorem two_le_sqrtBound (X : ℕ) : 2 ≤ sqrtBound X := by
   unfold sqrtBound
-  calc 2 = 2 ^ 1 := rfl
-    _ ≤ 2 ^ (X.log2 / 2 + 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
+  split_ifs with h
+  · exact h.1
+  · calc 2 = 2 ^ 1 := rfl
+      _ ≤ 2 ^ (X.log2 / 2 + 1) := Nat.pow_le_pow_right (by norm_num) (by omega)
 
 /-- The primes below `X` as a bitmask. With fuel `f + 1` the sieving numbers are the primes
 below `sqrtBound X`, taken from the same function with fuel `f`; with fuel `0` they are all
