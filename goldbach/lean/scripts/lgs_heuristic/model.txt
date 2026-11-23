@@ -1,0 +1,66 @@
+0. Dependence constant fitted on the scan up to 1000000000000 (m = 20 .. 320): c = 0.92   (second-order theory: 0.5; independent strikers: 0)
+
+1. How many even N <= X have least summand at least the m-th odd prime (unstruck by m - 1 strikers)
+   scan: ../rank_records; model: no primality of any N - q is used
+   X = 1000000000000 (c was fitted here)
+      m   prime          scan   independent ln(model/scan)   with dependence ln(model/scan)
+      2      5   462392087981 462338356898.5  -0.00   459654734690.9  -0.01
+      5     13   362356824360 367710435082.2  +0.01   355015472117.0  -0.02
+     10     31   243969416653 255539150938.7  +0.05   235466195904.7  -0.04
+     20     73   115624240635 130100657097.1  +0.12   111437377913.0  -0.04
+     40    179    30191934596  38449386601.1  +0.24    29377320682.7  -0.03
+     80    419     2550013218   4152529376.9  +0.49     2527251612.7  -0.01
+    120    661      249780540    492154929.2  +0.68      236113988.6  -0.06
+    160    947       22956055     60565729.1  +0.97       22839198.9  -0.01
+    200   1229        2327580      7619813.4  +1.19        2254927.3  -0.03
+    240   1523         231355       973088.9  +1.44         225669.2  -0.02
+    280   1823          20641       125624.6  +1.81          22801.4  +0.10
+    320   2131           2340        16353.0  +1.94           2320.9  -0.01
+    360   2437            234         2142.8  +2.21            237.6  +0.02
+    400   2749             31          282.3  +2.21             24.4  -0.24
+    440   3083              4           37.4  +2.23              2.5  -0.46
+   X = 100000000000 (not used in the fit)
+      m   prime          scan   independent ln(model/scan)   with dependence ln(model/scan)
+      2      5    45881945186  45876073888.2  -0.00    45557885722.3  -0.01
+      5     13    35058201490  35692108171.2  +0.02    34237893528.7  -0.02
+     10     31    22685925760  23996397103.4  +0.06    21808817593.0  -0.04
+     20     73    10012333855  11536640741.1  +0.14     9648776201.5  -0.04
+     40    179     2310955605   3084485410.3  +0.29     2256811105.6  -0.02
+     80    419      152927489    274680764.5  +0.59      152941400.7  +0.00
+    120    661       11863485     26853149.3  +0.82       11259538.5  -0.05
+    160    947         843880      2729557.6  +1.17         859510.0  +0.02
+    200   1229          67296       283988.6  +1.44          67029.8  -0.00
+    240   1523           5265        30017.4  +1.74           5302.1  +0.01
+    280   1823            353         3209.5  +2.21            423.6  +0.18
+    320   2131             36          346.2  +2.26             34.1  -0.05
+    360   2437              3           37.6  +2.53              2.8  -0.08
+
+2. The hit law: a front N waits for a geometric number of strikers, parameter h(N) = 2 C2 S(N) / ln N
+   58 terms from 1000 on: mean of h * (strikers faced) = 1.033 (1 expected, standard error 0.13); mean of P(wait <= observed) = 0.549 (0.5 expected, standard error 0.038)
+
+3. The front law: the expected number of unstruck even numbers between consecutive fronts is exponential, mean 1
+   independent strikers: 57 jumps, mean 11.61 (1 expected, standard error 0.13), median 7.82 (0.69 expected), mean of P(jump <= observed) = 0.918 (0.5 expected, standard error 0.038)
+   with dependence, c = 0.92: 57 jumps, mean 1.00 (1 expected, standard error 0.13), median 0.76 (0.69 expected), mean of P(jump <= observed) = 0.494 (0.5 expected, standard error 0.038)
+   the jumps with dependence, in order: 1.49 0.36 6.92 1.08 0.55 0.76 0.19 0.86 0.00 1.46 0.78 0.49 1.70 0.04 1.24 1.71 0.20 0.27 0.46 0.99 1.10 0.50 0.20 0.15 0.16 2.14 2.03 1.17 2.31 3.89 0.13 0.13 0.50 2.31 0.73 0.96 0.67 1.14 0.50 0.40 0.35 2.92 1.43 1.32 1.41 0.25 1.00 1.45 0.76 1.34 0.07 1.07 0.27 0.01 0.18 0.37 0.01
+
+4. The record value the model expects at each size (one expected unstruck N <= X), against the largest term <= X
+      X     independent   with dependence   actual
+   10^4         199            151          173
+   10^6         631            491          523
+   10^8        1319           1097         1093
+   10^10       2347           2003         1877
+   10^12       3671           3229         3457
+   10^14       5381           4759         4909
+   10^16       7351           6653         6961
+   10^18       9697           8861         9341
+
+5. At 10^200, by the same count in logarithms, against the research session's sampler
+   (goldbach/sublinear/README.md on branch ccr-d4a17dd0-7uu03r: parallel tempering over residue vectors)
+   ln(number of even N < 10^200 with least summand >= Q):   independent   with dependence   sampler
+      Q =  213070 ( 19050 strikers)                          403.7          403.2       403.3
+      Q =  245000 ( 21632 strikers)                          396.2          395.7       395.7
+      Q =  300000 ( 25996 strikers)                          383.7          383.0       383.1
+      Q =  350000 ( 29976 strikers)                          372.2          371.5       371.5
+      Q =  500000 ( 41537 strikers)                          338.9          337.9       338.0
+   independent strikers: one expected N at the 159526-th odd prime, 2,154,007   (the campaign's ceiling: 2,130,704)
+   with dependence, c = 0.92: one expected N at the 158130-th odd prime, 2,133,689   (the campaign's ceiling: 2,130,704)
