@@ -635,6 +635,18 @@ Version 3 (22 Nov):
     campaign mode.
   - At 17:42Z the three generators got research's 426 starting covers (58e95e3: 186 at 1,248 rows, 240 at 1,249). Their
     walks from the 210 starting covers were making only 1,251-row vectors, at +1.2 over the row guard's base.
+- uarch's one-pass generate kernel (f1b904a, `DEEP_GEN_ONEPASS=1`; tree `/content/ua_v10` = `ua_v3` + f1b904a's
+  `sieve200/cuda`), deployed on the three RTX cards at 18:09:59-18:11:05Z under the standing rule.
+  - The large-prime generate kernel used to visit every (prime, row) pair twice: once to count each bin's marks, once to
+    place them. Now the counting atomic's rank places the mark in the bin's 40 shared-memory slots, with an overflow list
+    and a fallback to the old path. The marks and bits are the same. With the flag unset, the kernel source is
+    byte-identical.
+  - bench_split on gold-g4b (`sievepack/opab_rtxpro6000.txt`), ms a 2^24 window: generate 28.75 → 22.15, the whole sieve
+    51.2 → 44.4. Unroll 8, 30 slots and 25 slots were slower.
+  - The driver gate on each card (`sievepack/opgate.sh`, `opgate_rtxpro6000.txt`): base / ONEPASS / ONEPASS + launch
+    bounds 512,3, alternating on the 24 test vectors.
+    - Batch ×0.9728 on gold-g4, ×0.9566 on gold-g4b, ×0.9725 on gold-g4c.
+    - Slice lines were identical everywhere, and the known case gave 23/23 with the chosen settings.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
