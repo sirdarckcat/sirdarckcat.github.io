@@ -213,6 +213,8 @@ results are concatenated (the same free-list hazard as the overlap).  GPU timing
 | B = 2^28 / 1e9 | -3% / -31% expected hits a second | the staged kernel reads its 16-byte prime table rows / rcta x 2 times a window; B = 1e8 stays |
 | the Fermat step | at its multiplier floor | 3.64 cycles x 876 IMAD.WIDE + 2.79 x 223 other instructions; `FERMAT28.md` |
 
-Time of a 1.76 s batch: Fermat kernels ~1.27 s (72%), sieve ~0.35 s (20%: tile kernel ~0.15, staged large primes ~0.17, count / select / finalize / rows ~0.03), host work not hidden ~0.1 s.  What is left, each worth 1-2%: rcta 4 / 8 at the
+Time of a 1.76 s batch: Fermat kernels ~1.27 s (72%), sieve ~0.43 s (24%: a 2^25 window at 1,262 rows is 217 ms wall = 193 ms sieve (gen + tiles) + ~24 ms count / select / finalize / rows), host work not hidden ~0.06 s.
+Section H (GPU session, 04:32Z, one Q = 170,000 vector, `uarch_measure/secth_rcta_rtxpro6000.txt`): rows a CTA of the staged kernel at B = 1e8, sieve ms a window: rcta 2 193.2 (twice), rcta 4 201.9, rcta 8 with 512 gen threads 186.6:
+**the table re-reads are not what limits the stage at 1e8** (rcta 8 saves 6.6 ms a window = 0.8% of a batch); production keeps rcta 2.  What is left, each worth 1-2%: rcta 4 / 8 at the
 production bound (`run_experiments.sh` section H), a fused per-round update kernel for the tail rounds, the unroll-3 variant of the tile kernel, 24 doubling shifts as IADD in the Fermat step.  The estimates of the GPU session's
 timing granularity (0.1 s steady batches) cannot resolve them; batch-end timestamps over hundreds of batches can.
