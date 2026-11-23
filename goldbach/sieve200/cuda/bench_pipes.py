@@ -226,6 +226,39 @@ def run_gpu(args):
                 print(f"  {nm:34s} {v:18.2f}   (minus address generation: {max(v - (ref or 0), 0):.2f})")
 
 
+def run_gpu_warps(args):
+    """Part 1 again with ONE CTA an SM of 1, 2, 3, 4, 6 and 8 warps a scheduler: do the cycles an operation costs fall with more warps (the scheduler overlaps warps: the pipe is the limit),
+    or stay at what one warp needs (the scheduler stalls for the static stall counts whichever warp issues next)?"""
+    import cupy as cp
+    import numpy as np
+    dev = cp.cuda.Device()
+    nsm = dev.attributes["MultiProcessorCount"]
+    name = cp.cuda.runtime.getDeviceProperties(0)["name"].decode()
+    print(f"{name}: cycles per warp instruction per scheduler against the warps a scheduler (one CTA of 128 x W threads an SM)")
+    ws = (1, 2, 3, 4, 6, 8)
+    print(f"{'chain-op':38s} " + " ".join(f"{'W=' + str(w):>8s}" for w in ws))
+    iters = 4000
+    for nm in ("IMAD.WIDE+acc, 1 bump", "IMAD.WIDE+acc, 1 bump + 1 IADD3", "IMAD.U32 (lo) +acc", "IADD3 (2 adds fused)", "IADD3 + IADD3.X (64-bit add)", "SHF", "LOP3"):
+        mod = cp.RawModule(code=pipe_kernel(nm, PIPE_BODIES[nm]))
+        k = mod.get_function("k")
+        row = []
+        for w in ws:
+            threads = 128 * w
+            grid = nsm
+            out = cp.empty(grid * threads, dtype=cp.uint32)
+            cyc = cp.zeros(grid, dtype=cp.int64)
+            k((grid,), (threads,), (out, cyc, np.int32(200)))
+            best = None
+            for _ in range(3):
+                k((grid,), (threads,), (out, cyc, np.int32(iters)))
+                cp.cuda.Device().synchronize()
+                c = int(cyc.get().max())
+                best = c if best is None else min(best, c)
+            row.append(best / (NCH * iters * w))
+        print(f"{nm:38s} " + " ".join(f"{v:8.2f}" for v in row), flush=True)
+    print("(flat across W: the scheduler's time for an instruction does not shrink with more warps; falling: other warps fill its stalls)")
+
+
 def run_gpu_global(args):
     import cupy as cp
     import numpy as np
@@ -277,11 +310,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", default=None, help="no GPU: compile for this arch (sm_80, sm_89, sm_120) and print each kernel's loop")
     ap.add_argument("--part3", action="store_true", help="only part 3 (global memory, scattered marks; needs ~5 GB free)")
+    ap.add_argument("--warps", action="store_true", help="only part 1 again as a function of the warps a scheduler (1, 2, 3, 4, 6, 8): do other warps fill the stalls?")
     a = ap.parse_args()
     if a.check:
         run_check(a.check)
     elif a.part3:
         run_gpu_global(a)
+    elif a.warps:
+        run_gpu_warps(a)
     else:
         run_gpu(a)
         run_gpu_global(a)
