@@ -13,3 +13,4 @@ cover/deliver/dump_*.txt
 cover/deliver/more150/dump_*.txt
 cover/covergen
 cover/specs_q*_*.json
+cover/ptcover_w

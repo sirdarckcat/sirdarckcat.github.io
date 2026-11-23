@@ -171,6 +171,15 @@ instead of 10 the best design is 167,500 to 172,500 at 171,200 to 171,300;
 at 40 million members a second it is 172,500 at 174,200. Supply at 170,000:
 about 1,400 covers with at most 1,263 rows and more than 50,000 at 1,264.
 
+A soft threshold was tried as well (`ptcover_w.c`, `soft_weights.py`,
+`eval_cover.py`): with near-misses a row at q matters in proportion to the
+chance that the final record ends above q, so the optimiser was given those
+weights instead of a sharp Q. A run of 60,000 sweeps gave a cover worth
+172,500, the same as the best sharp design (172,500 at Q = 172,500; 172,300 at
+170,000; `eval_cover.txt`). The sharp designs near the expected record are
+already within 100 to 200 of what the weighted objective can give, so the
+vectors stay as they are.
+
 ## Files
 
 - `ideas_research.txt`, `verdicts_on_research_ideas.txt`: this session's 100
@@ -183,7 +192,9 @@ about 1,400 covers with at most 1,263 rows and more than 50,000 at 1,264.
   `frailty200.py`, `frailty_*.json`, `frailty_*.txt`, `cover*.txt`;
   `overshoot_selected.py`, `overshoot_selected.txt`,
   `overshoot_selected_found.jsonl.gz` (the successes of the selected run);
-  `portfolio_budget.py`, `portfolio_budget.txt`;
+  `portfolio_budget.py`, `portfolio_budget.txt`; `soft_weights.py`,
+  `eval_cover.py`, `eval_cover.txt`, `soft_run_w170.txt` (with
+  `../ptcover_w.c`);
   `sieve_depth.py`, `sieve_depth.txt`; `price_list.py`, `price_list.txt`,
   `price/run_*.txt` (cover runs with `ptcover_fast.c` of the uarch session,
   branch `ccr-b8c25887-i6tn9f`).
