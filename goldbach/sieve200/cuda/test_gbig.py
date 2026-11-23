@@ -161,7 +161,7 @@ def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0):
 def staged_tests(rng):
     """the staged kernel's default build and its opt-in variants: hoisted visit loops (+ unroll), the flat flush, the grid order (every one must give the same bit matrix and bin demands)"""
     ok = True
-    for hoist, gunroll, flush2, order in ((0, 1, 0, 0), (1, 1, 1, 0), (0, 1, 1, 1), (1, 2, 0, 1), (1, 4, 1, 1)):
+    for hoist, gunroll, flush2, order in ((0, 1, 0, 0), (1, 1, 1, 0), (0, 1, 1, 1), (1, 2, 0, 1), (1, 4, 1, 1), (1, 8, 1, 1), (1, 8, 0, 0)):
         ok &= staged_tests_v(rng, hoist, gunroll, flush2, order)
     return ok
 

@@ -190,7 +190,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             #pragma unroll
             for (int u = 0; u < GEN_UNROLL; u++) {
                 const int pi = pb + u * pstep;
-                if (pi < np) t[u] = TAB[p_lo + pi]; else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+                t[u] = TAB[p_lo + (pi < np ? pi : np - 1)];                    /* clamped: an entry past the chunk is read (a valid address) and its marks are masked below */
             }
             #pragma unroll
             for (int u = 0; u < GEN_UNROLL; u++) {
@@ -305,7 +305,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                 #pragma unroll
                 for (int u = 0; u < GEN_UNROLL; u++) {
                     const int pi = pb + u * pstep;
-                    if (pi < np) t[u] = TAB[p_lo + pi]; else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+                    t[u] = TAB[p_lo + (pi < np ? pi : np - 1)];                    /* clamped: an entry past the chunk is read (a valid address) and its marks are masked below */
                 }
                 #pragma unroll
                 for (int u = 0; u < GEN_UNROLL; u++) {

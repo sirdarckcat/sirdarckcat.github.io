@@ -535,3 +535,28 @@ run together and the second to fourth read the chunk's table slice from the L2: 
 **To run:** `splitab.sh SPEC` (the new rows: `DEEP_GEN_FLUSH2=1`, `DEEP_GEN_ORDER=1`, HOIST + FLUSH2, PACK + HOIST + FLUSH2, + ORDER, ALL).  Read pass B for FLUSH2 (31.5 -> ?), pass A for ORDER (14.35 -> ?); then the driver gate as for the other options (identical slice lines
 on the same windows, the known case, the batch time).
 
+
+### Measured (GPU session, gold-g4c, 23 Nov 13:42-13:48Z, `uarch_measure/` / `sievepack/splitab6_rtxpro6000.txt`, `flushab.sh`): flat flush -4.9 ms, grid order -0.8 ms; the model above was wrong by 3x
+
+ms a 2^24 window, gen (pass A / pass B), then the sieve phase of bench_batch:
+
+| variant | gen | sieve phase |
+|---|---|---|
+| PACK + HOIST | 45.91 (14.31 / 31.60) | 75.1 |
+| `DEEP_GEN_FLUSH2=1` alone | 45.35 (15.67 / 29.69) against base 49.67 (15.58 / 34.09) | 79.2 against 83.7 |
+| HOIST + FLUSH2 | 43.07 (14.53 / 28.54) against HOIST 47.26 | 77.1 |
+| PACK + HOIST + FLUSH2 | 42.34 (14.48 / 27.86) | 72.2 |
+| + `DEEP_GEN_ORDER=1` | 40.32 (13.67 / 26.65) | 70.9 |
+| all six + TILE_UNROLL=4 + PREFETCH=256 | 40.33 (13.76 / 26.57) | 63.5 (production's four options: 67.7) |
+
+The driver gate (flushab.sh, 24 windows, identical slice lines, known case) on gold-g4c: batch 0.784 s against 0.811 s (x0.967), deployed 13:48Z.  **I estimated gen 45.8 -> 25-30 ms; it went to 40.3.**  The instruction count of pass B fell by 50% (28.6k -> 10.5k warp
+instructions a CTA) and its time by 15%.  What that says, with the same model (981k CTAs a window, 2 CTAs an SM, integer ops 2 cycles a warp instruction, ~2.4 GHz - all assumed, not measured): before the flat flush pass B ran at ~98% of the integer pipes' issue rate (28.6k instructions x 2 CTAs
+over 29k cycles = 1.97 a clock an SM, the peak is 2.0), after it at ~43%, and pass A at ~67%.  So the generate kernel was issue-bound only while the flush was in it; now **it waits**: a warp runs 14-28 visit iterations a pass (227 a CTA over 8-16 warps), each one starts with a 16-byte table load
+(L2 ~300 cycles, DRAM ~600) and then ~25 instructions (~50 cycles of issue), and the SM has 4-8 warps a scheduler.  An SM sustains ~W x 50 / (50 + latency) of the issue peak with W warps a scheduler: 8 x 50 / 400 = 100%, 8 x 50 / 700 = 57%: the observed 43-67% is that.  The same reasoning
+explains the tile kernel: its small-prime loop has the same load-then-compute chain per prime and `TILE_UNROLL=4` (4 loads in flight) took it from 14.3 to 7.7 ms for +27% instructions.  And it explains why `GEN_UNROLL=4` did nothing for the generate kernel: its set-up code cost +27% instructions a visit
+(28 against 22: 4 x 4 dummy MOVs and 4 compares for the guarded loads), exactly what the latency hiding won back.
+
+**Clamped loads (this commit).**  The unrolled visit loops now load `TAB[p_lo + min(pi, np - 1)]` unconditionally (an entry past the chunk is a valid address, its marks are masked by the `j = limS` select as before) instead of `if (pi < np) load else dummy`: **23-24 instructions a visit at unroll 1, 2, 4 and 8** (SASS, sm_120, FLUSH2 build: A loop 116 instructions for 4 visits and 4 mark loops,
+235 for 8; registers 32 / 29 / 38 / 43, no spills).  Same marks, same bits (`test_gbig.py` now runs unroll 8 too).  **To run: `genab.sh SPEC`** (unroll 1 / 2 / 4 / 8; CTAs of 256 threads with a 6144- and 4096-word staging buffer = 3 and 4 CTAs an SM; rcta 16): one line each, gen with its passes A and B, on top of the six options in production.
+What would confirm the latency reading: gen falling with the unroll depth at constant instruction count, and with the CTAs an SM.  What would refute it: no change (then the SM waits for something else: the shared-memory atomics' latency in the mark loops, the 16-barrier scan, the reservation's global atomics).
+
