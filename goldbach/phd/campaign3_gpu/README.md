@@ -148,7 +148,10 @@ Version 3 (22 Nov):
   `../campaign3/variants_q150k_g8ffe1_index.json`; sha256 54d87d6c751da532f7d3c35efebde1f5dbd9ac7f86ef697f1cbc0bc55d14e755.
   - k ≥ 2^32 (CPU shares): v0..v63 the lead's container (`../campaign3/q150k_cpu/specs_lead.json`), v64..v127 the helper
     session (`specs_helper.json`), v128..v191 this session's container.
-  - k in [2^30, 2^32): v0..v399 on the L4 that replaces the A100.
+  - k in [2^30, 2^32): v0..v399 for the L4 that was to replace the A100. The A100 was stopped at 01:40Z, after its share of the
+    research 128 and the uarch measurements (`uarch_measure/measure_a100_sections1-6.txt`). Colab then refused an L4 and a G4
+    ("precondition failed") and had no A100 ("Service Unavailable"), so the six GPUs left are the three RTX PRO 6000s and
+    three L4s.
 - Cost per GPU type, from the Colab usage rate as runtimes were added (22 Nov): RTX PRO 6000 10.05 compute units an hour, A100
   6.73, L4 1.94, CPU runtime 0.26. Full-weight members/s per unit an hour: L4 0.57M, RTX PRO 6000 0.54M, A100 0.27M. A fourth
   RTX PRO 6000 is refused ("precondition failed"); a second and a third L4 were granted, a fourth refused (seven GPUs in all).
