@@ -28,6 +28,12 @@ typedef unsigned long long u64;
 #ifndef PPT
 #define PPT 4
 #endif
+#ifndef GEN_HOIST
+#define GEN_HOIST 0  /* 1: gbig_gen_st takes the row of its items, its q and the pointer into the prime table out of the loops (a CTA's blockDim.x is a multiple of RCTA, so an item's row is the thread's): 24 -> ~15 instructions a visit */
+#endif
+#ifndef GEN_UNROLL
+#define GEN_UNROLL 1 /* with GEN_HOIST: primes a thread sets up together in the visit loops of gbig_gen_st (their table entries and Shoup chains in flight at once, then their mark loops) */
+#endif
 #ifndef BIN_PACK
 #define BIN_PACK 0   /* 1: packed bins (the STAGED kernel only): 5 marks of 19 bits in 3 words, 2.4 bytes a mark instead of 4: see "packed bins" below */
 #endif
@@ -127,7 +133,52 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
     for (int b = tid; b < NB; b += blockDim.x) cnt[b] = 0;
     if (tid == 0) over_s = 0;
     __syncthreads();
+#if GEN_HOIST
+    const int rrt = tid & (RCTA - 1);                                   /* the row of every item of this thread (blockDim.x is a multiple of RCTA): item = prime * RCTA + row */
+    const bool live = rrt < nr;
+    const u32 qt = live ? U[row0 + r0 + rrt] : 0u;
+    const int pstep = (int)blockDim.x >> RCTA_LOG, np = p_hi - p_lo, pi0 = tid >> RCTA_LOG;
+    const u32 rbt = (u32)rrt * NTILES;
+#endif
     /* pass A: the marks of every bin of this CTA */
+#if GEN_HOIST
+    if (live) {
+#if GEN_UNROLL > 1
+        for (int pb = pi0; pb < np; pb += pstep * GEN_UNROLL) {
+            uint4 t[GEN_UNROLL];
+            u32 j[GEN_UNROLL];
+            #pragma unroll
+            for (int u = 0; u < GEN_UNROLL; u++) {
+                const int pi = pb + u * pstep;
+                if (pi < np) t[u] = TAB[p_lo + pi]; else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+            }
+            #pragma unroll
+            for (int u = 0; u < GEN_UNROLL; u++) {
+                const u32 s = t[u].x;
+                u32 a = qt * t[u].y - __umulhi(qt, t[u].z) * s;
+                if (a >= s) a -= s;
+                u32 jj = a + s - t[u].w;
+                if (jj >= s) jj -= s;
+                j[u] = (pb + u * pstep < np) ? jj : (u32)KS;
+            }
+            #pragma unroll
+            for (int u = 0; u < GEN_UNROLL; u++)
+                for (u32 jj = j[u]; jj < KS; jj += t[u].x) atomicAdd(&cnt[rbt + (jj >> TILE_LOG)], 1u);
+        }
+#else
+        const uint4 *tp = TAB + p_lo + pi0;
+        for (int pi = pi0; pi < np; pi += pstep, tp += pstep) {
+            const uint4 t = *tp;
+            const u32 s = t.x;
+            u32 a = qt * t.y - __umulhi(qt, t.z) * s;                    /* q M^-1 mod s, in [0, 2s) */
+            if (a >= s) a -= s;
+            u32 j = a + s - t.w;
+            if (j >= s) j -= s;
+            for (; j < KS; j += s) atomicAdd(&cnt[rbt + (j >> TILE_LOG)], 1u);
+        }
+#endif
+    }
+#else
     for (int it = tid; it < nitems; it += blockDim.x) {
         const int rr = it & (RCTA - 1);
         if (rr >= nr) continue;
@@ -140,6 +191,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         const u32 rb = rr * NTILES;
         for (; j < KS; j += s) atomicAdd(&cnt[rb + (j >> TILE_LOG)], 1u);
     }
+#endif
     __syncthreads();
     /* inclusive scan of the counts (Hillis-Steele): pos[b] = marks of bins 0 .. b; bin b's run is stage[pos[b] - cnt[b] .. pos[b]) */
     if (tid < NB) pos[tid] = cnt[tid];
@@ -171,6 +223,44 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
     }
     if (total <= STAGE_CAP) {
         /* pass B: the same marks again, into the staging buffer at their place in bin order */
+#if GEN_HOIST
+        if (live) {
+#if GEN_UNROLL > 1
+            for (int pb = pi0; pb < np; pb += pstep * GEN_UNROLL) {
+                uint4 t[GEN_UNROLL];
+                u32 j[GEN_UNROLL];
+                #pragma unroll
+                for (int u = 0; u < GEN_UNROLL; u++) {
+                    const int pi = pb + u * pstep;
+                    if (pi < np) t[u] = TAB[p_lo + pi]; else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+                }
+                #pragma unroll
+                for (int u = 0; u < GEN_UNROLL; u++) {
+                    const u32 s = t[u].x;
+                    u32 a = qt * t[u].y - __umulhi(qt, t[u].z) * s;
+                    if (a >= s) a -= s;
+                    u32 jj = a + s - t[u].w;
+                    if (jj >= s) jj -= s;
+                    j[u] = (pb + u * pstep < np) ? jj : (u32)KS;
+                }
+                #pragma unroll
+                for (int u = 0; u < GEN_UNROLL; u++)
+                    for (u32 jj = j[u]; jj < KS; jj += t[u].x) stage[atomicAdd(&cur[rbt + (jj >> TILE_LOG)], 1u)] = jj & TILE_MASK;
+            }
+#else
+            const uint4 *tp = TAB + p_lo + pi0;
+            for (int pi = pi0; pi < np; pi += pstep, tp += pstep) {
+                const uint4 t = *tp;
+                const u32 s = t.x;
+                u32 a = qt * t.y - __umulhi(qt, t.z) * s;
+                if (a >= s) a -= s;
+                u32 j = a + s - t.w;
+                if (j >= s) j -= s;
+                for (; j < KS; j += s) stage[atomicAdd(&cur[rbt + (j >> TILE_LOG)], 1u)] = j & TILE_MASK;
+            }
+#endif
+        }
+#else
         for (int it = tid; it < nitems; it += blockDim.x) {
             const int rr = it & (RCTA - 1);
             if (rr >= nr) continue;
@@ -183,6 +273,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             const u32 rb = rr * NTILES;
             for (; j < KS; j += s) stage[atomicAdd(&cur[rb + (j >> TILE_LOG)], 1u)] = j & TILE_MASK;
         }
+#endif
         __syncthreads();
         /* flush: a warp a bin at a time, lane i on word i of the run */
         const int warp = tid >> 5, lane = tid & 31, nwarps = blockDim.x >> 5;

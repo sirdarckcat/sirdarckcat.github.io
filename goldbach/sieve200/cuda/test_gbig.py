@@ -15,12 +15,12 @@ from bigchunks import make_chunks
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def build(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=0):
-    out = os.path.join(HERE, f"libgbig_cpu_{tile_log}_{ks_log}_{rg}_{ppt}_{stage_cap}_{rcta}" + ("_pk" if pack else "") + ".so")
+def build(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=0, hoist=0, gunroll=1):
+    out = os.path.join(HERE, f"libgbig_cpu_{tile_log}_{ks_log}_{rg}_{ppt}_{stage_cap}_{rcta}" + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ".so")
     srcs = [os.path.join(HERE, f) for f in ("gbig_cpu.cpp", "gbig_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
         subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DTILE_LOG={tile_log}", f"-DKS_LOG={ks_log}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}",
-                               f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DBIN_PACK={pack}", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
+                               f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
     lib.cpu_gen_st.argtypes = [vp, vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]

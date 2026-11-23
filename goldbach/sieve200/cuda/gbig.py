@@ -18,11 +18,11 @@ _SRC = open(os.path.join(HERE, "gbig_kernels.cuh")).read()
 _KCACHE = {}
 
 
-def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False):
-    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack))
+def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hoist=False, gunroll=1):
+    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll)
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else ""))
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else ""))
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
@@ -79,7 +79,7 @@ class BigStage:
         assert self.rcta >= 1 and self.rcta & (self.rcta - 1) == 0, "rcta must be a power of two"
         self.pack = bool(pack)
         assert not self.pack or (self.staged and tile_log <= 19), "packed bins (19-bit marks, 5 in 3 words) need the staged kernel and tiles of at most 2^19 bits"
-        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack)
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")))
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         if self.staged:

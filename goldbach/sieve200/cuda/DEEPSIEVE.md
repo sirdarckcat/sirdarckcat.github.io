@@ -461,3 +461,15 @@ packed staged bins against numpy, the packed capacity retry (cap 8 -> 256), and 
 
 **To run on a GPU.**  Same fixed windows with and without `DEEP_BIN_PACK=1` (and `DEEP_STAGED=1`, rcta 8, 512 generate threads as in production): the slice lines must be IDENTICAL; `bench_split.py` shows the gen / apply split
 (expected: bin apply 19.9 -> ~12 ms, gen pass B 31.8 -> ~22 ms; estimate -13 ms a window, ~-6% of a batch), `bench_bigprimes.py --staged 1 --pack 1 ...` the stage alone with its bytes.
+
+
+### The visit loops of `gbig_gen_st`, hoisted (opt-in `DEEP_GEN_HOIST=1`, `DEEP_GEN_UNROLL=2|4`; same hour; CPU-verified, not yet timed)
+
+Pass A (22.8 ms a window at rcta 2, 15.6 at rcta 8) is largely bound by the integer pipes (bench_pipes: every integer op takes ~2 scheduler cycles a warp-op, 64 lane-ops a clock an SM): 7.1e9 visits, ~24 instructions a visit in the SASS (no mark), of which
+the loop-invariant ones were not hoisted because `blockDim.x` is not known to be a multiple of RCTA: the item's row (`it & (RCTA - 1)`), its `q = U[row0 + r0 + rr]` (a global load a visit), the validity test and the table address
+(`TAB + p_lo + (it >> RCTA_LOG)`: two LDCs and an IMAD.WIDE).  With `GEN_HOIST` a thread keeps its row, its q and steps a pointer into the table by blockDim.x / RCTA primes outside the loops: **24 -> 17 instructions a visit in pass A,
+~26 -> 20 in pass B** (SASS, sm_120), the same (prime, row) items in the same order a thread, so the same marks.  `GEN_UNROLL = 2 | 4` additionally sets up that many primes a thread at once (their table entries loaded together, their Shoup
+chains computed together, then their mark loops one after the other): 568 / 712 instructions, 34 / 40 registers, no spills.  Estimate: pass A 22.8 -> ~17 ms, pass B -2 ms if the loops stay issue-bound.
+CPU: `DEEP_GEN_HOIST=1` with and without `DEEP_BIN_PACK=1`, and `DEEP_GEN_UNROLL=2 | 4`, through `test_gbig_cpu.py` and `test_gbatch_cpu.py`: identical to numpy / to the CPU feeder.  The default build of the whole module stays SASS-identical to the committed one.
+
+`splitab.sh SPEC` runs `bench_split.py` under every opt-in variant of this tree (base, pack, hoist, pack + hoist, unroll 2 / 4, prefetch, the combinations) and prints one line each: gen (pass A / B), the tile kernel (small marks, bin apply), the window's sieve phase.
