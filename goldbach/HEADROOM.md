@@ -36,7 +36,7 @@ were 5 ms a window shorter).  That is NOT a recommendation: f is tied to the sup
 time still converts to hits at ~0.6-1:1.
 
 **An objective-level item (uarch, 17:05Z; sent to the lead, his call): place each vector's window at the TOP of its valid k range.**  The window is [k_lo, k_lo + 2^24) from the vector's first 200-digit k (N from 1.0e199 to ~8.8e199); the vector has 19.24M valid members, so [kmax - 2^24, kmax) (N from 2.2e199 to 10^200, 200 digits at both ends) is just as available, and a larger N has a lower prime density (p ~ e^gamma ln B / ln N):
-mean ln N 459.67 -> 459.94, expected yield sum (1-p)^c over the window x1.0155-1.0168 for the kept members' c = 350-380 (x1.0185 at c = 420), Fermat cost +0.1%: ~+1.5% design hits (and near-misses) per vector for nothing, one line in VectorSource.  Computed on the real production vector's M, N0 and kmax (not measured on a GPU).
+mean ln N 459.67 -> 459.94, expected yield sum (1-p)^c over the window x1.0155-1.0168 for the kept members' c = 350-380 (x1.0185 at c = 420), Fermat cost +0.1%: ~+1.5% design hits (and near-misses) per vector for nothing, one line in VectorSource.  Computed on the real production vector's M, N0 and kmax (not measured on a GPU).  **Approved by the lead (16:36Z)**; the patch is `sieve200/cuda/search_gpu5_vectop.patch` (`--vector-top 1` / `VECTOR_TOP`, default off, with the N-range assertion; applies to the driver at origin/ccr-8ffe9d7a-4ni11u @42f98e5), `test_vector_top_cpu.py` checks the arithmetic on a real spec (200 digits at both ends, the next k has 201).
 
 ## 1. Where an RTX PRO 6000 batch goes (2 x 2^25 members, Q = 170,000, 1.76 s)
 

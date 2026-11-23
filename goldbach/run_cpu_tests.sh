@@ -28,6 +28,7 @@ t "GPU sieve window, DEEP_ROWS_ORD=2"              $S DEEP_ROWS_ORD=2 python3 te
 t "bench_rows glue (fake GPU)"                     $S python3 test_bench_rows_cpu.py
 [ "$QUICK" = quick ] && { echo "quick: $fail failure(s)"; exit $fail; }
 t "near-miss truncation vs the full list's ground truth" $S python3 test_near_trunc_cpu.py
+t "top-of-range vector window arithmetic"          $S python3 test_vector_top_cpu.py $(ls ../phd/campaign3_gpu/v89/*spec*.json 2>/dev/null | head -1)
 t "GPU sieve vs CPU feeder"                        $S python3 test_gpu_sieve_cpu.py
 t "batch sieve vs CPU feeder"                      $S python3 test_gbatch_cpu.py
 t "batch sieve, packed bins"                       $S DEEP_BIN_PACK=1 python3 test_gbatch_cpu.py
