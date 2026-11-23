@@ -62,9 +62,10 @@ def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
 def persist_kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
     """the persistent pool kernel `fermat28_persist` (persist_source), compiled and cached like kernel(); its registers: persist_kernel(...).attributes['num_regs']"""
     assert limbs == 21, "fermat28 is built for 21 x u32 input limbs (n < 2^672)"
-    key = ("persist", step_file, asm_mad, maxreg)
+    psync = os.environ.get("FERMAT_PERSIST_SYNC", "1") != "0"           # __syncwarp() before each test (see fermat28_persist_kernel.cuh); 0: the first version, for comparison
+    key = ("persist", step_file, asm_mad, maxreg, psync)
     if key not in _K:
-        opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ())
+        opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ()) + (f"-DFM28_PSYNC={int(psync)}",)
         _K[key] = cp.RawKernel(persist_source(step_file), "fermat28_persist", options=opts)
     return _K[key]
 
@@ -94,7 +95,21 @@ def persist_pool(tester, kv, cnt, cols, run_rest, cta_sm=None, threads=128):
     frow = cp.empty(n, dtype=cp.int32)
     nsm = cp.cuda.Device().attributes["MultiProcessorCount"]
     grid = min(nsm * (cta_sm or persist_ctas_per_sm(tester.kp_regs, threads)), -(-n // threads))
+    trace = os.environ.get("FERMAT_PERSIST_TRACE", "") not in ("", "0")
+    if trace:
+        import time
+        e0, e1 = cp.cuda.Event(), cp.cuda.Event()
+        cp.cuda.get_current_stream().synchronize()
+        t_in = time.perf_counter()
+        e0.record()
     tester.kp((grid,), (threads,), (tester.cq, tester.M, kv.astype(cp.uint32), cnt.astype(cp.int32), indptr, cols32, np.int32(n), counter, tests, state, frow))
+    if trace:
+        e1.record()
+        e1.synchronize()
+        k_ms = cp.cuda.get_elapsed_time(e0, e1)
+        k_tests = int(tests.astype(cp.int64).sum())
+        print(f"[persist] {n} members, grid {grid} x {threads} ({grid // max(nsm, 1)} CTAs/SM, {tester.kp_regs} registers, sync {os.environ.get('FERMAT_PERSIST_SYNC', '1')}): kernel {k_ms:.1f} ms, "
+              f"{k_tests} tests done in it ({k_tests / max(k_ms, 1e-9) / 1e3:.2f}M tests/s), {int((state == 0).sum())} members in flight when the queue emptied", flush=True)
     if bool((state == 3).any()):
         raise RuntimeError("kernel 28 flagged an n outside its range")
     tests_m = tests.astype(cp.int64)
@@ -110,7 +125,14 @@ def persist_pool(tester, kv, cnt, cols, run_rest, cta_sm=None, threads=128):
         total = int(offs[-1])
         seg = cp.searchsorted(offs, cp.arange(total), side="right")
         cols_u = cols32[(indptr[unf] + pos_u)[seg] + (cp.arange(total) - (offs - lens)[seg])]
+        if trace:
+            cp.cuda.get_current_stream().synchronize()
+            t_r = time.perf_counter()
         t_u, p_u, s_u, f_u, g_u, l_u = run_rest(tester, kv[unf], lens, cols_u)
+        if trace:
+            cp.cuda.get_current_stream().synchronize()
+            print(f"[persist] the {int(unf.size)} members left in flight ({int(lens.sum())} rows in their lists): finished by the round-based path in {1e3 * (time.perf_counter() - t_r):.1f} ms, "
+                  f"{int(l_u)} launches, {int(g_u)} tests computed; the whole persist_pool {1e3 * (time.perf_counter() - t_in):.1f} ms", flush=True)
         tests_m[unf] = pos_u + t_u
         prp_m[unf] = p_u
         succ_m[unf] = s_u

@@ -11,6 +11,7 @@ typedef unsigned long long u64;
 #define __global__
 static inline int __clz(u32 x) { return __builtin_clz(x); }
 static inline int atomicAdd(int *p, int v) { return __sync_fetch_and_add(p, v); }
+static inline void __syncwarp() {}                                   /* the CPU threads are independent: nothing to converge */
 #define FM28_MADN(acc, a, b) ((acc) += (u64)(u32)(a) * (u32)(b))
 #ifndef PERSIST_SRC
 #error "PERSIST_SRC must name the file written from gpu_fermat28.persist_source()"

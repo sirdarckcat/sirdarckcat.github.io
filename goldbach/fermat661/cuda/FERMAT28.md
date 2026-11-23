@@ -188,7 +188,7 @@ can be changed to roll the reduction loop.  Things to try, in this order: `pytho
 variant's registers, local bytes and tests/s next to `fermat2`); 64 / 128 / 256 threads per block; `asm_mad=True`; 1 / 2 / 4 accumulators.
 
 
-## The persistent pool kernel (`fermat28_persist_kernel.cuh`, 23 Nov, not yet timed on a GPU)
+## The persistent pool kernel (`fermat28_persist_kernel.cuh`, 23 Nov): v1 measured ~1 s a batch SLOWER (plt8); v2 with `__syncwarp` awaiting plt9
 
 The round-based `run_pool` of `search_gpu5.py` tests a pool in ~45 rounds: each round builds its work list with ~100 small cupy kernels and ~6 host syncs, launches one Fermat kernel of ~1M tests, and reads the first PRPs back; it
 computes ~3% tests past a member's first PRP and leaves the GPU idle between the Fermat kernels of its two halves (`--pool-threads 2` hides most of it; `--profile-pool`: flush 1.34 s against 1.27 s of kernels; beside the sieve 1.58 s,
@@ -205,3 +205,21 @@ no row tested past the first PRP, one long kernel beside the sieve (the probe: F
 * **Expected** (a model, not a measurement): phase 1 at the kernel's 23.3M tests/s plus ~3% for threads that start or end a test while others are in the step loop (setup / final code run by part of a warp), phase 2 ~0.15 s (20 rounds of the
   shrinking active set): the flush without a sieve beside it about as long as now (1.31 vs 1.34 s), beside the sieve ~1.45 s against 1.58 s: a batch of ~1.42 s against 1.54 s (-8%).  `plt8.sh` measures it.
 * Use: `search_gpu5_persist.patch` adds `--persist 1` (`--persist-cta-sm N`, `--persist-maxreg N`); `MultiTester` builds `kp = gpu_fermat28.persist_kernel(...)`; `flush()` calls `persist_pool(..., rest)`.
+
+### plt8 (GPU session, RTX PRO 6000 `gold-g4c`, 23 Nov 10:13-10:18Z): the first version is much SLOWER, and why (diagnosis, not yet measured)
+
+Batches of 2^26 members, 6 batches, slice lines identical to base in every run (so the results are right): base 1.84 s, a2 (the deployed setting) 1.53 s, **p1 (persistent + a2) 2.68 s, p1 + tail rule 2.70 s, 4 CTAs an SM 2.71 s,
+one pool thread 2.71-2.74 s, persistent alone without the pipeline (pn) 2.81-2.84 s**; the tail rule alone on top of a2 (a2t) 1.504 s against 1.5265 s: -1.5%, under the 2% bar, not deployed.  The persistent kernel is ~1 s a batch slower
+even without the sieve beside it: it runs at about half the production kernel's tests/s, so the kernel itself is the problem, not the pipeline, the round-based leftovers or the occupancy (4 and 5 CTAs an SM are the same).
+
+What the SASS says (`sass.py`, sm_120): the step loop is the production loop (1,104 instructions, same mix), one copy.  The only convergence barrier ptxas put around the kernel's loop is `BSSY.RELIABLE B1` at the head and `BSYNC.RELIABLE B1`
+at the bottom of the body.  The fetch of a new member (a global atomic, `cnt[m]`, `indptr[m]`, `kv[m]`, `cols[...]`, the row: ~3 us of dependent loads) is done by the ~7% of lanes whose member just ended; the other lanes branch past
+it (`@P0 BRA L_x_2`) straight into the next test, and nothing makes the two groups meet before the 660-step test (an `if` containing `break` / `continue` is not a diamond, so no `BSSY` / `BSYNC` pair was generated for it).  On Volta and
+later (independent thread scheduling) the groups can then run the same step code at different program counters, and the warp issues every instruction once per group: up to 2x the instructions for the same tests, which is what was measured.
+Production never meets this: one thread is one test, every warp starts its tests together.
+
+**v2** (this commit): `__syncwarp()` at the head of the loop and again after the fetch, before the test (`FM28_PSYNC=1`, the default; `FERMAT_PERSIST_SYNC=0` builds v1 for comparison); the fetch is one structured block (members without a row
+are written as successes inside it, no `continue`).  SASS: `WARPSYNC.COLLECTIVE` at both points, the same step loop, 96 registers, no spills (sm_120 asm; sm_89 / sm_75 s1rw 128 as before).  CPU test passes (`test_fermat28_persist.py`:
+identical per-member results).  The cost of the sync is one fetch latency (~3 us) a test of ~5 ms.  `FERMAT_PERSIST_TRACE=1` prints per flush the kernel's own milliseconds, the tests it did, the members left in flight and the wall of the
+round-based finish; `bench_persist.py` (`test_bench_persist_fake.py` runs it on CPU stand-ins) times the production kernel and the persistent kernel (sync 0 and 1) on a synthetic pool and checks every result against the production
+kernel's flags: **if the diagnosis is right sync 0 shows ~0.5 x and sync 1 ~1.0 x the production tests/s; if sync 1 is still ~0.5 x the diagnosis is wrong and the persistent kernel should be dropped** (it was a +3-8% idea).  `plt9.sh` runs both.
