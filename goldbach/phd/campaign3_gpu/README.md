@@ -532,6 +532,22 @@ Version 3 (22 Nov):
   - It was a near-miss of the 89-moduli vector `q170000_m89_p2c00019_v545` at k = 10,814,286.
   - Since then every card reports near-misses from 158,209 up (`NEAR_MISS=158209`, `v89/set_nm.py`). The L4s and the
     T4 restarted for it at 12:57Z, the RTX cards with the `--target` roll-out.
+- uarch's opt-in sieve variants (3209f0d; files in `sievepack/`), deployed on the three RTX cards at 13:17:39-13:17:51Z.
+  - The tree is `/content/ua_v5`: `ua_v3` with 3209f0d's whole `sieve200/cuda`, whose default build is SASS-identical.
+  - The variants:
+    - `DEEP_BIN_PACK=1`: 5 marks of 19 bits in 3 words, 40% fewer bin bytes;
+    - `DEEP_GEN_HOIST=1`: the generate kernel's visit loops with the row, q and table pointer hoisted;
+    - `DEEP_TILE_UNROLL=4`: 4 small primes set up at once in the tile kernel;
+    - `DEEP_TILE_PREFETCH=256`.
+  - splitab (`sievepack/splitab_rtxpro6000.txt`), ms a 2^24 window of sieve: 83.7 for production; 78.1 with PACK; 81.2 with
+    HOIST; 76.9 with UNROLL=4; 70.3 with all three; 69.3 adding the prefetch.
+  - Each card's own check (`packab.sh`, `packab_rtxpro6000.txt`) ran production, the new tree without options, and the two
+    combinations, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs on every card.
+    - The known case with all four options gave the same 23 (k, q) as the CPU brute force.
+    - Batch: gold-g4 ×0.970 (it took the variant without prefetch), gold-g4b ×0.969, gold-g4c ×0.959.
+  - The batch gains less than the sieve does: with the sieve 17% faster, the Fermat side (pool wall ~0.65 s) becomes the
+    floor.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
