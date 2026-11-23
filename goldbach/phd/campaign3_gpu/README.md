@@ -186,6 +186,33 @@ Version 3 (22 Nov):
 
   - Restarts: compare steady states, not the first batches. After a restart, the first pass over the variants carries the
     per-variant setup. On the L4 (1,462 variants, 23 batches a round) that is ~2 s a batch: 13.4 s against 11.4 s on kernel 3.
+- Sieve bound B (23 Nov 00:20-00:45Z; production stays at B = 10^6). A deeper bound makes the f = 0.97 selection sharper and
+  leaves fewer tests per kept member.
+  - `deep_sieve_bound.py` (uarch `Sieve200`, CPU) gives each member's alive count at several B. The model: an alive row is prime
+    with p_B, and Σ_k c_B p_B is independent of B. That gives p_B = 0.0536, 0.0625, 0.0715, 0.0804 at 10^6 … 10^9; Mertens gives
+    0.0801 at 10^9. Each member's weight is (1 − p_Bmax)^c_Bmax.
+  - At f = 0.97, on 4M members of each of two vectors (`sieve_bound/cpu_*.txt`):
+
+    | selection bound | hit mass kept | tests per kept member | hit mass per test |
+    |---|---|---|---|
+    | 10^6 (production) | 15.9-16.0% | 18.66 | ×1 |
+    | 2·10^6 | 17.0% | 17.77 | ×1.12 |
+    | 4·10^6 | 18.0% | 16.96 | ×1.24 |
+    | 10^7 | 19.3% | 15.99 | ×1.41 |
+    | 10^8 | 22.65% | 13.99 | ×1.89-1.90 |
+    | 10^9 | 25.95% | 12.44 | ×2.45 |
+
+    That is ≈ (ln B / ln 10^6)^2.2: tests fall as 1 / ln B and kept mass rises as (ln B)^1.2.
+  - On the GPU (`bench_sieveb.sh`, the same 64 production-range slices at each B on an RTX PRO 6000,
+    `sieve_bound/gpu_rtxpro6000_64slices.txt`), the logged expected hits rise ×1.041, ×1.085, ×1.206 and ×1.254 at
+    2·10^6, 4·10^6, 10^7 and 2·10^7. Tests fall ×0.857 at 10^7, which is the model's figure.
+  - The batch time rises 2.70 → 3.50, 4.60, 7.60 and 14.7 s, so expected hits/s fall to ×0.80, ×0.64, ×0.43 and ×0.23.
+  - The cause is that `GpuFeeder` does one step per (prime, row, window) even when s > K and the pair hits at most once:
+    ≈0.08 ns a pair, linear in π(B).
+  - Break-even on a G4 batch of 64 slices (2.03 s, ~1.6 s of it Fermat): the primes above 10^6 must cost under ~0.65 s for
+    B = 10^7 and under ~1.25 s for B = 10^8. At 10^8 and K = 2^19 that is 7.9·10^11 pair-steps a batch, so a
+    large-prime path near 0.5 ps a pair (one Shoup modmul, a shift by k_start mod s, a compare) would give ~+40%. With
+    K = 2^21, near +65%.
 - Since 21:08Z the GPUs run Q = 140,000 (research cover, 1,011 rows; gold-g4, gold-g4b, L4) and Q = 150,000 (1,093-1,094 rows;
   gold-g4c), both checked here, k in [2^30, 2^32), top first (`run_v3_campQ.sh`). `TALLY.md` has expected against found.
 - `gpu_fermat_ref.py`: a limb-exact CPU model of the kernel (for the Lean proof). 200 candidates, k = 0..3, 247, 248,

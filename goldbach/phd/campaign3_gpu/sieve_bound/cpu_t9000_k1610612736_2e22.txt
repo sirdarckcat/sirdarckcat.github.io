@@ -1,0 +1,12 @@
+B=1e+06: 78409 primes, setup 0.0s, 1 windows of 2^22 in 4.0s (962.4 ns/member, 1 thread); alive/k 489.86, sd 16.08
+B=2e+06: 148844 primes, setup 0.0s, 1 windows of 2^22 in 4.6s (1089.9 ns/member, 1 thread); alive/k 466.45, sd 16.03
+B=4e+06: 283057 primes, setup 0.1s, 1 windows of 2^22 in 5.0s (1182.0 ns/member, 1 thread); alive/k 445.19, sd 15.95
+B=1e+07: 664490 primes, setup 0.2s, 1 windows of 2^22 in 6.1s (1443.3 ns/member, 1 thread); alive/k 419.89, sd 15.81
+B=1e+08: 5761366 primes, setup 2.0s, 1 windows of 2^22 in 23.5s (5596.2 ns/member, 1 thread); alive/k 367.40, sd 15.40
+members 4194304, p_B: 1e+06: 0.0536, 2e+06: 0.0563, 4e+06: 0.0590, 1e+07: 0.0625, 1e+08: 0.0715
+hit mass kept (weights from B = 1e+08) and tests per kept member, by selection bound and f:
+  f=0.95: B=1e+06 kept 22.39% tests 18.66 -> mass/test x1.000 | B=2e+06 kept 23.62% tests 17.77 -> mass/test x1.108 | B=4e+06 kept 24.84% tests 16.96 -> mass/test x1.221 | B=1e+07 kept 26.44% tests 15.99 -> mass/test x1.378 | B=1e+08 kept 30.37% tests 13.99 -> mass/test x1.809
+  f=0.97: B=1e+06 kept 15.97% tests 18.66 -> mass/test x1.000 | B=2e+06 kept 17.00% tests 17.77 -> mass/test x1.118 | B=4e+06 kept 17.99% tests 16.96 -> mass/test x1.240 | B=1e+07 kept 19.34% tests 15.99 -> mass/test x1.413 | B=1e+08 kept 22.65% tests 13.99 -> mass/test x1.892
+  f=0.98: B=1e+06 kept 12.13% tests 18.66 -> mass/test x1.000 | B=2e+06 kept 12.96% tests 17.77 -> mass/test x1.122 | B=4e+06 kept 13.81% tests 16.96 -> mass/test x1.254 | B=1e+07 kept 14.96% tests 15.99 -> mass/test x1.439 | B=1e+08 kept 17.77% tests 13.99 -> mass/test x1.953
+  f=0.99: B=1e+06 kept  7.46% tests 18.66 -> mass/test x1.000 | B=2e+06 kept  8.05% tests 17.77 -> mass/test x1.133 | B=4e+06 kept  8.66% tests 16.96 -> mass/test x1.277 | B=1e+07 kept  9.48% tests 15.99 -> mass/test x1.482 | B=1e+08 kept 11.54% tests 13.99 -> mass/test x2.063
+  f=0.995: B=1e+06 kept  4.53% tests 18.66 -> mass/test x1.000 | B=2e+06 kept  4.95% tests 17.77 -> mass/test x1.149 | B=4e+06 kept  5.36% tests 16.96 -> mass/test x1.303 | B=1e+07 kept  5.92% tests 15.99 -> mass/test x1.526 | B=1e+08 kept  7.37% tests 13.99 -> mass/test x2.172
