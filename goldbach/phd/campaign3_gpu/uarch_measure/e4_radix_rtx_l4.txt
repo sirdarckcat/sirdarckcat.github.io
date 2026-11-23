@@ -1,0 +1,28 @@
+# uarch E4 (bench_fm28_step.py --e4, c660415): ticks per warp-step of the production step (24 x 28 bits, redundant limbs), 24 x 28 with a carry chain, and
+# 23 x 29 bits with a carry chain; campaign paused ~3 s on each card, 2026-11-23 10:50Z.
+
+=== gold-g4c
+2026-11-23T10:50:07Z paused pid 1527265
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 2422 MHz, 47485 MiB
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, style s1r_asm, 3000 steps a launch, 128 threads a CTA
+
+E4  radix (ticks per warp-step per scheduler, 5 CTAs an SM or what the registers allow; ratio to the production step s1r_asm)
+step                                IMAD  regs  CTAs/SM  ticks/step   ratio    GHz
+s1r_asm: 24 x 28 bits, redundant (production)   900    80        5        4001   1.000  2.427
+24 x 28 bits, carry chain            900    88        5        4009   1.002  2.425
+23 x 29 bits, carry chain            828    90        5        3703   0.926  2.424
+2026-11-23T10:50:09Z resumed pid 1527265
+E4-DONE
+=== gold-l4b
+2026-11-23T10:50:28Z paused pid 123276
+NVIDIA L4, 1575 MHz, 19196 MiB
+NVIDIA L4: 58 SMs, style s1r_asm, 3000 steps a launch, 128 threads a CTA
+
+E4  radix (ticks per warp-step per scheduler, 5 CTAs an SM or what the registers allow; ratio to the production step s1r_asm)
+step                                IMAD  regs  CTAs/SM  ticks/step   ratio    GHz
+s1r_asm: 24 x 28 bits, redundant (production)   900    90        5        4467   1.000  1.468
+24 x 28 bits, carry chain            900    92        5        4536   1.015  1.781
+23 x 29 bits, carry chain            828    96        5        4249   0.951  1.434
+2026-11-23T10:50:31Z resumed pid 123276
+E4-DONE
+
