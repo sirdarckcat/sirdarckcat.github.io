@@ -9,12 +9,13 @@
 # D. bench_pipes.py --warps: do the instruction costs shrink with more warps a scheduler?
 # E. Nsight Compute on the Fermat kernel, if `ncu` works on this host (stall reasons, issue slots, pipe utilisation)
 # F. bench_clock.py: does clock64() tick at the SM clock?  (5 seconds; every "cycle" of the pipe benchmarks is a clock64 difference)
+# G. the production Fermat step with 1, 2 and 4 independent accumulators a column (time_fermat28.py, ~1 minute): if the RTX step is latency bound the 2 and 4 are faster; the cost model says -2.5% / -7%
 # SECTIONS="B C" runs only those; every section is time-limited and a failure does not stop the next one.  Then: summarize / commit the file and tell the uarch session.
 set -u
 SPEC=${1:?usage: GPU=0 bash run_experiments.sh SPEC.json [OUT.txt]}
 GPU=${GPU:-0}
 OUT=${2:-experiments_$(hostname)_gpu${GPU}.txt}
-SECTIONS=${SECTIONS:-"F A B C D E"}
+SECTIONS=${SECTIONS:-"F G A B C D E"}
 export CUDA_VISIBLE_DEVICES=$GPU
 HERE=$(cd "$(dirname "$0")" && pwd)
 FC=$HERE/../../fermat661/cuda
@@ -39,6 +40,11 @@ if len(v) > 4:
     print(f"  nvidia-smi SM clock during the run: median {statistics.median(v):.0f} MHz, min {min(v):.0f}, max {max(v):.0f}")
 PY
   rm -f /tmp/exp_clk_$$.csv
+fi
+
+if want G; then
+  section "G. accumulators a column: s1r_asm (production) against s2r_asm and s4r_asm (tests/s, --check against gmpy2; the cost model for a throughput-bound step: -2.5% and -7%)"
+  timeout 900 python3 "$FC/time_fermat28.py" "$SPEC" --variant s1r_asm s2r_asm s4r_asm --seconds 15 --check || echo "FAILED: time_fermat28 s2r_asm / s4r_asm"
 fi
 
 if want A; then

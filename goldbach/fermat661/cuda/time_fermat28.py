@@ -3,7 +3,8 @@ sieve200/cuda/measure_all.sh) and to get tests/s on the production-range candida
 
     python3 time_fermat28.py specs_variants.json [--variant s1r_asm s1rw ...] [--seconds 20] [--threads 128] [--batch 1048576] [--check]
 
-Variants: s1r_asm (redundant limbs, PTX mad.wide: the RTX PRO 6000s' production kernel), s1rw (redundant limbs, mul.wide for m * n: the A100 / L4), s1_asm, s1w, s1, s2w.
+Variants: s1r_asm (redundant limbs, PTX mad.wide: the RTX PRO 6000s' production kernel), s1rw (redundant limbs, mul.wide for m * n: the A100 / L4), s1_asm, s1w, s1, s2w,
+s2r_asm / s4r_asm (the production step with 2 / 4 independent accumulators a column: a test of whether the RTX step is latency bound; CPU-verified like the others).
 Prints one line a variant: tests/s (median and best of the timed loops), registers, and with --check the flags against gmpy2 on 2,000 candidates.
 """
 import argparse, json, os, sys, time
@@ -22,6 +23,8 @@ VARIANTS = {
     "s1w": dict(step_file="fermat28_step_s1w.cuh"),
     "s1": dict(step_file="fermat28_step_s1.cuh"),
     "s2w": dict(step_file="fermat28_step_w.cuh"),
+    "s2r_asm": dict(step_file="fermat28_step_r.cuh", asm_mad=True),             # 2 accumulators a column: 43 more adds a step than s1r_asm on sm_120 (the cost model: -2.5% if the step is throughput bound, faster if latency bound)
+    "s4r_asm": dict(step_file="fermat28_step_s4r.cuh", asm_mad=True),           # 4 accumulators a column: 120 more adds (model -7% / faster if latency bound)
 }
 
 ap = argparse.ArgumentParser()
