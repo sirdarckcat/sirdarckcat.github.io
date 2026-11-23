@@ -1,0 +1,218 @@
+## TOTALS
+modules 175187 lines 17549402 bytes 1030531854
+declaration kinds {'def': 212819, 'structure': 8286, 'instance': 7598, 'theorem': 784092, 'lemma': 34663, 'abbrev': 13202, 'inductive': 121, 'class': 43}
+named Prop-defs (statements-as-defs) 89053
+trust-relevant construct counts (text matches): {'run_cmd': 5, 'set_option': 88137, 'io_sys': 2792, 'elab_macro': 26}
+  run_cmd in 5 files; first: ['BuildAid.D1', 'BuildAid.D2', 'BuildAid.D3', 'BuildAid.D4', 'BuildAid.D5']
+  elab_macro in 22 files; first: ['Development.AbelianVarietyTheory.Definitions.GaloisGeometry.NegOnePowBoundaryTermsCancel', 'Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsProperOfFiniteType', 'Development.AbelianVarietyTheory.Proofs.IwasawaDecomposition.RigidFrameSymmetricRatioSeries', 'Development.AutomorphicSpectrum.Proofs.BlockDecomposition.Cup1CoboundaryMemBoundaries', 'Development.AutomorphicSpectrum.Proofs.BlockDecomposition.ShuffleCup1FormulaPositiveDegree', 'Development.EtaleCohomology.EtaleSheaves.ChasePf']
+  io_sys in 672 files; first: ['CompanionTheory.HarishChandraModules.BesselParameterIntegrals.BesselOrbitConvolutions.BeBessel', 'CompanionTheory.HarishChandraModules.BesselParameterIntegrals.BesselOrbitConvolutions.BeConv', 'Development.AbelianVarietyTheory.BlockTheory.DivisorBase.EpsilonPairingZeta', 'Development.AbelianVarietyTheory.BlockTheory.JetGauges.HodgeTateCharacterSystems', 'Development.AbelianVarietyTheory.BlockTheory.JetGauges.TraceFormDualSystem', 'Development.AbelianVarietyTheory.BlockTheory.PoincareCuspForms.WordDerivativeBlocks']
+
+## EXTERNAL IMPORT ROOTS (non-archive) {'Mathlib': 156238, 'Lean': 12, 'Batteries': 3}
+files that import Mathlib directly: 136003
+total internal import edges 753569
+
+## REACHABILITY from Main+Statements: 175187 of 175187 modules ( 100.0 %)
+not reachable from Main: 0
+ unreachable by area (top 25): []
+ reachable by library: {'Development': 141928, 'Formalism': 18254, 'ReciprocityTheory': 3845, 'GroundTheory': 8507, 'CompanionTheory': 2027, 'PositivityTheory': 449, 'Lemmata': 167, 'BuildAid': 5, 'Supplements': 3, 'Statements': 1, 'Main': 1}
+ reachable lines: 17549402
+
+## LAYERING: longest import chain length = 203
+ reachable modules by depth bucket: [(0, 32718), (10, 18621), (20, 17206), (30, 16645), (40, 16799), (50, 15162), (60, 12047), (70, 7820), (80, 6854), (90, 15012), (100, 8658), (110, 3251), (120, 2626), (130, 867), (140, 517), (150, 240), (160, 50), (170, 21), (180, 57), (190, 12), (200, 4)]
+ critical path from Main (first 15 / last 10 of 203):
+    Main 203
+    Supplements.Kernels.MainTheoremsAll 202
+    Supplements.Kernels.MainTheoremsCritical 201
+    Supplements.Kernels.MainTheorems 200
+    Development.AutomorphicArithmetic.CharacterBoxes.MainConclusion 199
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.IntegralStructures.RowSrc 198
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.IntegralStructures.GaloisRepresentationsOfThetaLift 197
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.IntegralStructures.GeometricFlagBases.WeightOneGeometricRealization 196
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.IntegralStructures.GeometricFlagBases.GeometricRealizationOfWeightOne 195
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.FiniteEtaleModels.KsGoodHolds 194
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.IntegralStructures.GeometricFlagBases.CovLink 193
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.AnnihilatorModels.QuotObjLink 192
+    Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.AnnihilatorModels.MEsNorm 191
+    Development.AbelianVarietyTheory.Proofs.DivisorProofs.FlagModelValueIndependent 190
+    Development.AbelianVarietyTheory.Proofs.DivisorProofs.FinitePointsClosureGenericCorrespondenceSndStatement 189
+   ...
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.UniformisationConclusion 10
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.QkToAkU 9
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.DegExpF 8
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.GtPtBridgeSt 7
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.ThetaPt 6
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.BaseOver 5
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.ConstGen 4
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.NonzeroLocus 3
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.SemiabelianSchemes.AbelianSchemeQuotients.IsAbelianScheme 2
+    ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.SemiabelianSchemes.SplitTori.SplitTorusAff 1
+
+## CROSS-LIBRARY IMPORT EDGES (importer -> imported):
+  Development -> Formalism : 41859
+  Development -> ReciprocityTheory : 38051
+  Development -> GroundTheory : 7532
+  Development -> CompanionTheory : 1875
+  CompanionTheory -> Development : 1437
+  GroundTheory -> ReciprocityTheory : 1161
+  Development -> PositivityTheory : 1057
+  CompanionTheory -> Formalism : 762
+  Lemmata -> Formalism : 634
+  PositivityTheory -> Development : 632
+  Formalism -> ReciprocityTheory : 348
+  ReciprocityTheory -> Formalism : 266
+  Formalism -> Development : 236
+  CompanionTheory -> ReciprocityTheory : 154
+  Formalism -> Lemmata : 118
+  PositivityTheory -> GroundTheory : 111
+  CompanionTheory -> GroundTheory : 65
+  GroundTheory -> Development : 57
+  ReciprocityTheory -> Lemmata : 50
+  Development -> BuildAid : 35
+  ReciprocityTheory -> Development : 17
+  GroundTheory -> Formalism : 10
+  PositivityTheory -> Formalism : 8
+  Lemmata -> ReciprocityTheory : 7
+  Supplements -> Development : 6
+  CompanionTheory -> BuildAid : 3
+  GroundTheory -> CompanionTheory : 2
+  PositivityTheory -> ReciprocityTheory : 2
+  Formalism -> CompanionTheory : 1
+  Formalism -> GroundTheory : 1
+  Main -> Statements : 1
+  Main -> Supplements : 1
+  ReciprocityTheory -> CompanionTheory : 1
+  Supplements -> Formalism : 1
+
+## TOP HUBS (most imported modules)
+    3088  Development.AbelianVarietyTheory.Definitions.Divisors.CTSmallCone   (364 lines)
+    2972  Development.AbelianVarietyTheory.Definitions.Divisors.SiegelWeilAnisotropicHermitian   (83 lines)
+    2518  Development.AbelianVarietyTheory.Definitions.Divisors.DiscreteSeriesHermitianUnique   (194 lines)
+    2460  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.ExistsNormLeHeightPow   (115 lines)
+    2390  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.UniformisationConclusion   (230 lines)
+    2284  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.UnifUniqSt   (64 lines)
+    2242  Development.AutomorphicArithmetic.ThetaCorrespondence.ThetaPairLifts.ThirdPlaceSeries.CohomologicalCsdTempered   (2 lines)
+    1840  Development.AbelianVarietyTheory.Definitions.Divisors.ToKnownTheoremsOf   (106 lines)
+    1684  Development.AbelianVarietyTheory.PublishedTheorems.TwistedTraceFormula.HarishChandraModulesOn   (212 lines)
+    1429  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.HeckeKer   (96 lines)
+    1354  Development.AbelianVarietyTheory.PublishedTheorems.TwistedTraceFormula.AdmissibleDiscreteSeriesOfHasParam   (268 lines)
+    1340  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.SecBaseChangeAnySt   (80 lines)
+    1307  Development.AbelianVarietyTheory.BlockTheory.DivisorBase.WeilTensorModels   (607 lines)
+    1206  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.IsHolPeriods   (117 lines)
+    1063  Development.AbelianVarietyTheory.Definitions.Degenerations.AdmissibleBaseOfCompleteDvr   (270 lines)
+    1051  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.HasDRepIffHasDerivAt   (116 lines)
+     963  Development.AbelianVarietyTheory.Definitions.AbelianSchemeLaws.FirstCohomologyVanishesSpecOfIsLocalRing   (247 lines)
+     937  Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.GeometricallyConnectedOfIsIsoRestrict   (130 lines)
+     921  Formalism.LocalRingCardinality.RhoDetPrimeEqMuTildeMulChiPow   (394 lines)
+     885  Development.AbelianVarietyTheory.PublishedTheorems.GaloisGeometry₂.HoweUnram   (24 lines)
+     873  Formalism.SharpRestriction.Divisibility.GeneratorPowers.ThExprUniqOfChartIndep2   (42 lines)
+     859  Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.CrysToDRBijective   (91 lines)
+     858  Development.AbelianVarietyTheory.Definitions.Divisors.DivisorSupportCondition   (162 lines)
+     829  Development.AbelianVarietyTheory.Definitions.Foundations.NormSumPairRankZeroOfCurveCoordNorm   (451 lines)
+     814  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.HarishChandraFinite   (146 lines)
+     812  Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.ExistsCrystalPairing   (136 lines)
+     811  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.CubeVal   (249 lines)
+     780  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.WeilRepresentationUnitaryPair   (20 lines)
+     776  Formalism.LocalRingCardinality.AdicCompletionLocal.LocTied   (39 lines)
+     775  Development.AutomorphicArithmetic.Foundations.LocalLanglands.IsRecTOfIsRec   (117 lines)
+     768  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.MumfordConstruction   (24 lines)
+     766  Development.AbelianVarietyTheory.BlockTheory.TwistedDiscreteSeries.CuspAlongSmoothRows   (216 lines)
+     740  Development.AbelianVarietyTheory.PublishedTheorems.AutomorphicForms₂.ExistsUniqueHcharOfFiniteOrder   (496 lines)
+     713  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.ExtensionDescent.GlobalSectionsRankAlgClosed   (214 lines)
+     700  Development.AbelianVarietyTheory.Statements.PlaceShiftStatements.NormSmall   (172 lines)
+     678  Development.AbelianVarietyTheory.Statements.HeckeThetaIntegrals.ThetaIntegralsAgree   (48 lines)
+     676  ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.ThetaUnifAV   (43 lines)
+     669  Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.AbelianHodgeDeRham   (32 lines)
+     667  Development.AutomorphicArithmetic.Foundations.GaloisRepresentations.ThetaParseval.HalfIndexLattices.SplitStab   (91 lines)
+     654  Formalism.SharpRestriction.LevelLetterCocycles.LocCoh   (196 lines)
+
+## PER SECOND-LEVEL AREA: files / Mlines / decls / props / has-moddoc%
+  Development.AbelianVarietyTheory                                 99187     8.24   456777  22268   0.0%
+  Development.AutomorphicArithmetic                                18431     1.79    91481   9224   0.0%
+  Development.AutomorphicSpectrum                                  15147     1.21    69213   1707   0.0%
+  Formalism.LocalToGlobal                                           5501     0.96    73238   9370   0.0%
+  Development.WeilBound                                             7051     0.86    55387   5578   0.0%
+  Formalism.SharpRestriction                                        3093     0.71    54618  11287   0.0%
+  GroundTheory.HeightsAndTheta                                      6410     0.65    37826   4852   0.0%
+  Formalism.HermitianCurvature                                      1922     0.46    35950   3856   0.0%
+  Formalism.PeriodIntegrals                                         4350     0.46    32692   4162   0.0%
+  ReciprocityTheory.ReductiveGroups                                 2799     0.41    26305   1760   0.0%
+  GroundTheory.AutomorphicForms                                      542     0.15    10954    127   0.0%
+  Development.ResolutionOfSingularities                              499     0.14     8050    203   0.0%
+  CompanionTheory.SpectralGeometry                                  1254     0.11     5864     64   0.0%
+  Development.EtaleCohomology                                       1398     0.11    10302   2012   0.0%
+  GroundTheory.ProfiniteCohomology                                   450     0.09     6262     28   0.0%
+  Formalism.GL3MeanSquares                                           440     0.08     4149    717   0.0%
+  GroundTheory.GlobalFields                                          384     0.07     5815     15   0.0%
+  GroundTheory.PAdicHodge                                            226     0.06     5354     39   0.0%
+  PositivityTheory.AutomorphicForms                                  445     0.06     4741    954   0.0%
+  Formalism.ThetaLogCoordinates                                      292     0.05     4209    534   0.0%
+  CompanionTheory.AutomorphicTheory                                  457     0.05     2806    351   0.0%
+  GroundTheory.ArithmeticGeometry                                    218     0.05     3770     37   0.0%
+  GroundTheory.LocalFields                                           159     0.04     3250     20   0.0%
+  Formalism.WachLatticeTwists                                        262     0.04     1582    596   0.0%
+  ReciprocityTheory.AnalyticForms                                    192     0.04     2328    214   0.0%
+  Formalism.LocalRingCardinality                                     173     0.04     3321    253   0.0%
+  ReciprocityTheory.L2DbarEstimates                                  227     0.03     1875    204   0.0%
+  Formalism.FlagUnipotentLattices                                     77     0.03     2449    981   0.0%
+  Formalism.PieriBlockIdeals                                          98     0.03     2560    783   0.0%
+  Formalism.SizeWindowBrackets                                        64     0.03     2268    849   0.0%
+  ReciprocityTheory.DualLattices                                     183     0.02     1489    127   0.0%
+  Development.DiscreteGroups                                         215     0.02     1381    106   0.0%
+  CompanionTheory.HarishChandraModules                               130     0.02     1481    189   0.0%
+  Formalism.AdmissibleDesigns                                         93     0.02     1478    110   0.0%
+  Formalism.MahlerMeasure                                             54     0.02     1318     99   0.0%
+  CompanionTheory.RealGroups                                         155     0.02     1217    290   0.0%
+  Formalism.PadicSubsetSums                                           82     0.02     1160    614   0.0%
+  Formalism.PolynomialDimension                                       41     0.02     1048    132   0.0%
+  Formalism.QuotientMetricDivisors                                    63     0.02      845    199   0.0%
+  Formalism.SatakeDualWeyl                                            85     0.01     1079    132   0.0%
+  ReciprocityTheory.SemistableReduction                              119     0.01      892     67   0.0%
+  Formalism.DistinguishedUnitIdeals                                   44     0.01     1046    228   0.0%
+  Formalism.GaussJetBounds                                            90     0.01      747    111   0.0%
+  ReciprocityTheory.ClassFieldTheory                                  91     0.01     1062     15   0.0%
+  Formalism.RealPlaceAnalysis                                         54     0.01     1058    146   0.0%
+  Formalism.HarderNarasimhan                                          43     0.01      474     42   0.0%
+  Formalism.EllipticTorsion                                           48     0.01      647     51   0.0%
+  GroundTheory.TateCohomology                                         56     0.01      807      4   0.0%
+  ReciprocityTheory.GroupCohomology                                   56     0.01      672     77   0.0%
+  Formalism.GradedWeylDivisibility                                   103     0.01      636    105   0.0%
+  Formalism.BranchSandwichDivisors                                    22     0.01      531     75   0.0%
+  Formalism.FrobeniusOrbits                                           32     0.01      442     48   0.0%
+  Formalism.CharacterColumnKernels                                    54     0.01      428    105   0.0%
+  Formalism.HermitianLattices                                         43     0.01      404     49   0.0%
+  Formalism.SubspaceCounting                                          32     0.01      447     43   0.0%
+  Formalism.LandauZeroFreeBounds                                      58     0.01      300     56   0.0%
+  Formalism.FormalDegreeBessel                                        31     0.01      562     93   0.0%
+  ReciprocityTheory.GeometryOfNumbers                                 39     0.01      330      2   0.0%
+  GroundTheory.Brauer                                                 20     0.00      455      0   0.0%
+  ReciprocityTheory.NeutralLocalFields                                20     0.00      448     61   0.0%
+  Formalism.MirabolicMackeyTheory                                     26     0.00      297     82   0.0%
+  Formalism.UnipotentAdelicQuotients                                  44     0.00      396    107   0.0%
+  ReciprocityTheory.Chebotarev                                        47     0.00      272     11   0.0%
+  CompanionTheory.ThickeningEstimates                                 22     0.00      399     59   0.0%
+  Formalism.FilteredPoleLength                                        36     0.00      231    137   0.0%
+  Formalism.LogVandermondeBounds                                      26     0.00      252     44   0.0%
+  GroundTheory.FunctionField                                          12     0.00      317      1   0.0%
+  Formalism.IncomingBounds                                            21     0.00      299     56   0.0%
+  Formalism.TruncatedSeriesCounting                                   39     0.00      182     64   0.0%
+  Formalism.CyclotomicNorms                                           21     0.00      229     43   0.0%
+  Formalism.DoubleCosetMeasures                                       15     0.00      281     26   0.0%
+  Formalism.ThetaSupremumBounds                                       19     0.00      180     57   0.0%
+  Formalism.ZeroFreeRegion                                            34     0.00      143     21   0.0%
+  Formalism.TameInertiaTowers                                         15     0.00      265     31   0.0%
+  ReciprocityTheory.CommutativeAlgebra                                26     0.00      172     30   0.0%
+  Formalism.MeanHeightDescent                                         24     0.00      120     50   0.0%
+  Formalism.FormalGroupWitt                                           21     0.00      240     50   0.0%
+  Formalism.TorsionNormIteration                                      15     0.00      218     25   0.0%
+  Formalism.WeaklyAdmissibleFiltrations                               20     0.00      225     43   0.0%
+  Formalism.ZetaNonvanishing                                          15     0.00      141      1   0.0%
+  Formalism.NormUnitaryBounds                                         14     0.00      139     17   0.0%
+  Formalism.CoboundaryTransfers                                       16     0.00      214     51   0.0%
+  Formalism.LatticeSlopes                                             18     0.00       98     18   0.0%
+  Formalism.RankGapBounds                                             17     0.00      219     86   0.0%
+  Formalism.FrobeniusBaseCase                                         12     0.00      201     38   0.0%
+  Formalism.TranslateCocycles                                          7     0.00      136     56   0.0%
+  Formalism.GaussValuationBounds                                      16     0.00       99     32   0.0%
+  Formalism.HyperbolicPlaceProducts                                   14     0.00      128     44   0.0%
+  GroundTheory.IdeleRoots                                             10     0.00      182     44   0.0%
+  ReciprocityTheory.GaloisValuations                                   9     0.00      174     19   0.0%
