@@ -59,6 +59,11 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
 
 ## 4. Everything else (each 1-4%, none worth a GPU slot alone)
 
-fused per-round update kernel for the tail rounds (+1%), the unroll-3 variant of the tile kernel (+2%), the 24 doubling shifts as IADD in the Fermat step (+1%), pruned apply (+3%), a deeper sieve for the
-first 60 rows (+3.5%), exponent prefix of 9-10 bits instead of 6 (+0.6%), per-GPU-type (B, f) for the L4 / T4 (+1-2% of the fleet).  Together ~x1.12 if all were done; the first two measurements of this audit
-(`--pool-threads 2`: +2.7%; rcta 8: +0.8%) agree with the sizes quoted.
+Sizes as of 09:30Z, after the pipeline: the sieve is now hidden, but it still taxes the Fermat rounds (~0.55 s of Fermat per second of sieve WORK, plt3), so a percent of sieve work removed is worth ~0.55% of a batch and a
+percent of Fermat work removed is worth 1%.  Fermat side: fused per-round update kernel for the tail rounds (+1%), the 24 doubling shifts as IADD in the Fermat step (+1%), exponent prefix of 9-10 bits instead of
+6 (+0.6%), a smaller waste than 3.1% (`--dmax 6` gave nothing: 1.581 against 1.571 s).  Sieve side (each % of its work x 0.55): the unroll-3 variant of the tile kernel (~-22% of its integer instructions: ~+2%), pruned
+apply (+1.5%), a deeper sieve for the first 60 rows (it adds sieve work: ~+2% net).  Sieve bursts (plt3): a 1 ms bubble after each row group +1.4%, 512-thread tile CTAs +1.1% (not applied: under the 2% a change needs;
+plt4 tries the two together).  L4 / T4: per-GPU-type (B, f) (+1-2% of the fleet's 19%).  Together at most ~x1.08 if all were done; measured so far: `--pool-threads 2` +2.7%, the pipeline +10% on the RTX cards.
+
+The Fermat kernel itself has no hot local memory (its 88 B of local memory is the 84-byte exponent array, one load per 32 steps), no shared memory, and is bound by one shared integer pipe (the additive cost model);
+anything the sieve issues on that pipe is paid by the Fermat kernel, which is why neither stream priorities nor a sieve that fits in the leftover registers help.
