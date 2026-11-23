@@ -4,7 +4,7 @@
 # 3,476 vectors; its top2 share is not reused since its done levels were lost), the template's own top-up file blanked (so nothing of the template card's share is appended),
 # then opl4gate2.sh on this GPU (per-member identity + the m88f known case 40/40, or stop) and deploy_l4op.py (options, one-pass, KLO top-16). Log: /content/bringup.log
 L=/content/bringup.log
-echo "$(date -u +%FT%TZ) bring-up start (new L4 for gold-gpu), $(hostname), $(nvidia-smi --query-gpu=name --format=csv,noheader)" >> $L
+echo "$(date -u +%FT%TZ) bring-up start (new L4 or T4, fresh campaign dir c170g, the share in /content/m88f_gpu_share.json), $(hostname), $(nvidia-smi --query-gpu=name --format=csv,noheader)" >> $L
 cd /content && tar -xzf /content/snap.tgz --exclude="bringup*" >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
 python3 -c 'import gmpy2' 2>/dev/null || pip install -q gmpy2 >> $L 2>&1
 python3 -c 'import gmpy2, cupy; print("gmpy2", gmpy2.version(), "cupy", cupy.__version__)' >> $L 2>&1
