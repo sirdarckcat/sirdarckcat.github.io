@@ -58,9 +58,13 @@ STYLES = {                       # S, redundant, mulw, extra nvrtc options, bits
     "s1rw": (1, True, True, [], 28),
     "s1w": (1, False, True, [], 28),
     "w28nr_asm": (1, False, False, ["-DFM28_ASM=1"], 28),     # 24 limbs of 28 bits, NOT redundant (the carry chain after the doubling): what a 29-bit step has to be compared with fairly
+    "w29r669_asm": (1, False, False, ["-DFM28_ASM=1"], 29),   # the REAL 23 x 29-bit step of FERMAT29.md (R = 2^669, 31-bit top digit, funnel-shift output): run it with NL = 23
     "w29nr_asm": (1, False, False, ["-DFM28_ASM=1"], 29),     # 23 limbs of 29 bits (R = 2^667, n < 2^663): 805 + 23 multiplications a step instead of 876 + 24; the column sums stay below 2^63.6 only with
                                                               # limbs below 2^29, i.e. no redundant limbs; run it with NL = 23 (--e4 does).  Timing only here: a real kernel needs gen_fermat28.generate(23, 1, W=29)
 }
+
+
+RB_OF = {"w29r669_asm": 669}
 
 
 def n_wide(NL):
@@ -69,7 +73,7 @@ def n_wide(NL):
 
 def source(NL, style, extra_alu=0, extra_mul=0):
     S, red, mulw, opts, W = STYLES[style]
-    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul, W) + KERNEL % dict(NL=NL, MK="MASK%d" % W, MV=(1 << W) - 1), list(opts)
+    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul, W, RB_OF.get(style)) + KERNEL % dict(NL=NL, MK="MASK%d" % W, MV=(1 << W) - 1), list(opts)
 
 
 def run_check(arch, style):
@@ -100,7 +104,8 @@ def run_e4(measure, props):
     (the tick rate is the same for all: the ratio is what counts).  The cost model (FERMAT28.md: 3.64 x IMAD + 2.79 x other on the RTX PRO 6000) predicts 0.958 for the last row."""
     print("\nE4  radix (ticks per warp-step per scheduler, 5 CTAs an SM or what the registers allow; ratio to the production step s1r_asm)")
     print(f"{'step':34s} {'IMAD':>5s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'ratio':>7s} {'GHz':>6s}")
-    rows = (("s1r_asm", 24, "s1r_asm: 24 x 28 bits, redundant (production)"), ("w28nr_asm", 24, "24 x 28 bits, carry chain"), ("w29nr_asm", 23, "23 x 29 bits, carry chain"))
+    rows = (("s1r_asm", 24, "s1r_asm: 24 x 28 bits, redundant (production)"), ("w28nr_asm", 24, "24 x 28 bits, carry chain"), ("w29nr_asm", 23, "23 x 29 bits, carry chain"),
+            ("w29r669_asm", 23, "23 x 29, R = 2^669 (the real step)"))
     base = {}
     for rep in range(3):
         for style, NL, label in rows:
