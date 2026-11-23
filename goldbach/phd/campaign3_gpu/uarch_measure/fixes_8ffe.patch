@@ -1,0 +1,22 @@
+--- ua57_orig/goldbach/sieve200/cuda/gbig.py	2026-11-23 00:51:09.000000000 +0000
++++ ua57/goldbach/sieve200/cuda/gbig.py	2026-11-23 01:04:38.721255891 +0000
+@@ -61,7 +61,7 @@
+ class BigStage:
+     def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None):
+         """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity)"""
+-        self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
++        self.U = U.astype(cp.uint32) if isinstance(U, cp.ndarray) else cp.asarray(np.asarray(U, dtype=np.uint32))   # 8ffe: U may already be on the device (BatchFeeder)
+         self.TAB = TAB if isinstance(TAB, cp.ndarray) else cp.asarray(np.ascontiguousarray(TAB, dtype=np.uint32))
+         self.nP = int(self.TAB.shape[0])
+         self.ks_log, self.tile_log, self.rg, self.ppt, self.threads = ks_log, tile_log, rg, ppt, threads
+--- ua57_orig/goldbach/sieve200/cuda/gpu_sieve.py	2026-11-23 00:51:09.000000000 +0000
++++ ua57/goldbach/sieve200/cuda/gpu_sieve.py	2026-11-23 01:05:43.254999352 +0000
+@@ -201,7 +201,7 @@
+         if timings:
+             t_w2 = time.perf_counter() - t_w2
+             wall = time.perf_counter() - wall0
+-            ms = lambda i, j: ev[i].elapsed_time(ev[j])
++            ms = lambda i, j: cp.cuda.get_elapsed_time(ev[i], ev[j])   # 8ffe: cupy Events have no elapsed_time method
+             tm = dict(prep=ms(0, 1), sieve=ms(1, 2), count=ms(2, 3), select=ms(3, 4), finalize=ms(4, 5), wait1=ms(5, 6), rows=ms(6, 7), wait2=1e3 * t_w2, wall=1e3 * wall)
+             tm["host"] = tm["wall"] - sum(tm[k] for k in ("prep", "sieve", "count", "select", "finalize", "wait1", "rows"))
+             w.timings = tm

@@ -1,0 +1,173 @@
+
+=================================================================== 1. GPU
+2026-11-23T00:58:54Z
+name, driver_version, memory.total [MiB], pstate, power.limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.max.memory [MHz]
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 580.82.07, 97887 MiB, P0, 600.00 W, 600.00 W, 2430 MHz, 12481 MHz
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Nov 23 00:58:54 2026
+Driver Version                            : 580.82.07
+CUDA Version                              : 13.0
+
+Attached GPUs                             : 1
+GPU 00000000:05:00.0
+    GPU Power Readings
+        Average Power Draw                : 397.51 W
+        Instantaneous Power Draw          : 117.53 W
+        Current Power Limit               : 600.00 W
+        Requested Power Limit             : 600.00 W
+        Default Power Limit               : 600.00 W
+        Min Power Limit                   : 300.00 W
+        Max Power Limit                   : 600.00 W
+    Power Samples
+        Duration                          : 2.36 sec
+        Number of Samples                 : 119
+        Max                               : 422.32 W
+        Min                               : 90.55 W
+        Avg                               : 361.33 W
+    GPU Memory Power Readings 
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+    Module Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+        Current Power Limit               : N/A
+        Requested Power Limit             : N/A
+        Default Power Limit               : N/A
+        Min Power Limit                   : N/A
+        Max Power Limit                   : N/A
+    Clocks
+        Graphics                          : 2422 MHz
+        SM                                : 2422 MHz
+        Memory                            : 12481 MHz
+        Video                             : 2100 MHz
+    Applications Clocks
+        Graphics                          : 2430 MHz
+        Memory                            : 12481 MHz
+    Default Applications Clocks
+        Graphics                          : 2430 MHz
+        Memory                            : 12481 MHz
+    Deferred Clocks
+        Memory                            : N/A
+    Max Clocks
+        Graphics                          : 2430 MHz
+        SM                                : 2430 MHz
+        Memory                            : 12481 MHz
+        Video                             : 2107 MHz
+    Max Customer Boost Clocks
+        Graphics                          : 2430 MHz
+    SM Clock Samples
+        Duration                          : N/A
+        Number of Samples                 : N/A
+        Max                               : N/A
+        Min                               : N/A
+        Avg                               : N/A
+    Memory Clock Samples
+        Duration                          : N/A
+        Number of Samples                 : N/A
+        Max                               : N/A
+        Min                               : N/A
+        Avg                               : N/A
+    Clock Policy
+        Auto Boost                        : N/A
+        Auto Boost Default                : N/A
+
+cupy 14.0.1 numpy 2.4.6 cuda runtime 13000
+
+=================================================================== 2. Fermat kernels with the SM clock and power sampled beside them (20 s each)
+2026-11-23T00:58:54Z
+--- s1r_asm
+device: NVIDIA RTX PRO 6000 Blackwell Server Edition  batch 1048576  threads 128  20 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (45 base-2 PRPs)
+  s1r_asm  regs  92 local  88 B: median   23,291,160 tests/s  best   23,297,576  (445 loops)
+  SM clock MHz: median 2422  min 2422  max 2422  (max allowed 2430)   [39 samples]
+  power W: median 418  max 419  (limit 600.00)   temperature C: median 61
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 39}
+--- s1rw
+device: NVIDIA RTX PRO 6000 Blackwell Server Edition  batch 1048576  threads 128  20 s a variant
+  s1rw: 0 mismatches against gmpy2 in 2000 candidates (45 base-2 PRPs)
+  s1rw     regs 102 local  88 B: median   22,686,013 tests/s  best   22,692,685  (433 loops)
+  SM clock MHz: median 2422  min 2422  max 2422  (max allowed 2430)   [40 samples]
+  power W: median 419  max 420  (limit 600.00)   temperature C: median 61
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 40}
+
+=================================================================== 3. bench_pipes.py part 3: scattered marks in global memory
+2026-11-23T00:59:37Z
+
+part 3: global memory, scattered marks.  G ops/s over the whole GPU (1 / that = ns an operation); 8 chains x 256 threads x 8 CTAs an SM
+  operation                                         64 MB       512 MB         4 GB
+  scattered atomicAnd (random word)               69.0 G/s       6.6 G/s       6.0 G/s
+  scattered plain store (random word)            135.9 G/s       4.8 G/s       4.4 G/s
+  scattered load (random word)                   138.9 G/s      16.9 G/s      15.4 G/s
+  128 B runs at random places (bin writes)      1052.6 G/s     367.2 G/s     324.8 G/s
+  reference: device copy of 1 GB (read + write): 1459 GB/s; a 32-byte sector of it is 0.022 ns
+
+=================================================================== 4. bench_bigprimes.py: the large-prime stage of a deeper sieve bound
+2026-11-23T00:59:39Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 40 rows, primes in (2^20, 2^22]: 213,922 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 55,360 entries a bin (227 MB of bins)   (setup 0.2 s)
+expected marks a row 3,197,269 = 0.1 a member; pair visits a row 213,922
+40 rows timed (3 groups), scaled to 40 rows: gen 1.2 ms, apply 1.1 ms, total 2.2 ms; marks 0.13 G (3,197,278 a row = 0.1 a member); capacity retries 0; wall 14.6 ms
+  ns a mark: gen 0.0091   apply 0.0085   TOTAL 0.0176   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 0.067  (40 rows, 0.3 pair visits a member: 0.13528 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 0.1 ms = 0.0008 ns a mark, 0.01235 ns a pair visit; pass B (the writes) ~ 1.1 ms = 0.0082 ns a mark
+  bins written + read: 1.0 GB in 2.2 ms = 455 GB/s; bit tiles written: 0.2 GB
+  check against numpy (first 2 rows): identical
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 1093 rows, primes in (2^20, 2^24]: 995,846 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 105,152 entries a bin (431 MB of bins)   (setup 0.1 s)
+expected marks a row 6,116,178 = 0.2 a member; pair visits a row 995,846
+128 rows timed (8 groups), scaled to 1093 rows: gen 139.3 ms, apply 62.0 ms, total 201.3 ms; marks 6.68 G (6,116,167 a row = 0.2 a member); capacity retries 0; wall 296.3 ms
+  ns a mark: gen 0.0208   apply 0.0093   TOTAL 0.0301   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 5.998  (1093 rows, 32.4 pair visits a member: 0.12794 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 3.2 ms = 0.0005 ns a mark, 0.00295 ns a pair visit; pass B (the writes) ~ 136.0 ms = 0.0203 ns a mark
+  bins written + read: 53.5 GB in 201.3 ms = 266 GB/s; bit tiles written: 4.6 GB
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 1093 rows, primes in (2^20, 2^26]: 3,875,784 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 150,848 entries a bin (618 MB of bins)   (setup 0.4 s)
+expected marks a row 8,801,810 = 0.3 a member; pair visits a row 3,875,784
+64 rows timed (4 groups), scaled to 1093 rows: gen 214.8 ms, apply 87.3 ms, total 302.0 ms; marks 9.62 G (8,801,810 a row = 0.3 a member); capacity retries 0; wall 485.6 ms
+  ns a mark: gen 0.0223   apply 0.0091   TOTAL 0.0314   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 9.002  (1093 rows, 126.2 pair visits a member: 0.05070 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 5.0 ms = 0.0005 ns a mark, 0.00117 ns a pair visit; pass B (the writes) ~ 209.8 ms = 0.0218 ns a mark
+  bins written + read: 77.0 GB in 302.0 ms = 255 GB/s; bit tiles written: 4.6 GB
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 1093 rows, primes in (2^20, 2^28]: 14,548,818 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 193,088 entries a bin (791 MB of bins)   (setup 1.2 s)
+expected marks a row 11,288,352 = 0.3 a member; pair visits a row 14,548,818
+32 rows timed (2 groups), scaled to 1093 rows: gen 256.1 ms, apply 109.1 ms, total 365.1 ms; marks 12.34 G (11,288,590 a row = 0.3 a member); capacity retries 0; wall 825.7 ms
+  ns a mark: gen 0.0208   apply 0.0088   TOTAL 0.0296   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 10.882  (1093 rows, 473.9 pair visits a member: 0.01610 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 14.1 ms = 0.0011 ns a mark, 0.00089 ns a pair visit; pass B (the writes) ~ 242.0 ms = 0.0196 ns a mark
+  bins written + read: 98.7 GB in 365.1 ms = 270 GB/s; bit tiles written: 4.6 GB
+
+=================================================================== 5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)
+2026-11-23T00:59:43Z
+Traceback (most recent call last):
+  File "/content/ua57/goldbach/sieve200/cuda/test_gpu_sieve.py", line 22, in <module>
+    import search
+ModuleNotFoundError: No module named 'search'
+FAILED: test_gpu_sieve
+  SM clock MHz: median 2422  min 2422  max 2422  (max allowed 2430)   [1 samples]
+  power W: median 91  max 91  (limit 600.00)   temperature C: median 46
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 1}
+
+=================================================================== 6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 100000000, a batch of 2^25 members)
+2026-11-23T00:59:43Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+Traceback (most recent call last):
+  File "/content/ua57/goldbach/sieve200/cuda/bench_batch.py", line 140, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/content/ua57/goldbach/sieve200/cuda/bench_batch.py", line 130, in main
+    ok = check(spec, a)
+  File "/content/ua57/goldbach/sieve200/cuda/bench_batch.py", line 49, in check
+    bf = BatchFeeder(S, INV, rows, N0M, ks_log=ks, tile_log=tile, llog=min(15, ks), f=a.f, nthreads=256, split=min(a.split, B // 2), rg=a.rg)
+  File "/content/ua57/goldbach/sieve200/cuda/gbatch.py", line 55, in __init__
+    self.big = gbig.BigStage(self.U, self.tabl, ks_log=ks_log, tile_log=tile_log, rg=rg, ppt=ppt, threads=gen_threads, S=Sh[self.n_small:], kernels=self.k) if self.n_large else None
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/ua57/goldbach/sieve200/cuda/gbig.py", line 64, in __init__
+    self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
+                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "cupy/_core/core.pyx", line 1699, in cupy._core.core._ndarray_base.__array__
+TypeError: Implicit conversion to a NumPy array is not allowed. Please use `.get()` to construct a NumPy array explicitly.
+FAILED: bench_batch
+
+=================================================================== done
+2026-11-23T00:59:45Z
+output file: /content/measure_out.txt
+MEASURE-DONE 2026-11-23T00:59:45Z
