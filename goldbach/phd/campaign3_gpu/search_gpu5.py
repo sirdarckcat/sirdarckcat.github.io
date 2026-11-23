@@ -13,7 +13,7 @@ Selection, accounting and log lines are search_gpu3.py's:
 - tests counted up to each member's first base-2 PRP.
 check_v5.sh compares the slice lines with search_gpu3.py's on production slices. Slices must be whole windows of 2^klog members.
 """
-import argparse, json, math, os, re, sys, threading, time
+import argparse, bisect, collections, glob, json, math, os, re, sys, threading, time
 import numpy as np
 
 ap = argparse.ArgumentParser()
@@ -71,6 +71,15 @@ ap.add_argument("--flush-each-window", type=int, default=0, choices=(0, 1),
 ap.add_argument("--trace-pipeline", type=int, default=0, choices=(0, 1),
                 help="--pipeline: after every batch print the seconds the consumer waited for the sieve (sieve time NOT hidden), the seconds the sieve thread spent making windows and waiting for the consumer "
                      "(it is Fermat-bound when it waits), and the windows made")
+ap.add_argument("--vector-dir", default=None,
+                help="campaign mode for SHORT vectors (e.g. covers on 89 moduli, ~2e7 members a vector): the specs come from DIR/vec_*.json chunk files (read in name order, more as they "
+                     "appear), and every vector is ONE slice of 2^klog members from k_lo, the first k with --vector-digits digits (N0 + k M >= 10^(digits - 1)); a vector whose window "
+                     "does not fit below its kmax is skipped.  --klo / --kmax / --slice / --desc are not used then")
+ap.add_argument("--vector-digits", type=int, default=200, help="--vector-dir: the digits every N must have (the window starts at the first such k)")
+ap.add_argument("--vector-wait", type=int, default=900, help="--vector-dir: seconds to wait for a new chunk file before the campaign ends as exhausted")
+ap.add_argument("--log-near-exp", type=int, default=0, choices=(0, 1),
+                help="1: also log, per batch, the expected number of tested members whose first probable-prime row is at or above --near-miss (design hits included): "
+                     "sum (1 - p^)^c over the tested members, c = the member's sieved-alive rows below the threshold")
 ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
                 help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
@@ -150,8 +159,50 @@ def _cq_rows(N0, residual, limbs):
     if a is None:
         if len(_CQ) >= 512:
             _CQ.pop(next(iter(_CQ)))
-        a = _CQ[key] = cp.asarray(np.stack([to_limbs(N0 - int(q), limbs) for q in residual]))
+        a = _CQ[key] = cp.asarray(cq_limbs(N0, residual, limbs))
     return a
+
+
+def cq_limbs(N0, residual, limbs):
+    """The rows of to_limbs(N0 - q, limbs) for every q (little-endian 32-bit limbs), vectorized: q < 2^32, so after the first limb only a borrow moves on
+    (np.stack of one to_limbs per row took ~10 ms a vector of 1,250 rows: with a new vector every window, the host time of a batch)."""
+    q = np.asarray([int(x) for x in residual], dtype=np.int64)
+    assert q.size and int(q.min()) >= 0 and int(q.max()) < (1 << 32) and int(N0) > int(q.max())
+    out = np.tile(np.asarray(to_limbs(int(N0), limbs), dtype=np.int64), (q.size, 1))
+    borrow = q
+    for j in range(limbs):
+        d = out[:, j] - borrow
+        borrow = (d < 0).astype(np.int64)
+        out[:, j] = d + (borrow << 32)
+        if not borrow.any():
+            break
+    assert not borrow.any()
+    return out.astype(np.uint32)
+
+
+_COUNT_BELOW = None
+
+
+def count_below(cols, offs, sid, thr_row):
+    """For every member m (its rows cols[offs[m]:offs[m+1]], ascending global rows of the variant sid[m]): how many rows lie below thr_row[sid[m]]
+    (binary search; --log-near-exp)"""
+    global _COUNT_BELOW
+    if _COUNT_BELOW is None:
+        _COUNT_BELOW = cp.RawKernel(r"""
+extern "C" __global__ void count_below(const int *cols, const long long *offs, const int *sid, const int *thr, long long n, int *out) {
+    long long m = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (m >= n) return;
+    long long lo = offs[m], hi = offs[m + 1];
+    const long long a = lo;
+    const int t = thr[sid[m]];
+    while (lo < hi) { long long mid = (lo + hi) >> 1; if (cols[mid] < t) lo = mid + 1; else hi = mid; }
+    out[m] = (int)(lo - a);
+}""", "count_below")
+    n = int(sid.size)
+    out = cp.empty(n, dtype=cp.int32)
+    if n:
+        _COUNT_BELOW(((n + 255) // 256,), (256,), (cols, offs, sid, thr_row, np.int64(n), out))
+    return out
 
 
 class MultiTester:
@@ -170,6 +221,8 @@ class MultiTester:
             qs.extend(int(q) for q in s["residual"])
         self.cq = parts[0] if len(parts) == 1 else cp.concatenate(parts)
         self.qrow = cp.asarray(np.array(qs, dtype=np.int64))      # q of every global row (for the first-PRP row of a member)
+        if args.log_near_exp and args.near_miss:                 # the global row index below which a variant's rows are < --near-miss
+            self.thr_row = cp.asarray(np.array([o + bisect.bisect_left([int(q) for q in s["residual"]], args.near_miss) for o, s in zip(self.off, specs)], dtype=np.int32))
         self.M = cp.asarray(to_limbs(M, limbs))
         if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
             nmax = max(int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M for sp in specs)
@@ -334,7 +387,7 @@ def batch_plan(batch, K):
         if spec.get("ceiling_digits"):
             kcap = int((mpz(10) ** spec["ceiling_digits"] - mpz(spec["N0"])) // mpz(spec["M"]))
             kmax = min(kmax, kcap + 1)
-        assert kstart % K == 0 and (kmax - kstart) % K == 0, "slices must be whole GPU sieve windows"
+        assert (kmax - kstart) % K == 0 and (args.vector_dir or kstart % K == 0), "slices must be whole GPU sieve windows"
         plan.append((si, spec, kstart, kmax))
     return plan
 
@@ -356,7 +409,7 @@ def run_batch(batch, out, pipe=None):
     st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], near=[], kmax=0) for _ in batch]
     pool = []                                                    # (sid, kv, cnt, cols) chunks
     npool = [0]
-    gt = [0, 0, 0.0]                                             # tests computed, launches, expected hits
+    gt = [0, 0, 0.0, 0.0]                                        # tests computed, launches, expected hits, expected first-PRP rows >= --near-miss (--log-near-exp)
 
     def flush():
         if not pool:
@@ -374,6 +427,10 @@ def run_batch(batch, out, pipe=None):
         tt, pp = int(tests_m.sum()), int(prp_m.sum())
         if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count
             gt[2] += float(((1.0 - pp / tt) ** cnt.astype(cp.float64)).sum())
+            if args.log_near_exp and args.near_miss:             # ... and of the members whose first PRP row is >= --near-miss: the alive rows below it are all composite
+                offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
+                cb = count_below(cols, offs, sid, tester.thr_row)
+                gt[3] += float(((1.0 - pp / tt) ** cb.astype(cp.float64)).sum())
         for si in range(len(batch)):
             m = sid == si
             st[si]["tests"] += int(tests_m[m].sum())
@@ -437,12 +494,56 @@ def run_batch(batch, out, pipe=None):
     tests = sum(s["tests"] for s in st)
     stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch {batch[0]['name']}..{batch[-1]['name']} "
              f"({len(batch)} slices) {dt*len(batch):.1f}s: tests {tests} counted, {gt[0]} computed "
-             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, found {len(found)} [v5 gpu-sieve]" + (f" [near-miss >= {args.near_miss}]" if args.near_miss else ""))
+             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {gt[2]:.4e}, "
+             + (f"expected near>={args.near_miss} {gt[3]:.4e}, " if args.log_near_exp and args.near_miss else "")
+             + f"found {len(found)} [v5 gpu-sieve]" + (f" [near-miss >= {args.near_miss}]" if args.near_miss else ""))
     return lines, found, stats
 
 
+class VectorSource:
+    """--vector-dir: one slice per short vector, [k_lo, k_lo + K) with k_lo the first k at which N0 + k M has --vector-digits digits, from the chunk files
+    DIR/vec_*.json read in name order as they appear (a producer on the host writes them ahead of the campaign; one chunk is held in memory)"""
+    def __init__(self, D, K, digits, wait):
+        self.D, self.K, self.wait = D, K, wait
+        self.lo = mpz(10) ** (digits - 1)
+        self.seen, self.queue, self.skipped = set(), collections.deque(), 0
+
+    def _load_next(self, excluded):
+        for f in sorted(glob.glob(os.path.join(self.D, "vec_*.json"))):
+            if f in self.seen:
+                continue
+            self.seen.add(f)
+            for s in load_specs(f):
+                N0, M = mpz(s["N0"]), mpz(s["M"])
+                k_lo = int((self.lo - N0 + M - 1) // M) if self.lo > N0 else 0
+                if k_lo + self.K > int(s["kmax"]):             # the window must lie below the vector's kmax (N < 10^200)
+                    self.skipped += 1
+                    continue
+                name = f"{s['name']}@{k_lo}"
+                if name not in excluded:
+                    self.queue.append(dict(s, name=name, kstart=k_lo, kmax=k_lo + self.K))
+            return True
+        return False
+
+    def take(self, n, excluded):
+        """the next n slices not in excluded; fewer if no new chunk is there (a short batch rather than a wait); [] after --vector-wait s without any"""
+        out, t_end = [], time.time() + self.wait
+        while len(out) < n:
+            while self.queue and len(out) < n:
+                x = self.queue.popleft()
+                if x["name"] not in excluded:
+                    out.append(x)
+            if len(out) >= n or self._load_next(excluded):
+                continue
+            if out or time.time() > t_end:
+                break
+            time.sleep(5)
+        return out
+
+
 def campaign(D):
-    specs = load_specs(os.path.join(D, "my_specs.json"))
+    specs = load_specs(os.path.join(D, "my_specs.json")) if not args.vector_dir else []
+    src = VectorSource(args.vector_dir, 1 << args.klog, args.vector_digits, args.vector_wait) if args.vector_dir else None
     LOG, FOUND, STATS = (os.path.join(D, f) for f in ("search.log", "found.jsonl", "gpu3_stats.log"))
     done = set()
     if os.path.exists(LOG):
@@ -453,6 +554,8 @@ def campaign(D):
     out = open(FOUND, "a")
 
     def select_batch(excluded):                                  # the next `--batch` slices that are not in `excluded`
+        if src:
+            return src.take(args.batch, excluded)
         batch = []
         top = (args.kmax - 1) // args.slice * args.slice
         k0s = range(top, args.klo - 1, -args.slice) if args.desc else range(args.klo // args.slice * args.slice, args.kmax, args.slice)
