@@ -24,7 +24,8 @@ static pthread_barrier_t g_bar1;          /* named barrier 1 of the pipelined ti
 static unsigned g_bar1_n = 0;
 static unsigned char *g_dyn;
 static void __syncthreads() { pthread_barrier_wait(&g_bar); }
-static inline unsigned min(unsigned a, unsigned b) { return a < b ? a : b; }     /* CUDA's min(unsigned, unsigned) (GEN_MINRED) */
+static inline unsigned min(unsigned a, unsigned b) { return a < b ? a : b; }
+static inline int __ffs(unsigned v) { return __builtin_ffs((int)v); }     /* CUDA's min(unsigned, unsigned) (GEN_MINRED) */
 /* the shuffle of the CPU emulation: every thread of the CTA calls it at the same point (a CTA barrier is then a valid warp barrier) */
 static unsigned g_shfl[1024];
 static inline unsigned __shfl_up_sync(unsigned, unsigned v, unsigned d) {
@@ -96,6 +97,55 @@ static void rows2_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows2(x-
 extern "C" void cpu_rows2(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
     rows_args a{bits, nU, member, offs, nsel, rows};
     run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows2_tramp, &a);
+}
+static void rowsnost_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows_nost(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows_nost(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rowsnost_tramp, &a);
+}
+static void rowsnold_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows_nold(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows_nold(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rowsnold_tramp, &a);
+}
+struct ord_args { const u32 *keys; int nkeep; u32 *ord; };
+static void ord_tramp(void *a) { ord_args *x = (ord_args *)a; s200g_order(x->keys, x->nkeep, x->ord); }
+extern "C" void cpu_order(const u32 *keys, int nkeep, u32 *ord, int nb) {
+    ord_args a{keys, nkeep, ord};
+    run_grid(nb, NTHREADS, 0, ord_tramp, &a);
+}
+struct rord_args { const u32 *bits; int nU; const u32 *member; const i64 *offs; const u32 *ord; int nsel; u16 *rows; };
+static void rord_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+static void rord2_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord2(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+static void rordnost_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord_nost(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+extern "C" void cpu_rows_ord(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rord_tramp, &a);
+}
+extern "C" void cpu_rows_ord2(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rord2_tramp, &a);
+}
+extern "C" void cpu_rows_ord_nost(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rordnost_tramp, &a);
+}
+struct rmask_args { const u32 *bits; int nU; const u32 *member; int nsel; u32 *masks; };
+static void rmask_tramp(void *a) { rmask_args *x = (rmask_args *)a; s200g_rowmask(x->bits, x->nU, x->member, x->nsel, x->masks); }
+extern "C" void cpu_rowmask(const u32 *bits, int nU, const u32 *member, int nsel, u32 *masks) {
+    rmask_args a{bits, nU, member, nsel, masks};
+    const unsigned ng = (nU + 31) / 32;
+    for (unsigned g = 0; g < ng; g++) {                                  /* grid (chunks, groups): blockIdx.y a row group */
+        blockIdx.y = g;
+        run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rmask_tramp, &a);
+    }
+    blockIdx.y = 0;
+}
+struct rlist_args { const u32 *masks; int nU; const i64 *offs; int nsel; u16 *rows; };
+static void rlist_tramp(void *a) { rlist_args *x = (rlist_args *)a; s200g_rowlist(x->masks, x->nU, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rowlist(const u32 *masks, int nU, const i64 *offs, int nsel, u16 *rows) {
+    rlist_args a{masks, nU, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rlist_tramp, &a);
 }
 extern "C" unsigned cpu_kw() { return KW; }
 

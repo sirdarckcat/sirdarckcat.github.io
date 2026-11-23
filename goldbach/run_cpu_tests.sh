@@ -22,6 +22,10 @@ t "staged kernel vs brute force: every variant"    $S python3 test_gbig.py
 t "large-prime stage, flat flush + grid order"     $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 python3 test_gbig_cpu.py
 t "window tail: rows2 + parallel finalize vs the originals" $S python3 test_rest2_cpu.py
 t "GPU sieve window, DEEP_REST2=1"                 $S DEEP_REST2=1 python3 test_gpu_sieve_cpu.py
+t "GPU sieve window, DEEP_FIN2=1 DEEP_ROWS3=1"       $S DEEP_FIN2=1 DEEP_ROWS3=1 python3 test_gpu_sieve_cpu.py
+t "GPU sieve window, DEEP_FIN2=1 DEEP_ROWS_ORD=1"    $S DEEP_FIN2=1 DEEP_ROWS_ORD=1 python3 test_gpu_sieve_cpu.py
+t "GPU sieve window, DEEP_ROWS_ORD=2"              $S DEEP_ROWS_ORD=2 python3 test_gpu_sieve_cpu.py
+t "bench_rows glue (fake GPU)"                     $S python3 test_bench_rows_cpu.py
 [ "$QUICK" = quick ] && { echo "quick: $fail failure(s)"; exit $fail; }
 t "near-miss truncation vs the full list's ground truth" $S python3 test_near_trunc_cpu.py
 t "GPU sieve vs CPU feeder"                        $S python3 test_gpu_sieve_cpu.py

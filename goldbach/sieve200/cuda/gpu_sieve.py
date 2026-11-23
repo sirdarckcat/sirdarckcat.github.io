@@ -56,7 +56,8 @@ def _kernels(klog, llog, nthreads, unroll=1):
                 f"#define NTHREADS {nthreads}\n#define S200G_UNROLL {unroll}\n")
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_sieve_sh", "s200g_prep", "s200g_count", "s200g_select", "s200g_rows", "s200g_n0m",
-                                                         "s200g_km", "s200g_finalize", "s200g_rows2", "s200g_fin_sums", "s200g_fin_main")}
+                                                         "s200g_km", "s200g_finalize", "s200g_rows2", "s200g_fin_sums", "s200g_fin_main", "s200g_rowmask", "s200g_rowlist", "s200g_rows_nost", "s200g_rows_nold", "s200g_order", "s200g_rows_ord", "s200g_rows_ord2",
+                                                         "s200g_rows_ord_nost")}
     return _KCACHE[key]
 
 
@@ -73,7 +74,12 @@ class GpuFeeder:
         self.sieve_threads = int(sieve_threads or nthreads)
         assert 32 <= self.sieve_threads <= 1024 and self.sieve_threads % 32 == 0
         self.shoup, self.unroll = bool(shoup), int(unroll)
-        self.rest2 = os.environ.get("DEEP_REST2", "0") == "1"                      # 1: the window's tail with loads in flight (s200g_rows2) and a finalize over all CTAs (s200g_fin_*): same output, ~8 ms a window less (not measured)
+        env = os.environ
+        # The window's tail (same output in every mode).  Measured on an RTX PRO 6000 (GPU session, 15:52Z): the finalize over all CTAs takes 0.01 ms against 2.10; s200g_rows2 (16 loads in flight) is SLOWER, 7.8 against 6.4 ms.
+        self.fin2 = env.get("DEEP_FIN2", "0") == "1" or env.get("DEEP_REST2", "0") == "1"       # DEEP_FIN2=1: the parallel finalize alone (s200g_fin_sums + s200g_fin_main)
+        ro = env.get("DEEP_ROWS_ORD", "0")                                                  # DEEP_ROWS_ORD=1 / 2: the rows loop in kept-member INDEX order (s200g_order + s200g_rows_ord / s200g_rows_ord2 with 8 loads in flight)
+        self.rows_mode = 3 if env.get("DEEP_ROWS3", "0") == "1" else (4 if ro == "1" else 5 if ro == "2" else (2 if env.get("DEEP_REST2", "0") == "1" else 1))
+        # rows_mode: 1 s200g_rows; 2 s200g_rows2 (DEEP_REST2=1; slower); 3 DEEP_ROWS3=1: s200g_rowmask + s200g_rowlist; 4 / 5 DEEP_ROWS_ORD=1 / 2
         if shared is None:
             S = np.asarray(S, dtype=np.int64)
             inv = np.asarray(INV, dtype=np.uint32)
@@ -204,7 +210,7 @@ class GpuFeeder:
         kv = cp.empty(nsel, dtype=cp.uint64)
         offs = cp.empty(nsel + 1, dtype=cp.int64)
         total = self._buf("total", (1,), cp.int64)
-        if self.rest2 and nsel:                                    # a CTA a selection block: the block's counts summed, then every CTA scans its own keys from the sum of the blocks before it
+        if self.fin2 and nsel:                                     # a CTA a selection block: the block's counts summed, then every CTA scans its own keys from the sum of the blocks before it
             btot = self._buf("btot", (nb,), cp.uint32)
             self.k["s200g_fin_sums"]((nb,), (nt,), (keys, np.int32(nkeep), btot))
             self.k["s200g_fin_main"]((nb,), (nt,), (keys, np.int32(nkeep), np.int32(nb), np.uint64(k0), btot, cnt, member, kv, offs, total))
@@ -220,7 +226,17 @@ class GpuFeeder:
         if timings:
             ev[6].record()
         if nsel:
-            self.k["s200g_rows2" if self.rest2 else "s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
+            if self.rows_mode in (4, 5) and nkeep <= 8192 and self.llog <= 19:      # the same loop with the kept members taken in index order (their words are then neighbours)
+                ordr = self._buf("ord", (nsel,), cp.uint32)
+                self.k["s200g_order"]((nb,), (nt,), (keys, np.int32(nkeep), ordr))
+                self.k["s200g_rows_ord" if self.rows_mode == 4 else "s200g_rows_ord2"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, ordr, np.int32(nsel), rows))
+            elif self.rows_mode == 3:                              # the matrix read once in row-group order into 32-bit masks, then the lists written from the masks
+                ng = (self.nU + 31) // 32
+                masks = self._buf("masks", (ng, nsel), cp.uint32)
+                self.k["s200g_rowmask"](((nsel + nt - 1) // nt, ng), (nt,), (self.bits, np.int32(self.nU), member, np.int32(nsel), masks))
+                self.k["s200g_rowlist"](((nsel + nt - 1) // nt,), (nt,), (masks, np.int32(self.nU), offs, np.int32(nsel), rows))
+            else:                                                  # (modes 4 / 5 with nkeep > 8192 or LLOG > 19 land here too: the original order)
+                self.k["s200g_rows2" if self.rows_mode == 2 else "s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
         if timings:
             ev[7].record()
             t_w2 = time.perf_counter()

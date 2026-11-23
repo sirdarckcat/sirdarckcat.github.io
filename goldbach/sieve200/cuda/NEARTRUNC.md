@@ -1,5 +1,8 @@
 # Near-miss truncation: select by the alive rows BELOW the near-miss threshold (uarch, 23 Nov 2026, 16:30Z; opt-in `--near-truncate 1`; CPU-verified, not run on a GPU)
 
+> **Decision (lead, 23 Nov 16:03Z): not deployed; selection stays on all rows.**  The campaign's objective is the final record when the units end (~3 Dec), which is dominated by whether a DESIGN hit (g >= 170,000) lands (~0.23 a day, ~89% for at least one in 9.5 days, worth ~+10,000 in g); a typical near-miss lands only ~2,000 above G and each one raises G and shrinks
+> the gain.  The -6.3% on design hits costs about as much as the +6.5% on near-misses buys, and the CPU path is one more thing to trust.  For the design-hit objective the ranking by all rows IS the right statistic.  The measurements below stand and stay as a note (they are exactly the trade-off table the decision needed); the patch stays opt-in and unused.
+
 ## The observation
 
 The campaign's gate metric is the expected number of tested members whose first probable-prime row is at or above the near-miss threshold G (`--near-miss`, 157,837; `--log-near-exp 1`, design hits included).  For a member with c_G alive rows **below G** that probability is

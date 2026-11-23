@@ -36,6 +36,21 @@ class _Fn:
         elif self.name == "s200g_rows2":
             bits, nU, member, offs, nsel, rows = args
             L.cpu_rows2(P(bits), int(nU), P(member), P(offs), int(nsel), P(rows))
+        elif self.name in ("s200g_rows_nost", "s200g_rows_nold"):
+            bits, nU, member, offs, nsel, rows = args
+            getattr(L, "cpu_" + self.name[6:])(P(bits), int(nU), P(member), P(offs), int(nsel), P(rows))
+        elif self.name == "s200g_order":
+            keys, nkeep, ordr = args
+            L.cpu_order(P(keys), int(nkeep), P(ordr), int(grid[0]))
+        elif self.name in ("s200g_rows_ord", "s200g_rows_ord2", "s200g_rows_ord_nost"):
+            bits, nU, member, offs, ordr, nsel, rows = args
+            getattr(L, "cpu_" + self.name[6:])(P(bits), int(nU), P(member), P(offs), P(ordr), int(nsel), P(rows))
+        elif self.name == "s200g_rowmask":
+            bits, nU, member, nsel, masks = args
+            L.cpu_rowmask(P(bits), int(nU), P(member), int(nsel), P(masks))                  # (grid y = the row groups: the wrapper loops over them)
+        elif self.name == "s200g_rowlist":
+            masks, nU, offs, nsel, rows = args
+            L.cpu_rowlist(P(masks), int(nU), P(offs), int(nsel), P(rows))
         elif self.name == "s200g_fin_sums":
             keys, nkeep, btot = args
             L.cpu_fin_sums(P(keys), int(nkeep), P(btot), int(grid[0]))

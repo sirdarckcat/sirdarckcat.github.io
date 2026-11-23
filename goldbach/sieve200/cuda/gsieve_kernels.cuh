@@ -322,6 +322,148 @@ extern "C" __global__ void s200g_rows2(const u32 *__restrict__ bits, int nU, con
         if ((p[(size_t)r * KW] >> sh) & 1u) *out++ = (u16)r;
 }
 
+/* The survivor lists in two steps (DEEP_ROWS3=1): s200g_rowmask then s200g_rowlist.  s200g_rows2 (16 loads in flight) measured SLOWER than s200g_rows on an RTX PRO 6000 (7.8 against 6.4 ms a window for
+   a matrix that count reads in 1.9 ms), so the 'one latency a row' model of s200g_rows was wrong: what bounds it is how the matrix is read, how the lists are written, or both.  Here the two are separated:
+   s200g_rowmask (reads only): a 32-bit mask a (row group, kept member), bit j = row 32 g + j alive, masks[g * nsel + i]; grid (member chunks, row groups) with the row group the SLOW dimension, so that the
+       CTAs resident together all sweep the same 32 rows (the order count reads in), and its writes are coalesced words (39 groups x nsel x 4 bytes = 39 MB);
+   s200g_rowlist (writes only, reads the 39 MB of masks): thread a member, the set bits of its masks in ascending order into rows[offs[i] ...]. */
+extern "C" __global__ void s200g_rowmask(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, int nsel, u32 *__restrict__ masks) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= nsel) return;
+    const int g = blockIdx.y;
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const int nr = nU - g * 32 < 32 ? nU - g * 32 : 32;
+    const u32 *p = bits + (size_t)(g * 32) * KW + (m >> 5);
+    u32 v[32];
+    #pragma unroll
+    for (int j = 0; j < 32; j++) v[j] = j < nr ? p[(size_t)j * KW] : 0u;
+    u32 mk = 0;
+    #pragma unroll
+    for (int j = 0; j < 32; j++) mk |= ((v[j] >> sh) & 1u) << j;
+    masks[(size_t)g * nsel + i] = mk;
+}
+
+extern "C" __global__ void s200g_rowlist(const u32 *__restrict__ masks, int nU, const i64 *__restrict__ offs, int nsel, u16 *__restrict__ rows) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= nsel) return;
+    u16 *out = rows + offs[i];
+    const int ng = (nU + 31) >> 5;
+    for (int g = 0; g < ng; g++) {
+        u32 mk = masks[(size_t)g * nsel + i];
+        while (mk) {
+            *out++ = (u16)(g * 32 + __ffs(mk) - 1);
+            mk &= mk - 1;
+        }
+    }
+}
+
+/* The kept members are listed in COUNT order (keys sorted by (count, index)), so the 32 lanes of a warp in s200g_rows read 32 words at RANDOM places of the block's 4 KB slab of a row: ~28 distinct 32-byte
+   sectors for 32 useful words, and the two CTAs that share a block fetch the same sectors twice; count reads the same matrix a whole 128-byte line a warp.  That, not the latency of a dependent chain (rows2 was
+   slower), may be what bounds rows.  DEEP_ROWS_ORD=1: s200g_order makes, per selection block, the permutation that lists its kept members by increasing INDEX (a bitonic sort of (index << 13 | position) in
+   shared memory, 32 KB, ~0.05 ms for all blocks; nkeep <= 8192, LLOG <= 19), and s200g_rows_ord runs the rows loop with thread j taking member ord[j]: a warp's lanes are ~2 words apart (8 sectors for 32 words), a CTA
+   reads its own half of the block's slab, and the lists are written exactly where they were (offs[ord[j]]): the same output.  s200g_rows_ord2 adds 8 loads in flight a thread (the gather is cheap enough now to
+   try it). */
+extern "C" __global__ void s200g_order(const u32 *keys, int nkeep, u32 *ord) {
+    __shared__ u32 sk[MAXKEEP_SORT];
+    const u32 *kb = keys + (size_t)blockIdx.x * nkeep;
+    u32 n2 = 1;
+    while (n2 < (u32)nkeep) n2 <<= 1;
+    for (u32 i = threadIdx.x; i < n2; i += blockDim.x) sk[i] = i < (u32)nkeep ? (((kb[i] & 0xFFFFFu) << 13) | i) : 0xFFFFFFFFu;
+    __syncthreads();
+    for (u32 k = 2; k <= n2; k <<= 1) {
+        for (u32 j = k >> 1; j > 0; j >>= 1) {
+            for (u32 i = threadIdx.x; i < n2; i += blockDim.x) {
+                const u32 ixj = i ^ j;
+                if (ixj > i) {
+                    const u32 a = sk[i], b = sk[ixj];
+                    const int up = (i & k) == 0;
+                    if ((a > b) == up) { sk[i] = b; sk[ixj] = a; }
+                }
+            }
+            __syncthreads();
+        }
+    }
+    for (int r = threadIdx.x; r < nkeep; r += blockDim.x) ord[(size_t)blockIdx.x * nkeep + r] = (u32)blockIdx.x * nkeep + (sk[r] & 0x1FFFu);
+}
+
+extern "C" __global__ void s200g_rows_ord(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {     /* no __restrict__: the loop stays the serial one of s200g_rows */
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
+    if (j >= nsel) return;
+    const u32 i = ord[j];
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const u32 *p = bits + (m >> 5);
+    u16 *out = rows + offs[i];
+    for (int r = 0; r < nU; r++)
+        if ((p[(size_t)r * KW] >> sh) & 1u) *out++ = (u16)r;
+}
+
+#ifndef ROWS_ORD_BATCH
+#define ROWS_ORD_BATCH 8
+#endif
+extern "C" __global__ void s200g_rows_ord2(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, const i64 *__restrict__ offs, const u32 *__restrict__ ord, int nsel, u16 *__restrict__ rows) {
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
+    if (j >= nsel) return;
+    const u32 i = ord[j];
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const u32 *p = bits + (m >> 5);
+    u16 *out = rows + offs[i];
+    int r = 0;
+    for (; r + ROWS_ORD_BATCH <= nU; r += ROWS_ORD_BATCH) {
+        u32 v[ROWS_ORD_BATCH];
+        #pragma unroll
+        for (int q = 0; q < ROWS_ORD_BATCH; q++) v[q] = p[(size_t)(r + q) * KW];
+        #pragma unroll
+        for (int q = 0; q < ROWS_ORD_BATCH; q++)
+            if ((v[q] >> sh) & 1u) *out++ = (u16)(r + q);
+    }
+    for (; r < nU; r++)
+        if ((p[(size_t)r * KW] >> sh) & 1u) *out++ = (u16)r;
+}
+
+/* Timing probes (bench_rows.py; no use in the pipeline): s200g_rows with its stores taken out (the loop still depends on every loaded bit: a running sum, one store a thread at the end) and with its loads
+   taken out (a hash of (row, word) stands in for the loaded word, the stores are capped at cnt-free offs gaps so that no thread writes past its list). */
+extern "C" __global__ void s200g_rows_nost(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, const i64 *__restrict__ offs, int nsel, u16 *__restrict__ rows) {     /* reads only (with no stores the compiler batches the loads: compare with s200g_rows2) */
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= nsel) return;
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const u32 *p = bits + (m >> 5);
+    u32 acc = 0;
+    for (int r = 0; r < nU; r++)
+        if ((p[(size_t)r * KW] >> sh) & 1u) acc += (u32)r + 1u;
+    rows[offs[i]] = (u16)acc;
+}
+extern "C" __global__ void s200g_rows_ord_nost(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, const i64 *__restrict__ offs, const u32 *__restrict__ ord, int nsel, u16 *__restrict__ rows) {     /* reads only, in index order (compare with s200g_rows_ord2) */
+    const int j = blockIdx.x * blockDim.x + threadIdx.x;
+    if (j >= nsel) return;
+    const u32 i = ord[j];
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const u32 *p = bits + (m >> 5);
+    u32 acc = 0;
+    for (int r = 0; r < nU; r++)
+        if ((p[(size_t)r * KW] >> sh) & 1u) acc += (u32)r + 1u;
+    rows[offs[i]] = (u16)acc;
+}
+extern "C" __global__ void s200g_rows_nold(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, const i64 *__restrict__ offs, int nsel, u16 *__restrict__ rows) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= nsel) return;
+    const u32 m = member[i];
+    const u32 sh = m & 31, w = m >> 5;
+    u16 *out = rows + offs[i];
+    u16 *end = rows + offs[i + 1];
+    for (int r = 0; r < nU; r++) {
+        u32 h = (u32)r * 0x9E3779B1u + w * 0x85EBCA6Bu;
+        h ^= h >> 15; h *= 0x2C1B3C6Du; h ^= h >> 12;
+        const u32 h2 = h * 0x297A2D39u, h3 = (h ^ (h >> 16)) * 0x7FEB352Du;
+        const u32 v = (h & h2) | (h2 & h3 & h);                  /* ~34% of the bits set */
+        if (((v >> sh) & 1u) && out < end) *out++ = (u16)r;
+    }
+}
+
 /* N0 mod s for every sieve prime, one thread per prime (so that a new variant costs no host time): N0L = nl limbs of 32 bits (little
    endian), Barrett with the same mu = floor((2^64-1)/s) as the sieve kernel; r * 2^32 + limb < 2^59 for s < 2^27. */
 extern "C" __global__ void s200g_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int nS, u32 *out) {

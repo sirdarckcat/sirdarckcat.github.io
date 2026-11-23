@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The window's tail kernels, restructured (DEEP_REST2=1): s200g_rows2 and s200g_fin_sums + s200g_fin_main against the originals s200g_rows / s200g_finalize and against numpy, on the CPU emulation.
+"""The window's tail kernels, restructured (DEEP_FIN2 / DEEP_REST2 / DEEP_ROWS3): s200g_rows2, s200g_rowmask + s200g_rowlist and s200g_fin_sums + s200g_fin_main against the originals s200g_rows / s200g_finalize and
+against numpy, on the CPU emulation.
 
     python3 test_rest2_cpu.py
 
@@ -54,7 +55,26 @@ def run_case(lib, klog, llog, nth, nU, nkeep, rng, k0, zero_blocks=()):
     r1 = np.full(max(tot, 1), 0xFFFF, np.uint16)
     lib.cpu_rows(P(bits), nU, P(m0), P(o0), nsel, P(r0))
     lib.cpu_rows2(P(bits), nU, P(m0), P(o0), nsel, P(r1))
-    ok_rows = np.array_equal(r0[:tot], r_np) and np.array_equal(r1[:tot], r_np) and int(np.diff(o0).sum()) == tot == int(sum(len(e) for e in exp))
+    ng = (nU + 31) // 32
+    masks = np.zeros((ng, nsel), np.uint32)
+    r2 = np.full(max(tot, 1), 0xFFFF, np.uint16)
+    lib.cpu_rowmask(P(bits), nU, P(m0), nsel, P(masks))
+    lib.cpu_rowlist(P(masks), nU, P(o0), nsel, P(r2))
+    exp_masks = np.zeros((ng, nsel), np.uint32)                                      # numpy: bit j of masks[g][i] = row 32 g + j alive for the i-th kept member
+    for i, m in enumerate(m0):
+        col = ((bits[:, int(m) >> 5] >> np.uint32(int(m) & 31)) & 1).astype(np.uint64)
+        for r in np.nonzero(col)[0]:
+            exp_masks[r // 32, i] |= np.uint32(1) << np.uint32(r % 32)
+    ok_mask = np.array_equal(masks, exp_masks) and np.array_equal(r2[:tot], r_np)
+    ordr = np.zeros(nsel, np.uint32)                                                  # the index-order permutation: per block, the positions of its kept members by increasing index
+    lib.cpu_order(P(keys), nkeep, P(ordr), nb)
+    exp_ord = np.concatenate([b * nkeep + np.argsort((keys[b] & 0xFFFFF).astype(np.int64), kind="stable") for b in range(nb)]).astype(np.uint32)
+    r3 = np.full(max(tot, 1), 0xFFFF, np.uint16)
+    r4 = np.full(max(tot, 1), 0xFFFF, np.uint16)
+    lib.cpu_rows_ord(P(bits), nU, P(m0), P(o0), P(ordr), nsel, P(r3))
+    lib.cpu_rows_ord2(P(bits), nU, P(m0), P(o0), P(ordr), nsel, P(r4))
+    ok_mask = ok_mask and np.array_equal(ordr, exp_ord) and np.array_equal(r3[:tot], r_np) and np.array_equal(r4[:tot], r_np)
+    ok_rows = np.array_equal(r0[:tot], r_np) and np.array_equal(r1[:tot], r_np) and int(np.diff(o0).sum()) == tot == int(sum(len(e) for e in exp)) and ok_mask
     return ok_fin, ok_rows, nsel, tot
 
 
@@ -69,12 +89,14 @@ def main():
              (12, 10, 64, 48, 64, (0,)),                       # nkeep = the CTA size; block 0 without a single alive row
              (13, 11, 64, 100, 129, (3,)),                     # 4 blocks, 3 chunks (last one has 1 key), a block of zero counts
              (12, 12, 64, 20, 200, ()),                        # a single block, 4 chunks
-             (12, 9, 128, 17, 31, (2, 7))]                     # 8 blocks, nkeep below the CTA size
+             (12, 9, 128, 17, 31, (2, 7)),                     # 8 blocks, nkeep below the CTA size
+             (11, 11, 64, 70, 40, ()),                         # 70 rows: two whole row groups of 32 and a partial one of 6
+             (11, 11, 64, 32, 7, ())]                          # exactly one row group
     for klog, llog, nth, nU, nkeep, zb in cases:
         lib = test_gsieve.build(klog, llog, nth, 8192, 1)
         ok_fin, ok_rows, nsel, tot = run_case(lib, klog, llog, nth, nU, nkeep, rng, k0=int(rng.integers(0, 1 << 40)), zero_blocks=zb)
         print(f"  K=2^{klog} L=2^{llog} CTA {nth}: {nU} rows, {nkeep} kept a block ({nsel} keys, {tot} alive rows): finalize == fin_sums + fin_main {'ok' if ok_fin else 'DIFFERENT'}; "
-              f"rows == rows2 == numpy {'ok' if ok_rows else 'DIFFERENT'}", flush=True)
+              f"rows == rows2 == rowmask+rowlist == rows_ord(2) == numpy, order == argsort by index {'ok' if ok_rows else 'DIFFERENT'}", flush=True)
         ok &= ok_fin and ok_rows
     print("REST2 OK" if ok else "REST2 FAILED")
     sys.exit(0 if ok else 1)
