@@ -55,8 +55,8 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 | 140,000 | 13,009 | 1,011 | 24.17 | `specs_q140000_128.json` |
 | 145,000 | 13,421 | 1,050 | 25.10 | `specs_q145000_128.json` |
 | 150,000 | 13,847 | 1,092 | 26.10 | `specs_q150000_128_k1092.json` (and `specs_q150000_128.json` at 1,093) |
-| 155,000 | 14,271 | 1,138 | 27.20 | `specs_q155000_128.json` |
-| 160,000 | 14,682 | 1,185 | 28.33 | `specs_q160000_128.json` |
+| 155,000 | 14,271 | 1,137 | 27.18 | `specs_q155000_128.json` (1,138 to 1,140); `starts/q155000.txt` |
+| 160,000 | 14,682 | 1,181 | 28.23 | `specs_q160000_128.json` (1,185); `starts/q160000.txt` |
 
 (60,000 sweeps on one core, about 15 minutes each, from random starts;
 `deliver/run_*.txt`. A first run of 30,000 sweeps on 4 cores gave 856 at
@@ -109,11 +109,15 @@ or below the cap) and prints every cover it visits once.
 
 | target Q | cap on uncovered rows | distinct covers reached | time (4 cores) |
 |---|---|---|---|
-| 150,000 | 1,092 (the best known) | about 1,000 | used up |
+| 150,000 | 1,092 (the best known) | 2,282 | used up |
 | 150,000 | 1,093 | more than 120,000 | 20,000 in 5 s; 120,000 in 6 min |
 | 150,000 | 1,094 | not exhausted | 20,000 in 3 s |
-| 140,000 | 1,007 (the best known) | 50 | used up |
+| 140,000 | 1,007 (the best known) | 65 | used up |
 | 140,000 | 1,008 | about 4,800 | 45 s |
+| 155,000 | 1,137 (the best known) | 7 | used up |
+| 155,000 | 1,138 | about 900 | 30 s |
+| 160,000 | 1,181 (the best known) | 1,072 | used up |
+| 160,000 | 1,182 | more than 6,000 | 10 s |
 
 One row more multiplies the supply by 30 to 100 and costs 2.4% of the
 success probability per member, so a search that needs 1,700 vectors a day
@@ -137,7 +141,18 @@ points from any spec file, and `python3 make_specs.py --ledger
 starts/ledger_q<Q>.txt specs.json` enters its vectors in the ledger. The
 starting points at 140,000 are the 1,007- and 1,008-row covers of the other
 session's sampler (`phd/cap200`), which are better than this sampler's
-1,011.
+1,011; at 160,000 they are that sampler's 294 covers with 1,181 rows together
+with 778 found here. `specs_to_covers.py` and the `--ledger` form also read
+that session's pool files.
+
+`descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
+walks: walk with the cap one or two rows above the best, keep what is at or
+below the best, lower the cap when something better turns up. From the long
+runs' 1,182 at Q = 160,000 it reached 1,181 in a minute, the value the other
+sampler found independently; at 140,000, 150,000 and 155,000 it found nothing
+below 1,007, 1,092 and 1,137, and more covers at those levels. Two samplers
+and this walk agreeing within a row or two is the evidence that these are the
+optima on the 88 moduli.
 
 ## Which members to test
 

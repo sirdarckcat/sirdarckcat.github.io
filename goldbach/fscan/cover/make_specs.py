@@ -2,7 +2,7 @@
 """Turn covers found by ptcover or covergen into search specs (the JSON format of goldbach/phd/campaign3).
 
     python3 make_specs.py Q name kmax covers.txt out.json [max_covers] [kmax_residual] [ledger.txt]
-    python3 make_specs.py --ledger ledger.txt specs.json [more.json ...]
+    python3 make_specs.py --ledger ledger.txt file [more files ...]
 
 covers.txt holds lines "COVER k r:a r:a ..." or "BEST r:a r:a ..." (ptcover / covergen output).  Every cover is
 checked from scratch: residues nonzero, residual recomputed, N0 = the even number below M = 2*prod(r) with
@@ -11,7 +11,8 @@ reported, that size is recomputed for each, and the first max_covers specs with 
 
 ledger.txt (optional) has one line per vector already handed out: the first 20 hex digits of the SHA-256 of the
 decimal N0.  A cover whose N0 is in the ledger is skipped and the N0 of every spec written is appended, so batches
-made with the same ledger never repeat a vector.  The second form adds the vectors of existing spec files.
+made with the same ledger never repeat a vector.  The second form adds the vectors of existing files: spec files
+(JSON lists), pool files of goldbach/phd/cap200 (JSON with "mods" and "pool") or cover lines (any other file).
 """
 import hashlib, json, math, sys
 try:
@@ -61,9 +62,21 @@ if __name__ == "__main__":
     if sys.argv[1] == "--ledger":
         have = set(open(sys.argv[2]).read().split()) if __import__("os").path.exists(sys.argv[2]) else set()
         new = []
+        def n0s(f):
+            try: d = json.load(open(f))
+            except ValueError: d = None
+            if isinstance(d, list):
+                for s in d: yield int(s["N0"])
+            elif isinstance(d, dict):
+                for _, classes in d["pool"]: yield crt_even(sorted(zip(d["mods"], classes)))[0]
+            else:
+                for line in open(f):
+                    t = line.split()
+                    if t and t[0] in ("COVER", "BEST"):
+                        yield crt_even(sorted(tuple(map(int, x.split(":"))) for x in t[(2 if t[0] == "COVER" else 1):]))[0]
         for f in sys.argv[3:]:
-            for s in json.load(open(f)):
-                h = key(int(s["N0"]))
+            for N0 in n0s(f):
+                h = key(N0)
                 if h not in have: have.add(h); new.append(h)
         with open(sys.argv[2], "a") as g: g.write("".join(h + "\n" for h in new))
         print(f"{len(new)} vectors added to {sys.argv[2]} ({len(have)} in all)"); sys.exit()

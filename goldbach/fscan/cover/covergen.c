@@ -15,7 +15,7 @@
  * brought nothing new.  Between two visits a walker attempts gap * (number of moduli) moves (default gap = 1).  Output: "COVER k r:a ..." lines, all different, also different
  * from every start line; make_specs.py turns them into search specs.  The program stops after count covers, or when
  * no new cover has appeared for COVERGEN_STALL seconds (environment, default 30): the reachable set is then used up
- * and a higher kcap or other starting points are needed.
+ * and a higher kcap or other starting points are needed.  COVERGEN_TIME (seconds) limits the whole run.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Q=%d rows=%d moduli=%d; %d of %d start covers have at most %d uncovered rows; %d walkers\n", Q, nrows, nmod, ngood, nstart, kcap, omp_get_max_threads());
     long written = 0; int stop = 0; long hist[8] = {0};
     double stall = getenv("COVERGEN_STALL") ? atof(getenv("COVERGEN_STALL")) : 30, last_new = omp_get_wtime();
+    double tmax = getenv("COVERGEN_TIME") ? atof(getenv("COVERGEN_TIME")) : 1e18, t_start = last_new;
     #pragma omp parallel
     {
         int w = omp_get_thread_num(); rng_t g = { seed * 0x9E3779B97F4A7C15ull + 0x1234567ull * (w + 1) }; for (int j = 0; j < 20; j++) rnd(&g);
@@ -123,7 +124,7 @@ int main(int argc, char **argv) {
                     last_new = omp_get_wtime();
                     if (++written >= want) stop = 1;
                 }
-                if (omp_get_wtime() - last_new > stall) stop = 1;
+                if (omp_get_wtime() - last_new > stall || omp_get_wtime() - t_start > tmax) stop = 1;
             }
         }
         free(cnt);
