@@ -190,3 +190,11 @@ including the extra marks and the tests saved).  The plain kernel groups 16 rows
   p(row j+1) = p(row j) - inv x (q(j+1) - q(j)) mod s, a table of inv x d for the ~100 distinct gaps d, one table read a prime a window instead of rows / rcta; marks appended to the bins with plain atomics: ~7e9 scattered
   marks at 1e9, ~0.15 s a window).  Not built: the measured selection gain (x1.14 at 1e9) does not pay for it.
 * Lesson (UARCH.md): a cost model that counts the work (marks) misses the traffic that the algorithm's blocking implies (table re-reads); the second estimate of this stage that was off by a large factor (the first: 3x, the L2 request rate).
+
+## Where the rest of a batch goes: `search_gpu5_roundprof.patch` (optional measurement, 23 Nov 2026-11-23 04:00Z)
+
+On an RTX a 1.70 s staged batch is ~1.1-1.2 s of Fermat kernels, ~0.35 s of sieve and ~0.2-0.25 s that is neither.  Part of that is the GPU idling between Fermat rounds of `run_pool`: each round ends with a host sync (`int(bad)`), a few
+more (`act.size` after a boolean-mask compaction, `rem.max()`, `total`) and some 40 small cupy launches before the next Fermat kernel can start, ~2-4 ms, in ~28 rounds a batch (target 2^20 tests a round).  The patch (applies to
+d6aed28's `search_gpu5.py`; `--profile-pool 1`, off by default, results unchanged: checked on a numpy fake with identical outputs) brackets each round's `tester.test` with CUDA events and prints per pool
+`[profile-pool] N members, R rounds, T tests: Fermat kernels X s on the GPU, run_pool wall Y s, gap Y-X s (..% of run_pool)` and the wall of the whole flush.  If the gap is above ~5% of the batch, the fix is to split a pool's members in
+two halves on two streams (two threads) so that one half's kernel runs while the host updates the other: no kernel change, ~1-3% a batch per half-percent of gap recovered; if it is under 3%, drop the idea.

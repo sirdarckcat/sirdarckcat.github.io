@@ -1,0 +1,63 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 03:46:17.286986300 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 03:46:17.289224392 +0000
+@@ -51,6 +51,9 @@
+ ap.add_argument("--fermat-cta-sm", type=int, default=0,
+                 help="with --overlap: launch the Fermat kernel in chunks of this many CTAs an SM (e.g. 3 of the 5 that fit), leaving registers and shared memory free on every SM "
+                      "for the sieve's CTAs to sit beside them; 0 = one launch a round, as before")
++ap.add_argument("--profile-pool", type=int, default=0, choices=(0, 1),
++                help="1: time the Fermat kernels of every round of every pool with CUDA events and print, per pool, the rounds, the kernels' GPU seconds, the wall seconds of run_pool and the gap "
++                     "between them (the GPU idle between rounds: the host's syncs and cupy calls), and the wall of the whole flush; no change to the results")
+ ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
+                 help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
+ ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
+@@ -196,6 +199,8 @@
+     list, checked ascending in MultiTester), and a round's first PRP is the lowest offset with flag 1: the first-PRP row is
+     the first probable prime over the member's fully tested prefix."""
+     n = int(kv.size)
++    prof = [] if args.profile_pool else None
++    t_prof = time.perf_counter()
+     indptr = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
+     frow = cp.full(n, -1, cp.int64)
+     last = cp.full(n, -1, cp.int64)                            # the last row each member was tested on
+@@ -215,7 +220,11 @@
+         off = cp.arange(total) - (csum - take)[m_of]
+         ip = (indptr[act] + pos[act])[m_of] + off
+         rowsv = cols[ip]
++        if prof is not None:
++            e0 = cp.cuda.Event(); e1 = cp.cuda.Event(); e0.record()
+         flags = tester.test(rowsv, kv[act][m_of].astype(cp.uint32))
++        if prof is not None:
++            e1.record(); prof.append((e0, e1, total))
+         prev = last[act][m_of]                                  # the row before each tested row: the member's last row, or the one before it here
+         if total > 1:
+             same = m_of[1:] == m_of[:-1]
+@@ -242,6 +251,12 @@
+         act = act[(~hit) & (~done)]
+         gtests += total
+         launches += 1
++    if prof is not None:
++        cp.cuda.Device().synchronize()
++        wall = time.perf_counter() - t_prof
++        kern = sum(cp.cuda.get_elapsed_time(a, b) for a, b, _ in prof) / 1e3          # (cupy has no Event.elapsed_time: the module function)
++        print(f"[profile-pool] {n} members, {launches} rounds, {gtests} tests: Fermat kernels {kern:.3f} s on the GPU, run_pool wall {wall:.3f} s, gap {wall - kern:.3f} s "
++              f"({100 * (wall - kern) / max(wall, 1e-9):.1f}% of run_pool); {gtests / max(kern, 1e-9) / 1e6:.1f}M tests/s while a kernel runs, {gtests / max(wall, 1e-9) / 1e6:.1f}M over the pool", flush=True)
+     return tests_m, prp_m, succ_m, frow, gtests, launches
+ 
+ 
+@@ -258,6 +273,7 @@
+     def flush():
+         if not pool:
+             return
++        t_flush = time.perf_counter()
+         sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
+         kv = cp.concatenate([c[1] for c in pool])
+         cnt = cp.concatenate([c[2] for c in pool])
+@@ -280,6 +296,8 @@
+             nm = cp.nonzero(qf >= args.near_miss)[0]
+             for i, si, k, q in zip(nm.tolist(), sid[nm].tolist(), kv[nm].tolist(), qf[nm].tolist()):
+                 st[si]["near"].append((int(k), int(q)))
++        if args.profile_pool:
++            print(f"[profile-pool] flush wall {time.perf_counter() - t_flush:.3f} s (the pool's Fermat rounds, its concatenations and the per-slice statistics)", flush=True)
+ 
+     K = 1 << args.klog
+     plan = []                                                    # (si, spec, kstart, kmax), checked before any GPU work
