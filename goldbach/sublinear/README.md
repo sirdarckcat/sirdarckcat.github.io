@@ -31,9 +31,20 @@ reason is now understood and quantified.
   c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
   N < 10^200 with every N − q, q prime below 16,981, divisible by a prime
   ≤ 491, certified by divisibility alone.
+- A third by-product is exact and small: D(n), how far the first n odd primes
+  can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
+  181, 223, 271, 331, 419 for n = 1 to 13 (`desert.c`). It grows faster than
+  the r·ln r of the theorem and sits at 40 to 50% of a first-moment estimate
+  of order r·ln² r, as do the certified covers at 89 to 93 primes.
 - For the campaign itself the day's gains are in `../fscan/cover/`: the
-  89-prime covers on which the fleet found 158,209, and the first-88 covers
-  (1,255 rows at 170,000) its smaller cards now run.
+  89-prime covers on which the fleet found 158,209, the first-88 covers
+  (1,255 rows at 170,000) its smaller cards now run, and, late on the 23rd,
+  the finding that the final record is decided by the rows a cover leaves
+  *above* its design level: the near-optimal covers come in two families that
+  the row count cannot tell apart and that differ by about +1,000 in expected
+  final record. With the fleet's own measured rates the expected final record
+  is about 175,000 to 176,000 (8.2% of the ceiling), and the chance of 10% in
+  the remaining units is below 0.01%.
 
 ## The question
 
@@ -706,11 +717,11 @@ fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values (n ≤ 7
 also by brute force over all vectors):
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 |
 
 At n = 89 and 93 the ratio is at least 5.6. So what can be had without luck
 grows faster than the r·ln r of the theorem. A first-moment count says how
