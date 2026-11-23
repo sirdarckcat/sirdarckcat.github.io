@@ -5,3 +5,5 @@ Scripts behind NEARTRUNC.md and the model in HEADROOM.md (uarch, 23 Nov 2026).  
 * `selexp.py B logK k0_offset`: expected near-misses >= G (sum (1-p)^c_G over the kept) and design hits (sum (1-p)^c_total), selecting by c_G against by c_total, with the production keep rule (blocks of 2^15, 492 kept).
 * `selcurve.py B logK`: the same gain against the near-miss threshold G.
 * `fsweep2.py`: the time model (batch = fixed + slope (1 - f)) validated against the GPU session's measured keep-fraction sweep, and today's predicted optimum.
+* `bsweep.py B1,B2,... k0_offset ...`: the design-hit yield per member sieved, Y(B, f) = sum (1-p_B)^c over the kept, for several sieve bounds on the same windows (one JSON line a run).
+* `bmodel.py logs...`: Y(B, f) against a time model of today's window (the serial-sum model and a 'sieve x0.6' variant): design hits a second relative to B = 1e8, f = 0.985.  Result (HEADROOM.md section 0): B = 1e8 stays optimal.
