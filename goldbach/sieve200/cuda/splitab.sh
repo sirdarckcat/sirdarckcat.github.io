@@ -6,10 +6,11 @@ SPEC=${1:?usage: splitab.sh spec.json}
 shift
 cd "$(dirname "$0")"
 COMMON="--rg 32 --rcta 8 --gen-threads 512 --tile-threads 512 $*"
-run() {   # label, env assignments...
+run() {   # label, env assignments... (BS_ARGS="--tile 18" adds arguments to bench_split.py instead of an environment variable)
     local label=$1; shift
-    local out
-    out=$(env "$@" python3 bench_split.py "$SPEC" $COMMON 2>&1)
+    local out extra="" envs=() a
+    for a in "$@"; do case "$a" in BS_ARGS=*) extra="${a#BS_ARGS=}";; *) envs+=("$a");; esac; done
+    out=$(env "${envs[@]}" python3 bench_split.py "$SPEC" $COMMON $extra 2>&1)
     local gen tile genA genB small apply sieve
     gen=$(echo "$out" | awk '/^  gen \(staged/ {print $NF}')
     genA=$(echo "$out" | awk '/pass A/ {print $NF}')
@@ -44,3 +45,10 @@ run "TILE_UNROLL=16 (+ PACK HOIST FLUSH2 ORDER PF)" DEEP_BIN_PACK=1 DEEP_GEN_HOI
 run "PF=384 (whole bin) on all"        DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=384
 run "PF=512 on all"                    DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=512
 run "PF=256 on all (reference)"        DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256
+# tiles of 2^18 bits (32 KB of shared memory): 3 tile CTAs an SM instead of 1, so the apply's DRAM waits of one CTA overlap the small-prime marks of another; the price is twice the tiles, i.e. twice
+# the small-prime table through the L2 (100 GB a window).  Never timed so far.
+STACK="DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4"
+run "stack, tile 19 (reference), PF=256"          $STACK DEEP_TILE_PREFETCH=256
+run "stack, tile 18, PF=128"                      $STACK DEEP_TILE_PREFETCH=128 BS_ARGS="--tile 18"
+run "stack, tile 18, no PF"                       $STACK BS_ARGS="--tile 18"
+run "stack, tile 18, tile unroll 2"               DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=2 BS_ARGS="--tile 18"
