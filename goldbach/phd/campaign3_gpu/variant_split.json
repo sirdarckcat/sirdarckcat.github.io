@@ -12481,7 +12481,7 @@
   "pt_q150k_t2698",
   "pt_q150k_t2699"
  ],
- "unassigned Q = 150,000 reserve: pt_q150k_t2700..t10133": [
+ "since 23 Nov 00:45Z, Q = 150,000: gold-l4b (a second L4), k in [2^30, 2^32): pt_q150k_t2700..t3099": [
   "pt_q150k_t2700",
   "pt_q150k_t2701",
   "pt_q150k_t2702",
@@ -12881,7 +12881,9 @@
   "pt_q150k_t3096",
   "pt_q150k_t3097",
   "pt_q150k_t3098",
-  "pt_q150k_t3099",
+  "pt_q150k_t3099"
+ ],
+ "unassigned Q = 150,000 reserve: pt_q150k_t3100..t10133": [
   "pt_q150k_t3100",
   "pt_q150k_t3101",
   "pt_q150k_t3102",

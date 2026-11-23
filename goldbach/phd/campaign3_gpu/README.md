@@ -138,7 +138,12 @@ Version 3 (22 Nov):
   ebdb6d0f04bcbf38fb394d15e9f027b8234f1989796f729fbe25f837dca90d8a.
   - gold-g4c: t0..t1999 since 00:09Z, after its share of the research 128 ran out at 00:08Z.
   - gold-a100: t2000..t2699 when it finishes the research 128 in [2^30, 2^31) (`chain_next.sh`).
-  - t2700..t10133 are in reserve.
+  - gold-l4b, a second L4 (23 Nov 00:45Z): t2700..t3099 (`run_l4b.sh` checks the kernels against gmpy2 and kernel 3 against kernel
+    28 on 12 production slices on that GPU first).
+  - t3100..t10133 are in reserve.
+- Cost per GPU type, from the Colab usage rate as runtimes were added (22 Nov): RTX PRO 6000 10.05 compute units an hour, A100
+  6.73, L4 1.94, CPU runtime 0.26. Full-weight members/s per unit an hour: L4 0.57M, RTX PRO 6000 0.54M, A100 0.27M. A fourth
+  RTX PRO 6000 is refused ("precondition failed"); a second L4 was granted.
 - Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
   (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
   so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
