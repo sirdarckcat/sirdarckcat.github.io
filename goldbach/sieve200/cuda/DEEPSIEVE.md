@@ -603,3 +603,10 @@ or when its loads are cheaper (clamped, unroll 8 / 16).  Something shared by all
 67 GB in 20 ms = 3.3 TB/s through the L2-to-SM path.  If that is the limit the way forward is fewer bytes through it - a smaller table entry (16 -> 12 or 8 bytes: the Shoup constant is 1/4 of it, and the row-dependent part q M^-1 mod s does not depend on the tile and could be a per-row table made once a vector) or two rows a CTA sharing each loaded
 entry - not more overlap.  Neither is built: both are restructurings of the tile kernel and its tables for at most -2 to -3 ms a window.
 
+### bundle9 (GPU session, gold-g4c, 14:58-14:59Z) and the LEAN gate (15:01-15:02Z): LEAN deployed (x0.9875), the pipelined tile not; my table probe was badly designed and is removed
+
+Sieve ms a 2^24 window (reference 50.6-51.1): SCAN2 50.8, RESV_LATE 50.1 (the late reservation moves ~10 ms from "pass A" to "pass B" in the printed split: the bench's cap = 0 pass A no longer waits for the reservation), MINRED 50.4, **LEAN (all three) 49.6 (-1.5 ms)**, LEAN + pipelined tile AT = 64 48.0, the pipelined tile alone 49.4.  The driver gate (24 windows, identical
+slice lines, known case 23 / 23): **LEAN x0.9875, LEAN + pipelined tile x0.994**: the pipelined tile's 96 KB of shared memory costs more beside the Fermat kernels than its 1.6 ms saves, so LEAN alone is deployed (15:02:52Z on gold-g4c, the other two cards gating).  Batch ~0.751 s.
+`TILE_PROBE` (a timing-only variant that read the small-prime table from 256 sampled entries) made the tile kernel 575 ms: every thread used the same 256 entries with the same row q, so every mark landed on the same few shared-memory words and the atomics serialised.  A probe must keep the marks' addresses spread (a hash start offset a prime would have done); I removed it rather than leave a broken instrument.
+Whether the table's trip through the L2 bounds the small-prime phase is therefore still untested; the best case for fixing it is -2 to -3 ms a window (-0.4% of a batch).
+

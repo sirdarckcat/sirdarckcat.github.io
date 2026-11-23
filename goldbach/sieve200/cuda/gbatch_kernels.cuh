@@ -14,10 +14,6 @@
 #ifndef TILE_UNROLL
 #define TILE_UNROLL 1   /* primes a thread sets up together in the small-prime loop (DEEP_TILE_UNROLL): 1 = the original loop, 2 / 4 = the table loads and the Shoup chains of that many primes in flight at once */
 #endif
-#ifndef TILE_PROBE
-#define TILE_PROBE 0    /* TIMING PROBE ONLY (DEEP_TILE_PROBE=1; the bits are WRONG): every table entry is read from a 256-entry sample of the table (4 KB, L1-resident) instead of its own place: the marks have the same distribution
-                           and about the same count, the table's trip through the L2 is gone.  If the small-prime time falls, that trip is what bounds the tile kernel. */
-#endif
 #ifndef TILE_PIPE
 #define TILE_PIPE 0     /* DEEP_TILE_PIPE=1: the tile kernel streams its bin through shared memory with cp.async WHILE the other warps make the small primes' marks (see "pipelined tile" below) */
 #endif
@@ -74,11 +70,7 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
         #pragma unroll
         for (int u = 0; u < TILE_UNROLL; u++) {
             const int pp = pb + u * (int)blockDim.x;
-#if TILE_PROBE
-            t[u] = tab[(pp & 255) * (nS >> 8)];
-#else
             t[u] = tab[pp < nS ? pp : nS - 1];                                 /* clamped: the (out of range) entry is read and its marks are masked below (nS >= 1 here) */
-#endif
         }
         u32 j[TILE_UNROLL];
         #pragma unroll
@@ -100,19 +92,11 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
     int p = threadIdx.x;
     uint4 t_n;
     t_n.x = 1; t_n.y = 0; t_n.z = 0; t_n.w = 0;
-#if TILE_PROBE
-    if (p < nS) t_n = tab[(p & 255) * (nS >> 8)];
-    for (; p < nS; p += blockDim.x) {
-        const uint4 t = t_n;
-        const int pn = p + blockDim.x;
-        if (pn < nS) t_n = tab[(pn & 255) * (nS >> 8)];
-#else
     if (p < nS) t_n = tab[p];
     for (; p < nS; p += blockDim.x) {
         const uint4 t = t_n;
         const int pn = p + blockDim.x;
         if (pn < nS) t_n = tab[pn];
-#endif
         const u32 s = t.x;
         u32 a = q * t.y - __umulhi(q, t.z) * s;
         if (a >= s) a -= s;
@@ -199,11 +183,7 @@ extern "C" __global__ void TILE_LB s200g_tile_pipe(const u32 *U, int row0, const
             #pragma unroll
             for (int u = 0; u < TILE_UNROLL; u++) {
                 const int pp = pb + u * nts;
-#if TILE_PROBE
-                t[u] = tab[(pp & 255) * (nS >> 8)];
-#else
                 t[u] = tab[pp < nS ? pp : nS - 1];
-#endif
             }
             u32 j[TILE_UNROLL];
             #pragma unroll
