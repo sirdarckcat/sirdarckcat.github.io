@@ -143,6 +143,12 @@ Value first: the Fermat rounds are 1.24 s of the 2.10 s deep batch on an RTX PRO
    1.14e10 at B = 1e8 (the stage is ~0.4 s a window now), 1.35e10 at 2^28 (+18%), 1.48e10 at 5e8 (+30%), 1.61e10 at 1e9 (+41%).  The per-(row, prime) visits of the primes above 2^25 (at most one mark a pair)
    cost ~12 instructions a pair: 4.9e10 pairs a window at 1e9 is ~20-40 ms, small.  So the sieve of a 2^26 batch grows from ~0.8 s to ~0.95 s (2^28), ~1.05 s (5e8), ~1.15 s (1e9) against Fermat 1.24 s,
    and hit mass per test rises x1.9 -> x2.45 from 1e8 to 1e9 (the GPU session's CPU model).  `--sieve-b 268435456`, then `500000000`; the first batch builds the prime tables (numpy: ~8 s at 1e8, ~80 s at 1e9,
-   about 600 MB of device memory at 1e9).  Compare **expected hits a second** (the log's deep-sieve figure per batch), not tests a second.
+   about 600 MB of device memory at 1e9).  Compare **expected hits a second** (the log's deep-sieve figure per batch), not tests a second.  Set `--p-est` for the bound: the chance that a surviving row is prime is proportional to ln B (Mertens; it
+   reproduces the measured 0.0535 at B = 1e6 -> 0.0715 at 1e8, Q = 60,000 run of the research session), so 0.0715 x ln B / ln 1e8: 0.0804 at 1e9, 0.0834 at 2^31 - 1 (the ceiling: the Shoup setup is 32-bit).
+   It does not change which members are selected (the emptiest by survivor count), only the expected-hits accounting.  Each decade of B has been worth less (x1.41, x1.9, x2.45 at 1e7, 1e8, 1e9: +35%, +29%, then
+   perhaps +24%), so stop where the marginal sieve time (+2% of a batch from 1e9 to 2^31 - 1, for ~+6% hit mass) stops paying.
+   Reading the Fermat probes (G, C): `time_fermat28.py --variant s1r_asm s2r_asm s4r_asm` (section G, ~1 minute): the cost model for a throughput-bound step says s2r -2.5%, s4r -7%; if they are FASTER the step is
+   latency bound and the fix is more independent accumulators / more warps (E3 shows the occupancy curve).  E1 (body size): ticks per IMAD.WIDE rising with the loop body means the instruction cache; E2 (extra
+   IADD3 / IMAD.WIDE inside the step): the marginal cost of an instruction inside the real step against bench_pipes.py's 1.8 / 2.5 ticks.
 4. **`run_experiments.sh`** (A: staged large-prime kernel against the plain one, sweep, B = 2^28 and 2^30 with `bench_bigprimes.py --b 28 / 30`; B: whole batch; C-E: Fermat step experiments, only if step 1 says < 1.0).
    If the overlap hides the sieve completely, the staged kernel only shortens the contention window; if it hides it partly (step 2 between 1.5 and 2.1 s), a faster sieve is worth its percentage directly.
