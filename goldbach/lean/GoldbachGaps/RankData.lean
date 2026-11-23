@@ -120,6 +120,21 @@ theorem leastSummand_556 : IsLeastSummand 556 47 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `962 - q`, `q < 43` prime. -/
+def mods962 : List ℕ :=
+  [2, 3, 5, 7, 13, 23]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_962 : IsLeastSummand 962 43 := by
+  have hl : desertListsCheck 962 43 mods962 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 962 0 43 mods962 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (962 - 43) := by
+    rw [show (962 : ℕ) - 43 = 919 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `992 - q`, `q < 73` prime. -/
 def mods992 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 23, 31]
@@ -132,6 +147,216 @@ theorem leastSummand_992 : IsLeastSummand 992 73 := by
   have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
   have hc : Nat.Prime (992 - 73) := by
     rw [show (992 : ℕ) - 73 = 919 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1144 - q`, `q < 41` prime. -/
+def mods1144 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 19]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1144 : IsLeastSummand 1144 41 := by
+  have hl : desertListsCheck 1144 41 mods1144 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1144 0 41 mods1144 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1144 - 41) := by
+    rw [show (1144 : ℕ) - 41 = 1103 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1150 - q`, `q < 41` prime. -/
+def mods1150 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 19, 31]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1150 : IsLeastSummand 1150 41 := by
+  have hl : desertListsCheck 1150 41 mods1150 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1150 0 41 mods1150 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1150 - 41) := by
+    rw [show (1150 : ℕ) - 41 = 1109 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1274 - q`, `q < 37` prime. -/
+def mods1274 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 31]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1274 : IsLeastSummand 1274 37 := by
+  have hl : desertListsCheck 1274 37 mods1274 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1274 0 37 mods1274 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1274 - 37) := by
+    rw [show (1274 : ℕ) - 37 = 1237 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1354 - q`, `q < 47` prime. -/
+def mods1354 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1354 : IsLeastSummand 1354 47 := by
+  have hl : desertListsCheck 1354 47 mods1354 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1354 0 47 mods1354 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1354 - 47) := by
+    rw [show (1354 : ℕ) - 47 = 1307 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1360 - q`, `q < 41` prime. -/
+def mods1360 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 19, 23]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1360 : IsLeastSummand 1360 41 := by
+  have hl : desertListsCheck 1360 41 mods1360 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1360 0 41 mods1360 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1360 - 41) := by
+    rw [show (1360 : ℕ) - 41 = 1319 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1362 - q`, `q < 41` prime. -/
+def mods1362 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 31]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1362 : IsLeastSummand 1362 41 := by
+  have hl : desertListsCheck 1362 41 mods1362 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1362 0 41 mods1362 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1362 - 41) := by
+    rw [show (1362 : ℕ) - 41 = 1321 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1382 - q`, `q < 61` prime. -/
+def mods1382 : List ℕ :=
+  [2, 3, 5, 7, 13, 29, 37]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1382 : IsLeastSummand 1382 61 := by
+  have hl : desertListsCheck 1382 61 mods1382 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1382 0 61 mods1382 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1382 - 61) := by
+    rw [show (1382 : ℕ) - 61 = 1321 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1856 - q`, `q < 67` prime. -/
+def mods1856 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 19, 43]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1856 : IsLeastSummand 1856 67 := by
+  have hl : desertListsCheck 1856 67 mods1856 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1856 0 67 mods1856 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1856 - 67) := by
+    rw [show (1856 : ℕ) - 67 = 1789 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1928 - q`, `q < 61` prime. -/
+def mods1928 : List ℕ :=
+  [2, 3, 5, 7, 17, 23, 31]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1928 : IsLeastSummand 1928 61 := by
+  have hl : desertListsCheck 1928 61 mods1928 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1928 0 61 mods1928 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1928 - 61) := by
+    rw [show (1928 : ℕ) - 61 = 1867 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `2078 - q`, `q < 61` prime. -/
+def mods2078 : List ℕ :=
+  [2, 3, 5, 13, 19, 23, 29]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_2078 : IsLeastSummand 2078 61 := by
+  have hl : desertListsCheck 2078 61 mods2078 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 2078 0 61 mods2078 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (2078 - 61) := by
+    rw [show (2078 : ℕ) - 61 = 2017 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `2438 - q`, `q < 61` prime. -/
+def mods2438 : List ℕ :=
+  [2, 3, 5, 7, 11, 29, 41]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_2438 : IsLeastSummand 2438 61 := by
+  have hl : desertListsCheck 2438 61 mods2438 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 2438 0 61 mods2438 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (2438 - 61) := by
+    rw [show (2438 : ℕ) - 61 = 2377 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `2512 - q`, `q < 53` prime. -/
+def mods2512 : List ℕ :=
+  [2, 3, 5, 7, 13, 19, 23, 41]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_2512 : IsLeastSummand 2512 53 := by
+  have hl : desertListsCheck 2512 53 mods2512 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 2512 0 53 mods2512 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (2512 - 53) := by
+    rw [show (2512 : ℕ) - 53 = 2459 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `2530 - q`, `q < 53` prime. -/
+def mods2530 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 19, 23, 41]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_2530 : IsLeastSummand 2530 53 := by
+  have hl : desertListsCheck 2530 53 mods2530 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 2530 0 53 mods2530 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (2530 - 53) := by
+    rw [show (2530 : ℕ) - 53 = 2477 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `2618 - q`, `q < 61` prime. -/
+def mods2618 : List ℕ :=
+  [2, 3, 5, 7, 13, 23, 29]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_2618 : IsLeastSummand 2618 61 := by
+  have hl : desertListsCheck 2618 61 mods2618 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 2618 0 61 mods2618 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (2618 - 61) := by
+    rw [show (2618 : ℕ) - 61 = 2557 by norm_num]
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
@@ -165,6 +390,21 @@ theorem leastSummand_5372 : IsLeastSummand 5372 139 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `6008 - q`, `q < 127` prime. -/
+def mods6008 : List ℕ :=
+  [2, 3, 5, 7, 13, 17, 19, 23, 43, 53]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_6008 : IsLeastSummand 6008 127 := by
+  have hl : desertListsCheck 6008 127 mods6008 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 6008 0 127 mods6008 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (6008 - 127) := by
+    rw [show (6008 : ℕ) - 127 = 5881 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `7426 - q`, `q < 173` prime. -/
 def mods7426 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 19, 31, 37, 41, 47, 53, 71, 73]
@@ -177,6 +417,111 @@ theorem leastSummand_7426 : IsLeastSummand 7426 173 := by
   have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
   have hc : Nat.Prime (7426 - 173) := by
     rw [show (7426 : ℕ) - 173 = 7253 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `9596 - q`, `q < 157` prime. -/
+def mods9596 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 31, 41, 43, 53, 61, 89]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_9596 : IsLeastSummand 9596 157 := by
+  have hl : desertListsCheck 9596 157 mods9596 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 9596 0 157 mods9596 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (9596 - 157) := by
+    rw [show (9596 : ℕ) - 157 = 9439 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `9602 - q`, `q < 139` prime. -/
+def mods9602 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 29, 43, 89]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_9602 : IsLeastSummand 9602 139 := by
+  have hl : desertListsCheck 9602 139 mods9602 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 9602 0 139 mods9602 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (9602 - 139) := by
+    rw [show (9602 : ℕ) - 139 = 9463 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `10268 - q`, `q < 109` prime. -/
+def mods10268 : List ℕ :=
+  [2, 3, 5, 7, 13, 23, 29, 31, 37, 59, 101]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_10268 : IsLeastSummand 10268 109 := by
+  have hl : desertListsCheck 10268 109 mods10268 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 10268 0 109 mods10268 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (10268 - 109) := by
+    rw [show (10268 : ℕ) - 109 = 10159 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `11642 - q`, `q < 139` prime. -/
+def mods11642 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 19, 23, 29, 31, 37, 59, 103]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_11642 : IsLeastSummand 11642 139 := by
+  have hl : desertListsCheck 11642 139 mods11642 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 11642 0 139 mods11642 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (11642 - 139) := by
+    rw [show (11642 : ℕ) - 139 = 11503 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `12886 - q`, `q < 173` prime. -/
+def mods12886 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 37, 41, 47, 53, 67, 101]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_12886 : IsLeastSummand 12886 173 := by
+  have hl : desertListsCheck 12886 173 mods12886 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 12886 0 173 mods12886 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (12886 - 173) := by
+    rw [show (12886 : ℕ) - 173 = 12713 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `13148 - q`, `q < 139` prime. -/
+def mods13148 : List ℕ :=
+  [2, 3, 5, 7, 13, 17, 19, 23, 29, 31, 103]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_13148 : IsLeastSummand 13148 139 := by
+  have hl : desertListsCheck 13148 139 mods13148 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 13148 0 139 mods13148 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (13148 - 139) := by
+    rw [show (13148 : ℕ) - 139 = 13009 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `13562 - q`, `q < 151` prime. -/
+def mods13562 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 23, 29, 31, 43, 97]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_13562 : IsLeastSummand 13562 151 := by
+  have hl : desertListsCheck 13562 151 mods13562 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 13562 0 151 mods13562 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (13562 - 151) := by
+    rw [show (13562 : ℕ) - 151 = 13411 by norm_num]
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
@@ -225,6 +570,51 @@ theorem leastSummand_63274 : IsLeastSummand 63274 293 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `66158 - q`, `q < 229` prime. -/
+def mods66158 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 29, 31, 71, 83, 89, 107, 149, 157, 257]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_66158 : IsLeastSummand 66158 229 := by
+  have hl : desertListsCheck 66158 229 mods66158 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 66158 0 229 mods66158 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (66158 - 229) := by
+    rw [show (66158 : ℕ) - 229 = 65929 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `84116 - q`, `q < 283` prime. -/
+def mods84116 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 19, 29, 31, 37, 43, 47, 79, 83, 113, 149, 229, 241]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_84116 : IsLeastSummand 84116 283 := by
+  have hl : desertListsCheck 84116 283 mods84116 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 84116 0 283 mods84116 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (84116 - 283) := by
+    rw [show (84116 : ℕ) - 283 = 83833 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `100768 - q`, `q < 251` prime. -/
+def mods100768 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 29, 43, 47, 83, 101, 103, 131, 157, 163, 239]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_100768 : IsLeastSummand 100768 251 := by
+  have hl : desertListsCheck 100768 251 mods100768 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 100768 0 251 mods100768 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (100768 - 251) := by
+    rw [show (100768 : ℕ) - 251 = 100517 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `113672 - q`, `q < 313` prime. -/
 def mods113672 : List ℕ :=
   [2, 3, 5, 7, 11, 17, 19, 29, 37, 47, 53, 61, 67, 83, 89, 149, 151, 197, 199, 337]
@@ -252,6 +642,51 @@ theorem leastSummand_128168 : IsLeastSummand 128168 331 := by
   have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
   have hc : Nat.Prime (128168 - 331) := by
     rw [show (128168 : ℕ) - 331 = 127837 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `134972 - q`, `q < 241` prime. -/
+def mods134972 : List ℕ :=
+  [2, 3, 5, 7, 11, 17, 23, 29, 37, 47, 53, 109, 113, 139, 157, 277, 307]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_134972 : IsLeastSummand 134972 241 := by
+  have hl : desertListsCheck 134972 241 mods134972 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 134972 0 241 mods134972 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (134972 - 241) := by
+    rw [show (134972 : ℕ) - 241 = 134731 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `137708 - q`, `q < 271` prime. -/
+def mods137708 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 23, 31, 37, 47, 59, 67, 157, 199, 229, 241, 359]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_137708 : IsLeastSummand 137708 271 := by
+  have hl : desertListsCheck 137708 271 mods137708 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 137708 0 271 mods137708 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (137708 - 271) := by
+    rw [show (137708 : ℕ) - 271 = 137437 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `142502 - q`, `q < 271` prime. -/
+def mods142502 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 31, 37, 43, 73, 79, 89, 101, 157]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_142502 : IsLeastSummand 142502 271 := by
+  have hl : desertListsCheck 142502 271 mods142502 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 142502 0 271 mods142502 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (142502 - 271) := by
+    rw [show (142502 : ℕ) - 271 = 142231 by norm_num]
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
@@ -393,6 +828,36 @@ theorem leastSummand_503222 : IsLeastSummand 503222 523 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `642662 - q`, `q < 409` prime. -/
+def mods642662 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 23, 29, 31, 37, 41, 43, 47, 59, 61, 73, 157, 313, 317, 337, 503, 601]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_642662 : IsLeastSummand 642662 409 := by
+  have hl : desertListsCheck 642662 409 mods642662 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 642662 0 409 mods642662 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (642662 - 409) := by
+    rw [show (642662 : ℕ) - 409 = 642253 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `732626 - q`, `q < 397` prime. -/
+def mods732626 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 31, 43, 61, 89, 97, 101, 179, 347, 379, 563, 709, 739]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_732626 : IsLeastSummand 732626 397 := by
+  have hl : desertListsCheck 732626 397 mods732626 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 732626 0 397 mods732626 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (732626 - 397) := by
+    rw [show (732626 : ℕ) - 397 = 732229 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `743636 - q`, `q < 367` prime. -/
 def mods743636 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 17, 19, 29, 31, 43, 103, 107, 163, 193, 457, 461, 601, 613, 761, 769]
@@ -424,6 +889,37 @@ theorem leastSummand_743666 : IsLeastSummand 743666 397 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `850712 - q`, `q < 409` prime. -/
+def mods850712 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 43, 67, 71, 83, 179, 241, 251, 349, 431, 563,
+   853]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_850712 : IsLeastSummand 850712 409 := by
+  have hl : desertListsCheck 850712 409 mods850712 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 850712 0 409 mods850712 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (850712 - 409) := by
+    rw [show (850712 : ℕ) - 409 = 850303 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `880508 - q`, `q < 439` prime. -/
+def mods880508 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 47, 53, 71, 83, 179, 199, 317, 331, 839, 883]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_880508 : IsLeastSummand 880508 439 := by
+  have hl : desertListsCheck 880508 439 mods880508 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 880508 0 439 mods880508 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (880508 - 439) := by
+    rw [show (880508 : ℕ) - 439 = 880069 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `1077212 - q`, `q < 439` prime. -/
 def mods1077212 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 61, 89, 107, 163, 167, 191, 193, 281, 397, 449, 563, 971]
@@ -452,6 +948,52 @@ theorem leastSummand_1077422 : IsLeastSummand 1077422 601 := by
   have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
   have hc : Nat.Prime (1077422 - 601) := by
     rw [show (1077422 : ℕ) - 601 = 1076821 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1403372 - q`, `q < 499` prime. -/
+def mods1403372 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 53, 61, 71, 89, 181, 251, 313, 349, 367, 523, 787, 821, 857,
+   1031]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1403372 : IsLeastSummand 1403372 499 := by
+  have hl : desertListsCheck 1403372 499 mods1403372 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1403372 0 499 mods1403372 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1403372 - 499) := by
+    rw [show (1403372 : ℕ) - 499 = 1402873 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1527062 - q`, `q < 409` prime. -/
+def mods1527062 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 37, 41, 47, 71, 97, 317, 373, 599, 733, 757, 1031, 1061]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1527062 : IsLeastSummand 1527062 409 := by
+  have hl : desertListsCheck 1527062 409 mods1527062 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1527062 0 409 mods1527062 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1527062 - 409) := by
+    rw [show (1527062 : ℕ) - 409 = 1526653 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `1544918 - q`, `q < 409` prime. -/
+def mods1544918 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 23, 31, 41, 43, 53, 61, 67, 73, 109, 139, 197, 311, 599, 709, 1009, 1063]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_1544918 : IsLeastSummand 1544918 409 := by
+  have hl : desertListsCheck 1544918 409 mods1544918 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 1544918 0 409 mods1544918 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (1544918 - 409) := by
+    rw [show (1544918 : ℕ) - 409 = 1544509 by norm_num]
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
@@ -567,6 +1109,102 @@ theorem leastSummand_10759922 : IsLeastSummand 10759922 829 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `14131052 - q`, `q < 709` prime. -/
+def mods14131052 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 43, 47, 53, 67, 73, 89, 103, 179, 223, 251, 257, 353,
+   397, 479, 541, 677, 997, 1367, 2411, 2719, 3307]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_14131052 : IsLeastSummand 14131052 709 := by
+  have hl : desertListsCheck 14131052 709 mods14131052 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 14131052 0 709 mods14131052 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (14131052 - 709) := by
+    rw [show (14131052 : ℕ) - 709 = 14130343 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `16541868 - q`, `q < 269` prime. -/
+def mods16541868 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 53, 59, 61, 67, 157, 163, 167, 173, 227, 269,
+   311, 547, 733, 761, 941, 1051, 1283, 1667, 1913, 2423, 2659, 3313, 3329]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_16541868 : IsLeastSummand 16541868 269 := by
+  have hl : desertListsCheck 16541868 269 mods16541868 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 16541868 0 269 mods16541868 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (16541868 - 269) := by
+    rw [show (16541868 : ℕ) - 269 = 16541599 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `21184688 - q`, `q < 661` prime. -/
+def mods21184688 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 37, 41, 61, 73, 79, 101, 109, 127, 163, 167, 199, 227, 251,
+   281, 283, 359, 977, 1231, 1319, 1423, 1637, 2089, 3343, 3851, 4013]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_21184688 : IsLeastSummand 21184688 661 := by
+  have hl : desertListsCheck 21184688 661 mods21184688 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 21184688 0 661 mods21184688 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (21184688 - 661) := by
+    rw [show (21184688 : ℕ) - 661 = 21184027 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `22360822 - q`, `q < 683` prime. -/
+def mods22360822 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 43, 47, 53, 61, 67, 113, 131, 137, 167, 223, 311,
+   317, 449, 491, 659, 761, 773, 1039, 1489, 1979, 2281, 2351, 3361]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_22360822 : IsLeastSummand 22360822 683 := by
+  have hl : desertListsCheck 22360822 683 mods22360822 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 22360822 0 683 mods22360822 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (22360822 - 683) := by
+    rw [show (22360822 : ℕ) - 683 = 22360139 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `22512140 - q`, `q < 439` prime. -/
+def mods22512140 : List ℕ :=
+  [2, 3, 7, 11, 13, 17, 19, 23, 29, 37, 41, 43, 47, 53, 61, 67, 71, 73, 79, 97, 137, 151, 157,
+   163, 353, 433, 587, 607, 773, 809, 1663, 2357, 2473, 3121, 4079, 4691]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_22512140 : IsLeastSummand 22512140 439 := by
+  have hl : desertListsCheck 22512140 439 mods22512140 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 22512140 0 439 mods22512140 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (22512140 - 439) := by
+    rw [show (22512140 : ℕ) - 439 = 22511701 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `23188020 - q`, `q < 239` prime. -/
+def mods23188020 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 43, 53, 59, 61, 83, 97, 101, 131, 151, 179, 191,
+   227, 479, 503, 599, 607, 1289, 2287, 3163]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_23188020 : IsLeastSummand 23188020 239 := by
+  have hl : desertListsCheck 23188020 239 mods23188020 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 23188020 0 239 mods23188020 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (23188020 - 239) := by
+    rw [show (23188020 : ℕ) - 239 = 23187781 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- Prime divisors of the numbers `24106882 - q`, `q < 929` prime. -/
 def mods24106882 : List ℕ :=
   [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 43, 47, 53, 59, 61, 73, 79, 83, 89, 101, 103,
@@ -596,6 +1234,55 @@ theorem leastSummand_27789878 : IsLeastSummand 27789878 997 := by
   have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
   have hc : Nat.Prime (27789878 - 997) := by
     rw [show (27789878 : ℕ) - 997 = 27788881 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `29012496 - q`, `q < 379` prime. -/
+def mods29012496 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 43, 53, 59, 61, 67, 71, 73, 139, 193, 227, 229, 241,
+   311, 347, 433, 509, 719, 1283, 1361, 1657, 1669, 1747, 1789, 4801]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_29012496 : IsLeastSummand 29012496 379 := by
+  have hl : desertListsCheck 29012496 379 mods29012496 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 29012496 0 379 mods29012496 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (29012496 - 379) := by
+    rw [show (29012496 : ℕ) - 379 = 29012117 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `29764560 - q`, `q < 157` prime. -/
+def mods29764560 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 29, 47, 53, 61, 67, 83, 139, 157, 173, 263, 277, 331, 523, 557,
+   571, 683, 709, 1109, 2081, 2689, 2741, 2903, 3259, 4013, 4079]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_29764560 : IsLeastSummand 29764560 157 := by
+  have hl : desertListsCheck 29764560 157 mods29764560 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 29764560 0 157 mods29764560 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (29764560 - 157) := by
+    rw [show (29764560 : ℕ) - 157 = 29764403 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `31083410 - q`, `q < 619` prime. -/
+def mods31083410 : List ℕ :=
+  [2, 3, 7, 11, 13, 17, 19, 23, 29, 37, 41, 47, 59, 61, 73, 79, 97, 127, 149, 193, 223, 257,
+   277, 613, 691, 739, 751, 1069, 1217, 1291, 1663, 1931, 2281, 2531, 2797, 3539, 4111, 4933,
+   5483]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_31083410 : IsLeastSummand 31083410 619 := by
+  have hl : desertListsCheck 31083410 619 mods31083410 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 31083410 0 619 mods31083410 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (31083410 - 619) := by
+    rw [show (31083410 : ℕ) - 619 = 31082791 by norm_num]
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
@@ -1006,5 +1693,137 @@ theorem clusterTable_spec : ∀ x ∈ clusterTable, IsLeastSummand x.1 x.2 := by
   · exact leastSummand_3506984
   · exact leastSummand_5833298
   · exact leastSummand_5833382
+
+/-- The table `classmax`: pairs `(N, g(N))`. -/
+def classmaxTable : List (ℕ × ℕ) :=
+  [(29012496, 379),
+   (31083410, 619),
+   (21184688, 661),
+   (23188020, 239),
+   (16541868, 269),
+   (22512140, 439),
+   (29764560, 157),
+   (22360822, 683),
+   (14131052, 709)]
+
+theorem classmaxTable_spec : ∀ x ∈ classmaxTable, IsLeastSummand x.1 x.2 := by
+  intro x hx
+  simp only [classmaxTable, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · exact leastSummand_29012496
+  · exact leastSummand_31083410
+  · exact leastSummand_21184688
+  · exact leastSummand_23188020
+  · exact leastSummand_16541868
+  · exact leastSummand_22512140
+  · exact leastSummand_29764560
+  · exact leastSummand_22360822
+  · exact leastSummand_14131052
+
+/-- The table `witness`: pairs `(N, g(N))`. -/
+def witnessTable : List (ℕ × ℕ) :=
+  [(308, 31),
+   (556, 47),
+   (962, 43),
+   (992, 73),
+   (1144, 41),
+   (1150, 41),
+   (1274, 37),
+   (1354, 47),
+   (1360, 41),
+   (1362, 41),
+   (1382, 61),
+   (1856, 67),
+   (1928, 61),
+   (2078, 61),
+   (2438, 61),
+   (2512, 53),
+   (2530, 53),
+   (2618, 61),
+   (2642, 103),
+   (5372, 139),
+   (6008, 127),
+   (7426, 173),
+   (9596, 157),
+   (9602, 139),
+   (10268, 109),
+   (11642, 139),
+   (12886, 173),
+   (13148, 139),
+   (13562, 151),
+   (54244, 233),
+   (63274, 293),
+   (66158, 229),
+   (84116, 283),
+   (100768, 251),
+   (113672, 313),
+   (128168, 331),
+   (134972, 241),
+   (137708, 271),
+   (142502, 271),
+   (503222, 523),
+   (642662, 409),
+   (732626, 397),
+   (850712, 409),
+   (880508, 439),
+   (1077212, 439),
+   (1077422, 601),
+   (1403372, 499),
+   (1527062, 409),
+   (1544918, 409)]
+
+theorem witnessTable_spec : ∀ x ∈ witnessTable, IsLeastSummand x.1 x.2 := by
+  intro x hx
+  simp only [witnessTable, List.mem_cons, List.not_mem_nil, or_false] at hx
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  · exact leastSummand_308
+  · exact leastSummand_556
+  · exact leastSummand_962
+  · exact leastSummand_992
+  · exact leastSummand_1144
+  · exact leastSummand_1150
+  · exact leastSummand_1274
+  · exact leastSummand_1354
+  · exact leastSummand_1360
+  · exact leastSummand_1362
+  · exact leastSummand_1382
+  · exact leastSummand_1856
+  · exact leastSummand_1928
+  · exact leastSummand_2078
+  · exact leastSummand_2438
+  · exact leastSummand_2512
+  · exact leastSummand_2530
+  · exact leastSummand_2618
+  · exact leastSummand_2642
+  · exact leastSummand_5372
+  · exact leastSummand_6008
+  · exact leastSummand_7426
+  · exact leastSummand_9596
+  · exact leastSummand_9602
+  · exact leastSummand_10268
+  · exact leastSummand_11642
+  · exact leastSummand_12886
+  · exact leastSummand_13148
+  · exact leastSummand_13562
+  · exact leastSummand_54244
+  · exact leastSummand_63274
+  · exact leastSummand_66158
+  · exact leastSummand_84116
+  · exact leastSummand_100768
+  · exact leastSummand_113672
+  · exact leastSummand_128168
+  · exact leastSummand_134972
+  · exact leastSummand_137708
+  · exact leastSummand_142502
+  · exact leastSummand_503222
+  · exact leastSummand_642662
+  · exact leastSummand_732626
+  · exact leastSummand_850712
+  · exact leastSummand_880508
+  · exact leastSummand_1077212
+  · exact leastSummand_1077422
+  · exact leastSummand_1403372
+  · exact leastSummand_1527062
+  · exact leastSummand_1544918
 
 end GoldbachGaps.RankData

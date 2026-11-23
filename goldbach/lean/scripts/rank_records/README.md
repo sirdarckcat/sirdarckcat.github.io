@@ -22,7 +22,7 @@ The patterns are the same at every rank.
 | pattern | measured | status |
 |---|---|---|
 | 3 divides N + g(N) | 287 of 287 | theorem: `IsSummand.three_dvd_add` (true for every N not divisible by 3) |
-| N is divisible by 3 | 0 of 287 (chance: 96) | measured; a multiple of 3 has no row divisible by 3 |
+| N is divisible by 3 | 0 of 287 (chance: 96) | theorem below 2^25: `RankSieve.notAmongTen_of_dvd_6` (no multiple of 3 above 1362 enters the ten largest); measured beyond |
 | N is divisible by 5, by 7, by 11, by 13 | 1, 2, 9 and 8 of 287 (chance: 57, 41, 26 and 22) | measured |
 | N is a quadratic non-residue mod 3, 5, 7 | 202 : 85, 193 : 93, 176 : 109 | measured; the direction is a theorem in the range: `card_rows_mod_three_le`, `card_rows_mod_five_le` |
 | arrivals come in clusters closer than g | 15 pairs (independent positions: about 2.4) | mechanism is a theorem: `IsNeedle.add_of_forall` |
@@ -48,7 +48,13 @@ The 42 record holders up to 10^12 (rank 1; the last three are 105963812462, 2448
 599533546358 with g = 3061, 3163 and 3457) agree with OEIS A025018 / A025019 (terms 2 to 43 of
 the b-files, which come from T. Oliveira e Silva's computations and continue to 3.3·10^18); their values are
 kernel-checked in `GoldbachGaps/RankData.lean` (`recordTable_spec`). That no smaller number does
-better is this scan, not a Lean theorem.
+better is a theorem for the 26 record holders below 2^25 (`RankSieve.isRecordHolder_iff`, see
+`scripts/rank_sieve`), and this scan for the 16 beyond.
+
+Below 2^25 = 33,554,432 the scan is replaced by proofs (`scripts/rank_sieve/README.md`): every
+even N there is a sum of two primes with the smaller at most 997; a multiple of 3 never needs a
+prime above 379, of 5 above 619, of 7 above 661; and after 1362 no multiple of 3 is ever among
+the ten largest.
 
 Why the non-residue classes: the prime r kills the rows q ≡ N (mod r), and below any level in
 this range the non-residue classes contain more primes than the residue classes (Chebyshev's

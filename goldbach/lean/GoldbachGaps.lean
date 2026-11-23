@@ -25,6 +25,8 @@ import GoldbachGaps.NeedleClusters
 import GoldbachGaps.RankPatterns
 import GoldbachGaps.RankData
 import GoldbachGaps.RankTable
+import GoldbachGaps.BitSieve
+import GoldbachGaps.RankSieve
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -146,7 +148,22 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                modulo 5); the least summands of the 42 record holders up to `10^12`
                (`RankData.recordTable_spec`) and of the clustered arrivals (`shift_pairs`,
                `records_42_apart`). That the table is complete, and that record holders avoid
-               multiples of 3 and prefer non-residue classes, are measurements.
+               multiples of 3 and prefer non-residue classes, are measurements beyond `2^25`;
+               below `2^25` the first two are theorems (next entry).
+* `BitSieve`, `RankSieve` – the rank experiment as theorems below `2^25 = 33554432`.
+               `BitSieve`: a prime sieve on bitmasks that the kernel evaluates (the primes of an
+               interval are the binary digits of one natural number; a digit left by the passes
+               for all primes below `D` is a prime when the interval ends below `D²`; "some
+               `N - q`, `q ≤ G`, is prime" is a union of shifts; a statement about every `N` of
+               an interval divisible by `m` is one equality of big numbers). `RankSieve`
+               (generated, 33 sieves of a million numbers; builds in about 90 s with 7 GB):
+               every even `N` in `[6, 2^25)` is a sum of two primes with the smaller at most
+               `997` (`exists_summand_le`); the record holders below `2^25` are exactly the 26
+               numbers of the table (`isRecordHolder_iff`); a multiple of `3` has least summand
+               at most `379`, of `5` at most `619`, of `7` `661`, of `11` `683`, of `13` `709`,
+               of `15` `239`, of `21` `269`, of `35` `439`, of `105` `157`, each attained
+               (`exists_summand_le_of_dvd_*`); and no multiple of `3` between `1362` and `2^25`
+               enters the ten largest least summands (`notAmongTen_of_dvd_6`).
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,

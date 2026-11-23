@@ -7,8 +7,9 @@ import GoldbachGaps.RankData
 `RankData.recordTable` lists the 42 even numbers up to `10^12` whose least Goldbach summand
 exceeds that of every smaller even number, with the summand; `RankData.recordTable_spec` proves
 each value (`N - q` composite for every prime `q < g` by an exhibited divisor, `g` and `N - g`
-prime). That no smaller number does better is the scan `scripts/rank_records/lgs_scan.c`, a
-computation and not a theorem here; the list agrees with terms 2 to 43 of OEIS A025018 and
+prime). That no smaller number does better is proved for the record holders below `2^25` in
+`GoldbachGaps/RankSieve.lean` (`isRecordHolder_iff`); beyond, it is the scan
+`scripts/rank_records/lgs_scan.c`, a computation and not a theorem; the list agrees with terms 2 to 43 of OEIS A025018 and
 A025019 (b-files).
 
 Instances of the shift law of `RankPatterns` among the numbers that arrive in the ten largest:
