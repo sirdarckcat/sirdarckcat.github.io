@@ -12,7 +12,8 @@ assume that `N` has a Goldbach partition:
 
 * `eventually_exists_even_le_no_summand`: unconditionally, with `c = 0.73`.
 * `eventually_exists_even_le_of_mertensThird`: with Mertens' third theorem
-  (`ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`, not in Mathlib, a named hypothesis `MertensThird`),
+  (`ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`, not in Mathlib, a named hypothesis `MertensThird`;
+  formalised in the PNT+ project, see the docstring of `MertensThird`),
   for every `c < e^γ / (2 C₂) = 1.349…`, `C₂` the twin-prime constant; and
   `eventually_exists_even_le_of_mertensThird_explicit` with `c = 1.2` (from `γ > 1/2` and three
   factors of `C₂`).
@@ -678,8 +679,17 @@ theorem eventually_exists_even_le_no_summand :
       ∀ q : ℕ, (q : ℝ) < 0.73 * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q :=
   eventually_exists_even_le_of_mertensUpper (by norm_num) mertensUpper_elementary (by norm_num)
 
-/-- **Mertens' third theorem**: `ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`. It is not in Mathlib; it is
-a hypothesis of `eventually_exists_even_le_of_mertensThird` and nothing else here uses it. -/
+/-- **Mertens' third theorem**: `ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`. It is not in Mathlib (checkout
+of 22 November 2026); it is a hypothesis of `eventually_exists_even_le_of_mertensThird` and of
+its explicit form, and nothing else here uses it.
+
+A formal proof exists outside Mathlib: the PNT+ project
+(`github.com/AlexKontorovich/PrimeNumberTheoremAnd`, file
+`PrimeNumberTheoremAnd/IEANTN/Mertens.lean`, commit `a4fb698`, Lean 4.35.0) has
+`Mertens.prod_one_minus_div_prime_eq` (`∏_{p ≤ x} (1 - 1/p) = e^{-γ} e^{E₃(x)} / ln x`) and
+`Mertens.E₃.bound''` (the product is asymptotic to `e^{-γ} / ln x`), from which this statement
+follows by restricting to integers. That file was read on 23 November 2026 (2,460 lines, no
+`sorry`) but not compiled here, and it is not a dependency of this library. -/
 def MertensThird : Prop :=
   Tendsto (fun w : ℕ => Real.log w * ∏ p ∈ Nat.primesLE w, (1 - (p : ℝ)⁻¹)) atTop
     (nhds (Real.exp (-Real.eulerMascheroniConstant)))
