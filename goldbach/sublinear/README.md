@@ -434,7 +434,7 @@ best covers give 1,439 ± 11 and nothing below about 1,340 within any budget
 considered here. A solution is worth 3.5 nats (a factor of 30) at the 10%
 target, and the same question at depth 5,000 (910 rows) is worth 8.8.
 
-## A provable lower bound (work in progress with the Lean session)
+## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
 can g(N) be made, provably? The conjectured maximal order is ln² N · ln ln N
@@ -477,13 +477,30 @@ is 0.7% of the ceiling, against 7.4% for the record found by search: as with
 prime gaps, what can be constructed is far behind what can be found. At
 16,000 the best cover found so far leaves 2 rows.
 
-Status with the Lean session (23 November): the order ln X · ln ln X by
-counting is already in its library (`Counting.lean`, constant 1/48); it is
-proving the covering theorem parametrised by the constant κ in
-∏_{3≤r≤w}(r−2)/(r−1) ≤ κ/ln w, to be instantiated unconditionally with an
-elementary κ = 1.37 (constant 0.73, already above the 1/2 of counting) and
-with Mertens' third theorem as a named hypothesis (1.349). The finite
-skeleton is its `Cap/Layers.lean` (`exists_even_le_of_layers`).
+**Formal status.** Proved by the Lean session, standard axioms only
+(`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
+`ccr-36ca7b46-8twf14`; statements verbatim in `COVERBOUND_STATEMENTS.md`
+there). With "p is a summand of N" meaning p and N − p both prime:
+
+- `eventually_exists_even_le_no_summand` (no hypothesis): for all large X
+  there is an even N ≤ X, N > 0.73·ln X·ln ln X, with no summand below
+  0.73·ln X·ln ln X. The constant comes from an elementary bound for the
+  product, ∏_{3≤r≤w}(r−2)/(r−1) ≤ (1575/1152)/ln(w+1).
+- `eventually_exists_even_le_of_mertensThird`: the same with every constant
+  below e^γ/(2·C₂) = 1.349, assuming Mertens' third theorem, which is
+  classical and formalised in the PNT+ project but is not in Mathlib and was
+  not compiled in this library.
+- The order ln X · ln ln X by counting was already there (`Counting.lean`,
+  constant 1/48).
+
+So the state of the question, as far as we can tell: order ln X · ln ln X with
+constant 1/2 by counting (one unrefereed preprint); 0.73 unconditionally and
+1.349 with Mertens' third theorem by covering (here, formal). At y = 463 the
+theorem's count gives 3,830, a greedy choice of classes covers every prime
+below 6,000, and tempering reaches 15,787: the factor 4 is rows sharing a
+mop-up prime, the improvement the theorem leaves as a remark. The finite
+instance (15,787) is being checked by the Lean kernel from N0 alone
+(`CompleteCover.lean` on the Lean branch).
 
 ## Ladder
 
