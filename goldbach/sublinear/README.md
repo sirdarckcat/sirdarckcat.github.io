@@ -625,7 +625,12 @@ the modulus exceeds 10^200 fivefold, tempering found 17,131 complete covers
 at 16,500 and 16,600, and 3,505 of them (20.5%, against 19.5% expected) have
 their number below 10^200; the best certifies 16,747
 (`complete_cover_16747_92primes.txt`: one 200-digit N with every N − q, q an
-odd prime below 16,747, divisible by a prime ≤ 487).
+odd prime below 16,747, divisible by a prime ≤ 487). Two primes beyond the
+line (93 primes, to 491; the modulus exceeds 10^200 by a factor 2,500):
+60,437 complete covers at 16,850 and 16,950, of which 18 have their number
+below 10^200 (24 expected), the best certifying 16,981
+(`complete_cover_16981_93primes.txt`). Each further prime costs its own size
+in covers to enumerate and has bought about 235 in the target so far.
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
