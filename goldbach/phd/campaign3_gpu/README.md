@@ -313,6 +313,26 @@ Version 3 (22 Nov):
     runs.
   - rcta 8 saves 6.6 ms a window, about 0.75% of a batch, which is under the 20 ms bar for a production change. DEEP_RCTA
     stays at 2.
+- Sieve under the Fermat kernel (23 Nov 08:03-08:11Z, gold-g4b).
+  - Hardware: the uarch session's `bench_overlap.py` (`uarch_measure/overlap_probe_rtxpro6000.txt`).
+    - Its sieve windows ran on a highest-priority stream beside one Fermat launch of 2^26 tests.
+    - The Fermat kernel ran ×1.10 slower and the sieve ×2.89 slower, which projects a production batch of 1.46 s against
+      1.76 s (×1.20). The default carve-out did as well as carve-out 100.
+    - The 80-register Fermat kernel was worse. Without the stream priority the sieve got no SM time.
+  - Driver (`uarch_measure/overlap_driver_rtxpro6000.txt`).
+    - The 03:10Z `--overlap` trial could not have overlapped anything. With `--pool 2097152`, a batch's two windows
+      (≈1.008M members each) fill the pool only once, at the final flush, so every sieve ran before any Fermat round.
+    - With `--pool 1000000` (one flush a window) the steady batches were:
+
+      | sieve thread | one vector | a new vector every window |
+      |---|---|---|
+      | off | 1.90 s | 1.90 s |
+      | on | 1.84 s | 1.88 s |
+
+    - Production does 1.75-1.76 s, and the smaller pool alone costs +0.14 s.
+    - The hardware probe implies about 0.16 s from hiding the second window's sieve, so something on the host side keeps
+      the thread from sieving under the Fermat rounds.
+    - Slice lines were identical in every run. Production is unchanged.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
