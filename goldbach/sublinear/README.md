@@ -516,16 +516,17 @@ ln ln X / ln ln ln X. Neither is attempted here.
 
 **At 200 digits, without luck.** Joint optimisation does much better than
 the asymptotic count suggests. Tempering on the 89 smallest odd primes
-(3 to 463) finds covers that leave *no row at all* up to Q = 15,877:
-`complete_cover_15877.txt` gives a class for each of the 89 primes such that
-every one of the 1,847 odd primes q ≤ 15,859 lies in the class of some r,
+(3 to 463) finds covers that leave *no row at all* up to Q = 15,907:
+`complete_cover_15907.txt` gives a class for each of the 89 primes such that
+every one of the 1,852 odd primes q ≤ 15,901 lies in the class of some r,
 and `complete_cover.py` checks it and prints N0 (193 digits). For every even
 N = N0 + tM, of which 21,378,977 are below 10^200, each N − q with q an odd
-prime below 15,877 is divisible by a prime ≤ 463: no prime below 15,877 is a
+prime below 15,907 is divisible by a prime ≤ 463: no prime below 15,907 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
 is 0.7% of the ceiling, against 7.4% for the record found by search: as with
 prime gaps, what can be constructed is far behind what can be found. At
-15,920 and at 16,000 the best covers found (600,000 sweeps) leave one row.
+15,950 and at 16,000 the best covers found leave one row; where exactly
+complete covers stop is not known.
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
@@ -547,11 +548,11 @@ So the state of the question, as far as we can tell: order ln X · ln ln X with
 constant 1/2 by counting (one unrefereed preprint); 0.73 unconditionally and
 1.349 with Mertens' third theorem by covering (here, formal). At y = 463 the
 theorem's count gives 3,830, a greedy choice of classes covers every prime
-below 6,000, and tempering reaches 15,877: the factor 4 is rows sharing a
+below 6,000, and tempering reaches 15,907: the factor 4 is rows sharing a
 mop-up prime, the improvement the theorem leaves as a remark. The finite
 instance has been checked by the Lean kernel from N0 alone, by divisibilities
 only, for the cover to 15,787 found first (`CompleteCover.lean`, commit
-8c061b4 on the Lean branch); the cover to 15,877 has been sent.
+8c061b4 on the Lean branch); the cover to 15,907 has been sent.
 
 ## Ladder
 
