@@ -31,15 +31,15 @@ import gen_fermat28 as gen
 HEAD = "typedef unsigned int u32;\ntypedef unsigned long long u64;\n"
 KERNEL = r'''
 #define NL %(NL)d
-#ifndef MASK28
-#define MASK28 0x0FFFFFFFu
+#ifndef %(MK)s
+#define %(MK)s 0x%(MV)08Xu
 #endif
 extern "C" __global__ void bench(const u32 *init, u32 *out, long long *cyc, int steps) {
     u32 x[NL], n[NL];
     const int t = blockIdx.x * blockDim.x + threadIdx.x;
     const u32 *p = init + (size_t)(t & 1023) * (2 * NL + 1);
     #pragma unroll
-    for (int i = 0; i < NL; i++) { x[i] = p[i] & MASK28; n[i] = (p[NL + i] & MASK28) | (i == 0 ? 1u : 0u); }
+    for (int i = 0; i < NL; i++) { x[i] = p[i] & %(MK)s; n[i] = (p[NL + i] & %(MK)s) | (i == 0 ? 1u : 0u); }
     const u32 np = p[2 * NL] | 1u;
     __syncthreads();
     const long long t0 = clock64();
@@ -53,10 +53,13 @@ extern "C" __global__ void bench(const u32 *init, u32 *out, long long *cyc, int 
     if (threadIdx.x == 0) cyc[blockIdx.x] = t1 - t0;
 }
 '''
-STYLES = {                       # S, redundant, mulw, extra nvrtc options
-    "s1r_asm": (1, True, False, ["-DFM28_ASM=1"]),
-    "s1rw": (1, True, True, []),
-    "s1w": (1, False, True, []),
+STYLES = {                       # S, redundant, mulw, extra nvrtc options, bits a limb
+    "s1r_asm": (1, True, False, ["-DFM28_ASM=1"], 28),
+    "s1rw": (1, True, True, [], 28),
+    "s1w": (1, False, True, [], 28),
+    "w28nr_asm": (1, False, False, ["-DFM28_ASM=1"], 28),     # 24 limbs of 28 bits, NOT redundant (the carry chain after the doubling): what a 29-bit step has to be compared with fairly
+    "w29nr_asm": (1, False, False, ["-DFM28_ASM=1"], 29),     # 23 limbs of 29 bits (R = 2^667, n < 2^663): 805 + 23 multiplications a step instead of 876 + 24; the column sums stay below 2^63.6 only with
+                                                              # limbs below 2^29, i.e. no redundant limbs; run it with NL = 23 (--e4 does).  Timing only here: a real kernel needs gen_fermat28.generate(23, 1, W=29)
 }
 
 
@@ -65,8 +68,8 @@ def n_wide(NL):
 
 
 def source(NL, style, extra_alu=0, extra_mul=0):
-    S, red, mulw, opts = STYLES[style]
-    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul) + KERNEL % dict(NL=NL), list(opts)
+    S, red, mulw, opts, W = STYLES[style]
+    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul, W) + KERNEL % dict(NL=NL, MK="MASK%d" % W, MV=(1 << W) - 1), list(opts)
 
 
 def run_check(arch, style):
@@ -91,6 +94,30 @@ def run_check(arch, style):
         print(f"{label:26s} {len(body):6d} {wide:9d} {iadd3:6d} {iadd3x:6d} {other('SHF'):5d} {other('LOP3'):5d} {other('IMAD') - wide:5d}")
 
 
+def run_e4(measure, props):
+    """E4  the radix.  The production step (24 limbs of 28 bits, redundant limbs) against the same step with a carry chain (what a 29-bit step has to be compared with) and against 23 limbs of 29 bits
+    (805 + 23 multiplications instead of 876 + 24; non-redundant, its column sums stay below 2^63.6): ticks per warp-step per scheduler at the production occupancy, repeated 3 times in turn
+    (the tick rate is the same for all: the ratio is what counts).  The cost model (FERMAT28.md: 3.64 x IMAD + 2.79 x other on the RTX PRO 6000) predicts 0.958 for the last row."""
+    print("\nE4  radix (ticks per warp-step per scheduler, 5 CTAs an SM or what the registers allow; ratio to the production step s1r_asm)")
+    print(f"{'step':34s} {'IMAD':>5s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'ratio':>7s} {'GHz':>6s}")
+    rows = (("s1r_asm", 24, "s1r_asm: 24 x 28 bits, redundant (production)"), ("w28nr_asm", 24, "24 x 28 bits, carry chain"), ("w29nr_asm", 23, "23 x 29 bits, carry chain"))
+    base = {}
+    for rep in range(3):
+        for style, NL, label in rows:
+            r = measure(NL, 0, 0, None, style)
+            if not r:
+                continue
+            best = base.get(style)
+            if best is None or r[0] < best[0]:
+                base[style] = r
+    ref = base["s1r_asm"][0]
+    for style, NL, label in rows:
+        r = base.get(style)
+        if r:
+            wide = NL * (NL + 1) // 2 + NL * NL + NL
+            print(f"{label:34s} {wide:5d} {r[1]:5d} {r[2]:8d} {r[0]:11.0f} {r[0] / ref:7.3f} {r[3]:6.3f}", flush=True)
+
+
 def run_gpu(a):
     import cupy as cp
     import numpy as np
@@ -105,10 +132,11 @@ def run_gpu(a):
     init = cp.asarray(rng.integers(0, 1 << 32, 1024 * 49, dtype=np.uint64).astype(np.uint32))
     cache = {}
 
-    def measure(NL, ea, em, c):
-        key = (NL, ea, em)
+    def measure(NL, ea, em, c, style=None):
+        style = style or a.style
+        key = (NL, ea, em, style)
         if key not in cache:
-            src, opts = source(NL, a.style, ea, em)
+            src, opts = source(NL, style, ea, em)
             cache[key] = cp.RawModule(code=src, options=tuple(opts)).get_function("bench")
         k = cache[key]
         regs = int(k.attributes["num_regs"])
@@ -138,6 +166,9 @@ def run_gpu(a):
                 best, ghz = m, m / (ms * 1e6)                              # clock64 ticks per ns of wall time over the launch (all CTAs resident at once): the tick rate in GHz
         return best / a.steps / c, regs, c, ghz
 
+    if a.e4:
+        run_e4(measure, props)
+        return
     print("\nE1  loop-body size (clock64 ticks per warp-step per scheduler; the next to last column divides by the IMAD.WIDE of the step; GHz = clock64 ticks per ns of wall time: the SM clock if clock64 counts SM cycles)")
     print(f"{'limbs':>6s} {'IMAD.WIDE':>9s} {'~code KB':>9s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'ticks/IMAD.WIDE':>16s} {'GHz':>6s}")
     for NL in (8, 12, 16, 20, 24):
@@ -167,6 +198,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--style", default="s1r_asm", choices=sorted(STYLES))
     ap.add_argument("--steps", type=int, default=3000)
+    ap.add_argument("--e4", action="store_true", help="GPU: only E4, the radix comparison (about 1 minute)")
     ap.add_argument("--check", default=None, help="no GPU: compile for this arch (sm_80, sm_89, sm_120) and print the loop's instruction counts")
     a = ap.parse_args()
     if a.check:
