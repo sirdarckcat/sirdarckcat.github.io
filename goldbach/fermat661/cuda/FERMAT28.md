@@ -157,13 +157,20 @@ The step loop (one squaring step) as the GPU runs it, from NVRTC 12.9 + `nvdisas
   * **the step is bound by the multiplier pipe: 876 IMAD.WIDE x 4.15 = 3,635 of ~3,850 cycles** for the best variant; the ALU work costs only rho x T_alu = 180 cycles.  A removed dead IADD3 saves
     0.35 x 2.1 = 0.7 cycles, not 2.1 (that was the over-prediction); `s1r plain + w` is within 6% of the floor 876 x 4.15 of this algorithm.
   * only fewer multiplications could still help the A100 / L4: the model gives `fermat31` (737 IMAD.WIDE, 1,056 other instructions) 7.99M tests/s on the A100 (+4.6% over s1r plain + w), 4.52M on the L4
-    (-3%), and `fermat30` +1.6% / -2%: not worth 5% of the fleet's output (the A100 is ~5%); on the RTX it is 20-25% slower.
+    (-3%), and `fermat30` +1.6% / -2%: not worth 5% of the fleet's output (the A100 is ~5%); on the RTX it is 24-33% slower (additive refit below).
 
-* **The RTX PRO 6000 is not explained** (it is ~86% of the fleet's output).  Its three timings (22.74M / 22.85M / 23.39M tests/s) are 3,770-3,880 cycles a step at the nominal 2.4 GHz, while the model with the
-  RTX benchmark costs (IMAD.WIDE 2.53) gives 2,540-2,610 cycles: **the measured cycles are 1.46-1.49 x the model's.**  Either the cards run at ~1.6 GHz under this load (power-limited; the A100
-  and L4 sit near their nominal clocks, the L4 is power-capped at 72 W) or a multiplication costs ~3.8 cycles inside the kernel instead of 2.5.  The two are told apart by the SM clock during the
-  kernel: `../../sieve200/cuda/measure_all.sh` samples it (nvidia-smi) beside `time_fermat28.py`.  If they are power-clocked, energy per test is the figure to optimise on them (fewer instructions,
-  less instruction fetch), not cycles; if not, something in the 18 KB loop body (fetch, register bank conflicts) is costing 50% and the next step is a benchmark that runs the real step at several loop-body sizes.
+* **The RTX PRO 6000 (explained 2026-11-23 04:07Z; it is ~86% of the fleet's output): the same kind of kernel as the A100, at the multiplier floor.**  Its timings (22.74M / 22.85M / 23.29M / 22.48M / 21.44M tests/s for
+  s1r plain + w, s1 asm, s1r asm, s2r asm, s4r asm) are 3,830-4,160 cycles a warp-step at 2.426 GHz, against 2,540-2,830 from the benchmark costs of the table above (IMAD.WIDE 2.53): 1.5x.  The GPU session's probes
+  (`sieve200/cuda/run_experiments.sh` F, G, C; `uarch_measure/run_experiments_FGC_rtxpro6000.txt`) closed every explanation but one: **clock64 counts SM cycles** (2.430 GHz, nvidia-smi 2,422 MHz; a dependent IMAD takes
+  6.0 ticks, not the 4 I assumed); **not the code size** (ticks per IMAD.WIDE fall from 4.99 to 4.57 as the step grows from 8 to 24 limbs); **not latency** (ticks per IMAD.WIDE 6.72 / 4.61 / 4.55 / 4.57 at 1 / 2 / 4 / 5 warps a
+  scheduler: flat from 2 warps; the chunked launches of the overlap trial agree: 4 CTAs an SM 0.93, 3 CTAs 0.86 of the 5-CTA throughput, a few percent of it launch gaps); **not more independent accumulators** (s2r -3.5%,
+  s4r -7.9%: the extra adds just cost).  What is left is **the benchmark**: `bench_pipes.py`'s 2.53 cycles for IMAD.WIDE on sm_120 is not what the kernel sees.  Inside the step the RTX behaves like the A100 / L4:
+  one fit over the five variants, **cycles a warp-step = 3.64 x IMAD.WIDE + 2.79 x every other integer instruction**, reproduces all five within 1.1% (`costmodel.py`, the RTX block; two parameters, five points).
+  NVIDIA's throughput table says the same about the hardware: a 32-bit integer multiply-add runs at 64 results a clock an SM and **the extended-precision multiply-add at 32** (footnote: "32 for extended-precision"),
+  i.e. 2 and 4 cycles a warp instruction a scheduler; IMAD.WIDE is the second.  The step is 876 x 3.64 = 3,190 of 3,830 cycles in the multiplier and 223 other instructions x 2.79 = 620 cycles (16%) in the rest.
+  Nothing is left to find in the kernel itself: only fewer IMAD.WIDE or fewer other instructions help, and the model says every alternative loses: `fermat31` -33%, `fermat30` -24% on the RTX (more adds than
+  the multiplications it saves are worth); removing 24 doubling shifts or part of the 94 carry shifts is worth ~1-2% at 2.79 cycles each, not tried.  (The old two-pipe reading of the RTX with a free clock scale, which
+  said "the card runs at ~1.6 GHz", was wrong twice: the clock is 2.43 GHz and the multiplier cost was the error.  How the benchmark came to say 2.53 is not known; the row is kept above as measured.)
 
 ## Verified on the CPU (the same source text, `fermat28_cpu.cpp`)
 

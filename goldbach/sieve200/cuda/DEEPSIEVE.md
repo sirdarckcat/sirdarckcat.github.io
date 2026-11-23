@@ -131,12 +131,11 @@ in the environment of `search_gpu5.py --deep 1` (`deep_feeder.py` reads them; no
 
 Value first: the Fermat rounds are 1.24 s of the 2.10 s deep batch on an RTX PRO 6000 and the sieve 0.75 s, so the order is overlap (up to x1.55), then the bound B (x1.1-1.3 more once the sieve is hidden), then the rest.
 
-1. **`bench_clock.py`** (5 s; it may run beside production on one RTX: the ticks-per-ns line does not depend on what else runs).  It decides whether every RTX "cycle" of `bench_pipes.py` / `bench_fm28_step.py` is a
-   clock64 tick that runs slower than the SM clock: ratio ticks / SM clock = 0.67 explains the whole 1.49x gap of the Fermat step (the model then holds with rho 0.8 and the RTX kernel is at its multiplier floor:
-   876 IMAD.WIDE of ~3.8 real cycles; nothing left to find in the step), ratio 1.0 means the gap is inside the real kernel (then `bench_fm28_step.py` E1-E3).  I now expect 1.0: ptxas encodes a stall of 4 for a
-   dependent IMAD on sm_120, and a microbenchmark paper on the RTX 5080 (GB203, also sm_120; Section IV-A, Table III: `mad.lo.s32` chains timed with %clock64, "true latency ... four cycles" for INT32 and FP32 on
-   both GB203 and GH100) measures exactly 4 ticks for it; the paper never says whether clock64 ticks at the SM clock, so it is consistent with both, but a real latency of 6 SM cycles would be odd.  Against 1.0: the
-   RTX variants differ by 1.13-1.30 real cycles for every tick of ALU cost (rho/r > 1 if r = 1).  Five seconds settle it; `bench_fm28_step.py` now prints the same ticks-per-ns (GHz) column at production occupancy.
+1. **`bench_clock.py`, `time_fermat28.py` s2r / s4r, `bench_fm28_step.py` E1-E3 (run 04:07Z; `uarch_measure/run_experiments_FGC_rtxpro6000.txt`): DONE, the Fermat step is at its multiplier floor.**  clock64 counts SM cycles (2.430 GHz;
+   a dependent IMAD is 6 cycles); ticks per IMAD.WIDE 4.99 -> 4.57 from 8 to 24 limbs (not instruction fetch), flat from 2 warps a scheduler (6.72 / 4.61 / 4.55 / 4.57 at 1 / 2 / 4 / 5: not latency); s2r -3.5%, s4r -7.9%
+   (more accumulators only add adds).  The 1.49x 'gap' of my cost model was a wrong benchmark number (IMAD.WIDE 2.53 on sm_120; the kernel sees 3.64, every other integer instruction 2.79, additive: five variants within
+   1.1%, `costmodel.py`), and NVIDIA's table gives extended-precision multiply-add half the 32-bit rate.  Nothing left in the step; E2 (it printed only its baseline: the dummy accumulators cost registers, so fewer CTAs
+   fitted and its rows were skipped) and the register-capped s1r_asm_r80 / r72 (+1-3% at best by the occupancy curve) are not worth a GPU slot.  Details: `fermat661/cuda/FERMAT28.md`.
 2. **`--overlap 1` against `--overlap 0` on one RTX** (`search_gpu5_overlap.patch`; same variants, same slices: tests and PRPs must be identical, then the batch time).  Try `--fermat-cta-sm 3` and `4` with
    `--deep-tile-threads 256`.  A batch near 1.35-1.5 s: keep it, and go to 3.  About 2.1 s: the sieve and Fermat CTAs do not share the SMs (look at `--fermat-cta-sm`, `--deep-tile-threads 128`); report both times.
 3. **A deeper bound B, once overlap works.**  With the sieve hidden under the Fermat rounds, the best B is the largest whose sieve still fits in them.  Marks a 2^25 window for 1,183 rows (Mertens: rows x 2^25 x ln(ln B / ln 1e6)):

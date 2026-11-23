@@ -6,7 +6,7 @@ Same job and same interface as `fermat28` (`kernel(limbs, step_file=...)`, `Test
 **Result so far: a negative one, kept because the reason is useful.**  It was written on the belief that the multiplier pipe is the bottleneck (so that carry-handling ALU instructions are free);
 a first reading of `bench_pipes.py` seemed to refute that (ALU instructions *add* to the multiplications) and put the prediction at +0% / +34% slower; **the refitted model of `FERMAT28.md` (2026-11-23:
 IMAD.WIDE costs 4.15 / 4.5 / 2.5 cycles on the A100 / L4 / RTX PRO 6000, not 2.3 / 2.4 / 2.5; ALU work overlaps the multiplier pipe to about two thirds, and it reproduces six measured A100 timings within
-1.5%) predicts fermat31 at +4.6% tests/s on an A100 against the best fermat28 (s1r plain + w), -3% on an L4 and ~20% slower on an RTX PRO 6000** (fermat30: +1.6% / -2% / -13%).  Same verdict, a
+1.5%) predicts fermat31 at +4.6% tests/s on an A100 against the best fermat28 (s1r plain + w), -3% on an L4 and ~33% slower on an RTX PRO 6000 (the additive refit of 2026-11-23 04:07Z; ~20% in the first fit)** (fermat30: +1.6% / -2% / -24%).  Same verdict, a
 different reason: the ~1,000 ALU instructions its carries need do not hide under the 139 multiplications they save.  It is there to be timed if someone wants to test the model
 (`test_gpu_fermat31.py` times it beside fermat28 in the same run); it should not go into production.
 
@@ -53,11 +53,11 @@ Step loop of the whole kernel, `ptxas -v` registers (no spills; a 176-byte stack
 | sm_80 | fermat30 | 1549 | 805 | 3755 | 7.76M (+1.6%) | 94 |
 | sm_89 | fermat28 s1r plain + w (the L4's) | 1151 | 876 | 4268 | 4.65M (measured 4.62M) | 94 |
 | sm_89 | fermat31 / fermat30 | 1793 / 1549 | 737 / 805 | 4383 / 4369 | 4.52M / 4.54M (-3% / -2%) | 96 / 94 |
-| sm_120 | fermat28 s1r asm (the RTX PRO 6000s' kernel) | 1104 | 876 | 2536 | 23.38M (measured 23.39M, after fitting the clock) | 88 |
-| sm_120 | fermat31 | 1831 | 737 | 3220 | 18.41M (-21%) | 128 |
+| sm_120 | fermat28 s1r asm (the RTX PRO 6000s' kernel) | 1104 | 876 | 3811 (additive fit, `costmodel.py`) | 23.4M (measured 23.29M) | 88 |
+| sm_120 | fermat31 | 1831 | 737 | 5717 | 15.6M (-33%) | 128 |
 | sm_120 | fermat30 | 1548 | 805 | 2941 | 20.15M (-14%) | 94 |
 
-(The sm_120 clock is a fit, see `FERMAT28.md`; the A100 and L4 rows are predictions for kernels nobody has timed.)
+(The sm_120 rows were rewritten 2026-11-23 04:07Z: the clock is not a fit (clock64 counts SM cycles at 2.43 GHz) and the model is the additive 3.64 x IMAD.WIDE + 2.79 x other, see `FERMAT28.md`; the A100 and L4 rows are predictions for kernels nobody has timed.)
 
 ## Verified on the CPU (`fermat31_cpu.cpp`: the same step and kernel text; the PTX carry chain and `mul.wide` are replaced there by portable C)
 
@@ -69,7 +69,7 @@ Step loop of the whole kernel, `ptxas -v` registers (no spills; a 176-byte stack
 
 ## Not verified here
 
-* Anything about speed (the prediction above is a model fitted to the benchmark; a run of `test_gpu_fermat31.py` would test it: it predicts fermat31 at about 0.8x fermat28 s1r asm on an RTX PRO 6000 and +4.6% against s1r plain + w on an A100).
+* Anything about speed (the prediction above is a model fitted to the benchmark; a run of `test_gpu_fermat31.py` would test it: it predicts fermat31 at about 0.67x fermat28 s1r asm on an RTX PRO 6000 and +4.6% against s1r plain + w on an A100).
 * The two PTX snippets: `FM31_ADD96` (`add.cc.u32 / addc.cc.u32 / addc.u32`) and `fm31_mulw` (`mul.wide.u32`).  The compiler's SASS for them is the expected `IADD3` / `IADD3.X` / `IADD3.X`
   and `IMAD.WIDE.U32`, but only a GPU run checks the carries: `python3 test_gpu_fermat31.py specs_variants.json` compares with gmpy2 (it must print `mismatches 0`) and times every variant
   against fermat28 (s1 plain / asm, s2), fermat3 and fermat2 for 64 / 128 / 256 threads a block, with the register caps 72 and 96 as variants.

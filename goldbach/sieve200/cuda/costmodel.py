@@ -16,8 +16,11 @@ prediction, +47% from the "w" steps, was wrong because of it.)  The measured tes
 are fitted for each GPU; cycles a step = SMs x 4 x clock x 32 / (655 steps x tests/s).
 
 Result (see FERMAT28.md): on the A100 rho = 0.35 and the six timings (four step variants, fermat28's asm, and the older fermat3, a different algorithm) agree within 1.5% at an
-effective clock of 1.38 GHz (nominal 1.41).  On the RTX PRO 6000 the measured cycles are 1.5-1.6 x the model's at the nominal 2.4 GHz: the card runs at ~1.5-1.65 GHz
-(power-limited?) or something inside the kernel costs 50% more than in the benchmark; `measure_all.sh` samples the clock to tell.
+effective clock of 1.38 GHz (nominal 1.41).  On the RTX PRO 6000 the measured cycles were 1.5x the model's: RESOLVED 2026-11-23 04:07Z.  The clock is not the cause (bench_clock: clock64 ticks at the
+SM clock, 2.430 GHz, nvidia-smi 2,422 MHz) and nothing in the kernel is wrong: bench_pipes.py's IMAD.WIDE row (2.53 cycles after subtracting the operand bump) does not describe the kernel.  Inside the real step
+the RTX behaves like the A100 / L4: an IMAD.WIDE costs ~3.75 cycles and every other integer instruction ~2.4, all additive (one fit, `--rtx-additive` below: cycles = 3.75 N_wide + 2.4 N_other, five variants
+within 2%), the step saturates the scheduler from 2 warps (bench_fm28_step E3: 4.55-4.61 ticks per IMAD.WIDE at 2, 4 and 5 warps) and NVIDIA's throughput table gives extended-precision multiply-add half the rate
+of a 32-bit one (32 against 64 a clock an SM = 4 cycles a warp instruction).  The two-pipe model below (T = max + rho min) stays for the A100 / L4; for the RTX it is replaced by the additive fit.
 """
 import argparse
 import collections
@@ -43,9 +46,10 @@ MEASURED = {
     ("A100", "fermat3"): 6.94e6, ("A100", "s1 plain"): 6.95e6, ("A100", "s1 plain+w"): 7.55e6, ("A100", "s2 plain+w"): 7.51e6, ("A100", "s1r plain+w"): 7.63e6,
     ("A100", "s1r asm"): 6.95e6,
     ("L4", "fermat3"): 3.92e6, ("L4", "s1 plain"): 4.00e6, ("L4", "s1 plain+w"): 4.57e6, ("L4", "s1r plain+w"): 4.62e6,
-    ("RTX", "fermat3"): 13.08e6, ("RTX", "s1 asm"): 22.85e6, ("RTX", "s1r plain+w"): 22.74e6, ("RTX", "s1r asm"): 23.39e6,
+    ("RTX", "fermat3"): 13.08e6, ("RTX", "s1 asm"): 22.85e6, ("RTX", "s1r plain+w"): 22.74e6, ("RTX", "s1r asm"): 23.29e6,
+    ("RTX", "s2r asm"): 22.48e6, ("RTX", "s4r asm"): 21.44e6,       # GPU session 2026-11-23 04:07Z (run_experiments.sh section G); s1r asm was 23.39M at 00:17Z
 }
-GPUS = {"A100": ("sm_80", 108, 1.41e9), "L4": ("sm_89", 58, 1.5e9), "RTX": ("sm_120", 188, 2.4e9)}   # L4: power-capped, 1.44-1.6 GHz; RTX: nominal, real clock unknown
+GPUS = {"A100": ("sm_80", 108, 1.41e9), "L4": ("sm_89", 58, 1.5e9), "RTX": ("sm_120", 188, 2.426e9)}   # L4: power-capped, 1.44-1.6 GHz; RTX: 2.426 GHz under load, and clock64 counts SM cycles (bench_clock, 04:07Z)
 STEPS = 655
 HEAD = "typedef unsigned int u32;\ntypedef unsigned long long u64;\n"
 FIT_EXCLUDE = {("RTX", "fermat3")}          # sm_120's fermat3 SASS is mostly MOV / HFMA2 (not understood), left out of the fit
@@ -65,6 +69,8 @@ def kernels(fc, fermat3):
         "s1r plain+w": k28("fermat28_step_s1rw.cuh"),
         "s1 asm": k28("fermat28_step_s1.cuh", ["FM28_ASM"]),
         "s1r asm": k28("fermat28_step_s1r.cuh", ["FM28_ASM"]),
+        "s2r asm": k28("fermat28_step_r.cuh", ["FM28_ASM"]),
+        "s4r asm": k28("fermat28_step_s4r.cuh", ["FM28_ASM"]),
         "fermat31": (HEAD + open(os.path.join(fc, "fermat31_step.cuh")).read() + kern31, []),
         "fermat30": (HEAD + open(os.path.join(fc, "fermat30_step.cuh")).read() + kern31, []),
     }
@@ -130,6 +136,9 @@ def main():
             n, c = loop_counts(text, defs, arch)
             tm, ta = times(c, arch)
             info[label] = (n, c.get("WIDE", 0), tm, ta)
+        if gpu == "RTX":                 # the two-pipe model does not describe sm_120 (see the docstring): the additive fit does
+            additive_rtx(ks, info, clk)
+            continue
         pts = []
         for label, (n, w, tm, ta) in info.items():
             if (gpu, label) in MEASURED and (gpu, label) not in FIT_EXCLUDE:
@@ -148,6 +157,35 @@ def main():
             else:
                 print(f"{label:12s} {n:5d} {w:9d} {tm:6.0f} {ta:6.0f} | {m:6.0f} {'':>8s} {'':>10s} | {'(not measured)':>16s} {pred / 1e6:9.2f}M")
         print()
+
+
+def additive_rtx(ks, info, clk):
+    """cycles a step = w x N_wide + c x N_other (every instruction of the loop that is not an IMAD.WIDE, uniform-datapath / branch / local-memory ones left out): least squares over the measured variants"""
+    rows = []
+    for label, (n, w, tm, ta) in info.items():
+        meas = MEASURED.get(("RTX", label))
+        if not meas or ("RTX", label) in FIT_EXCLUDE:
+            continue
+        _, c = loop_counts(ks[label][0], ks[label][1], "sm_120")
+        other = sum(v for k, v in c.items() if k != "WIDE" and k not in SKIP)
+        rows.append((label, c["WIDE"], other, 188 * 4 * clk * 32 / (STEPS * meas)))
+    sw = sum(r[1] * r[1] for r in rows); so = sum(r[2] * r[2] for r in rows); swo = sum(r[1] * r[2] for r in rows)
+    bw = sum(r[1] * r[3] for r in rows); bo = sum(r[2] * r[3] for r in rows)
+    det = sw * so - swo * swo
+    w = (bw * so - bo * swo) / det
+    c = (sw * bo - swo * bw) / det
+    print(f"RTX additive fit over {len(rows)} variants at {clk / 1e9:.3f} GHz: cycles a warp-step = {w:.2f} x IMAD.WIDE + {c:.2f} x every other integer instruction")
+    print(f"{'variant':12s} {'IMAD.WIDE':>9s} {'other':>6s} | {'measured':>8s} {'model':>6s} {'meas/model':>10s}")
+    for label, nw, no, cyc in rows:
+        print(f"{label:12s} {nw:9d} {no:6d} | {cyc:8.0f} {w * nw + c * no:6.0f} {cyc / (w * nw + c * no):10.3f}")
+    for label in ("fermat31", "fermat30"):
+        if label in info:
+            _, cc = loop_counts(ks[label][0], ks[label][1], "sm_120")
+            nw = cc["WIDE"]; no = sum(v for k, v in cc.items() if k != "WIDE" and k not in SKIP)
+            ref = rows[[r[0] for r in rows].index("s1r asm")]
+            t = w * nw + c * no
+            print(f"  {label}: {nw} IMAD.WIDE + {no} other = {t:.0f} cycles, {100 * (w * ref[1] + c * ref[2]) / t - 100:+.0f}% tests/s against s1r asm")
+    print()
 
 
 if __name__ == "__main__":

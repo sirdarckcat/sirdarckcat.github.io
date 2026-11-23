@@ -51,8 +51,11 @@ B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` st
   work), retracted a variant that removed ALU instructions, built a 31-bit-limb kernel with fewer multiplications, then read `bench_pipes.py` as "integer instructions add up, IMAD.WIDE ~2.4 cycles" (wrong the other
   way: its IMAD.WIDE rows contain the operand-bump IADD3, so the multiplier costs 4.15 / 4.5 cycles on sm_80 / 89, and ALU instructions overlap the multiplier pipe to about two thirds) and predicted +47% from removing
   600 dead adds a step on an A100 / L4; the GPU session measured +9-14%.  The refitted model T = max(T_mul, T_alu) + rho min(T_mul, T_alu) with the benchmark's costs and one parameter (rho = 0.35) reproduces six A100
-  timings within 1.5% (`sieve200/cuda/costmodel.py`, `fermat661/cuda/FERMAT28.md`), including the older `fermat3`, a different algorithm.  It does not explain the RTX PRO 6000 (measured cycles 1.5x the model's at the
-  nominal clock: the clock under load or something in the kernel; `measure_all.sh` samples the clock).
+  timings within 1.5% (`sieve200/cuda/costmodel.py`, `fermat661/cuda/FERMAT28.md`), including the older `fermat3`, a different algorithm.  For the RTX PRO 6000 it said the kernel ran 1.5x slower than the benchmark
+  predicted, and I spent a day on the clock (it counts SM cycles), the code size, the latency and the register banks.  **The benchmark was the error**: its 2.53 cycles for IMAD.WIDE on sm_120 is not what the real step sees
+  (3.64 cycles, 2.79 for every other integer instruction, five variants within 1.1%), NVIDIA's own throughput table gives extended-precision multiply-add half the rate of a 32-bit one, and the kernel was at its
+  multiplier floor all along.  When a model built on a micro-benchmark misses by a constant factor, test the benchmark against a real kernel that uses the instruction the same way (one saturating-warps
+  sweep, `bench_fm28_step.py` E3, answered it in 5 minutes) before explaining the kernel, and read the vendor's throughput table first.
 * **Count the traffic the blocking implies, not only the work.**  I estimated the staged large-prime stage at larger sieve bounds from the marks (Mertens: +41% marks at 1e9, +0.15 s a batch); the GPU session measured +1.10 s.
   The kernel reads its table of 16-byte prime records once a row pair and pass, so the traffic is rows / rcta x table bytes: free while the table fits the L2 (91 MB at 1e8), HBM-bound above (813 MB at 1e9).
   The same mistake in a new place: the first estimate of this stage was off by 3x for the L2 request rate, the second for a term that was not in the work count at all.
