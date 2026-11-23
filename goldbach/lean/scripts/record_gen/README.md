@@ -28,7 +28,8 @@ bitmasks, with the proof that it is correct for every X:
 | `RecordGenRun.records_two_pow_20` | the kernel runs the generator to 2^20: the first 21 terms, by the generator alone |
 
 Run it: `lake env lean scripts/record_gen/Run.lean` (21 terms below 2^20 in under a second, 24
-below 2^22 in about a second, 27 below 2^25 in 22 s). Nothing is searched number by number: the
+below 2^22 in about a second, 27 below 2^25 in 22 s, 30 below 2^27 in 3 min 12 s; all equal to
+the first terms of the OEIS b-files). Nothing is searched number by number: the
 cost is one shift and one OR of an X-digit number per striker, plus the prime sieve.
 
 ## Forcing it: first 2 terms, then 3, then 4, …
@@ -43,6 +44,9 @@ it. Each break is one idea of the generator (`python3 -I ladder.py 12`):
 | 3. N − v composite for every earlier value v; value = next prime | 4 terms | 98 − 11, 98 − 13, 98 − 17 are composite | the value is not the next prime: 11, 13, 17 miss 98 and its value is 19 |
 | 4. as 3, value = first prime that hits | 5 terms | 124 = 11 + 113 | the primes that missed must keep striking: 11 hits 124, the true term is 220 |
 | 5. N − q composite for every prime q up to the last value; value = first prime that hits | all | — | this is the sieve above; proved in Lean |
+
+The breaks are theorems too (`GoldbachGaps/RecordGenRun.lean`): `not_isRecord_8`,
+`not_isRecord_14`, `isRecord_98` (the value of 98 is 19 and not 11) and `not_isRecord_124`.
 
 So the sequence hides two things that the first four terms do not show. Until 30 the terms are
 2·3, 4·3, 2·3·5: each new term just adds the next prime as a factor (N − q is a multiple of q).

@@ -32,4 +32,41 @@ theorem isRecord_iff_mem_terms20 {N g : ℕ} (hN : N < 2 ^ 20) :
   rw [← records_two_pow_20, mem_records]
   exact ⟨fun h => ⟨hN, h⟩, fun h => h.2⟩
 
+/-! ### The simpler rules are wrong, provably
+
+`scripts/record_gen/ladder.py` generates the first terms by four simpler rules; each is right
+for one term more than the previous and then leaves the sequence. What each of them produces
+at that point is not a term. -/
+
+/-- Rule 1 (the next even number) is right for 2 terms and then says `8`. -/
+theorem not_isRecord_8 (g : ℕ) : ¬ IsRecord 8 g := by
+  intro h
+  rw [isRecord_iff_mem_terms20 (by norm_num)] at h
+  simp [terms20] at h
+
+/-- Rule 2 (the next even `N` with `N - (last value)` composite) is right for 3 terms and then
+says `14`. -/
+theorem not_isRecord_14 (g : ℕ) : ¬ IsRecord 14 g := by
+  intro h
+  rw [isRecord_iff_mem_terms20 (by norm_num)] at h
+  simp [terms20] at h
+
+/-- Rule 3 (dodge every earlier value; the value is the next prime) is right for 4 terms, finds
+`98`, and says its value is `11`. It is `19`: the strikers `11`, `13`, `17` miss. -/
+theorem isRecord_98 : IsRecord 98 19 ∧ ¬ IsRecord 98 11 := by
+  constructor
+  · rw [isRecord_iff_mem_terms20 (by norm_num)]
+    decide
+  · intro h
+    rw [isRecord_iff_mem_terms20 (by norm_num)] at h
+    simp [terms20] at h
+
+/-- Rule 4 (as rule 3 with the right value, but only the earlier values strike) is right for 5
+terms and then says `124`: the strikers that missed `98` must keep striking, and `11` hits
+`124`. The sixth term is `220`. -/
+theorem not_isRecord_124 (g : ℕ) : ¬ IsRecord 124 g := by
+  intro h
+  rw [isRecord_iff_mem_terms20 (by norm_num)] at h
+  simp [terms20] at h
+
 end GoldbachGaps.RecordGen
