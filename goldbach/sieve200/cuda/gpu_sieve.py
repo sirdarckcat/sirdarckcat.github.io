@@ -67,7 +67,7 @@ class GpuFeeder:
                           MU=cp.asarray((np.uint64(2 ** 64 - 1) // S.astype(np.uint64)).astype(np.uint64)),
                           S64=cp.asarray(S), nS=int(S.size))
         self.sh = shared
-        self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
+        self.U = U.astype(cp.uint32) if isinstance(U, cp.ndarray) else cp.asarray(np.asarray(U, dtype=np.uint32))
         self.N0M = N0M.astype(cp.uint32) if isinstance(N0M, cp.ndarray) else cp.asarray(np.asarray(N0M, dtype=np.uint32))
         self.nU = int(self.U.size)
         assert self.nU < 4096
@@ -99,7 +99,7 @@ class GpuFeeder:
     def retarget(self, N0, U):
         """Point THIS feeder at another variant of the same M (same primes and M^-1 mod s): N0 mod s is computed on the GPU, the rows are replaced, and the bit matrix (room for
         max_rows rows, allocated once) is shared, so a campaign with variants of 1,092-1,096 rows needs one feeder, one bit matrix and one large-prime stage.  Returns self."""
-        U = np.asarray(U, dtype=np.uint32)
+        U = np.asarray(U.get() if isinstance(U, cp.ndarray) else U, dtype=np.uint32)
         assert 0 < U.size < 4096
         if U.size > self._bits_root.shape[0]:
             raise ValueError(f"{U.size} rows but the bit matrix was allocated for {self._bits_root.shape[0]} (max_rows)")
@@ -201,7 +201,7 @@ class GpuFeeder:
         if timings:
             t_w2 = time.perf_counter() - t_w2
             wall = time.perf_counter() - wall0
-            ms = lambda i, j: ev[i].elapsed_time(ev[j])
+            ms = lambda i, j: cp.cuda.get_elapsed_time(ev[i], ev[j])             # (cupy Events have no elapsed_time method)
             tm = dict(prep=ms(0, 1), sieve=ms(1, 2), count=ms(2, 3), select=ms(3, 4), finalize=ms(4, 5), wait1=ms(5, 6), rows=ms(6, 7), wait2=1e3 * t_w2, wall=1e3 * wall)
             tm["host"] = tm["wall"] - sum(tm[k] for k in ("prep", "sieve", "count", "select", "finalize", "wait1", "rows"))
             w.timings = tm

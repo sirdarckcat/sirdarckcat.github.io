@@ -61,7 +61,7 @@ def expected_cap(S, tile_log, margin=1.08):
 class BigStage:
     def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None):
         """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity)"""
-        self.U = cp.asarray(np.asarray(U, dtype=np.uint32))
+        self.U = U.astype(cp.uint32) if isinstance(U, cp.ndarray) else cp.asarray(np.asarray(U, dtype=np.uint32))     # U may already be on the device (BatchFeeder passes its own)
         self.TAB = TAB if isinstance(TAB, cp.ndarray) else cp.asarray(np.ascontiguousarray(TAB, dtype=np.uint32))
         self.nP = int(self.TAB.shape[0])
         self.ks_log, self.tile_log, self.rg, self.ppt, self.threads = ks_log, tile_log, rg, ppt, threads

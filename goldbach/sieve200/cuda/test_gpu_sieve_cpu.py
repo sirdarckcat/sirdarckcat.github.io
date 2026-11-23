@@ -68,11 +68,10 @@ def install_fake_cupy():
     cp.RawModule = _RawModule
     class _Dev:
         def synchronize(self): pass
-    class _Event:                                                   # timings=True needs events: the wall clock will do
+    class _Event:                                                   # timings=True needs events: the wall clock will do (like cupy's, no elapsed_time method: cp.cuda.get_elapsed_time)
         def record(self): self.t = __import__("time").perf_counter()
-        def elapsed_time(self, other): return 1e3 * (other.t - self.t)
         def synchronize(self): pass
-    cp.cuda = types.SimpleNamespace(Device=lambda: _Dev(), Event=_Event)
+    cp.cuda = types.SimpleNamespace(Device=lambda: _Dev(), Event=_Event, get_elapsed_time=lambda a, b: 1e3 * (b.t - a.t))
     sys.modules["cupy"] = cp
     return cp
 
