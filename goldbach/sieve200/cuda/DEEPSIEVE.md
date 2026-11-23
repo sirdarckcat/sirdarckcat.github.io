@@ -152,3 +152,19 @@ Value first: the Fermat rounds are 1.24 s of the 2.10 s deep batch on an RTX PRO
    IADD3 / IMAD.WIDE inside the step): the marginal cost of an instruction inside the real step against bench_pipes.py's 1.8 / 2.5 ticks.
 4. **`run_experiments.sh`** (A: staged large-prime kernel against the plain one, sweep, B = 2^28 and 2^30 with `bench_bigprimes.py --b 28 / 30`; B: whole batch; C-E: Fermat step experiments, only if step 1 says < 1.0).
    If the overlap hides the sieve completely, the staged kernel only shortens the contention window; if it hides it partly (step 2 between 1.5 and 2.1 s), a faster sieve is worth its percentage directly.
+
+## The overlap trial of 23 Nov 03:10Z (RTX PRO 6000, `uarch_measure/overlap_trial_rtxpro6000.txt`) and what it says
+
+Steady batches of 2 windows (2 x 2^25 members), near-miss driver with its 0.5 s check (a constant in every row), tests and PRPs identical in all: base 2.50 s, `--overlap 1` unchunked (ov0) 2.50, `--fermat-cta-sm 3` (ov3) 2.70,
+3 with 128-thread tile CTAs 2.85, `--fermat-cta-sm 4` (ov4) 2.60, staged without overlap (st) 2.20, staged + overlap + 3 (stov3) 2.40; the staged kernel alone gave 2.10 -> 1.70 s once the 0.5 s check was fixed (now in production).
+
+* **The sieve did not run beside Fermat at all.**  With a serialized sieve ov3 and stov3 both imply a chunked-Fermat time of 1.44-1.45 s a batch (1.24 unchunked: +17%; ov4 1.34: +8%); with the overlap they would imply 1.77 and 1.62, which
+  cannot both be true.  ov0 should have saved ~0.3 s (the second window's sieve hidden under the first window's Fermat rounds) and saved nothing.  The likeliest cause: NVIDIA's list of things that stop two streams from running
+  concurrently includes **a switch between L1 / shared-memory configurations**; the Fermat kernel asks for no shared memory and the sieve CTAs for 64 KB, so the SM is configured for one or the other.  Test: `FERMAT_CARVEOUT=100 DEEP_CARVEOUT=100`
+  (c8b5d37), unchunked, with `--batch 4`.  Not yet run.
+* **The ceiling is lower than I first wrote.**  The sieve thread is created per batch, so with `--batch 2` the first window's sieve and the last window's Fermat rounds are always exposed: S1 + max(F1, S2) + F2 saves at most S2
+  (0.175 s of 1.70 staged: -10%); `--batch 4` hides 3 of 4 sieves (-16%); hiding all of them across batches would take one sieve thread for the whole campaign (not built).  Plain sieve (0.33 s a window) was worth more than staged
+  (0.175), so the staged kernel has already taken most of what the overlap could give.
+* **The chunked runs are an occupancy curve of the Fermat kernel** (5 CTAs / 20 warps an SM = 1.24 s; 4 = 1.34; 3 = 1.44 a batch of 2 windows; ~4% of the +8% / +17% is launch gaps and the tail of each 3-4 ms chunk): throughput 0.93 / 0.86 of
+  the 5-CTA value at 4 / 3 warps a scheduler.  A saturating fit puts the half-saturation point at ~1-1.6 warps and the 5-warp kernel at ~76-82% of its many-warps throughput: a mild latency component (+10% from doubling the
+  independent work a warp has, minus the extra adds), not a dependent-chain wall (that would make 3 warps 0.6 of 5).  `time_fermat28.py --variant s1r_asm s2r_asm s4r_asm` (section G) tests it directly; E3 (`bench_fm28_step.py`) draws the curve.
