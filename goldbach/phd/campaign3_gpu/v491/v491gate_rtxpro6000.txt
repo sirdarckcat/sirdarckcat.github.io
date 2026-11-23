@@ -1,0 +1,94 @@
+# research's 491-family 89-moduli vectors (bbc8cd8: first 88 odd primes + 491) on gold-g4c, the lead's six-point gate (23 Nov 19:19Z approval), v491gate.sh, 19:23:53-19:28:20Z.
+# Verdict line below says FAILED only because ck_prod's PLAIN large-prime stage asserts under production's DEEP_BIN_PACK=1 (packing needs the staged kernel; production uses
+# staged): ck_prod's staged runs are identical to the CPU feeder at both windows, and ck_base (no options: staged + plain + the production Fermat kernel vs gmpy2) is OK.
+# The rate test's 463 arm is what production consumes now (24 vectors of the card's newest chunk vec_000231.json); the 491 arm is walk-level (1,248 rows).
+
+2026-11-23T19:23:53Z paused pid 3037183
+2026-11-23T19:28:17Z resumed pid 3037183
+2026-11-23T19:28:20Z CPU slices done
+normal path, top 2^19, f = 0.97: GPU {'q170000_m89r491_t491a_v0@19635522': ('19635522', '20159810', 'tests=293402 prp=15744 p^=0.0537 alive/k=558.7 E^=29.98 hit%=18.1 found=0')} | CPU {'q170000_m89r491_t491a_v0@19635522': ('19635522', '20159810', 'tests=293402 prp=15744 p^=0.0537 alive/k=558.7 E^=29.98 hit%=18.1 found=0')} | IDENTICAL | []
+normal path, top 2^19, f = 0.90: GPU {'q170000_m89r491_t491a_v0@19635522': ('19635522', '20159810', 'tests=972764 prp=52432 p^=0.0539 alive/k=558.7 E^=30.11 hit%=37.7 found=0')} | CPU {'q170000_m89r491_t491a_v0@19635522': ('19635522', '20159810', 'tests=972764 prp=52432 p^=0.0539 alive/k=558.7 E^=30.11 hit%=37.7 found=0')} | IDENTICAL | []
+known case (production deep path, f = 0, >= 48,661): 46 near-misses | {'q170000_m89r491_t491a_v0@19635522': ('19635522', '20159810', 'tests=7349484 prp=524288 p^=0.0713 alive/k=419.0 E^=29.89 hit%=100.0 found=0')} | []
+GPU k=19640353 q=48817
+GPU k=19642688 q=55609
+GPU k=19642756 q=51817
+GPU k=19646266 q=50707
+GPU k=19667428 q=49207
+GPU k=19677796 q=50527
+GPU k=19694467 q=51151
+GPU k=19714273 q=53239
+GPU k=19737410 q=56569
+GPU k=19760353 q=54547
+GPU k=19768899 q=54361
+GPU k=19773428 q=59629
+GPU k=19784501 q=55201
+GPU k=19790669 q=57427
+GPU k=19810510 q=53857
+GPU k=19814108 q=48817
+GPU k=19821409 q=51151
+GPU k=19838290 q=49927
+GPU k=19848363 q=78241
+GPU k=19849951 q=51991
+GPU k=19867727 q=52009
+GPU k=19876713 q=63577
+GPU k=19935519 q=67339
+GPU k=19948679 q=53089
+GPU k=19954688 q=68071
+GPU k=19968828 q=52639
+GPU k=19982484 q=48889
+GPU k=20004977 q=64189
+GPU k=20014870 q=56857
+GPU k=20024603 q=55621
+GPU k=20027638 q=62131
+GPU k=20054024 q=53017
+GPU k=20057104 q=48817
+GPU k=20057573 q=53857
+GPU k=20061806 q=63841
+GPU k=20064567 q=57397
+GPU k=20072573 q=52321
+GPU k=20082604 q=48817
+GPU k=20089890 q=51817
+GPU k=20092725 q=51829
+GPU k=20112319 q=50929
+GPU k=20112851 q=54547
+GPU k=20139286 q=55117
+GPU k=20151888 q=48817
+GPU k=20157338 q=52711
+GPU k=20158740 q=54001
+top 2^24 window, f = 0, >= 48,661: before one-pass 1066, now 1066, per-member identical True | {'q170000_m89r491_t491a_v0@3382594': ('3382594', '20159810', 'tests=235210180 prp=16777216 p^=0.0713 alive/k=419.1 E^=29.89 hit%=100.0 found=0')} | [] []
+PM-KC-INSIDE [(19640353, 48817), (19642688, 55609), (19642756, 51817), (19646266, 50707), (19667428, 49207), (19677796, 50527), (19694467, 51151), (19714273, 53239), (19737410, 56569), (19760353, 54547), (19768899, 54361), (19773428, 59629), (19784501, 55201), (19790669, 57427), (19810510, 53857), (19814108, 48817), (19821409, 51151), (19838290, 49927), (19848363, 78241), (19849951, 51991), (19867727, 52009), (19876713, 63577), (19935519, 67339), (19948679, 53089), (19954688, 68071), (19968828, 52639), (19982484, 48889), (20004977, 64189), (20014870, 56857), (20024603, 55621), (20027638, 62131), (20054024, 53017), (20057104, 48817), (20057573, 53857), (20061806, 63841), (20064567, 57397), (20072573, 52321), (20082604, 48817), (20089890, 51817), (20092725, 51829), (20112319, 50929), (20112851, 54547), (20139286, 55117), (20151888, 48817), (20157338, 52711), (20158740, 54001)]
+ck_base | q170000_m89r491_t491a_v0: 89 moduli, 1245 rows, M has 193 digits, k_lo = 2015981 (k_lo mod 2^24 = 2015981), kmax = 20159810 || (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder || (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder || (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder || (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder || (2) kernel 28 (fermat29_step_s1.cuh, asm True) on 8192 random (row, k), k in [kend - 2^24, kend): 185 probable primes; flags identical to gmpy2 || CHECK491 OK
+ck_prod | q170000_m89r491_t491a_v0: 89 moduli, 1245 rows, M has 193 digits, k_lo = 2015981 (k_lo mod 2^24 = 2015981), kmax = 20159810 || (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder || (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder || Traceback (most recent call last): || AssertionError: DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits
+r463p : batch 0.734 s | expected near>=158209 2.3477e-05, hits 4.1374e-06 over 6 batches | 24 slices | []
+r491w : batch 0.753 s | expected near>=158209 2.3690e-05, hits 4.4326e-06 over 6 batches | 24 slices | []
+r463p_b: batch 0.732 s | expected near>=158209 2.3477e-05, hits 4.1374e-06 over 6 batches | 24 slices | []
+r491w_b: batch 0.727 s | expected near>=158209 2.3690e-05, hits 4.4326e-06 over 6 batches | 24 slices | []
+r463v : batch 0.738 s | expected near>=158209 2.8043e-05, hits 4.4756e-06 over 6 batches | 24 slices | []
+r491s : batch 0.757 s | expected near>=158209 2.4585e-05, hits 4.4415e-06 over 6 batches | 24 slices | []
+491 walk-level / 463 production supply (24 vectors each): batch x1.0096 | a second: design hits x1.0611, near-misses x0.9995
+reference: 491 start-level / 463 fixed test set: design hits a vector x0.9924, near-misses x0.8767; 463 fixed set / 463 production supply: hits x1.0817, near x1.1945
+RATE-TEST PASSED (hits/s x1.0611 >= 1.03, near-misses x0.9995 >= 0.97)
+V491-GPU FAILED (normal path + fast path; the known case is compared with the CPU brute force separately)
+V491-DONE
+
+=== ck_base.txt
+q170000_m89r491_t491a_v0: 89 moduli, 1245 rows, M has 193 digits, k_lo = 2015981 (k_lo mod 2^24 = 2015981), kmax = 20159810
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder
+  (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder
+  (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder
+  (2) kernel 28 (fermat29_step_s1.cuh, asm True) on 8192 random (row, k), k in [kend - 2^24, kend): 185 probable primes; flags identical to gmpy2
+CHECK491 OK
+
+=== ck_prod.txt
+q170000_m89r491_t491a_v0: 89 moduli, 1245 rows, M has 193 digits, k_lo = 2015981 (k_lo mod 2^24 = 2015981), kmax = 20159810
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 18062658: identical to the CPU feeder
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 3394939: identical to the CPU feeder
+Traceback (most recent call last):
+  File "/content/check491.py", line 38, in <module>
+    bf = BatchFeeder(S, INV, rows, N0M, ks_log=ks, tile_log=tile, llog=15, f=0.97, nthreads=256, split=1_000_000, rg=16, staged=staged, rcta=2, stage_cap=8192,
+                     gen_threads=256, tile_threads=512)
+  File "/content/ua_v10/goldbach/sieve200/cuda/gbatch.py", line 59, in __init__
+    assert not pack or (staged and tile_log <= 19 and int(rcta) >= 1), "DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits

@@ -1,0 +1,7 @@
+gold-g4c c170v: 137728 slices, 34432 batches, found lines 1, expected design hits (sum) 2.4218e-02, expected near-misses (sum, where logged) 1.5816e-01, first 2026-11-23T10:57:57 last 2026-11-23T19:29:05
+gold-g4c c170: 29438 slices, 14719 batches, found lines 0, expected design hits (sum) 1.2751e-02, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T03:55:42 last 2026-11-23T10:57:49
+gold-g4c cpu share campaign3_hi_0: 31792 slices
+gold-g4c cpu share campaign3_hi_1: 31792 slices
+gold-g4c cpu share campaign3_hi_2: 31792 slices
+gold-g4c cpu share campaign3_hi_3: 31791 slices
+gold-g4c vec89 made 149931

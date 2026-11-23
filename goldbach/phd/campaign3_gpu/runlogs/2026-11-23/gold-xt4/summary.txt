@@ -1,0 +1,2 @@
+gold-xt4 c170: 4678 slices, 4678 batches, found lines 0, expected design hits (sum) 2.0232e-03, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T04:03:27 last 2026-11-23T16:51:08
+gold-xt4 c170f: 928 slices, 928 batches, found lines 0, expected design hits (sum) 4.2090e-04, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T16:51:32 last 2026-11-23T19:29:38
