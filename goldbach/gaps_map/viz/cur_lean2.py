@@ -44,7 +44,7 @@ N2 = {
   title="Expected successes = Σ (1 − p)^(rows left)",
   gist="If each leftover row is prime with probability p, then for any chosen set of candidates the expected number of successes is the sum over candidates of (1 − p)^(rows left).",
   detail="The 'logged hit mass' printed by the search runs is exactly the expected number of successes. This is the cost model of the capped game.",
-  note="The identity every campaign plan is built on.",
+  note="The identity every campaign plan is built on. For the primes above Q, the thinning law (a later box) shows that independence is a safe bound.",
   chips=["Cap/Selection.lean"]),
 "c_selection": dict(group="lim", status="lean", impact="steer",
   title="Selection identity: where the successes sit",

@@ -55,6 +55,12 @@ E_LEAN = {
 "f_desert>f_notirr": ("parity for the extra degree", "With N = c·V^p, N has zero derivative and a non-square leading coefficient, and every irreducible factor of Q′ (degree at most J) divides V and hence N. Those are exactly the corollary's hypotheses, so N − Q cannot be irreducible."),
 "f_general>f_notirr": ("same parity corollary", "The smooth-V variant of the desert (desert_smooth, in this group) uses the same parity corollary for the rows that need it."),
 "f_resultant>f_sw": ("parity from the resultant form", "The resultant form of the discriminant feeds the same parity count: Stickelberger–Swan turns the discriminant, up to a square, into the parity of the number of irreducible factors, now for every N with zero derivative."),
+"r_rank>l_isleast": ("states", "Each table entry is a statement IsLeastSummand N g."),
+"r_rank>x_least": ("complete certificate", "g and N − g prime, plus the divisor certificates for every smaller prime, give IsLeastSummand."),
+"r_rank>x_coveredin": ("divisibility certificates", "The rows below g are shown composite by exhibited divisors, which the covered-range theorem turns into ‘no summand’."),
+"r_cover_more>x_coveredin": ("divisibility only", "The same covered-range theorem as for the 15,907 cover."),
+"r_cover_more>r_cover15907": ("same method, more primes", "The same divisibility-only certificate on 91, 92 and 93 primes instead of 89.", "doc", "Records.lean (Covers on more primes)"),
+"c_needles>c_brainstorm": ("residues within a budget", "What two needles can share beyond rows is residues, and only within a budget: two numbers that share a row agree only modulo moduli of product below Q, and two numbers below X agree modulo coprime moduli of product below X.", "doc", "Needles.lean header, citing Brainstorm.shared_row_value and move_budget"),
 "f_degree>f_desert": ("calls the desert theorem", "The J ≥ 1 form is the desert theorem with the extra degree conditions removed."),
 # ---------------- search-code proofs
 "g_f52>g_sched": ("uses the schedule", "The lane theorem reduces to 'the schedule's last value is 1 exactly when 2^(n−1) ≡ 1', which the schedule lemma proves for every odd n."),

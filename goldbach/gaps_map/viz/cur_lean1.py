@@ -18,7 +18,7 @@ N1 = {
   title="Pure cover: no prime below 15,907 is a summand",
   gist="A 193-digit even N such that for every prime q below 15,907 the number N − q has a divisor between 2 and 463. No primality or compositeness test is needed, only divisibility.",
   detail="This is what a cover alone certifies, with no luck involved. It uses the 89 odd primes up to 463. The same N also appears as a number below 10^200. The record 158,209 reaches about ten times further by using a cover that leaves some rows alive, then searching millions of candidates for one where every leftover row happens to be composite.",
-  note="Shows where the real difficulty is. A complete cover stops near 16 thousand; the rest of the record comes from searching and being lucky, which is what the capped-game cost laws measure.",
+  note="Shows where the real difficulty is. A complete cover stops near 16 thousand (a few hundred higher on 91–93 primes); the rest of the record comes from searching and being lucky, which is what the capped-game cost laws measure.",
   chips=["Cover15907.lean", "Records.lean"]),
 "r_family": dict(group="rec", status="lean", impact="record",
   title="A family of 21,378,978 covered numbers",

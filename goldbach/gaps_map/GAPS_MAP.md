@@ -1,9 +1,10 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-124 results and 223 links; this note says what the structure shows. Snapshot of 2026-11-23: Lean library at
-`8683c0b` (branch `ccr-36ca7b46-8twf14`), research at `eed2a7f` (`ccr-d4a17dd0-7uu03r`), lead merge `85aef81`
-(`ccr-2ce9e63a-hn0fuw`), thesis `85203b6` (`claude/phd-research-delegation-rualo0`).
+128 results and 234 links; this note says what the structure shows. Snapshot of 2026-11-23: Lean library read at
+`8683c0b` (branch `ccr-36ca7b46-8twf14`) with four boxes added for what the Lean session pushed up to `695dde2` (thinning law,
+longer covers, needles, record table), research at `eed2a7f` (`ccr-d4a17dd0-7uu03r`, plus its corrections at `02564fb`), lead merge
+`85aef81` (`ccr-2ce9e63a-hn0fuw`), thesis `85203b6` (`claude/phd-research-delegation-rualo0`).
 
 ## 1. The picture in one paragraph
 
@@ -19,12 +20,12 @@ cleverer mechanism exists. The two sides meet at about fifty points (section 3).
 
 | Layer | Boxes | Where | What it holds |
 |---|---|---|---|
-| Records | 4 | Lean | g = 158,209 (200 digits), the earlier ladder, the pure cover to 15,907 (no luck), and a family of 21,378,978 covered numbers |
+| Records | 6 | Lean | g = 158,209 (200 digits), the earlier ladder, the pure covers (15,907 on 89 primes; up to 16,981 on 93), a family of 21,378,978 covered numbers, and the 39 record holders below 10^11 |
 | Checkers | 7 | Lean | failed Fermat test ⇒ composite; block check; least-summand certificate; one elliptic-curve primality step and the group law it runs |
 | Covering principle | 8 | Lean | primorial core, covering certificate, every cover is realised, prime moduli suffice, kills are residues, a cover gives a number below a cap |
 | Asymptotic bounds | 14 | Lean | every odd prime is a least summand; effective form under Linnik; counting bound; covering bounds 0.73, 1.2 and 1.349 times ln X·ln ln X, with Mertens' third theorem proved from Mathlib |
 | Counting laws | 7 | Lean | budget law, first-moment pigeonhole, no free lunch, layered covers, value-set ceiling |
-| Search limits | 13 | Lean | hit mass, selection and tilt identities, lattice and Johnson radius, black-box bound, population bound, merge cost, list gain (0.207 rows per nat above Q), 21 settled ideas |
+| Search limits | 15 | Lean | hit mass, selection and tilt identities, the thinning law, lattice and Johnson radius, black-box bound, population bound, merge cost, list gain (0.207 rows per nat above Q), needles, 21 settled ideas |
 | Function-field model | 8 | Lean | Stickelberger–Swan, parity theorem, deserts N = λ·V^p, discriminant as a resultant |
 | Search-code proofs | 11 | Lean | CPU vector kernels and GPU kernels compute exactly the base-2 Fermat test |
 | Research: models and results | 40 | docs | cost model E, ceiling 2.13M, prices, closure theorem, three doors, rounding gap, decoding barrier, WP12 theorems, the sublinear programme and the function-field toy |
@@ -41,6 +42,8 @@ cleverer mechanism exists. The two sides meet at about fifty points (section 3).
 | Thesis ch. 2: primorial, cover, realisation, Dirichlet, transfer | `not_isSummand_of_primorial_dvd`, `not_isSummand_of_cover`, `exists_isLeastSummand_of_cover`, `exists_isLeastSummand` (+ Linnik form), `not_isSummand_of_desert` | the Lean docstrings use the thesis labels (lem:primcore, prop:cover, thm:coverdirichlet, thm:dirichlet) |
 | Cost model, cap accounting | `card_residues_in_le`, `noFreeLunch`, `not_prime_sub_iff` | cited in `Budget.lean`, `FirstMoment.lean`, `Rows.lean` |
 | Selection identity, hit mass | `expected_hits`, `selection_fraction`, `enrichment_at` | cited in `Selection.lean`, `Tilt.lean` |
+| Independence of the leftover rows (H1); the prize table's step to depth 10^8 | `thinSum_le_of_lt`, `thinCount_zero_le_of_lt` (above Q, independence is an upper bound) | cited in `Thinning.lean` (added 2026-11-23 16:40) |
+| Miniature: the best numbers are independent needles | `IsNeedle.add_of_forall`, `needle_pairs_lt_1000` (close needles share rows) | cited in `Needles.lean` |
 | Sublinear barriers (lattice, merge, black box, lists, CRT line) | `lattice_radius`, `johnson_leaves_the_cover`, `mitm_condition`, `blackbox_fraction`, `hitMass_selected_le`, `list_gain_above_Q`, `move_budget` | cited in `sublinear/README.md` |
 | Function-field toy | Stickelberger–Swan, `parity_card_factors`, `desert`, any-degree extension | cited in `sublinear/README.md` |
 | 100-idea brainstorm | `Cap/Brainstorm.lean` (21 ideas settled by theorem) | cited in both |
@@ -59,7 +62,9 @@ not trusted: the Lean kernel re-evaluates them. A text search of the library fin
 ## 5. What the plan rests on (unproved or heuristic)
 
 * **H1**, independence of the leftover rows. Every cost forecast uses it. Lean's `expected_hits` states it as an
-  assumption in its own header (“the independence itself is the model and not a theorem”).
+  assumption in its own header (“the independence itself is the model and not a theorem”). Since the snapshot, `Cap/Thinning.lean`
+  proves that inside the residue model, for the primes above Q, independence is an upper bound, so there it is an inequality and not a
+  premise; the residue model itself and the rows below Q stay heuristic.
 * **H2**, no compositeness test cheaper than one exponentiation. The closure theorem and the cost floor use it.
 * **The ceiling 2,130,704** and the "10% = 213,070" target: a heuristic prediction, validated on 6×10^8 numbers near
   10^18, not a bound.
@@ -92,9 +97,10 @@ the lattice radius, the black-box and population bounds, the list-gain bound.
 ## 7. How the map was built, and its limits
 
 * Lean side: a text scan of the library source (`tools/keygraph.py`): declaration names, namespace and `open`
-  tracking, comments ignored, docstrings attached to the declaration they document. 72 boxes; a box may stand for
+  tracking, comments ignored, docstrings attached to the declaration they document. 76 boxes; a box may stand for
   several theorems (listed under "Also covers"). It does not follow method syntax (`h.foo`) or instances, so six links
   were added by hand (marked) and some may be missing.
+* The Lean session's `scripts/rank_records` and `scripts/thinning_check` are not mapped.
 * Research side: three reading agents produced ledgers (`data/ledgers/`, about 200 entries) from the documents; I wrote the 52
   boxes from them and re-checked key numbers. Links are the documents' own cross-references.
 * The Lean branch's `phd/cap200/` is mapped as one box (the Lean session's cover experiments); its brainstorm

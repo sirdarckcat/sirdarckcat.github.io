@@ -52,7 +52,7 @@ META = dict(
  ],
  focus="r_158209",
  care=[
-  "This is a snapshot: Lean library at commit 8683c0b (branch ccr-36ca7b46-8twf14, 2026-11-23 14:55 UTC), research at eed2a7f (ccr-d4a17dd0-7uu03r; corrections the research session made after my review, at 02564fb, are folded in where noted), lead merge 85aef81 (ccr-2ce9e63a-hn0fuw), thesis 85203b6. All of it moves quickly.",
+  "This is a snapshot. The Lean library was read at 8683c0b (branch ccr-36ca7b46-8twf14, 2026-11-23 14:55 UTC); four boxes for what the Lean session added up to 695dde2 (16:40 UTC) are folded in (thinning law, longer covers, needles, record table); its rank-record and thinning-check scripts are not mapped. Research read at eed2a7f (ccr-d4a17dd0-7uu03r; corrections the research session made after my review, at 02564fb, are folded in where noted), lead merge 85aef81 (ccr-2ce9e63a-hn0fuw), thesis 85203b6. All of it moves quickly.",
   "<b>Lean boxes are exact</b>: the statements were read from the source. I did not run Lean; &lsquo;kernel-checked&rsquo; rests on the library's own notes plus a text search that finds no <code>sorry</code>, <code>native_decide</code> or added axiom.",
   "<b>Research boxes summarise documents</b>, and many are drafts, models or conjectures. Each box says which. Costs and exponents such as the 2.13M ceiling are model outputs, not theorems.",
   "The reference tool reads text, not types. It misses uses through method syntax and instances, so some links are added by hand (marked) and some may still be missing.",

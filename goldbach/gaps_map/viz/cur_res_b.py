@@ -43,7 +43,7 @@ RB = {
 "m_h1": dict(group="res", status="heur", impact="steer",
   title="H1: the leftover rows are independent",
   gist="Given all the divisibility information, the primality of distinct leftover rows is independent, with Mertens-adjusted probabilities (a Hardy–Littlewood style local model).",
-  detail="Not implied by GRH: it is a k-tuple statement. Support: the cost model matches measurements to about 0.1 nats over 1.2×10^9 candidates. But campaign 3 ran 0.2–0.4 nats above theory, and a first-moment match does not obviously constrain the joint probability that all rows are composite.",
+  detail="Not implied by GRH: it is a k-tuple statement. Support: the cost model matches measurements to about 0.1 nats over 1.2×10^9 candidates. But campaign 3 ran 0.2–0.4 nats above theory, and a first-moment match does not obviously constrain the joint probability that all rows are composite. Since this snapshot Lean proves that, inside the residue model and for primes above Q, independence is a safe upper bound; the residue model itself and the rows below Q stay heuristic.",
   note="Every cost forecast and the closure theorem assume it.",
   chips=["hypothesis"],
   where=[["Statement", "goldbach/phd/wp9/wp9_closure_theorem.md §2–§3, §7"]],

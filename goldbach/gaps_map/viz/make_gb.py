@@ -5,7 +5,7 @@ def load(fn, name):
     exec(open(os.path.join(V, fn)).read(), ns)
     return ns[name]
 NODES = {}
-for fn, nm in (("cur_lean1.py", "N1"), ("cur_lean2.py", "N2")):
+for fn, nm in (("cur_lean1.py", "N1"), ("cur_lean2.py", "N2"), ("cur_lean4.py", "N4")):
     NODES.update(load(fn, nm))
 NODES["c_brainstorm"] = load("cur_lean3.py", "N3")["c_brainstorm"] if os.path.exists(os.path.join(V, "cur_lean3.py")) else None
 NODES = {k: v for k, v in NODES.items() if v}
