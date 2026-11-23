@@ -560,3 +560,10 @@ explains the tile kernel: its small-prime loop has the same load-then-compute ch
 235 for 8; registers 32 / 29 / 38 / 43, no spills).  Same marks, same bits (`test_gbig.py` now runs unroll 8 too).  **To run: `genab.sh SPEC`** (unroll 1 / 2 / 4 / 8; CTAs of 256 threads with a 6144- and 4096-word staging buffer = 3 and 4 CTAs an SM; rcta 16): one line each, gen with its passes A and B, on top of the six options in production.
 What would confirm the latency reading: gen falling with the unroll depth at constant instruction count, and with the CTAs an SM.  What would refute it: no change (then the SM waits for something else: the shared-memory atomics' latency in the mark loops, the 16-barrier scan, the reservation's global atomics).
 
+### genab (GPU session, gold-g4c, 23 Nov 14:08-14:11Z, `sievepack/genab_rtxpro6000.txt`): the latency reading was right, `DEEP_GEN_UNROLL=4` takes the generate kernel from 40.3 to 28.7 ms
+
+ms a 2^24 window on top of production's six options (gen = pass A + pass B): unroll 1: **40.30** (13.67 + 26.64); unroll 2: 32.43 (11.68 + 20.76); **unroll 4: 28.74 (10.78 + 17.96)**; unroll 8: 30.10 (11.18 + 18.92); CTAs of 256 threads with the 8192-word buffer (2 CTAs, 8 warps): 36.27; 256 threads with 6144 / 4096 words
+(3 / 4 CTAs an SM, unroll 4): 29.97 / 29.95; 256 threads, 4096 words, unroll 1: 41.08; rcta 16, unroll 4: 32.91.  Tile unroll 8 / 16 (50 / 96 registers): tile kernel 21.56 / 21.75 against 20.86 at 4 (no gain; the small-prime phase moves ~6.5 TB/s through the L2: 50 GB of table a window, so that
+may be its limit now).  So **memory-level parallelism, not the instruction count or the occupancy, was what the generate kernel lacked: 4 table loads in flight a warp bought -11.6 ms a window (-29% of the kernel) at +4% instructions**, and 3-4 CTAs an SM instead of 2 buys nothing more once the loads overlap.
+At unroll 4 the kernel runs at ~70% of the integer issue peak again (37k instructions a CTA pair over ~26k cycles), so instructions count again and the visit loops (54% of them) are the next thing: see the window length below.
+

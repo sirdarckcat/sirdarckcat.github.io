@@ -61,8 +61,7 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
         #pragma unroll
         for (int u = 0; u < TILE_UNROLL; u++) {
             const int pp = pb + u * (int)blockDim.x;
-            if (pp < nS) t[u] = tab[pp];
-            else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+            t[u] = tab[pp < nS ? pp : nS - 1];                                 /* clamped: the (out of range) entry is read and its marks are masked below (nS >= 1 here) */
         }
         u32 j[TILE_UNROLL];
         #pragma unroll

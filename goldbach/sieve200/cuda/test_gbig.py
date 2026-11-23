@@ -111,7 +111,8 @@ def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0):
     ok = True
     # (tile_log, ks_log, rg, ppt (unused), threads, rcta, stage_cap, chunk target as a fraction of the buffer per CTA)
     for tile_log, ks_log, rg, threads, rcta, stage_cap, frac in ((10, 13, 4, 32, 2, 512, 0.75), (9, 12, 3, 32, 4, 256, 0.75), (11, 14, 4, 64, 1, 1024, 0.75),
-                                                                    (10, 13, 4, 32, 2, 512, 3.0), (9, 12, 3, 32, 4, 256, 1.0)):
+                                                                    (10, 13, 4, 32, 2, 512, 3.0), (9, 12, 3, 32, 4, 256, 1.0),
+                                                                    (8, 15, 2, 256, 2, 512, 0.75)):          # the last: 128 tiles a row (a 2^26-member window has 2^7 tiles of 2^19), 2 rows a CTA = 256 bins
         lib = build(tile_log, ks_log, rg, 1, stage_cap, rcta, 0, hoist, gunroll, flush2, order)
         NB, NT, TW = lib.cpu_nbins(), lib.cpu_ntiles(), lib.cpu_tile_words()
         KS = 1 << ks_log
