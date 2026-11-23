@@ -295,6 +295,33 @@ extern "C" __global__ void s200g_rows(const u32 *bits, int nU, const u32 *member
         if ((bits[(size_t)r * KW + w] >> sh) & 1u) rows[o++] = (u16)r;
 }
 
+/* The same lists as s200g_rows with the loads of ROWS2_BATCH rows in flight at once (DEEP_REST2=1).  s200g_rows tests a row's bit right after loading it and stores before it loads the next row's word:
+   the compiler cannot move the loads above the stores (the pointers may alias), so the SASS is LDG -> wait for the data -> test -> STG -> LDG -> ..., one memory latency a row a warp and no load in
+   flight beside it (measured on an RTX PRO 6000: 6.4 ms a window for 2.6 GB of bit matrix that count reads in 1.9 ms).  Here a thread loads ROWS2_BATCH words first (distinct registers), then tests them in
+   order; __restrict__ tells the compiler what it cannot know.  Row order and the lists are identical. */
+#ifndef ROWS2_BATCH
+#define ROWS2_BATCH 16
+#endif
+extern "C" __global__ void s200g_rows2(const u32 *__restrict__ bits, int nU, const u32 *__restrict__ member, const i64 *__restrict__ offs, int nsel, u16 *__restrict__ rows) {
+    const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= nsel) return;
+    const u32 m = member[i];
+    const u32 sh = m & 31;
+    const u32 *p = bits + (m >> 5);
+    u16 *out = rows + offs[i];
+    int r = 0;
+    for (; r + ROWS2_BATCH <= nU; r += ROWS2_BATCH) {
+        u32 v[ROWS2_BATCH];
+        #pragma unroll
+        for (int j = 0; j < ROWS2_BATCH; j++) v[j] = p[(size_t)(r + j) * KW];
+        #pragma unroll
+        for (int j = 0; j < ROWS2_BATCH; j++)
+            if ((v[j] >> sh) & 1u) *out++ = (u16)(r + j);
+    }
+    for (; r < nU; r++)
+        if ((p[(size_t)r * KW] >> sh) & 1u) *out++ = (u16)r;
+}
+
 /* N0 mod s for every sieve prime, one thread per prime (so that a new variant costs no host time): N0L = nl limbs of 32 bits (little
    endian), Barrett with the same mu = floor((2^64-1)/s) as the sieve kernel; r * 2^32 + limb < 2^59 for s < 2^27. */
 extern "C" __global__ void s200g_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int nS, u32 *out) {
@@ -347,4 +374,64 @@ extern "C" __global__ void s200g_finalize(const u32 *keys, int nsel, int nkeep, 
     for (int i = i0; i < i1; i++) { offs[i] = run; run += keys[i] >> 20; }
     if (threadIdx.x == blockDim.x - 1) { offs[nsel] = run; *total = run; }
     if (nsel == 0 && threadIdx.x == 0) { offs[0] = 0; *total = 0; }
+}
+
+
+/* The parallel finalize (DEEP_REST2=1; nsel > 0).  s200g_finalize is ONE CTA whose thread t walks a run of ~nsel / NTHREADS consecutive keys (a division, four strided loads and stores a key): ~2 ms
+   for 252,000 keys on an RTX PRO 6000, the whole GPU idle but one SM.  Here a CTA a selection block (the block's nkeep keys are contiguous in `keys`), in two kernels:
+   s200g_fin_sums: btot[b] = the sum of the counts of block b's kept keys;
+   s200g_fin_main: every CTA first adds up btot[0 .. b) (its own offset: at most nb values, no second pass over the keys), then the CSR offsets of its keys by a scan over chunks of blockDim.x keys, and
+                   cnt, member, k.  The last CTA also writes offs[nsel] and total.  Same outputs as s200g_finalize (nkeep keys a block, nsel = nb * nkeep, nkeep >= 1). */
+extern "C" __global__ void s200g_fin_sums(const u32 *keys, int nkeep, u32 *btot) {
+    __shared__ u32 part[NTHREADS];
+    const u32 *kb = keys + (size_t)blockIdx.x * nkeep;
+    u32 s = 0;
+    for (int i = threadIdx.x; i < nkeep; i += blockDim.x) s += kb[i] >> 20;
+    part[threadIdx.x] = s;
+    __syncthreads();
+    for (u32 d = blockDim.x >> 1; d; d >>= 1) {
+        if (threadIdx.x < d) part[threadIdx.x] += part[threadIdx.x + d];
+        __syncthreads();
+    }
+    if (threadIdx.x == 0) btot[blockIdx.x] = part[0];
+}
+
+extern "C" __global__ void s200g_fin_main(const u32 *keys, int nkeep, int nb, u64 k0, const u32 *btot, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    __shared__ i64 part[NTHREADS];
+    const int b = blockIdx.x;
+    i64 s = 0;
+    for (int j = threadIdx.x; j < b; j += blockDim.x) s += btot[j];
+    part[threadIdx.x] = s;
+    __syncthreads();
+    for (u32 d = blockDim.x >> 1; d; d >>= 1) {
+        if (threadIdx.x < d) part[threadIdx.x] += part[threadIdx.x + d];
+        __syncthreads();
+    }
+    i64 run = part[0];                                              /* the CSR offset of the block's first key */
+    __syncthreads();
+    const size_t base = (size_t)b * nkeep;
+    for (int c0 = 0; c0 < nkeep; c0 += blockDim.x) {
+        const int i = c0 + threadIdx.x;
+        const u32 key = i < nkeep ? keys[base + i] : 0u;
+        const u32 c = key >> 20;
+        part[threadIdx.x] = c;                                      /* inclusive scan of the chunk's counts (Hillis-Steele) */
+        __syncthreads();
+        for (u32 d = 1; d < blockDim.x; d <<= 1) {
+            const i64 v = part[threadIdx.x] + (threadIdx.x >= d ? part[threadIdx.x - d] : 0);
+            __syncthreads();
+            part[threadIdx.x] = v;
+            __syncthreads();
+        }
+        const i64 incl = part[threadIdx.x];
+        if (i < nkeep) {
+            const u32 m = ((u32)b << LLOG) + (key & 0xFFFFFu);
+            offs[base + i] = run + incl - c;
+            cnt[base + i] = (u16)c;
+            member[base + i] = m;
+            kout[base + i] = k0 + m;
+        }
+        run += part[blockDim.x - 1];                                /* the chunk's total: the same value in every thread */
+        __syncthreads();
+    }
+    if (b == nb - 1 && threadIdx.x == 0) { offs[(size_t)nb * nkeep] = run; *total = run; }
 }

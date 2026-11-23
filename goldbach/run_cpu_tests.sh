@@ -20,6 +20,8 @@ t "large-prime stage vs numpy (+packed, fallback)" $S python3 test_gbig_cpu.py
 t "large-prime stage, hoisted + unroll 2"          $S DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=2 python3 test_gbig_cpu.py
 t "staged kernel vs brute force: every variant"    $S python3 test_gbig.py
 t "large-prime stage, flat flush + grid order"     $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 python3 test_gbig_cpu.py
+t "window tail: rows2 + parallel finalize vs the originals" $S python3 test_rest2_cpu.py
+t "GPU sieve window, DEEP_REST2=1"                 $S DEEP_REST2=1 python3 test_gpu_sieve_cpu.py
 [ "$QUICK" = quick ] && { echo "quick: $fail failure(s)"; exit $fail; }
 t "GPU sieve vs CPU feeder"                        $S python3 test_gpu_sieve_cpu.py
 t "batch sieve vs CPU feeder"                      $S python3 test_gbatch_cpu.py
@@ -27,6 +29,7 @@ t "batch sieve, packed bins"                       $S DEEP_BIN_PACK=1 python3 te
 t "batch sieve, hoist + packed + gen unroll 4"     $S DEEP_GEN_HOIST=1 DEEP_BIN_PACK=1 DEEP_GEN_UNROLL=4 python3 test_gbatch_cpu.py
 t "batch sieve, tile unroll 4"                     $S DEEP_TILE_UNROLL=4 python3 test_gbatch_cpu.py
 t "batch sieve, flat flush + grid order"           $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
+t "batch sieve, DEEP_REST2=1 (+ staged, packed)"    $S DEEP_REST2=1 DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
 t "batch sieve, flat flush (alone)"                $S DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
 t "batch sieve, packed + flat flush"               $S DEEP_BIN_PACK=1 DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
 t "batch sieve, everything (pack hoist unroll 4 flush2 order)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py

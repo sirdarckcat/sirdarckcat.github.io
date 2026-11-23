@@ -92,6 +92,11 @@ extern "C" void cpu_rows(const u32 *bits, int nU, const u32 *member, const i64 *
     rows_args a{bits, nU, member, offs, nsel, rows};
     run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows_tramp, &a);
 }
+static void rows2_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows2(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows2(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows2_tramp, &a);
+}
 extern "C" unsigned cpu_kw() { return KW; }
 
 struct n0m_args { const u32 *N0L; int nl; const u32 *S; const u64 *MU; int nS; u32 *out; };
@@ -112,6 +117,19 @@ static void fin_tramp(void *a) { fin_args *x = (fin_args *)a; s200g_finalize(x->
 extern "C" void cpu_finalize(const u32 *keys, int nsel, int nkeep, u64 k0, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
     fin_args a{keys, nsel, nkeep, k0, cnt, member, kout, offs, total};
     run_grid(1, NTHREADS, 0, fin_tramp, &a);
+}
+
+struct fsum_args { const u32 *keys; int nkeep; u32 *btot; };
+static void fsum_tramp(void *a) { fsum_args *x = (fsum_args *)a; s200g_fin_sums(x->keys, x->nkeep, x->btot); }
+extern "C" void cpu_fin_sums(const u32 *keys, int nkeep, u32 *btot, int nb) {
+    fsum_args a{keys, nkeep, btot};
+    run_grid(nb, NTHREADS, 0, fsum_tramp, &a);
+}
+struct fmain_args { const u32 *keys; int nkeep, nb; u64 k0; const u32 *btot; u16 *cnt; u32 *member; u64 *kout; i64 *offs, *total; };
+static void fmain_tramp(void *a) { fmain_args *x = (fmain_args *)a; s200g_fin_main(x->keys, x->nkeep, x->nb, x->k0, x->btot, x->cnt, x->member, x->kout, x->offs, x->total); }
+extern "C" void cpu_fin_main(const u32 *keys, int nkeep, int nb, u64 k0, const u32 *btot, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    fmain_args a{keys, nkeep, nb, k0, btot, cnt, member, kout, offs, total};
+    run_grid(nb, NTHREADS, 0, fmain_tramp, &a);
 }
 
 struct prep_args { const u32 *S, *INV, *INVP, *N0M; u64 k0; int nS; uint4 *TAB; };

@@ -56,7 +56,7 @@ def _kernels(klog, llog, nthreads, unroll=1):
                 f"#define NTHREADS {nthreads}\n#define S200G_UNROLL {unroll}\n")
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("s200g_sieve", "s200g_sieve_sh", "s200g_prep", "s200g_count", "s200g_select", "s200g_rows", "s200g_n0m",
-                                                         "s200g_km", "s200g_finalize")}
+                                                         "s200g_km", "s200g_finalize", "s200g_rows2", "s200g_fin_sums", "s200g_fin_main")}
     return _KCACHE[key]
 
 
@@ -73,6 +73,7 @@ class GpuFeeder:
         self.sieve_threads = int(sieve_threads or nthreads)
         assert 32 <= self.sieve_threads <= 1024 and self.sieve_threads % 32 == 0
         self.shoup, self.unroll = bool(shoup), int(unroll)
+        self.rest2 = os.environ.get("DEEP_REST2", "0") == "1"                      # 1: the window's tail with loads in flight (s200g_rows2) and a finalize over all CTAs (s200g_fin_*): same output, ~8 ms a window less (not measured)
         if shared is None:
             S = np.asarray(S, dtype=np.int64)
             inv = np.asarray(INV, dtype=np.uint32)
@@ -203,7 +204,12 @@ class GpuFeeder:
         kv = cp.empty(nsel, dtype=cp.uint64)
         offs = cp.empty(nsel + 1, dtype=cp.int64)
         total = self._buf("total", (1,), cp.int64)
-        self.k["s200g_finalize"]((1,), (nt,), (keys, np.int32(nsel), np.int32(max(nkeep, 1)), np.uint64(k0), cnt, member, kv, offs, total))
+        if self.rest2 and nsel:                                    # a CTA a selection block: the block's counts summed, then every CTA scans its own keys from the sum of the blocks before it
+            btot = self._buf("btot", (nb,), cp.uint32)
+            self.k["s200g_fin_sums"]((nb,), (nt,), (keys, np.int32(nkeep), btot))
+            self.k["s200g_fin_main"]((nb,), (nt,), (keys, np.int32(nkeep), np.int32(nb), np.uint64(k0), btot, cnt, member, kv, offs, total))
+        else:
+            self.k["s200g_finalize"]((1,), (nt,), (keys, np.int32(nsel), np.int32(max(nkeep, 1)), np.uint64(k0), cnt, member, kv, offs, total))
         if timings:
             ev[5].record()
         cnt_acc = cnt
@@ -214,7 +220,7 @@ class GpuFeeder:
         if timings:
             ev[6].record()
         if nsel:
-            self.k["s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
+            self.k["s200g_rows2" if self.rest2 else "s200g_rows"]((((nsel + nt - 1) // nt),), (nt,), (self.bits, np.int32(self.nU), member, offs, np.int32(nsel), rows))
         if timings:
             ev[7].record()
             t_w2 = time.perf_counter()

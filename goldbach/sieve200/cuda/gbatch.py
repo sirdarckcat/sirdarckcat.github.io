@@ -26,7 +26,7 @@ def _np(a):
 HERE = os.path.dirname(os.path.abspath(__file__))
 _SRC = "".join(open(os.path.join(HERE, f)).read() for f in ("gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh"))
 _BCACHE = {}
-_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply", "ghead_gen", "ghead_apply")
+_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_rows2", "s200g_fin_sums", "s200g_fin_main", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply", "ghead_gen", "ghead_apply")
 
 
 def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None, tile_unroll=1, tile_prefetch=0, bin_pack=False, gen_hoist=False, gen_unroll=1, gen_flush2=False, gen_order=False,

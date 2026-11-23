@@ -610,3 +610,24 @@ slice lines, known case 23 / 23): **LEAN x0.9875, LEAN + pipelined tile x0.994**
 `TILE_PROBE` (a timing-only variant that read the small-prime table from 256 sampled entries) made the tile kernel 575 ms: every thread used the same 256 entries with the same row q, so every mark landed on the same few shared-memory words and the atomics serialised.  A probe must keep the marks' addresses spread (a hash start offset a prime would have done); I removed it rather than leave a broken instrument.
 Whether the table's trip through the L2 bounds the small-prime phase is therefore still untested; the best case for fixing it is -2 to -3 ms a window (-0.4% of a batch).
 
+
+### The window's tail (count, select, finalize, rows): 10.6 ms of a 61 ms window, and two of the four kernels are shaped wrongly for a GPU (uarch, 23 Nov 15:50Z; CPU-verified, opt-in `DEEP_REST2=1`, NOT timed on a GPU)
+
+**I looked at the wrong denominator in the morning.**  Task "rest phases" was closed at 385 ms a window: 11 ms of 385 is 3%.  The sieve phase is now 50 ms (generate 27.5, tile 20.8), so the same ~11 ms are **18% of the window's chain** (61 ms alone), and the window is the sieve thread's unit of work.
+The GPU session's own numbers (`uarch_measure/bench_split_rtxpro6000.txt`, `measure_rtxpro6000_sections5-6_fixed.txt`, ms a 2^24 window): count 1.87, select 0.19, **finalize 2.11, rows 6.39**; `wait1` (the host reading the survivor count) 0.13-0.34.
+
+**rows (6.4 ms for a 2.6 GB matrix that `count` reads in 1.87 ms = 1.4 TB/s).**  The SASS (`sass.py ... --kernel s200g_rows`, sm_120) is, per row of the unrolled loop: `LDG` -> `LOP3` (needs the loaded word) -> predicated `STG` -> next `LDG`.  The compiler cannot hoist the next load above the store
+(`bits` and `rows` may alias) and issue is in order, so a warp waits one full memory latency for every one of the 1,248 rows with **no load in flight beside it**; 7,872 warps each keep one 256-byte request outstanding and the DRAM sees small random chunks at a 2 MB stride.  Count is at the DRAM floor because it
+loads 16 rows before it adds anything.  `s200g_rows2` does the same: a thread loads `ROWS2_BATCH` = 16 words into 16 registers first (`__restrict__`), then tests and stores them in order.  SASS: 16 `LDG.E.CONSTANT` back to back, 40 registers, no spills; the lists are identical (`test_rest2_cpu.py`).
+Expected: the bytes are the same, so the floor is `count`'s 1.9 ms; I expect 2.5-3.5 ms (random 256-byte chunks do not reach streaming rates), i.e. **-3 to -4 ms a window**.  A CTA a selection block that stages each row's 4 KB slab through shared memory would be closer to 2 ms; not built until the number for this one is known.
+
+**finalize (2.1 ms: one CTA of 256 threads).**  Thread t walks a run of ~984 consecutive keys: an integer division by nkeep (~25 instructions), four loads and four stores a key at a 984-element stride across the warp (32 lines a request), then a second walk for the offsets.  Nothing about the work needs one CTA: the block's keys are contiguous.
+`s200g_fin_sums` (a CTA a selection block: the sum of its kept counts, a tree reduction) and `s200g_fin_main` (a CTA a block: the sum of the blocks before it, `btot[0 .. b)`, then a Hillis-Steele scan over chunks of blockDim keys and the coalesced writes of cnt, member, k, offs; the last CTA writes offs[nsel] and total).  Same outputs, 26 registers, 2 KB of
+shared memory; expected 20-40 us instead of 2.1 ms (**-2 ms a window**).  The host `wait1` and the final statistics read are unchanged.
+
+**Together** -5 to -6 ms of the 61 (10%), -20 to -24 ms a batch alone.  The sieve thread is near the critical path, but the batch gains from latency-bound kernels have been 60-65% of the window's change (the unroll: -46 ms of sieve, -29 ms of batch), so I would expect **-1% to -2% of a batch, not measured**.  These are DRAM- and latency-bound kernels that issue few
+instructions, so unlike the flat flush they should not change what the Fermat kernels pay.
+**Checked on the CPU**: `test_rest2_cpu.py` (finalize == fin_sums + fin_main and rows == rows2 == numpy over 8 geometries: nU below / at / above the 16-row batch, one or several selection blocks, nkeep 1 / below / at / above the CTA size, zero counts, a block with no alive row); `DEEP_REST2=1` through
+`test_gpu_sieve_cpu.py` (11 windows, every one identical to the CPU feeder; the counting wrapper shows the new kernels run), `test_gbatch_cpu.py`, `test_deep_feeder_cpu.py`, `test_ghead_cpu.py`, `test_headcheck_cpu.py`.
+**To run on a GPU**: `bench_split.py` prints the four phases of a whole window (`whole window (bench_batch's phases, ms): ... count ... finalize ... rows`): run it with and without `DEEP_REST2=1` (the variable is read when the feeder is built); then the driver gate (`DEEP_REST2=1`, slice lines identical on the 24 windows, known case 23 pairs, >= 1% of a batch).
+
