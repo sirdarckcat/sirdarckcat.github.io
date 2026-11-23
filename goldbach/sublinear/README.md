@@ -170,8 +170,14 @@ any optimisation, mops up the 223 quartics left with the quartic moduli, and
 so equals the desert at degree J + 1 and beats it above. The desert wins only
 on the deterministic objective at degree exactly J + 1, and only when q/p is
 large (the ratio (1 + 0.56(q − 1)/J)/p of the corollary: 1.5 for F_25 and
-J = 2, 2.1 for F_49). For search, the right design in the toy is an ordinary
-cover, a generic N, and the parity filter on what is left.
+J = 2, 2.1 for F_49). Turning single zero classes of a desert into nonzero
+ones is a loss on the rows the desert is for (those of which more than half
+have a smooth derivative) and a gain only at higher degrees, where the
+ordinary cover is better still. For search, the right design in the toy is an
+ordinary cover, a generic N, and the parity filter on what is left. The rule
+used here, that for N′ = 0 the parity depends on N only through its degree,
+its leading coefficient and N modulo Q′, is `parity_card_factors_resultant`
+and `parity_card_factors_congr` in the Lean library (commit 8683c0b).
 
 ## Result 2: what the parity filter is worth in a toy search
 
@@ -424,8 +430,22 @@ class 3 for 19%; the most popular class holds 30% modulo 7 and less beyond);
 they have 1.3
 standard deviations more incidences with the primes from 31 to 199 than a
 random number, the successes 0.35; and two of the 62 best agree modulo 0.49 of
-those primes on average, against 0.45 by chance. They are independent
-needles: nothing ties one to another.
+those primes on average, against 0.45 by chance. So nothing ties one of them
+to another beyond three things the model already contains, as the Lean
+session showed on the true successes when it tested this claim
+(`goldbach/lean/scripts/mini_check/needles*` on its branch): the tilt of the
+residues; the size (successes lean to large N); and rows shared by numbers
+closer than Q. The last is a real exception to independence: N + h − q′ =
+N − (q′ − h), so a neighbour N + h of a success inherits every row q′ with
+q′ − h prime, and the 303 true successes of the miniature (counting those
+divisible by a prime from 7 to 29) contain 4 pairs closer than 1,000 where
+independence predicts 0.09 and the inheritance predicts 2.7. It does not help
+the search. A neighbour keeps only the classes of the primes dividing h, so it
+loses the cover: at 200 digits a neighbour at distance 30,030 of a number
+with g = 157,837 inherits about 6,000 of the 19,050 rows below 213,070 and is
+left with about 1,600 rows at risk, the same as a fresh member of the best
+cover (my count and the Lean session's agree), and it cannot be sieved in
+bulk.
 
 What each prime beyond the line is worth, and costs, in the miniature (N
 ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
