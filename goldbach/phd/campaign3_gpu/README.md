@@ -333,6 +333,33 @@ Version 3 (22 Nov):
     - The hardware probe implies about 0.16 s from hiding the second window's sieve, so something on the host side keeps
       the thread from sieving under the Fermat rounds.
     - Slice lines were identical in every run. Production is unchanged.
+- Cross-batch sieve pipeline (23 Nov 08:40Z on the RTX PRO 6000s; the uarch session's `search_gpu5_xbatch2.patch` and
+  `overlap.Pipeline`, its tree a752ea3).
+  - One sieve thread for the whole campaign plans the next batch itself. It sieves that batch's two windows on the
+    highest-priority stream under the current batch's one flush (`--pipeline 1 --pipeline-depth 2`, production's pool of
+    2^21). `--trace-pipeline 1` prints, per batch, how long the consumer waited for the sieve and how long the sieve thread
+    was busy and idle.
+  - The patched driver keeps the old behaviour by default. It is now `search_gpu5.py` here and on the RTX cards, with the old
+    file kept as `search_gpu5_prev.py` on each card. The L4s and the T4 still run the old file.
+  - Measured in campaign mode (`uarch_measure/pipeline_v1_rtxpro6000.txt`, `pipeline_v2_rtxpro6000.txt`; batch ends
+    stamped every 20 ms):
+
+    | configuration | batch |
+    |---|---|
+    | production | 1.744-1.752 s |
+    | v1, a flush per window, two pool threads | 1.647 s (batches 3-5 ≈ 1.69 s) |
+    | v2, sync-free sieve windows | 1.73-1.76 s |
+    | v2, per-group overflow check (`GBATCH_DEFER_CHECK=0`) | 1.55-1.60 s |
+
+    - The sync-free sieve runs at full speed (0.44 s a batch) and the Fermat rounds wait for it.
+    - The per-group check's host round trips let the sieve trickle beside the Fermat rounds (≈1 s busy a batch), and the
+      consumer never waits.
+  - Slice lines were identical to production in every run. The 72 near-misses at a threshold of 63,097 were identical
+    with and without the pipeline. Peak memory is +1.6 GB.
+  - Production since 08:40-08:42Z (`deploy_pl.py`):
+    - tree `/content/ua_v2` (a752ea3 over the previous tree), with `GBATCH_DEFER_CHECK=0`;
+    - deep arguments plus `--pipeline 1 --pipeline-depth 2 --trace-pipeline 1`;
+    - gold-g4b's first 71 batches took 1.594 s each, against 1.76 s before.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
