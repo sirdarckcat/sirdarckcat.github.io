@@ -42,7 +42,7 @@ Nothing about the generator is tied to 2^25. That number is where the *certified
 | the proof that the program is right | every X | `mem_records` is a statement about all X |
 | the front (the next candidate) | exists for every striker, forever | `exists_isFront`, no hypothesis |
 | new terms, forever | exactly if Goldbach's conjecture is true | `goldbach_iff_generator_never_stops`, `goldbach_iff_records_unbounded` (`GoldbachGaps/RecordInfinite.lean`) |
-| running the proved generator | 2^25 in 20 s, 2^27 in 3 min; about a day for 10^10 | every sieving prime costs a pass over an X-digit number, so the time grows like X^1.6 |
+| running the proved generator | 2^25 in 20 s, 2^27 in 3 min; by extrapolation about an hour for 10^9 and two days for 10^10 | every sieving prime costs a pass over an X-digit number, so the time grows like X^1.6 |
 | statements checked by the kernel | 2^25 in 90 s; about 2 hours for 10^9; about 1.6 days for 10^10 | measured on single segments: 2.5 s per million numbers near 3·10^7, 8.5 s near 10^9, 21 s near 10^10, with 1 to 6 GB of memory |
 | fast scan, not proved (`scripts/rank_records/lgs_scan.c`) | 10^12 in 63 min: 43 terms | |
 | anyone's computation | 4·10^18: 69 terms (Oliveira e Silva, Herzog and Pardi, Math. Comp. 2014; OEIS b-file) | |
