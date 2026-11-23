@@ -1,0 +1,14 @@
+# The lead's gate for 89 moduli: A/B on gold-g4b (RTX PRO 6000), 2026-11-23, ab_measure.py on the cards' own batch statistics (--log-near-exp 1 on both sides).
+#   phase A 09:55:05-10:26:12Z: the 88-moduli campaign (/content/c170, Q = 170,000, 1,262-1,263 rows, windows of 2^25 from k in [2^30, 2^32)), new driver;
+#   phase B 10:26:12-10:57:09Z: the 89-moduli vector campaign (/content/c170v, 1,249-1,250 rows, one 2^24 window a vector from its first 200-digit k),
+#   same pipeline flags (depth 2 / 4 for 2 / 4 windows a batch, --pool-threads 2, 512-thread tiles, GBATCH_GROUP_DELAY_US=500), near-miss threshold 157,837.
+# 'near_per_s' = expected tested members a second whose first PRP row is >= 157,837, design hits included (the lead's metric).
+
+[ab] 88 moduli (c170): batches 1208, span_s 1856.000, slices 2416, batch_s 1.538, hits_per_s 5.6240e-07, near_per_s 2.8832e-06, found 0, first 09:55:07, last 10:26:03
+[ab] 89 moduli (c170v): batches 1152, span_s 1857.000, slices 4608, batch_s 1.613, hits_per_s 6.4178e-07, near_per_s 4.6281e-06, found 0, first 10:26:12, last 10:57:09
+[ab] ratio 89 / 88: expected near>=record per second x1.605, expected design hits per second x1.141, time a member x1.049
+
+# Reading: x1.605 on the lead's metric (>= 1.08 needed), x1.141 on design hits alone; a member costs x1.049 (the sieve of four 2^24 windows is the slower side).
+# The A/B vectors averaged 1,249.6 rows; research expects ~1,251 on average over nine days (+1.4 rows, ~3.4%): x1.55 and x1.10 adjusted.
+# Together with the CPU cross-check at the new k range and the known case (validation_gpu_rtxpro6000.txt, knowncase_cpu_brute.txt): the gate passes.
+# Deployed: gold-g4b (since 10:26:12Z), gold-g4 (10:57:46Z), gold-g4c (10:57:58Z) with deploy_v89.py; the L4s and the T4 stay on 88 moduli.
