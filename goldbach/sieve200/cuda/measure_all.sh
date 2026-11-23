@@ -11,8 +11,12 @@
 # reasons sampled beside them (this is what decides whether the RTX PRO 6000s are power-clocked).  3 bench_pipes part 3 (the global-memory cost of a scattered mark).
 # 4 bench_bigprimes (the large-prime stage of a deeper sieve bound: ns a mark).  5 test_gpu_sieve (the sieve against the CPU feeder + the sweep of the new options, clock sampled).
 # 6 bench_batch (the whole batch pipeline of a deeper bound at production size).
+# SECTIONS="4 6" runs only those sections (default "1 2 3 4 5 6"): the deep-sieve question needs 4 and 6 (and 3); the clock question needs 2.  B6=100000000 changes the bound of section 6 (default 2^26).
 # Afterwards: commit the output file to your branch (or send it) and tell the uarch session where it is.
 set -u
+SECTIONS=${SECTIONS:-"1 2 3 4 5 6"}
+B6=${B6:-67108864}
+want() { case " $SECTIONS " in *" $1 "*) return 0;; *) return 1;; esac; }
 SPEC=${1:?usage: GPU=0 bash measure_all.sh SPEC.json [OUT.txt]}
 GPU=${GPU:-0}
 OUT=${2:-measure_$(hostname)_gpu${GPU}.txt}
@@ -58,11 +62,14 @@ PY
 }
 section() { echo; echo "=================================================================== $*"; date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 
+if want 1; then
 section "1. GPU"
 nvidia-smi -i "$GPU" --query-gpu=name,driver_version,memory.total,pstate,power.limit,power.max_limit,clocks.max.sm,clocks.max.mem --format=csv
 nvidia-smi -i "$GPU" -q -d CLOCK,POWER 2>/dev/null | head -70
 python3 -c "import cupy, numpy; print('cupy', cupy.__version__, 'numpy', numpy.__version__, 'cuda runtime', cupy.cuda.runtime.runtimeGetVersion())"
+fi
 
+if want 2; then
 section "2. Fermat kernels with the SM clock and power sampled beside them (20 s each)"
 for v in s1r_asm s1rw; do
   echo "--- $v"
@@ -70,23 +77,32 @@ for v in s1r_asm s1rw; do
   timeout 600 python3 "$FC/time_fermat28.py" "$SPEC" --variant $v --seconds 20 --check || echo "FAILED: time_fermat28.py $v"
   sample_stop /tmp/measure_clk_$$.csv
 done
+fi
 
+if want 3; then
 section "3. bench_pipes.py part 3: scattered marks in global memory"
 timeout 900 python3 bench_pipes.py --part3 || echo "FAILED: bench_pipes part 3"
+fi
 
+if want 4; then
 section "4. bench_bigprimes.py: the large-prime stage of a deeper sieve bound"
 timeout 900 python3 bench_bigprimes.py --rows 40 --b 22 --ks 25 --check || echo "FAILED: bench_bigprimes check"
 timeout 1200 python3 bench_bigprimes.py --b 24 --groups 8 || echo "FAILED: bench_bigprimes b24"
 timeout 1200 python3 bench_bigprimes.py --b 26 --groups 4 || echo "FAILED: bench_bigprimes b26"
 timeout 1800 python3 bench_bigprimes.py --b 28 --groups 2 || echo "FAILED: bench_bigprimes b28"
+fi
 
+if want 5; then
 section "5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)"
 sample_start /tmp/measure_clk_$$.csv
 timeout 1800 python3 test_gpu_sieve.py "$SPEC" --B 1000000 --klog 19 --f 0.97 || echo "FAILED: test_gpu_sieve"
 sample_stop /tmp/measure_clk_$$.csv
+fi
 
-section "6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 2^26, a batch of 2^25 members)"
-timeout 2400 python3 bench_batch.py "$SPEC" --B 67108864 --ks 25 --check || echo "FAILED: bench_batch"
+if want 6; then
+section "6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = $B6, a batch of 2^25 members)"
+timeout 2400 python3 bench_batch.py "$SPEC" --B "$B6" --ks 25 --check || echo "FAILED: bench_batch"
+fi
 
 section "done"
 rm -f /tmp/measure_clk_$$.csv
