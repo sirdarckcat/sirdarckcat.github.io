@@ -647,6 +647,24 @@ Version 3 (22 Nov):
     bounds 512,3, alternating on the 24 test vectors.
     - Batch ×0.9728 on gold-g4, ×0.9566 on gold-g4b, ×0.9725 on gold-g4c.
     - Slice lines were identical everywhere, and the known case gave 23/23 with the chosen settings.
+  - Production (`vtop/production_rtxpro6000.txt`), on gold-g4 and gold-g4c:
+    - top placement against bottom: expected near-misses a batch ×1.0185, design hits a second ×1.015-1.017;
+    - one-pass on top of that: batch ×0.972, design hits a second ×1.033.
+- A trade-off in the newer covers. Research's new starting files lower the total rows but put more rows below the
+  near-miss threshold (158,209).
+  - On the RTX, chunks from 58e95e3 average 1,250.5-1,250.9 rows (from 1,251.0), but 1,171.8-1,176.8 of them lie below
+    158,209 (from ~1,169.3). Expected near-misses a batch fell ~10% from 18:20Z, when they reached the queue, while design
+    hits a batch rose ~0.8%.
+  - On the L4s and the T4, top2 has 1,257.65 rows (from 1,258.65), but 2.8 more below 158,209: about +2.4% design hits and
+    -6.5% near-misses.
+  - Both are kept for now, and the choice is with the lead.
+- The lead's L4 keep-fraction A/B (`l4f/ab_l4_f985.txt`): gold-l4c at f = 0.985 against gold-gpu and gold-l4b at 0.97,
+  17:30-18:30Z. Expected design hits a second came out ×0.9865 against the controls, below the +5% bar, so it went back
+  to 0.97 at 18:34Z.
+  - The L4 runs sieve then Fermat in series, under its power cap. Its fixed part is 3.27 s of a 9.33 s batch, so halving
+    the tests only removes the Fermat half.
+- At 18:34-18:35Z the four L4/T4 cards switched to 6,000 m88f vectors from research's 3bcdbf6 starting file at cap 1,258
+  (1,800 a card on the L4s, 600 on the T4; `m88f/deploy_l4_t4.txt`).
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

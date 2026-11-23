@@ -34,3 +34,11 @@
 # (34 at 1,256, 1,875 at 1,257, 18,091 at 1,258), 6,000 specs at 1,255-1,258 rows (2 / 100 / 1,877 / 4,021; mean 1,257.65), 1,223 skipped as already handed out. Ledger 14,040.
 # Split round-robin (3 L4s : 1 T4 = 1,800 : 600, each card's mean 1,257.65) as /content/m88f_top2.json on each card; /content/m88f_topup1.json (cap 1,259, mean 1,258.8) is superseded
 # and stays unused. starts_q170000_m88f_3bcdbf6.txt is the starting file used.
+# 18:34:30-18:35:12Z (swap_top2.py at a batch end on each card): /content/c170f/my_specs.json = the card's top2 share (old list kept as my_specs_pre_top2.json; the done set carries
+# over, the new vectors start at the top level); gold-l4c's SKIPF back to 0.97 at the same restart (the A/B, l4f/ab_l4_f985.txt).
+#   gold-l4c 18:34:30Z | 1800 vectors | SKIPF=0.97 ; gold-gpu 18:35:06Z | 1800 ; gold-l4b 18:35:06Z | 1800 ; gold-xt4 18:35:12Z | 600
+# The trade-off (rows below the near-miss threshold 158,209; all four batches, from their spec files):
+#   main (the 2,000 in use before):  rows 1,258.651 | below 158,209 1,179.936 | above 78.715
+#   cap1 (topup1, unused):           rows 1,258.804 | below 1,179.583 | above 79.221
+#   top2 (in use since 18:34Z):      rows 1,257.653 | below 1,182.746 | above 74.906
+# At ~0.024 expected PRPs a row: design hits about x1.024, near-misses >= 158,209 about x0.935. Put to the lead (18:41Z); kept for now.

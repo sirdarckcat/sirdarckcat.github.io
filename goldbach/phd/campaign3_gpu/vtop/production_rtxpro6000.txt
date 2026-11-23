@@ -1,0 +1,29 @@
+# RTX production in three windows of /content/c170v/gpu3_stats.log (prod3w.py): W0 bottom placement 16:50-17:28:30Z, W1 top placement 17:30:30-18:04:30Z, W2 top + one-pass 18:12:30-18:34Z.
+# gold-g4b's W0 and W1 include its own test pauses (vtop.sh 17:01:33-17:03:38, opab.sh 18:01:18-18:02:18), which lengthen their mean batch.
+== gold-g4
+[p3] W0 bottom       batches  3072 | batch 0.7516 s | near/batch 4.3334e-06 | near/s 5.7653e-06 | hits/s 8.9405e-07 | tests/batch 14117341
+[p3] W1 top          batches  2708 | batch 0.7530 s | near/batch 4.4137e-06 | near/s 5.8618e-06 | hits/s 9.0781e-07 | tests/batch 14125621
+[p3] W2 top+onepass  batches  1819 | batch 0.7317 s | near/batch 4.1455e-06 | near/s 5.6654e-06 | hits/s 9.3744e-07 | tests/batch 14125363
+[p3] W1 top / W0 bottom: batch x1.0018 | near a batch x1.0185 | near/s x1.0167 | hits/s x1.0154
+[p3] W2 top+onepass / W1 top: batch x0.9718 | near a batch x0.9392 | near/s x0.9665 | hits/s x1.0326
+== gold-g4b
+[p3] W0 bottom       batches  2901 | batch 0.7959 s | near/batch 4.3385e-06 | near/s 5.4508e-06 | hits/s 8.4506e-07 | tests/batch 14117771
+[p3] W1 top          batches  2618 | batch 0.7788 s | near/batch 4.4183e-06 | near/s 5.6729e-06 | hits/s 8.7751e-07 | tests/batch 14125572
+[p3] W2 top+onepass  batches  1819 | batch 0.7334 s | near/batch 4.2100e-06 | near/s 5.7407e-06 | hits/s 9.3726e-07 | tests/batch 14126030
+[p3] W1 top / W0 bottom: batch x0.9785 | near a batch x1.0184 | near/s x1.0407 | hits/s x1.0384
+[p3] W2 top+onepass / W1 top: batch x0.9416 | near a batch x0.9529 | near/s x1.0119 | hits/s x1.0681
+== gold-g4c
+[p3] W0 bottom       batches  3072 | batch 0.7516 s | near/batch 4.3370e-06 | near/s 5.7702e-06 | hits/s 8.9392e-07 | tests/batch 14117169
+[p3] W1 top          batches  2710 | batch 0.7524 s | near/batch 4.4176e-06 | near/s 5.8713e-06 | hits/s 9.0907e-07 | tests/batch 14125959
+[p3] W2 top+onepass  batches  1827 | batch 0.7318 s | near/batch 4.1290e-06 | near/s 5.6422e-06 | hits/s 9.3944e-07 | tests/batch 14125732
+[p3] W1 top / W0 bottom: batch x1.0010 | near a batch x1.0186 | near/s x1.0175 | hits/s x1.0169
+[p3] W2 top+onepass / W1 top: batch x0.9726 | near a batch x0.9347 | near/s x0.9610 | hits/s x1.0334
+
+# W2's lower expected near-misses a batch is the vectors, not the kernel: in each card's one-pass gate the same 24 vectors give the same near sum (2.804310e-05) for base, op and opl.
+# 5-minute bins on gold-g4c (mean expected near-misses >= 158,209 a batch, x1e-6 | design hits a batch, x1e-7; starting chunk):
+#   17:30 c184 4.399 6.823 | 17:45 c188 4.395 6.852 | 18:00 c193 4.400 6.836 | 18:10 c196 4.434 6.847 (one-pass from 18:10) | 18:15 c197 4.395 6.825 |
+#   18:20 c199 3.977 6.887 | 18:25 c201 4.033 6.910 | 18:30 c202 3.948 6.894 | 18:35 c204 3.834 6.866
+# The drop starts with chunk 200, the first made from research's 58e95e3 start file (17:42Z). Chunk rows / rows below 158,209 on gold-g4c:
+#   c186 1250.99/1169.0 c188 1251.00/1169.3 c190 1251.00/1169.6 c192 1251.00/1169.3 c194 1251.00/1169.6 c196 1251.00/1169.2 c198 1251.00/1169.5 |
+#   c200 1250.51/1176.8 c202 1250.59/1175.6 c204 1250.62/1175.4 c206 1250.94/1171.8 c208 1251.00/1169.1
+# Fewer rows in all (+~0.8% design hits a batch) but up to ~7 more below 158,209 (-10% near-misses a batch). Put to the lead (18:41Z) and research; kept for now.
