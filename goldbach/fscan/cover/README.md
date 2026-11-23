@@ -278,6 +278,27 @@ weighted rows and `ptcover_wfast.c` the same with the fast move evaluation of
 is subtracted from 64 times the plain count): identical tables, BEST and dump
 for a given seed, 3 to 4 times faster.
 
+Supply of family B (capture-recapture between two independent walks, an
+order of magnitude). On the first 89 primes: about 10,000 covers at ≤ 1,250
+rows, 170,000 at ≤ 1,251, 2.7 million at ≤ 1,252, so some 40 million at
+≤ 1,253. On the first 88 with 491: 24,000 at ≤ 1,248, 290,000 at ≤ 1,249,
+3.7 million at ≤ 1,250, so some 50 million at ≤ 1,251, the same volumes two
+rows lower; emulated producer there: 1,290.6 weighted rows and 175,965 at cap
+1,248, 1,291.0 and 175,915 at cap 1,249. For the ten million vectors the
+large cards use in the rest of the campaign that is about 1,293 weighted rows
+on the 491 set, 1,295 on the first 89 and 1,303 on family A. On the weighted
+measure 491 is also the best 89th prime of all candidates up to 900 (best
+cover 1,287.2 weighted rows; 557: 1,288.2; 523: 1,288.8; 463: 1,289.8). A cap
+on weighted rows does not improve the supply within a family: at 3.6 million
+covers the weighted cap 1,292.5 and the plain cap 1,250 give the same mean
+weighted rows on the 491 set, because within a family the rows above Q
+hardly vary. The gain is in the choice of family, and the producers can keep
+their plain caps. Local weighted descents from family B and from the covers
+designed for 175,000 find nothing better, and family B stays within 100 in
+expected final record of the best cover known for a record of 172,000,
+175,000 or 178,000 (it has 1,341 rows below 180,000 against 1,334 for the
+cover designed for 180,000), so a design hit does not call for new covers.
+
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
 below the best, lower the cap when something better turns up. From the long
