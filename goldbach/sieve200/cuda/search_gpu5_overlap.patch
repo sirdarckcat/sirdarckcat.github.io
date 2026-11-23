@@ -1,0 +1,112 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -42,6 +42,10 @@
+ ap.add_argument("--deep-split", type=int, default=1000000, help="--deep: primes above this go through the large-prime stage")
+ ap.add_argument("--deep-rg", type=int, default=16, help="--deep: rows a group of the large-prime stage")
+ ap.add_argument("--deep-max-rows", type=int, default=1100, help="--deep: rows of the bit matrix (the most rows of any variant)")
++ap.add_argument("--deep-tile-threads", type=int, default=256, help="--deep: CTA size of the tile kernel (128 leaves registers for co-resident Fermat CTAs with --overlap)")
++ap.add_argument("--deep-gen-threads", type=int, default=256, help="--deep: CTA size of the large-prime generate kernel")
++ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
++                help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
+ ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
+ ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
+                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
+@@ -60,6 +64,7 @@
+ from gpu_fermat3 import kernel as kernel3      # noqa: E402
+ sys.path.insert(0, os.path.join(args.sieve200, "cuda"))
+ from gpu_sieve import GpuFeeder               # noqa: E402
++from overlap import overlapped, LruCache     # noqa: E402
+ if args.kernel == 28:
+     sys.path.insert(0, os.environ.get("FERMAT28_DIR", "/content/f28"))
+     import gpu_fermat28                       # noqa: E402
+@@ -86,7 +91,8 @@
+     if args.deep:
+         from deep_feeder import deep_feeder_for                  # noqa: E402  (sieve200/cuda)
+         return deep_feeder_for(_DEEP, spec, B=args.sieve_b, ks_log=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+-                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True))
++                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, gen_threads=args.deep_gen_threads,
++                               tile_threads=args.deep_tile_threads, log=lambda m: print(m, flush=True))
+     key = (spec["name"].split("@")[0], spec["N0"])
+     if key not in _VAR:
+         search.init_spec(spec, args.sieve_b, args.block)       # S, M^-1 mod s cached per M; N0 mod s per call
+@@ -106,18 +112,24 @@
+     return fd
+ 
+ 
++_CQ = LruCache(512)                 # (N0, rows, limbs) -> the device array of N0 - q: ~1.5 us a row to build, 1,092 rows x slices a batch
++
++
+ class MultiTester:
+     """cq rows N0_v - q of every variant in the batch (shared M); test(idx, k) -> uint8 flags."""
+     def __init__(self, specs, limbs=21):
+         M = int(specs[0]["M"])
+         assert all(int(s["M"]) == M for s in specs), "a pool needs one M"
+-        rows, self.off = [], []
++        parts, self.off, n = [], [], 0
+         for s in specs:
+             N0 = int(s["N0"])
+             assert N0 > max(s["residual"]), "N0 - q must be positive"
+-            self.off.append(len(rows))
+-            rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
+-        self.cq = cp.asarray(np.stack(rows))
++            self.off.append(n)
++            part = _CQ.get((N0, tuple(int(q) for q in s["residual"]), limbs),            # the same variants come back in every batch; exact keys
++                           lambda: cp.asarray(np.stack([to_limbs(N0 - int(q), limbs) for q in s["residual"]])))
++            parts.append(part)
++            n += int(part.shape[0])
++        self.cq = parts[0] if len(parts) == 1 else cp.concatenate(parts)
+         self.M = cp.asarray(to_limbs(M, limbs))
+         if args.kernel == 3:                                   # lazy reduction needs 16n < 2^(32L)
+             nmax = max(int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M for sp in specs)
+@@ -195,6 +207,8 @@
+         kv = cp.concatenate([c[1] for c in pool])
+         cnt = cp.concatenate([c[2] for c in pool])
+         cols = cp.concatenate([c[3] for c in pool])
++        if args.overlap:
++            cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
+         pool.clear(); npool[0] = 0
+         tests_m, prp_m, succ_m, g, nl = run_pool(tester, kv, cnt, cols)
+         gt[0] += g; gt[1] += nl
+@@ -208,23 +222,32 @@
+             st[si]["succ"].extend(int(k) for k in kv[m & succ_m].tolist())
+ 
+     K = 1 << args.klog
++    plan = []                                                    # (si, spec, kstart, kmax), checked before any GPU work
+     for si, spec in enumerate(batch):
+-        fd = feeder_for(spec)
+         kstart, kmax = spec["kstart"], spec["kmax"]
+         if spec.get("ceiling_digits"):
+             kcap = int((mpz(10) ** spec["ceiling_digits"] - mpz(spec["N0"])) // mpz(spec["M"]))
+             kmax = min(kmax, kcap + 1)
+         assert kstart % K == 0 and (kmax - kstart) % K == 0, "slices must be whole GPU sieve windows"
+         st[si]["kmax"] = kmax
+-        for w0 in range(kstart, kmax, K):
+-            w = fd.window(w0)
+-            st[si]["alive"] += int(w.alive_total.sum())
+-            st[si]["kdone"] += K
+-            st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
+-            pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), w.rows.astype(cp.int32) + np.int32(tester.off[si])))
+-            npool[0] += int(w.k.size)
+-            if npool[0] >= args.pool:
+-                flush()
++        plan.append((si, spec, kstart, kmax))
++
++    def windows():                                               # the sieve: (slice index, window) in order
++        for si, spec, kstart, kmax in plan:
++            fd = feeder_for(spec)
++            for w0 in range(kstart, kmax, K):
++                yield si, fd.window(w0)
++
++    for si, w in (overlapped(cp, windows()) if args.overlap else windows()):
++        st[si]["alive"] += int(w.alive_total.sum())
++        st[si]["kdone"] += K
++        st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
++        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), w.rows.astype(cp.int32) + np.int32(tester.off[si])))
++        if args.overlap:
++            cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
++        npool[0] += int(w.k.size)
++        if npool[0] >= args.pool:
++            flush()
+     flush()
+     dt = (time.time() - t0) / len(batch)
+     lines, found = [], []

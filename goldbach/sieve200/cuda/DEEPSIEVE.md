@@ -74,3 +74,28 @@ How to run it (all of it needs a GPU run first: `measure_all.sh`, sections 3, 4,
 
 Not done: the sieve of window w+1 on a second stream beside the Fermat rounds of window w (the same idea as for the 2^19 windows); selection of f and B (the research session's model); the rows kernel's index ordering if
 `bench_batch.py` shows the rows phase above ~5% of the window.
+
+## First GPU numbers (RTX PRO 6000, 2026-11-23; the GPU session's `uarch_measure/`) and what they changed
+
+* **Deployed**: `--deep 1` at B = 10^8 has run on the three RTX PRO 6000s since 01:30Z: a batch of 2^26 members takes 2.10 s against 2.00 s for 1e6 and gives x1.42 expected hits: **x1.32 hits/s**.
+  Two bugs the CPU emulation could not catch were found on the first run (a cupy array through `np.asarray`, `Event.elapsed_time`); fixed in f620e9b, and the fake cupy of `test_gpu_sieve_cpu.py` made faithful.
+* **The stage costs 0.030 ns a mark** (2^24 .. 2^28: 0.0301 / 0.0314 / 0.0296), 2-6x my estimate: a 2^25 window at B = 1e8 is 373 ms (11.5 ns a member): tile kernel (small primes, as today) ~60,
+  `gbig_gen` ~215 (pass A, the visits and counts: 3-14 ms; **pass B, the writes: 136-242 ms = 0.020 ns a mark = 49 G marks/s**), apply ~95 (62-109: **266 GB/s of the device's 1,460**).
+* Why (their `bench_pipes.py` part 3): a random 4-byte store into 4 GB runs at 4.4 G/s (a DRAM read-modify-write of a 32-byte sector), into 64 MB (L2-resident) at 136 G/s, 128-byte runs at 325-1,050 G/s.
+  The bins of a group are 430-790 MB, so pass B is somewhere between: ~49 G/s.  And the apply is latency bound: one CTA of 256 threads an SM (64 KB of shared memory) with one 4-byte load in flight keeps
+  ~190 KB in flight, which at ~1 us is ~200 GB/s.
+* Done: `gbig_apply_entries` (f5436df): 16-byte loads, four in flight a thread, all issued before the first atomic (expected ~95 -> ~35 ms a window).
+* Being measured: `sweep_bigprimes.sh` (ppt = primes a thread, rg = rows a group, tile = 17 / 18 / 19, CTA size): if the bins of a group fit the 128 MB L2 (rg 2-4) or longer runs (ppt) help, pass B is
+  limited by partial-sector traffic; if nothing helps it is the request rate and the next step is a staged pass B (marks sorted by bin in shared memory, flushed as runs; chunks of primes with
+  equal expected marks so that a CTA's marks fit the staging buffer).  Each 100 ms a window is ~9% of a production batch.
+* The cost of a mark is what limits B: every decade of B adds only ln(ln 10^(k+1) / ln 10^k) of the marks (+25% from 1e8 to 2^28), so a cheaper mark moves the optimum B up almost for free.
+
+## Overlapping the sieve with the Fermat rounds (`overlap.py`, `search_gpu5_overlap.patch`)
+
+A deep batch is 2.10 s = Fermat 1.24 s + sieve stage 0.75 s + 0.1 s; the stage is bound by the memory system, the Fermat kernel by the integer multiplier, so they can share the GPU.
+`--overlap 1` runs the sieve of window w + 1 in a thread on a non-blocking stream of the highest priority while the caller tests the pool of window w (one window ahead, results in the same order, the
+same numbers).  `git apply goldbach/sieve200/cuda/search_gpu5_overlap.patch` on `search_gpu5.py` as of f43e7f9 (after the deep patch) also adds a cache of the device `N0 - q` arrays (the same variants
+come back every batch: ~48 ms of Python a 64-slice batch), `--deep-tile-threads` / `--deep-gen-threads` (CTA sizes) and syncs where an array made on the sieve stream is dropped by the caller.
+Upper bound: max(1.24, 0.75) + 0.1 = 1.35 s, x1.55 over the present batch; what it really gives depends on how the two kernels share the SMs: the Fermat CTAs (5 an SM, 128 threads, 92-102 registers)
+leave ~4,000 registers an SM, so a 256-thread sieve CTA cannot sit beside them (try `--deep-tile-threads 128`); the high priority lets sieve CTAs take an SM as soon as a Fermat CTA (~1 ms) retires.
+`test_overlap_cpu.py` tests the helper (order, run-ahead bound, error propagation, the cache) with a stub cupy.
