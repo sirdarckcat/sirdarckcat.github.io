@@ -5,6 +5,7 @@ import GoldbachGaps.Counting
 import GoldbachGaps.CoverBound
 import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
+import GoldbachGaps.CompleteCover
 import GoldbachGaps.Record150
 import GoldbachGaps.Record199
 import GoldbachGaps.Record199_g125269
@@ -70,6 +71,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
+* `CompleteCover` – the same test with no residuals read as divisibility: every prime `q`
+               of a block has `N - q` divisible by a covering modulus, so the bound on the
+               least summand needs no primality or compositeness test
+               (`scripts/gen_cover.py` generates instances).
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
