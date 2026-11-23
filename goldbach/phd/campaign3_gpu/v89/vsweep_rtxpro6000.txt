@@ -1,0 +1,17 @@
+# Keep fraction in vector mode (vsweep.sh) on gold-g4 (RTX PRO 6000), 2026-11-23 11:52:18-11:54:51Z: the production vector config (29-bit kernel, r32, pipeline depth 4,
+# batches of 4) on the same 24 test vectors (one 2^24 window each from k_lo) at each f; f = 0.97 again last (drift control), then r8: f = 0.97 with DEEP_RCTA=8 and
+# --deep-gen-threads 512. batch s: mean of batches 2-5 (batch 1 untimed, batch 6 the tail). near / hits: the expected near-misses >= 157,837 and design hits of the tested
+# members (--log-near-exp), per batch. A measurement: production stays at f = 0.97 (a design change, for the lead).
+
+f         batch s batches  near/batch  hits/batch  tests/batch      near/s  x f0.97      hits/s  x f0.97  gaps | errors
+f_0.96      1.890       6  8.8875e-06  1.2570e-06     37609600  4.7017e-06   0.9417  6.6498e-07   0.9341  [1.87, 1.886, 1.913, 1.892, 1.659] | []
+f_0.965     1.692       6  8.2362e-06  1.1694e-06     32906491  4.8678e-06   0.9749  6.9113e-07   0.9708  [1.685, 1.696, 1.694, 1.693, 1.479] | []
+f_0.97      1.508       6  7.5295e-06  1.0736e-06     28230246  4.9930e-06   1.0000  7.1192e-07   1.0000  [1.502, 1.514, 1.526, 1.49, 1.261] | []
+f_0.975     1.324       6  6.7832e-06  9.7240e-07     23528986  5.1244e-06   1.0263  7.3460e-07   1.0319  [1.344, 1.31, 1.322, 1.318, 1.072] | []
+f_0.98      1.134       6  5.9663e-06  8.6095e-07     18827812  5.2628e-06   1.0540  7.5944e-07   1.0667  [1.159, 1.104, 1.119, 1.153, 0.858] | []
+f_0.985     0.939       6  5.0629e-06  7.3694e-07     14127868  5.3917e-06   1.0798  7.8479e-07   1.1024  [0.932, 0.926, 0.963, 0.935, 0.674] | []
+f_0.99      0.751       6  3.9205e-06  5.7665e-07      9418538  5.2204e-06   1.0455  7.6784e-07   1.0786  [0.732, 0.769, 0.774, 0.729, 0.494] | []
+f_0.97b     1.515       6  7.5295e-06  1.0736e-06     28230246  4.9686e-06   0.9951  7.0844e-07   0.9951  [1.505, 1.501, 1.514, 1.541, 1.259] | []
+r8_0.97     1.498       6  7.5295e-06  1.0736e-06     28230246  5.0269e-06   1.0068  7.1676e-07   1.0068  [1.512, 1.486, 1.515, 1.478, 1.25] | []
+r8 (DEEP_RCTA=8, --deep-gen-threads 512, f = 0.97): slice lines vs f_0.97: IDENTICAL | f_0.97b vs f_0.97: IDENTICAL
+VSWEEP-DONE

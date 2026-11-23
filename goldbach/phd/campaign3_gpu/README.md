@@ -442,9 +442,26 @@ Version 3 (22 Nov):
     | gold-l4b (L4) | 10.103 / 10.057 s | 9.705 s | −3.7% |
     | gold-gpu (L4) | 9.861 / 9.788 s | 9.469 s | −3.6% |
     | gold-l4c (L4) | 9.871 / 9.901 s | 9.587 s | −3.0% |
-    | gold-xt4 (T4) | (check running) | | |
+    | gold-xt4 (T4) | 9.633 / 9.611 s | 9.276 s | −3.6% |
 
-    In production the RTX cards now run 1.517 s a batch (1.575 s before), and gold-l4b 9.69 s (about 10.06 s before).
+    All seven GPUs run it since 11:54Z. In production the RTX cards run 1.517 s a batch (1.575 s before), and gold-l4b
+    9.69 s (about 10.06 s before).
+- Keep fraction in vector mode (`v89/vsweep.sh`, `v89/vsweep_rtxpro6000.txt`; gold-g4, 29-bit kernel, the same 24 windows
+  at each f).
+  - Expected near-misses ≥ 157,837 a second, against f = 0.97:
+
+    | f | 0.96 | 0.965 | 0.97 | 0.975 | 0.98 | 0.985 | 0.99 |
+    |---|---|---|---|---|---|---|---|
+    | batch | 1.890 s | 1.692 s | 1.508 s | 1.324 s | 1.134 s | 0.939 s | 0.751 s |
+    | near-misses a second | ×0.942 | ×0.975 | ×1 | ×1.026 | ×1.054 | ×1.080 | ×1.046 |
+    | design hits a second | ×0.934 | ×0.971 | ×1 | ×1.032 | ×1.067 | ×1.102 | ×1.079 |
+
+  - A repeat of f = 0.97 came within 0.5%.
+  - At f = 0.985 a card uses its vectors ×1.6 faster, and the vector supply at the row cap is research's question.
+    Production stays at f = 0.97 until the lead decides, since this is a design change.
+  - DEEP_RCTA=8 with `--deep-gen-threads 512` gave identical slice lines and 1.498 s a batch against 1.508 / 1.515 s (−0.9%).
+    uarch's wcost3 has it at −5.3 ms a 2^24 window of sieve alone (`uarch_measure/wcost3_rtxpro6000.txt`). Both are under
+    the agreed 8 ms bar, so it is not deployed.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
