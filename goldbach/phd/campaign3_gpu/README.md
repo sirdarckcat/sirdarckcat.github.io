@@ -409,6 +409,42 @@ Version 3 (22 Nov):
     - The kernel-28 flags are identical to gmpy2 on 8,192 random (row, k) with k in [k_lo, k_lo + 2^24).
     - The known case: on one vector's 524,288 members from k_lo, the GPU path (skip-frac 0, near-miss 46,171) and a CPU
       brute force (gcd residual, BPSW scan of every member) find the same 23 members, with the same least prime q.
+- 29-bit Fermat kernel (23 Nov, uarch 710585f on ccr-b8c25887-i6tn9f; files in `k29/`), deployed under the lead's standing
+  rule for engine changes.
+  - The kernel has 23 limbs of 29 bits and a 31-bit top Montgomery digit (R = 2^669).
+    - A step costs 805 + 23 multiplications, against 876 + 24 for the 24 × 28-bit kernel.
+    - It covers n < 2^665, against 2^668. N < 10^200 = 2^664.4.
+    - It flags n ≥ 2^665, and the driver then raises.
+  - Step files: `fermat29_step_s1.cuh` (asm 1) on the RTX PRO 6000s, `fermat29_step_s1w.cuh` (asm 0) on the L4s and the T4.
+  - The driver takes uarch's `search_gpu5_k29.patch`: its kernel-28 n-range assertion follows the step file
+    (`gpu_fermat28.step_nmax`).
+  - First light (`t29.sh`, `first_light_*.txt`).
+    - 0 mismatches against gmpy2 on 2,000 candidates, on an 88-moduli spec and on an 89-moduli vector window.
+    - Tests a second rose ×1.057 on both cards: 23.29M to 24.62M on the RTX, 4.47M to 4.73M on the L4.
+  - Each card ran its own check before its deploy.
+    - The RTX cards ran `k29v.sh` and then `deploy_k29r.py` (`identity_rtxpro6000.txt`).
+      - 24 vector windows had slice lines identical to production's, with no range errors.
+      - The vector known case found the same 23 (k, q) as the CPU brute force.
+    - The L4s and the T4 ran `k29l2.sh` (`identity_l4_t4.txt`).
+      - 8 production windows just below 2^30 had identical slice lines.
+      - 146,191's member, under its Q = 150,000 residual (`nm150_v77.json`), was reported with g = 146,191 by both the normal
+        and the deep sieve.
+      - The script deploys only if the 29-bit batch is also at least 1% faster.
+      - The campaign has to be stopped for about 3 minutes: a card that size holds one sieve matrix only. The first version
+        (`k29l.sh`) only paused it, and its runs ran out of memory: the paused process held 22.2 of the L4's 23.0 GB.
+  - Batch times:
+
+    | card | production | 29-bit | change |
+    |---|---|---|---|
+    | gold-g4c (RTX PRO 6000) | 1.582 / 1.575 s | 1.510 s | −4.3% |
+    | gold-g4 (RTX PRO 6000) | 1.577 / 1.570 s | 1.516 s | −3.7% |
+    | gold-g4b (RTX PRO 6000) | 1.564 / 1.567 s | 1.501 s | −4.1% |
+    | gold-l4b (L4) | 10.103 / 10.057 s | 9.705 s | −3.7% |
+    | gold-gpu (L4) | 9.861 / 9.788 s | 9.469 s | −3.6% |
+    | gold-l4c (L4) | 9.871 / 9.901 s | 9.587 s | −3.0% |
+    | gold-xt4 (T4) | (check running) | | |
+
+    In production the RTX cards now run 1.517 s a batch (1.575 s before), and gold-l4b 9.69 s (about 10.06 s before).
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
