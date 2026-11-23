@@ -175,8 +175,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`discr_sub_general`), and the number of irreducible factors of `N - Q` is even
                exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` (`even_card_factors_iff`), which
                decides every row, also of a degree divisible by the characteristic
-               (`desert_general`). `scripts/parity_check/gen_parity.py` compares the general
-               formula with full factorisations over `F_3`, `F_5`, `F_7`.
+               (`desert_general`). The desert is not confined to the degrees up to `J + 1`:
+               `N = c · V^p` kills every row of any degree whose derivative has no
+               irreducible factor of degree above `J` (`desert_smooth`), a positive proportion
+               of the rows of each degree. `scripts/parity_check/` compares the general formula
+               with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
+               the rows of higher degree with a smooth derivative (`smooth_rows.py`).
 
 ## Building
 

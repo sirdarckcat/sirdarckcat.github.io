@@ -37,6 +37,12 @@ irreducible factors of `N - Q` is even exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) 
 (`even_card_factors_iff`). This decides every row, including the degrees divisible by the
 characteristic, where about half of the rows are killed (`desert_general`).
 
+The desert is larger than the degrees up to `J + 1`. The hypothesis is only that every
+irreducible factor of `Q'` divides `N`, so `N = c · V^p` kills every row, of any degree below
+`deg N`, whose derivative has no irreducible factor of degree above `J` (`desert_smooth`,
+`desert_smooth_general`): a positive proportion of the rows of each degree, and all but about
+`1 / (J + 1)` of those of degree `J + 2`.
+
 The statement and its numerical confirmation are the research session's
 (`goldbach/sublinear/README.md`, Result 1).
 -/
@@ -632,6 +638,58 @@ theorem desert_general (hF : ringChar F ≠ 2)
     intro hirr
     rw [normalizedFactors_irreducible hirr, Multiset.card_singleton] at hev
     exact absurd hev (by decide)
+
+/-- **The desert reaches every degree.** `N = c · V^p` as in `desert`. The rows killed are not
+only those of degree at most `J + 1`: `N - Q` is not irreducible for every monic irreducible
+`Q` of any degree `d < deg N` with `d ≠ 0` in the field whose derivative has no irreducible
+factor of degree above `J`. Among the rows of degree `d` these are a positive proportion
+(the proportion of polynomials of degree `d - 1` that are `J`-smooth), e.g. all but about
+`1 / (J + 1)` of the rows of degree `J + 2`. -/
+theorem desert_smooth (hF : ringChar F ≠ 2)
+    (hq : IsSquare (Fintype.card F)) {V : F[X]} {J : ℕ} {c : F} (hVm : V.Monic)
+    (hV : ∀ π : F[X], Irreducible π → π.natDegree ≤ J → π ∣ V) (hc : ¬IsSquare c)
+    {Q : F[X]} (hQ : Q.Monic) (hQi : Irreducible Q) (hd : (Q.natDegree : F) ≠ 0)
+    (hlt : Q.natDegree < (C c * V ^ ringChar F).natDegree)
+    (hsm : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π.natDegree ≤ J) :
+    ¬Irreducible (C c * V ^ ringChar F - Q) := by
+  have : CharP F (ringChar F) := ringChar.charP F
+  have hp : (ringChar F).Prime := CharP.char_is_prime F (ringChar F)
+  have hNl : (C c * V ^ ringChar F).leadingCoeff = c := by
+    rw [leadingCoeff_mul, leadingCoeff_C, (hVm.pow _).leadingCoeff, mul_one]
+  have hN' : derivative (C c * V ^ ringChar F) = 0 := by
+    rw [derivative_C_mul, derivative_pow, CharP.cast_eq_zero F (ringChar F), C_0, zero_mul,
+      zero_mul, mul_zero]
+  refine not_irreducible_sub_of_isSquare_card hF hq hQ hQi hN' hd hlt ?_ ?_
+  · intro π hπ hπQ'
+    exact ((hV π hπ (hsm π hπ hπQ')).trans (dvd_pow_self V hp.ne_zero)).mul_left _
+  · rw [hNl]
+    exact hc
+
+/-- The same for every row, with the sign criterion of `even_card_factors_iff` in place of
+`d ≠ 0`. -/
+theorem desert_smooth_general (hF : ringChar F ≠ 2)
+    (hq : IsSquare (Fintype.card F)) {V : F[X]} {J : ℕ} {c : F} (hVm : V.Monic)
+    (hV : ∀ π : F[X], Irreducible π → π.natDegree ≤ J → π ∣ V) (hc : ¬IsSquare c)
+    {Q : F[X]} (hQ : Q.Monic) (hQi : Irreducible Q)
+    (hlt : Q.natDegree < (C c * V ^ ringChar F).natDegree)
+    (hsm : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π.natDegree ≤ J)
+    (hsign : (-1 : ℤ) ^ (Q.natDegree + 1 + (derivative Q).natDegree)
+        * quadraticChar F (derivative Q).leadingCoeff
+          ^ ((C c * V ^ ringChar F).natDegree - Q.natDegree) = 1) :
+    ¬Irreducible (C c * V ^ ringChar F - Q) := by
+  have : CharP F (ringChar F) := ringChar.charP F
+  have hp : (ringChar F).Prime := CharP.char_is_prime F (ringChar F)
+  have hNl : (C c * V ^ ringChar F).leadingCoeff = c := by
+    rw [leadingCoeff_mul, leadingCoeff_C, (hVm.pow _).leadingCoeff, mul_one]
+  have hN' : derivative (C c * V ^ ringChar F) = 0 := by
+    rw [derivative_C_mul, derivative_pow, CharP.cast_eq_zero F (ringChar F), C_0, zero_mul,
+      zero_mul, mul_zero]
+  have hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ C c * V ^ ringChar F :=
+    fun π hπ hπQ' => ((hV π hπ (hsm π hπ hπQ')).trans (dvd_pow_self V hp.ne_zero)).mul_left _
+  have hev := (even_card_factors_iff hF hq hQ hQi hN' hlt hrad (by rw [hNl]; exact hc)).mpr hsign
+  intro hirr
+  rw [normalizedFactors_irreducible hirr, Multiset.card_singleton] at hev
+  exact absurd hev (by decide)
 
 end FiniteField
 
