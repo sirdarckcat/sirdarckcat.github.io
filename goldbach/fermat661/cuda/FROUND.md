@@ -29,3 +29,12 @@ PRP probability 0 to 1, empty and one-row lists, the two halves of a split pool,
 3. `--profile-pool 1` prints the `[profile-pool]` line for both (`[fused rounds]` in the second): the gap per round is the number (2.2 ms alone, expected ~0.2-0.3 ms); then the batch time over >= 50 batches with the a2 pipeline.
    What it can and cannot do: it removes the host time and the exposure of ~90 small kernels a round to the sieve's priority; it does not change the Fermat kernel, so the x1.08 slowdown of the kernels beside the sieve stays.
    Expected: 0 to +6% on the RTX cards (the 0.13 s of sieve-induced gap is the ceiling), ~+2% on L4 / T4 (7% gaps, 5x longer rounds); not measured.
+
+
+## Measured (GPU session, 23 Nov 12:26-12:35Z, RTX PRO 6000, f = 0.985, the same 24 vector windows, slice lines IDENTICAL in every run; `phd/campaign3_gpu/fround/`)
+
+* `--fused-rounds 1` alone (frab.sh, gold-g4b): **0.869 s a batch against 0.940 s (x0.924)**; the second pair of runs 0.874 / 0.942.  `--profile-pool` (both paths print the line): a half-pool of 503,808 members, 36-41 rounds, Fermat kernels 0.34-0.41 s,
+  run_pool wall 0.681-0.691 s without, 0.640-0.646 s with: the gap per pool fell from 0.33-0.35 s to 0.24-0.30 s.
+* Together with `DEEP_RCTA=8` and 512 generate threads (x0.983 alone, r8f.sh): **0.846 / 0.855 / 0.847 s a batch against 0.949 / 0.948 / 0.947 s on the three RTX cards (-10%)**; both checked on each card (identity, the vector known case, >= 1% faster) and
+  deployed 12:30:45-12:31:09Z.  The estimate was 0 to +6%; it was +8.2% (x0.924).
+* What it means for the next items: a batch is now ~0.85 s for ~0.95 s of GPU work (Fermat kernels ~0.57 s alone, sieve ~0.38 s alone), so the two share the GPU almost serially (~12% overlap): **a millisecond of either is worth ~0.5% of a batch**.

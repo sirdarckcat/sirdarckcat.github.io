@@ -412,3 +412,21 @@ head rows of the kept members removed (the model says 11.11%)**; predicted fall 
 (my guess was 7-15; the two-pass staged prototype of headcost.sh was 15.4 ms at rcta 8).  Then the 24 test vector windows through the production driver, the base run (`--dump-members`) and the head run: production / base slice lines identical (24 / 24),
 **per-member dumps identical for 12,091,392 members (`compare_dumps.py`: DUMPS-IDENTICAL) with 8.42% fewer counted tests (169,381,475 -> 155,111,986)**, logged expected hits and near-misses x0.9998.  Deployed on gold-g4c at 12:06:49Z for a production A/B
 against gold-g4 / gold-g4b.  Expected: 8.42% of ~1.15 s of Fermat kernel time a batch = -97 ms, minus 4 x 11.5 ms of sieve work x ~0.55 = +25 ms: ~-4.5% a batch.
+
+
+## Where the 88 ms of a vector window go, and three opt-in experiments on the tile kernel (23 Nov 2026, 12:55Z; CPU-verified, not yet timed)
+
+**What is known.**  A 2^24 window (1,248 rows, B = 1e8) takes 88.5 ms of "sieve (gen + tiles)", 99.5 ms with count / select / finalize / rows (bench_batch, wcost2/3).  The GPU session's `bench_pipes.py` on the RTX PRO 6000 (12:26Z):
+a random `ATOMS.AND` costs ~2.7 cycles a warp-op an SM (the same as a random `STS.32` / `LDS.32`), i.e. ~12 marks a clock an SM; every integer op (IADD3, LOP3, SHF, IMAD.U32) ~2 scheduler cycles a warp-op (16 lanes a clock a scheduler);
+a 128-byte-run store 325-1,050 G words/s, a copy of 1 GB 1,460 GB/s.  The tile kernel makes ~1.7e10 marks a window and does ~0.8 marks a clock an SM: **15x below the atomic unit and ~15x below the integer pipes' rate** (3-10 ms each from the counts),
+so neither the atomics nor the arithmetic limits it.  What is left: **latency** (a CTA is 16 warps, 4 a scheduler, 1 CTA an SM because the 2^19-bit bitmap takes 64 KB of shared memory; each prime is a dependent chain: table load, Shoup product,
+two conditional subtractions, a data-dependent loop) and **DRAM** (the large primes make ~6e9 marks a window, 150k per (row, tile) bin, 4 bytes each: 24 GB written by `gbig_gen_st` and 24 GB read by the tile kernel's apply = ~33 ms at the
+copy rate, the size of gen + apply).  `bench_split.py` takes the window apart kernel by kernel (gen, gen pass A, tile, tile without bins / small primes / both) with no host sync in between: it has been asked of the GPU session.
+
+**Three experiments, all opt-in (the default build of every kernel is byte-identical to production), all CPU-verified identical to the CPU feeder (`test_gbatch_cpu.py` with the variable set):**
+* `DEEP_TILE_UNROLL=2|4` (`TILE_UNROLL` in `gbatch_kernels.cuh`): a thread sets up 2 / 4 primes at once - their 16-byte table entries loaded together, their Shoup chains computed together (independent chains instead of one) - and then runs their mark loops one
+  after the other.  Same marks, same bits.  SASS (sm_120): 392 -> 416 / 496 instructions, still 40 registers.
+* `DEEP_TILE_PREFETCH=N` (`TILE_PREFETCH_KB`): at kernel start every thread issues `prefetch.global.L2` (`CCTL.E.PF2`) for the first N KB of this CTA's bin, which the apply reads ~100 us later, after the marks; the DRAM read overlaps the atomics.
+* `DEEP_TILE_LOG=18` (read by `DeepSieve`; `bench_split.py --tile 18`): tiles of 2^18 bits = 32 KB of shared memory: 3 tile CTAs an SM (48 warps) instead of 1 (16), twice the tiles (more table traffic and visits), bins half the size.
+Decision rule: a variant is worth a deployment test if the TILE KERNEL line of `bench_split.py` falls by >= 8 ms a window (~0.5% of a batch a millisecond at the present batch of ~0.85 s: the sieve and the Fermat kernels now share the GPU almost serially).
+If the large-prime stage is DRAM-bound, the next step is fewer bytes a mark (3 marks of 21 bits in a u64: -33%), not more occupancy.

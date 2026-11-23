@@ -29,15 +29,15 @@ _BCACHE = {}
 _NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply", "ghead_gen", "ghead_apply")
 
 
-def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None):
+def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None, tile_unroll=1, tile_prefetch=0):
     """tile_lb: None, or (threads, min CTAs an SM) for __launch_bounds__ of the tile kernel: DEEP_TILE_MAXREG=32 with 128-thread tile CTAs makes a CTA that needs 128 x 32 = 4,096 registers, which is what
     5 resident Fermat CTAs (92 registers x 128 threads, 12,288 each) leave free on an SM of 65,536"""
-    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb)
+    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, tile_unroll, tile_prefetch)
     if key not in _BCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {ks_log}\n#define LLOG {llog}\n#define NTHREADS {nthreads}\n"
                 f"#define S200G_UNROLL 1\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n#define RG {rg}\n#define PPT {ppt}\n"
                 f"#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n"
-                + (f"#define TILE_LB __launch_bounds__({tile_lb[0]}, {tile_lb[1]})\n" if tile_lb else ""))
+                + (f"#define TILE_LB __launch_bounds__({tile_lb[0]}, {tile_lb[1]})\n" if tile_lb else "") + (f"#define TILE_UNROLL {tile_unroll}\n" if tile_unroll > 1 else "") + (f"#define TILE_PREFETCH_KB {tile_prefetch}\n" if tile_prefetch > 0 else ""))
         mod = cp.RawModule(code=head + _SRC)
         _BCACHE[key] = {n: mod.get_function(n) for n in _NAMES}
     return _BCACHE[key]
@@ -50,7 +50,7 @@ class BatchFeeder(GpuFeeder):
         maxreg = int(os.environ.get("DEEP_TILE_MAXREG", "0"))                    # 0: the compiler's choice (40 registers on sm_120)
         tile_lb = (int(tile_threads), max(1, 65536 // (int(tile_threads) * maxreg))) if maxreg else None
         super().__init__(S, INV, U, N0M, klog=ks_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, shared=shared, plain_sieve=False,
-                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb), max_rows=max_rows)
+                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, int(os.environ.get("DEEP_TILE_UNROLL", "1")), int(os.environ.get("DEEP_TILE_PREFETCH", "0"))), max_rows=max_rows)
         self.tile_log, self.rg, self.tile_threads = tile_log, rg, tile_threads
         self.staged, self.rcta, self.stage_cap, self.ppt = bool(staged), int(rcta), int(stage_cap), int(ppt)
         self.ntiles = 1 << (ks_log - tile_log)

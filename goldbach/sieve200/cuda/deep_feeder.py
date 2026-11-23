@@ -65,6 +65,7 @@ class DeepSieve:
         a driver script can switch it without a new patch.
         head_b / head_rows: the DEEP HEAD (ghead.py): the primes in (B, head_b] on the first head_rows rows, applied after the selection to the kept members' lists (0: none)"""
         from gbatch import BatchFeeder                                   # (imports cupy)
+        tile_log = int(os.environ.get("DEEP_TILE_LOG", tile_log))         # DEEP_TILE_LOG=18: tiles of 2^18 bits (32 KB of shared memory: 3 tile CTAs an SM instead of 1); the driver passes no tile_log
         staged = bool(int(os.environ.get("DEEP_STAGED", "0"))) if staged is None else bool(staged)
         rcta = int(os.environ.get("DEEP_RCTA", "2")) if rcta is None else int(rcta)
         stage_cap = int(os.environ.get("DEEP_STAGE_CAP", "8192")) if stage_cap is None else int(stage_cap)

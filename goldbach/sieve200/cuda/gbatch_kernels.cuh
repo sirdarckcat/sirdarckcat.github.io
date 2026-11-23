@@ -8,6 +8,12 @@
 #ifndef TILE_LB
 #define TILE_LB   /* a driver may define __launch_bounds__(threads, minCTAs) (DEEP_TILE_MAXREG) so that a tile CTA fits in the registers resident Fermat CTAs leave free */
 #endif
+#ifndef TILE_PREFETCH_KB
+#define TILE_PREFETCH_KB 0   /* DEEP_TILE_PREFETCH: KB of this CTA's bin to ask the L2 for at kernel start (prefetch.global.L2), so that the apply, which reads the bin AFTER the small primes' marks, finds it there */
+#endif
+#ifndef TILE_UNROLL
+#define TILE_UNROLL 1   /* primes a thread sets up together in the small-prime loop (DEEP_TILE_UNROLL): 1 = the original loop, 2 / 4 = the table loads and the Shoup chains of that many primes in flight at once */
+#endif
 /* TABT[tile * nS + p] = {s, M^-1, invp, c0 of the tile}: c0 = (N0 M^-1 + k0 + tile 2^TILE_LOG) mod s */
 extern "C" __global__ void s200g_prep_tiles(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TABT) {
     const int p = blockIdx.x * blockDim.x + threadIdx.x;
@@ -34,7 +40,47 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
     const u32 q = U[row0 + rr];
     const uint4 *tab = TABT + (size_t)tile * nS;
     for (u32 i = threadIdx.x; i < TILE_WORDS; i += blockDim.x) bm[i] = 0xFFFFFFFFu;
+#if TILE_PREFETCH_KB > 0 && (defined(__CUDA_ARCH__) || defined(__CUDACC_RTC__))
+    {   /* the bin of this (row, tile) is read only after the marks of the small primes (~100 us of shared-memory atomics a CTA): its first TILE_PREFETCH_KB KB are fetched from DRAM meanwhile */
+        const u32 pb_bin = (u32)rr * NTILES + tile;
+        u32 pn_ = gcnt[pb_bin];
+        if (gcnt[NBINS] != 0u) pn_ = 0u;
+        u32 pbytes = pn_ * 4u;
+        if (pbytes > TILE_PREFETCH_KB * 1024u) pbytes = TILE_PREFETCH_KB * 1024u;
+        const char *pbase = (const char *)(bins + (size_t)pb_bin * cap);
+        for (u32 off = threadIdx.x * 128u; off < pbytes; off += blockDim.x * 128u) asm volatile("prefetch.global.L2 [%0];" :: "l"(pbase + off));
+    }
+#endif
     __syncthreads();
+#if TILE_UNROLL > 1
+    /* The loop below has one dependent chain a prime (a table load, the Shoup product, two conditional subtractions, then a data-dependent loop of marks) and a CTA has only 16 warps, 4 a scheduler:
+       the SM issues ~0.36 warp-instructions a cycle (SASS: 129 instructions for 16 marks, 37 a prime; the shared-memory atomics run at ~12 marks a clock an SM and the kernel at ~0.8).  Here
+       TILE_UNROLL primes' entries are loaded together, their start offsets computed together (independent chains), then their mark loops run one after the other: the same marks, the same bits. */
+    for (int pb = threadIdx.x; pb < nS; pb += blockDim.x * TILE_UNROLL) {
+        uint4 t[TILE_UNROLL];
+        #pragma unroll
+        for (int u = 0; u < TILE_UNROLL; u++) {
+            const int pp = pb + u * (int)blockDim.x;
+            if (pp < nS) t[u] = tab[pp];
+            else { t[u].x = 1; t[u].y = 0; t[u].z = 0; t[u].w = 0; }
+        }
+        u32 j[TILE_UNROLL];
+        #pragma unroll
+        for (int u = 0; u < TILE_UNROLL; u++) {
+            const u32 s = t[u].x;
+            u32 a = q * t[u].y - __umulhi(q, t[u].z) * s;
+            if (a >= s) a -= s;
+            u32 jj = a + s - t[u].w;
+            if (jj >= s) jj -= s;
+            j[u] = (pb + u * (int)blockDim.x < nS) ? jj : (u32)TILE_BITS;      /* past the table: no marks */
+        }
+        #pragma unroll
+        for (int u = 0; u < TILE_UNROLL; u++) {
+            const u32 s = t[u].x;
+            for (u32 jj = j[u]; jj < TILE_BITS; jj += s) atomicAnd(&bm[jj >> 5], __funnelshift_l(0xFFFFFFFEu, 0xFFFFFFFEu, jj));
+        }
+    }
+#else
     int p = threadIdx.x;
     uint4 t_n;
     t_n.x = 1; t_n.y = 0; t_n.z = 0; t_n.w = 0;
@@ -50,6 +96,7 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
         if (j >= s) j -= s;
         for (; j < TILE_BITS; j += s) atomicAnd(&bm[j >> 5], __funnelshift_l(0xFFFFFFFEu, 0xFFFFFFFEu, j));
     }
+#endif
     __syncthreads();
     const u32 bin = rr * NTILES + tile;
     u32 n = gcnt[bin];
