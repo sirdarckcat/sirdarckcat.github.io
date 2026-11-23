@@ -127,6 +127,11 @@ def rows (φ : List (List Literal)) (n : ℕ) : List ℕ :=
 theorem length_mods (φ : List (List Literal)) (n : ℕ) : (mods φ n).length = n := by
   simp [mods]
 
+theorem prime_of_mem_mods (φ : List (List Literal)) (n : ℕ) {r : ℕ} (hr : r ∈ mods φ n) :
+    r.Prime := by
+  obtain ⟨i, -, rfl⟩ := List.mem_map.mp hr
+  exact bigPrime_prime _ i
+
 theorem nodup_mods (φ : List (List Literal)) (n : ℕ) : (mods φ n).Nodup :=
   List.Nodup.map (bigPrime_strictMono _).injective List.nodup_range
 
