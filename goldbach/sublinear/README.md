@@ -402,7 +402,8 @@ argument might have missed (the 62 with at most 8 rows left, the 1,965 with at
 most 10, the 256 successes): they are spread evenly over [0, 10^9) (the
 successes lean to large N, where primes are rarer); modulo each small prime
 they sit in several good classes, not one (class 2 mod 5 for 73% of them,
-class 3 for 19%; no class above 30% modulo 7 or beyond); they have 1.3
+class 3 for 19%; the most popular class holds 30% modulo 7 and less beyond);
+they have 1.3
 standard deviations more incidences with the primes from 31 to 199 than a
 random number, the successes 0.35; and two of the 62 best agree modulo 0.49 of
 those primes on average, against 0.45 by chance. They are independent
