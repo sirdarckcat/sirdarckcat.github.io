@@ -10,6 +10,10 @@ import numpy as np
 import gmpy2
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from fm_geom import geometry
+
+W, NLIMB, NMAX = geometry(os.environ.get("FM28_STEP", "fermat28_step.cuh"))      # (28, 24, 668), or (29, 23, 663) for fermat29_step_*.cuh
 
 
 def build():
@@ -51,7 +55,7 @@ def main():
         bad = pos = 0
         for n, g in zip(ns, got):
             bl = n.bit_length()
-            if not (642 <= bl <= 668) or n % 2 == 0:
+            if not (642 <= bl <= NMAX) or n % 2 == 0:
                 exp = 2
             else:
                 exp = 1 if pow(2, n - 1, n) == 1 else 0
@@ -66,34 +70,34 @@ def main():
     # the residue itself: y = 2^(1-n) mod n for many random n (a wrong carry shows up here even when the verdict is 0 anyway)
     print("final residue 2^(1-n) mod n (kernel y before the last reduction), random n")
     nres = max(a.count * 10, 1000)
-    ns = [rnd(rng.randint(642, 668)) for _ in range(nres)]
-    dbg = np.zeros((nres, 24), dtype=np.uint32)
+    ns = [rnd(rng.randint(642, NMAX)) for _ in range(nres)]
+    dbg = np.zeros((nres, NLIMB), dtype=np.uint32)
     lib.set_dbg(dbg.ctypes.data)
     CQ = np.stack([to_limbs(n) for n in ns])
     run(CQ, to_limbs(0), np.arange(nres), np.zeros(nres, dtype=np.uint32))
     bad = 0
     for n, row in zip(ns, dbg):
-        y = sum(int(v) << (28 * i) for i, v in enumerate(row))
+        y = sum(int(v) << (W * i) for i, v in enumerate(row))
         bad += (y >= 4 * n) or (y % n != pow(2, -(n - 1), n))
-    print(f"  {'residues, 642..668 bits':<44s} {nres:5d} numbers  wrong {bad}")
+    print(f"  {'residues, 642..' + str(NMAX) + ' bits':<44s} {nres:5d} numbers  wrong {bad}")
     ok &= bad == 0
     print("arbitrary numbers (M = 0, k = 0)")
-    for bits in (668, 665, 664, 663, 661, 660, 655, 650, 646, 642, 669):
+    for bits in sorted({NMAX, NMAX - 3, NMAX - 4, NMAX - 5, 661, 660, 655, 650, 646, 642, NMAX + 1}, reverse=True):
         check_numbers(f"random odd, {bits} bits", [rnd(bits) for _ in range(a.count // 3)])
-    check_numbers("out of range: 641, 670, 672 bits, even", [rnd(641), rnd(670), rnd(672), rnd(664) - 1, rnd(650) + 1 if False else rnd(650) - 1])
-    check_numbers("primes 642..668 bits", [int(gmpy2.next_prime(gmpy2.mpz(rnd(rng.randint(642, 667))))) for _ in range(a.count // 3)])
+    check_numbers("out of range: 641, NMAX + 2, 672 bits, even", [rnd(641), rnd(NMAX + 2), rnd(672), rnd(NMAX - 4) - 1, rnd(650) - 1])
+    check_numbers("primes 642..NMAX bits", [int(gmpy2.next_prime(gmpy2.mpz(rnd(rng.randint(642, NMAX - 1))))) for _ in range(a.count // 3)])
     ps = []
     while len(ps) < 12:
         p = int(gmpy2.next_prime(gmpy2.mpz(rnd(330))))
         for kk in range(2, 600, 2):
             q = kk * (p - 1) + 1
             n = p * q
-            if q > 2 and gmpy2.is_prime(q) and pow(2, n - 1, n) == 1 and 642 <= n.bit_length() <= 668:
+            if q > 2 and gmpy2.is_prime(q) and pow(2, n - 1, n) == 1 and 642 <= n.bit_length() <= NMAX:
                 ps.append(n)
                 break
     check_numbers("base-2 pseudoprimes", ps)
-    check_numbers("edge values", [(1 << 664) - 1, (1 << 664) + 1, (1 << 665) - 1, (1 << 668) - 1, (1 << 668) + 3, (1 << 642) | 1,
-                                  (1 << 643) - 1, (1 << 663) + 7, (1 << 669) - 1])
+    check_numbers("edge values", [(1 << (NMAX - 4)) - 1, (1 << (NMAX - 4)) + 1, (1 << (NMAX - 3)) - 1, (1 << NMAX) - 1, (1 << NMAX) + 3, (1 << 642) | 1,
+                                  (1 << 643) - 1, (1 << (NMAX - 5)) + 7, (1 << (NMAX + 1)) - 1])
     # campaign 3 style: n = N0 - q + k M
     print("campaign 3 style: n = N0 - q + k M with 21 x u32 limbs")
     camp = json.load(open(os.path.join(HERE, "..", "..", "phd", "campaign3", "base_spec.json")))
@@ -108,7 +112,7 @@ def main():
         bad = pos = oor = 0
         for i, k, g in zip(idx.tolist(), kv.tolist(), got):
             n = N0 - U[i] + k * M
-            if not (642 <= n.bit_length() <= 668):
+            if not (642 <= n.bit_length() <= NMAX):
                 exp = 2; oor += 1
             else:
                 exp = 1 if pow(2, n - 1, n) == 1 else 0
@@ -116,6 +120,37 @@ def main():
             bad += int(g) != exp
         print(f"  {name:<44s} {cnt:5d} tests    positives {pos:4d}  out-of-range {oor}  wrong {bad}", flush=True)
         ok &= bad == 0
+    # vector mode (89 moduli, M of 193 digits): n = N0 - q + kM, k from the first 200-digit k up (n between 10^199 and 8.9 x 10^199 < 2^663: in range of the 28- and of the 29-bit kernels)
+    print("vector mode: n = N0 - q + k M, 89 moduli, k from the first 200-digit k")
+    vs = json.load(open(os.path.join(HERE, "vector89_spec.json")))
+    vN0, vM, vU = int(vs["N0"]), int(vs["M"]), vs["residual"]
+    klo = -(-10 ** 199 // vM)
+    vCQ = np.stack([to_limbs(vN0 - q) for q in vU])
+    cnt = a.count
+    kv = np.array([rng.randrange(klo, klo + (1 << 24)) for _ in range(cnt)], dtype=np.uint32)
+    idx = np.array([rng.randrange(len(vU)) for _ in range(cnt)], dtype=np.int32)
+    got = run(vCQ, to_limbs(vM), idx, kv)
+    bad = pos = oor = 0
+    for i, k, g in zip(idx.tolist(), kv.tolist(), got):
+        n = vN0 - vU[i] + k * vM
+        if not (642 <= n.bit_length() <= NMAX):
+            exp = 2; oor += 1
+        else:
+            exp = 1 if pow(2, n - 1, n) == 1 else 0
+        pos += exp == 1
+        bad += int(g) != exp
+    print(f"  {'k in [k_lo, k_lo + 2^24)':<44s} {cnt:5d} tests    positives {pos:4d}  out-of-range {oor}  wrong {bad}", flush=True)
+    ok &= bad == 0 and oor == 0
+    prs = []
+    k = klo
+    while len(prs) < 40:
+        i = rng.randrange(len(vU))
+        if gmpy2.is_prime(vN0 - vU[i] + k * vM):
+            prs.append((i, k))
+        k += rng.randrange(1, 5000)
+    got = run(vCQ, to_limbs(vM), np.array([p[0] for p in prs]), np.array([p[1] for p in prs], dtype=np.uint32))
+    print(f"  {'real primes N0 - q + kM (vector mode)':<44s} {len(prs):5d} tests    all pass: {bool(got.all())}")
+    ok &= bool(got.all())
     # members of one progression that are prime: N0 - q + kM for the prime ones
     prs = []
     k = 1 << 31

@@ -9,16 +9,19 @@
  * conversion, no R mod n.  All values stay below 4n (see FERMAT28.md), so a step needs no compare and subtract.
  */
 #define L32 21
-#define NL 24
-#ifndef MASK28
-#define MASK28 0x0FFFFFFFu
+#ifndef FM_W                       /* the step file of a limb width other than 28 (gen_fermat28.py ... W=29) defines the geometry first */
+#define FM_W 28                    /* bits a limb */
+#define FM_NL 24                   /* limbs */
+#define FM_NMAX 668                /* n below 2^FM_NMAX: 16 n < R */
 #endif
-#define RB 672
+#define NL FM_NL
+#define RB (FM_W * FM_NL)          /* R = 2^RB */
+#define FM_MASK ((1u << FM_W) - 1u)
 
 __device__ __forceinline__ u32 fm28_inv_neg28(u32 lo) {          /* -lo^-1 mod 2^28, lo odd */
     u32 x = (3u * lo) ^ 2u;
     x *= 2u - lo * x; x *= 2u - lo * x; x *= 2u - lo * x;
-    return (0u - x) & MASK28;
+    return (0u - x) & FM_MASK;
 }
 
 __device__ __forceinline__ int fm28_ge(const u32 *a, const u32 *b) {     /* a >= b, 24 limbs */
@@ -37,7 +40,7 @@ __device__ __forceinline__ void fm28_sub(u32 *a, const u32 *b) {         /* a -=
     for (int i = 0; i < NL; i++) {
         u32 v = a[i] - b[i] - br;
         br = (v >> 31) & 1u;
-        a[i] = v & MASK28;
+        a[i] = v & FM_MASK;
     }
 }
 
@@ -57,16 +60,16 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
     int bn = 0;
     #pragma unroll
     for (int j = 0; j < L32; j++) if (n32[j]) bn = 32 * j + 32 - __clz(n32[j]);
-    if (bn < 642 || bn > 668 || !(n32[0] & 1u)) { out[tid] = 2; return; }
+    if (bn < 642 || bn > FM_NMAX || !(n32[0] & 1u)) { out[tid] = 2; return; }
     const int t = bn - 6;
-    /* limbs of 28 bits */
+    /* limbs of FM_W (28) bits */
     u32 n[NL];
     #pragma unroll
     for (int i = 0; i < NL; i++) {
-        const int p = 28 * i, w = p >> 5, b = p & 31;
+        const int p = FM_W * i, w = p >> 5, b = p & 31;
         u32 v = n32[w] >> b;
-        if (b > 4 && w + 1 < L32) v |= n32[w + 1] << (32 - b);
-        n[i] = v & MASK28;
+        if (b > 32 - FM_W && w + 1 < L32) v |= n32[w + 1] << (32 - b);
+        n[i] = v & FM_MASK;
     }
     const u32 np = fm28_inv_neg28(n32[0]);
     /* E = n + 671, c = ceil(E / 2^t), B = c 2^t - E (0 <= B < 2^t), aligned so that its bit t-1 is bit 671 */
@@ -110,7 +113,7 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
     /* start value 2^(672 - c) */
     u32 x[NL];
     {
-        const int e = RB - (int)c, ei = e / 28, eb = e - 28 * ei;
+        const int e = RB - (int)c, ei = e / FM_W, eb = e - FM_W * ei;
         #pragma unroll
         for (int i = 0; i < NL; i++) x[i] = (i == ei) ? (1u << eb) : 0u;
     }
@@ -131,7 +134,7 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
     {                                                             /* the steps leave limbs below 2^29: one carry chain brings them below 2^28 */
         u32 cy = 0;
         #pragma unroll
-        for (int i = 0; i < NL; i++) { const u32 v = x[i] + cy; x[i] = v & MASK28; cy = v >> 28; }
+        for (int i = 0; i < NL; i++) { const u32 v = x[i] + cy; x[i] = v & FM_MASK; cy = v >> FM_W; }
     }
 #endif
     /* y < 4n; reduce and compare with 1 */
@@ -139,7 +142,7 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
     {
         u32 cy = 0;
         #pragma unroll
-        for (int i = 0; i < NL; i++) { u32 v = (n[i] << 1) + cy; n2[i] = v & MASK28; cy = v >> 28; }
+        for (int i = 0; i < NL; i++) { u32 v = (n[i] << 1) + cy; n2[i] = v & FM_MASK; cy = v >> FM_W; }
     }
     if (fm28_ge(x, n2)) fm28_sub(x, n2);                          /* y < 4n: 2n, then n */
     if (fm28_ge(x, n)) fm28_sub(x, n);

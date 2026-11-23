@@ -73,3 +73,17 @@ Step loop of the whole kernel, `ptxas -v` registers (no spills; a 176-byte stack
 * The two PTX snippets: `FM31_ADD96` (`add.cc.u32 / addc.cc.u32 / addc.u32`) and `fm31_mulw` (`mul.wide.u32`).  The compiler's SASS for them is the expected `IADD3` / `IADD3.X` / `IADD3.X`
   and `IMAD.WIDE.U32`, but only a GPU run checks the carries: `python3 test_gpu_fermat31.py specs_variants.json` compares with gmpy2 (it must print `mismatches 0`) and times every variant
   against fermat28 (s1 plain / asm, s2), fermat3 and fermat2 for 64 / 128 / 256 threads a block, with the register caps 72 and 96 as variants.
+
+## Addendum (23 Nov, uarch session): 23 limbs of 29 bits needs no carry groups, models 4% faster on the RTX PRO 6000, and cannot run the campaign's numbers
+
+The 30- and 31-bit radixes lose because a column holds more products than a 64-bit register can add (groups, 96-bit column sums: ~450-1,000 ALU instructions).  29 bits does not: with limbs below 2^29 a column (11 cross products d_i x_j < 2^59,
+the diagonal, 23 reduction products m_i n_j < 2^58, the carry) stays below 46 x 2^58 = 2^63.5.  It has no room for the redundant-limb trick (limbs below 2^30 would overflow), so it needs the carry chain after the doubling, but it has 805 + 23
+multiplications instead of 876 + 24.  Compiled for sm_120 (`gen_fermat28.generate(23, 1, W=29)`, the step in a loop, `bench_fm28_step.py --check`): 1,057 instructions in the loop (828 IMAD) against 1,092 (900) for the production step s1r_asm, and
+1,139 for 24 x 28 bits with the same carry chain: the cost model (3.64 x IMAD + 2.79 x other) gives 3,653 against 3,812 cycles a step: **-4.2%, i.e. +4.3% tests/s** on an RTX PRO 6000 (more on an A100 / L4, where a multiplication costs 4.15-4.5 cycles
+and an ALU instruction a third of that).  `fermat28_kernel.cuh` was generalised for it (`FM_W`, `FM_NL`, `FM_NMAX`, defaults 28 / 24 / 668: the SASS of every existing configuration is byte-identical, sm_120 s1r asm and sm_89 s1rw / s1r checked) and
+the whole 29-bit kernel compiles (sm_120: 88 registers, no spills, 2,024 instructions; sm_89 s1w: 94 registers).
+
+**It does not work for the campaign: R = 2^(29 x 23) = 2^667 and the lazy Montgomery steps need 16 n < R, so n < 2^663, while the 89-moduli vector windows (N0 + kM, M = 4.7e192, k from 2.1e6 to 1.9e7) run from 10^199 = 2^661.1 to 8.9e199 = 2^664.2; only
+k < 7.9e6, a third of a window, is in range.**  (My first estimate of the top, 2^662.8, was an arithmetic error.)  A balanced-digit Montgomery step improves the bound only to 8 n < R (n < 2^664), still short of 10^200 = 2^664.4.  A top limb of 31 bits
+(R = 2^669) breaks the alignment of the upper columns (they come out 2 bits off a limb boundary and need a shift each); 22 limbs of 30 bits do not hold the numbers.  The generator keeps the `W` parameter (the 28-bit files are reproduced byte for byte), the
+kernel keeps the macros; there is no 29-bit step file in the repository.  The right place to use it would be a search with n below 2^663 (N below 3.7e199: an 88-moduli campaign with kmax 2^30 qualifies: N < 1.9e199).
