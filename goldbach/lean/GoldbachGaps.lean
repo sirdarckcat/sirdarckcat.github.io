@@ -162,6 +162,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                reducible for every monic irreducible `Q` of degree at most `J + 1` when `V` is
                divisible by all irreducibles of degree at most `J` (`desert`): a desert with
                no factor exhibited and no congruence paid for the top degree.
+               The condition `d ≠ 0` is not needed: with `e`, `ℓ` the degree and leading
+               coefficient of `Q'`, `discr (N - Q) = ± λ^(n-2-e) ℓ^(n-d) discr Q`
+               (`discr_sub_general`), and the number of irreducible factors of `N - Q` is even
+               exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` (`even_card_factors_iff`), which
+               decides every row, also of a degree divisible by the characteristic
+               (`desert_general`). `scripts/parity_check/gen_parity.py` compares the general
+               formula with full factorisations over `F_3`, `F_5`, `F_7`.
 
 ## Building
 

@@ -29,6 +29,14 @@ proved in `GoldbachGaps.FunctionField.Stickelberger`. With it, unconditionally:
   non-square, `N = c · V^p` has `N - Q` reducible for every monic irreducible `Q` of degree at
   most `J + 1` (degree `J + 1` only if `p ∤ J + 1`).
 
+The condition `d ≠ 0` in the field is not needed. With `e` and `ℓ` the degree and the leading
+coefficient of `Q'` (so `e = d - 1`, `ℓ = d` when `p ∤ d`), `discr_sub_general` reads
+`discr (N - Q) = (-1)^(n(n-1)/2 + n + ne + e + ed + d(d-1)/2) · λ^(n-2-e) · ℓ^(n-d) · discr Q`,
+and over a field with a square number of elements and for a non-square `λ` the number of
+irreducible factors of `N - Q` is even exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1`
+(`even_card_factors_iff`). This decides every row, including the degrees divisible by the
+characteristic, where about half of the rows are killed (`desert_general`).
+
 The statement and its numerical confirmation are the research session's
 (`goldbach/sublinear/README.md`, Result 1).
 -/
@@ -92,6 +100,122 @@ theorem natDegree_derivative_of_monic {Q : F[X]} (hQ : Q.Monic) (hd : (Q.natDegr
   have hdeg : (derivative Q).natDegree = Q.natDegree - 1 :=
     le_antisymm (natDegree_derivative_le Q) (le_natDegree_of_ne_zero (by rw [hc]; exact hd))
   exact ⟨hdeg, by rw [leadingCoeff, hdeg, hc]⟩
+
+/-- The general discriminant identity with every degree and leading coefficient named: `e`
+and `l` are the degree and the leading coefficient of `Q'`. -/
+theorem discr_sub_general_aux {N Q : F[X]} {n d e : ℕ} {lam l : F} (hNn : N.natDegree = n)
+    (hQd : Q.natDegree = d) (hNl : N.leadingCoeff = lam)
+    (hQe : (derivative Q).natDegree = e) (hQl : (derivative Q).leadingCoeff = l)
+    (hQ : Q.Monic) (hN : derivative N = 0) (hQ' : derivative Q ≠ 0) (hlt : d < n)
+    (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N) :
+    discr (N - Q) =
+      (-1) ^ (n * (n - 1) / 2 + n + n * e + e + e * d + d * (d - 1) / 2)
+        * lam ^ (n - 2 - e) * l ^ (n - d) * discr Q := by
+  have hd0 : Q.natDegree ≠ 0 := by
+    intro h0
+    apply hQ'
+    rw [eq_C_of_natDegree_eq_zero h0, derivative_C]
+  have hd1 : 1 ≤ d := by
+    rw [← hQd]
+    exact Nat.one_le_iff_ne_zero.mpr hd0
+  have hed : e < d := by
+    rw [← hQe, ← hQd]
+    exact natDegree_derivative_lt hd0
+  have hN0 : N ≠ 0 := by
+    intro h
+    rw [h, natDegree_zero] at hNn
+    omega
+  have hlam0 : lam ≠ 0 := by
+    rw [← hNl]
+    exact leadingCoeff_ne_zero.mpr hN0
+  have hlt' : Q.natDegree < N.natDegree := by rw [hQd, hNn]; exact hlt
+  -- the polynomial `f = N - Q`
+  have hfn : (N - Q).natDegree = n := by
+    rw [natDegree_sub_eq_left_of_natDegree_lt hlt', hNn]
+  have hfl : (N - Q).leadingCoeff = lam := by
+    rw [leadingCoeff_sub_of_degree_lt (degree_lt_degree hlt'), hNl]
+  have hfc : (N - Q).coeff n = lam := by
+    rw [← hfl, leadingCoeff, hfn]
+  have hfpos : 0 < (N - Q).degree := by
+    rw [← natDegree_pos_iff_degree_pos, hfn]
+    omega
+  have hfd : derivative (N - Q) = C (-1 : F) * derivative Q := by
+    rw [derivative_sub, hN, zero_sub, C_neg, C_1, neg_one_mul]
+  have hQpos : 0 < Q.degree := by
+    rw [← natDegree_pos_iff_degree_pos, hQd]
+    exact hd1
+  have hQc : Q.coeff d = 1 := by
+    rw [← hQd]
+    exact hQ.coeff_natDegree
+  -- the chain of resultants
+  have eA : resultant (N - Q) (derivative (N - Q)) n (n - 1) =
+      (-1) ^ (n * (n - 1) / 2) * lam * discr (N - Q) := by
+    have h := resultant_deriv hfpos
+    rwa [hfn, hfl] at h
+  have hk : n - 1 = e + (n - 1 - e) := by omega
+  have eB0 := resultant_add_right_deg (N - Q) (derivative Q) n e (n - 1 - e) (le_of_eq hQe)
+  rw [← hk, hfc] at eB0
+  have eB : resultant (N - Q) (derivative (N - Q)) n (n - 1) =
+      (-1) ^ n * (lam ^ (n - 1 - e) * ((-1) ^ (n * e) *
+        resultant (derivative Q) (N - Q) e n)) := by
+    rw [hfd, resultant_C_mul_right, eB0, resultant_comm (N - Q) (derivative Q) n e]
+  have eC : resultant (derivative Q) (N - Q) e n =
+      l ^ (n - d) * resultant (derivative Q) (C (-1 : F) * Q) e d := by
+    have h := resultant_congr_of_roots (g := derivative Q) (h₁ := N - Q) (h₂ := C (-1 : F) * Q)
+      (n₁ := n) (n₂ := d) (le_of_eq hfn) ((natDegree_C_mul_le _ _).trans (le_of_eq hQd)) hlt.le
+      (fun π hπ hπd => by
+        have : N - Q - C (-1 : F) * Q = N := by
+          rw [C_neg, C_1]
+          ring
+        rw [this]
+        exact hrad π hπ hπd)
+    rw [hQe, hQl] at h
+    exact h
+  have eD : resultant (derivative Q) (C (-1 : F) * Q) e d =
+      (-1) ^ e * ((-1) ^ (e * d) * resultant Q (derivative Q) d e) := by
+    rw [resultant_C_mul_right, resultant_comm (derivative Q) Q e d]
+  have eE : resultant Q (derivative Q) d e = (-1) ^ (d * (d - 1) / 2) * discr Q := by
+    have h := resultant_deriv hQpos
+    rw [hQd, hQ.leadingCoeff, mul_one] at h
+    have hk2 : d - 1 = e + (d - 1 - e) := by omega
+    have h2 := resultant_add_right_deg Q (derivative Q) d e (d - 1 - e) (le_of_eq hQe)
+    rw [← hk2, hQc, one_pow, one_mul] at h2
+    rw [← h2]
+    exact h
+  -- signs
+  have hs3 : (-1 : F) ^ (n * (n - 1) / 2) * (-1) ^ (n * (n - 1) / 2) = 1 := by
+    rw [← mul_pow]
+    simp
+  have hpow : lam ^ (n - 1 - e) = lam ^ (n - 2 - e) * lam := by
+    rw [← pow_succ]
+    congr 1
+    omega
+  have key : (-1 : F) ^ (n * (n - 1) / 2) * lam * discr (N - Q) =
+      (-1) ^ n * (lam ^ (n - 1 - e) * ((-1) ^ (n * e) * (l ^ (n - d) *
+        ((-1) ^ e * ((-1) ^ (e * d) * ((-1) ^ (d * (d - 1) / 2) * discr Q)))))) := by
+    rw [← eA, eB, eC, eD, eE]
+  apply mul_left_cancel₀ hlam0
+  rw [pow_add, pow_add, pow_add, pow_add, pow_add]
+  linear_combination (-1 : F) ^ (n * (n - 1) / 2) * key - lam * discr (N - Q) * hs3
+    + (-1 : F) ^ (n * (n - 1) / 2) * (-1) ^ n * (-1) ^ (n * e) * (-1) ^ e * (-1) ^ (e * d)
+        * (-1) ^ (d * (d - 1) / 2) * l ^ (n - d) * discr Q * hpow
+
+/-- **The general discriminant identity.** Over any field: if `N' = 0`, `Q` is monic with
+`Q' ≠ 0` and `deg Q < deg N`, and every irreducible factor of `Q'` divides `N`, then with
+`n = deg N`, `d = deg Q`, `e = deg Q'`, `λ` and `ℓ` the leading coefficients of `N` and `Q'`:
+`discr (N - Q) = (-1)^(n(n-1)/2 + n + ne + e + ed + d(d-1)/2) · λ^(n-2-e) · ℓ^(n-d) · discr Q`.
+When `d ≠ 0` in the field this is `discr_sub` (`e = d - 1`, `ℓ = d`); it also covers the
+degrees `d` divisible by the characteristic. -/
+theorem discr_sub_general {N Q : F[X]} (hQ : Q.Monic) (hN : derivative N = 0)
+    (hQ' : derivative Q ≠ 0) (hlt : Q.natDegree < N.natDegree)
+    (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N) :
+    discr (N - Q) =
+      (-1) ^ (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree
+          + N.natDegree * (derivative Q).natDegree + (derivative Q).natDegree
+          + (derivative Q).natDegree * Q.natDegree + Q.natDegree * (Q.natDegree - 1) / 2)
+        * N.leadingCoeff ^ (N.natDegree - 2 - (derivative Q).natDegree)
+        * (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree) * discr Q :=
+  discr_sub_general_aux rfl rfl rfl rfl rfl hQ hN hQ' hlt hrad
 
 /-- The discriminant identity with the degrees and the leading coefficient named. -/
 theorem discr_sub_aux {N Q : F[X]} {n d : ℕ} {lam : F} (hNn : N.natDegree = n)
@@ -382,6 +506,132 @@ theorem desert (hF : ringChar F ≠ 2)
       exact ((hV π hπ (by omega)).trans (dvd_pow_self V hp.ne_zero)).mul_left _
     · rw [hNl]
       exact hc
+
+/-- **The parity theorem for every row.** As `parity_card_factors`, without the condition
+that `deg Q` is not zero in the field: `e` and `ℓ` are the degree and the leading coefficient
+of `Q'`. -/
+theorem parity_card_factors_general (hF : ringChar F ≠ 2) {N Q : F[X]}
+    (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
+    (hlt : Q.natDegree < N.natDegree)
+    (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N) :
+    Squarefree (N - Q) ∧
+      (-1 : ℤ) ^ (N.natDegree + Multiset.card (normalizedFactors (N - Q))) =
+        quadraticChar F (-1) ^ (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree
+            + N.natDegree * (derivative Q).natDegree + (derivative Q).natDegree
+            + (derivative Q).natDegree * Q.natDegree + Q.natDegree * (Q.natDegree - 1) / 2)
+          * quadraticChar F N.leadingCoeff ^ (N.natDegree - 2 - (derivative Q).natDegree)
+          * quadraticChar F (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree)
+          * (-1) ^ (Q.natDegree + 1) := by
+  have hQ' : derivative Q ≠ 0 :=
+    (separable_iff_derivative_ne_zero hQi).mp (PerfectField.separable_of_irreducible hQi)
+  have hsq := squarefree_sub hQi hN hQ' hrad
+  refine ⟨hsq, ?_⟩
+  have h1 := stickelbergerSwan F hF (N - Q) hsq
+  have h2 := stickelbergerSwan F hF Q hQi.squarefree
+  rw [normalizedFactors_irreducible hQi, Multiset.card_singleton] at h2
+  rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h1
+  rw [← h1, discr_sub_general hQ hN hQ' hlt hrad, map_mul, map_mul, map_mul, map_pow, map_pow,
+    map_pow, h2]
+
+/-- **Which rows are killed.** Over a finite field of odd characteristic with a square number
+of elements, for `N` with a non-square leading coefficient: the number of irreducible factors
+of `N - Q` is even exactly when `(-1)^(d + 1 + e) χ(ℓ)^(n - d) = 1`, with `e` and `ℓ` the degree
+and the leading coefficient of `Q'`. For `d` not divisible by the characteristic that is
+always so (`e = d - 1`, `ℓ = d`). -/
+theorem even_card_factors_iff (hF : ringChar F ≠ 2) (hq : IsSquare (Fintype.card F))
+    {N Q : F[X]} (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
+    (hlt : Q.natDegree < N.natDegree)
+    (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N)
+    (hlam : ¬IsSquare N.leadingCoeff) :
+    Even (Multiset.card (normalizedFactors (N - Q))) ↔
+      (-1 : ℤ) ^ (Q.natDegree + 1 + (derivative Q).natDegree)
+        * quadraticChar F (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree) = 1 := by
+  have hQ' : derivative Q ≠ 0 :=
+    (separable_iff_derivative_ne_zero hQi).mp (PerfectField.separable_of_irreducible hQi)
+  have hd0 : Q.natDegree ≠ 0 := by
+    intro h0
+    apply hQ'
+    rw [eq_C_of_natDegree_eq_zero h0, derivative_C]
+  have hed : (derivative Q).natDegree < Q.natDegree := natDegree_derivative_lt hd0
+  obtain ⟨-, h⟩ := parity_card_factors_general hF hQ hQi hN hlt hrad
+  have hm1 : IsSquare (-1 : F) := by
+    simpa using isSquare_intCast_of_isSquare_card hF hq (-1)
+  rw [(quadraticChar_one_iff_isSquare (neg_ne_zero.mpr one_ne_zero)).mpr hm1,
+    quadraticChar_neg_one_iff_not_isSquare.mpr hlam, one_pow, one_mul, pow_add] at h
+  -- signs in `ℤ`
+  have f1 : (-1 : ℤ) ^ N.natDegree =
+      (-1) ^ (N.natDegree - 2 - (derivative Q).natDegree) * (-1) ^ (derivative Q).natDegree := by
+    have e : N.natDegree =
+        (N.natDegree - 2 - (derivative Q).natDegree + (derivative Q).natDegree) + 2 := by omega
+    conv_lhs => rw [e, pow_add, pow_add]
+    simp
+  have f2 : (-1 : ℤ) ^ (N.natDegree - 2 - (derivative Q).natDegree)
+      * (-1) ^ (N.natDegree - 2 - (derivative Q).natDegree) = 1 := by
+    rw [← mul_pow]
+    simp
+  have f3 : (-1 : ℤ) ^ N.natDegree * (-1) ^ N.natDegree = 1 := by
+    rw [← mul_pow]
+    simp
+  have hr : (-1 : ℤ) ^ Multiset.card (normalizedFactors (N - Q)) =
+      (-1) ^ (Q.natDegree + 1 + (derivative Q).natDegree)
+        * quadraticChar F (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree) := by
+    rw [pow_add (-1 : ℤ) (Q.natDegree + 1)]
+    linear_combination
+      (-((-1 : ℤ) ^ Multiset.card (normalizedFactors (N - Q)))) * f3
+      + (-1 : ℤ) ^ N.natDegree * h
+      + ((-1 : ℤ) ^ (N.natDegree - 2 - (derivative Q).natDegree)
+          * quadraticChar F (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree)
+          * (-1) ^ (Q.natDegree + 1)) * f1
+      + ((-1 : ℤ) ^ (derivative Q).natDegree
+          * quadraticChar F (derivative Q).leadingCoeff ^ (N.natDegree - Q.natDegree)
+          * (-1) ^ (Q.natDegree + 1)) * f2
+  rw [← hr]
+  exact (neg_one_pow_eq_one_iff_even (by norm_num)).symm
+
+/-- **The desert, every row.** `N = c · V^p` as in `desert`. For a monic irreducible `Q` of
+degree `d ≤ J + 1` (and `d < deg N`), `N - Q` is not irreducible if `d ≤ J`, or if
+`(-1)^(d + 1 + e) χ(ℓ)^(n - d) = 1` where `e`, `ℓ` are the degree and the leading coefficient of
+`Q'` and `n = deg N`. The second condition holds for every `d` not divisible by `p` and for
+about half of the rows of a degree divisible by `p`. -/
+theorem desert_general (hF : ringChar F ≠ 2)
+    (hq : IsSquare (Fintype.card F)) {V : F[X]} {J : ℕ} {c : F} (hVm : V.Monic)
+    (hV : ∀ π : F[X], Irreducible π → π.natDegree ≤ J → π ∣ V) (hc : ¬IsSquare c)
+    {Q : F[X]} (hQ : Q.Monic) (hQi : Irreducible Q) (hQJ : Q.natDegree ≤ J + 1)
+    (hlt : Q.natDegree < (C c * V ^ ringChar F).natDegree)
+    (hsign : Q.natDegree ≤ J ∨
+      (-1 : ℤ) ^ (Q.natDegree + 1 + (derivative Q).natDegree)
+        * quadraticChar F (derivative Q).leadingCoeff
+          ^ ((C c * V ^ ringChar F).natDegree - Q.natDegree) = 1) :
+    ¬Irreducible (C c * V ^ ringChar F - Q) := by
+  have : CharP F (ringChar F) := ringChar.charP F
+  have hp : (ringChar F).Prime := CharP.char_is_prime F (ringChar F)
+  have hNl : (C c * V ^ ringChar F).leadingCoeff = c := by
+    rw [leadingCoeff_mul, leadingCoeff_C, (hVm.pow _).leadingCoeff, mul_one]
+  have hN' : derivative (C c * V ^ ringChar F) = 0 := by
+    rw [derivative_C_mul, derivative_pow, CharP.cast_eq_zero F (ringChar F), C_0, zero_mul,
+      zero_mul, mul_zero]
+  by_cases hdJ : Q.natDegree ≤ J
+  · intro hirr
+    have hQN : Q ∣ C c * V ^ ringChar F :=
+      ((hV Q hQi hdJ).trans (dvd_pow_self V hp.ne_zero)).mul_left _
+    have hQf : Q ∣ C c * V ^ ringChar F - Q := dvd_sub hQN dvd_rfl
+    have hass : Associated Q (C c * V ^ ringChar F - Q) :=
+      (hQi.dvd_irreducible_iff_associated hirr).mp hQf
+    have h := natDegree_eq_of_degree_eq (degree_eq_degree_of_associated hass)
+    rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h
+    omega
+  · have hs := hsign.resolve_left hdJ
+    have hQ' : derivative Q ≠ 0 :=
+      (separable_iff_derivative_ne_zero hQi).mp (PerfectField.separable_of_irreducible hQi)
+    have hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ C c * V ^ ringChar F := by
+      intro π hπ hπQ'
+      have h1 := natDegree_le_of_dvd hπQ' hQ'
+      have h2 := natDegree_derivative_le Q
+      exact ((hV π hπ (by omega)).trans (dvd_pow_self V hp.ne_zero)).mul_left _
+    have hev := (even_card_factors_iff hF hq hQ hQi hN' hlt hrad (by rw [hNl]; exact hc)).mpr hs
+    intro hirr
+    rw [normalizedFactors_irreducible hirr, Multiset.card_singleton] at hev
+    exact absurd hev (by decide)
 
 end FiniteField
 
