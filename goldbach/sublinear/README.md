@@ -323,6 +323,22 @@ could see the deeper residues would reach the first success two hundred times
 sooner. The miniature is also where any proposed method for (P′) below can be
 tested against the truth in seconds.
 
+What each prime beyond the line is worth, and costs, in the miniature (N
+ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
+100 successes; "overhead" is the number of residue vectors modulo the primes
+up to z per number below X, i.e. the work of pinning those primes by plain
+enumeration):
+
+| z | 29 | 31 | 37 | 43 | 61 | 97 | 200 |
+|---|---|---|---|---|---|---|---|
+| gain, 10 successes | 0.44 | 0.15 | 0.77 | 0.66 | 1.71 | 2.40 | 3.15 |
+| gain, 30 successes | 0.21 | 0.02 | 0.18 | 0.34 | 0.62 | 1.50 | 2.79 |
+| gain, 100 successes | 0.10 | 0.30 | 0.55 | 0.59 | 0.78 | 1.16 | 1.94 |
+| overhead | 6.5 | 201 | 7.4·10^3 | 1.3·10^7 | 1.2·10^14 | 2.3·10^27 | 7.8·10^72 |
+
+A prime just beyond the line buys a fraction of a nat and costs its own size:
+this is point 3 of the next section, measured.
+
 ## Why nothing known collects the prize
 
 The 460.5 nats of 10^200 are exactly enough to *choose* the residues of N
