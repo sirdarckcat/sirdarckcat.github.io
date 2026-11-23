@@ -21,6 +21,25 @@ def source(step_file="fermat28_step.cuh"):
     return _HEAD + open(os.path.join(HERE, step_file)).read() + open(os.path.join(HERE, "fermat28_kernel.cuh")).read()
 
 
+def persist_source(step_file="fermat28_step.cuh"):
+    """The source of the persistent pool kernel `fermat28_persist` (fermat28_persist_kernel.cuh): fermat28_kernel.cuh's kernel body turned into a device function fm28_test(cq, Mv, k, dbg) by
+    exact text replacements (each must match once: the test IS the production kernel's code), followed by the persistent kernel.  The production kernel `fermat28` is not in this module."""
+    kern = open(os.path.join(HERE, "fermat28_kernel.cuh")).read()
+    i = kern.index('extern "C" __global__ void fermat28(')
+    head, body = kern[:i], kern[i:]
+    old_head = ('extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx, const u32 *kv,\n'
+                '                                    unsigned char *out, int T) {\n'
+                '    int tid = blockIdx.x * blockDim.x + threadIdx.x;\n'
+                '    if (tid >= T) return;\n'
+                '    const u32 *cq = CQ + (size_t)idx[tid] * L32;\n'
+                '    const u32 k = kv[tid];\n')
+    new_head = '__device__ __forceinline__ int fm28_test(const u32 *cq, const u32 *Mv, const u32 k, const int tid) {\n'
+    for old, new in ((old_head, new_head), ("{ out[tid] = 2; return; }", "return 2;"), ("    out[tid] = (unsigned char)one;\n}", "    return one;\n}")):
+        assert body.count(old) == 1, f"fermat28_kernel.cuh changed: {old[:60]!r}"
+        body = body.replace(old, new)
+    return _HEAD + open(os.path.join(HERE, step_file)).read() + head + body + open(os.path.join(HERE, "fermat28_persist_kernel.cuh")).read()
+
+
 def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
     """step_file: fermat28_step_s1.cuh / fermat28_step.cuh (2) / fermat28_step_s4.cuh = 1, 2 or 4 independent accumulators per
     column; fermat28_step_s1r.cuh / fermat28_step_r.cuh are the same with redundant limbs (no carry chain after the doubling, see
@@ -38,6 +57,66 @@ def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
             except Exception as e:      # an old cupy or a driver that refuses: the hint is optional
                 print(f"FERMAT_CARVEOUT={carve} ignored: {e}", flush=True)
     return _K[key]
+
+
+def persist_kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
+    """the persistent pool kernel `fermat28_persist` (persist_source), compiled and cached like kernel(); its registers: persist_kernel(...).attributes['num_regs']"""
+    assert limbs == 21, "fermat28 is built for 21 x u32 input limbs (n < 2^672)"
+    key = ("persist", step_file, asm_mad, maxreg)
+    if key not in _K:
+        opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ())
+        _K[key] = cp.RawKernel(persist_source(step_file), "fermat28_persist", options=opts)
+    return _K[key]
+
+
+def persist_ctas_per_sm(regs, threads=128):
+    """how many CTAs of `threads` threads and `regs` registers a thread fit on an SM (registers are allocated in units of 8 a thread): the grid of the persistent kernel is this many CTAs an SM"""
+    at = cp.cuda.Device().attributes
+    per_cta = -(-int(regs) // 8) * 8 * threads
+    return max(1, min(at.get("MaxRegistersPerMultiprocessor", 65536) // per_cta, at.get("MaxThreadsPerMultiProcessor", 1536) // threads))
+
+
+def persist_pool(tester, kv, cnt, cols, run_rest, cta_sm=None, threads=128):
+    """One flush of a pool with the persistent kernel, the members it leaves undecided (the queue ran empty) finished by `run_rest(tester, kv, cnt, cols)` = search_gpu5's round-based run_pool.
+    Arguments and return value as run_pool: members kv[m] (int64) with their rows cols[indptr[m]:indptr[m+1]] (global rows of tester.cq, ascending q; cnt[m] of them), returns per member the rows
+    tested (up to and including the first PRP; cnt for a success), PRP found, success, the global row of the first PRP (-1 if none), the tests computed, the launches.
+    tester needs .cq, .M (device arrays), .kp (persist_kernel(...)) and .kp_regs (its registers, for the grid)."""
+    n = int(kv.size)
+    if n == 0:
+        z = cp.zeros(0, cp.int64)
+        return z, cp.zeros(0, cp.bool_), cp.zeros(0, cp.bool_), z, 0, 0
+    cnt64 = cnt.astype(cp.int64)
+    indptr = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt64)])
+    cols32 = cols if cols.dtype == cp.int32 else cols.astype(cp.int32)
+    counter = cp.zeros(1, dtype=cp.int32)
+    tests = cp.empty(n, dtype=cp.int32)
+    state = cp.empty(n, dtype=cp.uint8)
+    frow = cp.empty(n, dtype=cp.int32)
+    nsm = cp.cuda.Device().attributes["MultiProcessorCount"]
+    grid = min(nsm * (cta_sm or persist_ctas_per_sm(tester.kp_regs, threads)), -(-n // threads))
+    tester.kp((grid,), (threads,), (tester.cq, tester.M, kv.astype(cp.uint32), cnt.astype(cp.int32), indptr, cols32, np.int32(n), counter, tests, state, frow))
+    if bool((state == 3).any()):
+        raise RuntimeError("kernel 28 flagged an n outside its range")
+    tests_m = tests.astype(cp.int64)
+    prp_m = state == 1
+    succ_m = state == 2
+    frow_m = frow.astype(cp.int64)
+    gtests, launches = int(tests_m.sum()), 1                      # (every row tested so far is a test computed: no waste)
+    unf = cp.nonzero(state == 0)[0]
+    if int(unf.size):
+        pos_u = tests_m[unf]
+        lens = cnt64[unf] - pos_u
+        offs = cp.cumsum(lens)
+        total = int(offs[-1])
+        seg = cp.searchsorted(offs, cp.arange(total), side="right")
+        cols_u = cols32[(indptr[unf] + pos_u)[seg] + (cp.arange(total) - (offs - lens)[seg])]
+        t_u, p_u, s_u, f_u, g_u, l_u = run_rest(tester, kv[unf], lens, cols_u)
+        tests_m[unf] = pos_u + t_u
+        prp_m[unf] = p_u
+        succ_m[unf] = s_u
+        frow_m[unf] = f_u
+        gtests += int(g_u); launches += int(l_u)
+    return tests_m, prp_m, succ_m, frow_m, gtests, launches
 
 
 def to_limbs(x, limbs=21):

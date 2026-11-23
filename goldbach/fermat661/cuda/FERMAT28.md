@@ -186,3 +186,22 @@ Compilation by NVRTC (clang compiles the same source to PTX for sm_80 without er
 (my estimate is about 125 registers a thread), and whether a 17 KB straight-line step hurts the instruction cache.  If it does, the generator
 can be changed to roll the reduction loop.  Things to try, in this order: `python3 test_gpu_fermat28.py specs_variants.json` (prints every
 variant's registers, local bytes and tests/s next to `fermat2`); 64 / 128 / 256 threads per block; `asm_mad=True`; 1 / 2 / 4 accumulators.
+
+
+## The persistent pool kernel (`fermat28_persist_kernel.cuh`, 23 Nov, not yet timed on a GPU)
+
+The round-based `run_pool` of `search_gpu5.py` tests a pool in ~45 rounds: each round builds its work list with ~100 small cupy kernels and ~6 host syncs, launches one Fermat kernel of ~1M tests, and reads the first PRPs back; it
+computes ~3% tests past a member's first PRP and leaves the GPU idle between the Fermat kernels of its two halves (`--pool-threads 2` hides most of it; `--profile-pool`: flush 1.34 s against 1.27 s of kernels; beside the sieve 1.58 s,
+kernels x1.08 slower plus ~0.14 s of gaps).  `fermat28_persist` replaces the rounds of a pool by ONE launch: every thread takes a member from a queue (one `atomicAdd`), tests its rows in ascending order until the first
+probable prime (`fm28_test` = `fermat28`'s body, turned into a device function by exact text replacements in `gpu_fermat28.persist_source()`, so it is the same code), writes `tests / state / frow` and takes the next member.  No host work,
+no row tested past the first PRP, one long kernel beside the sieve (the probe: Fermat x1.10, sieve x2.89 beside it).  When the queue is empty a thread that finishes a test of an undecided member leaves it to the caller
+(`state` 0, `tests` = the composite rows so far): those are the ~120k members in flight at that moment (the remaining length of a member is memoryless: ~14 more tests each, ~6% of the pool's tests), which
+`gpu_fermat28.persist_pool(tester, kv, cnt, cols, run_rest)` finishes with the round-based `run_rest` (= `run_pool` / `run_pool_split`) on their remaining rows and merges: the same return value as `run_pool`.
+* **Checked on the CPU** (`test_fermat28_persist.py`: the kernel compiled with g++ and run by real threads taking members from the atomic queue, 1 / 3 / 10-24 lanes; the glue with numpy for cupy): for every member the tests counted, PRP flag,
+  success flag and first-PRP row equal sequential Python `pow` in ascending row order; tests computed = tests counted (no waste) when the leftovers are finished in the same way; members with no row, one row, more members than lanes;
+  an n outside 2^642 .. 2^668 raises.  Both the asm (`s1r`, RTX) and the `s1rw` (L4 / A100) steps.
+* **Compiled** (NVRTC + ptxas 12.9 through `sieve200/cuda/sass.py`): sm_120 s1r asm: 2,288 instructions, 96 registers, no spills (production `fermat28`: 2,184, 88 as built here, 92 in cupy: both allocate 96 = 5 CTAs of 128 threads an SM);
+  sm_89 / sm_75 s1rw: 2,704 / 2,736 instructions and 128 registers (production: 94): 4 CTAs an SM, or `--persist-maxreg 96` for 5 with no spill (the `bt` array and the loop state are all that is in local memory).
+* **Expected** (a model, not a measurement): phase 1 at the kernel's 23.3M tests/s plus ~3% for threads that start or end a test while others are in the step loop (setup / final code run by part of a warp), phase 2 ~0.15 s (20 rounds of the
+  shrinking active set): the flush without a sieve beside it about as long as now (1.31 vs 1.34 s), beside the sieve ~1.45 s against 1.58 s: a batch of ~1.42 s against 1.54 s (-8%).  `plt8.sh` measures it.
+* Use: `search_gpu5_persist.patch` adds `--persist 1` (`--persist-cta-sm N`, `--persist-maxreg N`); `MultiTester` builds `kp = gpu_fermat28.persist_kernel(...)`; `flush()` calls `persist_pool(..., rest)`.

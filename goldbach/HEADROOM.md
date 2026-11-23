@@ -58,6 +58,12 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
 3. **The return on compute is logarithmic**: raising the target by 1,000 costs 0.21 nats (8.7 more uncovered rows), so x2 compute = +0.69 nats = +3,300 on the expected final record (172,300 -> ~175,600), x5 = +7,700
    (~180,000).  Speed is worth having; it does not change the order of magnitude of the answer.
 
+## 3b. One more structural item, found late: the Fermat round loop (23 Nov, 10:30Z)
+
+The round-based `run_pool` computes ~3% tests past a member's first PRP, issues ~100 small kernels and ~6 host syncs a round for ~45 rounds a half-pool, and beside the sieve loses ~0.14 s of GPU gaps (the sieve's higher stream priority
+delays those small kernels) on top of the x1.08 slower Fermat kernels.  A persistent work-stealing Fermat kernel (`fermat661/cuda/fermat28_persist_kernel.cuh`, `search_gpu5_persist.patch`, CPU-verified identical per-member results,
+see `FERMAT28.md`) does a pool in one launch and finishes the ~6% of the work still in flight when the queue is empty with the old code: modelled -8% of a batch on the RTX cards, a few % on the L4 / T4; **not yet timed** (`sieve200/cuda/plt8.sh`).
+
 ## 4. Everything else (each 1-4%, none worth a GPU slot alone)
 
 Sizes as of 09:30Z, after the pipeline: the sieve is now hidden, but it still taxes the Fermat rounds (~0.55 s of Fermat per second of sieve WORK, plt3), so a percent of sieve work removed is worth ~0.55% of a batch and a
