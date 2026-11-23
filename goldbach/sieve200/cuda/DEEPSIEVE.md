@@ -99,6 +99,9 @@ come back every batch: ~48 ms of Python a 64-slice batch), `--deep-tile-threads`
 Upper bound: max(1.24, 0.75) + 0.1 = 1.35 s, x1.55 over the present batch; what it really gives depends on how the two kernels share the SMs: the Fermat CTAs (5 an SM, 128 threads, 92-102 registers)
 leave ~4,000 registers an SM, so a 256-thread sieve CTA cannot sit beside them (try `--deep-tile-threads 128`); the high priority lets sieve CTAs take an SM as soon as a Fermat CTA (~1 ms) retires.
 `test_overlap_cpu.py` tests the helper (order, run-ahead bound, error propagation, the cache) with a stub cupy.
+`--fermat-cta-sm N` (same patch) makes room for the sieve without touching the Fermat kernel: the pool's tests are launched in chunks of N CTAs an SM (N x SMs x 128 tests: 3 x 188 x 128 = 72k) instead of
+one launch of 8,000+ CTAs, so each SM holds N of the 5 Fermat CTAs that fit and has registers (~28k of 64k at N = 3), threads and shared memory left for a sieve CTA; the chunks are launched back to back
+in one stream (the CTAs of a chunk finish together, so the ~5 us launch gaps and the tail cost little).  Try N = 3 and 4 with `--overlap 1 --deep-tile-threads 256` (a 256-thread tile CTA needs ~5k registers).
 
 ## The staged generate kernel (`gbig_gen_st`, 2026-11-23; CPU-verified, never run on a GPU)
 
