@@ -307,6 +307,12 @@ Version 3 (22 Nov):
     1.70 s, and the 146,191 near-miss is still reported.
   - In production on the three RTX PRO 6000s since 04:16Z (`restart_ps.py`). Not on the L4s or the T4, whose ~10 s batches
     leave proportionally less idle time.
+- Rows a CTA of the staged large-prime kernel (the uarch session's section H, `uarch_measure/secth_rcta_rtxpro6000.txt`).
+  - At B = 10^8, on a 2^25 window of a Q = 170,000 vector, the sieve column measured rcta 2 193.2 ms, rcta 4 201.9 ms, rcta 8
+    (512 generate threads) 186.6 ms, and rcta 2 again 193.2 ms. Kept members and survivor rows were the same in all four
+    runs.
+  - rcta 8 saves 6.6 ms a window, about 0.75% of a batch, which is under the 20 ms bar for a production change. DEEP_RCTA
+    stays at 2.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
