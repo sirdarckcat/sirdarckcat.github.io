@@ -1,26 +1,23 @@
-# Row weights for ptcover_w: weight(q) = 64 * P(the campaign's final record ends above q), from the model of
-# portfolio_budget.py for a reference design.  A row far below the expected record weighs 64 (it must be composite in
-# every member that can become the record); a row far above it weighs 0.
-#   python3 brainstorm/soft_weights.py [days=10] [rate=29e6] [record_in_hand=157837] [design=170000] > weights.txt
-import bisect, math, sys
-days = float(sys.argv[1]) if len(sys.argv) > 1 else 10.0
-rate = float(sys.argv[2]) if len(sys.argv) > 2 else 29e6
-hand = int(sys.argv[3]) if len(sys.argv) > 3 else 157837
-design = int(sys.argv[4]) if len(sys.argv) > 4 else 170000
-p = 11.008269598801753 / (200 * math.log(10)); RATIO = 0.89; TOP = 200000
-def primes_upto(n):
-    s = bytearray([1]) * (n + 1); s[0] = s[1] = 0
-    for i in range(2, int(n ** .5) + 1):
-        if s[i]: s[i * i::i] = bytearray(len(s[i * i::i]))
-    return [i for i in range(n + 1) if s[i]]
-P = [q for q in primes_upto(TOP) if q > 2]
-best = None
-for line in open(f"starts/q{design}.txt"):
-    t = line.split()
-    if best is None or int(t[1]) < best[0]: best = (int(t[1]), [tuple(map(int, x.split(":"))) for x in t[2:]])
-U = [q for q in P if all(q % r != a for r, a in best[1])]
-n = rate * 86400 * days
-for q in P:
-    w = 1.0 if q < hand else 1 - math.exp(-n * RATIO * (1 - p) ** bisect.bisect_right(U, q))   # P(some member has g > q)
-    wi = round(64 * w)
+# Row weights for ptcover_w and for covergen's weighted mode (COVERGEN_WEIGHTS): what one more uncovered row at q
+# costs the campaign, as a fraction of a row below the record in hand, times 64.
+#
+#   python3 brainstorm/soft_weights.py days rate record_in_hand Q reference_covers.txt > weights.txt     (run from cover/)
+#
+# Model of portfolio_budget.py and rank_covers.py: on a cover, the expected number of members with g >= x is
+# m(x) = n * RATIO * (1 - p)^U(x), U(x) = its uncovered primes below x, and the expected final record is
+# record + int (1 - e^-m(x)) dx.  One more uncovered row at q multiplies m(x) by (1 - p) for every x > q, so it costs
+# -ln(1 - p) * int_{x > q} m e^-m dx.  Relative to a row below the record:
+#     w(q) = int_{x > q} m e^-m dx / int_{x > record} m e^-m dx,
+# which is 1 below the record, falls slowly at first (just above the record m is large: some member will pass there
+# anyway) and reaches 0 where no member is expected to arrive.  m(x) is taken from the first cover of the reference
+# file (the weights hardly depend on which good cover it is).  Rows whose weight rounds to 0 are left out.
+import math, sys
+sys.path.insert(0, __file__.rsplit("/", 1)[0])
+from rank_covers import Model, read_covers
+days, rate, hand, Q, ref = float(sys.argv[1]), float(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), sys.argv[5]
+M = Model(days, rate, hand, Q)
+cover = next(read_covers(ref))
+w = M.weights(cover)
+for q, x in zip(M.P.tolist(), w.tolist()):
+    wi = round(64 * x)
     if wi > 0: print(q, wi)

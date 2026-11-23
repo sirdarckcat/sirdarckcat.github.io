@@ -16,6 +16,12 @@
  * from every start line; make_specs.py turns them into search specs.  The program stops after count covers, or when
  * no new cover has appeared for COVERGEN_STALL seconds (environment, default 30): the reachable set is then used up
  * and a higher kcap or other starting points are needed.  COVERGEN_TIME (seconds) limits the whole run.
+ *
+ * Weighted rows: with COVERGEN_WEIGHTS=file (lines "q weight", weight 1..64, 64 = one full row; the format of
+ * ptcover_w and brainstorm/soft_weights.py) the rows are the primes of that file, which may go beyond Q, a cover is
+ * measured by the sum of the weights of its uncovered rows, kcap is that sum in rows (a decimal number is allowed)
+ * and the k printed is the weighted sum rounded up to a whole row.  Without the variable every row below Q weighs
+ * 64 and the program does exactly what it did before.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +31,7 @@
 
 #define MAXM 256
 static int Q, nrows, nmod;
-static int *rowq;
+static int *rowq, *roww;
 static int mod_[MAXM];
 static int **cstart, **crows;
 
@@ -46,10 +52,24 @@ static int seen_or_add(uint64_t h) {          /* 1 if h was present */
 
 int main(int argc, char **argv) {
     if (argc < 5) { fprintf(stderr, "usage: covergen Q start.txt kcap count [seed] [gap]\n"); return 1; }
-    Q = atoi(argv[1]); int kcap = atoi(argv[3]); long want = atol(argv[4]);
+    Q = atoi(argv[1]); long want = atol(argv[4]);
+    const char *wfile = getenv("COVERGEN_WEIGHTS");
+    int kcap = wfile ? (int)(atof(argv[3]) * 64 + 0.5) : atoi(argv[3]) * 64;      /* in units of 1/64 row */
     uint64_t seed = argc > 5 ? strtoull(argv[5], 0, 10) : 1; int gap = argc > 6 ? atoi(argv[6]) : 1;
-    char *sv = calloc(Q + 1, 1); rowq = malloc(sizeof(int) * (Q / 2 + 2));
-    for (int i = 2; i < Q; i++) if (!sv[i]) { if (i > 2) rowq[nrows++] = i; for (long j = (long)i * i; j < Q; j += i) sv[j] = 1; }
+    if (wfile) {
+        FILE *w = fopen(wfile, "r"); if (!w) { perror(wfile); return 1; }
+        int q, wt, cap = 1 << 16; rowq = malloc(sizeof(int) * cap); roww = malloc(sizeof(int) * cap);
+        while (fscanf(w, "%d %d", &q, &wt) == 2) if (wt > 0) {
+            if (nrows == cap) { cap *= 2; rowq = realloc(rowq, sizeof(int) * cap); roww = realloc(roww, sizeof(int) * cap); }
+            rowq[nrows] = q; roww[nrows++] = wt;
+        }
+        fclose(w);
+        if (!nrows) { fprintf(stderr, "no row in %s\n", wfile); return 1; }
+    } else {
+        char *sv = calloc(Q + 1, 1); rowq = malloc(sizeof(int) * (Q / 2 + 2));
+        for (int i = 2; i < Q; i++) if (!sv[i]) { if (i > 2) rowq[nrows++] = i; for (long j = (long)i * i; j < Q; j += i) sv[j] = 1; }
+        roww = malloc(sizeof(int) * (nrows + 1)); for (int i = 0; i < nrows; i++) roww[i] = 64;
+    }
     /* start covers */
     FILE *f = fopen(argv[2], "r"); if (!f) { perror(argv[2]); return 1; }
     static char line[1 << 16]; int nstart = 0, cap = 0; int (*start)[MAXM] = NULL;
@@ -82,12 +102,12 @@ int main(int argc, char **argv) {
     for (int s = 0; s < nstart; s++) {
         memset(cnt0, 0, nrows);
         for (int m = 0; m < nmod; m++) for (int j = cstart[m][start[s][m]]; j < cstart[m][start[s][m] + 1]; j++) cnt0[crows[m][j]]++;
-        int k = 0; for (int i = 0; i < nrows; i++) k += cnt0[i] == 0;
+        int k = 0; for (int i = 0; i < nrows; i++) if (cnt0[i] == 0) k += roww[i];
         seen_or_add(hash_cover(start[s]));
         if (k <= kcap) memcpy(start[ngood++], start[s], sizeof(int) * nmod);
     }
-    if (!ngood) { fprintf(stderr, "no start cover with at most %d uncovered rows\n", kcap); return 1; }
-    fprintf(stderr, "Q=%d rows=%d moduli=%d; %d of %d start covers have at most %d uncovered rows; %d walkers\n", Q, nrows, nmod, ngood, nstart, kcap, omp_get_max_threads());
+    if (!ngood) { fprintf(stderr, "no start cover with at most %g uncovered rows\n", kcap / 64.0); return 1; }
+    fprintf(stderr, "Q=%d rows=%d moduli=%d; %d of %d start covers have at most %g uncovered rows; %d walkers\n", Q, nrows, nmod, ngood, nstart, kcap / 64.0, omp_get_max_threads());
     long written = 0; int stop = 0; long hist[8] = {0};
     double stall = getenv("COVERGEN_STALL") ? atof(getenv("COVERGEN_STALL")) : 30, last_new = omp_get_wtime();
     double tmax = getenv("COVERGEN_TIME") ? atof(getenv("COVERGEN_TIME")) : 1e18, t_start = last_new;
@@ -99,15 +119,15 @@ int main(int argc, char **argv) {
             if (stale > 4000) {             /* nothing new around here: go on from another starting point */
                 memcpy(a, start[rnd(&g) % ngood], sizeof(int) * nmod); memset(cnt, 0, nrows);
                 for (int m = 0; m < nmod; m++) for (int j = cstart[m][a[m]]; j < cstart[m][a[m] + 1]; j++) cnt[crows[m][j]]++;
-                k = 0; for (int i = 0; i < nrows; i++) k += cnt[i] == 0;
+                k = 0; for (int i = 0; i < nrows; i++) if (cnt[i] == 0) k += roww[i];
                 stale = 0;
             }
             for (int t = 0; t < gap * nmod; t++) {
                 int m = rnd(&g) % nmod, r = mod_[m];
                 int c = 1 + rnd(&g) % (r - 2); if (c >= a[m]) c++;
                 int lose = 0, gain = 0, o = a[m];
-                for (int j = cstart[m][o]; j < cstart[m][o + 1]; j++) lose += cnt[crows[m][j]] == 1;
-                for (int j = cstart[m][c]; j < cstart[m][c + 1]; j++) gain += cnt[crows[m][j]] == 0;
+                for (int j = cstart[m][o]; j < cstart[m][o + 1]; j++) if (cnt[crows[m][j]] == 1) lose += roww[crows[m][j]];
+                for (int j = cstart[m][c]; j < cstart[m][c + 1]; j++) if (cnt[crows[m][j]] == 0) gain += roww[crows[m][j]];
                 if (k + lose - gain > kcap) continue;
                 for (int j = cstart[m][o]; j < cstart[m][o + 1]; j++) cnt[crows[m][j]]--;
                 for (int j = cstart[m][c]; j < cstart[m][c + 1]; j++) cnt[crows[m][j]]++;
@@ -119,8 +139,9 @@ int main(int argc, char **argv) {
             {
                 if (!stop && hn * 2 < hcap && !seen_or_add(h)) {
                     stale = 0;
-                    printf("COVER %d", k); for (int m = 0; m < nmod; m++) printf(" %d:%d", mod_[m], a[m]); printf("\n");
-                    if (kcap - k < 8) hist[kcap - k]++;
+                    int kr = (k + 63) / 64, d = (kcap + 63) / 64 - kr;                  /* whole rows, rounded up */
+                    printf("COVER %d", kr); for (int m = 0; m < nmod; m++) printf(" %d:%d", mod_[m], a[m]); printf("\n");
+                    if (d >= 0 && d < 8) hist[d]++;
                     last_new = omp_get_wtime();
                     if (++written >= want) stop = 1;
                 }
@@ -130,7 +151,7 @@ int main(int argc, char **argv) {
         free(cnt);
     }
     fprintf(stderr, "%ld covers written; by uncovered rows:", written);
-    for (int d = 7; d >= 0; d--) if (hist[d]) fprintf(stderr, " %d: %ld", kcap - d, hist[d]);
+    for (int d = 7; d >= 0; d--) if (hist[d]) fprintf(stderr, " %d: %ld", (kcap + 63) / 64 - d, hist[d]);
     fprintf(stderr, "\n");
     return 0;
 }

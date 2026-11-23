@@ -203,9 +203,14 @@ A soft threshold was tried as well (`ptcover_w.c`, `soft_weights.py`,
 chance that the final record ends above q, so the optimiser was given those
 weights instead of a sharp Q. A run of 60,000 sweeps gave a cover worth
 172,500, the same as the best sharp design (172,500 at Q = 172,500; 172,300 at
-170,000; `eval_cover.txt`). The sharp designs near the expected record are
-already within 100 to 200 of what the weighted objective can give, so the
-vectors stay as they are.
+170,000; `eval_cover.txt`), and the vectors stayed as they were. That run was
+too short to decide the matter (one sharp design had fewer weighted rows than
+it reached), and the conclusion was wrong: on 23 November the same weights
+showed that the near-optimal covers differ by 9 to 11 weighted rows, about
++1,000 in expected final record, according to how many rows they happen to
+leave above Q (`../README.md`, "Rows above the design level"; `soft_weights.py`
+now takes the weights from `rank_covers.py`, as the cost of a row in expected
+final record, and its command line has changed).
 
 ## Files
 

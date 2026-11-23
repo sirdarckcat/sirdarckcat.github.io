@@ -188,7 +188,8 @@ and 82,000 at ≤ 1,249 in 40 seconds, where the 463 family has 5,700 at
 more successes per member at the level a large supply is drawn from; a vector
 has 2.016·10^7 members instead of 2.138·10^7. `./gen_vectors.sh 170000 1248
 count name seed m89r491` uses `starts/q170000_m89r491.txt` (2 covers at
-1,245, 93 at 1,246, 1,828 at 1,247, 2,077 at 1,248).
+1,245, 93 at 1,246, 1,828 at 1,247, 2,001 at 1,248; see the two families
+below).
 
 **The first 88 odd primes** (3 to 461, in place of the campaign's 3 to 439
 with 467, 487, 491 and 683). M has 190.00 digits, so a vector has 9.9·10^9
@@ -204,10 +205,66 @@ more successes per member at the best cover and about 10% at the supply
 level; at 213,070 the same set gives 1,619 against 1,623. Supply: 2,150
 distinct covers at ≤ 1,257 rows and 36,800 at ≤ 1,258 in 40 seconds.
 `./gen_vectors.sh 170000 1258 count name seed m88f` uses
-`starts/q170000_m88f.txt` (2 covers at 1,255, 99 at 1,256, 78 at 1,257, 765
-at 1,258; about 2,200 exist at ≤ 1,257) and sets kmax per vector (9,898,466,666 for these; cap it at 2^32
+`starts/q170000_m88f.txt` (2 covers at 1,255, 99 at 1,256, 2 at 1,257, 188
+at 1,258 since the selection below; about 2,200 exist at ≤ 1,257) and sets kmax per vector (9,898,466,666 for these; cap it at 2^32
 if the kernel needs 32-bit k). The fleet's four smaller cards have run this
 set since 23 November.
+
+**Rows above the design level: two families.** The optimiser counts the
+uncovered rows below Q and nothing else. A member that passes all of them
+still stops at the first uncovered prime q ≥ Q with N − q prime, so the final
+record also depends on how many primes the cover leaves uncovered just above
+Q. The planning model (`brainstorm/rank_covers.py`, `soft_weights.py`) prices
+a row by what one more uncovered row at q costs in expected final record,
+relative to a row below the record in hand. With the fleet's own expected
+rates of 23 November (9.3·10^-7 design hits a second on each of the three
+large cards, 3.2·10^-6 for the fleet, 2.1 to 2.3 in the 8.2 days left; the
+model reproduces this at 52 million effective members a second) and the
+record at 158,209:
+
+| row at | ≤ 164,000 | 168,000 | 170,000 | 172,000 | 175,000 | 178,000 | 180,000 | 185,000 |
+|---|---|---|---|---|---|---|---|---|
+| weight | 1.00 | 0.93 | 0.83 | 0.67 | 0.39 | 0.19 | 0.12 | 0.03 |
+
+A row just above the record weighs the same as a row below it: near-misses
+there are expected a dozen times over anyway, and what limits the final
+record is the range 168,000 to 180,000. Measured this way, the near-optimal
+covers of each set fall into two families that the row count below Q cannot
+tell apart:
+
+| set | family | covers | rows < 170,000 | below 158,209 | 170–175k | 175–180k | 180–190k | weighted rows | expected final record |
+|---|---|---|---|---|---|---|---|---|---|
+| first 89 | A | 396 | 1,248.6 | 1,168.2 | 57.2 | 60.6 | 110.9 | 1,300.4 | 174,850 |
+| first 89 | B | 224 | 1,249.0 | 1,174.0 | 46.6 | 49.1 | 105.2 | 1,291.7 | 175,830 |
+| first 88 + 491 | A | 76 | 1,248.0 | 1,167.5 | 58.4 | 61.1 | 112.8 | 1,300.9 | 174,810 |
+| first 88 + 491 | B | 3,924 | 1,247.5 | 1,173.1 | 46.1 | 50.3 | 104.8 | 1,290.1 | 176,020 |
+| first 88 | A | 653 | 1,257.9 | 1,177.6 | 58.4 | 61.0 | 112.9 | 1,310.8 | 174,150 |
+| first 88 | B | 291 | 1,257.3 | 1,181.3 | 46.0 | 49.7 | 102.8 | 1,299.3 | 175,280 |
+
+(Family B is what `starts/q170000_<set>.txt` now holds, family A the rest
+of `starts/all/`.) Family B has about six more rows below the record and
+about thirty fewer between 170,000 and 190,000: 13% fewer near-misses just
+above the record, the same number of design hits within 1%, 28% more members
+expected to pass 175,000 and 69% more to pass 180,000. In weighted rows it is 9 to 11 better, about a quarter
+more of the rate that decides the final record, and worth about +1,000 in
+expected final record. A capped walk keeps the family of its starting cover:
+an emulation of the fleet's producer (walks of 11,000 covers at cap 1,251, a
+third of them, the 1,000 with the fewest rows) gives 1,302.2 weighted rows
+and 174,680 from family A starts, 1,293.0 and 175,690 from family B starts,
+at the same 1,250.4 rows below Q. The advantage needs time to pay: with less
+than about two days of the present fleet left, family A is ahead by 100 to
+200, since then the record is decided below Q.
+
+`starts/q170000_m89.txt`, `q170000_m89r491.txt` and `q170000_m88f.txt` now
+hold family B only, best expected record first (224, 3,924 and 291 covers);
+the complete files are in `starts/all/`. `python3 brainstorm/rank_covers.py
+days rate record Q out.txt file ... [--within X]` scores and sorts any cover
+files, and `python3 brainstorm/soft_weights.py days rate record Q covers.txt`
+writes the row weights. `covergen` takes them: with
+`COVERGEN_WEIGHTS=weights.txt` the walk is capped on the weighted rows
+(which reach above Q) instead of the rows below Q, so a supply drawn that way
+stays good above Q however far it walks; without the variable its output is
+unchanged, byte for byte with one walker.
 
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
