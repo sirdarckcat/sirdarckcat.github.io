@@ -26,3 +26,18 @@ The steps are scripted:
 - `handover_pro.sh OLD NEW GPU KIND ARG AT` is the proactive form, run at ~23 h (the lead, 19:27Z). At time AT, it waits for a batch end on OLD and stops
   the campaign there. It then takes the final snapshot, pulls the found lines one last time, stops the session to free its slot, and continues as above.
   For KIND `l4new`, ARG is the new card's share file.
+
+The 491 generator's cap steps (`vecgen491.sh`, the lead's decisions of 23 Nov 21:19-21:46Z). The cap goes up by one, up to CAPMAX, in three cases:
+
+- when a walk gives no new vector;
+- when a walk gives fewer than YMIN = 100 new vectors;
+- at once, when fewer than BUFMIN = 3,500 vectors (~10 min of an RTX's supply) are ahead after a walk that did not fill its chunk.
+
+Each step is its own `cap raised to N` line. `rowguard491.py` steps its base by one row on each of these lines, and the +2 trip is relative to that base.
+Replacements start at the old card's last cap with CAPMAX 1,252 (`resume491.sh`, `bringup_rtx491.sh`). A running generator is changed only at an idle
+moment between walks, with `restart_gen.py`.
+
+The rules were checked with a mock covergen / make_specs whose yields per walk were scripted:
+
+- 1000 600 300 150 90 → steps at 90; 1000 50 → steps at 50; 0 → the "no chunk" step; then it stays at CAPMAX.
+- With 3,300 consumed, chunks of 1,000 do not step, and a chunk of 600 with 300 ahead steps.

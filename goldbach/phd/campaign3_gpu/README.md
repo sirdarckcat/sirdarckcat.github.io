@@ -737,6 +737,13 @@ Version 3 (22 Nov):
         dead generator (`peek_rg.py`'s supply fields).
     - The tail before a cap step: at 1,248 on gold-g4d, a walk's new covers fell from 1,000 to 1 over 28 walks in
       ~3 min. The 12,000-vector buffer (~35 min) covered that easily.
+      - The 1,250 pool is ~130× larger, so its tail could keep an RTX waiting for 1-2 h. The lead decided (21:46Z) to
+        step the cap when a walk gives fewer than 100 new vectors, and at once when fewer than 3,500 (~10 min) are
+        ahead after a walk that did not fill its chunk: "a GPU must never idle waiting for vectors".
+      - The leftovers at the old cap still come out of later walks, best first (`vecgen491.sh`, YMIN / BUFMIN).
+      - A mock run of the generator checked both rules (`bringup/README.md`).
+      - The live generators were restarted on these rules at an idle moment between walks (`restart_gen.py`), so no
+        ledger line or chunk was cut. Their cap carried over (1,249), with CAPMAX 1,252.
 - research's top32 shift for the L4/T4 vectors (4de3423; the lead approved it at 20:34Z behind a three-point gate; `s32/`).
   - Each vector gets N0 += k_shift·M, with k_shift = 5,603,499,370 or 5,603,499,371, so that k = 2^32 − 1 is its last
     member below 10^200.
