@@ -1,0 +1,34 @@
+# The known case at the TOP of the vector, CPU side (cpu_brute_k0.py, this session's container, 4 processes, 2026-11-23 16:55:15-17:28Z): every member k in
+# [20854690, 21378978) of q170000_m89_t1_v0 (v89/knowncase_spec.json; kend = 21,378,978 = its spec kmax, the first k with 201 digits), residual rows recomputed from
+# gcd(N0 - q, M), each member's rows scanned in ascending order with gmpy2.is_bpsw_prp until the first prime; listed: every member whose least prime q is >= T = 46,171.
+
+q170000_m89_t1_v0: residual recomputed from gcd: 1248 rows (identical to the spec's), k in [20854690, 21378978), T = 46171
+BRUTE k=20899461 q=48589
+BRUTE k=20903013 q=52237
+BRUTE k=20909356 q=46327
+BRUTE k=20914784 q=51001
+BRUTE k=20922075 q=56809
+BRUTE k=20924406 q=47389
+BRUTE k=20928592 q=49669
+BRUTE k=20929390 q=50131
+BRUTE k=20938947 q=48589
+BRUTE k=21044951 q=56377
+BRUTE k=21050303 q=52021
+BRUTE k=21138137 q=49477
+BRUTE k=21148982 q=47221
+BRUTE k=21154485 q=47317
+BRUTE k=21163509 q=46327
+BRUTE k=21193180 q=52627
+BRUTE k=21200833 q=54181
+BRUTE k=21214016 q=49639
+BRUTE k=21230683 q=51607
+BRUTE k=21233580 q=48871
+BRUTE k=21234843 q=46441
+BRUTE k=21246122 q=55381
+BRUTE k=21276261 q=50821
+BRUTE k=21314491 q=46441
+BRUTE k=21331195 q=48049
+BRUTE-DONE 25 members with no prime below 46171
+
+# Against the GPU side (vtop_rtxpro6000.txt, kc_top: the patched driver with --vector-place top --klog 19, production's deep settings, f = 0, --near-miss 46171):
+# GPU 25 | CPU 25 | identical True | only GPU [] | only CPU []: the same k and the same least prime q for every one.

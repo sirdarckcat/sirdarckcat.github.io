@@ -611,6 +611,30 @@ Version 3 (22 Nov):
     is kept for a revert).
   - Measured over the first ~15 minutes (`deploy_l4_t4.txt`): members a second ×1.003-1.008, expected design hits a second
     ×1.058-1.064, alive rows a member 423.8 → 422.5.
+- Top-of-range windows in vector mode (23 Nov; the lead decided at 16:36Z, subject to four checks; files in `vtop/`).
+  - `--vector-place top` (`search_gpu5_vtop.patch`, 22 changed lines): a vector's 2^24 window is [kend − 2^24, kend),
+    with kend = min(kmax, ⌈(10^200 − N0)/M⌉). That is N from 2.15·10^199 to just below 10^200, instead of 10^199 to
+    8.85·10^199 from k_lo.
+  - A larger N has a slightly lower prime density, so a member's rows are less likely to hold a prime. Expected
+    near-misses from 158,209 rise ×1.0113 a vector and expected hits ×1.0122 (the 24 test vectors), at the same batch
+    time (×1.003, inside the noise).
+  - The loader asserts that every window lies in [10^199, 10^200). It skips a vector whose name is in the done set
+    under either placement, since the two windows of one vector overlap by ~85%.
+  - The checks, on gold-g4b (`vtop_rtxpro6000.txt`):
+    1. The loader, run from the code itself on all 228 chunk files (112,931 vectors). At the default placement it
+       matches production on every chunk. At the top, it takes each of the 12,579 vectors not yet done exactly once,
+       and a simulated restart takes nothing again.
+    2. The GPU normal path equals search_c.py on the top 2^19 of a production vector, at f = 0.97 and 0.9.
+    3. The bottom known case gives the same 23 (k, q), and the slice lines at the default placement are identical to
+       production's.
+    4. A top-window name is name@4601761 or name@4601762; a bottom one is name@2137898.
+    - Extra: the known case at the top (k ∈ [20,854,690, 21,378,978), f = 0, near-misses from 46,171) gives the same 25
+      (k, q) on the GPU and in `cpu_brute_k0.py` (`knowncase_top_cpu_brute.txt`).
+  - Deployed on gold-g4, gold-g4b and gold-g4c at 17:29:09-17:29:18Z (`deploy_vtop.py`, `deploy_rtxpro6000.txt`).
+    `search_gpu5.py` here is the deployed driver. The L4s and the T4 still run the earlier one, which is the same in
+    campaign mode.
+  - At 17:42Z the three generators got research's 426 starting covers (58e95e3: 186 at 1,248 rows, 240 at 1,249). Their
+    walks from the 210 starting covers were making only 1,251-row vectors, at +1.2 over the row guard's base.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
