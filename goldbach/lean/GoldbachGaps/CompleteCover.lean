@@ -10,7 +10,8 @@ primality or compositeness test, only divisions.
 
 The certificate is the block test of `Desert.lean` with an empty list of residuals:
 `covered_of_desertBlockCheck_nil` reads it as divisibility, `CoveredIn.noSummandIn` passes to
-Goldbach summands. Generated instances (`scripts/gen_cover.py`) live in their own files.
+Goldbach summands, and `CoveredIn.add_mul` extends a cover of `N` to every `N + t M`, `M` the
+product of the moduli. Generated instances (`scripts/gen_cover.py`) live in their own files.
 -/
 
 namespace GoldbachGaps
@@ -64,5 +65,26 @@ theorem CoveredIn.noSummandIn {N g a b : ℕ} {coverMods smallPrimes : List ℕ}
   obtain ⟨r, hr, hrq⟩ := h q ha hb' hqp
   have hr2 := hcover r hr
   rcases (Nat.dvd_prime hNq).mp hrq with h1 | h1 <;> omega
+
+/-- A covered range has no Goldbach summand, with the side conditions stated directly: every
+modulus is at least `2` and `r + b < N`. -/
+theorem CoveredIn.noSummandIn_of_lt {N a b : ℕ} {coverMods : List ℕ}
+    (h : CoveredIn N coverMods a b) (hmods : ∀ r ∈ coverMods, 2 ≤ r ∧ r + b < N) :
+    NoSummandIn N a b := by
+  rintro q ha hb ⟨hqp, hNq⟩
+  obtain ⟨r, hr, hrq⟩ := h q ha hb hqp
+  have hr2 := hmods r hr
+  rcases (Nat.dvd_prime hNq).mp hrq with h1 | h1 <;> omega
+
+/-- **The whole progression is covered.** If `N` is covered below `b ≤ N`, so is `N + t M` for
+every `t`, `M` the product of the moduli: the divisor of `N - q` also divides `N + t M - q`. -/
+theorem CoveredIn.add_mul {N a b : ℕ} {coverMods : List ℕ} (h : CoveredIn N coverMods a b)
+    (hb : b ≤ N) (t : ℕ) : CoveredIn (N + t * coverMods.prod) coverMods a b := by
+  intro q ha hq hqp
+  obtain ⟨r, hr, hrq⟩ := h q ha hq hqp
+  refine ⟨r, hr, ?_⟩
+  have e : N + t * coverMods.prod - q = (N - q) + t * coverMods.prod := by omega
+  rw [e]
+  exact dvd_add hrq (Dvd.dvd.mul_left (List.dvd_prod hr) t)
 
 end GoldbachGaps

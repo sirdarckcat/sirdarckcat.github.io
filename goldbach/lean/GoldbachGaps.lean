@@ -12,6 +12,7 @@ import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
+import GoldbachGaps.Cover15787
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -75,6 +76,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                of a block has `N - q` divisible by a covering modulus, so the bound on the
                least summand needs no primality or compositeness test
                (`scripts/gen_cover.py` generates instances).
+* `Cover15787` – generated instance: a 193-digit even `N` (and the 21,378,977 members
+               `N + t M` of its progression below `10^200`) with `N - q` divisible by a prime
+               `r ≤ 463` for each of the 1,840 primes `q < 15787`. It is the complete cover on
+               the 89 odd primes up to 463 found by the research session
+               (`goldbach/sublinear/complete_cover_15787.txt`, branch `ccr-d4a17dd0-7uu03r`);
+               closed statements in `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of

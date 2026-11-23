@@ -4,6 +4,7 @@ import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
+import GoldbachGaps.Cover15787
 
 /-!
 # The bounded record games, as kernel-checked theorems
@@ -52,5 +53,31 @@ summand is `157837`. -/
 theorem exists_lt_ten_pow_200_least_summand_157837 :
     ∃ N < 10 ^ 200, IsLeastSummand N 157837 :=
   ⟨Record200_g157837.N, Record200_g157837.N_lt, Record200_g157837.isLeastSummand⟩
+
+/-- **A bound by divisibility alone.** Some even `N < 10^200` has, for every prime `q < 15787`,
+a divisor `r` of `N - q` with `2 ≤ r ≤ 463` and `r < N - q`; in particular no prime below
+`15787` is a Goldbach summand of `N`. No primality or compositeness test enters the proof:
+it is the complete cover on the 89 odd primes up to `463` found by the research session
+(`Cover15787`). The record `157837` above needs luck on top of its cover; this is what the
+cover alone certifies. -/
+theorem exists_lt_ten_pow_200_complete_cover_15787 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 15787, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 15787, ¬ IsSummand N q :=
+  ⟨Cover15787.N, lt_trans Cover15787.N_lt (by norm_num), Cover15787.complete_cover.2.1,
+    Cover15787.complete_cover.2.2.1, Cover15787.complete_cover.2.2.2⟩
+
+/-- The same for a whole arithmetic progression: `21378977` numbers `N + t M` below `10^200`,
+all even, all with every `N + t M - q` (`q < 15787` prime) divisible by some `r ≤ 463`. -/
+theorem exists_progression_complete_cover_15787 :
+    ∃ N M : ℕ, 0 < M ∧ ∀ t < 21378977, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
+      (∀ q < 15787, q.Prime →
+        ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
+      ∀ q < 15787, ¬ IsSummand (N + t * M) q := by
+  refine ⟨Cover15787.N, Cover15787.M, ?_, fun t ht => ?_⟩
+  · rw [Cover15787.M_eq]
+    norm_num
+  · obtain ⟨h1, h2, h3⟩ := Cover15787.complete_cover_family t
+    exact ⟨Cover15787.family_lt t ht, h1, h2, h3⟩
 
 end GoldbachGaps
