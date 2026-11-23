@@ -681,3 +681,44 @@ Every variant's lists equal rows' (True).  What it says: **the order of the kept
 scattered two-byte stores (writes only 1.36 ms for 186 MB, ~137 GB/s).  `DEEP_FIN2=1` (0.90 -> 0.01 ms) + `DEEP_ROWS_ORD=2` (3.88 -> 2.61) is **-2.2 ms a window, ~0.6% of a batch by the GPU session's conversion: under the 1% bar, not gated, shelved** (the flags stay as a bundle ingredient).  A fused index-ordered kernel with a shared-memory staged, contiguous write might reach ~2.0 ms (another ~0.6 ms a window, ~0.15%): not built.
 (The earlier real-data DEEP_REST2 run, finalize 2.10 -> 0.01 and rows2 6.4 -> 7.8 at f = 0.97, is consistent with this: rows2 without the order is a wash or worse.)
 
+
+
+## The one-pass generate kernel (`DEEP_GEN_ONEPASS=1`; uarch, 23 Nov 17:55Z; CPU-verified, NOT yet timed on a GPU)
+
+**Why.**  `gbig_gen_st` visits every (prime, row) pair of its chunk **twice**: pass A to count the marks of each bin, the scan to place the bins' runs in the staging buffer, and pass B to visit the same pairs
+again (the 16-byte table load, the Shoup chain, the two reductions, the mark loop) only to learn where each mark goes.  With the per-CTA accounting above (227 warp visit iterations and 333 mark steps a CTA,
+real prime list) and today's SASS (unroll 4, clamped loads, flat flush, LEAN): pass A visits ~5.4k + marks ~2.0k, pass B visits ~5.4k + staging ~2.7k, flush ~3.0k, scan + reservation ~0.5k: ~19k warp
+instructions a CTA, of which pass B's 5.4k of visits repeat pass A's exactly, with their table loads waited for a second time.  Measured split (genab, unroll 4): pass A 10.78 ms, pass B 17.96 ms.
+
+**What.**  Each bin of the CTA (8 rows x 32 tiles = 256 bins) owns `SLOT_C` = 40 words of shared memory and each pair is visited ONCE: the counting atomic returns the mark's rank r in its bin, the mark goes to
+`slot[b * 40 + r]` while r < 40, and to an overflow list of (word, rank) entries (`OVF_CAP` = 128) beyond that.  A bin's marks are then one contiguous run of slots, so there is **no scan**: the bins are reserved in
+global memory from the counts (one atomic a bin, as before) and copied out (packed: groups of 5, the last group padded with copies of the bin's last mark when it is flushed; an overflowed mark is a group of 5
+copies of itself after the bin's slot groups, at its rank).  If the list fills, the CTA writes every mark the old way (the visits again, one store a mark), like a chunk too big for the staging buffer.
+The host's chunks are unchanged (3/4 of `STAGE_CAP` marks a CTA, ~24 a bin): a bin of Poisson(24) marks needs more than 40 slots with probability 9.9e-4, **0.55 overflow entries a CTA**, and the fallback
+needs more than 128 of them (never in practice).  Same marks in the same bins as `gbig_gen_st`, same bit matrix, same overflow protocol (any bin over `cap`: `gcnt[NBINS] = 1`, nothing written); unpacked, the
+same bin counts; the order of the marks inside a bin differs (it never was fixed: atomics).  With `DEEP_GEN_ONEPASS=0` (the default) the preprocessed source of the production kernel is byte-identical to before
+(checked with `g++ -E` on the production defines).
+
+**The visit loop**, a second change inside the new kernel: the unrolled steps whose 4 primes are all in the chunk need no clamp and no validity mask (`TAB[p_lo + min(pi, np - 1)]` and the `j = limS` select
+cost ~3 instructions a visit); only the one partial step at the end is clamped, so the loads in flight a warp are the same as production's.
+
+**SASS** (`sass.py`, sm_120, production's defines + `GEN_ONEPASS`): **44 registers** (production 40; allocated as 48, so 24,576 a CTA against 20,480; `DEEP_GEN_LB=512,3` brings it to 40 with no spills), **44,048 B** of shared memory (38,032), no spills, 2 CTAs of 512 threads an SM as before; the visit step is
+46 instructions for 4 visits (**11.5 a visit**, production ~17 + pass B's again); the mark step is **13 instructions** on its common path (production: 6 in pass A + 8 in pass B; the warp-aggregated atomic of
+the overflow list is off that path); the flush ~60 instructions a warp iteration over 8 group slots a bin (~5 of them used).  **Estimate a CTA: visits 227 x 13.5 = 3.1k + marks 333 x 13 = 4.3k + flush
+~3.9k + reservation ~0.4k = ~11.6k warp instructions, against ~19k: -39%.**  At unroll 8: 55 registers, no spills; with 25 slots and `__launch_bounds__(512, 3)` (`DEEP_GEN_LB=512,3`): 40 registers,
+28,688 B, 3 CTAs an SM.
+
+**Expected, not measured:** if the kernel stays near its ~70% of the integer issue rate, **gen 28.7 -> ~17-21 ms a window** (the floor that does not move is the bins' DRAM writes: 14.4 GB a window, ~9 ms at
+1.6 TB/s); -8 to -12 ms a window, -32 to -48 ms of a batch's alone time.  How much of that reaches the batch depends on the mix: the flat flush (instructions only: -18.1k a CTA) converted at 157% (-27 ms a batch),
+the unroll (latency only) at 63%; this change is both, with 41% of the flat flush's instruction cut, so **-3% to -8% of a batch** (-20 to -60 ms), most likely near -5%.  What would refute it:
+gen not falling with the instruction count (then the kernel waits on the bins' writes or on the counting atomics' latency, and pass B's visits were hiding under them).
+
+**CPU** (the pthread emulation of the kernel source): `test_gbig.py` (`onepass_tests`: 40 slots / 20 slots / 10 slots with a 4-entry list, unroll 1 and 4, both grid orders, the min-based reduction,
+unpacked and packed, the 6 staged geometries including 3x-coarse chunks and 2-row CTAs over 128 tiles, a capacity too small then large enough) against the brute-force reference: bits identical, unpacked bin
+counts identical, the overflow flag set when it must be; a CPU-only counter checks that every path ran (CTAs that used the overflow list without the fallback at 40 and 20 slots, CTAs that took the fallback at a
+list of 4).  `test_gbig_cpu.py` with `DEEP_GEN_ONEPASS=1` at 40 and 10 slots (the cupy glue, packed and unpacked, the stage-overflow chunks, the capacity retry); `test_gbatch_cpu.py` (BatchFeeder against
+sieve200's CPU feeder) on production's stack + one-pass with `--big` (8 and 16 rows a CTA), and unpacked at 7 slots: every window identical.  `run_cpu_tests.sh` has the new lines.
+
+**To run on a GPU:** `bash onepassab.sh SPEC` (production, one-pass at 40 slots, the same at 40 registers, at unroll 8, 30 slots with 6144-word chunks, 25 slots with 4096-word chunks at 3 CTAs an SM, production again; with one pass the
+printed "pass A" is all the visits and "pass B" is the flush); then the driver gate as usual with `DEEP_GEN_ONEPASS=1` added to production's environment (it needs `DEEP_GEN_HOIST=1`, which production has; slice
+lines identical on the 24 windows, known case 23 / 23, >= 1% of a batch).

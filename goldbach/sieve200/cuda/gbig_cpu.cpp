@@ -29,7 +29,11 @@ static inline unsigned __shfl_up_sync(unsigned, unsigned v, unsigned d) {
     return r;
 }
 #define S200G_DYNSHARED(type, name) type *name = (type *)g_dyn
+/* GEN_ONEPASS: CTAs that used the overflow list, CTAs that took the fallback, overflow entries (read by test_gbig.py to see that every path ran) */
+static unsigned long long g_1p[3];
+#define GEN1P_STAT(n, fb) { if ((n) > 0) __atomic_fetch_add(&g_1p[0], 1ull, __ATOMIC_RELAXED); if (fb) __atomic_fetch_add(&g_1p[1], 1ull, __ATOMIC_RELAXED); __atomic_fetch_add(&g_1p[2], (unsigned long long)(n), __ATOMIC_RELAXED); }
 #include "gbig_kernels.cuh"
+extern "C" void cpu_1p_stats(unsigned long long *out) { for (int i = 0; i < 3; i++) { out[i] = g_1p[i]; g_1p[i] = 0; } }
 
 typedef void (*kfn)(void *);
 struct launch_t { kfn f; void *args; unsigned tid; };

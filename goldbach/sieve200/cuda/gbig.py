@@ -22,15 +22,30 @@ def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hois
     key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll, bool(flush2), bool(order), tuple(lean))
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if flush2 else "") + ("#define GEN_ORDER 1\n" if order else "") + "".join(f"#define {n} 1\n" for n in lean))
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if flush2 else "") + ("#define GEN_ORDER 1\n" if order else "") + defines(lean))
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
 
 
 def lean_flags():
-    """the fixed-latency options of the generate kernel set in the environment: DEEP_GEN_SCAN2 (shuffle scan), DEEP_GEN_RESV_LATE (late reservation), DEEP_GEN_MINRED (min-based reduction)"""
-    return tuple(n for n, v in (("GEN_SCAN2", "DEEP_GEN_SCAN2"), ("GEN_RESV_LATE", "DEEP_GEN_RESV_LATE"), ("GEN_MINRED", "DEEP_GEN_MINRED")) if os.environ.get(v, "0") == "1")
+    """the options of the generate kernel set in the environment, as names ("#define NAME 1") or "NAME=VALUE" ("#define NAME VALUE"): DEEP_GEN_SCAN2 (shuffle scan), DEEP_GEN_RESV_LATE (late
+    reservation), DEEP_GEN_MINRED (min-based reduction), DEEP_GEN_ONEPASS (one visit a pair: per-bin slots, no pass B; needs DEEP_GEN_HOIST=1) with DEEP_GEN_SLOT_C / DEEP_GEN_OVF_CAP (its slots a bin and
+    overflow entries; defaults in gbig_kernels.cuh)"""
+    env = os.environ
+    out = tuple(n for n, v in (("GEN_SCAN2", "DEEP_GEN_SCAN2"), ("GEN_RESV_LATE", "DEEP_GEN_RESV_LATE"), ("GEN_MINRED", "DEEP_GEN_MINRED"), ("GEN_ONEPASS", "DEEP_GEN_ONEPASS")) if env.get(v, "0") == "1")
+    if "GEN_ONEPASS" in out:
+        assert env.get("DEEP_GEN_HOIST", "0") == "1", "DEEP_GEN_ONEPASS=1 needs DEEP_GEN_HOIST=1"
+        out += tuple(f"{n}={int(env[v])}" for n, v in (("SLOT_C", "DEEP_GEN_SLOT_C"), ("OVF_CAP", "DEEP_GEN_OVF_CAP")) if v in env)
+        if env.get("DEEP_GEN_LB"):                                              # "512,3": __launch_bounds__(512, 3) (3 CTAs of 512 threads an SM need <= 40 registers)
+            a, b = (int(x) for x in env["DEEP_GEN_LB"].split(","))
+            out += (f"GEN_LB=__launch_bounds__({a},{b})",)
+    return out
+
+
+def defines(names):
+    """the #define lines of lean_flags() entries"""
+    return "".join(f"#define {n.replace('=', ' ')}\n" if "=" in n else f"#define {n} 1\n" for n in names)
 
 
 def primes_between(lo, hi):

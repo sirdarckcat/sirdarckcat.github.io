@@ -15,18 +15,23 @@ from bigchunks import make_chunks
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def build(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=0, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0)):
-    out = os.path.join(HERE, f"libgbig_cpu_{tile_log}_{ks_log}_{rg}_{ppt}_{stage_cap}_{rcta}" + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ("_f2" if flush2 else "") + ("_go" if order else "") + ("_ln%d%d%d" % tuple(lean) if any(lean) else "") + ".so")
+def build(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=0, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0), op=None):
+    """op: None, or (SLOT_C, OVF_CAP) for the one-pass kernel (GEN_ONEPASS=1)"""
+    out = os.path.join(HERE, f"libgbig_cpu_{tile_log}_{ks_log}_{rg}_{ppt}_{stage_cap}_{rcta}" + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ("_f2" if flush2 else "") + ("_go" if order else "") + ("_ln%d%d%d" % tuple(lean) if any(lean) else "") + (f"_op{op[0]}x{op[1]}" if op else "") + ".so")
     srcs = [os.path.join(HERE, f) for f in ("gbig_cpu.cpp", "gbig_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
         subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DTILE_LOG={tile_log}", f"-DKS_LOG={ks_log}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}",
-                               f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", f"-DGEN_FLUSH2={flush2}", f"-DGEN_ORDER={order}", f"-DGEN_SCAN2={lean[0]}", f"-DGEN_RESV_LATE={lean[1]}", f"-DGEN_MINRED={lean[2]}", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
+                               f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", f"-DGEN_FLUSH2={flush2}", f"-DGEN_ORDER={order}", f"-DGEN_SCAN2={lean[0]}", f"-DGEN_RESV_LATE={lean[1]}", f"-DGEN_MINRED={lean[2]}", *((f"-DGEN_ONEPASS=1", f"-DSLOT_C={op[0]}", f"-DOVF_CAP={op[1]}") if op else ()), "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
     lib.cpu_gen_st.argtypes = [vp, vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     lib.cpu_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     lib.cpu_apply.argtypes = [ctypes.c_int, vp, vp, ctypes.c_uint32, vp, ctypes.c_int]
+    lib.cpu_1p_stats.argtypes = [vp]
     return lib
+
+
+STATS_1P = {}          # op -> [CTAs that used the overflow list, CTAs that took the fallback, overflow entries], summed over the one-pass runs
 
 
 def primes_between(lo, hi):
@@ -105,7 +110,7 @@ def main():
     sys.exit(0 if ok else 1)
 
 
-def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0)):
+def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0), op=None, bpack=0):
     """gbig_gen_st (the staged kernel) against the same reference: normal chunks (most CTAs stage their marks), chunks far over the buffer (every CTA falls back to one store a mark),
     rows that do not fill the last row group of CTAs, and a bin capacity too small (the flag) and then large enough"""
     ok = True
@@ -113,7 +118,7 @@ def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0)):
     for tile_log, ks_log, rg, threads, rcta, stage_cap, frac in ((10, 13, 4, 32, 2, 512, 0.75), (9, 12, 3, 32, 4, 256, 0.75), (11, 14, 4, 64, 1, 1024, 0.75),
                                                                     (10, 13, 4, 32, 2, 512, 3.0), (9, 12, 3, 32, 4, 256, 1.0),
                                                                     (8, 15, 2, 256, 2, 512, 0.75)):          # the last: 128 tiles a row (a 2^26-member window has 2^7 tiles of 2^19), 2 rows a CTA = 256 bins
-        lib = build(tile_log, ks_log, rg, 1, stage_cap, rcta, 0, hoist, gunroll, flush2, order, lean)
+        lib = build(tile_log, ks_log, rg, 1, stage_cap, rcta, bpack, hoist, gunroll, flush2, order, lean, op)
         NB, NT, TW = lib.cpu_nbins(), lib.cpu_ntiles(), lib.cpu_tile_words()
         KS = 1 << ks_log
         S = primes_between(1 << tile_log, 1 << (ks_log + 2))
@@ -138,20 +143,28 @@ def staged_tests_v(rng, hoist=0, gunroll=1, flush2=0, order=0, lean=(0, 0, 0)):
                     while j < KS:
                         cnt[r * NT + (j >> tile_log)] += 1
                         j += s
-            for cap, expect_overflow in ((8, True), (int(cnt.max()) + 2, False)):
+            for cap, expect_overflow in ((8, True), ((int(cnt.max()) + 2) * (3 if bpack else 1) + (64 if bpack else 0), False)):    # packed: a bin is at most 3 words a mark (+ padding)
                 gcnt = np.zeros(NB + 1, dtype=np.uint32)
                 bins = np.zeros(NB * cap, dtype=np.uint32)
                 lib.cpu_gen_st(U.ctypes.data, TAB.ctypes.data, ps.ctypes.data, len(ps) - 1, row0, nrows, cap, gcnt.ctypes.data, bins.ctypes.data, threads)
                 over = bool(gcnt[NB])
+                if op:
+                    st = np.zeros(3, dtype=np.uint64)
+                    lib.cpu_1p_stats(st.ctypes.data)
+                    if not expect_overflow:
+                        acc = STATS_1P.setdefault(op, [0, 0, 0])
+                        for i in range(3):
+                            acc[i] += int(st[i])
                 good = over == expect_overflow
                 if not expect_overflow:
                     out = np.zeros(NB * TW, dtype=np.uint32)
                     lib.cpu_apply(nrows * NT, gcnt.ctypes.data, bins.ctypes.data, cap, out.ctypes.data, threads)
                     got = out[:nrows * NT * TW].reshape(nrows, NT * TW)
                     good &= np.array_equal(got, refw[row0:row0 + nrows])
-                    good &= np.array_equal(gcnt[:nrows * NT].astype(np.int64), cnt[:nrows * NT])
+                    if not bpack:                                               # packed bins count words (3 a group of 5 marks), not marks
+                        good &= np.array_equal(gcnt[:nrows * NT].astype(np.int64), cnt[:nrows * NT])
                     # how many CTAs staged: chunks with marks <= buffer (a CTA's total is the sum over its rows)
-                    print(f"  STAGED{' lean' + str(lean) if any(lean) else ''}{' hoist' if hoist else ''}{' unroll ' + str(gunroll) if gunroll > 1 else ''}{' FLAT-FLUSH' if flush2 else ''}{' ORDER' if order else ''} TILE_LOG={tile_log} KS_LOG={ks_log} RG={rg} RCTA={rcta} STAGE_CAP={stage_cap} chunk x{frac} threads={threads} rows {row0}..{row0 + nrows - 1} cap {cap}: "
+                    print(f"  STAGED{' lean' + str(lean) if any(lean) else ''}{' hoist' if hoist else ''}{' unroll ' + str(gunroll) if gunroll > 1 else ''}{' FLAT-FLUSH' if flush2 else ''}{' ORDER' if order else ''}{' ONEPASS slots ' + str(op[0]) + ' ovf ' + str(op[1]) if op else ''}{' PACKED' if bpack else ''} TILE_LOG={tile_log} KS_LOG={ks_log} RG={rg} RCTA={rcta} STAGE_CAP={stage_cap} chunk x{frac} threads={threads} rows {row0}..{row0 + nrows - 1} cap {cap}: "
                           f"{len(ps) - 1} chunks, {int(cnt.sum())} marks, bits and bin counts {'identical to the reference' if good else 'DIFFERENT'}", flush=True)
                 else:
                     print(f"  STAGED TILE_LOG={tile_log} KS_LOG={ks_log} rows {row0}..{row0 + nrows - 1} cap {cap}: overflow flag {'set' if over else 'NOT SET'}", flush=True)
@@ -165,7 +178,26 @@ def staged_tests(rng):
     for hoist, gunroll, flush2, order, lean in ((0, 1, 0, 0, (0, 0, 0)), (1, 1, 1, 0, (0, 0, 0)), (0, 1, 1, 1, (0, 0, 0)), (1, 2, 0, 1, (0, 0, 0)), (1, 4, 1, 1, (0, 0, 0)), (1, 8, 1, 1, (0, 0, 0)), (1, 8, 0, 0, (0, 0, 0)),
                                                  (1, 4, 1, 1, (1, 1, 1)), (1, 1, 1, 1, (1, 1, 1)), (0, 1, 1, 0, (1, 1, 1)), (1, 4, 0, 0, (1, 0, 1))):
         ok &= staged_tests_v(rng, hoist, gunroll, flush2, order, lean)
+    ok &= onepass_tests(rng)
     return ok
+
+
+def onepass_tests(rng):
+    """the one-pass kernel (GEN_ONEPASS: per-bin slots, no pass B) on the same geometries: 40 slots a bin (an overflow now and then: the chunks put ~24 marks in a bin, ~72 in the 3x-coarse ones),
+    20 slots (most bins of the production-like chunks overflow into the list), 10 slots with a list of 4 entries (most CTAs take the fallback); unroll 1 / 4, both grid orders, the min-based reduction; unpacked (bits and bin counts)
+    and packed (bits)"""
+    ok = True
+    STATS_1P.clear()
+    for op in ((40, 128), (20, 128), (10, 4)):
+        for gunroll, order, minred in ((1, 0, 0), (4, 1, 1), (4, 0, 0)):
+            for bpack in (0, 1):
+                ok &= staged_tests_v(rng, 1, gunroll, 0, order, (0, 0, minred), op, bpack)
+    # every path of the kernel ran: slots with overflow entries and no fallback (40 and 20 slots), and the fallback (a list of 4)
+    for op, (lst, fb, ent) in sorted(STATS_1P.items()):
+        print(f"  ONEPASS slots {op[0]} ovf {op[1]}: {lst} CTAs used the overflow list ({ent} entries), {fb} took the fallback", flush=True)
+    paths = all(STATS_1P[op][0] - STATS_1P[op][1] > 0 for op in ((40, 128), (20, 128))) and STATS_1P[(10, 4)][1] > 0
+    print(f"  ONEPASS paths: overflow list without fallback at 40 and 20 slots, fallback at a list of 4: {'all exercised' if paths else 'NOT ALL EXERCISED'}", flush=True)
+    return ok and paths
 
 
 if __name__ == "__main__":

@@ -29,12 +29,19 @@ class _Fn:
             self.lib.cpu_apply(int(grid[0]), P(gcnt), P(bins), int(cap), P(out), int(block[0]))
 
 
+def op_of(code):
+    """(SLOT_C, OVF_CAP) of a module source built with GEN_ONEPASS (the host's #defines come first, then the header's defaults), or None"""
+    if "#define GEN_ONEPASS 1" not in code:
+        return None
+    return tuple(int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("SLOT_C", "OVF_CAP"))
+
+
 class _RawModule:
     def __init__(self, code=None):
         tl, ks, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("TILE_LOG", "KS_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
         self.order = "#define GEN_ORDER 1" in code
         self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1,
-                                   1 if "#define GEN_FLUSH2 1" in code else 0, 1 if self.order else 0, tuple(1 if f"#define {n} 1" in code else 0 for n in ("GEN_SCAN2", "GEN_RESV_LATE", "GEN_MINRED")))
+                                   1 if "#define GEN_FLUSH2 1" in code else 0, 1 if self.order else 0, tuple(1 if f"#define {n} 1" in code else 0 for n in ("GEN_SCAN2", "GEN_RESV_LATE", "GEN_MINRED")), op_of(code))
 
     def get_function(self, name):
         return _Fn(self.lib, name, self.order)
