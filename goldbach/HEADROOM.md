@@ -10,7 +10,7 @@ because the return is logarithmic.**
 
 | step (date, who measured) | batch of 4 windows | note |
 |---|---|---|
-| a2 pipeline + rg 32, no bubble (11:16Z) | 1.575 s | f = 0.97, 22.8 M tests/s Fermat kernel |
+| a2 pipeline + rg 32, no bubble (11:16Z) | 1.575 s | f = 0.97; Fermat kernel 23.3M tests/s (time_fermat28) |
 | + 29-bit Fermat kernel (11:40Z) | 1.508 s (-4%) | kernel +5.7% tests/s |
 | f = 0.985 (the lead, 12:06Z) | 0.939 s | x1.080 expected near-misses a second (fewer kept members: 14.1M tests a batch, not 28.2M) |
 | + fused Fermat rounds (12:31Z) | 0.869 s (x0.924) | the per-round bookkeeping as 5 small kernels |
