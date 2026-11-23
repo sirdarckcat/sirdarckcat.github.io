@@ -2,6 +2,7 @@ import GoldbachGaps.Basic
 import GoldbachGaps.Effective
 import GoldbachGaps.Covering
 import GoldbachGaps.Counting
+import GoldbachGaps.CoverBound
 import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
 import GoldbachGaps.Record150
@@ -58,6 +59,14 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (paper Proposition `prop:cover`, Theorem `thm:coverdirichlet`).
 * `Counting` – the counting bound: for large `X` some even `n` in `(X, 2X]` has no
                Goldbach summand below `log X · log log X / 48`.
+* `CoverBound` – the same order by a covering construction, with a better constant: for
+               all large `X` there is an even `N ≤ X` with `N - q` composite for every prime
+               `q < 0.73 · log X · log log X` (`eventually_exists_even_le_no_summand`;
+               counting pairs cannot exceed `1/2`), and for every
+               `c < e^γ / (2 C₂) = 1.349…` if Mertens' third theorem is granted (a named
+               hypothesis, `eventually_exists_even_le_of_mertensThird`). Inputs: the layered
+               cover of `Cap.Layers`, the prime number theorem from Mathlib, and an elementary
+               bound `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ 1.367 / log w`.
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.

@@ -22,7 +22,9 @@ and an Erdős–Rankin type improvement). What remains for either theorem is the
 the three counts in the hypothesis `hcount`: the product `∏ (r - 2)/(r - 1)` (Mertens), the
 number of mop-up primes (Chebyshev or the prime number theorem) and, for the second, the
 number of rows surviving the fixed layer (an upper-bound sieve for prime pairs and a count
-of smooth numbers). None of those is proved here.
+of smooth numbers). None of those is proved here. For the first theorem they are estimated in
+`GoldbachGaps/CoverBound.lean` (prime number theorem; the product by an elementary bound, or by
+Mertens' third theorem as a hypothesis).
 -/
 
 namespace GoldbachGaps.Cap
