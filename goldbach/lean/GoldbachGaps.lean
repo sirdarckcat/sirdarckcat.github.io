@@ -13,8 +13,7 @@ import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
-import GoldbachGaps.Cover15787
-import GoldbachGaps.Cover15877
+import GoldbachGaps.Cover15907
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -80,16 +79,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                of a block has `N - q` divisible by a covering modulus, so the bound on the
                least summand needs no primality or compositeness test
                (`scripts/gen_cover.py` generates instances).
-* `Cover15787` – generated instance: a 193-digit even `N` (and the 21,378,977 members
+* `Cover15907` – generated instance: a 193-digit even `N` (and the 21,378,978 members
                `N + t M` of its progression below `10^200`) with `N - q` divisible by a prime
-               `r ≤ 463` for each of the 1,840 primes `q < 15787`. It is the complete cover on
+               `r ≤ 463` for each of the 1,853 primes `q < 15907`. It is the complete cover on
                the 89 odd primes up to 463 found by the research session
-               (`goldbach/sublinear/complete_cover_15787.txt`, branch `ccr-d4a17dd0-7uu03r`);
-               closed statements in `Records`.
-* `Cover15877` – the same for the research session's later cover on the same 89 primes
-               (`complete_cover_15877.txt`, commit `1658574`): another 193-digit even `N` (and
-               the 21,378,978 members of its progression below `10^200`) with `N - q`
-               divisible by a prime `r ≤ 463` for each of the 1,848 primes `q < 15877`.
+               (`goldbach/sublinear/complete_cover_15907.txt`, branch `ccr-d4a17dd0-7uu03r`,
+               commit `9e99b06`), the best of three on 2026-11-23; the certificates of the
+               earlier covers to 15787 and 15877 were at commits `8c061b4` and `7c4568c` of
+               this branch and their statements are now corollaries. Closed statements in
+               `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
