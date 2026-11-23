@@ -8,6 +8,7 @@ import GoldbachGaps.Record199
 import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
+import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -57,9 +58,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
                2026-11-22 below `10^199` (`goldbach/records/budget_1e200_199digit_g*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g = 125269` and `g = 133981`.
-* `Record200_g146191` – generated certificate for the standing record below `10^200`
-               (`goldbach/records/budget_1e200_200digit_g146191` on the same branch):
-               a 200-digit `N` with `g(N) = 146191`.
+* `Record200_g146191`, `Record200_g157837` – generated certificates for two records below
+               `10^200` (`goldbach/records/budget_1e200_200digit_g146191` and `…_g157837` on
+               the same branch): 200-digit `N` with `g(N) = 146191` and, the standing record,
+               `g(N) = 157837`.
 * `Records`  – the bounded record games as closed theorems.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on

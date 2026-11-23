@@ -3,6 +3,7 @@ import GoldbachGaps.Record199
 import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
+import GoldbachGaps.Record200_g157837
 
 /-!
 # The bounded record games, as kernel-checked theorems
@@ -38,11 +39,18 @@ theorem exists_lt_ten_pow_199_least_summand_133981 :
     ∃ N < 10 ^ 199, IsLeastSummand N 133981 :=
   ⟨Record199_g133981.N, Record199_g133981.N_lt, Record199_g133981.isLeastSummand⟩
 
-/-- Budget game, the standing record of 2026-11-22 late (campaign at `Q = 140000`, variant
+/-- Budget game, record of 2026-11-22 late (campaign at `Q = 140000`, variant
 `r200_q140k_c_v77`, `k = 3101585871`): there is an `N` below `10^200` whose least Goldbach
 summand is `146191`. -/
 theorem exists_lt_ten_pow_200_least_summand_146191 :
     ∃ N < 10 ^ 200, IsLeastSummand N 146191 :=
   ⟨Record200_g146191.N, Record200_g146191.N_lt, Record200_g146191.isLeastSummand⟩
+
+/-- Budget game, the standing record of 2026-11-23 (campaign at `Q = 150000`, variant
+`pt_q150k_t528`, `k = 4224399187`): there is an `N` below `10^200` whose least Goldbach
+summand is `157837`. -/
+theorem exists_lt_ten_pow_200_least_summand_157837 :
+    ∃ N < 10 ^ 200, IsLeastSummand N 157837 :=
+  ⟨Record200_g157837.N, Record200_g157837.N_lt, Record200_g157837.isLeastSummand⟩
 
 end GoldbachGaps
