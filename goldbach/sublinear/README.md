@@ -371,7 +371,11 @@ line, and the line is sharp for a structural reason.
    (N = Σ a_r e_r − jM), so changing a single coordinate changes every
    further residue. Two different N < X agree modulo primes of total size
    below ln X only (`move_budget`, proved in Lean). There are no local moves:
-   beyond the line the landscape is that of a random-energy model.
+   beyond the line the landscape is that of a random-energy model. Measured
+   in the miniature (`toy_rem_check.c`): over 123 million pairs of members of
+   the same cover, N and N + 2·3·5···23, the rows left at depth 200 correlate
+   at −0.03 within each cover quality, the small negative value expected from
+   landing in a different class modulo every further prime.
 2. *Lattices.* Chinese remaindering with errors or with lists (Goldreich–Ron–
    Sudan, Boneh, Guruswami–Sahai–Sudan, Bleichenbacher–Nguyen) finds N from
    residues when the lists are short and the agreement high: the weighted
