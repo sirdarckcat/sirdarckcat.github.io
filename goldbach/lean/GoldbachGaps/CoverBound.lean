@@ -1,4 +1,5 @@
 import GoldbachGaps.Cap.Layers
+import GoldbachGaps.Mertens
 
 /-!
 # A lower bound for the largest least Goldbach summand, by covering
@@ -10,13 +11,17 @@ assume that `N` has a Goldbach partition:
   for all large `X` there is an even `N ≤ X` such that `N - q` is composite for every prime
   `q < c · ln X · ln ln X`.
 
-* `eventually_exists_even_le_no_summand`: unconditionally, with `c = 0.73`.
-* `eventually_exists_even_le_of_mertensThird`: with Mertens' third theorem
-  (`ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`, not in Mathlib, a named hypothesis `MertensThird`;
-  formalised in the PNT+ project, see the docstring of `MertensThird`),
-  for every `c < e^γ / (2 C₂) = 1.349…`, `C₂` the twin-prime constant; and
-  `eventually_exists_even_le_of_mertensThird_explicit` with `c = 1.2` (from `γ > 1/2` and three
-  factors of `C₂`).
+* `eventually_exists_even_le_of_mul_lt_one`: for every `c` with `c · 2 C₂ e^{-γ} < 1`, that is
+  `c < e^γ / (2 C₂) = 1.349…`, `C₂` the twin-prime constant. No hypothesis: Mertens' third
+  theorem (`ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`), which is not in Mathlib, is proved in
+  `GoldbachGaps/Mertens.lean` (`mertensThird`).
+* `eventually_exists_even_le_no_summand_six_fifths`: the same with the explicit `c = 1.2` (from
+  `γ > 1/2` and three factors of `C₂`).
+* `eventually_exists_even_le_no_summand`: with `c = 0.73`, by an elementary bound for the
+  product that does not use Mertens' theorem.
+* `eventually_exists_even_le_of_mertensThird` and `…_explicit`: the two statements above with
+  Mertens' third theorem as a hypothesis `MertensThird` (how they were first proved, on
+  23 November 2026, before `Mertens.lean` existed).
 * `eventually_exists_even_le_of_mertensUpper`: the general statement. If
   `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε) / ln w` for every `ε > 0` and all large `w`
   (`MertensUpper κ`), the conclusion holds for every `c < 1/κ`.
@@ -679,17 +684,17 @@ theorem eventually_exists_even_le_no_summand :
       ∀ q : ℕ, (q : ℝ) < 0.73 * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q :=
   eventually_exists_even_le_of_mertensUpper (by norm_num) mertensUpper_elementary (by norm_num)
 
-/-- **Mertens' third theorem**: `ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`. It is not in Mathlib (checkout
-of 22 November 2026); it is a hypothesis of `eventually_exists_even_le_of_mertensThird` and of
-its explicit form, and nothing else here uses it.
+/-- **Mertens' third theorem**: `ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`, as a proposition. It is not
+in Mathlib (checkout of 22 November 2026). It holds: `mertensThird` below, proved from Mathlib in
+`GoldbachGaps/Mertens.lean`. The statements `eventually_exists_even_le_of_mertensThird` and its
+explicit form take it as a hypothesis; their unconditional forms are
+`eventually_exists_even_le_of_mul_lt_one` and `eventually_exists_even_le_no_summand_six_fifths`.
 
-A formal proof exists outside Mathlib: the PNT+ project
+An independent formal proof exists in the PNT+ project
 (`github.com/AlexKontorovich/PrimeNumberTheoremAnd`, file
-`PrimeNumberTheoremAnd/IEANTN/Mertens.lean`, commit `a4fb698`, Lean 4.35.0) has
-`Mertens.prod_one_minus_div_prime_eq` (`∏_{p ≤ x} (1 - 1/p) = e^{-γ} e^{E₃(x)} / ln x`) and
-`Mertens.E₃.bound''` (the product is asymptotic to `e^{-γ} / ln x`), from which this statement
-follows by restricting to integers. That file was read on 23 November 2026 (2,460 lines, no
-`sorry`) but not compiled here, and it is not a dependency of this library. -/
+`PrimeNumberTheoremAnd/IEANTN/Mertens.lean`, commit `a4fb698`, Lean 4.35.0:
+`Mertens.prod_one_minus_div_prime_eq` and `Mertens.E₃.bound''`). That file was read on
+23 November 2026 but not compiled here, and nothing here depends on it. -/
 def MertensThird : Prop :=
   Tendsto (fun w : ℕ => Real.log w * ∏ p ∈ Nat.primesLE w, (1 - (p : ℝ)⁻¹)) atTop
     (nhds (Real.exp (-Real.eulerMascheroniConstant)))
@@ -851,5 +856,26 @@ theorem eventually_exists_even_le_of_mertensThird_explicit (h : MertensThird) :
   have h5 : twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant) ≤
       1575 / 2304 * 0.6066 := mul_le_mul h1 h2.le h4.le (by norm_num)
   nlinarith
+
+/-- Mertens' third theorem holds: it is proved from Mathlib in `GoldbachGaps/Mertens.lean`. -/
+theorem mertensThird : MertensThird := Mertens.mertens_third
+
+/-- **The covering bound with the sharp constant, with no hypothesis.** If
+`c · 2 C₂ e^{-γ} < 1`, that is `c < e^γ / (2 C₂) = 1.349…` (`C₂` the twin-prime constant, `γ`
+Euler's constant), then for all large `X` there is an even `N ≤ X` such that `N - q` is
+composite for every prime `q < c · ln X · ln ln X`. -/
+theorem eventually_exists_even_le_of_mul_lt_one {c : ℝ}
+    (hc : c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1) :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q :=
+  eventually_exists_even_le_of_mertensThird mertensThird hc
+
+/-- **An explicit constant, with no hypothesis.** For all large `X` there is an even `N ≤ X`
+such that `N - q` is composite for every prime `q < 1.2 · ln X · ln ln X`. (The crude bounds
+`γ > 1/2` and `C₂ ≤ 0.684` are used; the limit of the method is `1.349`.) -/
+theorem eventually_exists_even_le_no_summand_six_fifths :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, 1.2 * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < 1.2 * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q :=
+  eventually_exists_even_le_of_mertensThird_explicit mertensThird
 
 end GoldbachGaps
