@@ -25,6 +25,8 @@ import gpu_fermat28 as g28
 VARIANTS = {
     "s1r_asm": dict(step_file="fermat28_step_s1r.cuh", asm_mad=True),       # the RTX PRO 6000s' production kernel
     "s1rw": dict(step_file="fermat28_step_s1rw.cuh"),                       # A100 / L4 / T4
+    "s29_asm": dict(step_file="fermat29_step_s1.cuh", asm_mad=True),        # 23 x 29 bits, n < 2^665 (the pool's rows are 661 bits)
+    "s29w": dict(step_file="fermat29_step_s1w.cuh"),
 }
 
 

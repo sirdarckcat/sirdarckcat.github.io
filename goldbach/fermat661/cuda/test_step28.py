@@ -5,11 +5,11 @@ import ctypes, os, random, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from test_fermat28 import build
-from fm_geom import geometry
+from fm_geom import geometry, rbits
 
 STEPFILE = os.environ.get("FM28_STEP", "fermat28_step.cuh")
 W, NLIMB, NMAX = geometry(STEPFILE)                  # (28, 24, 668) for the 28-bit steps; (29, 23, 663) for fermat29_step_*.cuh
-RBITS = W * NLIMB
+RBITS = rbits(STEPFILE)                              # log2 R: W * NLIMB, or more for a step with a wide top digit (R = 2^669 for 23 x 29 bits)
 lib = ctypes.CDLL(build())
 lib.step_test.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p]
 lib.inv_test.argtypes = [ctypes.c_uint32]; lib.inv_test.restype = ctypes.c_uint32

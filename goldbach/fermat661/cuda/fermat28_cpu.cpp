@@ -28,4 +28,8 @@ extern "C" void step_test(const u32 *x_in, const u32 *n, u32 np, u32 b, u32 *x_o
     fm28_step(x, nn, np, b);
     for (int i = 0; i < NL; i++) x_out[i] = x[i];
 }
+#ifdef FM_TOPX
+extern "C" u32 inv_test(u32 lo) { return fm28_inv_neg32(lo); }
+#else
 extern "C" u32 inv_test(u32 lo) { return fm28_inv_neg28(lo); }
+#endif

@@ -8,6 +8,7 @@ and 2 if n is outside 2^642 <= n < 2^668 or even (MultiTester checks the range o
 Verified on the CPU against Python pow (test_fermat28.py: the same source compiled with g++); never run on a GPU by its author.
 """
 import os
+import re
 
 import numpy as np
 import cupy as cp
@@ -151,17 +152,23 @@ def to_limbs(x, limbs=21):
     return np.frombuffer(int(x).to_bytes(4 * limbs, "little"), dtype=np.uint32)
 
 
-def _check_range(N0, M, U, kmax, kmin=0):
+def step_nmax(step_file="fermat28_step.cuh"):
+    """n must be below 2^step_nmax for this step file: 668 for the 24 x 28-bit steps (R = 2^672), 665 for fermat29_step_*.cuh (23 x 29 bits, R = 2^669: 16 n < R)"""
+    m = re.search(r"#define FM_NMAX (\d+)", open(os.path.join(HERE, step_file)).read())
+    return int(m.group(1)) if m else 668
+
+
+def _check_range(N0, M, U, kmax, kmin=0, nmax=668):
     lo = int(N0) - max(int(q) for q in U) + int(kmin) * int(M)
     hi = int(N0) + int(kmax) * int(M)
-    if not (1 << 641) <= lo or hi >= (1 << 668):
-        raise ValueError(f"n spans {lo.bit_length()}..{hi.bit_length()} bits; fermat28 needs 642..668")
+    if not (1 << 641) <= lo or hi >= (1 << nmax):
+        raise ValueError(f"n spans {lo.bit_length()}..{hi.bit_length()} bits; this fermat28 step needs 642..{nmax}")
 
 
 class Tester:
     """Holds one spec's cq[i] = N0 - q_i and M on the GPU; test(idx, k) -> uint8 flags (on the GPU)."""
     def __init__(self, N0, M, U, limbs=21, kmax=1 << 32, kopts=None, kmin=0):
-        _check_range(N0, M, U, kmax, kmin)
+        _check_range(N0, M, U, kmax, kmin, step_nmax((kopts or {}).get("step_file", "fermat28_step.cuh")))
         self.L = limbs
         self.cq = cp.asarray(np.stack([to_limbs(int(N0) - int(q), limbs) for q in U]))
         self.M = cp.asarray(to_limbs(int(M), limbs))
@@ -186,7 +193,7 @@ class MultiTester:
         for s in specs:
             N0 = int(s["N0"])
             assert N0 > max(s["residual"]), "N0 - q must be positive"
-            _check_range(N0, M, s["residual"], kmax, kmin)
+            _check_range(N0, M, s["residual"], kmax, kmin, step_nmax((kopts or {}).get("step_file", "fermat28_step.cuh")))
             self.off.append(len(rows))
             rows.extend(to_limbs(N0 - int(q), limbs) for q in s["residual"])
         self.cq = cp.asarray(np.stack(rows))

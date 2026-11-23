@@ -15,7 +15,10 @@
 #define FM_NMAX 668                /* n below 2^FM_NMAX: 16 n < R */
 #endif
 #define NL FM_NL
-#define RB (FM_W * FM_NL)          /* R = 2^RB */
+#ifndef FM_RB                      /* a step with a wide top digit (gen_fermat28.py ... RB = 669) declares R = 2^FM_RB larger than 2^(FM_W FM_NL) */
+#define FM_RB (FM_W * FM_NL)
+#endif
+#define RB FM_RB                   /* R = 2^RB */
 #define FM_MASK ((1u << FM_W) - 1u)
 
 __device__ __forceinline__ u32 fm28_inv_neg28(u32 lo) {          /* -lo^-1 mod 2^28, lo odd */
@@ -23,6 +26,14 @@ __device__ __forceinline__ u32 fm28_inv_neg28(u32 lo) {          /* -lo^-1 mod 2
     x *= 2u - lo * x; x *= 2u - lo * x; x *= 2u - lo * x;
     return (0u - x) & FM_MASK;
 }
+
+#ifdef FM_TOPX
+__device__ __forceinline__ u32 fm28_inv_neg32(u32 lo) {          /* -lo^-1 mod 2^32, lo odd: the step takes the digits it needs (W bits, W + FM_TOPX for the top one) from it */
+    u32 x = (3u * lo) ^ 2u;
+    x *= 2u - lo * x; x *= 2u - lo * x; x *= 2u - lo * x;
+    return 0u - x;
+}
+#endif
 
 __device__ __forceinline__ int fm28_ge(const u32 *a, const u32 *b) {     /* a >= b, 24 limbs */
     int ge = 1, decided = 0;
@@ -71,7 +82,11 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
         if (b > 32 - FM_W && w + 1 < L32) v |= n32[w + 1] << (32 - b);
         n[i] = v & FM_MASK;
     }
+#ifdef FM_TOPX
+    const u32 np = fm28_inv_neg32(n32[0]);
+#else
     const u32 np = fm28_inv_neg28(n32[0]);
+#endif
     /* E = n + 671, c = ceil(E / 2^t), B = c 2^t - E (0 <= B < 2^t), aligned so that its bit t-1 is bit 671 */
     u32 E[L32];
     {
@@ -102,7 +117,7 @@ extern "C" __global__ void fermat28(const u32 *CQ, const u32 *Mv, const int *idx
             br = (cw < E[j]) | ((cw == E[j]) & br);
             Bw[j] = v;
         }
-        const int sh = RB - t, ws = sh >> 5, bs = sh & 31;         /* 9 .. 36: shift by 0 or 1 whole words, then bs bits */
+        const int sh = 32 * L32 - t, ws = sh >> 5, bs = sh & 31;   /* 9 .. 36: shift by 0 or 1 whole words, then bs bits: bit t-1 of B goes to the top bit of the L32-word buffer, which the loop below reads first */
         #pragma unroll
         for (int j = 0; j < L32; j++) {
             const u32 lo = ws ? (j > 0 ? Bw[j - 1] : 0u) : Bw[j];
