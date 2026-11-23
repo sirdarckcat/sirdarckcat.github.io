@@ -23,6 +23,7 @@ t "large-prime stage, flat flush + grid order"     $S DEEP_GEN_FLUSH2=1 DEEP_GEN
 t "window tail: rows2 + parallel finalize vs the originals" $S python3 test_rest2_cpu.py
 t "GPU sieve window, DEEP_REST2=1"                 $S DEEP_REST2=1 python3 test_gpu_sieve_cpu.py
 [ "$QUICK" = quick ] && { echo "quick: $fail failure(s)"; exit $fail; }
+t "near-miss truncation vs the full list's ground truth" $S python3 test_near_trunc_cpu.py
 t "GPU sieve vs CPU feeder"                        $S python3 test_gpu_sieve_cpu.py
 t "batch sieve vs CPU feeder"                      $S python3 test_gbatch_cpu.py
 t "batch sieve, packed bins"                       $S DEEP_BIN_PACK=1 python3 test_gbatch_cpu.py
