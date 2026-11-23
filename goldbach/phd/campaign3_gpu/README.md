@@ -230,6 +230,23 @@ Version 3 (22 Nov):
     and tests ×0.86 / ×0.80 / ×0.75 at 10^7 / 3·10^7 / 10^8. The engine on 4 slices with 4 processes
     (`sieve_bound/cpu_engine_search_c_4slices.txt`) takes 26.3 s at 10^6, 34.6 s at 10^7 (window 2^20), 46.4 s at 3·10^7 and
     110.6 s at 10^8, so even 10^7 is a net ×0.87.
+- Deep sieve, B = 10^8 (23 Nov 01:30Z on, production on the three RTX PRO 6000s). This is the uarch session's bucketed
+  large-prime stage: each (row, prime) pair is visited once per 2^25-member window, and marks are binned by (row, 2^19-bit tile).
+  It runs through `search_gpu5.py --deep 1` (`search_gpu5_deep.patch`, `deep_feeder.py`, `gbatch.py`, `gbig.py` on
+  ccr-b8c25887-i6tn9f at eecb551, plus two one-line fixes in `uarch_measure/fixes_8ffe.patch`).
+  - `uarch_measure/measure_*.txt` (`measure_all.sh` on an RTX PRO 6000 and an L4): the large-prime stage costs 0.030 ns a
+    mark on the RTX PRO 6000 and 0.10 ns on the L4. A whole 2^25 window at B = 10^8 takes 11.5 / 52.6 ns a member, and
+    `--check` shows it identical to the CPU feeder.
+  - `check_deep.sh` on an RTX PRO 6000 (2 variants × 2^25 members below 2^30), `uarch_measure/deepcheck_rtxpro6000.txt`:
+    - the new sieve tree gives slice lines identical to the production sieve;
+    - `--deep` at B = 10^6 gives tests and PRPs identical to the normal path;
+    - at B = 10^8, expected hits ×1.434 and tests ×0.750.
+  - Steady batches of 2^26 members (`uarch_measure/deeptime_rtxpro6000.txt`): production 2.00 s and 3.23e-5 expected hits.
+    `--deep` at 10^6 takes 1.90 s. At 10^8 it takes 2.10 s for 4.46e-5 expected hits: ×1.32 hits/s.
+  - `switch_deep.sh` restarts a running campaign in deep mode exactly at a 2^25 boundary: it waits until every variant has
+    the row k0 = m·2^25 in search.log, then sets KMAX = k0. Nothing is skipped, and nothing is rescanned beyond the batches
+    in flight. `run_v5_campQ.sh` passes `DEEP_ARGS`
+    (`--deep 1 --klog 25 --slice 33554432 --sieve-b 100000000 --p-est 0.0715`, BATCH=2).
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is

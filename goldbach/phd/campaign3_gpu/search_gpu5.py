@@ -36,6 +36,12 @@ ap.add_argument("--dmax", type=int, default=8, help="most complements of one mem
 ap.add_argument("--pool", type=int, default=1 << 19, help="members collected before the pool is tested")
 ap.add_argument("--klog", type=int, default=19, help="members per GPU sieve window: 2^klog")
 ap.add_argument("--sieve-threads", type=int, default=256, help="GpuFeeder threads per CTA (1024 is faster on sm_80/89)")
+ap.add_argument("--deep", type=int, default=0, choices=(0, 1),
+                help="1: the uarch session's batch-level sieve (sieve200/cuda/deep_feeder.py): windows of 2^klog members (use --klog 25 --slice 33554432), primes up to --sieve-b, "
+                     "those above --deep-split through the bucketed large-prime stage; kernel launches and memory as DEEPSIEVE.md says")
+ap.add_argument("--deep-split", type=int, default=1000000, help="--deep: primes above this go through the large-prime stage")
+ap.add_argument("--deep-rg", type=int, default=16, help="--deep: rows a group of the large-prime stage")
+ap.add_argument("--deep-max-rows", type=int, default=1100, help="--deep: rows of the bit matrix (the most rows of any variant)")
 ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
 ap.add_argument("--kernel", type=int, default=int(os.environ.get("SEARCH_GPU3_KERNEL", "2")), choices=(2, 3, 28),
                 help="2: gpu_fermat.py (proven in Lean); 3: gpu_fermat3.py (dedicated squaring, lazy reduction, n < 2^(32L-7)); "
@@ -72,8 +78,15 @@ def load_specs(path):
     return specs
 
 
+_DEEP = {}                          # --deep: the DeepSieve of the current M (one BatchFeeder, one bit matrix for every variant)
+
+
 def feeder_for(spec):
-    """The GpuFeeder for this spec's row count, pointed at this variant (its U and N0 mod s)."""
+    """The GpuFeeder for this spec's row count, pointed at this variant (its U and N0 mod s).  --deep: the one BatchFeeder of deep_feeder.py, retargeted."""
+    if args.deep:
+        from deep_feeder import deep_feeder_for                  # noqa: E402  (sieve200/cuda)
+        return deep_feeder_for(_DEEP, spec, B=args.sieve_b, ks_log=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+                               split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True))
     key = (spec["name"].split("@")[0], spec["N0"])
     if key not in _VAR:
         search.init_spec(spec, args.sieve_b, args.block)       # S, M^-1 mod s cached per M; N0 mod s per call
