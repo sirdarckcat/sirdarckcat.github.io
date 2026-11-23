@@ -82,6 +82,15 @@ For the L4 / T4 (overlap gave nothing there) the plain -3.4% is available, ~+0.6
   A Karatsuba squaring saves 66 (one level) to 138 (three levels) IMAD.WIDE (4.2 cycles) but its recombination is ~3 64-bit adds a column (~140-280 IADD3-class instructions, 350-700 cycles): still a loss.
 * **The selection fraction.**  With the measured sieve (6.4 ns a member at 2^24, 0.6 us of Fermat per kept member) and a Gaussian alive-count (sd ~15) the success rate per unit cost has its optimum at keeping 1.5-2.5% (f = 0.975-0.985), +2-3% over f = 0.97: flat, inside the noise.
 
+## 3d. Two more items built and waiting for the GPU (23 Nov, 11:45-12:15Z)
+
+* **The deep head** (section 4, last bullet; `sieve200/cuda/DEEPSIEVE.md`, last section): -8.4% Fermat tests for ~7-15 ms a window, ~+4-6% of a batch; CPU-verified, run order and gate sent to the GPU session.
+* **Fused Fermat rounds** (`fermat661/cuda/FROUND.md`): the bookkeeping of `run_pool` (~100 small cupy kernels and ~6 host syncs a round) as 5 small kernels, ~10 launches and one host read a round, the Fermat kernel unchanged, per-member results
+  and test lists identical to the driver's `run_pool` (CPU test against the verbatim function).  Aimed at the 2.2 ms a round of gap alone and the ~0.13 s a batch the sieve adds beside it (8%): 0 to +6% on the RTX cards, not measured.
+* **Not yet measured at all**: FP32 FFMA beside IMAD.WIDE inside the step (`bench_fm28_step.py --e5`, commit 02b90fc): the audit's "FP32 shares the lanes" was an assumption; and the shared-memory atomic rate (`bench_pipes.py` part 2:
+  `ATOMS.AND` with random addresses, plain STS, byte stores) on the RTX PRO 6000, only its part 3 (global memory) ever ran there: the sieve's tile kernel does ~0.8 marks a clock an SM, 20x under its instruction issue rate,
+  which smells of the atomic unit, not of ALU work.
+
 ## 4. Everything else (each 1-4%, none worth a GPU slot alone)
 
 Sizes as of 09:30Z, after the pipeline: the sieve is now hidden, but it still taxes the Fermat rounds (~0.55 s of Fermat per second of sieve WORK, plt3), so a percent of sieve work removed is worth ~0.55% of a batch and a
