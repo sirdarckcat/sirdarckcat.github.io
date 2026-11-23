@@ -165,7 +165,14 @@ Q = 170,000 and 1,609 at 213,070, against 1,262 and 1,623 on the campaign's
 88 moduli; after the larger boost that is E = 30.30 against 30.53 and 39.06
 against 39.27, i.e. 1.27 and 1.23 times the success rate. `./gen_vectors.sh
 Q cap count name seed m89` uses `starts/q<Q>_m89.txt` and sets kmax per
-vector.
+vector. Starting files exist for 170,000 (1,248 rows; two of four tempering
+runs reach it), 175,000 (1,291; campaign set 1,302), 180,000 (1,334; campaign
+set 1,352) and 213,070 (1,609). The fleet's record of 23 November, 158,209,
+came from this set at 170,000. With 8.5 fleet-days left and that record in
+hand, `brainstorm/portfolio_budget.py 8.5 29e6 158209 0 m89` gives an expected
+final record of 172,700 at design 170,000, 173,000 at 175,000 and 171,200 at
+180,000: 170,000 to 175,000 are equivalent, and the design need not move
+before the record does.
 
 **The first 88 odd primes** (3 to 461, in place of the campaign's 3 to 439
 with 467, 487, 491 and 683). M has 190.00 digits, so a vector has 9.9·10^9
