@@ -6,6 +6,22 @@ cards are ~81% of the fleet's Fermat throughput; the L4s and the T4 gain nothing
 stream priorities were tried and are worse: plt7).  A real 2x-5x needs more GPUs, which is a money question, not an engineering one; and a 2x-5x of compute buys only +3,300 to +7,700 on the final record,
 because the return is logarithmic.**
 
+## 0. Status at 13:30Z (23 Nov): what the engine has gained since the 05:30Z audit, measured (RTX PRO 6000, vector mode, the same 24 test windows)
+
+| step (date, who measured) | batch of 4 windows | note |
+|---|---|---|
+| a2 pipeline + rg 32, no bubble (11:16Z) | 1.575 s | f = 0.97, 22.8 M tests/s Fermat kernel |
+| + 29-bit Fermat kernel (11:40Z) | 1.508 s (-4%) | kernel +5.7% tests/s |
+| f = 0.985 (the lead, 12:06Z) | 0.939 s | x1.080 expected near-misses a second (fewer kept members: 14.1M tests a batch, not 28.2M) |
+| + fused Fermat rounds (12:31Z) | 0.869 s (x0.924) | the per-round bookkeeping as 5 small kernels |
+| + DEEP_RCTA = 8, 512 generate threads | 0.858 s (x0.983) | -10% together |
+| deep head (11:59-12:24Z) | +0.7% worse, taken off | -8.4% tests for 54 ms of sieve a batch |
+| **record g(N) = 158,209** (12:48Z, certified 12:56Z) | | found by this pipeline on gold-g4c |
+
+Where a batch goes now (f = 0.985): ~0.95 s of GPU work (Fermat kernels ~0.57 s alone, sieve ~0.38 s alone) in ~0.86 s: the two share the GPU almost serially, so a millisecond of sieve or Fermat time is worth ~0.5% of a batch.  Window sieve (bench_split, ms of 83-87):
+gen 50-55 (pass A 16-23, pass B 32-34), tile kernel 33 (small marks 14.6, bin apply 19.9, init/write 1.7): the large primes' 4-byte marks are written and read back at the DRAM rate.  In flight (opt-in, CPU-verified, not yet timed): packed bins (-40% bytes), hoisted visit
+loops (-30% instructions a visit), tile-kernel latency experiments (DEEPSIEVE.md, last sections).  Closed with data: FP32 beside the multiplier, the shared-memory atomics as a limit, a persistent Fermat kernel, a deeper head at f = 0.985.
+
 ## 1. Where an RTX PRO 6000 batch goes (2 x 2^25 members, Q = 170,000, 1.76 s)
 
 | part | time | what bounds it | floor / what was tried |
