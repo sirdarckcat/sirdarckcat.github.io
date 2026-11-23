@@ -51,7 +51,10 @@ def prime_tables_M(M, cover, B):
     mm = mod_big(M, S)
     keep = mm != 0                                                      # an s dividing M cannot sieve
     S, mm = S[keep], mm[keep]
-    return S.astype(np.uint32), modinv_vec(mm, S).astype(np.uint32)
+    INV = np.empty(S.size, dtype=np.uint32)
+    for lo in range(0, S.size, 1 << 22):                                # chunks: the extended Euclid keeps ~8 temporaries of the chunk's size (50M primes at B = 1e9)
+        INV[lo:lo + (1 << 22)] = modinv_vec(mm[lo:lo + (1 << 22)], S[lo:lo + (1 << 22)])
+    return S.astype(np.uint32), INV
 
 
 class DeepSieve:
