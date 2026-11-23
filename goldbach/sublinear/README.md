@@ -1,15 +1,44 @@
 # Finding deserts without trying the numbers one by one
 
 A research programme started on 23 November 2026, at the user's request, by
-this session (experiments, number theory) and the Lean session (proofs).
-It is expected to take a long time and may not succeed; this file is the
-running record of what has been tried, what is proved, what is only measured,
-and what is open.
+this session (experiments, number theory) and the Lean session (proofs). This
+file is the running record of what has been tried, what is proved, what is
+only measured, and what is open.
+
+**Where it stands (23 November, evening).** No method was found, and the
+reason is now understood and quantified.
+
+- The numbers wanted exist in abundance: about 10^175 even N below 10^200
+  have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
+  by the rows left at sieve depth 5,000 would reach one within the Colab units
+  that remain (Result 3; the counting method is checked against an exact
+  enumeration of every even number below 10^9, and re-enumerated
+  independently by the Lean session).
+- They cannot be located by anything known. 10^200 is exactly large enough to
+  choose the residues of N modulo the primes up to 463; that choice is the
+  cover, and it is collected in full. Beyond that line every method examined
+  costs more than scoring candidates one by one, each ruled out with numbers
+  and the counting parts proved in Lean ("Why nothing known collects the
+  prize"). Problem (P′) states what would have to be solved.
+- Even a perfect search over everything the fleet's sieve sees would stop
+  near 16% of the ceiling with the remaining units.
+- In the polynomial toy setting a mechanism that is neither a small factor
+  nor luck does exist (Result 1), now proved in Lean without hypotheses,
+  including a formal proof of Stickelberger–Swan; over the integers it has no
+  counterpart.
+- Two by-products about the integers, both proved in Lean: for all large X
+  some even N ≤ X has no Goldbach summand below c·ln X·ln ln X, for every
+  c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
+  N < 10^200 with every N − q, q prime below 16,981, divisible by a prime
+  ≤ 491, certified by divisibility alone.
+- For the campaign itself the day's gains are in `../fscan/cover/`: the
+  89-prime covers on which the fleet found 158,209, and the first-88 covers
+  (1,255 rows at 170,000) its smaller cards now run.
 
 ## The question
 
 The search for an even N < 10^200 with a large g(N) (the least prime p with
-N − p prime) works in two stages. A *cover* fixes N modulo 88 small primes so
+N − p prime) works in two stages. A *cover* fixes N modulo 88 or 89 small primes so
 that most of the numbers N − q, q prime below the target, have a small factor.
 The rows q it leaves (about 1,100 to 1,600) must then all give a composite
 N − q by luck, and members N = N0 + tM are tried one after another: sieve,
@@ -686,11 +715,11 @@ constant 1/2 by counting (one unrefereed preprint); every constant below
 theorem's count gives 3,830, a greedy choice of classes covers every prime
 below 6,000, and tempering reaches 15,907: the factor 4 is rows sharing a
 mop-up prime, the improvement the theorem leaves as a remark. The finite
-instance is checked by the Lean kernel from N0 alone, by divisibilities only:
-`Cover15907.lean` and `Records.lean` on the Lean branch (commit c9591a7),
-`exists_lt_ten_pow_200_complete_cover_15907` and
-`exists_progression_complete_cover_15907` (all 21,378,978 members below
-10^200).
+instances are checked by the Lean kernel from the classes alone, by
+divisibilities only (`Records.lean` on the Lean branch):
+`exists_lt_ten_pow_200_complete_cover_15907`, `…_16381`, `…_16747`,
+`…_16981`, and the progression forms for 89 primes (all 21,378,978 members
+below 10^200) and 91 primes (95 members).
 
 ## Ladder
 
@@ -698,12 +727,13 @@ instance is checked by the Lean kernel from N0 alone, by divisibilities only:
 |---|---|---|---|
 | 1 | Toy theorem (parity) and corollary, formal proof, Stickelberger–Swan included | Lean | done: proved without hypotheses (`FunctionField/ParityDesert.lean`, `Stickelberger.lean`, commit c0e3fb4 on the Lean branch), with two extensions (any degree; smooth derivative) |
 | 2 | Toy search with the parity filter: measure the factor against the model | research | done: 4 to 5 times (Result 2) |
-| 3 | Toy instance small enough to enumerate every member: does anything besides parity and the symmetries of F_q[x] predict the best members? | research | to do |
-| 4 | Barrier statements for the integer search, formal | Lean | done (Lean branch, `Cap/BlackBox.lean`, `Cap/Radius.lean`, `Cap/Population.lean`): black-box bound (m questions reach the fraction m·g/K); inside the decoding radius only one-class lists pay for themselves, which is the cover (`list_deficit`, `johnson_leaves_the_cover`), and the radius is at least 3.88 times the typical agreement for K = 2^32; the population bound in Chernoff form (`hitMass_selected_le`: m tests on a population of e^F expect at most m·y^k + e^F·u^(−k)·∏(1 − s_j + s_j·y·u) successes however the members were found); the meet-in-the-middle condition ln P ≤ 2F − C (`mitm_condition_log`) |
+| 3 | An instance small enough to enumerate every member: does anything predict the best members beyond what the model contains? | both | done over the integers (every even N below 10^9, "The same thing in miniature"): nothing beyond the tilt of the residues, the size, and rows shared by numbers closer than Q; not done in F_q[x] |
+| 4 | Barrier statements for the integer search, formal | Lean | done (Lean branch, `Cap/BlackBox.lean`, `Cap/Radius.lean`, `Cap/Population.lean`, `Cap/ListGain.lean`, `Cap/Thinning.lean`): black-box bound (m questions reach the fraction m·g/K); inside the decoding radius only one-class lists pay for themselves, which is the cover (`list_deficit`, `johnson_leaves_the_cover`), and the radius is at least 3.88 times the typical agreement for K = 2^32; the population bound in Chernoff form (`hitMass_selected_le`: m tests on a population of e^F expect at most m·y^k + e^F·u^(−k)·∏(1 − s_j + s_j·y·u) successes however the members were found); the meet-in-the-middle condition ln P ≤ 2F − C (`mitm_condition_log`) |
 | 5 | Integer candidates for information that is not a residue (anything cheaper than a Fermat test that correlates with primality of a rough number, in a special family of N) | both | open; no candidate yet |
 | 6 | Constants: wheel and list merges inside the production sieve | research | costed at 0.1 to 0.4 nats, not started |
 | 7 | The prize: number of N by rows left at depth z, and the cost of an ideal search | research | done for z up to 50,000 at the 10% target (Result 3): 3.5, 5.9, 8.8, 12.6, 14.8 nats |
 | 8 | Problem (P′): any method that reaches beyond the Chinese-remainder line at less than the cost of scoring every member | both | open; lattices, meet in the middle, birthday trees and hashing ruled out with numbers (above) |
+| 9 | A provable lower bound for the largest g(N), and the largest g certified by factors alone at 200 digits | both | done: every constant below 1.349 times ln X · ln ln X, unconditional (`CoverBound.lean`, `Mertens.lean`); 16,981 (`Records.lean`) |
 
 ## References
 
