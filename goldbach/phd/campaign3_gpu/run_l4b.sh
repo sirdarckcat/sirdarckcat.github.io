@@ -1,5 +1,5 @@
 #!/bin/bash
-# A second L4: install, check the kernels against gmpy2 (test28_prod.py, w set) and the whole pipeline (check_v5w.sh: kernel 3
+# Another L4 (gold-l4b, gold-l4c): install, check the kernels against gmpy2 (test28_prod.py, w set) and the whole pipeline (check_v5w.sh: kernel 3
 # against kernel 28 s1rw on 12 production slices) on this GPU, then the Q = 150,000 campaign on its vectors, k in [2^30, 2^32).
 mkdir -p /content/c3g /content/c150 /content/bp /content/f28w
 cd /content/c3g && tar -xzf /content/c3g_bundle.tgz && cp run_v5_campQ.sh /content/run_v5_campQ.sh && cp chain_next.sh /content/chain_next.sh
@@ -13,6 +13,6 @@ echo "KERNEL=28 K28_STEP=fermat28_step_s1rw.cuh K28_ASM=0 FERMAT28_DIR=/content/
 bash /content/c3g/check_v5w.sh
 if ! grep -q "ALL MATCH" /content/c3g/test28.out || ! grep -q "CHECKW PASSED" /content/k28w_check/check.txt; then
   echo "C3GPU-END rc=99 checks failed on this GPU $(date -u +%FT%TZ)" >> /content/c150/driver.log; exit 1; fi
-echo "$(date -u +%FT%TZ) checks passed on this L4: test28_prod w ALL MATCH; check_v5w kernel 3 = kernel 28 s1rw" >> /content/c150/driver.log
+echo "$(date -u +%FT%TZ) checks passed on this L4 ($(hostname)): test28_prod w ALL MATCH; check_v5w kernel 3 = kernel 28 s1rw" >> /content/c150/driver.log
 echo "KLO=1073741824 KERNEL=28 SKIPF=0.97 BATCH=64 POOL=2097152 SIEVE200=/content/bp/goldbach/sieve200 SIEVE_THREADS=1024 K28_STEP=fermat28_step_s1rw.cuh K28_ASM=0 FERMAT28_DIR=/content/f28w" > /content/next_campaign_env
 env $(cat /content/next_campaign_env) bash /content/run_v5_campQ.sh /content/c150
