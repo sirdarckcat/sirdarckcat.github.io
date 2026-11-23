@@ -587,8 +587,11 @@ prime below 15,907 is divisible by a prime ≤ 463: no prime below 15,907 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
 is 0.7% of the ceiling, against 7.4% for the record found by search: as with
 prime gaps, what can be constructed is far behind what can be found. At
-15,950 and at 16,000 the best covers found leave one row; where exactly
-complete covers stop is not known.
+15,950 and at 16,000 the best covers found on these 89 primes leave one row;
+where exactly complete covers stop is not known. Two more primes still fit
+below 10^200: with 467 and 479 added (91 primes, 95 members below 10^200)
+a complete cover reaches 16,381 (`complete_cover_16381_91primes.txt`, 1,898
+rows, every N − q divisible by a prime ≤ 479; N0 has 198 digits).
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
