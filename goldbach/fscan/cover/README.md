@@ -63,6 +63,7 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 | 172,500 | 15,708 | 1,284 | 30.69 | `starts/q172500.txt` (one run) |
 | 175,000 | 15,915 | 1,302 | 31.12 | `starts/q175000.txt` (one run) |
 | 177,500 | 16,123 | 1,323 | 31.63 | `starts/q177500.txt` (one run) |
+| 213,070 | 19,050 | 1,623 | 38.80 | `starts/q213070.txt` (four runs of 150,000 sweeps, all 1,623; the 10% threshold) |
 
 (60,000 sweeps on one core, about 15 minutes each, from random starts;
 `deliver/run_*.txt`. A first run of 30,000 sweeps on 4 cores gave 856 at

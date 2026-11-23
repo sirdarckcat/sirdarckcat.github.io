@@ -171,6 +171,29 @@ instead of 10 the best design is 167,500 to 172,500 at 171,200 to 171,300;
 at 40 million members a second it is 172,500 at 174,200. Supply at 170,000:
 about 1,400 covers with at most 1,263 rows and more than 50,000 at 1,264.
 
+### What 10% takes (`reach_target.py`)
+
+The user's standing goal since 23 November is g ≥ 213,070, 10% of the
+ceiling. For that event only the number of uncovered rows below 213,070
+matters, so the cover should be designed for exactly that threshold. Four
+runs of 150,000 sweeps all ended at 1,623 rows (the previous best, from the
+other sampler, was 1,634; my first run had 1,639), and the capped walk finds
+nothing lower; `starts/q213070.txt` holds 106 covers at 1,623 and 900 at
+1,624. With 9 days of the fleet at 29 million effective members a second:
+
+| cover designed for | uncovered rows below 213,070 | chance of g ≥ 213,070 | fleet-days for one expected | expected final record |
+|---|---|---|---|---|
+| 170,000 | 1,718 | 0.0018% | 505,000 | 171,800 |
+| 200,000 | 1,657 | 0.0078% | 116,000 | 166,200 |
+| 213,070 | 1,623 | 0.0177% | 50,700 | 164,500 |
+
+So the best design is ten times better for the 10% event than the design
+that maximises the expected record, and it still needs about 5,600 times
+the remaining budget (140 years of the present fleet, about 600 card-years)
+for one expected crossing. Nothing on the method side that survived the
+brainstorm changes that by more than a factor 2; the rest is compute or a
+new method (`../../../sublinear/`).
+
 A soft threshold was tried as well (`ptcover_w.c`, `soft_weights.py`,
 `eval_cover.py`): with near-misses a row at q matters in proportion to the
 chance that the final record ends above q, so the optimiser was given those
