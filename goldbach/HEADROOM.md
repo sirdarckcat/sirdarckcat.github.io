@@ -91,8 +91,13 @@ For the L4 / T4 (overlap gave nothing there) the plain -3.4% is available, ~+0.6
   and test lists identical to the driver's `run_pool` (CPU test against the verbatim function).  Aimed at the 2.2 ms a round of gap alone and the ~0.13 s a batch the sieve adds beside it (8%): 0 to +6% on the RTX cards, not measured yet.
 * **FP32 beside the multiplier: measured, closed.**  `bench_fm28_step.py --e5` on the RTX PRO 6000 (11:59Z): a dummy FFMA adds 1.16-1.24 ticks inside the production step, the same as a dummy IADD3 (1.1-1.6); an IMAD.WIDE adds 4.0-4.2.  The audit's
   "FP32 shares the integer lanes" was right; a hybrid integer + floating-point limb kernel has nothing to run on.
-* **Still unmeasured on the RTX**: the shared-memory atomic rate (`bench_pipes.py` part 2: `ATOMS.AND` with random addresses, plain STS, byte stores); only its part 3 (global memory) ever ran there.  The sieve's tile kernel does ~0.8 marks a clock an SM,
-  ~20x under its instruction issue rate, which smells of the atomic unit, not of ALU work.
+* **The shared-memory atomic rate (bench_pipes.py parts 1-3, GPU session 12:25Z, RTX PRO 6000)**: a random-address `ATOMS.AND` costs ~2.7 cycles a warp-op, the same as a random `STS.32` / `STS.U8` / `LDS.32` (2.6), a conflict-free
+  `ATOMS.AND` 3.3, a plain read-modify-write 6.7: **~12 marks a clock an SM at the unit's rate, and the tile kernel does ~0.8, so the atomics are not what limits it** (race-free marking: dead).  IMAD.WIDE+acc 4.35 cycles, +1 IADD3 -> 6.6.
+  What limits the sieve window (88 ms of gen + tiles) has never been attributed kernel by kernel; the large primes make ~6e9 marks a 2^24 window (150k per (row, tile) bin, 29% of a tile's bits), written by `gbig_gen_st` and read by the tile
+  kernel at 4 bytes a mark = ~48 GB of bin traffic a window = ~33 ms at the 1.46 TB/s copy rate: my working hypothesis is that the stage is DRAM-bound (`sieve200/cuda/bench_split.py`, asked for at 12:40Z, tells).
+* **Deep head, production A/B at f = 0.985 (GPU session 12:08-12:24Z, ~1,010 batches a card): 0.9514 s with the head against 0.9449 s without: +0.7% WORSE** (tests -8.4%, the head costs ~13.6 ms a window in contention: 0.048 s of Fermat saved,
+  0.0545 s of sieve added a batch); taken off at 12:24Z.  At f = 0.985 the Fermat share of a batch is ~60% and the sieve ~40% (only ~25-35% of it hidden), so a window's sieve millisecond is worth ~0.3% of a batch.  Optimum head
+  at the measured cost per (row x prime) (4.7e-9 ms): not B2 = 1e9 (-1.8 ms a window) but B2 = 3e8 (+2.9 ms a window, ~+1.2% of a batch): the first primes above 1e8 pay far more per visit than those near 1e9.
 * **wcost3 (11:49Z)**: for a 2^24 vector window rcta 8 with 512 generate threads is 83.2 ms against 88.5 ms (-5.3 ms; -0.9% a batch in production: not deployed); rcta 4 / 8 at 256 threads and rcta 16 are slower, so the per-window fixed part is not the
   generate kernel's pair visits alone.  **Keep fraction in vector mode (vsweep, 11:52Z): f = 0.985 gives x1.080 expected near-misses a second against f = 0.97 (x1.054 at 0.98, x1.046 at 0.99); the lead decided f = 0.985 on the RTX cards (12:06Z).**
 
