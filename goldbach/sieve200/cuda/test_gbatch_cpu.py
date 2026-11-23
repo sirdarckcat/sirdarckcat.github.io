@@ -71,6 +71,7 @@ class _RawModule:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--rows", type=int, default=40)
+    ap.add_argument("--big", action="store_true", help="also B = 500,009 against batches of 2^12 / 2^13 members: primes 100x the batch, at most one mark a row (the regime of B = 1e9)")
     a = ap.parse_args()
     cp = TG.install_fake_cupy()
     cp.RawModule = _RawModule
@@ -80,11 +81,12 @@ def main():
     spec["residual"] = spec["residual"][:a.rows]
     cover = [r for r, _ in spec["cover"]]
     ok = True
+    BIG = ((500009, 12, 11, 11, 4, 2048, 0.8, False, 2, 8192), (500009, 12, 11, 11, 4, 2048, 0.8, True, 2, 512), (500009, 13, 12, 11, 8, 4096, 0.9, True, 1, 1024)) if a.big else ()
     # (B, ks_log, tile_log, llog, rg, split, f): primes up to B; a batch of 2^ks members in 2^(ks - tile) tiles; the primes above `split` through gbig
     for B, ks, tile, llog, rg, split, f, staged, rcta, stage_cap in ((32768, 15, 12, 11, 4, 4096, 0.9, False, 2, 8192), (20011, 14, 11, 11, 3, 2048, 0.5, False, 2, 8192),
                                                                       (9001, 13, 11, 11, 16, 9001, 0.0, False, 2, 8192), (32768, 14, 12, 11, 7, 0, 0.8, False, 2, 8192),
                                                                       (32768, 15, 12, 11, 4, 4096, 0.9, True, 2, 512), (32768, 14, 12, 11, 7, 0, 0.8, True, 1, 768),
-                                                                      (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)):
+                                                                      (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)) + BIG:
         search.G.clear(); search._SIEVE_CACHE.clear()
         search.init_spec(spec, B, 1 << llog)
         bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=32, tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
