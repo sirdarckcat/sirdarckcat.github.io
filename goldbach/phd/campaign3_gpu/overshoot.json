@@ -87,6 +87,17 @@
    "expected": 40.78,
    "p_row": 0.02393,
    "tail": 0.2174
+  },
+  {
+   "name": "pt_q150k_t528@4194304000",
+   "gpu": "gold-g4c",
+   "Q": 150000,
+   "g": 157837,
+   "digits": 200,
+   "rows_survived": 91,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.1105
   }
  ],
  "by_Q": {
@@ -101,6 +112,12 @@
    "rows_survived": 63,
    "expected": 40.8,
    "tail": 0.2174
+  },
+  "150000": {
+   "hits": 1,
+   "rows_survived": 91,
+   "expected": 40.8,
+   "tail": 0.1105
   }
  }
 }

@@ -1,6 +1,6 @@
 # campaign3 on the GPUs: expected against found
 
-Updated 2026-11-23 01:54 UTC. Regenerated from the runtimes' own logs:
+Updated 2026-11-23 02:10 UTC. Regenerated from the runtimes' own logs:
 - `tally_rt.py` runs on each runtime and reads its search.log, gpu3_stats.log and found.jsonl;
 - this page is written from those results.
 
@@ -19,11 +19,11 @@ Columns:
 | A100 (gold-a100) | 131,072 | 137.44e9 | 22.652e9 | 26.20 | 0.065 (0.065 + 0.000) | 0 | - |
 | RTX PRO 6000 (gold-g4) | 230,818 | 303.47e9 | 53.979e9 | 26.20 | 0.157 (0.157 + 0.000) | 0 | - |
 | RTX PRO 6000 (gold-g4b) | 222,776 | 295.75e9 | 52.738e9 | 26.19 | 0.155 (0.155 + 0.000) | 0 | - |
-| RTX PRO 6000 (gold-g4c) | 383,274 | 463.59e9 | 79.759e9 | 26.16 | 0.239 (0.239 + 0.000) | 0 | - |
+| RTX PRO 6000 (gold-g4c) | 384,476 | 503.92e9 | 88.883e9 | 26.16 | 0.267 (0.267 + 0.000) | 1 | 157,837 |
 | L4 (gold-gpu) | 48,066 | 58.79e9 | 10.235e9 | 26.20 | 0.030 (0.030 + 0.000) | 0 | - |
 | L4 (gold-l4b) | 15,074 | 27.31e9 | 5.235e9 | 26.17 | 0.016 (0.016 + 0.000) | 0 | - |
 | L4 (gold-l4c) | 13,122 | 24.23e9 | 4.655e9 | 26.15 | 0.014 (0.014 + 0.000) | 0 | - |
-| **all** | | 1310.57e9 | 229.252e9 | | **0.676** | **0** | - |
+| **all** | | 1350.90e9 | 238.377e9 | | **0.704** | **1** | 157,837 |
 
 ## Q = 122,000, 867-872 rows (v, w families), N < 10^199
 
@@ -60,7 +60,7 @@ Columns:
 | L4 (gold-gpu) | 180 | 0.19e9 | 0.189e9 | 21.02 | 0.110 (0.000 + 0.110) | 0 | - |
 | **all** | | 0.19e9 | 0.189e9 | | **0.110** | **0** | - |
 
-**All covers: expected 9.18, found 8.**
+**All covers: expected 9.21, found 9.**
 
 ## How far past Q the hits went (`overshoot.py`)
 
@@ -78,6 +78,8 @@ with mean (1 − p)/p ≈ 41 and tail P(≥ u) = (1 − p)^u, and the sum over h
 | `r200_q122k_k850_v440@4282384384` | 122,000 | 122,827 | 9 | 40.8 | 0.804 |
 | `r200_q122k_k850_v1039@4281335808` | 122,000 | 125,221 | 43 | 40.8 | 0.353 |
 | `r200_q140k_c_v77@3100639232` | 140,000 | 146,191 | 63 | 40.8 | 0.217 |
+| `pt_q150k_t528@4194304000` | 150,000 | 157,837 | 91 | 40.8 | 0.111 |
 
 - Q = 122,000: 7 hits survived 425 rows against 285.1 expected, P(sum ≥ that) = 0.108.
 - Q = 140,000: 1 hits survived 63 rows against 40.8 expected, P(sum ≥ that) = 0.217.
+- Q = 150,000: 1 hits survived 91 rows against 40.8 expected, P(sum ≥ that) = 0.111.

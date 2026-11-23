@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23T01:54:32Z",
+ "updated": "2026-11-23T02:10:21Z",
  "rows": [
   {
    "dir": "/content/c150",
@@ -303,19 +303,28 @@
     "pt_q150k_t100",
     "pt_q150k_t1000"
    ],
-   "slices": 383274,
-   "members": 463588032512,
-   "hit_mass_members": 79758988673.024,
-   "mean_E": 26.164728462471047,
-   "tests": 248897408621,
-   "prps": 13790232576,
-   "expected_logged": 0.23876533629999996,
-   "slices_logged": 383274,
-   "expected_model": 0.0,
-   "slices_model": 0,
-   "found": 0,
-   "g": [],
-   "hits": [],
+   "slices": 384476,
+   "members": 503920459776,
+   "hit_mass_members": 88883445366.784,
+   "mean_E": 26.164407939639098,
+   "tests": 265889021800,
+   "prps": 15001387007,
+   "expected_logged": 0.2669585172999997,
+   "slices_logged": 384474,
+   "expected_model": 4.623707769683852e-05,
+   "slices_model": 2,
+   "found": 1,
+   "g": [
+    157837
+   ],
+   "hits": [
+    {
+     "name": "pt_q150k_t528@4194304000",
+     "k": 4224399187,
+     "g": 157837,
+     "digits": 200
+    }
+   ],
    "gpu": "RTX PRO 6000 (gold-g4c)",
    "family": "Q = 150,000, 1,092-1,097 rows (research covers, minted variants, generator batches; deep sieve B = 10^8 since 01:14-01:26Z on 23 Nov), N < 10^200"
   },
@@ -495,11 +504,13 @@
  "summary": [
   {
    "family": "Q = 150,000, 1,092-1,097 rows (research covers, minted variants, generator batches; deep sieve B = 10^8 since 01:14-01:26Z on 23 Nov), N < 10^200",
-   "members": 1310569005056.0,
-   "hit_mass_members": 229252190437.37598,
-   "expected": 0.6756621752999997,
-   "found": 0,
-   "g": []
+   "members": 1350901432320.0,
+   "hit_mass_members": 238376647131.136,
+   "expected": 0.7039015933776963,
+   "found": 1,
+   "g": [
+    157837
+   ]
   },
   {
    "family": "Q = 122,000, 867-872 rows (v, w families), N < 10^199",
