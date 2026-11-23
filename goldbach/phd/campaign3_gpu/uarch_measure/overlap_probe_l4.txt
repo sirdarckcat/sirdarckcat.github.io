@@ -1,0 +1,47 @@
+# uarch overlap probe for the fleet cards (run_overlap_probe.sh MODE=fleet VARIANT=s1rw TESTS=16777216, a752ea3) on gold-l4b (L4), 2026-11-23 08:48:45-08:51:14Z,
+# campaign stopped meanwhile. Spec: the first of gold-l4b's Q = 170,000 vectors (1,262 rows). Projection with an L4 batch of 10.0 s = Fermat 6.4 + sieve 3.6 s (estimate).
+# Before: the pipeline itself (patched driver, a752ea3 tree, GBATCH_DEFER_CHECK=0, --pipeline 1 --pipeline-depth 2) ran on gold-l4b 08:44-08:48Z:
+# 10.000 s a batch against 10.054 s before, the sieve thread busy 4.9 s and idle 5.0 s a batch, the consumer never waiting. gold-l4b reverted at 08:51Z.
+
+name, driver_version, clocks.max.sm [MHz]
+NVIDIA L4, 580.82.07, 2040 MHz
+
+=================================================================== --variant s1rw
+2026-11-23T08:48:45Z
+NVIDIA L4: 58 SMs, Fermat s1rw, 16,777,216 tests a launch, carve-out default, sieve stream highest priority
+  Fermat kernel: 94 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 3.694 s (4.5M tests/s)   sieve window 1623.9 ms
+concurrent: Fermat 7.818 s (x2.117 against alone), 3 sieve windows completed meanwhile (mean 2440 ms a window: x1.50; 0.32 windows/s against 0.62 alone: sieve slowdown x1.91)
+  the same work one after the other: 8.565 s;  overlapped: 7.818 s  ->  x1.10
+production batch (Fermat 6.4 s, sieve 3.6 s, other 0.0 s): sequential 10.00 s, overlapped 13.55 s -> x0.74
+no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority
+
+=================================================================== --variant s1rw --no-priority
+2026-11-23T08:49:34Z
+NVIDIA L4: 58 SMs, Fermat s1rw, 16,777,216 tests a launch, carve-out default, sieve stream plain non-blocking
+  Fermat kernel: 94 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 3.692 s (4.5M tests/s)   sieve window 1616.0 ms
+concurrent: Fermat 3.715 s (x1.006 against alone), 0 sieve windows completed meanwhile (mean 0 ms a window: x0.00; 0.00 windows/s against 0.62 alone: sieve slowdown xinf)
+  the same work one after the other: 3.692 s;  overlapped: 3.715 s  ->  x0.99
+production batch (Fermat 6.4 s, sieve 3.6 s, other 0.0 s): sequential 10.00 s, overlapped inf s -> x0.00
+no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority
+
+=================================================================== --variant s1rw --cta-sm 4
+2026-11-23T08:50:13Z
+NVIDIA L4: 58 SMs, Fermat s1rw, 16,777,216 tests a launch in chunks of 4 CTAs an SM, carve-out default, sieve stream highest priority
+  Fermat kernel: 94 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 3.703 s (4.5M tests/s)   sieve window 1601.5 ms
+            production kernel (s1rw, one launch) alone: 3.698 s (4.5M tests/s): this configuration alone is x1.001 of it
+concurrent: Fermat 9.188 s (x2.482 against alone), 4 sieve windows completed meanwhile (mean 2362 ms a window: x1.47; 0.37 windows/s against 0.62 alone: sieve slowdown x1.67)
+  the same work one after the other: 10.108 s;  overlapped: 9.188 s  ->  x1.10
+  Fermat under overlap against the production kernel alone: x2.485 (against this configuration alone: x2.482)
+production batch (Fermat 6.4 s, sieve 3.6 s, other 0.0 s): sequential 10.00 s, overlapped 15.90 s -> x0.63
+no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority
+
+done
+
+# Reading: on the L4 the sieve and the Fermat kernel share the SMs with little gain (x1.10 work a second at best, Fermat x2.1 slower beside it): no
+# configuration helps, so the L4s and the T4 stay without the pipeline.

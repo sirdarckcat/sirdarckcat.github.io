@@ -360,6 +360,11 @@ Version 3 (22 Nov):
     - tree `/content/ua_v2` (a752ea3 over the previous tree), with `GBATCH_DEFER_CHECK=0`;
     - deep arguments plus `--pipeline 1 --pipeline-depth 2 --trace-pipeline 1`;
     - gold-g4b's first 71 batches took 1.594 s each, against 1.76 s before.
+  - Not on the L4s or the T4.
+    - On gold-l4b the pipeline ran 10.000 s a batch against 10.054 s before (08:44-08:48Z), so the card went back to its
+      previous configuration.
+    - The fleet-mode probe on that L4 (`uarch_measure/overlap_probe_l4.txt`): beside the sieve the Fermat kernel runs
+      ×2.1 slower, for ×1.10 work a second at best. Chunked launches and the plain stream do worse.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
