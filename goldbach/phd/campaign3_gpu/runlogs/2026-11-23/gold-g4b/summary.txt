@@ -1,7 +1,7 @@
-gold-g4b c170v: 145408 slices, 36352 batches, found lines 0, expected design hits (sum) 2.6024e-02, expected near-misses (sum, where logged) 1.7083e-01, first 2026-11-23T10:26:10 last 2026-11-23T19:28:58
+gold-g4b c170v: 162136 slices, 40535 batches, found lines 0, expected design hits (sum) 2.8886e-02, expected near-misses (sum, where logged) 1.8787e-01, first 2026-11-23T10:26:10 last 2026-11-23T20:20:05
 gold-g4b c170: 25998 slices, 12999 batches, found lines 0, expected design hits (sum) 1.1265e-02, expected near-misses (sum, where logged) 5.3551e-03, first 2026-11-23T03:55:27 last 2026-11-23T10:26:03
-gold-g4b cpu share campaign3_hi_0: 31468 slices
-gold-g4b cpu share campaign3_hi_1: 31468 slices
-gold-g4b cpu share campaign3_hi_2: 31468 slices
-gold-g4b cpu share campaign3_hi_3: 31468 slices
-gold-g4b vec89 made 157931
+gold-g4b cpu share campaign3_hi_0: 32757 slices
+gold-g4b cpu share campaign3_hi_1: 32757 slices
+gold-g4b cpu share campaign3_hi_2: 32757 slices
+gold-g4b cpu share campaign3_hi_3: 32757 slices
+gold-g4b vec89 made 173931

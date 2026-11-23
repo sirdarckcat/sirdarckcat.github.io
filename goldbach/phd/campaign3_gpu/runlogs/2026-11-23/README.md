@@ -11,5 +11,5 @@ compact records were extracted (`extract.sh`), one directory a card:
 - `ledger_p<P>.txt.xz`: each RTX card's 89-moduli generator ledger (covers already handed out, partition P of 3), so a replacement never repeats a vector.
 - `summary.txt`: slices, batches, found lines, and the sums of the logged per-batch expected design hits and near-misses.
 
-The day so far (snapshots of 19:28-19:29Z): expected design hits ~0.124 in all (RTX vector mode 0.075, RTX campaign mode before 10:57Z 0.037, L4/T4 0.012, gold-gpu's not
+Final records of gold-g4 / gold-g4b / gold-g4c from their last snapshots (20:04 / 20:20 / 20:52Z); the L4s and the T4 still from 19:28-19:29Z. The day so far (first snapshots): expected design hits ~0.124 in all (RTX vector mode 0.075, RTX campaign mode before 10:57Z 0.037, L4/T4 0.012, gold-gpu's not
 recovered), none found; expected near-misses >= 157,837 / 158,209 (logged in vector mode) ~0.49, one found (158,209). Final snapshots replace these before each runtime ends.
