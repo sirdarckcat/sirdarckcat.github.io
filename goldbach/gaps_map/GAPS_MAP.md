@@ -1,10 +1,12 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-128 results and 234 links; this note says what the structure shows. Snapshot of 2026-11-23: Lean library read at
+136 results and 260 links; this note says what the structure shows. Snapshot of 2026-11-23: Lean library read at
 `8683c0b` (branch `ccr-36ca7b46-8twf14`) with four boxes added for what the Lean session pushed up to `695dde2` (thinning law,
 longer covers, needles, record table), research at `eed2a7f` (`ccr-d4a17dd0-7uu03r`, plus its corrections at `02564fb`), lead merge
-`85aef81` (`ccr-2ce9e63a-hn0fuw`), thesis `85203b6` (`claude/phd-research-delegation-rualo0`).
+`85aef81` (`ccr-2ce9e63a-hn0fuw`), thesis `85203b6` (`claude/phd-research-delegation-rualo0`). Eight boxes tagged
+'exhaustive test' add a statistical test of the model from the archipelago study (`goldbach/archipelagos/`, branch
+`ccr-c6e00296-3g7fp9`; section 9).
 
 ## 1. The picture in one paragraph
 
@@ -28,7 +30,7 @@ cleverer mechanism exists. The two sides meet at about fifty points (section 3).
 | Search limits | 15 | Lean | hit mass, selection and tilt identities, the thinning law, lattice and Johnson radius, black-box bound, population bound, merge cost, list gain (0.207 rows per nat above Q), needles, 21 settled ideas |
 | Function-field model | 8 | Lean | Stickelberger–Swan, parity theorem, deserts N = λ·V^p, discriminant as a resultant |
 | Search-code proofs | 11 | Lean | CPU vector kernels and GPU kernels compute exactly the base-2 Fermat test |
-| Research: models and results | 40 | docs | cost model E, ceiling 2.13M, prices, closure theorem, three doors, rounding gap, decoding barrier, WP12 theorems, the sublinear programme and the function-field toy |
+| Research: models and results | 48 | docs, data | cost model E, ceiling 2.13M, prices, closure theorem, three doors, rounding gap, decoding barrier, WP12 theorems, the sublinear programme and the function-field toy; eight tests of the model on exhaustive data near 10^12 to 10^18 (tagged 'exhaustive test') |
 | Research: searches and records | 12 | docs | the three games, fleet campaign, height records, megagap, engines, cover optimisers (both sessions), verification legs |
 
 ## 3. Where the two sides meet
@@ -44,6 +46,7 @@ cleverer mechanism exists. The two sides meet at about fifty points (section 3).
 | Selection identity, hit mass | `expected_hits`, `selection_fraction`, `enrichment_at` | cited in `Selection.lean`, `Tilt.lean` |
 | Independence of the leftover rows (H1); the prize table's step to depth 10^8 | `thinSum_le_of_lt`, `thinCount_zero_le_of_lt` (above Q, independence is an upper bound) | cited in `Thinning.lean` (added 2026-11-23 16:40) |
 | Miniature: the best numbers are independent needles | `IsNeedle.add_of_forall`, `needle_pairs_lt_1000` (close needles share rows) | cited in `Needles.lean` |
+| Exhaustive tests: every row composite, pairs of neighbours, archipelagos, records, scoring (section 9) | `expected_hits`, `thinSum_le_of_lt`, `IsNeedle.add_of_forall`, `shared_row_value`, the record table's Chebyshev check | the evidence boxes' links |
 | Sublinear barriers (lattice, merge, black box, lists, CRT line) | `lattice_radius`, `johnson_leaves_the_cover`, `mitm_condition`, `blackbox_fraction`, `hitMass_selected_le`, `list_gain_above_Q`, `move_budget` | cited in `sublinear/README.md` |
 | Function-field toy | Stickelberger–Swan, `parity_card_factors`, `desert`, any-degree extension | cited in `sublinear/README.md` |
 | 100-idea brainstorm | `Cap/Brainstorm.lean` (21 ideas settled by theorem) | cited in both |
@@ -64,10 +67,13 @@ not trusted: the Lean kernel re-evaluates them. A text search of the library fin
 * **H1**, independence of the leftover rows. Every cost forecast uses it. Lean's `expected_hits` states it as an
   assumption in its own header (“the independence itself is the model and not a theorem”). Since the snapshot, `Cap/Thinning.lean`
   proves that inside the residue model, for the primes above Q, independence is an upper bound, so there it is an inequality and not a
-  premise; the residue model itself and the rows below Q stay heuristic.
+  premise; the residue model itself and the rows below Q stay heuristic. An exhaustive test on 60 million numbers near 10^12,
+  10^15 and 10^18 (section 9) measures the joint probability that every row is composite: once the sieve passes the threshold
+  it matches independence within about 1%, for pairs of neighbours as well, and up to each window's record. With shallower
+  sieves independence overstates it by 2–9%. Evidence at these sizes, not a proof at 200 digits.
 * **H2**, no compositeness test cheaper than one exponentiation. The closure theorem and the cost floor use it.
 * **The ceiling 2,130,704** and the "10% = 213,070" target: a heuristic prediction, validated on 6×10^8 numbers near
-  10^18, not a bound.
+  10^18 and on the records of exhaustive windows near 10^12, 10^15 and 10^18, not a bound.
 * **The ideal-search prizes** (3.5 to 14.8 nats) assume numbers below 10^200 are a fair sample of residue vectors.
 * **Closure theorem, Door 1, WP12 Theorem 2**: draft-rigour or evidence, not Lean-checked.
 
@@ -106,6 +112,9 @@ the lattice radius, the black-box and population bounds, the list-gain bound.
 * The Lean branch's `phd/cap200/` is mapped as one box (the Lean session's cover experiments); its brainstorm
   experiments are not mapped individually.
 * Nothing from the archives was executed.
+* Evidence layer: eight boxes written from the archipelago study (`viz/cur_tests.py`, loaded by `viz/cur_res.py`, which also
+  appends one sentence to H1, the ceiling and the scoring barrier). Their numbers come from `goldbach/archipelagos/`, and each
+  box links to its chart on the Goldbach Archipelagos page.
 
 ## 8. Rebuild
 
@@ -115,3 +124,28 @@ python3 -I viz/make_gb.py                                                       
 ```
 `viz/spec_lean.py` lists the Lean declarations per box, `viz/cur_*.py` the curated text, `viz/meta.py` groups,
 lenses and page text.
+
+## 9. The evidence layer: archipelagos and tests of the model
+
+Added on 2026-11-23 from a separate statistical study, `goldbach/archipelagos/` on `ccr-c6e00296-3g7fp9`, with charts on the
+Goldbach Archipelagos page (https://claude.ai/artifact/PjRwM5XGzjkMwWTsPMw3YR). It computes g(N) exactly for 20 million consecutive even N near 10^12, 10^15 and
+10^18 and compares the truth with the model behind every forecast: rows with a prime factor up to the sieve depth are composite,
+every other row is prime with one fixed probability, independently.
+
+* **Every row composite (H1).** Grouped by the rows a sieve leaves, the share of big numbers (top 1% of g) matches the
+  model within about 1% over five orders of magnitude once the sieve passes the threshold; totals at three depths are 0.993 to
+  1.005 of the prediction. Shallower sieves overstate it by 2–9%, the pair term of the fscan notes.
+* **Pairs of neighbours.** N + d is up to about 18 times likelier to be big when N is (d = 30). The model predicts every even lag
+  up to 732 from shared rows and residues alone, within the block-bootstrap error bars.
+* **Archipelagos.** 86–91% of big numbers sit in clusters linked by shared rows (Lean's needles in bulk). The largest, 176
+  numbers near 10^18, sits on the largest prime gap in its window. A neighbour of a covered number leaves the cover
+  (`shared_row_value`), so clusters cannot help the 200-digit search.
+* **Records.** Each window's record is where the model's tail puts it (near 10^18, g ≥ 3,137 expected 1.2 times, seen once).
+  Clustering fades toward the top, so it does not distort the ceiling.
+* **Scoring.** A gradient-boosted model with 133 features of the same residues predicts big numbers no better than
+  (1 − c)^rows with nothing fitted, in three held-out runs: the count of rows left is a sufficient statistic.
+* **What a sieve can know.** Near 10^18 a sieve to 65,521 removes 27% of the uncertainty about which numbers are big; the rest is
+  whether the surviving rows are prime.
+
+Rebuild: `python3 gdata.py 1e18 2e7 e18` (and 1e12, 1e15), then `theory.py`, `archipelagos.py`, `ml.py`, `budget.py`, `tail.py`,
+`viz_data.py`, `amap.py` and `build_page.py` in `goldbach/archipelagos/` (see its README).

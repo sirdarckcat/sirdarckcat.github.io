@@ -1,0 +1,607 @@
+<title>Goldbach Archipelagos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column of 46rem, charts at column width, sections divided by space and one hairline; only the figure row is boxed. */
+:root {
+  --bg: #f6f9f8;
+  --ink: #0f1e25;
+  --ink-2: #44545b;
+  --muted: #5f6f74;
+  --grid: #e0e7e6;
+  --axis: #bccaca;
+  --rule: #d5dedd;
+  --accent: #0b726d;
+  --wash: rgba(11, 114, 109, 0.07);
+  --band: rgba(235, 104, 52, 0.12);
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --quiet: #b3bebd;
+  --tip-bg: #ffffff;
+  --tip-line: rgba(15, 30, 37, 0.12);
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111615; --ink: #e6eeed; --ink-2: #b4c2c2; --muted: #93a1a0; --grid: #222b2a; --axis: #3a4746;
+    --rule: #2b3635; --accent: #45c3b9; --wash: rgba(69, 195, 185, 0.09); --band: rgba(217, 89, 38, 0.18);
+    --s1: #3987e5; --s2: #d95926; --quiet: #4b5857; --tip-bg: #1a2221; --tip-line: rgba(255, 255, 255, 0.12);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111615; --ink: #e6eeed; --ink-2: #b4c2c2; --muted: #93a1a0; --grid: #222b2a; --axis: #3a4746;
+  --rule: #2b3635; --accent: #45c3b9; --wash: rgba(69, 195, 185, 0.09); --band: rgba(217, 89, 38, 0.18);
+  --s1: #3987e5; --s2: #d95926; --quiet: #4b5857; --tip-bg: #1a2221; --tip-line: rgba(255, 255, 255, 0.12);
+  color-scheme: dark;
+}
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.6 var(--f-body); }
+.page { max-width: 46rem; margin: 0 auto; padding-block: 2.5rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.eyebrow { font: 600 0.75rem/1.4 var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem; }
+h1 { font: 750 clamp(2.3rem, 7vw, 3.3rem)/1.02 var(--f-display); letter-spacing: -0.015em; margin: 0 0 1rem; text-wrap: balance; }
+h2 { font: 700 1.5rem/1.2 var(--f-display); letter-spacing: -0.005em; margin: 0 0 0.75rem; text-wrap: balance; }
+h3 { font: 600 1rem/1.35 var(--f-body); margin: 1.5rem 0 0.4rem; }
+p { margin: 0 0 0.9rem; }
+.lede { font-size: 1.15rem; line-height: 1.55; color: var(--ink); }
+.small, .note { font-size: 0.9rem; color: var(--ink-2); }
+section { padding-top: 2.4rem; margin-top: 2.4rem; border-top: 1px solid var(--rule); }
+.mono { font-family: var(--f-mono); font-size: 0.92em; overflow-wrap: anywhere; }
+a { color: var(--accent); }
+ul.plain { padding-left: 1.1rem; margin: 0 0 1rem; }
+ul.plain li { margin-bottom: 0.55rem; }
+ul.plain li::marker { color: var(--accent); }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 1.6rem 0 0.4rem; }
+.tile { border: 1px solid var(--rule); border-radius: 10px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tile .v { font: 600 1.9rem/1.1 var(--f-body); letter-spacing: -0.01em; }
+.tile .t { font-size: 0.85rem; line-height: 1.35; color: var(--ink-2); }
+@media (max-width: 640px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.chart { margin: 1.4rem 0 0.6rem; border-radius: 6px; }
+.chart:focus-visible { outline: 2px solid var(--accent); outline-offset: 6px; }
+.ctitle { font: 600 0.98rem/1.35 var(--f-body); margin: 0 0 0.15rem; }
+.csub { font-size: 0.86rem; color: var(--ink-2); margin: 0 0 0.5rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 0.84rem; color: var(--ink-2); margin: 0 0 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { display: inline-block; flex: none; }
+.sw.dot { width: 10px; height: 10px; border-radius: 50%; }
+.sw.line { width: 16px; height: 2px; border-radius: 1px; }
+.sw.box { width: 10px; height: 10px; border-radius: 2px; }
+.c-s1 { background: var(--s1); } .c-s2 { background: var(--s2); } .c-q { background: var(--quiet); }
+.c-band { background: var(--band); box-shadow: inset 0 0 0 1px var(--rule); }
+.plotwrap { position: relative; }
+.plot { width: 100%; touch-action: pan-y; }
+.plot svg { display: block; overflow: visible; }
+.tip { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 3; background: var(--tip-bg); color: var(--ink);
+  border: 1px solid var(--tip-line); border-radius: 8px; padding: 7px 10px; font: 400 0.8rem/1.45 var(--f-body);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10); max-width: 270px; }
+.trow { display: flex; align-items: baseline; gap: 6px; }
+.trow strong { font-weight: 600; font-variant-numeric: tabular-nums; }
+.trow .weak { color: var(--ink-2); }
+.trow .sw.line { align-self: center; }
+details.tv { margin: 0.2rem 0 0; font-size: 0.86rem; }
+details.tv summary { cursor: pointer; color: var(--accent); width: max-content; }
+details.tv summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.tablewrap { overflow-x: auto; max-height: 22rem; overflow-y: auto; margin-top: 0.5rem; border: 1px solid var(--rule); border-radius: 6px; }
+.tablewrap.open { max-height: none; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: right; white-space: nowrap; }
+th { font-weight: 600; color: var(--ink-2); background: var(--bg); position: sticky; top: 0; }
+th:first-child, td:first-child { text-align: left; }
+tr:last-child td { border-bottom: 0; }
+td:first-child { white-space: normal; min-width: 8.5rem; }
+.tcap { font: 600 0.86rem/1.4 var(--f-body); color: var(--ink-2); margin: 1.1rem 0 0; }
+td.best { font-weight: 600; }
+.fits { border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; margin: 1.2rem 0 0.2rem; background: var(--wash); }
+.fits p { margin: 0 0 0.5rem; font-size: 0.95rem; }
+.fits-h { font: 600 0.75rem/1.4 var(--f-body) !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.fits-l { display: flex; flex-wrap: wrap; gap: 6px 8px; list-style: none; padding: 0; margin: 0.2rem 0 0; }
+.fits-l a { display: inline-block; padding: 3px 10px; border: 1px solid var(--rule); border-radius: 999px; text-decoration: none; font-size: 0.84rem; background: var(--bg); }
+.fits-l a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.verdict { border-left: 3px solid var(--accent); padding: 0.2rem 0 0.2rem 0.9rem; margin: 1.1rem 0; }
+.grid { stroke: var(--grid); stroke-width: 1; }
+.base { stroke: var(--axis); stroke-width: 1; }
+.ref { stroke: var(--ink-2); stroke-width: 1; opacity: 0.6; }
+.tick { fill: var(--muted); font: 500 11px var(--f-body); font-variant-numeric: tabular-nums; }
+.lbl { fill: var(--ink-2); font: 500 12px var(--f-body); }
+.lbl.strong { fill: var(--ink); font-weight: 600; }
+.stem-q { stroke: var(--quiet); fill: none; }
+.stem-b { stroke: var(--s1); fill: none; }
+.ln-s1 { fill: none; stroke: var(--s1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.ln-s2 { fill: none; stroke: var(--s2); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.dot-s1 { fill: var(--s1); stroke: var(--bg); stroke-width: 2; }
+.dot-s2 { fill: var(--s2); stroke: var(--bg); stroke-width: 2; }
+.dot-q { fill: var(--quiet); }
+.wash { fill: var(--wash); }
+.band { fill: var(--band); }
+.bar-s1 { fill: var(--s1); } .bar-s2 { fill: var(--s2); } .bar-q { fill: var(--quiet); }
+.hot { stroke: var(--ink); stroke-width: 2; }
+.xhair { stroke: var(--ink-2); stroke-width: 1; opacity: 0.55; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<main class="page">
+  <p class="eyebrow">Statistical study · exhaustive data at 10<sup>12</sup>, 10<sup>15</sup> and 10<sup>18</sup></p>
+  <h1>Goldbach Archipelagos</h1>
+  <p class="lede">Large Goldbach gaps come in groups. In 20 million consecutive even numbers at each of three scales, about nine in ten of the top-1% gaps belong to a cluster of linked neighbours. Call each such number an island and a cluster of them an archipelago. The standard model explains archipelagos to within about 1%. Its score, the number of surviving rows, already uses everything a sieve can see: a gradient-boosted model with 133 features could not beat it.</p>
+  <p class="small">g(N) is the least prime p with N&nbsp;−&nbsp;p also prime. A number is <strong>big</strong> when g(N) is in the top 1% of its window (g&nbsp;≥&nbsp;614 near 10<sup>18</sup>) and <strong>huge</strong> in the top 0.01% (g&nbsp;≥&nbsp;1,490). The <strong>rows</strong> of N are the numbers N&nbsp;−&nbsp;q for the primes q below the threshold; N is big exactly when every row is composite.</p>
+  <div class="tiles" role="list">
+    <div class="tile" role="listitem"><span class="v">91%</span><span class="t">of big numbers near 10<sup>18</sup> sit in an archipelago of two or more</span></div>
+    <div class="tile" role="listitem"><span class="v">176</span><span class="t">islands in the largest archipelago, on top of the window's largest prime gap</span></div>
+    <div class="tile" role="listitem"><span class="v">≈1%</span><span class="t">gap between model and data on clustering at the strong lags</span></div>
+    <div class="tile" role="listitem"><span class="v">None</span><span class="t">gain from machine learning over the plain survivor count</span></div>
+  </div>
+  <div class="fits" role="note">
+    <p class="fits-h">Where this fits</p>
+    <p>This page is the evidence layer of the <a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p" target="_blank" rel="noopener">Goldbach Gaps Map</a>, which shows what is proved in Lean and what the research rests on. Its weakest link is H1, the assumption that the leftover rows are independent; every cost forecast, the closure theorem and Lean's hit-mass formula assume it. The tests below measure it directly, on numbers small enough to check one by one.</p>
+    <ul class="fits-l">
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-m-h1" target="_blank" rel="noopener">H1, the assumption</a></li>
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-c-hits" target="_blank" rel="noopener">Hit-mass formula (Lean)</a></li>
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-c-thinning" target="_blank" rel="noopener">Thinning law (Lean)</a></li>
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-c-needles" target="_blank" rel="noopener">Needles (Lean)</a></li>
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-m-ceiling" target="_blank" rel="noopener">The ceiling</a></li>
+      <li><a href="https://claude.ai/artifact/61W1713byd63vzpSgCL69p#n-s-score" target="_blank" rel="noopener">Scoring barrier</a></li>
+    </ul>
+  </div>
+
+  <section id="map">
+    <h2>What an archipelago looks like</h2>
+    <p>Each stem is one even N near 10<sup>18</sup>, and its height is g(N). Blue stems are big numbers. The 176 in the shaded stretch form one archipelago, 1,854 wide. The lower panel counts the primes among the 614 numbers just below each N. That count is usually about 15, and for the islands of this archipelago it averages 3. Underneath lies a stretch of 1,152 numbers that holds only eight primes. It includes the largest prime gap in the whole 40-million-number window, 558 long, after <span class="mono">1,000,000,000,038,086,591</span>. The peak, g&nbsp;=&nbsp;2,311, belongs to the number whose longer window covers the whole stretch.</p>
+    <div class="chart" id="c-amap" tabindex="0" aria-label="Archipelago map: g(N) and primes below N for 1,627 even numbers near 10^18. Use the arrow keys to step through the numbers.">
+      <p class="ctitle">g(N) along 3,252 consecutive numbers near 10<sup>18</sup></p>
+      <div class="legend"><span><i class="sw box c-s1"></i>big (g ≥ 614)</span><span><i class="sw box c-q"></i>other even N</span><span><i class="sw line c-s2"></i>primes among the 614 numbers below N</span><span><i class="sw box c-band"></i>prime gap of 558</span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="amap"><summary>Show the numbers</summary><div class="tablewrap"></div></details>
+    </div>
+    <p class="note">The windows of the numbers to the right of the gap overlap it, which is why the dip in the lower panel sits right of the shaded gap. The other four largest archipelagos at 10<sup>18</sup> (117, 110, 104 and 101 members) sit on prime gaps of 272 to 348.</p>
+  </section>
+
+  <section id="why">
+    <h2>Why they form</h2>
+    <p>If N is big, every row N&nbsp;−&nbsp;q is composite. The neighbour N&nbsp;+&nbsp;d reuses one of those composites whenever q and q&nbsp;+&nbsp;d are both prime, because (N&nbsp;+&nbsp;d)&nbsp;−&nbsp;(q&nbsp;+&nbsp;d)&nbsp;=&nbsp;N&nbsp;−&nbsp;q. Lags that are multiples of 6 share the most prime pairs. The lag 30 shares the most of all, 67 of the 111 rows near 10<sup>18</sup>. Beyond d&nbsp;≈&nbsp;614 nothing is shared, and the only link left is that N and N&nbsp;+&nbsp;d agree modulo the small primes dividing d.</p>
+    <p>The Lean library proves this inheritance (the Needles box on the map) and finds four close pairs among the 303 needles below 10<sup>9</sup>, against 2.7 expected once inherited rows are counted. Here the same mechanism shows up in about 196,000 big numbers per scale.</p>
+    <p>The model in orange knows exactly this and nothing more. Rows with a prime factor up to 997 are composite, and every other row is prime with one fixed probability (29.8% near 10<sup>18</sup>), independently of the others. It is the model the 200-digit search runs on.</p>
+    <div class="chart" id="c-comb" tabindex="0" aria-label="Clustering by lag. Use the arrow keys to step through the lags.">
+      <p class="ctitle">How much likelier N + d is to be big when N is big</p>
+      <p class="csub">R(d) = P(N and N + d both big) ÷ P(big)², near 10<sup>18</sup>. 1× means no clustering.</p>
+      <div class="legend"><span><i class="sw dot c-s1"></i>measured, d a multiple of 6</span><span><i class="sw line c-s2"></i>model</span><span><i class="sw dot c-q"></i>measured, other lags</span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="lag"><summary>Show the numbers (all 366 lags)</summary><div class="tablewrap"></div></details>
+    </div>
+    <div class="chart" id="c-parity" tabindex="0" aria-label="Measured against model clustering for all 366 lags. Use the arrow keys to step through the lags.">
+      <p class="ctitle">Every lag lands on the diagonal</p>
+      <p class="csub">Measured R(d) against the model, all 366 even lags up to 732, logarithmic axes</p>
+      <div class="legend"><span><i class="sw dot c-s1"></i>d a multiple of 6</span><span><i class="sw dot c-s2"></i>other lags</span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+    </div>
+    <p class="note">At the strong lags (R ≥ 3) model and data differ by about 1% on average. A 3–5% excess at lags ≡ 2 (mod 6) looked like a deviation at first. With block-bootstrap error bars (±2 standard errors) it is 1.05 ± 0.09 near 10<sup>18</sup> and 1.00 ± 0.07 near 10<sup>15</sup>, so it is noise. Because big numbers come in archipelagos, counts of them are noisier than independent draws would be.</p>
+    <h3>Archipelagos against a control</h3>
+    <p class="small">The control shuffles the big labels among numbers in the same class mod 30030. That keeps every effect of the primes 2 to 13 and removes the shared composites. Two big numbers are linked when they are less than the threshold apart and share at least a quarter of their row values.</p>
+    <div class="tablewrap open"><table id="t-arch"></table></div>
+  </section>
+
+  <section id="who">
+    <h2>What big-gap numbers have in common</h2>
+    <p>Three properties stand out, and all three come from the residues of N.</p>
+    <ul class="plain">
+      <li><strong>They avoid multiples of small primes.</strong> Only 0.9% of big numbers near 10<sup>18</sup> are divisible by 3, against a third of all numbers. When r divides N, no row is divisible by r, so r makes no row composite. The same holds, more weakly, for 5, 7, 11 and 13.</li>
+      <li><strong>They prefer quadratic non-residue classes.</strong> 57.4% of big numbers are ≡ 2 (mod 3) and 41.7% are ≡ 1. Below 614 there are 57 primes ≡ 2 (mod 3) and 53 ≡ 1, which is Chebyshev's bias. N ≡ 2 (mod 3) makes all 57 of those rows divisible by 3, four more than N ≡ 1 does. Mod 5 and mod 7 show the same tilt toward the non-residues. The Lean session's record table found the same preference among the 39 record holders below 10<sup>11</sup>.</li>
+      <li><strong>They sit above prime-poor stretches.</strong> Each extra prime among the 614 numbers below N multiplies the chance of a big gap by about 0.72.</li>
+    </ul>
+    <div class="chart" id="c-res" tabindex="0" aria-label="Share of big numbers in each residue class mod 3, 5 and 7. Use the arrow keys to step through the classes.">
+      <p class="ctitle">Where the big numbers sit, by residue of N</p>
+      <p class="csub">Share of big numbers in each class near 10<sup>18</sup>; the hairline marks the share of all numbers</p>
+      <div class="legend"><span><i class="sw box c-s2"></i>quadratic non-residue</span><span><i class="sw box c-s1"></i>quadratic residue</span><span><i class="sw box c-q"></i>0 (r divides N)</span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="res"><summary>Show the numbers</summary><div class="tablewrap"></div></details>
+    </div>
+    <div class="chart" id="c-floor" tabindex="0" aria-label="Chance of a big gap by number of primes below N. Use the arrow keys to step through the counts.">
+      <p class="ctitle">Chance that N is big, by the primes just below it</p>
+      <p class="csub">Primes among the 614 numbers below N, near 10<sup>18</sup>; logarithmic scale</p>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="floor"><summary>Show the numbers</summary><div class="tablewrap"></div></details>
+    </div>
+  </section>
+
+  <section id="model">
+    <h2>Does the standard model hold up?</h2>
+    <p>Once the sieve goes deeper than the threshold, it does. Grouping numbers by how many rows survive a sieve to 997, the model's chance of a big gap matches the observed rate across five orders of magnitude. The Lean session's thinning law makes independence an upper bound for moduli above the threshold, and the data sit within the noise of that bound.</p>
+    <div class="chart" id="c-cal" tabindex="0" aria-label="Calibration: chance of a big gap by number of surviving rows, observed and model. Use the arrow keys to step through the counts.">
+      <p class="ctitle">Chance that N is big, by rows left after a sieve to 997</p>
+      <p class="csub">Near 10<sup>18</sup>, 20 million numbers; logarithmic scale</p>
+      <div class="legend"><span><i class="sw dot c-s1"></i>observed</span><span><i class="sw line c-s2"></i>model (1 − 0.298)<sup>rows</sup></span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="cal"><summary>Show the numbers</summary><div class="tablewrap"></div></details>
+    </div>
+    <h3>The extreme tail</h3>
+    <p class="small">How many numbers in each window reach g&nbsp;≥&nbsp;x, observed and predicted (sieve to 65,521). The last row of each scale is the window's record.</p>
+    <div class="tablewrap open"><table id="t-tail"></table></div>
+    <p class="note">With a sieve shallower than the threshold (to 13 or 97) the model expects 2–9% too many big gaps. That has the sign and size of the pair term in the fscan notes in the repository, which already correct for it. Past the threshold the difference is below 1%, and the 200-digit search sieves to 10<sup>8</sup> against a threshold of about 2·10<sup>5</sup>.</p>
+  </section>
+
+  <section id="ml">
+    <h2>Can machine learning find what the count misses?</h2>
+    <p>Both sides got the same information: the residues of N modulo every prime up to the sieve depth, and no primality of any row. LightGBM saw 133 features. They were which of the 111 rows survive, the survivor count at eight depths, where in the range the survivors sit, N mod 3 to 23, and Hardy–Littlewood pair weights of the survivors. It trained on 2.5 million numbers from the first half of the window and was scored on 2.5 million from the second half, so no archipelago straddles the split.</p>
+    <div id="ml-tables"></div>
+    <p class="note">Gain is held-out log-loss improvement over the calibrated survivor count, in nats per number, with ±2 standard errors from a block bootstrap. Negative means worse than the count.</p>
+    <div class="verdict"><p><strong>The survivor count is a sufficient statistic.</strong> The theory formula, with nothing fitted, beats every learned model in all three runs. Nothing else in the residues predicts a big gap. The research session reached the same conclusion from aggregate hit counts; this is the direct test.</p></div>
+  </section>
+
+  <section id="missing">
+    <h2>What we are missing</h2>
+    <p>Each bar shows how much of the uncertainty about whether N is big one kind of information removes. It is measured as held-out log-loss against the base rate near 10<sup>18</sup>.</p>
+    <div class="chart" id="c-budget" tabindex="0" aria-label="Information budget: share of uncertainty explained by each kind of information. Use the arrow keys to step through the rows.">
+      <p class="ctitle">Share of the uncertainty each kind of information removes</p>
+      <div class="legend"><span><i class="sw box c-s1"></i>what a sieve sees (residues of N)</span><span><i class="sw box c-s2"></i>adds the outcomes of six neighbours</span></div>
+      <div class="plotwrap"><div class="plot"></div><div class="tip" hidden></div></div>
+      <details class="tv" data-table="budget"><summary>Show the numbers</summary><div class="tablewrap"></div></details>
+    </div>
+    <p>Even a sieve to 65,521 leaves about three quarters of the uncertainty. What is left is whether the surviving numbers happen to be prime, and only a primality test, or a sieve all the way to √N, can say. At 200 digits the sieve reaches 10<sup>8</sup> while √N is 10<sup>100</sup>, so nearly all of it is luck. The outcomes of six neighbours are worth about as much as sieving 65 times deeper, but each outcome costs primality tests of its own.</p>
+  </section>
+
+  <section id="search">
+    <h2>What this means for the 200-digit search</h2>
+    <ul class="plain">
+      <li><strong>The fleet already ranks members by the best possible score.</strong> The count of rows left after the sieve is all the residues can say. Machine learning will not improve the ranking.</li>
+      <li><strong>A cover is a built archipelago, and a much stronger one.</strong> It makes most rows composite by choosing N's residues, the same mechanism that tilts the classes above. Natural archipelagos sit on prime gaps, and the largest prime gaps near 10<sup>200</sup> are about 16,000 long, against a record of 158,209.</li>
+      <li><strong>Natural archipelagos cannot be added to a cover.</strong> N and N + d share rows only when d is below g. Then they agree only modulo primes whose product is below g, which is Lean's <span class="mono">shared_row_value</span>. So a neighbour falls out of the cover on more than 80 of the 88 primes. Lean measured the chance that any of 7,000 neighbours of a 200-digit hit is also a hit: 4·10<sup>−15</sup>.</li>
+      <li><strong>The ceiling behind the 7.43% looks sound.</strong> The same model predicts each window's record (g ≥ 3,137 expected 1.2 times near 10<sup>18</sup>, seen once). Clustering also fades as the level rises: the share of exceedances that start a new cluster grows from 0.10 at the top 1% to 0.50 at the top 0.1% and 0.80 at the top 0.01%.</li>
+      <li><strong>The only lever left is new information.</strong> That means a cheaper way to learn whether surviving rows are prime, or a way to find members with few survivors without sieving them all. It is the open problem the research session is working on (<span class="mono">goldbach/sublinear/</span> on its branch).</li>
+    </ul>
+  </section>
+
+  <section id="method">
+    <h2>How this was done</h2>
+    <ul class="plain small">
+      <li><strong>Data.</strong> 20,000,000 consecutive even N starting at 10<sup>12</sup>, 10<sup>15</sup> and 10<sup>18</sup>. Every integer of each window was classified by a segmented sieve with all primes up to √N, and its smallest prime factor up to 65,521 was stored. A check against deterministic Miller–Rabin on 1,200 values of g(N) and 12,000 numbers found no mismatch.</li>
+      <li><strong>Model.</strong> A row with a prime factor ≤ z is composite. Every other row is prime with probability c<sub>z</sub>, the share of primes among the z-rough numbers of the window, independently. The model's R(d) is computed from the actual survivor patterns of N and N + d, so it includes every residue effect up to z and all shared rows.</li>
+      <li><strong>Archipelagos.</strong> Connected components of big numbers, linked at lags below the threshold that share at least a quarter of the row values. The extremal index uses runs, with exceedances closer than the threshold counted as one cluster.</li>
+      <li><strong>Error bars.</strong> Block bootstrap over 20,000 to 50,000 consecutive numbers, because archipelagos make neighbouring outcomes dependent.</li>
+      <li><strong>Files.</strong> Scripts and results are in <span class="mono">goldbach/archipelagos/</span> on branch <span class="mono">ccr-c6e00296-3g7fp9</span>: <span class="mono">gdata.py</span>, <span class="mono">theory.py</span>, <span class="mono">archipelagos.py</span>, <span class="mono">ml.py</span>, <span class="mono">budget.py</span>, <span class="mono">tail.py</span>, <span class="mono">lagse.py</span>, and their <span class="mono">.txt</span> and <span class="mono">.json</span> outputs.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+const D = /*BUNDLE*/null;
+const NS = "http://www.w3.org/2000/svg";
+const nf = new Intl.NumberFormat("en-US");
+const f1 = v => v.toLocaleString("en-US", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const f2 = v => v.toLocaleString("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const pc = (v, d = 1) => (100 * v).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d }) + "%";
+const pcAuto = v => { const p = 100 * v; const d = p >= 10 ? 1 : p >= 1 ? 2 : p >= 0.1 ? 3 : 4; return p.toFixed(d) + "%"; };
+function S(tag, a, p) { const e = document.createElementNS(NS, tag); if (a) for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; }
+function T(p, x, y, text, cls, anchor) { const e = S("text", { x, y, class: cls || "tick", "text-anchor": anchor || "start" }, p); e.textContent = text; return e; }
+const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) * (r1 - r0) / (d1 - d0);
+const lgs = (d0, d1, r0, r1) => { const a = Math.log10(d0), b = Math.log10(d1); return v => r0 + (Math.log10(v) - a) * (r1 - r0) / (b - a); };
+function vbar(x, y0, y1, w, r) { // column from baseline y0 up to y1, rounded data end
+  const h = y0 - y1; r = Math.min(r, w / 2, Math.max(h, 0));
+  return `M${x} ${y0}V${y1 + r}Q${x} ${y1} ${x + r} ${y1}H${x + w - r}Q${x + w} ${y1} ${x + w} ${y1 + r}V${y0}Z`;
+}
+function hbar(x0, x1, y, h, r) { // bar from baseline x0 out to x1, rounded data end
+  const w = x1 - x0; r = Math.min(r, h / 2, Math.max(w, 0));
+  return `M${x0} ${y}H${x1 - r}Q${x1} ${y} ${x1} ${y + r}V${y + h - r}Q${x1} ${y + h} ${x1 - r} ${y + h}H${x0}Z`;
+}
+function tipShow(tip, host, rows, px, py) {
+  tip.replaceChildren();
+  for (const [strong, weak, key] of rows) {
+    const r = document.createElement("div"); r.className = "trow";
+    if (key) { const k = document.createElement("i"); k.className = "sw " + key; r.appendChild(k); }
+    const s = document.createElement("strong"); s.textContent = strong; r.appendChild(s);
+    if (weak) { const w = document.createElement("span"); w.className = "weak"; w.textContent = weak; r.appendChild(w); }
+    tip.appendChild(r);
+  }
+  tip.hidden = false;
+  const W = host.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left = px + 14; if (left + tw > W) left = Math.max(0, px - 14 - tw);
+  let top = py - th - 10; if (top < 0) top = Math.min(py + 14, Math.max(0, host.clientHeight - th));
+  tip.style.left = left + "px"; tip.style.top = top + "px";
+}
+function mount(id, render) {
+  const box = document.getElementById(id), host = box.querySelector(".plot"), tip = box.querySelector(".tip");
+  let api = null, w = 0, cur = -1;
+  const draw = () => {
+    const nw = Math.floor(host.clientWidth); if (!nw || nw === w) return; w = nw;
+    host.replaceChildren(); tip.hidden = true; cur = -1; api = render(host, w, tip);
+  };
+  new ResizeObserver(() => requestAnimationFrame(draw)).observe(host);
+  draw();
+  const hide = () => { cur = -1; tip.hidden = true; if (api) api.clear(); };
+  host.addEventListener("pointermove", ev => {
+    if (!api) return; const r = host.getBoundingClientRect();
+    const i = api.pick(ev.clientX - r.left, ev.clientY - r.top);
+    if (i < 0) { hide(); return; } cur = i; api.show(i);
+  });
+  host.addEventListener("pointerleave", hide);
+  box.addEventListener("keydown", ev => {
+    if (!api || (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft")) return;
+    ev.preventDefault();
+    cur = Math.max(0, Math.min(api.n - 1, (cur < 0 ? api.start : cur) + (ev.key === "ArrowRight" ? 1 : -1)));
+    api.show(cur);
+  });
+  box.addEventListener("focus", ev => { if (ev.target === box && api && cur < 0) { cur = api.start; api.show(cur); } });
+  box.addEventListener("blur", ev => { if (ev.target === box) hide(); });
+}
+function nearest(xsPix, x) { let lo = 0, hi = xsPix.length - 1; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (xsPix[m] < x) lo = m; else hi = m; } return Math.abs(xsPix[lo] - x) <= Math.abs(xsPix[hi] - x) ? lo : hi; }
+
+/* 1. archipelago map */
+mount("c-amap", (host, W, tip) => {
+  const A = D.amap, n = A.g.length, G = A.G, base = BigInt(A.N_min_s), start = A.start_off;
+  const xv = i => start + 2 * i;
+  const m = { l: 44, r: 12, t: 10 }, hA = 190, gap = 30, hB = 92, hx = 34, H = m.t + hA + gap + hB + hx;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x = lin(xv(0), xv(n - 1), m.l, W - m.r), yA = lin(0, 2500, m.t + hA, m.t);
+  const b0 = m.t + hA + gap, yB = lin(0, 25, b0 + hB, b0);
+  S("rect", { x: x(0), y: m.t, width: x(A.isl.span) - x(0), height: hA, class: "wash" }, svg);
+  for (const t of [0, 500, 1000, 1500, 2000, 2500]) { S("line", { x1: m.l, x2: W - m.r, y1: yA(t), y2: yA(t), class: t ? "grid" : "base" }, svg); T(svg, m.l - 6, yA(t) + 4, nf.format(t), "tick", "end"); }
+  let pq = "", pb = ""; const sw = Math.max(1, 0.85 * (W - m.l - m.r) / n);
+  for (let i = 0; i < n; i++) { const X = x(xv(i)).toFixed(2), s = `M${X} ${yA(0)}V${yA(A.g[i]).toFixed(2)}`; if (A.g[i] >= G) pb += s; else pq += s; }
+  S("path", { d: pq, class: "stem-q", "stroke-width": sw }, svg);
+  S("path", { d: pb, class: "stem-b", "stroke-width": sw }, svg);
+  S("line", { x1: m.l, x2: W - m.r, y1: yA(G), y2: yA(G), class: "ref" }, svg);
+  T(svg, W - m.r, yA(G) - 5, "top 1%", "lbl", "end");
+  T(svg, x(0) + 6, m.t + 14, "archipelago: 176 islands", "lbl strong");
+  let ip = 0; for (let i = 0; i < n; i++) if (A.g[i] > A.g[ip]) ip = i;
+  S("circle", { cx: x(xv(ip)), cy: yA(A.g[ip]), r: 4, class: "dot-s1" }, svg);
+  T(svg, x(xv(ip)) + 8, yA(A.g[ip]) + 4, "g = " + nf.format(A.g[ip]), "lbl");
+  T(svg, m.l, b0 - 8, "primes in the 614 numbers below N", "lbl");
+  for (const t of [0, 10, 20]) { S("line", { x1: m.l, x2: W - m.r, y1: yB(t), y2: yB(t), class: t ? "grid" : "base" }, svg); T(svg, m.l - 6, yB(t) + 4, String(t), "tick", "end"); }
+  S("rect", { x: x(39), y: b0, width: x(597) - x(39), height: hB, class: "band" }, svg);
+  S("line", { x1: m.l, x2: W - m.r, y1: yB(A.mean_pb), y2: yB(A.mean_pb), class: "ref" }, svg);
+  T(svg, W - m.r, yB(A.mean_pb) + 14, "typical: " + f1(A.mean_pb), "lbl", "end");
+  let d = ""; for (let i = 0; i < n; i++) d += (i ? "L" : "M") + x(xv(i)).toFixed(2) + " " + yB(A.pb[i]).toFixed(2);
+  S("path", { d, class: "ln-s2" }, svg);
+  const span = xv(n - 1) - xv(0), step = span / 6 > 400 ? 1000 : 500;
+  for (let t = Math.ceil(xv(0) / step) * step; t <= xv(n - 1); t += step) { T(svg, x(t), b0 + hB + 16, (t < 0 ? "−" : "") + nf.format(Math.abs(t)), "tick", "middle"); }
+  T(svg, W - m.r, H - 2, "N − 1,000,000,000,038,086,552", "tick", "end");
+  const gx = S("g", { visibility: "hidden" }, svg);
+  const xl = S("line", { y1: m.t, y2: b0 + hB, class: "xhair" }, gx);
+  const dA = S("circle", { r: 4, class: "dot-s1" }, gx), dB = S("circle", { r: 4, class: "dot-s2" }, gx);
+  const xsPix = Array.from({ length: n }, (_, i) => x(xv(i)));
+  return {
+    n, start: ip,
+    pick: (px) => (px < m.l - 8 || px > W - m.r + 8) ? -1 : nearest(xsPix, px),
+    show(i) {
+      const X = xsPix[i]; xl.setAttribute("x1", X); xl.setAttribute("x2", X);
+      dA.setAttribute("cx", X); dA.setAttribute("cy", yA(A.g[i])); dA.setAttribute("class", A.g[i] >= G ? "dot-s1" : "dot-q");
+      dB.setAttribute("cx", X); dB.setAttribute("cy", yB(A.pb[i])); gx.setAttribute("visibility", "visible");
+      const N = (base + BigInt(xv(i))).toLocaleString("en-US");
+      tipShow(tip, host, [["g(N) = " + nf.format(A.g[i]), A.g[i] >= G ? " · big" : "", "box " + (A.g[i] >= G ? "c-s1" : "c-q")],
+                          [String(A.pb[i]), " primes in the 614 below", "line c-s2"], ["", "N = " + N]], X, yA(A.g[i]));
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 2. lag comb */
+mount("c-comb", (host, W, tip) => {
+  const six = D.lag.filter(r => r[0] % 6 === 0), oth = D.lag.filter(r => r[0] % 6 !== 0);
+  const m = { l: 40, r: 14, t: 12, b: 36 }, H = 290;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x = lin(0, 740, m.l, W - m.r), y = lin(0, 20, H - m.b, m.t);
+  for (const t of [0, 5, 10, 15, 20]) { S("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t ? "grid" : "base" }, svg); T(svg, m.l - 6, y(t) + 4, t + "×", "tick", "end"); }
+  S("line", { x1: m.l, x2: W - m.r, y1: y(1), y2: y(1), class: "ref" }, svg);
+  S("line", { x1: x(614), x2: x(614), y1: m.t, y2: H - m.b, class: "ref" }, svg);
+  T(svg, x(614) - 6, m.t + 12, "614: rows stop overlapping", "lbl", "end");
+  for (const t of [0, 100, 200, 300, 400, 500, 600, 700]) T(svg, x(t), H - m.b + 16, String(t), "tick", "middle");
+  T(svg, W - m.r, H - 2, "lag d", "tick", "end");
+  for (const r of oth) S("circle", { cx: x(r[0]), cy: y(r[1]), r: 2.5, class: "dot-q" }, svg);
+  let d = ""; six.forEach((r, i) => d += (i ? "L" : "M") + x(r[0]).toFixed(2) + " " + y(r[2]).toFixed(2));
+  S("path", { d, class: "ln-s2" }, svg);
+  const rr = W < 500 ? 3 : 4;
+  for (const r of six) S("circle", { cx: x(r[0]), cy: y(r[1]), r: rr, class: "dot-s1" }, svg);
+  const p30 = six.find(r => r[0] === 30);
+  T(svg, x(30) + 9, y(p30[1]) + 4, "d = 30: " + f1(p30[1]) + "×", "lbl strong");
+  const gx = S("g", { visibility: "hidden" }, svg);
+  const xl = S("line", { y1: m.t, y2: H - m.b, class: "xhair" }, gx);
+  const hot = S("circle", { r: 6, class: "dot-s1 hot" }, gx);
+  const xsPix = six.map(r => x(r[0]));
+  return {
+    n: six.length, start: 4,
+    pick: px => (px < m.l - 8 || px > W - m.r + 8) ? -1 : nearest(xsPix, px),
+    show(i) {
+      const r = six[i], X = xsPix[i]; xl.setAttribute("x1", X); xl.setAttribute("x2", X);
+      hot.setAttribute("cx", X); hot.setAttribute("cy", y(r[1])); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[f2(r[1]) + "×", " measured", "dot c-s1"], [f2(r[2]) + "×", " model", "line c-s2"], ["d = " + r[0], " · " + r[3] + " of 111 rows shared"]], X, y(Math.max(r[1], r[2])));
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 3. parity */
+mount("c-parity", (host, W, tip) => {
+  const pts = D.lag.slice().sort((a, b) => a[2] - b[2]);
+  const side = Math.min(W, 380), m = { l: 40, r: 14, t: 10, b: 36 }, H = side;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x0 = m.l, x1 = Math.min(W - m.r, m.l + (H - m.t - m.b));
+  const x = lgs(0.5, 20, x0, x1), y = lgs(0.5, 20, H - m.b, m.t);
+  for (const t of [0.5, 1, 2, 5, 10, 20]) {
+    S("line", { x1: x0, x2: x1, y1: y(t), y2: y(t), class: t === 0.5 ? "base" : "grid" }, svg); T(svg, x0 - 6, y(t) + 4, t + "×", "tick", "end");
+    S("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, class: t === 0.5 ? "base" : "grid" }, svg); T(svg, x(t), H - m.b + 16, t + "×", "tick", "middle");
+  }
+  S("line", { x1: x(0.5), y1: y(0.5), x2: x(20), y2: y(20), class: "ref" }, svg);
+  T(svg, x1, H - 2, "model", "tick", "end");
+  T(svg, x0 + 6, m.t + 12, "measured", "tick");
+  const P = pts.map(r => [x(r[2]), y(r[1]), r]);
+  for (const [X, Y, r] of P) S("circle", { cx: X, cy: Y, r: 3.5, class: r[0] % 6 === 0 ? "dot-s1" : "dot-s2" }, svg);
+  if (x1 + 150 < W) { T(svg, x1 + 16, m.t + 30, "366 lags.", "lbl"); T(svg, x1 + 16, m.t + 48, "Mean gap from the", "lbl"); T(svg, x1 + 16, m.t + 64, "diagonal: 2.4%.", "lbl"); }
+  const gx = S("g", { visibility: "hidden" }, svg), hot = S("circle", { r: 6, class: "dot-s1 hot" }, gx);
+  return {
+    n: P.length, start: P.length - 1,
+    pick(px, py) { let bi = -1, bd = 24 * 24; P.forEach(([X, Y], i) => { const dd = (X - px) ** 2 + (Y - py) ** 2; if (dd < bd) { bd = dd; bi = i; } }); return bi; },
+    show(i) {
+      const [X, Y, r] = P[i]; hot.setAttribute("cx", X); hot.setAttribute("cy", Y);
+      hot.setAttribute("class", (r[0] % 6 === 0 ? "dot-s1" : "dot-s2") + " hot"); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[f2(r[1]) + "×", " measured", "dot " + (r[0] % 6 === 0 ? "c-s1" : "c-s2")], [f2(r[2]) + "×", " model", "line c-s2"], ["d = " + r[0], ""]], X, Y);
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 4. residue classes */
+const QR = { 3: [1], 5: [1, 4], 7: [1, 2, 4] };
+mount("c-res", (host, W, tip) => {
+  const R = D.res.e18, mods = [3, 5, 7], bars = [];
+  const m = { l: 40, r: 8, t: 14, b: 44 }, H = 250;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const slots = 3 + 5 + 7 + 2 * 1.4, slot = (W - m.l - m.r) / slots, bw = Math.min(24, slot * 0.62);
+  const y = lin(0, 0.6, H - m.b, m.t);
+  for (const t of [0, 0.2, 0.4, 0.6]) { S("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t ? "grid" : "base" }, svg); T(svg, m.l - 6, y(t) + 4, pc(t, 0), "tick", "end"); }
+  let pos = 0;
+  for (const r of mods) {
+    const g0 = m.l + pos * slot;
+    for (let c = 0; c < r; c++) {
+      const cx = m.l + (pos + c + 0.5) * slot, v = R[r].big[c], kind = c === 0 ? "q" : QR[r].includes(c) ? "s1" : "s2";
+      S("path", { d: vbar(cx - bw / 2, y(0), y(v), bw, 4), class: "bar-" + kind }, svg);
+      T(svg, cx, H - m.b + 15, String(c), "tick", "middle");
+      if (r === 3 && (slot >= 36 || c === 2)) T(svg, cx, y(v) - 6, pc(v), "lbl", "middle");
+      bars.push({ cx, v, r, c, kind });
+    }
+    const gx1 = m.l + (pos + r) * slot;
+    S("line", { x1: g0 + 2, x2: gx1 - 2, y1: y(1 / r), y2: y(1 / r), class: "ref" }, svg);
+    T(svg, (g0 + gx1) / 2, H - m.b + 32, "N mod " + r, "lbl", "middle");
+    pos += r + 1.4;
+  }
+  const gx = S("g", { visibility: "hidden" }, svg), hot = S("path", { class: "hot", fill: "none" }, gx);
+  const xsPix = bars.map(b => b.cx);
+  const name = { q: "r divides N", s1: "quadratic residue", s2: "quadratic non-residue" };
+  return {
+    n: bars.length, start: 2,
+    pick: (px) => { const i = nearest(xsPix, px); return Math.abs(xsPix[i] - px) <= slot ? i : -1; },
+    show(i) {
+      const b = bars[i]; hot.setAttribute("d", vbar(b.cx - bw / 2, y(0), y(b.v), bw, 4)); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[pc(b.v), " of big numbers", "box c-" + b.kind], ["N ≡ " + b.c + " (mod " + b.r + ")", " · " + name[b.kind]], ["", pc(1 / b.r) + " of all numbers"]], b.cx, y(b.v));
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 5. primes below N */
+mount("c-floor", (host, W, tip) => {
+  const rows = D.pbtab.table.filter(r => r[2] > 0 && r[1] * r[2] * 2e7 >= 10);
+  const m = { l: 52, r: 14, t: 12, b: 36 }, H = 240;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x = lin(2, 28, m.l, W - m.r), y = lgs(1e-4, 1, H - m.b, m.t);
+  for (const t of [1e-4, 1e-3, 1e-2, 1e-1, 1]) { S("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 1e-4 ? "base" : "grid" }, svg); T(svg, m.l - 6, y(t) + 4, pcAuto(t).replace(/\.?0+%$/, "%"), "tick", "end"); }
+  for (const t of [5, 10, 15, 20, 25]) T(svg, x(t), H - m.b + 16, String(t), "tick", "middle");
+  T(svg, W - m.r, H - 2, "primes among the 614 numbers below N", "tick", "end");
+  S("line", { x1: m.l, x2: W - m.r, y1: y(0.0098), y2: y(0.0098), class: "ref" }, svg);
+  T(svg, W - m.r, y(0.0098) - 5, "all N: 1%", "lbl", "end");
+  let d = ""; rows.forEach((r, i) => d += (i ? "L" : "M") + x(r[0]).toFixed(2) + " " + y(r[2]).toFixed(2));
+  S("path", { d, class: "ln-s1" }, svg);
+  for (const r of rows) S("circle", { cx: x(r[0]), cy: y(r[2]), r: 4, class: "dot-s1" }, svg);
+  const gx = S("g", { visibility: "hidden" }, svg), hot = S("circle", { r: 6, class: "dot-s1 hot" }, gx);
+  const xsPix = rows.map(r => x(r[0]));
+  return {
+    n: rows.length, start: 7,
+    pick: px => (px < m.l - 8 || px > W - m.r + 8) ? -1 : nearest(xsPix, px),
+    show(i) {
+      const r = rows[i]; hot.setAttribute("cx", xsPix[i]); hot.setAttribute("cy", y(r[2])); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[pcAuto(r[2]), " chance of a big gap"], [r[0] + " primes below N", " · " + pcAuto(r[1]) + " of all numbers"]], xsPix[i], y(r[2]));
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 6. calibration */
+mount("c-cal", (host, W, tip) => {
+  const rows = D.cal.filter(r => r[2] > 0);
+  const m = { l: 60, r: 14, t: 12, b: 36 }, H = 270;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x = lin(2, 33, m.l, W - m.r), y = lgs(1e-6, 1, H - m.b, m.t);
+  for (const [t, s] of [[1e-6, "0.0001%"], [1e-5, "0.001%"], [1e-4, "0.01%"], [1e-3, "0.1%"], [1e-2, "1%"], [1e-1, "10%"], [1, "100%"]]) { S("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 1e-6 ? "base" : "grid" }, svg); T(svg, m.l - 6, y(t) + 4, s, "tick", "end"); }
+  for (const t of [5, 10, 15, 20, 25, 30]) T(svg, x(t), H - m.b + 16, String(t), "tick", "middle");
+  T(svg, W - m.r, H - 2, "rows left after the sieve to 997", "tick", "end");
+  let d = ""; rows.forEach((r, i) => d += (i ? "L" : "M") + x(r[0]).toFixed(2) + " " + y(r[3]).toFixed(2));
+  S("path", { d, class: "ln-s2" }, svg);
+  for (const r of rows) S("circle", { cx: x(r[0]), cy: y(r[2]), r: 4, class: "dot-s1" }, svg);
+  const gx = S("g", { visibility: "hidden" }, svg), xl = S("line", { y1: m.t, y2: H - m.b, class: "xhair" }, gx), hot = S("circle", { r: 6, class: "dot-s1 hot" }, gx);
+  const xsPix = rows.map(r => x(r[0]));
+  return {
+    n: rows.length, start: 7,
+    pick: px => (px < m.l - 8 || px > W - m.r + 8) ? -1 : nearest(xsPix, px),
+    show(i) {
+      const r = rows[i], X = xsPix[i]; xl.setAttribute("x1", X); xl.setAttribute("x2", X);
+      hot.setAttribute("cx", X); hot.setAttribute("cy", y(r[2])); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[pcAuto(r[2]), " observed", "dot c-s1"], [pcAuto(r[3]), " model", "line c-s2"], [r[0] + " rows left", " · " + nf.format(r[1]) + " numbers"]], X, y(r[2]));
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* 7. information budget */
+const BNAMES = ["Residues mod 30030 (primes 2 to 13)", "Sieve to 97", "Sieve to 997", "Sieve to 9,973", "Sieve to 65,521", "Sieve to 997 + outcomes of N ± 6, ± 30, ± 60"];
+mount("c-budget", (host, W, tip) => {
+  const rows = D.budget.e18, m = { l: 4, r: 52, t: 22 }, rowH = 46, bh = 16, H = m.t + rows.length * rowH + 4;
+  const svg = S("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, "aria-hidden": "true" }, host);
+  const x = lin(0, 1, m.l, W - m.r);
+  for (const t of [0, 0.25, 0.5, 0.75, 1]) { S("line", { x1: x(t), x2: x(t), y1: m.t - 6, y2: H - 4, class: t ? "grid" : "base" }, svg); T(svg, x(t), m.t - 10, pc(t, 0), "tick", t === 0 ? "start" : t === 1 ? "end" : "middle"); }
+  const ys = [];
+  rows.forEach((r, i) => {
+    const y0 = m.t + i * rowH; ys.push(y0);
+    T(svg, m.l, y0 + 14, BNAMES[i], "lbl");
+    S("path", { d: hbar(x(0), x(r.explained), y0 + 20, bh, 4), class: i === 5 ? "bar-s2" : "bar-s1" }, svg);
+    T(svg, x(r.explained) + 6, y0 + 20 + bh - 3, pc(r.explained), "lbl strong");
+  });
+  const gx = S("g", { visibility: "hidden" }, svg), hot = S("path", { class: "hot", fill: "none" }, gx);
+  return {
+    n: rows.length, start: 4,
+    pick: (px, py) => { const i = Math.floor((py - m.t) / rowH); return i >= 0 && i < rows.length ? i : -1; },
+    show(i) {
+      const r = rows[i]; hot.setAttribute("d", hbar(x(0), x(r.explained), ys[i] + 20, bh, 4)); gx.setAttribute("visibility", "visible");
+      tipShow(tip, host, [[pc(r.explained), " of the uncertainty removed", "box " + (i === 5 ? "c-s2" : "c-s1")], [pc(r.top1), " of big N in the top 1% of scores"], [pc(r.top3), " of big N in the top 3%"]], x(r.explained), ys[i] + 20);
+    },
+    clear() { gx.setAttribute("visibility", "hidden"); }
+  };
+});
+
+/* section links from the map (#map, #why, #who, #model, #ml, #missing, #method) */
+function goHash() { const id = (location.hash || "").slice(1); const el = id && /^[a-z]+$/.test(id) && document.getElementById(id); if (el) el.scrollIntoView(); }
+window.addEventListener("hashchange", goHash); if (location.hash) requestAnimationFrame(goHash);
+
+/* tables */
+function table(el, head, rows) {
+  el.replaceChildren();
+  const th = document.createElement("thead"), tr = document.createElement("tr");
+  for (const h of head) { const c = document.createElement("th"); c.textContent = h; tr.appendChild(c); }
+  th.appendChild(tr); el.appendChild(th);
+  const tb = document.createElement("tbody");
+  for (const r of rows) { const t = document.createElement("tr"); for (const v of r) { const c = document.createElement("td"); if (v && typeof v === "object") { c.textContent = v.t; if (v.cls) c.className = v.cls; } else c.textContent = v; t.appendChild(c); } tb.appendChild(t); }
+  el.appendChild(tb);
+}
+const SC = { e12: "10¹²", e15: "10¹⁵", e18: "10¹⁸" };
+const SHARE = { e12: [0.856, 0.705], e15: [0.891, 0.799], e18: [0.908, 0.834] };
+table(document.getElementById("t-arch"), ["Near", "Big N", "Share in an archipelago ≥ 2 (control)", "Archipelagos ≥ 10 (control)", "Archipelagos ≥ 20 (control)", "Largest (control)"],
+  ["e12", "e15", "e18"].map(k => { const a = D.arch[k]; return [SC[k], nf.format(a.n_big), pc(SHARE[k][0]) + " (" + pc(SHARE[k][1]) + ")", nf.format(a.ge["10"]) + " (" + nf.format(a.null_ge["10"]) + ")", nf.format(a.ge["20"]) + " (" + nf.format(a.null_ge["20"]) + ")", a.max_size + " (" + a.null_max + ")"]; }));
+const tailRows = [];
+for (const k of ["e12", "e15", "e18"]) for (const r of D.tail[k]) tailRows.push([SC[k], "g ≥ " + nf.format(r.x), nf.format(r.observed), r.model >= 100 ? nf.format(Math.round(r.model)) : f2(r.model), f2(r.observed / r.model)]);
+table(document.getElementById("t-tail"), ["Near", "Threshold", "Observed", "Model", "Ratio"], tailRows);
+const MLN = [["theory (1-c)^u, no fit", "Theory, nothing fitted"], ["count, calibrated", "Survivor count (reference)"], ["LightGBM, counts at all depths", "LightGBM, counts only"], ["LightGBM, all features", "LightGBM, all features"]];
+const mlBox = document.getElementById("ml-tables");
+for (const [k, lab] of [["e18_997", "Near 10¹⁸, sieve to 997 (133 features)"], ["e18_97", "Near 10¹⁸, sieve to 97 (132 features)"], ["e15_997", "Near 10¹⁵, sieve to 997 (133 features)"]]) {
+  const cap = document.createElement("p"); cap.className = "tcap"; cap.textContent = lab; mlBox.appendChild(cap);
+  const wrap = document.createElement("div"); wrap.className = "tablewrap open"; const t = document.createElement("table"); wrap.appendChild(t); mlBox.appendChild(wrap);
+  table(t, ["Score", "Gain, nats per number", "AUC", "Big N in top 1%"], MLN.map(([key, nm]) => {
+    const r = D.ml[k][key];
+    return [nm, key === "count, calibrated" ? "0 (reference)" : (r.gain >= 0 ? "+" : "−") + Math.abs(r.gain).toFixed(5) + " ± " + r.se2.toFixed(5), r.auc.toFixed(4), pc(r.top1)];
+  }));
+}
+
+/* table views for the charts, built when opened */
+const TV = {
+  amap: () => [["N", "g(N)", "Big", "Primes in the 614 below"], D.amap.g.map((g, i) => [(BigInt(D.amap.N_start_s) + BigInt(2 * i)).toLocaleString("en-US"), nf.format(g), g >= D.amap.G ? "yes" : "", String(D.amap.pb[i])])],
+  lag: () => [["Lag d", "Measured R(d)", "Model R(d)", "Rows shared (of 111)"], D.lag.map(r => [String(r[0]), f2(r[1]), f2(r[2]), String(r[3])])],
+  res: () => { const out = []; for (const r of [3, 5, 7]) for (let c = 0; c < r; c++) out.push(["N ≡ " + c + " (mod " + r + ")", c === 0 ? "divides N" : QR[r].includes(c) ? "residue" : "non-residue", pc(D.res.e18[r].big[c]), pc(D.res.e15[r].big[c]), pc(D.res.e12[r].big[c]), pc(1 / r)]); return [["Class", "Kind", "Big N, 10¹⁸", "Big N, 10¹⁵", "Big N, 10¹²", "All N"], out]; },
+  floor: () => [["Primes below N", "Share of all N", "P(big)", "P(huge)"], D.pbtab.table.map(r => [String(r[0]), pcAuto(r[1]), pcAuto(r[2]), r[3] ? pcAuto(r[3]) : "0"])],
+  cal: () => [["Rows left", "Numbers", "Observed P(big)", "Model P(big)"], D.cal.map(r => [String(r[0]), nf.format(r[1]), r[2] ? pcAuto(r[2]) : "0", pcAuto(r[3])])],
+  budget: () => [["Information", "Uncertainty removed, 10¹⁸", "Big N in top 1%", "Uncertainty removed, 10¹⁵"], D.budget.e18.map((r, i) => [BNAMES[i], pc(r.explained), pc(r.top1), pc(D.budget.e15[i].explained)])],
+};
+document.querySelectorAll("details.tv").forEach(dt => dt.addEventListener("toggle", () => {
+  const w = dt.querySelector(".tablewrap"); if (!dt.open || w.firstChild) return;
+  const [head, rows] = TV[dt.dataset.table](); const t = document.createElement("table"); w.appendChild(t); table(t, head, rows);
+}));
+</script>

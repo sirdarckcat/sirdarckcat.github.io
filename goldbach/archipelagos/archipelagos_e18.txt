@@ -1,0 +1,69 @@
+e18: big = g >= 614 (196,133 N), huge = g >= 1490 (1,997 N); 111 rows
+lags sharing >= 1/4 of the rows: 69 (all multiples of 6: False), e.g. [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 30, 34] ...
+most shared: d=30: 67/111, d=60: 61/111, d=90: 60/111, d=42: 57/111, d=6: 55/111, d=120: 55/111
+
+archipelagos (clusters of big N): 42,791 from 196,133 big N; largest has 176 members
+  members >=      real   null(shuffled within mod 30030)
+          1    42,791     72,092
+          2    24,703     39,506
+          3    18,003     25,365
+          4    14,253     17,323
+          5    11,754     12,158
+          6     9,939      8,691
+          8     7,285      4,392
+         10     5,554      2,216
+         15     2,935        375
+         20     1,710         66
+  share of big N in an archipelago of >= 2: real 0.908, null 0.834
+  huge N: 1,997; in an archipelago of >= 2: 0.933; median archipelago size of a huge N: 18 (of a big N: 10)
+  five largest archipelagos:
+    176 members, span   1854, N from 1000000000038086552, max g 2311
+    117 members, span   1440, N from 1000000000001091328, max g 1913
+    110 members, span   1938, N from 1000000000002319148, max g 1753
+    104 members, span    808, N from 1000000000007282134, max g 1613
+    101 members, span   1760, N from 1000000000020886136, max g 1579
+
+extremal index theta = clusters / exceedances (run length G1), real vs class-shuffled null
+     top 1% real:  196,133 exceedances,   19,045 clusters, theta = 0.097
+     top 1% null:  196,133 exceedances,    9,357 clusters, theta = 0.048
+   top 0.1% real:   19,234 exceedances,    9,625 clusters, theta = 0.500
+   top 0.1% null:   19,234 exceedances,   14,273 clusters, theta = 0.742
+  top 0.01% real:    1,997 exceedances,    1,596 clusters, theta = 0.799
+  top 0.01% null:    1,997 exceedances,    1,953 clusters, theta = 0.978
+
+primes in [N - 614, N - 3]: mean 14.78 for all N, 11.17 for big N, 11.28 for huge N
+  k primes  share of N   P(big | k)   P(huge | k)
+         3    0.00007      0.32459      0.002249
+         4    0.00028      0.21247      0.002107
+         5    0.00101      0.14707      0.001281
+         6    0.00304      0.10244      0.001053
+         7    0.00746      0.07079      0.000576
+         8    0.01578      0.05170      0.000532
+         9    0.02907      0.03653      0.000354
+        10    0.04667      0.02613      0.000270
+        11    0.06800      0.01880      0.000173
+        12    0.08909      0.01355      0.000153
+        13    0.10480      0.00956      0.000107
+        14    0.11430      0.00685      0.000077
+        15    0.11408      0.00482      0.000046
+        16    0.10461      0.00343      0.000039
+        17    0.08937      0.00242      0.000025
+        18    0.07023      0.00166      0.000012
+        19    0.05224      0.00124      0.000013
+        20    0.03606      0.00079      0.000008
+        21    0.02352      0.00057      0.000000
+        22    0.01414      0.00043      0.000004
+        23    0.00807      0.00026      0.000000
+        24    0.00420      0.00025      0.000012
+        25    0.00210      0.00019      0.000000
+        26    0.00102      0.00005      0.000000
+        27    0.00045      0.00011      0.000000
+        28    0.00020      0.00000      0.000000
+        29    0.00007      0.00000      0.000000
+
+residue profile (share of N in each class; big N vs all N)
+  mod  3: 0:   0.9% (all 33.3%)  1:  41.7% (all 33.3%)  2:  57.4% (all 33.3%)
+  mod  5: 0:   6.2% (all 20.0%)  1:  21.1% (all 20.0%)  2:  25.8% (all 20.0%)  3:  26.0% (all 20.0%)  4:  20.9% (all 20.0%)
+  mod  7: 0:   7.2% (all 14.3%)  1:  13.7% (all 14.3%)  2:  15.0% (all 14.3%)  3:  17.1% (all 14.3%)  4:  14.9% (all 14.3%)  5:  16.7% (all 14.3%)  6:  15.4% (all 14.3%)
+  mod 11: 0:   6.1% (all  9.1%)  1:   8.4% (all  9.1%)  2:   9.9% (all  9.1%)  3:   9.5% (all  9.1%)  4:   9.2% (all  9.1%)  5:   9.4% (all  9.1%)  6:   9.3% (all  9.1%)  7:   9.8% (all  9.1%)  8:   9.9% (all  9.1%)  9:   8.5% (all  9.1%)  10:  10.0% (all  9.1%)
+  mod 13: 0:   5.6% (all  7.7%)  1:   7.7% (all  7.7%)  2:   8.4% (all  7.7%)  3:   8.1% (all  7.7%)  4:   7.5% (all  7.7%)  5:   8.1% (all  7.7%)  6:   8.2% (all  7.7%)  7:   7.3% (all  7.7%)  8:   8.3% (all  7.7%)  9:   7.7% (all  7.7%)  10:   7.6% (all  7.7%)  11:   8.0% (all  7.7%)  12:   7.5% (all  7.7%)

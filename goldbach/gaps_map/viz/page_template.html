@@ -424,7 +424,7 @@ details > summary { cursor: pointer; font-weight: 600; }
       h += "<h3>" + esc(M.noteHeading) + '</h3><p class="gb" style="--gbc:' + kv(lv.slot) + '"><strong>' + esc(lv.label) + ".</strong>" + (n.note.text ? " " + esc(n.note.text) : "") + "</p>";
     }
     if (n.meta && n.meta.length) {
-      h += "<h3>Where it lives</h3><dl class=\"meta\">" + n.meta.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd><code>" + esc(r[1]) + "</code>" + (r[2] ? copyBtn(r[1]) : "") + "</dd>"; }).join("") + "</dl>";
+      h += "<h3>Where it lives</h3><dl class=\"meta\">" + n.meta.map(function (r) { return "<dt>" + esc(r[0]) + "</dt><dd>" + (/^https:\/\//.test(r[1]) ? '<a href="' + esc(r[1]) + '" target="_blank" rel="noopener">' + esc(M.linkText || "Open") + "</a>" : "<code>" + esc(r[1]) + "</code>" + (r[2] ? copyBtn(r[1]) : "")) + "</dd>"; }).join("") + "</dl>";
     }
     if (n.source) h += "<details style=\"margin-top:12px\"><summary>" + esc(n.sourceLabel || M.sourceLabel) + "</summary><pre>" + esc(n.source) + "</pre></details>";
     return h;

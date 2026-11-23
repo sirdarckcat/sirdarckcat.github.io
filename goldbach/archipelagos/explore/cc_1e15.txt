@@ -1,0 +1,47 @@
+N in [1e+15, 1e+15): 20,000,000 even N; mean g = 75.6; max g = 2617 at N = 1000000026287378
+big  := g >= 480  (0.990% of N)
+huge := g >= 1202  (0.0095% of N, 1909 numbers)
+
+     lag d   R(d) measured   R(d) if only N mod 30030 mattered
+         2         0.88            0.66
+         4         0.93            0.75
+         6         9.71            1.53
+         8         0.81            0.67
+        12         8.36            1.39
+        18         7.97            1.39
+        24         8.72            1.54
+        30        18.64            1.77
+        36         9.39            1.53
+        42        10.77            1.48
+        60        13.90            1.74
+        90        12.27            1.73
+       210         8.10            1.85
+       420         2.58            1.85
+      2310         1.92            1.91
+     30030         1.98            1.96
+     60060         1.97            1.96
+     90090         1.95            1.96
+    210210         1.92            1.96
+    330330         1.90            1.96
+    390390         1.92            1.96
+    510510         2.05            1.96
+    210216         1.57            1.53
+    330336         1.54            1.53
+    210240         1.75            1.77
+    330360         1.71            1.77
+
+neighbours N +- d, d in {6,...,60,90,...,210} (30 numbers):
+  P(some neighbour is huge | N big)  = 0.02686   vs  | N random: 0.00271  (9.9x)
+  P(some neighbour is big | N huge)  = 0.760     vs  | N random: 0.163
+  huge N with no big neighbour: 458 of 1909
+
+score u_z(N) = how many of the 91 rows q < 480 have N - q free of primes <= z
+       z   share of the big N in the 1% / 5% of N with the lowest u_z (random: 1% / 5%)
+      13     4.1% /  17.0%   (huge N in the lowest 1%:   4.6%)
+     100     7.6% /  24.7%   (huge N in the lowest 1%:   8.0%)
+    1000    13.6% /  36.0%   (huge N in the lowest 1%:  13.4%)
+   10000    20.2% /  47.8%   (huge N in the lowest 1%:  21.4%)
+
+real	0m37.281s
+user	0m30.751s
+sys	0m6.533s

@@ -1,0 +1,8 @@
+e18 0 mod 6, d < G         40 lags: measured / model = 1.005  (+-2se 0.043)
+e18 2 mod 6, d < G         40 lags: measured / model = 1.053  (+-2se 0.087)
+e18 4 mod 6, d < G         40 lags: measured / model = 1.032  (+-2se 0.105)
+e18 0 mod 6, G < d < 2G    40 lags: measured / model = 1.009  (+-2se 0.054)
+e15 0 mod 6, d < G         40 lags: measured / model = 1.005  (+-2se 0.038)
+e15 2 mod 6, d < G         40 lags: measured / model = 0.998  (+-2se 0.068)
+e15 4 mod 6, d < G         40 lags: measured / model = 0.997  (+-2se 0.068)
+e15 0 mod 6, G < d < 2G    40 lags: measured / model = 0.990  (+-2se 0.054)
