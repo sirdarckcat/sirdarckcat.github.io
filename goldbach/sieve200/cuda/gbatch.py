@@ -29,17 +29,19 @@ _BCACHE = {}
 _NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply", "ghead_gen", "ghead_apply")
 
 
-def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None, tile_unroll=1, tile_prefetch=0, bin_pack=False, gen_hoist=False, gen_unroll=1, gen_flush2=False, gen_order=False):
+def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None, tile_unroll=1, tile_prefetch=0, bin_pack=False, gen_hoist=False, gen_unroll=1, gen_flush2=False, gen_order=False,
+                   tile_pipe=None):
     """tile_lb: None, or (threads, min CTAs an SM) for __launch_bounds__ of the tile kernel: DEEP_TILE_MAXREG=32 with 128-thread tile CTAs makes a CTA that needs 128 x 32 = 4,096 registers, which is what
     5 resident Fermat CTAs (92 registers x 128 threads, 12,288 each) leave free on an SM of 65,536"""
-    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, tile_unroll, tile_prefetch, bool(bin_pack), bool(gen_hoist), gen_unroll, bool(gen_flush2), bool(gen_order))
+    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, tile_unroll, tile_prefetch, bool(bin_pack), bool(gen_hoist), gen_unroll, bool(gen_flush2), bool(gen_order), tile_pipe)
     if key not in _BCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {ks_log}\n#define LLOG {llog}\n#define NTHREADS {nthreads}\n"
                 f"#define S200G_UNROLL 1\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n#define RG {rg}\n#define PPT {ppt}\n"
                 f"#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n"
-                + (f"#define TILE_LB __launch_bounds__({tile_lb[0]}, {tile_lb[1]})\n" if tile_lb else "") + (f"#define TILE_UNROLL {tile_unroll}\n" if tile_unroll > 1 else "") + (f"#define TILE_PREFETCH_KB {tile_prefetch}\n" if tile_prefetch > 0 else "") + ("#define BIN_PACK 1\n" if bin_pack else "") + ("#define GEN_HOIST 1\n" if gen_hoist else "") + (f"#define GEN_UNROLL {gen_unroll}\n" if gen_unroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if gen_flush2 else "") + ("#define GEN_ORDER 1\n" if gen_order else ""))
+                + (f"#define TILE_LB __launch_bounds__({tile_lb[0]}, {tile_lb[1]})\n" if tile_lb else "") + (f"#define TILE_UNROLL {tile_unroll}\n" if tile_unroll > 1 else "") + (f"#define TILE_PREFETCH_KB {tile_prefetch}\n" if tile_prefetch > 0 else "") + ("#define BIN_PACK 1\n" if bin_pack else "") + ("#define GEN_HOIST 1\n" if gen_hoist else "") + (f"#define GEN_UNROLL {gen_unroll}\n" if gen_unroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if gen_flush2 else "") + ("#define GEN_ORDER 1\n" if gen_order else "")
+                + (f"#define TILE_PIPE 1\n#define TILE_PIPE_AT {tile_pipe[0]}\n#define TILE_PIPE_CH {tile_pipe[1]}\n" if tile_pipe else ""))
         mod = cp.RawModule(code=head + _SRC)
-        _BCACHE[key] = {n: mod.get_function(n) for n in _NAMES}
+        _BCACHE[key] = {n: mod.get_function(n) for n in _NAMES + (("s200g_tile_pipe",) if tile_pipe else ())}
     return _BCACHE[key]
 
 
@@ -49,10 +51,14 @@ class BatchFeeder(GpuFeeder):
         assert ks_log >= tile_log and 1 <= rg <= 64
         maxreg = int(os.environ.get("DEEP_TILE_MAXREG", "0"))                    # 0: the compiler's choice (40 registers on sm_120)
         tile_lb = (int(tile_threads), max(1, 65536 // (int(tile_threads) * maxreg))) if maxreg else None
+        tile_pipe = None                                                          # DEEP_TILE_PIPE=1: (apply threads, chunk words): the tile kernel streams its bin through shared memory beside the small-prime marks (gbatch_kernels.cuh, "pipelined tile")
+        if os.environ.get("DEEP_TILE_PIPE", "0") == "1":
+            tile_pipe = (int(os.environ.get("DEEP_TILE_PIPE_AT", "128")), int(os.environ.get("DEEP_TILE_PIPE_CH", "4092")))
+            assert tile_pipe[0] % 32 == 0 and tile_pipe[1] % 12 == 0 and int(tile_threads) >= tile_pipe[0] + 32 and int(tile_threads) % 32 == 0, "DEEP_TILE_PIPE: apply threads and tile threads whole warps, tile threads >= apply + 32, chunk a multiple of 12 words"
         pack = bool(int(os.environ.get("DEEP_BIN_PACK", "0")))                    # 1: packed bins (5 marks of 19 bits in 3 words: 2.4 bytes a mark instead of 4); the staged kernel only
         assert not pack or (staged and tile_log <= 19 and int(rcta) >= 1), "DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits"
         super().__init__(S, INV, U, N0M, klog=ks_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, shared=shared, plain_sieve=False,
-                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, int(os.environ.get("DEEP_TILE_UNROLL", "1")), int(os.environ.get("DEEP_TILE_PREFETCH", "0")), pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), os.environ.get("DEEP_GEN_FLUSH2", "0") == "1", os.environ.get("DEEP_GEN_ORDER", "0") == "1"), max_rows=max_rows)
+                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb, int(os.environ.get("DEEP_TILE_UNROLL", "1")), int(os.environ.get("DEEP_TILE_PREFETCH", "0")), pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), os.environ.get("DEEP_GEN_FLUSH2", "0") == "1", os.environ.get("DEEP_GEN_ORDER", "0") == "1", tile_pipe), max_rows=max_rows)
         self.tile_log, self.rg, self.tile_threads = tile_log, rg, tile_threads
         self.staged, self.rcta, self.stage_cap, self.ppt, self.pack = bool(staged), int(rcta), int(stage_cap), int(ppt), pack
         self.ntiles = 1 << (ks_log - tile_log)
@@ -64,9 +70,10 @@ class BatchFeeder(GpuFeeder):
         self.tabl = cp.empty((max(self.n_large, 1), 4), dtype=cp.uint32)                    # the large primes, c0 of the batch
         self.big = gbig.BigStage(self.U, self.tabl, ks_log=ks_log, tile_log=tile_log, rg=rg, ppt=ppt, threads=gen_threads, S=Sh[self.n_small:], kernels=self.k,
                                 staged=self.staged, rcta=self.rcta, stage_cap=self.stage_cap, pack=pack) if self.n_large else None
-        self.tile_smem = 4 * ((1 << tile_log) // 32)
+        self.tile_kernel = "s200g_tile_pipe" if tile_pipe else "s200g_tile"
+        self.tile_smem = 4 * ((1 << tile_log) // 32 + (2 * tile_pipe[1] if tile_pipe else 0))
         if self.tile_smem > 48 * 1024:
-            self.k["s200g_tile"].max_dynamic_shared_size_bytes = self.tile_smem
+            self.k[self.tile_kernel].max_dynamic_shared_size_bytes = self.tile_smem
         self._zero = (cp.zeros(rg * self.ntiles + 1, dtype=cp.uint32), cp.zeros(1, dtype=cp.uint32))     # no large primes: empty bins
         # How the host checks the large-prime stage's bin-overflow flag (see window()): 1 = after EVERY row group (a blocking round trip each: the sieve stream idles for a moment after each group and the
         # sieve trickles in short bursts), N >= 2 = after every N-th group, 0 = never during the window (the flag is read once at its end: the groups are launched back to back and the sieve runs flat out).
@@ -131,5 +138,5 @@ class BatchFeeder(GpuFeeder):
                 gcnt, cap = self.big.gcnt, self.big.cap
             else:
                 gcnt, bins, cap = self._zero[0], self._zero[1], 1
-            self.k["s200g_tile"]((nrows, self.ntiles), (self.tile_threads,), (self.U, np.int32(row0), self.tabt, np.int32(nSs), gcnt, bins, np.uint32(cap), self.bits),
+            self.k[self.tile_kernel]((nrows, self.ntiles), (self.tile_threads,), (self.U, np.int32(row0), self.tabt, np.int32(nSs), gcnt, bins, np.uint32(cap), self.bits),
                                  shared_mem=self.tile_smem)

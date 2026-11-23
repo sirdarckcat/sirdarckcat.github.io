@@ -14,6 +14,15 @@
 #ifndef TILE_UNROLL
 #define TILE_UNROLL 1   /* primes a thread sets up together in the small-prime loop (DEEP_TILE_UNROLL): 1 = the original loop, 2 / 4 = the table loads and the Shoup chains of that many primes in flight at once */
 #endif
+#ifndef TILE_PIPE
+#define TILE_PIPE 0     /* DEEP_TILE_PIPE=1: the tile kernel streams its bin through shared memory with cp.async WHILE the other warps make the small primes' marks (see "pipelined tile" below) */
+#endif
+#ifndef TILE_PIPE_AT
+#define TILE_PIPE_AT 128    /* threads (whole warps) that apply the bin; the others make the small primes' marks */
+#endif
+#ifndef TILE_PIPE_CH
+#define TILE_PIPE_CH 4092   /* words of a bin chunk (a multiple of 12: whole 16-byte copies and whole groups of 3 words); two chunks of 16 KB are in flight */
+#endif
 /* TABT[tile * nS + p] = {s, M^-1, invp, c0 of the tile}: c0 = (N0 M^-1 + k0 + tile 2^TILE_LOG) mod s */
 extern "C" __global__ void s200g_prep_tiles(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TABT) {
     const int p = blockIdx.x * blockDim.x + threadIdx.x;
@@ -105,3 +114,97 @@ extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint
     u32 *dst = bits + (size_t)(row0 + rr) * (KS / 32u) + (size_t)tile * TILE_WORDS;
     for (u32 i = threadIdx.x; i < TILE_WORDS; i += blockDim.x) dst[i] = bm[i];
 }
+
+/* ---- pipelined tile (TILE_PIPE = 1) ------------------------------------------------------------------------------------------------------------------------------------------------------
+ * The plain kernel does three things one after the other with one CTA an SM (the 64 KB bitmap fills the shared memory): the small primes' marks (~38 us a CTA, issue / L2 bound), then the bin's
+ * apply (360 KB read from DRAM: the 188 CTAs of a wave read 68 MB, ~45 us at the DRAM rate, though PF=256 asks the L2 for most of it earlier), then the write.  DRAM sits idle for the first
+ * phase and the SMs for most of the second: the kernel moves 17 GB in 20.9 ms (54% of the DRAM rate) and is 11.9 ms without any bin.  The marks of the small primes and the entries of the bin
+ * are both atomicAnd on the same bitmap, so they may happen in ANY order and at the same time.  Here TILE_PIPE_AT threads (4 warps of 16) are the apply role: they stream the bin through two
+ * shared-memory buffers of TILE_PIPE_CH words with cp.async (16 bytes a copy, straight from the memory system into shared memory), wait for a chunk, apply it (named barrier 1 among them
+ * only), and refill the buffer; the other warps run the small-prime loop of the unrolled kernel (TILE_UNROLL, with their thread indices shifted) and never wait for them.  At the end the usual barrier.
+ * Shared memory: bitmap + 2 TILE_PIPE_CH words (96 KB at the defaults: dynamic, host: BatchFeeder.tile_smem).  The bits are the same: the same atomicAnd of the same set of bit indices.
+ */
+#if TILE_PIPE
+#if defined(__CUDA_ARCH__) || defined(__CUDACC_RTC__)
+__device__ __forceinline__ void tp_cp16(u32 *dst, const u32 *src) {
+    asm volatile("cp.async.cg.shared.global [%0], [%1], 16;" :: "r"((u32)__cvta_generic_to_shared(dst)), "l"(src) : "memory");
+}
+__device__ __forceinline__ void tp_commit() { asm volatile("cp.async.commit_group;" ::: "memory"); }
+__device__ __forceinline__ void tp_wait1() { asm volatile("cp.async.wait_group 1;" ::: "memory"); }
+__device__ __forceinline__ void tp_wait0() { asm volatile("cp.async.wait_group 0;" ::: "memory"); }
+__device__ __forceinline__ void tp_bar() { asm volatile("bar.sync 1, %0;" :: "n"(TILE_PIPE_AT) : "memory"); }
+#else      /* the CPU emulation (gsieve_cpu.cpp): the copy is immediate, the named barrier is a second pthread barrier among the apply threads */
+static inline void tp_cp16(u32 *dst, const u32 *src) { memcpy(dst, src, 16); }
+static inline void tp_commit() {}
+static inline void tp_wait1() {}
+static inline void tp_wait0() {}
+static inline void tp_bar() { pthread_barrier_wait(&g_bar1); }
+#endif
+
+__device__ __forceinline__ void tp_issue(u32 *sb, const u32 *eb, u32 n, u32 c, u32 tid) {      /* copy chunk c of the bin into buffer c & 1 (16-byte copies, the last may run past n inside the bin's cap) */
+    const u32 w0 = c * TILE_PIPE_CH;
+    const u32 cn = (n - w0 < TILE_PIPE_CH) ? n - w0 : TILE_PIPE_CH;
+    u32 *dst = sb + (c & 1u) * TILE_PIPE_CH;
+    for (u32 v = tid; v < (cn + 3u) / 4u; v += TILE_PIPE_AT) tp_cp16(dst + 4u * v, eb + w0 + 4u * v);
+}
+
+extern "C" __global__ void TILE_LB s200g_tile_pipe(const u32 *U, int row0, const uint4 *TABT, int nS, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits) {
+    S200G_DYNSHARED(u32, bm);
+    u32 *sb = bm + TILE_WORDS;
+    const int rr = blockIdx.x;
+    const int tile = blockIdx.y;
+    const u32 tid = threadIdx.x;
+    const u32 bin = rr * NTILES + tile;
+    u32 n = gcnt[bin];
+    if (gcnt[NBINS] != 0u) n = 0u;
+    const u32 *eb = bins + (size_t)bin * cap;
+    const u32 nch = (n + TILE_PIPE_CH - 1u) / TILE_PIPE_CH;
+    if (tid < TILE_PIPE_AT) {                                           /* the first two chunks are on their way before the bitmap is even initialised */
+        if (nch > 0u) { tp_issue(sb, eb, n, 0u, tid); tp_commit(); }
+        if (nch > 1u) { tp_issue(sb, eb, n, 1u, tid); tp_commit(); }
+    }
+    for (u32 i = tid; i < TILE_WORDS; i += blockDim.x) bm[i] = 0xFFFFFFFFu;
+    __syncthreads();
+    if (tid < TILE_PIPE_AT) {
+        for (u32 c = 0; c < nch; c++) {
+            if (c + 1u < nch) tp_wait1(); else tp_wait0();              /* this thread's copies of chunk c are done ... */
+            tp_bar();                                                   /* ... and everybody's */
+            const u32 cn = (n - c * TILE_PIPE_CH < TILE_PIPE_CH) ? n - c * TILE_PIPE_CH : TILE_PIPE_CH;
+            gbig_apply_words(bm, sb + (c & 1u) * TILE_PIPE_CH, cn, tid, TILE_PIPE_AT);
+            tp_bar();                                                   /* the buffer is free again */
+            if (c + 2u < nch) { tp_issue(sb, eb, n, c + 2u, tid); tp_commit(); }
+        }
+    } else {
+        const u32 q = U[row0 + rr];
+        const uint4 *tab = TABT + (size_t)tile * nS;
+        const int ts = (int)tid - TILE_PIPE_AT, nts = (int)blockDim.x - TILE_PIPE_AT;
+        for (int pb = ts; pb < nS; pb += nts * TILE_UNROLL) {
+            uint4 t[TILE_UNROLL];
+            #pragma unroll
+            for (int u = 0; u < TILE_UNROLL; u++) {
+                const int pp = pb + u * nts;
+                t[u] = tab[pp < nS ? pp : nS - 1];
+            }
+            u32 j[TILE_UNROLL];
+            #pragma unroll
+            for (int u = 0; u < TILE_UNROLL; u++) {
+                const u32 s = t[u].x;
+                u32 a = q * t[u].y - __umulhi(q, t[u].z) * s;
+                if (a >= s) a -= s;
+                u32 jj = a + s - t[u].w;
+                if (jj >= s) jj -= s;
+                j[u] = (pb + u * nts < nS) ? jj : (u32)TILE_BITS;
+            }
+            #pragma unroll
+            for (int u = 0; u < TILE_UNROLL; u++) {
+                const u32 s = t[u].x;
+                for (u32 jj = j[u]; jj < TILE_BITS; jj += s) atomicAnd(&bm[jj >> 5], __funnelshift_l(0xFFFFFFFEu, 0xFFFFFFFEu, jj));
+            }
+        }
+    }
+    __syncthreads();
+    u32 *dst = bits + (size_t)(row0 + rr) * (KS / 32u) + (size_t)tile * TILE_WORDS;
+    for (u32 i = tid; i < TILE_WORDS; i += blockDim.x) dst[i] = bm[i];
+}
+#endif
+

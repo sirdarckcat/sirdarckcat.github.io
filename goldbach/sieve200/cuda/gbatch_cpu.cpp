@@ -45,6 +45,18 @@ extern "C" void cpu_tile(int nrows, const u32 *U, int row0, const uint4 *TABT, i
         run_grid(nrows, threads, (size_t)TILE_WORDS * 4, tile_tramp, &a);
     }
 }
+#if TILE_PIPE
+static void tile_pipe_tramp(void *a) { tile_args *x = (tile_args *)a; s200g_tile_pipe(x->U, x->row0, x->TABT, x->nS, x->gcnt, x->bins, x->cap, x->bits); }
+extern "C" void cpu_tile_pipe(int nrows, const u32 *U, int row0, const uint4 *TABT, int nS, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits, int threads) {
+    tile_args a{U, row0, TABT, nS, gcnt, bins, cap, bits};
+    g_bar1_n = TILE_PIPE_AT;
+    for (unsigned ty = 0; ty < NTILES; ty++) {
+        blockIdx.y = ty;
+        run_grid(nrows, threads, (size_t)(TILE_WORDS + 2 * TILE_PIPE_CH) * 4, tile_pipe_tramp, &a);
+    }
+    g_bar1_n = 0;
+}
+#endif
 extern "C" int cpu_ntiles() { return NTILES; }
 extern "C" int cpu_tile_words() { return TILE_WORDS; }
 extern "C" int cpu_nbins() { return NBINS; }

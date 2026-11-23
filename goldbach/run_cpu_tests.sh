@@ -30,6 +30,8 @@ t "batch sieve, flat flush + grid order"           $S DEEP_GEN_FLUSH2=1 DEEP_GEN
 t "batch sieve, flat flush (alone)"                $S DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
 t "batch sieve, packed + flat flush"               $S DEEP_BIN_PACK=1 DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
 t "batch sieve, everything (pack hoist unroll 4 flush2 order)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
+t "batch sieve, pipelined tile kernel (tiny chunks)"  $S DEEP_TILE_PIPE=1 DEEP_TILE_PIPE_AT=32 DEEP_TILE_PIPE_CH=96 python3 test_gbatch_cpu.py
+t "batch sieve, pipelined tile + the whole stack"     $S DEEP_TILE_PIPE=1 DEEP_TILE_PIPE_AT=32 DEEP_TILE_PIPE_CH=96 DEEP_BIN_PACK=1 DEEP_TILE_UNROLL=4 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 python3 test_gbatch_cpu.py
 t "deferred overflow check"                        $S python3 test_gbatch_defer_cpu.py
 t "deferred overflow check, packed"                $S DEEP_BIN_PACK=1 python3 test_gbatch_defer_cpu.py
 t "DeepSieve over variants"                        $S python3 test_deep_feeder_cpu.py

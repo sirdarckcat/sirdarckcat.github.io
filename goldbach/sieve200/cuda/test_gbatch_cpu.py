@@ -16,11 +16,11 @@ import test_gpu_sieve_cpu as TG
 import test_gsieve
 
 
-def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0, hoist=0, gunroll=1, flush2=0, order=0):
-    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ("_f2" if flush2 else "") + ("_go" if order else "") + ".so")
+def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0, hoist=0, gunroll=1, flush2=0, order=0, pipe=None):
+    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ("_f2" if flush2 else "") + ("_go" if order else "") + (f"_tp{pipe[0]}x{pipe[1]}" if pipe else "") + ".so")
     srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", f"-DGEN_FLUSH2={flush2}", f"-DGEN_ORDER={order}",
+        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", f"-DGEN_FLUSH2={flush2}", f"-DGEN_ORDER={order}", *((f"-DTILE_PIPE=1", f"-DTILE_PIPE_AT={pipe[0]}", f"-DTILE_PIPE_CH={pipe[1]}") if pipe else ()),
                                "-DMAXKEEP_SORT=8192u", "-DS200G_UNROLL=1", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
@@ -34,6 +34,8 @@ def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0
     lib.cpu_prep.argtypes = [vp, vp, vp, vp, ctypes.c_uint64, ctypes.c_int, vp]
     lib.cpu_prep_tiles.argtypes = [vp, vp, vp, vp, ctypes.c_uint64, ctypes.c_int, vp, ctypes.c_int]
     lib.cpu_tile.argtypes = [ctypes.c_int, vp, ctypes.c_int, vp, ctypes.c_int, vp, vp, ctypes.c_uint32, vp, ctypes.c_int]
+    if pipe:
+        lib.cpu_tile_pipe.argtypes = [ctypes.c_int, vp, ctypes.c_int, vp, ctypes.c_int, vp, vp, ctypes.c_uint32, vp, ctypes.c_int]
     lib.cpu_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     lib.cpu_gen_st.argtypes = [vp, vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     lib.cpu_head_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
@@ -53,6 +55,9 @@ class _Fn(TG._Fn):
         elif self.name == "s200g_tile":
             U, row0, tabt, nS, gcnt, bins, cap, bits = args
             L.cpu_tile(int(grid[0]), P(U), int(row0), P(tabt), int(nS), P(gcnt), P(bins), int(cap), P(bits), int(block[0]))
+        elif self.name == "s200g_tile_pipe":
+            U, row0, tabt, nS, gcnt, bins, cap, bits = args
+            L.cpu_tile_pipe(int(grid[0]), P(U), int(row0), P(tabt), int(nS), P(gcnt), P(bins), int(cap), P(bits), int(block[0]))
         elif self.name == "gbig_gen":
             U, TAB, nP, row0, nrows, cap, gcnt, bins = args
             L.cpu_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
@@ -74,7 +79,8 @@ class _RawModule:
         ks, llog, nth, tile, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KS_LOG", "LLOG", "NTHREADS", "TILE_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
         m = re.search(r"#define TILE_UNROLL (\d+)", code)
         self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc, int(m.group(1)) if m else 1, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1,
-                         1 if "#define GEN_FLUSH2 1" in code else 0, 1 if "#define GEN_ORDER 1" in code else 0)
+                         1 if "#define GEN_FLUSH2 1" in code else 0, 1 if "#define GEN_ORDER 1" in code else 0,
+                         (int(re.search(r"#define TILE_PIPE_AT (\d+)", code).group(1)), int(re.search(r"#define TILE_PIPE_CH (\d+)", code).group(1))) if "#define TILE_PIPE 1" in code else None)
         self.order = "#define GEN_ORDER 1" in code
 
     def get_function(self, name):

@@ -20,6 +20,8 @@ struct dim_t { unsigned x, y; };
 static thread_local dim_t threadIdx;
 static dim_t blockIdx, blockDim;
 static pthread_barrier_t g_bar;
+static pthread_barrier_t g_bar1;          /* named barrier 1 of the pipelined tile kernel (bar.sync 1, TILE_PIPE_AT): g_bar1_n threads, 0 = none */
+static unsigned g_bar1_n = 0;
 static unsigned char *g_dyn;
 static void __syncthreads() { pthread_barrier_wait(&g_bar); }
 #define S200G_DYNSHARED(type, name) type *name = (type *)g_dyn
@@ -43,11 +45,13 @@ static void run_grid(unsigned grid, unsigned block, size_t dyn_bytes, kfn f, voi
     for (unsigned b = 0; b < grid; b++) {
         blockIdx.x = b;
         pthread_barrier_init(&g_bar, nullptr, block);
+        if (g_bar1_n) pthread_barrier_init(&g_bar1, nullptr, g_bar1_n);
         pthread_t *th = (pthread_t *)malloc(sizeof(pthread_t) * block);
         launch_t *l = (launch_t *)malloc(sizeof(launch_t) * block);
         for (unsigned t = 0; t < block; t++) { l[t] = {f, args, t}; pthread_create(&th[t], nullptr, thr, &l[t]); }
         for (unsigned t = 0; t < block; t++) pthread_join(th[t], nullptr);
         pthread_barrier_destroy(&g_bar);
+        if (g_bar1_n) pthread_barrier_destroy(&g_bar1);
         free(th); free(l);
     }
     free(g_dyn);

@@ -95,7 +95,7 @@ def main(argv=None):
     def launch_tile(gcnt, ns):
         bins = big._bins_for(big.cap)
         for row0, nrows in groups:
-            bf.k["s200g_tile"]((nrows, bf.ntiles), (bf.tile_threads,), (bf.U, np.int32(row0), bf.tabt, np.int32(ns), gcnt, bins, np.uint32(big.cap), bf.bits), shared_mem=bf.tile_smem)
+            bf.k[bf.tile_kernel]((nrows, bf.ntiles), (bf.tile_threads,), (bf.U, np.int32(row0), bf.tabt, np.int32(ns), gcnt, bins, np.uint32(big.cap), bf.bits), shared_mem=bf.tile_smem)
 
     launch_gen(big.cap)                                                 # leaves valid counts and bins of the last group for the tile variants
     cp.cuda.Device().synchronize()

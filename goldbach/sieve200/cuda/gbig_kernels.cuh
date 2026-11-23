@@ -513,6 +513,23 @@ __device__ __forceinline__ void gbig_apply_entries(u32 *bm, const u32 *e, u32 n)
 }
 #endif
 
+/* The entries of a CHUNK of a bin already in shared memory (the tile kernel's pipelined apply, TILE_PIPE): n words at e, whole groups of 3 words when packed; thread t of nt clears their bits. */
+__device__ __forceinline__ void gbig_apply_words(u32 *bm, const u32 *e, u32 n, u32 t, u32 nt) {
+#if BIN_PACK
+    const u32 ng = __umulhi(n, 0xAAAAAAABu) >> 1;                       /* n / 3 */
+    for (u32 g = t; g < ng; g += nt) {
+        const u32 a = e[3u * g], b = e[3u * g + 1u], c = e[3u * g + 2u];
+        GBIG_CLEAR(bm, a & 0x7FFFFu);
+        GBIG_CLEAR(bm, ((a >> 19) | (b << 13)) & 0x7FFFFu);
+        GBIG_CLEAR(bm, (b >> 6) & 0x7FFFFu);
+        GBIG_CLEAR(bm, ((b >> 25) | (c << 7)) & 0x7FFFFu);
+        GBIG_CLEAR(bm, (c >> 12) & 0x7FFFFu);
+    }
+#else
+    for (u32 i = t; i < n; i += nt) { const u32 off = e[i]; GBIG_CLEAR(bm, off); }
+#endif
+}
+
 /* one CTA a bin (row rr, tile): out[bin * TILE_WORDS ...] = the tile's bits, 1 = not marked */
 extern "C" __global__ void gbig_apply(const u32 *gcnt, const u32 *bins, u32 cap, u32 *out) {
     S200G_DYNSHARED(u32, bm);

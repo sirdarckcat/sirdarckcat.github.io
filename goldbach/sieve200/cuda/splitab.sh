@@ -52,3 +52,10 @@ run "stack, tile 19 (reference), PF=256"          $STACK DEEP_TILE_PREFETCH=256
 run "stack, tile 18, PF=128"                      $STACK DEEP_TILE_PREFETCH=128 BS_ARGS="--tile 18"
 run "stack, tile 18, no PF"                       $STACK BS_ARGS="--tile 18"
 run "stack, tile 18, tile unroll 2"               DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=2 BS_ARGS="--tile 18"
+# the pipelined tile kernel (DEEP_TILE_PIPE=1): the bin streams through shared memory (cp.async, 2 x TILE_PIPE_CH words) while the other warps make the small primes' marks; 96 KB of shared memory.
+# AT = threads that apply (default 128 = 4 of 16 warps), CH = words a chunk (default 4092 = 16 KB).  No PF: the copies replace it.
+PIPE_STACK="DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PIPE=1"
+run "TILE_PIPE AT=128 CH=4092"       $PIPE_STACK
+run "TILE_PIPE AT=64 CH=4092"        $PIPE_STACK DEEP_TILE_PIPE_AT=64
+run "TILE_PIPE AT=192 CH=4092"       $PIPE_STACK DEEP_TILE_PIPE_AT=192
+run "TILE_PIPE AT=128 CH=2040"       $PIPE_STACK DEEP_TILE_PIPE_CH=2040
