@@ -1,6 +1,7 @@
 # What a fixed budget of fleet time is worth at each design threshold.
-#   python3 brainstorm/portfolio_budget.py [days=9.3] [rate=29e6] [record_in_hand=146191] [hours at 150,000 first=0]
-#   (run from cover/)
+#   python3 brainstorm/portfolio_budget.py [days=9.3] [rate=29e6] [record_in_hand=146191] [hours at 150,000 first=0] [tag]
+#   (run from cover/; tag, e.g. m89 or m88f, takes the covers of starts/q<Q>_<tag>.txt, another modulus set, and
+#   p from their moduli)
 # rate: effective full-weight members per second of the whole fleet (29e6 on 23 Nov 02:08Z, deep sieve included).
 # A member has g >= x with probability RATIO * (1 - p)^U(x), U(x) = the primes below x that its cover leaves
 # uncovered (RATIO = 0.89: the fleet's logged expectation against (1 - p)^k).  Members are independent, so
@@ -15,6 +16,7 @@ days = float(sys.argv[1]) if len(sys.argv) > 1 else 9.3
 rate = float(sys.argv[2]) if len(sys.argv) > 2 else 29e6
 hand = int(sys.argv[3]) if len(sys.argv) > 3 else 146191
 first150 = float(sys.argv[4]) / 24 if len(sys.argv) > 4 else 0.0
+tag = sys.argv[5] if len(sys.argv) > 5 else ""
 p = 11.008269598801753 / (200 * math.log(10)); RATIO = 0.89; TOP = 300000; STEP = 20
 def primes_upto(n):
     s = bytearray([1]) * (n + 1); s[0] = s[1] = 0
@@ -32,11 +34,13 @@ def best_cover(path):
     return best[1]
 here = os.path.dirname(os.path.abspath(__file__))
 U = {}
-for Q in (150000, 155000, 160000, 165000, 167500, 170000, 172500, 175000, 177500, 180000, 190000):
-    f = f"starts/q{Q}.txt" if os.path.exists(f"starts/q{Q}.txt") else f"{here}/price/run_{Q}.txt"
+for Q in (150000, 155000, 160000, 165000, 167500, 170000, 172500, 175000, 177500, 180000, 190000, 213070):
+    if tag: f = f"starts/q{Q}_{tag}.txt"
+    else: f = f"starts/q{Q}.txt" if os.path.exists(f"starts/q{Q}.txt") else f"{here}/price/run_{Q}.txt"
     if not os.path.exists(f): continue
     cover = best_cover(f)
     U[Q] = [q for q in P if all(q % r != a for r, a in cover)]
+    if tag: p = 2 * math.prod(r / (r - 1) for r, _ in cover) / (200 * math.log(10))
 def log_none(Q, d, x, late):                  # ln P(no reported member with g >= x in d days at design Q)
     u = bisect.bisect_left(U[Q], x if (late or x > Q) else Q)
     return -rate * 86400 * d * RATIO * (1 - p) ** u
