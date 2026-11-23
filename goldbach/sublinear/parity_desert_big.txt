@@ -1,0 +1,3 @@
+F_49 (p = 7), N = lam * V^7 * x^0, deg V = 49, deg N = 343, lam non-square
+  rows of degree 2: 1176 monic irreducibles, 200 tested: r even 200, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+real	0m31.084s
