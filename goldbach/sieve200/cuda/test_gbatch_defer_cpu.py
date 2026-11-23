@@ -39,6 +39,8 @@ def main():
     # (B, ks_log, tile_log, llog, rg, split, f, staged, rcta, stage_cap)
     for B, ks, tile, llog, rg, split, f, staged, rcta, stage_cap in ((32768, 15, 12, 11, 4, 4096, 0.9, False, 2, 8192), (32768, 15, 12, 11, 4, 4096, 0.9, True, 2, 512),
                                                                       (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)):
+        if os.environ.get("DEEP_BIN_PACK", "0") == "1" and not staged:
+            continue                                                    # packed bins exist for the staged kernel only
         def make():
             search.G.clear(); search._SIEVE_CACHE.clear()
             search.init_spec(spec, B, 1 << llog)

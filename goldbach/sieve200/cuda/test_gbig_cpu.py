@@ -32,7 +32,7 @@ class _Fn:
 class _RawModule:
     def __init__(self, code=None):
         tl, ks, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("TILE_LOG", "KS_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
-        self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc)
+        self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc, 1 if "#define BIN_PACK 1" in code else 0)
 
     def get_function(self, name):
         return _Fn(self.lib, name)
@@ -86,4 +86,27 @@ if __name__ == "__main__":
     bits2 = np.unpackbits(out2.view(np.uint8), bitorder="little").reshape(4, 1 << 13).astype(bool)
     good2 = np.array_equal(bits2, ref) and st2.retries == 1 and st2.cap >= 64
     print(f"staged capacity retry: cap 8 -> {st2.cap}, retries {st2.retries}, result {'identical to numpy' if good2 else 'WRONG'}")
-    sys.exit(0 if (good and good2) else 1)
+    # packed bins (5 marks of 19 bits in 3 words): the staged kernel through the glue, its capacity retry, and the fallback path of a chunk with more marks than the stage buffer (the chunks are made 4x too
+    # coarse: one mark = one group of 5 copies, 3 words), against numpy; the same fallback without packing
+    from bigchunks import make_chunks
+    import cupy as cp                                          # (the fake one)
+    ok3 = True
+    for pack in (False, True):
+        for coarse in (1, 4):
+            st3 = gbig.BigStage(U, TAB, ks_log=13, tile_log=10, rg=4, ppt=2, threads=32, staged=True, rcta=2, stage_cap=512, pack=pack)
+            if coarse > 1:
+                st3.pstart = cp.asarray(make_chunks(S, 13, coarse * 0.75 * 512 / 2))
+                st3.nchunks = int(st3.pstart.size) - 1
+                st3.cap = max(st3.cap, 256) if not pack else max(st3.cap, 3 * 256)
+            out3 = np.array(st3.run_group(0, 4))
+            bits3 = np.unpackbits(out3.view(np.uint8), bitorder="little").reshape(4, 1 << 13).astype(bool)
+            g3 = np.array_equal(bits3, ref)
+            print(f"staged {'PACKED ' if pack else ''}bins, chunks {coarse}x{' (the stage-overflow fallback path)' if coarse > 1 else ''}: cap {st3.cap}, retries {st3.retries}, result {'identical to numpy' if g3 else 'WRONG'}")
+            ok3 &= g3
+        st4 = gbig.BigStage(U, TAB, ks_log=13, tile_log=10, rg=4, ppt=2, threads=32, cap=8, staged=True, rcta=2, stage_cap=512, pack=pack)
+        out4 = np.array(st4.run_group(0, 4))
+        bits4 = np.unpackbits(out4.view(np.uint8), bitorder="little").reshape(4, 1 << 13).astype(bool)
+        g4 = np.array_equal(bits4, ref) and st4.retries == 1
+        print(f"staged {'PACKED ' if pack else ''}capacity retry: cap 8 -> {st4.cap}, retries {st4.retries}, result {'identical to numpy' if g4 else 'WRONG'}")
+        ok3 &= g4
+    sys.exit(0 if (good and good2 and ok3) else 1)

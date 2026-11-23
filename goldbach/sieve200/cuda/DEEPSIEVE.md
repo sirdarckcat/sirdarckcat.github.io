@@ -442,3 +442,22 @@ passes grow with the number of groups (more table re-reads and launches) and rg 
 * `DEEP_TILE_LOG=18` (read by `DeepSieve`; `bench_split.py --tile 18`): tiles of 2^18 bits = 32 KB of shared memory: 3 tile CTAs an SM (48 warps) instead of 1 (16), twice the tiles (more table traffic and visits), bins half the size.
 Decision rule: a variant is worth a deployment test if the TILE KERNEL line of `bench_split.py` falls by >= 8 ms a window (~0.5% of a batch a millisecond at the present batch of ~0.85 s: the sieve and the Fermat kernels now share the GPU almost serially).
 If the large-prime stage is DRAM-bound, the next step is fewer bytes a mark (3 marks of 21 bits in a u64: -33%), not more occupancy.
+
+
+## Packed bins (23 Nov 2026, 13:20Z; CPU-verified, opt-in `DEEP_BIN_PACK=1`, not yet timed on a GPU)
+
+**Why.**  bench_split (above): the large-prime stage is bound by the DRAM traffic of its bins - 6.0e9 marks a 2^24 window, 4 bytes each, written by `gbig_gen_st` (24 GB) and read by the tile kernel's apply (24 GB, 19.9 ms = 1.2 TB/s; 9.7 ms when
+the bins sit in the L2).  A mark is a 19-bit offset in a 2^19-bit tile: 4 bytes is 13 bits of waste.
+
+**What.**  Five marks of 19 bits in three 32-bit words (95 of 96 bits, 2.4 bytes a mark, **-40% bytes**): `w0 = m0 | m1 << 19`, `w1 = m1 >> 13 | m2 << 6 | m3 << 25`, `w2 = m3 >> 7 | m4 << 12`.  `gcnt[bin]` and `cap` count WORDS
+(whole groups of 3).  In `gbig_gen_st`: pass A and the scan are unchanged (marks per bin), a bin's room is `3 ceil(c / 5)` words, the flush has a lane a group of 5 marks read them from the staging buffer (sorted by bin) and write the 3 words (the last
+group repeats the bin's last mark: clearing a bit twice is harmless, so no sentinel); a chunk with more marks than the staging buffer (the fallback) writes each mark as a group of five copies (3 words a mark; its room is reserved that way).
+The apply (`gbig_apply_entries`, used by the tile kernel and `gbig_apply`) takes a group a step (three word loads, `GBIG_APPLY_UNROLL` groups in flight) and clears 5 bits.  The capacity is `0.6 x (marks cap) + 3 x chunks` words
+(`expected_cap(..., pack=True, nchunks=...)`; bins buffer 40% smaller).  Instruction counts (sm_120): `gbig_gen_st` 488 -> 504 (28 registers), `s200g_tile` 392 -> 520 (40), `gbig_apply` 328 -> 464, no spills.  **The default build (BIN_PACK 0) of the whole
+module is SASS-identical to the committed one.**
+
+**Verification (CPU).**  `DEEP_BIN_PACK=1 python3 test_gbatch_cpu.py` (every staged geometry, 3 windows each: identical to sieve200's CPU feeder), `DEEP_BIN_PACK=1 test_gbatch_defer_cpu.py`, `DEEP_STAGED=1 DEEP_BIN_PACK=1 test_deep_feeder_cpu.py`, and `test_gbig_cpu.py`:
+packed staged bins against numpy, the packed capacity retry (cap 8 -> 256), and the stage-overflow fallback with chunks made 4x too coarse (packed and unpacked).
+
+**To run on a GPU.**  Same fixed windows with and without `DEEP_BIN_PACK=1` (and `DEEP_STAGED=1`, rcta 8, 512 generate threads as in production): the slice lines must be IDENTICAL; `bench_split.py` shows the gen / apply split
+(expected: bin apply 19.9 -> ~12 ms, gen pass B 31.8 -> ~22 ms; estimate -13 ms a window, ~-6% of a batch), `bench_bigprimes.py --staged 1 --pack 1 ...` the stage alone with its bytes.

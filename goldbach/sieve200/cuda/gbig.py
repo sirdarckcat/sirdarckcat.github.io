@@ -18,11 +18,11 @@ _SRC = open(os.path.join(HERE, "gbig_kernels.cuh")).read()
 _KCACHE = {}
 
 
-def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2):
-    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta)
+def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False):
+    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack))
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n")
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else ""))
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
@@ -54,14 +54,18 @@ def make_table(S, M=None, N0=None, k0=0, rng=None):
     return np.ascontiguousarray(np.stack([S, INV, INVP, C0], axis=1))
 
 
-def expected_cap(S, tile_log, margin=1.08):
-    """a bin capacity: the expected marks of a (row, tile) bin, tile_bits * sum 1/s, plus a margin and 6 standard deviations"""
+def expected_cap(S, tile_log, margin=1.08, pack=False, nchunks=0):
+    """a bin capacity: the expected marks of a (row, tile) bin, tile_bits * sum 1/s, plus a margin and 6 standard deviations.  pack: the capacity in WORDS of a packed bin (3 words a group of 5 marks, the
+    runs of the nchunks CTAs padded to whole groups: 3 words a chunk more, at most)"""
     e = (1 << tile_log) * float(np.sum(1.0 / S.astype(np.float64)))
-    return int(math.ceil((e * margin + 6.0 * math.sqrt(e) + 64) / 32.0)) * 32
+    marks = e * margin + 6.0 * math.sqrt(e) + 64
+    if pack:
+        marks = marks * 0.6 + 3.0 * nchunks
+    return int(math.ceil(marks / 32.0)) * 32
 
 
 class BigStage:
-    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None, staged=False, rcta=2, stage_cap=8192):
+    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None, staged=False, rcta=2, stage_cap=8192, pack=False):
         """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity).
         staged: the staged generate kernel (gbig_gen_st: a CTA takes a chunk of primes and rcta rows, sorts the marks by bin in shared memory and writes whole runs; threads >= rcta x tiles)"""
         self.U = U.astype(cp.uint32) if isinstance(U, cp.ndarray) else cp.asarray(np.asarray(U, dtype=np.uint32))     # U may already be on the device (BatchFeeder passes its own)
@@ -73,14 +77,18 @@ class BigStage:
         self.tile_words = (1 << tile_log) // 32
         self.staged, self.rcta, self.stage_cap = bool(staged), int(rcta), int(stage_cap)
         assert self.rcta >= 1 and self.rcta & (self.rcta - 1) == 0, "rcta must be a power of two"
-        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta)
+        self.pack = bool(pack)
+        assert not self.pack or (self.staged and tile_log <= 19), "packed bins (19-bit marks, 5 in 3 words) need the staged kernel and tiles of at most 2^19 bits"
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack)
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
-        self.cap = cap or expected_cap(S, tile_log)
         if self.staged:
             assert threads % 32 == 0 and threads >= self.rcta * self.ntiles, "the staged kernel needs a CTA of at least rcta x tiles threads (one thread a bin for the scan)"
             self.pstart = cp.asarray(make_chunks(S, ks_log, 0.75 * self.stage_cap / self.rcta))      # chunks of primes with ~3/4 of the staging buffer in marks
             self.nchunks = int(self.pstart.size) - 1
+        else:
+            self.nchunks = 0
+        self.cap = cap or expected_cap(S, tile_log, pack=self.pack, nchunks=self.nchunks)
         assert self.cap % 4 == 0, "a bin must start 16-byte aligned (the apply loads 16 bytes at a time)"
         self.apply_smem = 4 * self.tile_words
         if self.apply_smem > 48 * 1024:
@@ -174,5 +182,10 @@ class BigStage:
             best = ms if best is None else min(best, ms)
         return best
 
-    def marks(self, nrows):
+    def words(self, nrows):
+        """the words of the bins of the last group's first nrows rows (the marks of an unpacked stage; 3 a group of 5 marks, padding included, of a packed one)"""
         return int(self.gcnt[:nrows * self.ntiles].astype(cp.uint64).sum())
+
+    def marks(self, nrows):
+        w = self.words(nrows)
+        return w * 5 // 3 if self.pack else w                       # (a packed stage: the padding of the groups of 5 is counted as marks, < 1%)

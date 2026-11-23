@@ -28,6 +28,9 @@ typedef unsigned long long u64;
 #ifndef PPT
 #define PPT 4
 #endif
+#ifndef BIN_PACK
+#define BIN_PACK 0   /* 1: packed bins (the STAGED kernel only): 5 marks of 19 bits in 3 words, 2.4 bytes a mark instead of 4: see "packed bins" below */
+#endif
 #define TILE_BITS (1u << TILE_LOG)
 #define TILE_MASK (TILE_BITS - 1u)
 #define TILE_WORDS (TILE_BITS / 32u)
@@ -151,9 +154,14 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
     const u32 total = pos[NB - 1];
     if (tid < NB) {                                                     /* the room of bin b in global memory: [base, base + c) of bin (r0 NTILES + b) */
         const u32 c = cnt[tid];
-        const u32 bs = c ? atomicAdd(&gcnt[r0 * NTILES + tid], c) : 0u;
+#if BIN_PACK
+        const u32 w = (total <= STAGE_CAP) ? 3u * ((c + 4u) / 5u) : 3u * c;     /* words: 3 a group of 5 marks (the last group padded with copies of the bin's last mark), or 3 a mark when the chunk is too big to stage */
+#else
+        const u32 w = c;
+#endif
+        const u32 bs = w ? atomicAdd(&gcnt[r0 * NTILES + tid], w) : 0u;
         base[tid] = bs;
-        if (bs + c > cap) over_s = 1u;
+        if (bs + w > cap) over_s = 1u;
         cur[tid] = (total <= STAGE_CAP) ? pos[tid] - c : 0u;
     }
     __syncthreads();
@@ -182,7 +190,19 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             const u32 c = cnt[b];
             const u32 *src = stage + (pos[b] - c);
             u32 *dst = bins + (size_t)(r0 * NTILES + b) * cap + base[b];
+#if BIN_PACK
+            const u32 ng = (c + 4u) / 5u;                               /* a lane a group of 5 marks -> 3 words (the marks are 19-bit offsets, the last group repeats the last mark: clearing a bit twice is harmless) */
+            for (u32 g = lane; g < ng; g += 32) {
+                const u32 g5 = 5u * g, last = c - 1u;
+                const u32 m0 = src[g5], m1 = src[g5 + 1u <= last ? g5 + 1u : last], m2 = src[g5 + 2u <= last ? g5 + 2u : last];
+                const u32 m3 = src[g5 + 3u <= last ? g5 + 3u : last], m4 = src[g5 + 4u <= last ? g5 + 4u : last];
+                dst[3u * g] = m0 | (m1 << 19);
+                dst[3u * g + 1u] = (m1 >> 13) | (m2 << 6) | (m3 << 25);
+                dst[3u * g + 2u] = (m3 >> 7) | (m4 << 12);
+            }
+#else
             for (u32 i = lane; i < c; i += 32) dst[i] = src[i];
+#endif
         }
     } else {
         for (int it = tid; it < nitems; it += blockDim.x) {                 /* more marks than the buffer: one store a mark, as gbig_gen */
@@ -197,7 +217,15 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             const u32 rb = rr * NTILES;
             for (; j < KS; j += s) {
                 const u32 b = rb + (j >> TILE_LOG);
+#if BIN_PACK
+                const u32 mk = j & TILE_MASK;                           /* one mark = one group of 5 copies of it (3 words) */
+                u32 *d = bins + (size_t)(r0 * NTILES + b) * cap + base[b] + 3u * atomicAdd(&cur[b], 1u);
+                d[0] = mk | (mk << 19);
+                d[1] = (mk >> 13) | (mk << 6) | (mk << 25);
+                d[2] = (mk >> 7) | (mk << 12);
+#else
                 bins[(size_t)(r0 * NTILES + b) * cap + base[b] + atomicAdd(&cur[b], 1u)] = j & TILE_MASK;
+#endif
             }
         }
     }
@@ -210,6 +238,32 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
 #define GBIG_APPLY_UNROLL 4
 #endif
 #define GBIG_CLEAR(bm, off) atomicAnd(&(bm)[(off) >> 5], ~(1u << ((off) & 31)))
+#if BIN_PACK
+/* packed bins: n words = n / 3 groups of 5 marks (19 bits each, bit 95 unused): w0 = m0 | m1 << 19, w1 = m1 >> 13 | m2 << 6 | m3 << 25, w2 = m3 >> 7 | m4 << 12.  A thread takes a group a step
+   (3 word loads), GBIG_APPLY_UNROLL groups in flight. */
+__device__ __forceinline__ void gbig_apply_entries(u32 *bm, const u32 *e, u32 n) {
+    const u32 ng = __umulhi(n, 0xAAAAAAABu) >> 1;                       /* n / 3 (n is a multiple of 3: gcnt counts whole groups) */
+    for (u32 i = threadIdx.x; i < ng; i += blockDim.x * GBIG_APPLY_UNROLL) {
+        u32 w0[GBIG_APPLY_UNROLL], w1[GBIG_APPLY_UNROLL], w2[GBIG_APPLY_UNROLL];
+        #pragma unroll
+        for (int u = 0; u < GBIG_APPLY_UNROLL; u++) {
+            const u32 g = i + u * blockDim.x;
+            if (g < ng) { w0[u] = e[3u * g]; w1[u] = e[3u * g + 1u]; w2[u] = e[3u * g + 2u]; }
+        }
+        #pragma unroll
+        for (int u = 0; u < GBIG_APPLY_UNROLL; u++) {
+            if (i + u * blockDim.x < ng) {
+                const u32 a = w0[u], b = w1[u], c = w2[u];
+                GBIG_CLEAR(bm, a & 0x7FFFFu);
+                GBIG_CLEAR(bm, ((a >> 19) | (b << 13)) & 0x7FFFFu);
+                GBIG_CLEAR(bm, (b >> 6) & 0x7FFFFu);
+                GBIG_CLEAR(bm, ((b >> 25) | (c << 7)) & 0x7FFFFu);
+                GBIG_CLEAR(bm, (c >> 12) & 0x7FFFFu);
+            }
+        }
+    }
+}
+#else
 __device__ __forceinline__ void gbig_apply_entries(u32 *bm, const u32 *e, u32 n) {
     const uint4 *e4 = (const uint4 *)e;
     const u32 nv = n >> 2;
@@ -226,6 +280,7 @@ __device__ __forceinline__ void gbig_apply_entries(u32 *bm, const u32 *e, u32 n)
     }
     for (u32 i = (nv << 2) + threadIdx.x; i < n; i += blockDim.x) { const u32 off = e[i]; GBIG_CLEAR(bm, off); }
 }
+#endif
 
 /* one CTA a bin (row rr, tile): out[bin * TILE_WORDS ...] = the tile's bits, 1 = not marked */
 extern "C" __global__ void gbig_apply(const u32 *gcnt, const u32 *bins, u32 cap, u32 *out) {

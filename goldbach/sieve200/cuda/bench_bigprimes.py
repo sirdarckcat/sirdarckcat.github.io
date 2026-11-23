@@ -39,6 +39,7 @@ def main():
     ap.add_argument("--staged", type=int, default=0, help="1: the staged generate kernel (gbig_gen_st), --rcta rows a CTA, --stage-cap marks staged a CTA")
     ap.add_argument("--rcta", type=int, default=2)
     ap.add_argument("--stage-cap", type=int, default=8192, dest="stage_cap")
+    ap.add_argument("--pack", type=int, default=0, help="1 (with --staged 1): packed bins, 5 marks of 19 bits in 3 words (2.4 bytes a mark instead of 4)")
     ap.add_argument("--groups", type=int, default=None)
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
@@ -48,7 +49,7 @@ def main():
     TAB = make_table(S, rng=rng)
     U = np.sort(rng.choice(np.arange(1, 150000), size=a.rows, replace=False)).astype(np.uint32)
     K = 1 << a.ks
-    st = BigStage(U, TAB, ks_log=a.ks, tile_log=a.tile, rg=a.rg, ppt=a.ppt, threads=a.threads, staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap)
+    st = BigStage(U, TAB, ks_log=a.ks, tile_log=a.tile, rg=a.rg, ppt=a.ppt, threads=a.threads, staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap, pack=bool(a.pack))
     exp_marks_row = K * float(np.sum(1.0 / S.astype(np.float64)))
     ngroups = (a.rows + a.rg - 1) // a.rg
     run_groups = min(ngroups, a.groups or ngroups)
@@ -59,6 +60,7 @@ def main():
     cp.cuda.Device().synchronize()
     tm = {}
     marks = 0
+    words = 0
     nr = 0
     t0 = time.time()
     for g in range(run_groups):
@@ -66,6 +68,7 @@ def main():
         nrows = min(a.rg, a.rows - row0)
         st.run_group(row0, nrows, tm)
         marks += st.marks(nrows)
+        words += st.words(nrows)
         nr += nrows
     cp.cuda.Device().synchronize()
     wall = time.time() - t0
@@ -79,7 +82,7 @@ def main():
     print(f"  ns a member of the batch: {1e6 * (gen + app) / K:.3f}  ({a.rows} rows, {S.size * a.rows / K:.1f} pair visits a member: {1e6 * gen / (S.size * a.rows):.5f} ns a visit in gen)")
     pa = st.pass_a_ms(0, min(a.rg, a.rows)) * (a.rows / min(a.rg, a.rows))
     print(f"  of gen: pass A (visits + counting, no writes) {pa:.1f} ms = {1e6 * pa / total_marks:.4f} ns a mark, {1e6 * pa / (S.size * a.rows):.5f} ns a pair visit; pass B (the writes) ~ {gen - pa:.1f} ms = {1e6 * (gen - pa) / total_marks:.4f} ns a mark")
-    traffic = total_marks * 8 / 1e9
+    traffic = words * scale * 8 / 1e9                                   # 4 bytes a word written and read
     print(f"  bins written + read: {traffic:.1f} GB in {gen + app:.1f} ms = {traffic / ((gen + app) / 1e3):.0f} GB/s; bit tiles written: {a.rows * K / 8 / 1e9:.1f} GB")
     if a.check:
         nrows = min(2, a.rows)

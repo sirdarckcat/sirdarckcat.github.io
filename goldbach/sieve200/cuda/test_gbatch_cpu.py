@@ -16,11 +16,11 @@ import test_gpu_sieve_cpu as TG
 import test_gsieve
 
 
-def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1):
-    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ".so")
+def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0):
+    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ("_pk" if pack else "") + ".so")
     srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}",
+        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}", f"-DBIN_PACK={pack}",
                                "-DMAXKEEP_SORT=8192u", "-DS200G_UNROLL=1", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
@@ -71,7 +71,7 @@ class _RawModule:
     def __init__(self, code=None):
         ks, llog, nth, tile, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KS_LOG", "LLOG", "NTHREADS", "TILE_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
         m = re.search(r"#define TILE_UNROLL (\d+)", code)
-        self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc, int(m.group(1)) if m else 1)
+        self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc, int(m.group(1)) if m else 1, 1 if "#define BIN_PACK 1" in code else 0)
 
     def get_function(self, name):
         return _Fn(self.lib, name)
@@ -97,6 +97,8 @@ def main():
                                                                       (9001, 13, 11, 11, 16, 9001, 0.0, False, 2, 8192), (32768, 14, 12, 11, 7, 0, 0.8, False, 2, 8192),
                                                                       (32768, 15, 12, 11, 4, 4096, 0.9, True, 2, 512), (32768, 14, 12, 11, 7, 0, 0.8, True, 1, 768),
                                                                       (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)) + BIG:
+        if os.environ.get("DEEP_BIN_PACK", "0") == "1" and not staged:
+            continue                                                    # packed bins exist for the staged kernel only
         search.G.clear(); search._SIEVE_CACHE.clear()
         search.init_spec(spec, B, 1 << llog)
         bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=max(32, -(-rcta * (1 << (ks - tile)) // 32) * 32), tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
