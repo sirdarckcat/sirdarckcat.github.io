@@ -112,3 +112,47 @@ value agree only on moduli whose product is below `g`.
 The optimum is flat downwards (a week: within 500 for `Q` from 144,000 to 152,000) and falls
 off quickly upwards (160,000 gives 149,100: half the time there is no success at all).
 An expected record of 213,070 needs about 1,000 years of this fleet.
+
+## 2026-11-23: what a solver of the search problem would be worth
+
+The research programme `goldbach/sublinear/` (research branch) asks for members of a progression
+with far fewer rows left than the mean, found without enumerating the members. `ceiling.py`
+(`ceiling.txt`) turns the selection identity (`Cap/Tilt.lean`: `selection_fraction`,
+`enrichment_at`) into what such a method could gain at most. With the crude survival
+`s = ln 683 / ln z`:
+
+| | λ | keep 3% | best of 2^32 | best of e^100 | best of e^200 |
+|---|---|---|---|---|---|
+| 150,000, sieve to 2^26 | 1.08 | 2.0 nats | 6.3 | 14.5 | 20.9 |
+| 213,070, sieve to 2^26 | 1.32 | 2.3 | 7.6 | 17.6 | 25.4 |
+| 213,070, sieve to 2^28 | 1.40 | 2.4 | 8.0 | 18.6 | 26.9 |
+
+(enrichment of the tested members over an average member, in nats; the last two columns need
+a progression that long, i.e. a cover that has given up 78 or 178 nats of modulus).
+
+- On the present progressions (2^32 members) a perfect and free method is worth at most
+  4.3 nats (150,000) to 5.3 nats (213,070) over the 3% rule, and it would test one member per
+  progression, so it needs `e^(E - 7.6)` progressions: 3.6 · 10^13 covers with 1,623 rows at
+  213,070. Every member of every progression tested for free still needs `e^(E - 22.4)`
+  = 1.6 · 10^7 such covers for one expected success.
+- Making selection cheaper by a factor `F` moves the cut from `z` to about `z + ln F / z` and
+  gains about `λ ln F / z` nats: 0.6 to 0.8 nats per factor of ten at the present cut.
+- The goal 213,070 with the fleet time there is asks for 8.4 nats. The best family exhibited
+  for primes up to 10^7 (`oracle_tilt.py`, not constructive) has `E` = 29.0 against an
+  effective 36.5 today: the whole information in the residues modulo primes up to 10^7 is
+  worth about 7.5 nats by that bound (the true optimum may be a few nats lower). So residue
+  information reaches the goal only with an essentially perfect decoder of one member in
+  `e^200`, and then barely.
+
+What is proved about methods (`Cap/Radius.lean`, `Cap/BlackBox.lean`): the lattice decoders
+(Coppersmith; Guruswami–Sahai–Sudan) need a smooth part 3.88 times the typical one for
+`K = 2^32`, and in list form can use only singleton lists, which is the cover; a method that
+treats the count of rows left as an oracle needs `K / g` questions to find one of the `g` best
+of `K` members. For arbitrary lists, already of two classes each, deciding whether any member of
+an interval meets all of them is NP-complete (Manders and Adleman 1978; Garey and Johnson,
+problem AN1: `x² ≡ a (mod b)`, `x < c`, with the factorisation of `b` and the square roots
+given). What is special about our lists is that for every prime `s` above the threshold they
+are the same set of small numbers: the rows. The problem is then to find a short interval
+with few rough numbers at fixed places, which is how record prime gaps are searched for, and
+there the only known method is the present one: covering congruences, then a sieve over the
+members.
