@@ -48,11 +48,7 @@ extern "C" __global__ void s200g_tile(const u32 *U, int row0, const uint4 *TABT,
     __syncthreads();
     const u32 bin = rr * NTILES + tile;
     const u32 n = gcnt[bin];
-    const u32 *e = bins + (size_t)bin * cap;
-    for (u32 i = threadIdx.x; i < n; i += blockDim.x) {
-        const u32 off = e[i];
-        atomicAnd(&bm[off >> 5], ~(1u << (off & 31)));
-    }
+    gbig_apply_entries(bm, bins + (size_t)bin * cap, n);
     __syncthreads();
     u32 *dst = bits + (size_t)(row0 + rr) * (KS / 32u) + (size_t)tile * TILE_WORDS;
     for (u32 i = threadIdx.x; i < TILE_WORDS; i += blockDim.x) dst[i] = bm[i];

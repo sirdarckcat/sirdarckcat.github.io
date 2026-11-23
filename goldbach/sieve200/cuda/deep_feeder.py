@@ -78,12 +78,13 @@ class DeepSieve:
         return self.fd.retarget(N0, rows)
 
 
-def deep_feeder_for(state, spec, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, max_rows=1100, nthreads=256, log=print):
+def deep_feeder_for(state, spec, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, max_rows=1100, nthreads=256, gen_threads=256, tile_threads=256, log=print):
     """search_gpu5's feeder_for for the deep sieve: state is a dict kept by the caller (it holds the DeepSieve of the current M); spec a campaign spec (M, N0, residual, cover)."""
     M = int(spec["M"])
     ds = state.get("ds")
     if ds is None or ds.M != M:
         state.clear()
         cover = [int(r) for r, _ in spec.get("cover", [])]
-        state["ds"] = ds = DeepSieve(M, cover, B, ks_log=ks_log, tile_log=tile_log, llog=llog, f=f, p_est=p_est, split=split, rg=rg, nthreads=nthreads, max_rows=max_rows, log=log)
+        state["ds"] = ds = DeepSieve(M, cover, B, ks_log=ks_log, tile_log=tile_log, llog=llog, f=f, p_est=p_est, split=split, rg=rg, nthreads=nthreads, gen_threads=gen_threads,
+                                      tile_threads=tile_threads, max_rows=max_rows, log=log)
     return ds.feeder(int(spec["N0"]), [int(q) for q in spec["residual"]])

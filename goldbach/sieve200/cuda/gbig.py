@@ -72,6 +72,7 @@ class BigStage:
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         self.cap = cap or expected_cap(S, tile_log)
+        assert self.cap % 4 == 0, "a bin must start 16-byte aligned (the apply loads 16 bytes at a time)"
         self.apply_smem = 4 * self.tile_words
         if self.apply_smem > 48 * 1024:
             self.k["gbig_apply"].max_dynamic_shared_size_bytes = self.apply_smem

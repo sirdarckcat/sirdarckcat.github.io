@@ -91,6 +91,30 @@ extern "C" __global__ void gbig_gen(const u32 *U, const uint4 *TAB, int nP, int 
     }
 }
 
+/* Apply the n entries at e to the shared bitmap bm (every entry clears its bit).  e is 16-byte aligned (cap is a multiple of 32 words).  16-byte loads, GBIG_APPLY_UNROLL of
+ * them in flight a thread: with one load at a time the apply is bound by the memory latency (1 CTA of 256 threads an SM keeps ~190 KB in flight, ~200 GB/s: measured 266 GB/s on an
+ * RTX PRO 6000 against 1,460 GB/s of the device), so all the loads of an iteration are issued before the first atomic. */
+#ifndef GBIG_APPLY_UNROLL
+#define GBIG_APPLY_UNROLL 4
+#endif
+#define GBIG_CLEAR(bm, off) atomicAnd(&(bm)[(off) >> 5], ~(1u << ((off) & 31)))
+__device__ __forceinline__ void gbig_apply_entries(u32 *bm, const u32 *e, u32 n) {
+    const uint4 *e4 = (const uint4 *)e;
+    const u32 nv = n >> 2;
+    for (u32 i = threadIdx.x; i < nv; i += blockDim.x * GBIG_APPLY_UNROLL) {
+        uint4 v[GBIG_APPLY_UNROLL];
+        #pragma unroll
+        for (int u = 0; u < GBIG_APPLY_UNROLL; u++) {
+            if (i + u * blockDim.x < nv) v[u] = e4[i + u * blockDim.x];
+        }
+        #pragma unroll
+        for (int u = 0; u < GBIG_APPLY_UNROLL; u++) {
+            if (i + u * blockDim.x < nv) { GBIG_CLEAR(bm, v[u].x); GBIG_CLEAR(bm, v[u].y); GBIG_CLEAR(bm, v[u].z); GBIG_CLEAR(bm, v[u].w); }
+        }
+    }
+    for (u32 i = (nv << 2) + threadIdx.x; i < n; i += blockDim.x) { const u32 off = e[i]; GBIG_CLEAR(bm, off); }
+}
+
 /* one CTA a bin (row rr, tile): out[bin * TILE_WORDS ...] = the tile's bits, 1 = not marked */
 extern "C" __global__ void gbig_apply(const u32 *gcnt, const u32 *bins, u32 cap, u32 *out) {
     S200G_DYNSHARED(u32, bm);
@@ -99,11 +123,7 @@ extern "C" __global__ void gbig_apply(const u32 *gcnt, const u32 *bins, u32 cap,
     __syncthreads();
     u32 n = gcnt[bin];
     if (n > cap) n = cap;
-    const u32 *e = bins + (size_t)bin * cap;
-    for (u32 i = threadIdx.x; i < n; i += blockDim.x) {
-        const u32 off = e[i];
-        atomicAnd(&bm[off >> 5], ~(1u << (off & 31)));
-    }
+    gbig_apply_entries(bm, bins + (size_t)bin * cap, n);
     __syncthreads();
     for (u32 i = threadIdx.x; i < TILE_WORDS; i += blockDim.x) out[(size_t)bin * TILE_WORDS + i] = bm[i];
 }
