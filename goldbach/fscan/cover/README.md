@@ -272,7 +272,11 @@ writes the row weights. `covergen` takes them: with
 `COVERGEN_WEIGHTS=weights.txt` the walk is capped on the weighted rows
 (which reach above Q) instead of the rows below Q, so a supply drawn that way
 stays good above Q however far it walks; without the variable its output is
-unchanged, byte for byte with one walker.
+unchanged, byte for byte with one walker. `ptcover_w.c` is the tempering on
+weighted rows and `ptcover_wfast.c` the same with the fast move evaluation of
+`ptcover_fast.c` (the deficit of the few rows that weigh less than a full one
+is subtracted from 64 times the plain count): identical tables, BEST and dump
+for a given seed, 3 to 4 times faster.
 
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
