@@ -579,6 +579,20 @@ Version 3 (22 Nov):
     - Slice lines were identical in all seven runs.
     - The known case with unroll 4 gave the 23 (k, q).
     - Batch with unroll 4: gold-g4 ×0.969, gold-g4b ×0.962, gold-g4c ×0.966.
+  - In production, 14:15:30-14:31Z: 0.755 s a batch on all three cards (`sievepack/production_1415_1431.txt`).
+- The last small items (15:00-15:35Z) are at the noise floor of a batch.
+  - `sievepack/bundle8_rtxpro6000.txt`, ms a window: the tile kernel's clamped loads made no change. Prefetch 384 / 512, the
+    split points and tile 18 were all slower. The pipelined tile kernel at AT=64 saved 1.5 ms.
+  - `sievepack/bundle9_rtxpro6000.txt`: LEAN (GEN_SCAN2 + RESV_LATE + MINRED) saved 1.2 ms a window, 2.8 with the pipelined
+    tile.
+  - The LEAN gate (`sievepack/leanab_gold-g4c.txt`, `leanab2_g4_g4b.txt`):
+    - gold-g4c took LEAN at ×0.9875 (15:02:52Z);
+    - gold-g4 took LEAN + the pipelined tile at ×0.9895 (15:06:25Z);
+    - gold-g4b failed the 1% gate at ×0.9928 and is unchanged.
+    - On every card, slice lines were identical and the known case ran with the deployed set (`kc_prod.sh`).
+    - The three cards now differ in options whose differences are within the noise.
+  - The fused rounds' control stream (uarch 27db8d0, `fround/ctlab_rtxpro6000.txt`) cut the gap a half-pool beside the
+    sieve from 0.295 to 0.198 s. But the batch did not move (×0.998), so it is not deployed.
 - The keep fraction, re-swept with the 13:17Z engine (`v89/vsweep3_rtxpro6000.txt`, near-misses from 158,209): ×0.903 /
   ×0.926 / ×0.942 / ×0.975 / ×1.006 at f = 0.975 / 0.9775 / 0.98 / 0.9825 / 0.9875 against 0.985, and a repeat at 0.985
   gave ×0.985. f = 0.985 stays.
