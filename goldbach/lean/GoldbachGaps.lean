@@ -2,14 +2,17 @@ import GoldbachGaps.Basic
 import GoldbachGaps.Effective
 import GoldbachGaps.Covering
 import GoldbachGaps.Counting
+import GoldbachGaps.CoverBound
 import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
+import GoldbachGaps.CompleteCover
 import GoldbachGaps.Record150
 import GoldbachGaps.Record199
 import GoldbachGaps.Record199_g125269
 import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
+import GoldbachGaps.Cover15787
 import GoldbachGaps.Records
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -33,6 +36,7 @@ import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
+import GoldbachGaps.Cap.Population
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -57,9 +61,27 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (paper Proposition `prop:cover`, Theorem `thm:coverdirichlet`).
 * `Counting` – the counting bound: for large `X` some even `n` in `(X, 2X]` has no
                Goldbach summand below `log X · log log X / 48`.
+* `CoverBound` – the same order by a covering construction, with a better constant: for
+               all large `X` there is an even `N ≤ X` with `N - q` composite for every prime
+               `q < 0.73 · log X · log log X` (`eventually_exists_even_le_no_summand`;
+               counting pairs cannot exceed `1/2`), and for every
+               `c < e^γ / (2 C₂) = 1.349…` if Mertens' third theorem is granted (a named
+               hypothesis, `eventually_exists_even_le_of_mertensThird`). Inputs: the layered
+               cover of `Cap.Layers`, the prime number theorem from Mathlib, and an elementary
+               bound `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ 1.367 / log w`.
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
+* `CompleteCover` – the same test with no residuals read as divisibility: every prime `q`
+               of a block has `N - q` divisible by a covering modulus, so the bound on the
+               least summand needs no primality or compositeness test
+               (`scripts/gen_cover.py` generates instances).
+* `Cover15787` – generated instance: a 193-digit even `N` (and the 21,378,977 members
+               `N + t M` of its progression below `10^200`) with `N - q` divisible by a prime
+               `r ≤ 463` for each of the 1,840 primes `q < 15787`. It is the complete cover on
+               the 89 odd primes up to 463 found by the research session
+               (`goldbach/sublinear/complete_cover_15787.txt`, branch `ccr-d4a17dd0-7uu03r`);
+               closed statements in `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
@@ -118,7 +140,14 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                Johnson radius only singleton lists, i.e. the cover, are left), `BlackBox` (a
                method that only asks members whether they are good finds one of the `g` good
                ones among `K` with `m` questions for at most the fraction `m g / K` of the
-               instances).
+               instances), `Population` (independent rows left with probabilities `s_j`:
+               `E [x^R] = ∏ (1 - s_j + s_j x)`; the members with at most `k` rows left
+               contribute at most `u^(-k) ∏ (1 - s_j + s_j y u)` to `E [y^R]`; at most `μ - a`
+               rows left has probability at most `exp (-a²/(2μ))`; whichever `m` members of a
+               population are tested, their hit mass is at most `m y^k` plus that of the
+               members with fewer than `k` rows; a merge of two lists of residue combinations
+               costs at least `2 P / (K √(a b))` per member found, so the constrained primes
+               can exceed the population by `F - C` nats and no more).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
@@ -162,6 +191,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                reducible for every monic irreducible `Q` of degree at most `J + 1` when `V` is
                divisible by all irreducibles of degree at most `J` (`desert`): a desert with
                no factor exhibited and no congruence paid for the top degree.
+               The condition `d ≠ 0` is not needed: with `e`, `ℓ` the degree and leading
+               coefficient of `Q'`, `discr (N - Q) = ± λ^(n-2-e) ℓ^(n-d) discr Q`
+               (`discr_sub_general`), and the number of irreducible factors of `N - Q` is even
+               exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` (`even_card_factors_iff`), which
+               decides every row, also of a degree divisible by the characteristic
+               (`desert_general`). The desert is not confined to the degrees up to `J + 1`:
+               `N = c · V^p` kills every row of any degree whose derivative has no
+               irreducible factor of degree above `J` (`desert_smooth`), a positive proportion
+               of the rows of each degree. `scripts/parity_check/` compares the general formula
+               with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
+               the rows of higher degree with a smooth derivative (`smooth_rows.py`).
 
 ## Building
 
