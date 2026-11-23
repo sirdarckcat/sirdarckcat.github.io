@@ -124,3 +124,22 @@ rate and partial-sector traffic are the limit (a window 373 -> ~230 ms, ~190 wit
 Use: `bench_bigprimes.py --staged 1 --rcta 2 --stage-cap 8192` (the sweep script has a staged section), `bench_batch.py --staged 1`, and in a campaign `DEEP_STAGED=1 DEEP_RCTA=2 DEEP_STAGE_CAP=8192`
 in the environment of `search_gpu5.py --deep 1` (`deep_feeder.py` reads them; no new patch).  `--deep-gen-threads` must be at least rcta x 64 and a multiple of 32; 512 threads leave two CTAs an SM busy.
 `python3 test_gbig.py` (kernel vs a brute-force reference: normal chunks, chunks 3x the buffer, a partial last row pair, overflow flag), `test_gbig_cpu.py`, `test_gbatch_cpu.py`, `test_bench_batch_cpu.py` cover it.
+
+## What to run next, in this order, and what each answer decides (written 2026-11-23 02:50Z so that it survives anyone's context)
+
+Value first: the Fermat rounds are 1.24 s of the 2.10 s deep batch on an RTX PRO 6000 and the sieve 0.75 s, so the order is overlap (up to x1.55), then the bound B (x1.1-1.3 more once the sieve is hidden), then the rest.
+
+1. **`bench_clock.py`** (5 s; it may run beside production on one RTX: the ticks-per-ns line does not depend on what else runs).  It decides whether every RTX "cycle" of `bench_pipes.py` / `bench_fm28_step.py` is a
+   clock64 tick that runs slower than the SM clock: ratio ticks / SM clock = 0.67 explains the whole 1.49x gap of the Fermat step (the model then holds with rho 0.8 and the RTX kernel is at its multiplier floor:
+   876 IMAD.WIDE of ~3.8 real cycles; nothing left to find in the step), ratio 1.0 means the gap is inside the real kernel (then `bench_fm28_step.py` E1-E3).  The one outside datum I found
+   (the GB203 microbenchmark paper: a dependent IMAD measures 4 on an RTX 5080 with clock64) says 1.0; the A100 / L4 fits (ratio 1.0 there) and the variant-to-variant differences on the RTX (1.13-1.30 real cycles for every
+   tick of ALU cost, i.e. rho/r > 1) say < 1.  Five seconds settle it.
+2. **`--overlap 1` against `--overlap 0` on one RTX** (`search_gpu5_overlap.patch`; same variants, same slices: tests and PRPs must be identical, then the batch time).  Try `--fermat-cta-sm 3` and `4` with
+   `--deep-tile-threads 256`.  A batch near 1.35-1.5 s: keep it, and go to 3.  About 2.1 s: the sieve and Fermat CTAs do not share the SMs (look at `--fermat-cta-sm`, `--deep-tile-threads 128`); report both times.
+3. **A deeper bound B, once overlap works.**  With the sieve hidden under the Fermat rounds, the best B is the largest whose sieve still fits in them.  Marks a 2^25 window for 1,183 rows (Mertens: rows x 2^25 x ln(ln B / ln 1e6)):
+   1.14e10 at B = 1e8 (the stage is ~0.4 s a window now), 1.35e10 at 2^28 (+18%), 1.48e10 at 5e8 (+30%), 1.61e10 at 1e9 (+41%).  The per-(row, prime) visits of the primes above 2^25 (at most one mark a pair)
+   cost ~12 instructions a pair: 4.9e10 pairs a window at 1e9 is ~20-40 ms, small.  So the sieve of a 2^26 batch grows from ~0.8 s to ~0.95 s (2^28), ~1.05 s (5e8), ~1.15 s (1e9) against Fermat 1.24 s,
+   and hit mass per test rises x1.9 -> x2.45 from 1e8 to 1e9 (the GPU session's CPU model).  `--sieve-b 268435456`, then `500000000`; the first batch builds the prime tables (numpy: ~8 s at 1e8, ~80 s at 1e9,
+   about 600 MB of device memory at 1e9).  Compare **expected hits a second** (the log's deep-sieve figure per batch), not tests a second.
+4. **`run_experiments.sh`** (A: staged large-prime kernel against the plain one, sweep, B = 2^28 and 2^30 with `bench_bigprimes.py --b 28 / 30`; B: whole batch; C-E: Fermat step experiments, only if step 1 says < 1.0).
+   If the overlap hides the sieve completely, the staged kernel only shortens the contention window; if it hides it partly (step 2 between 1.5 and 2.1 s), a faster sieve is worth its percentage directly.
