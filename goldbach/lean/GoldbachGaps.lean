@@ -16,6 +16,9 @@ import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15907
 import GoldbachGaps.Records
+import GoldbachGaps.Needles
+import GoldbachGaps.NeedlePairs
+import GoldbachGaps.NeedleClusters
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -106,6 +109,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `…_g157837` and `…_g158209` on the same branch): 200-digit `N` with
                `g(N) = 146191`, `g(N) = 157837` and, the standing record, `g(N) = 158209`.
 * `Records`  – the bounded record games as closed theorems.
+* `Needles`, `NeedlePairs`, `NeedleClusters` – what two needles (numbers with no Goldbach
+               summand below `Q`) have in common. Rows are numbers: `N + h` inherits from a
+               needle `N` every row `q'` with `q' - h` prime (`IsNeedle.add_of_forall`), 97 of
+               168 rows for `Q = 1000`, `h = 30`; numbers at distance `Q` or more share no row
+               (`row_ne_of_add_le`). Kernel-checked instances: four pairs of needles at level
+               `1000` below `10^9` at distances 30, 30, 126, 210 (`needle_pairs_lt_1000`),
+               where independent positions would give 0.09 such pairs among the 303 needles of
+               the exhaustive enumeration (`scripts/mini_check/needle_pairs.txt`). Needles are
+               not independent, and nothing here says they are random.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
