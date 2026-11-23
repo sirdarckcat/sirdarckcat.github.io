@@ -6,6 +6,9 @@ import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15907
+import GoldbachGaps.Cover16381
+import GoldbachGaps.Cover16747
+import GoldbachGaps.Cover16981
 
 /-!
 # The bounded record games, as kernel-checked theorems
@@ -125,5 +128,59 @@ theorem exists_progression_complete_cover_15787 :
   refine ⟨N, M, hM, fun t ht => ?_⟩
   obtain ⟨h0, he, h1, h2⟩ := h t (by omega)
   exact ⟨h0, he, fun q hq => h1 q (by omega), fun q hq => h2 q (by omega)⟩
+
+/-! ### Covers on more primes
+
+Each prime added to the covering set multiplies the modulus by more than `463`, so beyond 89
+primes the progression of a cover has few members below `10^200` (95 on 91 primes) or, from
+92 primes on, less than one on average: a cover below `10^200` then exists only for a
+fraction of the choices of residues, and the research session finds one by enumerating them
+(`goldbach/sublinear/complete_cover_16381_91primes.txt`, `…_16747_92primes.txt` and
+`…_16981_93primes.txt`, branch `ccr-d4a17dd0-7uu03r`, commit `10648a4`). The bound proved
+by divisibility alone grows with the set: `15907` on the odd primes up to `463`, `16381` up
+to `479`, `16747` up to `487`, `16981` up to `491`. -/
+
+/-- **The bound by divisibility alone, on 93 primes.** Some even `N < 10^200` has, for every
+prime `q < 16981`, a divisor `r` of `N - q` with `2 ≤ r ≤ 491` and `r < N - q`; in particular
+no prime below `16981` is a Goldbach summand of `N`. Its progression has no other member below
+`10^200` (`Cover16981.family_ge`). -/
+theorem exists_lt_ten_pow_200_complete_cover_16981 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 16981, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 491 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 16981, ¬ IsSummand N q :=
+  ⟨Cover16981.N, Cover16981.N_lt, Cover16981.complete_cover.2.1,
+    Cover16981.complete_cover.2.2.1, Cover16981.complete_cover.2.2.2⟩
+
+/-- The same on 92 primes: every `N - q` with `q < 16747` prime is divisible by some
+`r ≤ 487`. -/
+theorem exists_lt_ten_pow_200_complete_cover_16747 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 16747, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 487 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 16747, ¬ IsSummand N q :=
+  ⟨Cover16747.N, Cover16747.N_lt, Cover16747.complete_cover.2.1,
+    Cover16747.complete_cover.2.2.1, Cover16747.complete_cover.2.2.2⟩
+
+/-- The same on 91 primes: every `N - q` with `q < 16381` prime is divisible by some
+`r ≤ 479`. -/
+theorem exists_lt_ten_pow_200_complete_cover_16381 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 16381, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 479 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 16381, ¬ IsSummand N q :=
+  ⟨Cover16381.N, lt_trans Cover16381.N_lt (by norm_num), Cover16381.complete_cover.2.1,
+    Cover16381.complete_cover.2.2.1, Cover16381.complete_cover.2.2.2⟩
+
+/-- On 91 primes the cover is still a progression with several members below `10^200`:
+`95` numbers `N + t M`, all even, all with every `N + t M - q` (`q < 16381` prime) divisible
+by some `r ≤ 479`. The next member is not below `10^200` (`Cover16381.family_ge`). -/
+theorem exists_progression_complete_cover_16381 :
+    ∃ N M : ℕ, 0 < M ∧ ∀ t < 95, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
+      (∀ q < 16381, q.Prime →
+        ∃ r, 2 ≤ r ∧ r ≤ 479 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
+      ∀ q < 16381, ¬ IsSummand (N + t * M) q := by
+  refine ⟨Cover16381.N, Cover16381.M, ?_, fun t ht => ?_⟩
+  · rw [Cover16381.M_eq]
+    norm_num
+  · obtain ⟨h1, h2, h3⟩ := Cover16381.complete_cover_family t
+    exact ⟨Cover16381.family_lt t ht, h1, h2, h3⟩
 
 end GoldbachGaps

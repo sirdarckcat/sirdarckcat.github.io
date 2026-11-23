@@ -15,6 +15,9 @@ import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15907
+import GoldbachGaps.Cover16381
+import GoldbachGaps.Cover16747
+import GoldbachGaps.Cover16981
 import GoldbachGaps.Records
 import GoldbachGaps.Needles
 import GoldbachGaps.NeedlePairs
@@ -46,6 +49,7 @@ import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
 import GoldbachGaps.Cap.ListGain
+import GoldbachGaps.Cap.Thinning
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -102,6 +106,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                earlier covers to 15787 and 15877 were at commits `8c061b4` and `7c4568c` of
                this branch and their statements are now corollaries. Closed statements in
                `Records`.
+* `Cover16381`, `Cover16747`, `Cover16981` – generated instances on more primes, from the
+               research session's files `complete_cover_16381_91primes.txt`,
+               `…_16747_92primes.txt` and `…_16981_93primes.txt` (same branch, commit
+               `10648a4`): even `N < 10^200` with `N - q` divisible by a prime `r ≤ 479`
+               for the 1,898 odd primes `q < 16381` (198 digits, 95 members of the progression
+               below `10^200`), by `r ≤ 487` for `q < 16747` and by `r ≤ 491` for the 1,956
+               odd primes `q < 16981` (200 digits each, one member: the modulus exceeds
+               `10^200`, so these were found by enumerating residue choices, not read off a
+               progression). `16981` is the largest bound on the least summand proved here
+               without any primality or compositeness test. Closed statements in `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
@@ -192,7 +206,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `N` modulo one prime to a list of classes buys at most `(W - μ) / ln (W / μ)`
                rows for each nat it costs, `W` the most rows in a class and `μ` the average;
                for a prime above `Q = 213070` with at most 1609 rows left that is 0.207 rows a
-               nat whatever the shape of the list).
+               nat whatever the shape of the list), `Thinning` (moduli that separate the rows,
+               in particular all moduli `≥ Q` for rows below `Q`: a class vector kills at most
+               one row per modulus, so the sum over class vectors of `y^(rows left)` is at
+               most `∏ m · (1 - (1 - y) θ)^k`, `θ = ∏ (1 - 1/m)`, the value for rows killed
+               independently; hence the class vectors leaving at most `K` of `k` rows are at
+               most the binomial Chernoff bound. The research session's continuation of its
+               prize table to depth `10^8` by independent rows is therefore a bound in a known
+               direction above `Q`; `scripts/thinning_check/` tests the same law below `Q` on
+               that session's tables and derives its `1/ln² z` regularity from it).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
