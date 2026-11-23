@@ -5,6 +5,9 @@ The kernels are compiled from the same .cuh by g++ (fround_cpu.cpp: loops over b
 The reference is run_pool VERBATIM from the GPU session's search_gpu5.py (origin/ccr-8ffe9d7a-4ni11u @123d93c, 23 Nov 2026), exec'd with the same fake cupy.  Compared for every pool:
 tests counted, PRP flags, successes, first-PRP rows, the tests computed on the GPU and the number of rounds (all identical), for several (target, dmax), pools with empty lists and one-row lists,
 PRP probabilities from 0 to 1, and the two errors (rows not ascending; a flag above 1 with kernel 28's range check, and ignored without it).
+The control-stream mode (run_pool_fused(..., ctl_stream=s): the round's bookkeeping on a second stream, only the Fermat kernel on the caller's) runs against a fake device that records every launch with
+its stream and every event record / wait: the results are identical, the launches of the two streams form ONE chain (each launch happens after the one issued before it, through the events and the host
+read: no kernel can overlap another or read a half-written array), the launch order per round is the expected one, and a run with the waits left out is caught by the same checker.
 
     python3 test_fround_cpu.py
 """
@@ -77,11 +80,73 @@ def build():
     return ctypes.CDLL(so)
 
 
+class FakeEvent:
+    def __init__(self, dev):
+        self.dev, self.op = dev, None
+
+    def record(self, stream=None):
+        self.op = self.dev.issue("event", stream)
+
+
+class FakeStream:
+    """a stream of the fake device; `with s:` makes it the current one; wait_event makes the NEXT launch on it depend on the event's record"""
+    def __init__(self, dev, name):
+        self.dev, self.name, self.last, self.waits = dev, name, None, []
+
+    def __enter__(self):
+        self.dev.stack.append(self)
+        return self
+
+    def __exit__(self, *exc):
+        assert self.dev.stack.pop() is self
+        return False
+
+    def wait_event(self, ev):
+        assert ev.op is not None, "waiting for an event that was never recorded"
+        if not self.dev.ignore_waits:
+            self.waits.append(ev.op)
+
+
+class FakeDevice:
+    """every launch (kernel, cumsum, host read, event record) is an op with the ops it must follow: the previous op of its stream, the events it waits for, and the last host read (the host issues
+    it after a synchronous read returned, and that read follows everything the stream had before it)"""
+    def __init__(self):
+        self.ignore_waits = False
+        self.reset()
+
+    def reset(self):
+        self.cur = FakeStream(self, "cur")
+        self.stack = [self.cur]
+        self.ops = []
+        self.host_barrier = None
+
+    def current(self):
+        return self.stack[-1]
+
+    def issue(self, name, stream=None, host_sync=False):
+        st = stream if stream is not None else self.current()
+        preds = list(st.waits)
+        st.waits = []
+        if st.last is not None:
+            preds.append(st.last)
+        if self.host_barrier is not None:
+            preds.append(self.host_barrier)
+        self.ops.append((name, st.name, preds))
+        st.last = len(self.ops) - 1
+        if host_sync:
+            self.host_barrier = st.last
+        return st.last
+
+
+DEV = FakeDevice()
+
+
 class FakeKernel:
-    def __init__(self, fn):
-        self.fn = fn
+    def __init__(self, fn, name="kernel"):
+        self.fn, self.name = fn, name
 
     def __call__(self, grid, block, args, shared_mem=0):
+        DEV.issue(self.name)
         conv = []
         for a in args:
             if isinstance(a, np.ndarray):
@@ -97,14 +162,17 @@ class FakeKernel:
 def install_fake_cupy(lib):
     cp = types.ModuleType("cupy")
     cp.__dict__.update({k: getattr(np, k) for k in dir(np) if not k.startswith("__")})
-    cp.asnumpy = np.asarray
+    cp.asnumpy = lambda a: (DEV.issue("host_read", host_sync=True), np.asarray(a))[1]
+    cp.cumsum = lambda *a, **k: (DEV.issue("cumsum"), np.cumsum(*a, **k))[1]
+    cp.cuda = types.SimpleNamespace(Event=lambda *a, **k: FakeEvent(DEV), get_current_stream=lambda: DEV.current(), get_elapsed_time=lambda a, b: 1.0,
+                                    Device=lambda *a: types.SimpleNamespace(synchronize=lambda: None, id=0))
 
     class RawModule:
         def __init__(self, code=None, options=()):
             self.code = code
 
         def get_function(self, name):
-            return FakeKernel(getattr(lib, "cpu_" + name))
+            return FakeKernel(getattr(lib, "cpu_" + name), name)
     cp.RawModule = RawModule
     cupyx = types.ModuleType("cupyx")
     cupyx.scatter_min = lambda a, idx, v: np.minimum.at(a, idx, v)
@@ -120,6 +188,7 @@ class FakeTester:
 
     def test(self, idx, kv):
         assert idx.dtype == np.int32 and kv.dtype == np.uint32 and idx.size == kv.size
+        DEV.issue("test")
         self.tests += int(idx.size)
         h = ((idx.astype(np.uint64) * np.uint64(0x9E3779B1) + kv.astype(np.uint64) * np.uint64(0x85EBCA6B) + np.uint64(12345)) * np.uint64(0xC2B2AE35)) >> np.uint64(11)
         u = (h % np.uint64(1000003)).astype(np.float64) / 1000003.0
@@ -217,6 +286,90 @@ def main():
     f = fround.run_pool_fused(FakeTester(0.0715, range_bad=0.001), kv, cnt, cols, target=1 << 12, dmax=8, check_range=False)
     good = same(r, f)
     print(f"  a flag above 1 without the range check (kernel 3 / 2): {'identical' if good else 'DIFFERENT'}", flush=True)
+    ok &= good
+    # the control-stream mode: the bookkeeping on a second stream, only the Fermat kernel on the caller's.  A fake device records every launch with its stream, every event record and wait, and the host
+    # reads (a synchronous read returns after everything its stream had before it: the host issues the next launches after that).
+    ROUND = [("fr_plan", "ctl"), ("cumsum", "ctl"), ("fr_info", "ctl"), ("host_read", "ctl"), ("fr_expand", "ctl"), ("event", "ctl"),
+             ("test", "cur"), ("event", "cur"), ("fr_post", "ctl"), ("cumsum", "ctl"), ("fr_compact", "ctl")]
+    TAIL = [("fr_plan", "ctl"), ("cumsum", "ctl"), ("fr_info", "ctl"), ("host_read", "ctl"), ("event", "ctl")]
+
+    def unordered(ops):
+        """the (launch, previous launch) pairs where a launch does not happen after the launch issued before it (events skipped): the two streams' launches must be ONE chain, as on one stream"""
+        reach, bad, prev = [], [], None
+        for i, (name, st, preds) in enumerate(ops):
+            m = 0
+            for q in preds:
+                m |= reach[q] | (1 << q)
+            reach.append(m)
+            if name != "event":
+                if prev is not None and not (m >> prev) & 1:
+                    bad.append((ops[prev][0] + "@" + ops[prev][1], name + "@" + st))
+                prev = i
+        return bad
+
+    def run_ctl(fn):
+        DEV.reset()
+        ctl = FakeStream(DEV, "ctl")
+        try:
+            out, err = fn(ctl), None
+        except RuntimeError as e:
+            out, err = None, str(e)
+        DEV.issue("after-return")                              # what the caller launches next on its stream
+        return out, err, list(DEV.ops), len(DEV.stack)
+
+    nchk = 0
+    for p, n, mean_len, target, dmax in ((0.0715, 12000, 60, 1 << 20, 8), (0.0715, 3000, 300, 1 << 12, 8), (0.3, 2000, 20, 1 << 10, 3), (0.0, 400, 12, 1 << 12, 8), (1.0, 400, 12, 1 << 12, 8)):
+        kv, cnt, cols = make_pool(rng, n, mean_len=mean_len)
+        args.dmax, args.target = dmax, target
+        a = ref(FakeTester(p), kv, cnt, cols)
+        b = fround.run_pool_fused(FakeTester(p), kv, cnt, cols, target=target, dmax=dmax, check_range=True)
+        out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(p), kv, cnt, cols, target=target, dmax=dmax, check_range=True, ctl_stream=ctl))
+        first = next(i for i, o in enumerate(ops) if o[0] == "fr_plan")
+        names = [(o[0], o[1]) for o in ops[first:-1]]
+        pattern = (err is None and names == ROUND * out[5] + TAIL and (ops[first - 1][0], ops[first - 1][1]) == ("event", "cur") and ops[-1][:2] == ("after-return", "cur"))
+        bad = unordered(ops)
+        good = err is None and same(out, a) and same(out, b) and out[4] == a[4] and out[5] == a[5] and pattern and not bad and depth == 1
+        print(f"  ctl_stream: p={p} n={n} lists ~{mean_len} target 2^{target.bit_length() - 1} dmax {dmax}: {out[5]} rounds, {len(ops)} launches on two streams, results identical to run_pool and to "
+              f"the one-stream mode, launch order as expected, one chain: {'ok' if good else 'FAILED'}" + ("" if not bad else f"  unordered: {bad[:3]}"), flush=True)
+        ok &= good
+        nchk += 1
+    # the checker has teeth: the same run with every wait_event ignored (the Fermat kernel and the bookkeeping could overlap) is caught
+    kv, cnt, cols = make_pool(rng, 3000, mean_len=60)
+    DEV.ignore_waits = True
+    try:
+        out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(0.0715), kv, cnt, cols, target=1 << 12, dmax=8, check_range=True, ctl_stream=ctl))
+    finally:
+        DEV.ignore_waits = False
+    bad = unordered(ops)
+    good = len(bad) > 0 and err is None
+    print(f"  ctl_stream with the event waits left out: {len(bad)} launches not ordered after their predecessor (e.g. {bad[0] if bad else None}): {'caught' if good else 'NOT CAUGHT'}", flush=True)
+    ok &= good
+    # the two errors with ctl_stream: the same messages, the stream stack restored (a `with` left through the exception)
+    kv, cnt, cols = make_pool(rng, 3000, mean_len=60, unsorted=3)
+    args.kernel = 28
+    out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(0.0715), kv, cnt, cols, target=1 << 12, dmax=8, check_range=True, ctl_stream=ctl))
+    good = err == "a member's rows are not tested in ascending order" and depth == 1 and not unordered(ops)
+    print(f"  ctl_stream, rows not ascending: {err!r}, current stream restored: {'ok' if good else 'FAILED'}", flush=True)
+    ok &= good
+    kv, cnt, cols = make_pool(rng, 3000, mean_len=60)
+    out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(0.0715, range_bad=0.001), kv, cnt, cols, target=1 << 12, dmax=8, check_range=True, ctl_stream=ctl))
+    good = err == "kernel 28 flagged an n outside its range" and depth == 1 and not unordered(ops)
+    print(f"  ctl_stream, a flag above 1 with kernel 28: {err!r}, current stream restored: {'ok' if good else 'FAILED'}", flush=True)
+    ok &= good
+    # half pools (what run_pool_split passes: a slice of the pool and target // 2) and the profile line
+    sl = (kv[:1500], cnt[:1500], cols[:int(cnt[:1500].sum())])
+    args.dmax, args.target = 8, 1 << 20
+    r = ref(FakeTester(0.0715), *sl, target=(1 << 20) // 2)
+    out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(0.0715), *sl, target=(1 << 20) // 2, dmax=8, check_range=True, ctl_stream=ctl))
+    good = err is None and same(out, r) and not unordered(ops)
+    print(f"  ctl_stream, a half of a pool (1500 members, target 2^19): {'identical' if good else 'DIFFERENT'}", flush=True)
+    ok &= good
+    import io, contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        out, err, ops, depth = run_ctl(lambda ctl: fround.run_pool_fused(FakeTester(0.0715), *sl, target=1 << 12, dmax=8, check_range=True, profile=True, ctl_stream=ctl))
+    good = err is None and "[profile-pool] [fused rounds]" in buf.getvalue() and not unordered(ops)
+    print(f"  ctl_stream with profile=True: the profile line is printed, order intact: {'ok' if good else 'FAILED'}", flush=True)
     ok &= good
     # nothing to do
     z = fround.run_pool_fused(FakeTester(0.1), np.zeros(0, np.int64), np.zeros(0, np.int64), np.zeros(0, np.int32), target=1 << 12, dmax=8)

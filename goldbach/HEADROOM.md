@@ -25,8 +25,8 @@ because the return is logarithmic.**
 
 Where a batch goes now (14:30Z, 0.755 s): the sieve phase of a window is 50.7 ms (generate 28.7, tile 20.8, rest ~1); Fermat kernels ~0.62 s alone (14.1M tests at 22.8M tests/s; at the integer multiplier's limit, FERMAT28.md), sieve ~0.25 s alone (4 windows x 63.5 ms + count / select / finalize / rows ~7 ms each) in 0.784 s: the two share the GPU
 almost serially, and the sieve's INSTRUCTIONS cost the Fermat kernels as much as its time (the flat flush: batch -27 ms for -17 ms of sieve).  The generate kernel is latency-bound beside its instruction count (DEEPSIEVE.md, "Measured ... the model above was wrong by 3x").  Window sieve (bench_split, ms of 83-87):
-gen 50-55 (pass A 16-23, pass B 32-34), tile kernel 33 (small marks 14.6, bin apply 19.9, init/write 1.7): the large primes' 4-byte marks are written and read back at the DRAM rate.  In flight (opt-in, CPU-verified, not yet timed): packed bins (-40% bytes), hoisted visit
-loops (-30% instructions a visit), tile-kernel latency experiments (DEEPSIEVE.md, last sections).  Closed with data: FP32 beside the multiplier, the shared-memory atomics as a limit, a persistent Fermat kernel, a deeper head at f = 0.985.
+gen 50-55 (pass A 16-23, pass B 32-34), tile kernel 33 (small marks 14.6, bin apply 19.9, init/write 1.7): the large primes' 4-byte marks are written and read back at the DRAM rate.  Packed bins, hoisted loops, the flat flush, the grid order, the generate unroll and LEAN were in flight when this paragraph was written and are in the table above.  In flight now (opt-in, CPU-verified, not timed): the
+control stream for the fused Fermat rounds (FROUND.md, last section: a hypothesis about the 0.24-0.30 s gap a half-pool beside the sieve).  Closed with data: FP32 beside the multiplier, the shared-memory atomics as a limit, a persistent Fermat kernel, a deeper head at f = 0.985.
 
 ## 1. Where an RTX PRO 6000 batch goes (2 x 2^25 members, Q = 170,000, 1.76 s)
 

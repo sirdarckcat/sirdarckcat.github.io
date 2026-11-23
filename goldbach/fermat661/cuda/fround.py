@@ -9,6 +9,7 @@ cols: int32 rows of all members, concatenated, ascending within a member (global
 (int64), whether a PRP was found (bool), success = every row composite (bool), the global row of the first PRP (int64, -1 none), the tests computed on the GPU and the rounds.
 See fround_kernels.cuh for the round and test_fround_cpu.py for the comparison with run_pool.  The rounds are independent of the streams: run it inside a `with stream:` block (run_pool_split's halves).
 """
+import contextlib
 import os
 import threading
 import time
@@ -31,8 +32,13 @@ def kernels():
     return _K
 
 
-def run_pool_fused(tester, kv, cnt, cols, target=1 << 20, dmax=8, check_range=True, threads=128, profile=False):
-    """profile: print run_pool's --profile-pool line (Fermat kernels timed by events, the pool's wall, the gap) for this call"""
+def run_pool_fused(tester, kv, cnt, cols, target=1 << 20, dmax=8, check_range=True, threads=128, profile=False, ctl_stream=None):
+    """profile: print run_pool's --profile-pool line (Fermat kernels timed by events, the pool's wall, the gap) for this call.
+    ctl_stream: a CUDA stream (or None).  With one, the round's BOOKKEEPING (the five kernels, the two scans, the host read of ctl) runs on it and only the Fermat kernel (tester.test) runs on the caller's
+    current stream, with events ordering the two (the bookkeeping waits for the test, the test waits for fr_expand).  Why: beside a sieve that owns the highest stream priority the pool's stream is the lowest, and
+    each of a round's ~8 small kernels waits for an SM slot that the sieve's queued CTAs take first (measured by the GPU session with --profile-pool: the gap of a half-pool of 36-41 rounds beside the sieve is
+    0.24-0.30 s = 6-8 ms a round; expected 0.2-0.3 ms a round alone, not measured for the fused rounds); a control stream ABOVE the sieve's priority (FERMAT_CTL_PRIORITY=-100 = the greatest, the sieve at
+    OVERLAP_SIEVE_PRIORITY=-4) places those kernels at the next free slot while the long Fermat kernel keeps the pool's low priority.  Same results; what it gains on a GPU is not measured."""
     n = int(kv.size)
     t_prof = time.perf_counter()
     prof = [] if profile else None
@@ -56,32 +62,53 @@ def run_pool_fused(tester, kv, cnt, cols, target=1 << 20, dmax=8, check_range=Tr
         ctl = cp.zeros(4, i32)                                  # [0] active members entering the round, [1] error flags, [2] tests of the round, [3] spare
         ctl[0] = nact
         nb = nact                                               # the slots a round's kernels cover: an upper bound of the active members (the count entering the previous round)
+        bk = contextlib.nullcontext()                           # where the bookkeeping runs: the caller's current stream, or ctl_stream
+        if ctl_stream is not None:
+            cur = cp.cuda.get_current_stream()
+            ev_in, ev_x, ev_t = (cp.cuda.Event(disable_timing=True) for _ in range(3))      # re-recorded every round: a wait captures the record it was issued after
+            ev_in.record(cur)
+            ctl_stream.wait_event(ev_in)                        # kv, cnt, cols, indptr and the work arrays are complete before the control stream reads them
+            bk = ctl_stream
         while nb > 0:
-            g = (nb + threads - 1) // threads
-            k["fr_plan"]((g,), (threads,), (act, cnt, pos, ctl, np.int32(nb), np.int32(target), np.int32(dmax), takes))
-            cp.cumsum(takes[:nb], dtype=i32, out=ends[:nb])
-            k["fr_info"]((1,), (1,), (ends, np.int32(nb), ctl))
-            c = cp.asnumpy(ctl[:3])                             # the round's one host read: (active members, error flags, tests)
-            nact_now, err, total = int(c[0]), int(c[1]), int(c[2])
-            if err & 1:
-                raise RuntimeError("a member's rows are not tested in ascending order")
-            if err & 2:
-                raise RuntimeError("kernel 28 flagged an n outside its range")
-            if nact_now == 0:
-                break
-            k["fr_expand"](((total + threads - 1) // threads,), (threads,), (act, ends, takes, indptr, pos, cols, kv, np.int32(nb), np.int32(total), rowsv, kvals))
+            with bk:
+                g = (nb + threads - 1) // threads
+                k["fr_plan"]((g,), (threads,), (act, cnt, pos, ctl, np.int32(nb), np.int32(target), np.int32(dmax), takes))
+                cp.cumsum(takes[:nb], dtype=i32, out=ends[:nb])
+                k["fr_info"]((1,), (1,), (ends, np.int32(nb), ctl))
+                c = cp.asnumpy(ctl[:3])                         # the round's one host read: (active members, error flags, tests)
+                nact_now, err, total = int(c[0]), int(c[1]), int(c[2])
+                if err & 1:
+                    raise RuntimeError("a member's rows are not tested in ascending order")
+                if err & 2:
+                    raise RuntimeError("kernel 28 flagged an n outside its range")
+                if nact_now == 0:
+                    break
+                k["fr_expand"](((total + threads - 1) // threads,), (threads,), (act, ends, takes, indptr, pos, cols, kv, np.int32(nb), np.int32(total), rowsv, kvals))
+                if ctl_stream is not None:
+                    ev_x.record(ctl_stream)
+            if ctl_stream is not None:
+                cur.wait_event(ev_x)                            # the Fermat kernel starts after fr_expand
             if prof is not None:
                 e0 = cp.cuda.Event(); e1 = cp.cuda.Event(); e0.record()
             flags = tester.test(rowsv[:total], kvals[:total])
             if prof is not None:
                 e1.record(); prof.append((e0, e1, total))
-            k["fr_post"]((g,), (threads,), (act, ends, takes, rowsv, flags, pos, last, cnt, tests_m, prp_m, succ_m, frow, keep, ctl, np.int32(nb), np.int32(1 if check_range else 0)))
-            cp.cumsum(keep[:nb], dtype=i32, out=kcs[:nb])
-            k["fr_compact"]((g,), (threads,), (act, keep, kcs, act2, ctl, np.int32(nb)))
+            if ctl_stream is not None:
+                ev_t.record(cur)
+                ctl_stream.wait_event(ev_t)                     # fr_post reads the flags: after the Fermat kernel
+            with bk:
+                k["fr_post"]((g,), (threads,), (act, ends, takes, rowsv, flags, pos, last, cnt, tests_m, prp_m, succ_m, frow, keep, ctl, np.int32(nb), np.int32(1 if check_range else 0)))
+                cp.cumsum(keep[:nb], dtype=i32, out=kcs[:nb])
+                k["fr_compact"]((g,), (threads,), (act, keep, kcs, act2, ctl, np.int32(nb)))
             act, act2 = act2, act
             gtests += total
             launches += 1
             nb = nact_now
+        if ctl_stream is not None:
+            ev_f = cp.cuda.Event(disable_timing=True)
+            ev_f.record(ctl_stream)
+            cur.wait_event(ev_f)                                # the caller's stream sees the results (tests_m, prp_m, succ_m, frow) only after the last bookkeeping kernel (the host read that ends
+                                                                    # the loop already follows them: this keeps the rule 'a stream's results are complete for its next launch' without that argument)
     if prof is not None:
         cp.cuda.Device().synchronize()
         wall = time.perf_counter() - t_prof

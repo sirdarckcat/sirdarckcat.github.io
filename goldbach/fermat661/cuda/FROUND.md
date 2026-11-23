@@ -38,3 +38,37 @@ PRP probability 0 to 1, empty and one-row lists, the two halves of a split pool,
 * Together with `DEEP_RCTA=8` and 512 generate threads (x0.983 alone, r8f.sh): **0.846 / 0.855 / 0.847 s a batch against 0.949 / 0.948 / 0.947 s on the three RTX cards (-10%)**; both checked on each card (identity, the vector known case, >= 1% faster) and
   deployed 12:30:45-12:31:09Z.  The estimate was 0 to +6%; it was +8.2% (x0.924).
 * What it means for the next items: a batch is now ~0.85 s for ~0.95 s of GPU work (Fermat kernels ~0.57 s alone, sieve ~0.38 s alone), so the two share the GPU almost serially (~12% overlap): **a millisecond of either is worth ~0.5% of a batch**.
+
+
+## Control stream: the round's small kernels above the sieve's priority (opt-in, 23 Nov 15:30Z; CPU-verified, NOT run on a GPU; a hypothesis)
+
+**What the measurement says.**  Beside the sieve a half-pool of 36-41 rounds has a gap (run_pool wall minus Fermat kernels) of **0.24-0.30 s = 6-8 ms a round** with the fused rounds (GPU session, `--profile-pool`).  The same loop alone is expected
+at 0.2-0.3 ms a round (not measured for the fused rounds; the unfused loop alone measured 2.2 ms).  The sieve thread's stream has the highest priority and the pool's stream the lowest, so each of a round's ~8 small launches
+(`fr_plan`, `cumsum`, `fr_info`, `fr_expand`, `fr_post`, `cumsum`, `fr_compact`, and the host read that waits for them) is queued behind the sieve's grids: a block of a lower-priority kernel starts only when no
+higher-priority block is waiting for a slot, which on a GPU kept full by 0.5-0.7 ms sieve launches happens in the tails of those launches.  ~8 chances to wait ~0.7 ms is the 6 ms.  That is a model fitted to one number, not a measurement of the cause.
+
+**The change.**  `run_pool_fused(..., ctl_stream=s)` runs the five kernels, the two scans and the host read of every round on `s`, and only `tester.test` (the Fermat kernel, unchanged) on the caller's current stream.  Events order the two:
+
+```
+ctl:  fr_plan, cumsum, fr_info, [host read], fr_expand, record(ev_x)           cur: wait(ev_x), test, record(ev_t)
+ctl:  wait(ev_t), fr_post, cumsum, fr_compact                                  (next round)
+start: ev_in recorded on cur, waited by ctl (the pool's arrays are complete);  end: ev_f recorded on ctl, waited by cur
+```
+
+With `s` above the sieve's priority (`FERMAT_CTL_PRIORITY=-100` = the greatest, and the sieve one level below: `OVERLAP_SIEVE_PRIORITY=-4`; with both at the greatest nothing changes) a bookkeeping block takes the next free slot instead of
+waiting for a sieve launch's tail, while the long Fermat kernel stays on the pool's low-priority stream, so the sieve's share of the SMs is unchanged.  Without `ctl_stream` (the default) the code path is the old one, line for line.
+
+**What was checked on the CPU** (`test_fround_cpu.py`, a fake device that records every launch with its stream, every event record / wait and every host read): per-member results, tests computed and rounds identical to the driver's `run_pool`
+and to the one-stream mode on 5 pool shapes and a half pool; the launch order of a round is the one above; **every launch happens after the launch issued before it** (through the events and the host read: the two streams form one
+chain, so nothing overlaps and no kernel reads a half-written array); the same checker flags 41 launches when the waits are left out, and each of the three essential waits (`ev_in`, `ev_x`, `ev_t`) is caught alone (the fourth, `ev_f`, is redundant:
+the host read that ends the loop already follows the last bookkeeping kernel; it is kept so the caller's stream never depends on that argument); both errors raise the same messages with the current stream restored; `profile=True` works.
+What it cannot check: CUDA's own semantics (a wait captures the record it was issued after; CuPy's per-stream free lists: every array is allocated on the caller's stream, used on `s` only between events that follow its last use on the caller's stream, and
+freed after `ev_f`, so a block is never handed to a stream while another still uses it).
+
+**Run it on a GPU** (the driver patch `search_gpu5_ctlprio.patch` applies after `search_gpu5_fround.patch`; `fround.py` replaced next to `gpu_fermat28.py`):
+
+1. A = production (`--fused-rounds 1`), B = the same with `FERMAT_CTL_PRIORITY=-100 OVERLAP_SIEVE_PRIORITY=-4`, optionally C = `OVERLAP_SIEVE_PRIORITY=-4` alone (the sieve one level lower must not be what changes the batch).
+   The slice lines of the 24 windows must be IDENTICAL, the known case 23 (k, q) pairs.  **Run the first window under `timeout`**: a mistake in the ordering would show as a hang or wrong lines.
+2. `--profile-pool 1`: the number to read is the gap a half-pool beside the sieve (0.24-0.30 s now).  If the hypothesis is right it falls toward the alone value (tens of ms); if it does not move, the wait is not the queue behind the sieve and the change is dropped.
+3. The batch time over >= 50 batches against A.  The gap is partly hidden already (the two halves and the sieve fill each other's idle time), so the batch gain is smaller than the gap: expected 0 to a few %, **not measured**; my last three estimates of this kind were off by 3x-10x.
+
