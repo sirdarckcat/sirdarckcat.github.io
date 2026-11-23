@@ -596,6 +596,21 @@ Version 3 (22 Nov):
 - The keep fraction, re-swept with the 13:17Z engine (`v89/vsweep3_rtxpro6000.txt`, near-misses from 158,209): ×0.903 /
   ×0.926 / ×0.942 / ×0.975 / ×1.006 at f = 0.975 / 0.9775 / 0.98 / 0.9825 / 0.9875 against 0.985, and a repeat at 0.985
   gave ×0.985. f = 0.985 stays.
+- research's m88f covers on the L4s and the T4 (23 Nov; files in `m88f/`). These are covers on the first 88 odd primes
+  (b3d6688), Q = 170,000, with 1,257-1,259 residual rows against 1,262-1,263 for the 88-moduli covers before. The lead
+  decided at 15:58Z, subject to four checks.
+  - 2,040 vectors (`ledger_q170000_m88f.txt`), 510 per card. Every N is in [10^199, 10^200) on the campaign's k range
+    [2^30, 2^32).
+  - The checks:
+    1. The prime tables come from each spec's own cover and M.
+    2. The GPU normal path equals search_c.py on a 2^20 slice at f = 0.97 and 0.9 (`checks_l4_cpu.txt`).
+    3. The known case, deep path at f = 0, k ∈ [2^32 − 2^19, 2^32), near-misses from 45,061: the GPU's 40 (k, q) equal
+       `cpu_brute_k0.py`'s (`knowncase_cpu_brute_m88f.txt`).
+    4. The first 20 vectors gave members a second ×1.0114 on gold-l4b.
+  - The cards switched at batch ends, 16:50:45-16:51:24Z (`deploy_m88f.py`, campaign dir `/content/c170f`; `/content/c170`
+    is kept for a revert).
+  - Measured over the first ~15 minutes (`deploy_l4_t4.txt`): members a second ×1.003-1.008, expected design hits a second
+    ×1.058-1.064, alive rows a member 423.8 → 422.5.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
