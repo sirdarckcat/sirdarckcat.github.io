@@ -1,0 +1,19 @@
+# The RTX cards' sieve options and uarch's one-pass generate kernel on gold-l4b (NVIDIA L4, power-capped at 72 W), opl4b.sh, 2026-11-23 18:40-18:44Z, campaign stopped:
+# bench_split.py, ms a 2^25 window (64 tiles) of q170000_m88f_top2_v1 (1,258 rows), B = 1e8. Tree /content/ua_v10 = uaB + f1b904a's sieve200/cuda + fc12768's gbig.py.
+# The L4's production parameters are the driver defaults (--deep-rg 16, gen 256, tile 256, rcta 2) and no DEEP_* options but DEEP_STAGED. One-pass slots per uarch's sizing.
+q170000_m88f_top2_v1
+2026-11-23T18:40:17Z stopping the campaign in /content/c170f
+2026-11-23T18:40:18Z stopped
+L4 production params (rg 16, 256/256, rcta 2), no options  gen  708.66 (A  352.85 B  355.80)  tile  660.83  sieve  1455.1  rc 0
++ RTX option stack                                         gen  430.06 (A  177.02 B  253.04)  tile  690.74  sieve  1171.5  rc 0
++ stack, rg 32, gen 512, tile 512, rcta 8                  gen  447.11 (A  138.76 B  308.35)  tile  461.27  sieve   982.4  rc 0
++ stack, rg 16, gen 512, tile 512, rcta 8                  gen  460.77 (A  147.54 B  313.23)  tile  500.91  sieve  1014.0  rc 0
++ stack + LEAN, rg 32, 512/512, rcta 8                     gen  426.14 (A  237.77 B  188.37)  tile  463.44  sieve   967.7  rc 0
++ stack + ONEPASS 20 slots, rg 32, 512/512, rcta 8         gen  308.31 (A  144.89 B  163.42)  tile  462.07  sieve   832.5  rc 0
++ stack + ONEPASS 40 slots, rg 32, 512/512, rcta 4         gen  258.37 (A  142.08 B  116.29)  tile  461.67  sieve   785.4  rc 0
++ stack + ONEPASS 40 slots, rg 16, 512/512, rcta 4         gen  263.38 (A  150.03 B  113.35)  tile  494.14  sieve   800.5  rc 0
++ stack + ONEPASS 75 slots, rg 32, 512/512, rcta 2         gen  246.35 (A  147.05 B   99.30)  tile  452.06  sieve   783.1  rc 0
++ stack + ONEPASS 75 slots, L4 params (rg 16, 256/256, rcta 2) gen  287.28 (A  191.08 B   96.21)  tile  688.47  sieve  1024.8  rc 0
+L4 production params again                                 gen  709.61 (A  353.54 B  356.06)  tile  662.57  sieve  1459.8  rc 0
+2026-11-23T18:44:35Z campaign restarted in /content/c170f (unchanged)
+OPL4B-DONE
