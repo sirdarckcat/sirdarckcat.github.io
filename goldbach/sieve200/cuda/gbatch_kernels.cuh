@@ -5,6 +5,9 @@
  * this tile: c0 includes the tile's offset), the bin's entries are applied, and the tile is written into the batch matrix bits[row][2^KS_LOG / 32] that the count, select and rows
  * kernels read (KLOG = KS_LOG).  s200g_prep_tiles builds the per-tile tables once a batch.
  */
+#ifndef TILE_LB
+#define TILE_LB   /* a driver may define __launch_bounds__(threads, minCTAs) (DEEP_TILE_MAXREG) so that a tile CTA fits in the registers resident Fermat CTAs leave free */
+#endif
 /* TABT[tile * nS + p] = {s, M^-1, invp, c0 of the tile}: c0 = (N0 M^-1 + k0 + tile 2^TILE_LOG) mod s */
 extern "C" __global__ void s200g_prep_tiles(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TABT) {
     const int p = blockIdx.x * blockDim.x + threadIdx.x;
@@ -24,7 +27,7 @@ extern "C" __global__ void s200g_prep_tiles(const u32 *S, const u32 *INV, const 
 /* grid (nrows, NTILES): row rr of the group = row0 + rr, tile blockIdx.y.  nS small primes (the table of every tile), gcnt / bins / cap from gbig_gen.  If a bin of the group overflowed `cap`
    (gcnt[NBINS] != 0) its entries are incomplete and some slots were never written (stale or uninitialised: an entry is a bit index, read blindly): none is applied and the rows of the group
    are wrong; the host learns of it from the flag (BigStage.gen_group(defer=...) accumulates it, read once a window) and repeats the window the old way (no round trip a group). */
-extern "C" __global__ void s200g_tile(const u32 *U, int row0, const uint4 *TABT, int nS, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits) {
+extern "C" __global__ void TILE_LB s200g_tile(const u32 *U, int row0, const uint4 *TABT, int nS, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits) {
     S200G_DYNSHARED(u32, bm);
     const int rr = blockIdx.x;
     const int tile = blockIdx.y;

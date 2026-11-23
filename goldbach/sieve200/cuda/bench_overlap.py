@@ -13,7 +13,9 @@ shared-memory atomics and L2 traffic, the Fermat step by the integer multiplier,
 What it does: (1) Fermat alone: one launch of --tests real candidates (events); (2) the sieve alone: one 2^25-member window of the production configuration (staged large primes, B = 1e8,
 the spec's rows); (3) both: the Fermat launch on the default stream, the sieve windows back to back in a thread on a high-priority non-blocking stream until the Fermat launch is done.
 It prints the Fermat slowdown under the overlap, the sieve slowdown, the windows completed, and a projection of a production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s):
-    sequential = F + S + O,  overlapped = max(F x slowdown_F, S x slowdown_S) + O   (slowdown_F against the production kernel's own one-launch time, --ref-variant).
+    sequential = F + S + O;  overlapped: both run beside each other (Fermat x slowdown_F, sieve x slowdown_S) until the shorter is done, the rest of the other runs alone: with t_s = S x slowdown_S <= t_f = F x slowdown_F
+    that is t_s + (F - t_s / slowdown_F) + O  (slowdown_F against the production kernel's own one-launch time, --ref-variant).  (Before 08:55Z this was max(t_f, t_s) + O, pessimistic whenever the sieve
+    finishes first: on the L4 it said 13.6 s for a batch that the driver then measured at 10.0 s, the sequential time.)
 Success = a projected batch clearly below the sequential 1.76 s (x1.15 or more).  Needs a GPU, cupy and the tree of sieve200/cuda + fermat661/cuda; ~3 minutes; stop production on that GPU first.
 """
 import argparse
@@ -52,7 +54,11 @@ def parse():
     ap.add_argument("--ref-variant", default="s1r_asm", choices=sorted(VARIANTS), dest="ref_variant",
                     help="the production kernel of this GPU (s1r_asm on the RTX PRO 6000, s1rw on the L4 / T4 / A100): the projection compares the overlapped Fermat time with ITS unchunked launch, "
                          "so a variant or a chunked launch that is slower on its own is charged for it")
-    ap.add_argument("--no-priority", action="store_true", help="the sieve stream without the highest priority (a plain non-blocking stream)")
+    ap.add_argument("--no-priority", action="store_true", help="the sieve stream without the highest priority (a plain non-blocking stream); same as --sieve-priority default")
+    ap.add_argument("--sieve-priority", choices=("high", "default"), default="high", dest="sieve_priority", help="priority of the sieve thread's stream (high: the device's greatest)")
+    ap.add_argument("--fermat-stream", choices=("default", "high"), default="default", dest="fermat_stream",
+                    help="high: the Fermat launch on a non-blocking stream of the highest priority instead of the default stream (with --sieve-priority default: the Fermat CTAs are placed first, the sieve "
+                         "gets what they leave; needs a sieve CTA that fits in the leftover registers: DEEP_TILE_MAXREG=32 with --tile-threads 128 --gen-threads 128)")
     ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--proj-fermat", type=float, default=1.27, help="seconds of Fermat kernels in a production batch (projection)")
     ap.add_argument("--proj-sieve", type=float, default=0.43, help="seconds of sieve in a production batch (projection)")
@@ -88,17 +94,19 @@ def make_tester(cp, spec, a):
     return T, idx, kv, attrs
 
 
-def fermat_pass(cp, T, idx, kv, cta_sm, nsm):
-    """one timed launch of all the tests (the chunked launch as search_gpu5 --fermat-cta-sm); returns (event start, event end)"""
-    e0, e1 = cp.cuda.Event(), cp.cuda.Event()
-    e0.record()
-    if cta_sm:
-        step = cta_sm * nsm * 128
-        for lo in range(0, int(idx.size), step):
-            T.test(idx[lo:lo + step], kv[lo:lo + step])
-    else:
-        T.test(idx, kv)
-    e1.record()
+def fermat_pass(cp, T, idx, kv, cta_sm, nsm, stream=None):
+    """one timed launch of all the tests (the chunked launch as search_gpu5 --fermat-cta-sm), on `stream` (None: the default stream); returns (event start, event end)"""
+    import contextlib
+    with (stream if stream is not None else contextlib.nullcontext()):
+        e0, e1 = cp.cuda.Event(), cp.cuda.Event()
+        e0.record()
+        if cta_sm:
+            step = cta_sm * nsm * 128
+            for lo in range(0, int(idx.size), step):
+                T.test(idx[lo:lo + step], kv[lo:lo + step])
+        else:
+            T.test(idx, kv)
+        e1.record()
     return e0, e1
 
 
@@ -108,13 +116,13 @@ def main():
         os.environ["FERMAT_CARVEOUT"] = str(a.carveout)
         os.environ["DEEP_CARVEOUT"] = str(a.carveout)
     import cupy as cp
-    from overlap import sieve_stream
+    from overlap import sieve_stream, new_stream
     specs = json.load(open(a.spec))
     spec = specs[0] if isinstance(specs, list) else specs
     dev = cp.cuda.Device()
     nsm = dev.attributes["MultiProcessorCount"]
     print(f"{cp.cuda.runtime.getDeviceProperties(0)['name'].decode()}: {nsm} SMs, Fermat {a.variant}, {a.tests:,} tests a launch{f' in chunks of {a.cta_sm} CTAs an SM' if a.cta_sm else ''}, "
-          f"carve-out {a.carveout or 'default'}, sieve stream {'plain non-blocking' if a.no_priority else 'highest priority'}", flush=True)
+          f"carve-out {a.carveout or 'default'}, sieve stream {'plain non-blocking' if (a.no_priority or a.sieve_priority == 'default') else 'highest priority'}, Fermat on the {a.fermat_stream} stream", flush=True)
     bf, nrows = make_feeder(cp, spec, a)
     T, idx, kv, attrs = make_tester(cp, spec, a)
     K = 1 << a.ks
@@ -127,11 +135,12 @@ def main():
     T.test(idx[:8192], kv[:8192])
     dev.synchronize()
 
+    fst = new_stream(cp, -100, "Fermat") if a.fermat_stream == "high" else None
     # 1. Fermat alone, 2. sieve alone
     f_alone = []
     for _ in range(a.reps):
         dev.synchronize()
-        e0, e1 = fermat_pass(cp, T, idx, kv, a.cta_sm, nsm)
+        e0, e1 = fermat_pass(cp, T, idx, kv, a.cta_sm, nsm, fst)
         e1.synchronize()
         f_alone.append(cp.cuda.get_elapsed_time(e0, e1) / 1e3)          # (cupy has no Event.elapsed_time: the module function)
     s_alone = []
@@ -171,7 +180,7 @@ def main():
         def work():
             try:
                 cp.cuda.Device(dev.id).use()
-                st = cp.cuda.Stream(non_blocking=True) if a.no_priority else sieve_stream(cp)
+                st = new_stream(cp, 0, "sieve") if (a.no_priority or a.sieve_priority == "default") else sieve_stream(cp)
                 j = 20
                 with st:
                     while not stop.is_set():
@@ -189,7 +198,7 @@ def main():
         th.start()
         time.sleep(0.05)                                                # the sieve thread is running when the Fermat launch starts
         tw0 = time.perf_counter()
-        e0, e1 = fermat_pass(cp, T, idx, kv, a.cta_sm, nsm)
+        e0, e1 = fermat_pass(cp, T, idx, kv, a.cta_sm, nsm, fst)
         e1.synchronize()
         tw1 = time.perf_counter()
         fc = cp.cuda.get_elapsed_time(e0, e1) / 1e3
@@ -212,7 +221,13 @@ def main():
     print(f"  the same work one after the other: {work_seq:.3f} s;  overlapped: {fc:.3f} s  ->  x{work_seq / fc:.2f}")
     # projection of a production batch
     seq = a.proj_fermat + a.proj_sieve + a.proj_other
-    ov = max(a.proj_fermat * slow_fp, a.proj_sieve * slow_s) + a.proj_other
+    # Both run beside each other until the shorter of them is done; the rest of the other runs alone at full speed (the probe's sieve runs back to back for the whole Fermat launch, a batch's sieve is
+    # only 2 windows).  t_s: the batch's sieve when it runs beside the Fermat kernel; t_f: the batch's Fermat kernels when the sieve runs beside them.
+    t_s, t_f = a.proj_sieve * slow_s, a.proj_fermat * slow_fp
+    if t_s <= t_f:
+        ov = t_s + (a.proj_fermat - t_s / slow_fp) + a.proj_other                 # the sieve is done first, the Fermat work that is left runs alone
+    else:
+        ov = t_f + (a.proj_sieve - t_f / slow_s) + a.proj_other                   # sieve-bound: the sieve work that is left runs alone
     if F_ref != F:
         print(f"  Fermat under overlap against the production kernel alone: x{slow_fp:.3f} (against this configuration alone: x{slow_f:.3f})")
     print(f"production batch (Fermat {a.proj_fermat} s, sieve {a.proj_sieve} s, other {a.proj_other} s): sequential {seq:.2f} s, overlapped {ov:.2f} s -> x{seq / ov:.2f}")

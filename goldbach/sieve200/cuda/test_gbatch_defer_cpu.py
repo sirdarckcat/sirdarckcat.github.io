@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """BatchFeeder with the bin-overflow check DEFERRED to the end of the window (BigStage.gen_group(defer=...), BatchFeeder.window: no host round trip a row group) against the per-group check,
-on the CPU emulation of the kernels (test_gbatch_cpu.py's harness):
+on the CPU emulation of the kernels (test_gbatch_cpu.py's harness).  sync_every = 0 is the deferred-only mode, N >= 2 checks every N-th group on the host (a throttle for the sieve beside
+the Fermat rounds), 1 (the default) is the per-group check:
 
   1. with the capacity the stage chose, every window is identical to the per-group path, the sticky flag stays clear, no window is repeated, and every gen_group call of the window was a deferred one
      (no per-group wait);
@@ -44,7 +45,8 @@ def main():
             return gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2,
                                                     gen_threads=max(32, -(-rcta * (1 << (ks - tile)) // 32) * 32), tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
         old, new = make(), make()
-        old.defer_check = False
+        old.sync_every = 1
+        new.sync_every = 0
         calls = []                                              # the `defer` argument of every gen_group call of `new`
         real = new.big.gen_group
         new.big.gen_group = lambda row0, nrows, timings=None, U=None, defer=None: (calls.append(defer is not None), real(row0, nrows, timings, U, defer))[1]
@@ -81,6 +83,25 @@ def main():
         wref = old.window(k0 + (2 << ks))
         good = flag == 1 and not same(wbad, wref)
         print(f"  {tag}: the unrepeated deferred attempt of an overflowed window: flag {flag}, wrong window ({not same(wbad, wref)}): {'ok' if good else 'FAILED'}", flush=True)
+        ok &= good
+        # 4. the hybrid: every 3rd group checked by the host, the others deferred; also with a forced overflow (the checked groups grow the capacity, the deferred ones before them are caught by the flag);
+        #    and a group delay (a bubble) changes nothing
+        hyb = make()
+        hyb.sync_every = 3
+        hyb.group_delay = 1e-6
+        hcalls = []
+        hreal = hyb.big.gen_group
+        hyb.big.gen_group = lambda row0, nrows, timings=None, U=None, defer=None: (hcalls.append(defer is None), hreal(row0, nrows, timings, U, defer))[1]
+        k1 = 7 << ks
+        wh, wo1 = hyb.window(k1), old.window(k1)
+        ngr = -(-hyb.nU // rg)
+        want = [(g + 1) % 3 == 0 for g in range(ngr)]
+        good = same(wh, wo1) and hcalls == want and hyb.window_retries == 0
+        hcalls.clear()
+        hyb.big.cap = old.big.cap = 32
+        wh2, wo2 = hyb.window(k1 + (1 << ks)), old.window(k1 + (1 << ks))
+        good &= same(wh2, wo2) and hyb.window_retries == 1
+        print(f"  {tag}: hybrid (every 3rd group checked): {sum(want)} of {ngr} groups checked, identical, forced overflow repeated once: {'ok' if good else 'FAILED'}", flush=True)
         ok &= good
     print("ALL OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

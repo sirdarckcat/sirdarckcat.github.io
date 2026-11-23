@@ -290,3 +290,33 @@ set (a bin overflowed: practically never once the capacity is right), repeats th
 slots were never written, and an entry is a bit index read blindly), so nothing stale is read before the repeat.  `GBATCH_DEFER_CHECK=0` restores the per-group check.  CPU emulation (`test_gbatch_defer_cpu.py`, three geometries
 incl. staged): identical windows with the deferred check, no wait in a window, a forced overflow (capacity 32) repeats the window once and gives the per-group result, and the unrepeated attempt is wrong with the flag set (the
 test is not vacuous); `test_gbatch_cpu.py --big` unchanged.  NVRTC sm_120: s200g_tile 384 -> 392 instructions, 40 registers, no spills.  Expected: a few ms a window when alone (bubbles), more beside the Fermat kernel; unmeasured.
+
+
+## Correction (23 Nov 08:57Z): the per-group host round trip is what makes the overlap work; what is deployed; what is next
+
+GPU session, `uarch_measure/pipeline_v2_rtxpro6000.txt` (campaign mode, 6 batches, slice lines identical in every run): production 1.744 s; the pipeline of `search_gpu5_xbatch2.patch` with my sync-free sieve (`h`) 1.73-1.76 s
+for the batches that have a sieve beside them, the sieve thread busy 0.44 s a batch (= alone) and the consumer never waiting: **no gain**; the same with the per-group overflow check (`j`) 1.55-1.60 s, the sieve busy
+0.94-1.05 s a batch (x2.2) and idle 0.5-0.9 s.  The 08:20Z reading above (the in-batch overlap hides little because the main thread holds the GIL) and the sync-free window were WRONG: with the priority, a flat-out sieve's pending
+CTAs take every SM slot a Fermat CTA frees (~1 ms a CTA), so the sieve runs at full speed and the Fermat rounds wait; the blocking check after each row group makes the sieve's work arrive in ~80 short bursts a window with
+gaps in which the Fermat CTAs refill the SMs, which is the co-residency of the probe.  In production on the three RTX PRO 6000s since 08:40-08:42Z: the patched driver, `--pipeline 1 --pipeline-depth 2 --trace-pipeline 1
+--pool-threads 2`, `GBATCH_DEFER_CHECK=0`: 1.576 / 1.587 / 1.607 s a batch against 1.76 s.  The tree now defaults to that (`GBATCH_SYNC_EVERY=1`); `GBATCH_SYNC_EVERY=0` is the deferred-only mode, N >= 2 checks every N-th
+group (`test_gbatch_defer_cpu.py` covers all three).
+
+Accounting (RTX, driver): Fermat-only flush 1.31 s (production 1.744 - sieve 0.434), pipeline batch 1.58 s: Fermat loses 0.27 s while the sieve (0.434 s of work) takes ~1.0 s of wall time, so while both run the Fermat
+rounds go at 0.735 and the sieve at 0.43 of their solo speed (work rate 1.165); the probe's single big Fermat launch lost 0.12 s for the same sieve (work rate 1.25).  If the driver reached the probe's rate the batch
+would be ~1.46 s (another -7%).  The loss per second of overlap is not proportional to the sieve's intensity (the driver's sieve is only 1.2x as intense as the probe's and costs 2.4x as much per second): bursts
+that displace Fermat CTAs, and each Fermat round's launch queueing behind sieve CTAs of a higher priority, are the likely causes.
+
+L4 (08:44-08:51Z): batch 10.000 s against 10.054 s with the pipeline; probe (Fermat s1rw): Fermat x2.117 beside the sieve, sieve x1.91, work rate x1.0-1.10; reverted; the T4 is not worth a slot.  (The probe's batch
+projection printed 13.55 s there because it took max(Fermat x slowdown, sieve x slowdown), which is wrong when the sieve finishes first; corrected to the sieve's wall time plus the Fermat work left, which gives 10.04 s,
+the measured batch.)
+
+Two more findings while reading the driver: (1) **`BatchFeeder.tile_threads` was never used**: the tile kernel was always launched with `sieve_threads` = `nthreads` = 256, so every `--deep-tile-threads` /
+`bench_batch.py --tile-threads` sweep ran the same kernel; fixed (the default stays 256); (2) the tile kernel is 40 registers x 256 threads = 10,240 registers, and 5 resident Fermat CTAs (92 registers x 128
+threads = 12,288 each) leave 4,096 free: a sieve CTA can only run by taking the slot of a retiring Fermat CTA, which is why the stream priority is needed at all (without it the sieve got NO SM time).
+
+**Next (`plt3.sh`, one script, ~5 minutes on one paused RTX; none of it is verified on hardware):** (a) throttle variants of the burst structure (a bubble after each checked group `GBATCH_GROUP_DELAY_US`, checks every 2nd /
+4th group, row groups of 4 / 8 rows); (b) real 128 / 512-thread tile CTAs; (c) **a sieve that fits beside the Fermat CTAs**: `DEEP_TILE_MAXREG=32` (`__launch_bounds__(128, 16)` on the tile kernel: no spills, NVRTC sm_120; the staged
+generate kernel is 26 registers) with 128-thread CTAs needs 4,096 registers a CTA = exactly what 5 Fermat CTAs leave, so it never displaces one; with the Fermat streams above the sieve's
+(`FERMAT_STREAM_PRIORITY=high` + `OVERLAP_SIEVE_PRIORITY=0`, `search_gpu5_prio.patch`) the Fermat rounds would never queue behind the sieve and the sieve would take only what the Fermat CTAs leave plus the gaps and
+tails; the sieve's solo speed with 128 threads is lower, so it may become the bottleneck (its slack is ~0.5 s a batch); (d) `--dmax 6` (the waste of 3.1%).

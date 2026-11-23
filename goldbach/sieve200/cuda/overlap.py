@@ -10,6 +10,7 @@ dropped, wherever that happens; the CALLER must therefore synchronize its own st
 One item waits in the queue at a time (the sieve runs at most one window ahead of the consumer, plus the one being consumed).  Errors in the thread are re-raised in the caller.
 """
 import collections
+import os
 import queue
 import threading
 import time
@@ -17,16 +18,22 @@ import time
 _STREAM = {}
 
 
+def new_stream(cp, priority=-100, what="sieve"):
+    """a new non-blocking stream of the given priority (-100: outside every device's range [-5 .. 0], the driver clamps it to the greatest priority; 0: the default, the lowest; cupy has no
+    wrapper of cudaDeviceGetStreamPriorityRange, only of cudaStreamCreateWithPriority); a plain non-blocking stream if the priority calls are missing"""
+    try:
+        return cp.cuda.ExternalStream(cp.cuda.runtime.streamCreateWithPriority(1, int(priority)))           # 1 = cudaStreamNonBlocking
+    except Exception as e:
+        print(f"overlap: no stream priorities ({e}); a plain non-blocking {what} stream", flush=True)
+        return cp.cuda.Stream(non_blocking=True)
+
+
 def sieve_stream(cp):
-    """a non-blocking stream of the highest priority (a plain non-blocking stream if the priority calls are missing); one per process"""
+    """the sieve thread's non-blocking stream, by default of the highest priority (its CTAs are placed first when an SM slot frees: on an RTX PRO 6000 the sieve gets no SM time at all without it,
+    for a Fermat CTA that does not leave room for a 10,240-register sieve CTA); OVERLAP_SIEVE_PRIORITY=0 gives it the default (lowest) priority, for a sieve CTA that fits in the registers the Fermat
+    CTAs leave free (DEEP_TILE_MAXREG=32, 128-thread tile CTAs) with the Fermat streams above it (FERMAT_STREAM_PRIORITY=high); one per process"""
     if "s" not in _STREAM:
-        try:
-            # 1 = cudaStreamNonBlocking; priority -100 is outside every device's range [-5 .. 0] and the driver clamps it to the greatest priority (cupy has no wrapper of
-            # cudaDeviceGetStreamPriorityRange, only of cudaStreamCreateWithPriority)
-            _STREAM["s"] = cp.cuda.ExternalStream(cp.cuda.runtime.streamCreateWithPriority(1, -100))
-        except Exception as e:
-            print(f"overlap: no stream priorities ({e}); a plain non-blocking stream", flush=True)
-            _STREAM["s"] = cp.cuda.Stream(non_blocking=True)
+        _STREAM["s"] = new_stream(cp, int(os.environ.get("OVERLAP_SIEVE_PRIORITY", "-100")), "sieve")
     return _STREAM["s"]
 
 

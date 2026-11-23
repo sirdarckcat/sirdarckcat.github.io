@@ -10,6 +10,7 @@ The prime list is search.G["S"] up to B_big, ascending: the primes <= split go t
 primes and the same window (test_gbatch_cpu.py against sieve200's CPU Feeder).  A prototype: see DEEPSIEVE.md.
 """
 import os
+import time
 
 import numpy as np
 import cupy as cp
@@ -28,12 +29,15 @@ _BCACHE = {}
 _NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply")
 
 
-def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2):
-    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta)
+def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None):
+    """tile_lb: None, or (threads, min CTAs an SM) for __launch_bounds__ of the tile kernel: DEEP_TILE_MAXREG=32 with 128-thread tile CTAs makes a CTA that needs 128 x 32 = 4,096 registers, which is what
+    5 resident Fermat CTAs (92 registers x 128 threads, 12,288 each) leave free on an SM of 65,536"""
+    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb)
     if key not in _BCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {ks_log}\n#define LLOG {llog}\n#define NTHREADS {nthreads}\n"
                 f"#define S200G_UNROLL 1\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n#define RG {rg}\n#define PPT {ppt}\n"
-                f"#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n")
+                f"#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n"
+                + (f"#define TILE_LB __launch_bounds__({tile_lb[0]}, {tile_lb[1]})\n" if tile_lb else ""))
         mod = cp.RawModule(code=head + _SRC)
         _BCACHE[key] = {n: mod.get_function(n) for n in _NAMES}
     return _BCACHE[key]
@@ -43,8 +47,10 @@ class BatchFeeder(GpuFeeder):
     def __init__(self, S, INV, U, N0M, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, nthreads=256, split=None, rg=16, ppt=4, gen_threads=256, tile_threads=256,
                  shared=None, max_rows=None, staged=False, rcta=2, stage_cap=8192):
         assert ks_log >= tile_log and 1 <= rg <= 64
+        maxreg = int(os.environ.get("DEEP_TILE_MAXREG", "0"))                    # 0: the compiler's choice (40 registers on sm_120)
+        tile_lb = (int(tile_threads), max(1, 65536 // (int(tile_threads) * maxreg))) if maxreg else None
         super().__init__(S, INV, U, N0M, klog=ks_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, shared=shared, plain_sieve=False,
-                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta), max_rows=max_rows)
+                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta, tile_lb), max_rows=max_rows)
         self.tile_log, self.rg, self.tile_threads = tile_log, rg, tile_threads
         self.staged, self.rcta, self.stage_cap, self.ppt = bool(staged), int(rcta), int(stage_cap), int(ppt)
         self.ntiles = 1 << (ks_log - tile_log)
@@ -60,7 +66,13 @@ class BatchFeeder(GpuFeeder):
         if self.tile_smem > 48 * 1024:
             self.k["s200g_tile"].max_dynamic_shared_size_bytes = self.tile_smem
         self._zero = (cp.zeros(rg * self.ntiles + 1, dtype=cp.uint32), cp.zeros(1, dtype=cp.uint32))     # no large primes: empty bins
-        self.defer_check = os.environ.get("GBATCH_DEFER_CHECK", "1") != "0"      # bin-overflow check once a window instead of a host round trip a row group (see window())
+        # How the host checks the large-prime stage's bin-overflow flag (see window()): 1 = after EVERY row group (a blocking round trip each: the sieve stream idles for a moment after each group and the
+        # sieve trickles in short bursts), N >= 2 = after every N-th group, 0 = never during the window (the flag is read once at its end: the groups are launched back to back and the sieve runs flat out).
+        # Measured on an RTX PRO 6000 beside the Fermat rounds (23 Nov 08:37Z, pipeline depth 2): 1 -> batches of 1.55-1.60 s, 0 -> 1.73-1.76 s (= no overlap: the flat-out sieve at the highest stream priority
+        # takes the SMs and the Fermat rounds wait), so the DEFAULT is 1.  GBATCH_DEFER_CHECK=1 is the old name of 0, =0 of 1.
+        env = os.environ
+        self.sync_every = int(env["GBATCH_SYNC_EVERY"]) if "GBATCH_SYNC_EVERY" in env else (0 if env.get("GBATCH_DEFER_CHECK", "0") == "1" else 1)
+        self.group_delay = float(env.get("GBATCH_GROUP_DELAY_US", "0")) * 1e-6    # seconds the host waits after a checked group before it launches the tile kernel: the sieve stream is idle meanwhile
         self._ovf = cp.zeros(1, dtype=cp.uint32)
         self._defer = None
         self.window_retries = 0                                                  # windows repeated because a bin overflowed (the cap then grows; expected: never after the first windows)
@@ -82,8 +94,8 @@ class BatchFeeder(GpuFeeder):
         """GpuFeeder.window with the large-prime stage's bin-overflow check deferred to the end of the window: the groups are launched back to back (no host round trip a group: ~80 a window
         before, each of which idled the stream and needed the GIL back from the driver's main thread when the sieve runs in a thread beside the Fermat rounds).  The window ends with host
         reads (the survivor count, the statistics), so reading the flag afterwards waits for nothing.  A set flag (a bin overflowed the capacity: practically never) repeats the window the
-        old way, group by group, which grows the capacity; GBATCH_DEFER_CHECK=0 always checks per group."""
-        if not (self.defer_check and self.n_large):
+        old way, group by group, which grows the capacity.  sync_every (GBATCH_SYNC_EVERY) = 1, the default, is the old way throughout."""
+        if self.sync_every == 1 or not self.n_large:
             return super().window(k0, f=f, timings=timings)
         self._ovf[:] = 0
         self._defer = self._ovf
@@ -105,12 +117,17 @@ class BatchFeeder(GpuFeeder):
             self.k["s200g_prep"](((nL + 255) // 256,), (256,), (sh["S"][nSs:], sh["INV"][nSs:], sh["INVP"][nSs:], self.N0M[nSs:], np.uint64(k0), np.int32(nL), self.tabl))
         if ev is not None:
             ev[1].record()
-        for row0 in range(0, self.nU, self.rg):
+        for gi, row0 in enumerate(range(0, self.nU, self.rg)):
             nrows = min(self.rg, self.nU - row0)
             if nL:
-                bins = self.big.gen_group(row0, nrows, U=self.U, defer=self._defer)
+                defer = self._defer
+                if defer is not None and self.sync_every > 1 and (gi + 1) % self.sync_every == 0:
+                    defer = None                                                  # this group is checked by the host (it waits for everything launched before it too)
+                bins = self.big.gen_group(row0, nrows, U=self.U, defer=defer)
+                if defer is None and self.group_delay:
+                    time.sleep(self.group_delay)                                  # the generate is done and the tile kernel is not launched yet: the stream idles for this long
                 gcnt, cap = self.big.gcnt, self.big.cap
             else:
                 gcnt, bins, cap = self._zero[0], self._zero[1], 1
-            self.k["s200g_tile"]((nrows, self.ntiles), (snt,), (self.U, np.int32(row0), self.tabt, np.int32(nSs), gcnt, bins, np.uint32(cap), self.bits),
+            self.k["s200g_tile"]((nrows, self.ntiles), (self.tile_threads,), (self.U, np.int32(row0), self.tabt, np.int32(nSs), gcnt, bins, np.uint32(cap), self.bits),
                                  shared_mem=self.tile_smem)
