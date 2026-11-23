@@ -658,3 +658,26 @@ Under this reading a deeper load queue cannot help (rows2: 16 loads in flight, e
 * CPU: `test_rest2_cpu.py` (10 geometries): order == argsort by index per block, rows_ord == rows_ord2 == rows == rowmask + rowlist == numpy; `DEEP_ROWS_ORD=1|2`, `DEEP_FIN2=1`, `DEEP_ROWS3=1` through `test_gpu_sieve_cpu.py` (11 windows each, identical to the CPU feeder, the intended kernels run); FIN2 + ROWS3 through `test_gbatch_cpu.py` (with pack + hoist + unroll 4 + flush2 + order) and `test_ghead_cpu.py`.
   SASS (sm_120): rows_ord 28 registers and the same serial LDG -> LOP3 -> STG chain as rows; rows_ord2 40; s200g_order 12 registers, 32 KB shared.
 
+### Closed: the survivor-list kernel, measured (GPU session, gold-g4c, 23 Nov 16:25Z, `bench_rows.py`, synthetic window at production's f = 0.985; uarch 17:05Z)
+
+2^24 members, 1,248 rows (2.62 GB), 251,904 kept, 97.5M alive rows.  Production tail (ms): count 1.93, select 0.18, **finalize 0.90, rows 3.85** (6.9 ms, 11% of a window).  **My "10.6 ms, 18%" and "finalize 2.1, rows 6.4" were bench_split's default f = 0.97 (504K kept members), not production's 0.985: a wrong denominator of mine, again.**
+
+| variant | ms | GB/s of the matrix |
+|---|---|---|
+| count (reference) | 1.85 | 1,417 |
+| rows (production, serial) | 3.88 | 675 |
+| rows2 (16 loads in flight) | 3.72 | 704 |
+| rows, no stores (reads only) | 2.94 | 891 |
+| rows, no loads (writes only) | 1.36 | 1,926 |
+| order (the permutation, once) | 0.01 | |
+| rows_ord (kept members by index, serial) | 2.96 | 885 |
+| **rows_ord2 (by index, 8 loads in flight)** | **2.61** | 1,002 |
+| rows_ord, no stores (reads only) | 1.75 | 1,497 |
+| rowmask (row-group-major grid) | 1.99 | 1,314 |
+| rowlist (lists from the masks) | 1.62 | 1,614 |
+| rowmask + rowlist | 3.68 | 711 |
+
+Every variant's lists equal rows' (True).  What it says: **the order of the kept members was real** (reads only 2.94 -> 1.75 ms, count's rate), and the row-group-major grid of rowmask reaches the same read rate in COUNT order (1.99 ms); more loads in flight help a little once the gather is cheap (2.96 -> 2.61, and rows2's 3.72 is no better than rows' 3.88 on random data); what remains is the
+scattered two-byte stores (writes only 1.36 ms for 186 MB, ~137 GB/s).  `DEEP_FIN2=1` (0.90 -> 0.01 ms) + `DEEP_ROWS_ORD=2` (3.88 -> 2.61) is **-2.2 ms a window, ~0.6% of a batch by the GPU session's conversion: under the 1% bar, not gated, shelved** (the flags stay as a bundle ingredient).  A fused index-ordered kernel with a shared-memory staged, contiguous write might reach ~2.0 ms (another ~0.6 ms a window, ~0.15%): not built.
+(The earlier real-data DEEP_REST2 run, finalize 2.10 -> 0.01 and rows2 6.4 -> 7.8 at f = 0.97, is consistent with this: rows2 without the order is a wash or worse.)
+
