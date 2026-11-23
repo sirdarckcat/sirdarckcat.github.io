@@ -583,3 +583,23 @@ Model: the CTA takes max(compute ~45 us, DRAM 360 KB at the SM's 8 GB/s share ~4
 **Risk to know about:** a named barrier whose participants do not all arrive hangs the kernel.  All 128 apply threads run the same number of chunks (nch from the bin's count, read identically by every thread, no writes to it during the launch) and the barrier is not used by anything else.
 **To run:** `splitab.sh` rows `TILE_PIPE AT=128 / 64 / 192 / CH=2040` on the unroll-4 stack, the tile line (tile kernel ms; small / apply are not separable here: read the TOTAL).  Then the driver gate as usual (`DEEP_TILE_PIPE=1`, tile threads 512, the carve-out of 100 for the shared memory).
 
+
+### bundle8 (GPU session, gold-g4c, 23 Nov 14:31-14:33Z, `sievepack/bundle8_rtxpro6000.txt`): the small items, measured: the tile kernel does not move
+
+ms a 2^24 window on production's stack (reference: gen 28.74 + tile 20.78 = sieve phase 50.6-50.9):
+
+| row | gen | tile | sieve phase |
+|---|---|---|---|
+| tile kernel with clamped loads | 28.79 | 20.78 | 50.6 |
+| PF = 384 / 512 | 28.77 / 28.80 | 21.83 / 21.88 | 52.3 / 52.0 |
+| `--split` 524288 / 700000 / 1500000 | 32.75 / 30.88 / 26.67 | 19.88 / 20.18 / 23.59 | 53.8 / 52.2 / 51.6 |
+| tile 18 (PF 128 / none) | 31.58 / 31.60 | 24.44 / 20.65 | 57.2 / 53.8 |
+| **pipelined tile, AT = 64** | 28.75 | **19.18** | **49.2** |
+| pipelined tile, AT = 128 / 192 / (128, CH 2040) | 28.75 | 20.35 / 21.80 / 19.76 | 50.2 / 51.6 / 49.6 |
+
+None is deployed (none reaches 1% of a batch).  **My model of the tile kernel was wrong again**: I had it as three phases in series per CTA with the apply a DRAM wave (9.0 ms = the bins at 1.6 TB/s) that streaming the bin beside the small primes would hide (-7 ms); it hid 1.6 ms.  What the table says:
+the tile kernel's ~20 ms does not shrink when its phases overlap (the pipelined kernel), when its prefetch is longer (PF), when its tiles are smaller and 3 CTAs share an SM (tile 18 without PF is 20.65 against 20.78), when the table is shorter (a lower split makes the small-prime part 5.5 ms but the gen and the bins pay it back),
+or when its loads are cheaper (clamped, unroll 8 / 16).  Something shared by all of them bounds it.  The candidate I cannot exclude: the small-prime table's trip through the L2 (every tile CTA reads the 1.25 MB slice of its tile: 188 SMs x 1.25 MB = 235 MB a wave, ~6 TB/s, 50 GB a window) and the bins' 14.4 GB, together
+67 GB in 20 ms = 3.3 TB/s through the L2-to-SM path.  If that is the limit the way forward is fewer bytes through it - a smaller table entry (16 -> 12 or 8 bytes: the Shoup constant is 1/4 of it, and the row-dependent part q M^-1 mod s does not depend on the tile and could be a per-row table made once a vector) or two rows a CTA sharing each loaded
+entry - not more overlap.  Neither is built: both are restructurings of the tile kernel and its tables for at most -2 to -3 ms a window.
+

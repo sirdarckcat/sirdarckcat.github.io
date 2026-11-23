@@ -18,14 +18,19 @@ _SRC = open(os.path.join(HERE, "gbig_kernels.cuh")).read()
 _KCACHE = {}
 
 
-def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hoist=False, gunroll=1, flush2=False, order=False):
-    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll, bool(flush2), bool(order))
+def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hoist=False, gunroll=1, flush2=False, order=False, lean=()):
+    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll, bool(flush2), bool(order), tuple(lean))
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if flush2 else "") + ("#define GEN_ORDER 1\n" if order else ""))
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if flush2 else "") + ("#define GEN_ORDER 1\n" if order else "") + "".join(f"#define {n} 1\n" for n in lean))
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
+
+
+def lean_flags():
+    """the fixed-latency options of the generate kernel set in the environment: DEEP_GEN_SCAN2 (shuffle scan), DEEP_GEN_RESV_LATE (late reservation), DEEP_GEN_MINRED (min-based reduction)"""
+    return tuple(n for n, v in (("GEN_SCAN2", "DEEP_GEN_SCAN2"), ("GEN_RESV_LATE", "DEEP_GEN_RESV_LATE"), ("GEN_MINRED", "DEEP_GEN_MINRED")) if os.environ.get(v, "0") == "1")
 
 
 def primes_between(lo, hi):
@@ -80,8 +85,9 @@ class BigStage:
         self.pack = bool(pack)
         assert not self.pack or (self.staged and tile_log <= 19), "packed bins (19-bit marks, 5 in 3 words) need the staged kernel and tiles of at most 2^19 bits"
         self.flush2 = self.staged and os.environ.get("DEEP_GEN_FLUSH2", "0") == "1"      # the flat flush of the staging buffer (gbig_kernels.cuh, GEN_FLUSH2); options of the staged kernel only
-        self.order = self.staged and os.environ.get("DEEP_GEN_ORDER", "0") == "1"        # the generate grid is (row slices, chunks): the slices of a chunk run together (GEN_ORDER)
-        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), self.flush2, self.order)
+        self.order = self.staged and os.environ.get("DEEP_GEN_ORDER", "0") == "1"
+        self.lean = lean_flags() if self.staged else ()        # the generate grid is (row slices, chunks): the slices of a chunk run together (GEN_ORDER)
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), self.flush2, self.order, self.lean)
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         if self.staged:

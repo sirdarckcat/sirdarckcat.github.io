@@ -59,3 +59,5 @@ run "TILE_PIPE AT=128 CH=4092"       $PIPE_STACK
 run "TILE_PIPE AT=64 CH=4092"        $PIPE_STACK DEEP_TILE_PIPE_AT=64
 run "TILE_PIPE AT=192 CH=4092"       $PIPE_STACK DEEP_TILE_PIPE_AT=192
 run "TILE_PIPE AT=128 CH=2040"       $PIPE_STACK DEEP_TILE_PIPE_CH=2040
+# TIMING PROBE (the bits are wrong, read only the tile line): every small-prime table entry from a 256-entry sample of the table (L1-resident): does the table's trip through the L2 bound the tile kernel's small-prime phase?
+run "PROBE: tile table from L1 (unroll 4, PF 256)" DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256 DEEP_TILE_PROBE=1

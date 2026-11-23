@@ -24,6 +24,15 @@ static pthread_barrier_t g_bar1;          /* named barrier 1 of the pipelined ti
 static unsigned g_bar1_n = 0;
 static unsigned char *g_dyn;
 static void __syncthreads() { pthread_barrier_wait(&g_bar); }
+static inline unsigned min(unsigned a, unsigned b) { return a < b ? a : b; }     /* CUDA's min(unsigned, unsigned) (GEN_MINRED) */
+/* the shuffle of the CPU emulation: every thread of the CTA calls it at the same point (a CTA barrier is then a valid warp barrier) */
+static unsigned g_shfl[1024];
+static inline unsigned __shfl_up_sync(unsigned, unsigned v, unsigned d) {
+    g_shfl[threadIdx.x] = v; __syncthreads();
+    const unsigned lane = threadIdx.x & 31u, r = (lane >= d) ? g_shfl[threadIdx.x - d] : v;
+    __syncthreads();
+    return r;
+}
 #define S200G_DYNSHARED(type, name) type *name = (type *)g_dyn
 #ifndef KLOG
 #define KLOG 12

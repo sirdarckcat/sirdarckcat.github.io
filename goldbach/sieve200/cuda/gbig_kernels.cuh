@@ -45,6 +45,15 @@ typedef unsigned long long u64;
 #define GEN_FLUSH2 0 /* 1: gbig_gen_st stages the bin of a mark in its word (bin << TILE_LOG | offset = j + row * KS) and copies the staging buffer to the bins in one flat loop (a thread a word, or a group of
                         5 marks when packed) instead of a warp a bin: see "flat flush" below */
 #endif
+#ifndef GEN_SCAN2
+#define GEN_SCAN2 0  /* 1: the scan of the bin lengths by warp shuffles (3 barriers) instead of Hillis-Steele (16) */
+#endif
+#ifndef GEN_RESV_LATE
+#define GEN_RESV_LATE 0 /* 1 (with GEN_FLUSH2): the bins' global reservation (atomicAdd, a ~1 us round trip) is issued after the scan but its result is used only after pass B: the latency hides behind the staging */
+#endif
+#ifndef GEN_MINRED
+#define GEN_MINRED 0 /* 1: the two conditional subtractions of a visit (ISETP + SEL + IADD3 each) as unsigned minimums (IADD3 + VIMNMX): 2 instructions fewer a visit */
+#endif
 #ifndef FLUSH_UNROLL
 #define FLUSH_UNROLL 4 /* GEN_FLUSH2: words (groups) a thread copies together */
 #endif
@@ -196,9 +205,15 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             for (int u = 0; u < GEN_UNROLL; u++) {
                 const u32 s = t[u].x;
                 u32 a = qt * t[u].y - __umulhi(qt, t[u].z) * s;
+#if GEN_MINRED
+                a = min(a, a - s);
+                u32 jj = a + s - t[u].w;
+                jj = min(jj, jj - s);
+#else
                 if (a >= s) a -= s;
                 u32 jj = a + s - t[u].w;
                 if (jj >= s) jj -= s;
+#endif
 #if GEN_FLUSH2
                 j[u] = (pb + u * pstep < np) ? jj + rowS : limS;
 #else
@@ -219,9 +234,15 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             const uint4 t = *tp;
             const u32 s = t.x;
             u32 a = qt * t.y - __umulhi(qt, t.z) * s;                    /* q M^-1 mod s, in [0, 2s) */
+#if GEN_MINRED
+            a = min(a, a - s);
+            u32 j = a + s - t.w;
+            j = min(j, j - s);
+#else
             if (a >= s) a -= s;
             u32 j = a + s - t.w;
             if (j >= s) j -= s;
+#endif
 #if GEN_FLUSH2
             for (j += rowS; j < limS; j += s) atomicAdd(&cnt[j >> TILE_LOG], 1u);
 #else
@@ -256,6 +277,21 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
 #else
     if (tid < NB) pos[tid] = cnt[tid];
 #endif
+#if GEN_SCAN2
+    {   /* warp-shuffle inclusive scan: every thread of the CTA takes part (the ones past NB with 0), 3 barriers in all */
+        __shared__ u32 wsum[32];
+        const u32 lane = (u32)tid & 31u, wid = (u32)tid >> 5;
+        u32 v = (tid < NB) ? pos[tid] : 0u;
+        #pragma unroll
+        for (int d = 1; d < 32; d <<= 1) { const u32 o = __shfl_up_sync(0xFFFFFFFFu, v, d); if (lane >= (u32)d) v += o; }
+        if (lane == 31u) wsum[wid] = v;
+        __syncthreads();
+        u32 add = 0u;
+        for (u32 w = 0; w < wid; w++) add += wsum[w];
+        if (tid < NB) pos[tid] = v + add;
+    }
+    __syncthreads();
+#else
     __syncthreads();
     for (int d = 1; d < NB; d <<= 1) {
         u32 v = 0;
@@ -264,7 +300,41 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         if (tid < NB && tid >= d) pos[tid] += v;
         __syncthreads();
     }
+#endif
     const u32 total = pos[NB - 1];
+#if GEN_RESV_LATE && GEN_FLUSH2
+    /* the reservation is ISSUED here (one atomicAdd a bin: a global round trip of ~1 us) but its result is only needed once pass B is done: it stays in a register and hides behind the staging */
+    u32 bs_r = 0u, w_r = 0u;
+    if (tid < NB) {
+        const u32 c = cnt[tid];
+#if BIN_PACK
+        const u32 len = ((c + 4u) / 5u) * 5u;
+        w_r = (total <= STAGE_CAP) ? 3u * ((c + 4u) / 5u) : 3u * c;
+#else
+        const u32 len = c;
+        w_r = c;
+#endif
+        bs_r = w_r ? atomicAdd(&gcnt[r0 * NTILES + tid], w_r) : 0u;
+        cur[tid] = (total <= STAGE_CAP) ? pos[tid] - len : 0u;
+    }
+    __syncthreads();
+#define GEN_RESOLVE_BLOCK \
+    if (tid < NB) {                                                     /* the reservation's result: this CTA's room in bin b, the capacity check, the staging-to-bins offset */ \
+        const u32 c_ = cnt[tid]; \
+        GEN_LEN_DECL \
+        base[tid] = bs_r; \
+        if (bs_r + w_r > cap) over_s = 1u; \
+        dlt[tid] = (u32)(r0 * NTILES + tid) * cap + bs_r - GEN_DLT_SUB; \
+    }
+#if BIN_PACK
+#define GEN_LEN_DECL const u32 len_ = ((c_ + 4u) / 5u) * 5u;
+#define GEN_DLT_SUB (3u * ((pos[tid] - len_) / 5u))
+#else
+#define GEN_LEN_DECL const u32 len_ = c_;
+#define GEN_DLT_SUB (pos[tid] - len_)
+#endif
+#define GEN_OVER_CHECK if (over_s) { if (tid == 0) gcnt[NBINS] = 1u; return; }
+#else
     if (tid < NB) {                                                     /* the room of bin b in global memory: [base, base + w) of bin (r0 NTILES + b) */
         const u32 c = cnt[tid];
 #if GEN_FLUSH2 && BIN_PACK
@@ -294,6 +364,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         if (tid == 0) gcnt[NBINS] = 1u;
         return;
     }
+#endif
     if (total <= STAGE_CAP) {
         /* pass B: the same marks again, into the staging buffer at their place in bin order */
 #if GEN_HOIST
@@ -311,9 +382,15 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                 for (int u = 0; u < GEN_UNROLL; u++) {
                     const u32 s = t[u].x;
                     u32 a = qt * t[u].y - __umulhi(qt, t[u].z) * s;
+#if GEN_MINRED
+                    a = min(a, a - s);
+                    u32 jj = a + s - t[u].w;
+                    jj = min(jj, jj - s);
+#else
                     if (a >= s) a -= s;
                     u32 jj = a + s - t[u].w;
                     if (jj >= s) jj -= s;
+#endif
 #if GEN_FLUSH2
                     j[u] = (pb + u * pstep < np) ? jj + rowS : limS;
 #else
@@ -334,9 +411,15 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                 const uint4 t = *tp;
                 const u32 s = t.x;
                 u32 a = qt * t.y - __umulhi(qt, t.z) * s;
+#if GEN_MINRED
+                a = min(a, a - s);
+                u32 j = a + s - t.w;
+                j = min(j, j - s);
+#else
                 if (a >= s) a -= s;
                 u32 j = a + s - t.w;
                 if (j >= s) j -= s;
+#endif
 #if GEN_FLUSH2
                 for (j += rowS; j < limS; j += s) stage[atomicAdd(&cur[j >> TILE_LOG], 1u)] = j;
 #else
@@ -365,6 +448,13 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         }
 #endif
         __syncthreads();
+#if GEN_RESV_LATE && GEN_FLUSH2
+        GEN_RESOLVE_BLOCK
+#if !BIN_PACK
+        __syncthreads();
+        GEN_OVER_CHECK
+#endif
+#endif
 #if GEN_FLUSH2
 #if BIN_PACK
         if (tid < NB) {                                                 /* pad every run to a multiple of 5 words with copies of its last word (the same mark: clearing a bit twice is harmless) */
@@ -375,6 +465,9 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             }
         }
         __syncthreads();
+#if GEN_RESV_LATE
+        GEN_OVER_CHECK
+#endif
         const u32 ngr = total / 5u;                                     /* total is a multiple of 5: whole groups, a group inside one bin's run */
         for (u32 g0 = tid; g0 < ngr; g0 += blockDim.x * FLUSH_UNROLL) {
             u32 e[FLUSH_UNROLL][5];
@@ -436,6 +529,11 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         }
 #endif
     } else {
+#if GEN_RESV_LATE && GEN_FLUSH2
+        GEN_RESOLVE_BLOCK
+        __syncthreads();
+        GEN_OVER_CHECK
+#endif
         for (int it = tid; it < nitems; it += blockDim.x) {                 /* more marks than the buffer: one store a mark, as gbig_gen */
             const int rr = it & (RCTA - 1);
             if (rr >= nr) continue;
