@@ -326,6 +326,17 @@ that is, with the fleet's deep sieve and 3% rule behind each tested N in every
 line. That selection is worth 2.0 nats today and about 1.8 after an ideal
 search to 20,000, which has already used part of the same information.
 
+**How many solutions there are.** Summing (1 − p_z)^k over *all* N gives the
+expected number of even N < 10^200 with no prime row below the target, and it
+must not depend on the depth z at which it is computed. It does not: for
+213,070 the six runs give e^403.30, 403.28, 403.27, 403.26, 403.24, 403.24
+(z = 463 to 50,000), about 10^175 numbers. At 245,000 it is e^395.7, at
+300,000 e^383.1, at 350,000 e^371.5, at 500,000 e^338.0: about 0.23 nats less
+per 1,000 in the target, which reaches zero near 2.1 million, the ceiling the
+campaign measures against. So at the 10% level one N in 10^25 is a solution
+and one in e^39 among the members of the best covers; the difficulty is
+entirely one of location.
+
 **How far an ideal search would go** (`ideal_tilt_targets.txt`). The same
 count at higher targets, as the natural logarithm of the number of N tested
 per success:
