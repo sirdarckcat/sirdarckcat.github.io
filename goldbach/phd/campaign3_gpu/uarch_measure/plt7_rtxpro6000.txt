@@ -1,0 +1,40 @@
+# uarch plt7.sh (99ecb45) on gold-g4b (RTX PRO 6000), 2026-11-23 09:26:01-09:27:44Z, campaign paused. Driver search_gpu5_xb4.py = the deployed driver (ad33baf)
+# + search_gpu5_poolsplitn.patch (--pool-threads 3 / 4; test_poolsplitn_fake.py OK); tree /content/ua_v3. a2 / a2b = the deployed setting (control, twice); a2p3 / a2p4 =
+# 3 / 4 pool parts; a2e / a2e3 = the Fermat streams at the sieve's priority (FERMAT_STREAM_PRIORITY=high) with 2 / 3 parts. base (no pipeline) now
+# inherits GBATCH_GROUP_DELAY_US=500 from the production env, hence its 1.84 s (it is only the slice-line reference).
+
+base  : gaps [1.827, 1.851, 1.841, 1.844, 1.826] | batches with a sieve beside them: mean 1.841 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 48748 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2    : gaps [1.55, 1.4, 1.749, 1.516, 1.305] | batches with a sieve beside them: mean 1.554 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49604 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.094 s, idle 0.408 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.398 s, idle 0.443 s
+         [pipeline] waited 0.216 s; sieve 3 windows busy 1.377 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.151 s, idle 0.369 s
+a2p3  : gaps [1.552, 1.577, 1.618, 1.619, 1.346] | batches with a sieve beside them: mean 1.591 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49642 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.182 s, idle 0.510 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.298 s, idle 0.387 s
+         [pipeline] waited 0.041 s; sieve 3 windows busy 1.421 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.179 s, idle 0.458 s
+a2p4  : gaps [1.709, 1.651, 1.674, 1.652, 1.382] | batches with a sieve beside them: mean 1.671 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49626 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.288 s, idle 0.443 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.332 s, idle 0.432 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.406 s, idle 0.318 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.229 s, idle 0.257 s
+a2e   : gaps [1.574, 1.71, 1.697, 1.625, 1.426] | batches with a sieve beside them: mean 1.651 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49604 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.180 s, idle 0.017 s
+         [pipeline] waited 0.072 s; sieve 2 windows busy 1.744 s, idle 0.000 s
+         [pipeline] waited 0.054 s; sieve 2 windows busy 1.621 s, idle 0.000 s
+         [pipeline] waited 0.048 s; sieve 2 windows busy 1.817 s, idle 0.000 s
+         [pipeline] waited 0.093 s; sieve 1 windows busy 0.349 s, idle 0.000 s
+a2e3  : gaps [1.667, 1.576, 1.817, 1.725, 1.34] | batches with a sieve beside them: mean 1.696 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49642 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.655 s, idle 0.076 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.459 s, idle 0.023 s
+         [pipeline] waited 0.117 s; sieve 3 windows busy 1.913 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.686 s, idle 0.026 s
+a2b   : gaps [1.534, 1.533, 1.53, 1.53, 1.314] | batches with a sieve beside them: mean 1.532 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 49626 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.164 s, idle 0.491 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.158 s, idle 0.362 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.093 s, idle 0.373 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.097 s, idle 0.450 s
+PLT7-DONE
+
+# Reading: nothing beats the control (1.532-1.554 s): more parts and equal priority make the sieve slower and the batches longer. Production unchanged.
