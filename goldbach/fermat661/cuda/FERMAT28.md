@@ -236,3 +236,10 @@ v2 without the sync has `BSSY B0` / `BSYNC B0` around the fetch block (the struc
 registers, 64 KB of shared memory) has no room until the kernel ends; the round-based Fermat kernels free a slot every ~5 ms and the a2 setting (sieve on the highest-priority stream, bursts throttled by the per-group host check) lives on
 that.  Also `persist_kernel()` did not apply `FERMAT_CARVEOUT` (it does now).  `plt10.sh` tests the persistent kernel with 4 / 3 / 2 CTAs an SM (the step loop is flat from 2 warps a scheduler) and the carve-out hints, with the a2 sieve and with
 the sieve flat out.  Where the sieve does not overlap anyway (L4, T4: overlap measured no gain) the persistent kernel is a plain -3.4% (use `--persist-maxreg 96` there).
+
+### plt10 (GPU session, 11:07-11:09Z): beside the sieve at 2-5 CTAs an SM it is still worse; the persistent kernel is closed for the RTX cards
+
+bench_persist.py: 5 / 3 / 2 CTAs an SM run at 0.98 / 0.98 / 0.92 x the production kernel (23.4M tests/s: flat from 3 CTAs, as the step loop is).  Driver, 6 batches, slice lines identical, mean of all but the last batch: base 1.852 s, a2 (control) 1.547 / 1.522 s,
+persistent + tail rule + a2 sieve + carve-out hints: 3 CTAs an SM **1.659 s**, 3 CTAs with the sieve flat out (no check, no bubble) **1.627 s**, 4 CTAs (256-thread tile CTAs) 1.711 s, 2 CTAs 1.824 s, 5 CTAs with the carve-outs 1.657 s: **+5% to +19% against a2 in every
+configuration.**  Keeping the persistent kernel's slots away from the sieve does not give the sieve what the round-based kernels' retiring CTAs do (a slot every ~5 ms to the highest-priority sieve stream, which the a2 burst shape is built on).
+It remains a plain -3.4% where the sieve does not overlap anyway (L4 / T4: `--persist 1 --persist-maxreg 96`, untested there).

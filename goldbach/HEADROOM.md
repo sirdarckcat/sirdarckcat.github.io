@@ -65,7 +65,7 @@ kernel (`fermat661/cuda/fermat28_persist_kernel.cuh`, `search_gpu5_persist.patch
 Measured by the GPU session on an RTX PRO 6000 (plt8 10:13Z, plt9 10:46Z): **the first kernel was ~1 s a batch SLOWER (2.8 s against 1.84 s)** - its `continue` / `break` in the member-fetch block left ptxas no reconvergence point before
 the 660-step test (SASS), so the lanes that fetched a member ran the step loop out of step with the rest; **the restructured kernel runs at 0.98 x the production kernel's tests/s (23.4M, `bench_persist.py`), and in the driver without the sieve
 beside it a batch takes 1.782 s against base 1.844 s (-3.4%)**; **beside the sieve with the a2 pipeline it is 1.667 s against a2's 1.537 s (+8.5% worse)**: 940 persistent CTAs hold 61,440 of an SM's 65,536 registers for the whole kernel, so a sieve CTA
-has no room until the kernel ends and the overlap that makes a2 x1.2 is gone.  Still open (`plt10.sh`): the persistent kernel with 2-4 CTAs an SM (the step loop is flat from 2 warps a scheduler) leaving room for the sieve; best case ~+4% over a2.
+has no room until the kernel ends and the overlap that makes a2 x1.2 is gone.  plt10 (11:09Z) closed it for the RTX cards: with 2 / 3 / 4 / 5 CTAs an SM, with carve-out hints, with the sieve flat out, every persistent configuration is +5% to +19% SLOWER than a2 beside the sieve (1.627-1.824 s against 1.522-1.547 s).
 For the L4 / T4 (overlap gave nothing there) the plain -3.4% is available, ~+0.6% of the fleet.
 
 ## 3c. Measured today, and ruled out with numbers (23 Nov, 10:15-11:00Z)
@@ -92,3 +92,7 @@ plt4 tries the two together).  L4 / T4: per-GPU-type (B, f) (+1-2% of the fleet'
 
 The Fermat kernel itself has no hot local memory (its 88 B of local memory is the 84-byte exponent array, one load per 32 steps), no shared memory, and is bound by one shared integer pipe (the additive cost model);
 anything the sieve issues on that pipe is paid by the Fermat kernel, which is why neither stream priorities nor a sieve that fits in the leftover registers help.
+* **Row groups of 32 (GPU session, wcost2 11:07Z, deployed 11:16Z).**  A 2^24 window's sieve takes 95.2 ms at rg 16, 88.7 at rg 32, 88.1 at rg 64 (and 75.5 -> 62.3 ms at 2^23): -6.5 to -7 ms a window from fewer launches and syncs; with no bubble a batch of
+  the vector mode went from 1.606-1.622 s to 1.575 s (-2.4%, slice lines identical) on the three RTX cards.  So the fixed part of a window is 40-55 ms, not the 30 I estimated, and mostly per-group overhead rather than pair visits.
+* **A deep head, priced (headcost 11:09Z).**  The second large-prime stage for primes in (2^27, 2^30] (46.8M) on the first 64 rows costs 15.4 ms of GPU time at rcta 8 (7.9 ms visits + 7.2 ms writes; 39.4 ms at rcta 2; 29.5 ms for 128 rows),
+  ~9 ms with a single-pass kernel.  Against ~26 ms of Fermat saved (8.6% of the tests) that is ~+4-5% of a batch.  Not built: it changes the driver's expected-hit accounting (see the message to the GPU session).
