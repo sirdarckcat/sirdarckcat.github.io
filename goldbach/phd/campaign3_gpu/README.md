@@ -692,6 +692,34 @@ Version 3 (22 Nov):
     - Deployed at 19:11:41Z with the top 16 levels.
   - Measured on the L4s (`l4rate.py`, 18:57-19:08Z against 18:35-18:54Z): batch ×0.854 / ×0.852, expected design hits
     a second ×1.166 / ×1.171 on gold-gpu / gold-l4c. gold-l4b's earlier window includes the test stops.
+- Colab ends every runtime 24 h after creation. gold-gpu was created at 2026-11-22T19:12:40Z and ended at 19:13:03Z on
+  the 23rd, taking its logs with it.
+  - Before every later end, each card's state was snapshotted (`runlogs/snap.py`), and its compact records went to
+    `runlogs/2026-11-23/`: done sets, generator ledgers, found files, expected sums.
+  - The user approved replacements (~20:10Z). The kit is in `bringup/`. Colab refuses a fourth concurrent G4, so each
+    RTX replacement waits for its predecessor's slot.
+  - gold-g4 → gold-g4d (20:19Z), gold-g4b → gold-g4e (20:33Z) and gold-g4c → gold-g4f (21:02Z): each on research's
+    491-family vectors (below), with a fresh campaign directory `/content/c170r` and generator partitions 0, 1 and 2.
+    - Each new GPU first passed the production known case at the top window (25 = 25, `kc_top_check.py`).
+  - gold-gpu → gold-l4d (20:20Z), on gold-gpu's untouched top3 share in `/content/c170g`.
+    - It first passed the per-member check and the m88f known case 40/40 on the new GPU.
+  - Following the lead (19:27Z), found lines are copied off every card every 2 minutes (`runlogs/found_sync.sh`).
+    From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
+- research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
+  the lead behind a six-point gate (`v491/`, gold-g4c):
+  1. The deep sieve matches the CPU feeder at the top windows, and the Fermat flags match gmpy2.
+  2. The GPU normal path equals search_c.py at f = 0.97 and 0.9.
+  3. The known case gives the same 46 (k, q) on the GPU and in `cpu_brute_k0.py`.
+  4. The full 2^24 window at f = 0 gives 1,066 = 1,066 near-misses member by member, before and after one-pass.
+  5. Against what production consumed (24 vectors of the newest 463 chunk), design hits a second ×1.061 and near-misses
+     ×0.9995. The lead's bars were +3% and −3%.
+  6. On gold-g4d the generator makes 1,000 vectors at 1,248 rows every ~40 s.
+- Family-B covers (research a9e4a27; the lead changed the criterion at 20:00Z). What decides the final record is how far
+  above 170,000 a design hit stops. So the uncovered primes in 170,000-180,000 count, not the rows below 158,209.
+  - Check 6 (`famB/check6_results.txt`), uncovered primes in [170k, 175k) / [175k, 180k): 57.2 / 60.5 in the first
+    m89 chunks (family A), 49.1 / 52.1 in the 58e95e3 chunks (A + B), and 46.1 / 50.4 in the 491 chunks.
+  - The 491 family-B-only file (3,924 covers, a subset of 4,000) has run since 20:26Z. The m88f file is B ∩ present
+    (258 covers).
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

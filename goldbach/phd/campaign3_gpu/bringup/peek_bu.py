@@ -1,0 +1,1 @@
+import os; print("[bl]", open("/content/bringup.log").read()[-1500:].replace("\n", " || ") if os.path.exists("/content/bringup.log") else "no log", "| out", open("/content/bringup.out").read()[-300:] if os.path.exists("/content/bringup.out") else None)

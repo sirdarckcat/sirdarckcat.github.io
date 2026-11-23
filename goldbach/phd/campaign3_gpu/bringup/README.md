@@ -14,3 +14,15 @@ A replacement session (same accelerator) gets the old card's `snap.tgz` and:
 - L4 / T4: `kc_m88f.json`, then `bash bringup_l4.sh`. It restores and runs `opl4gate2.sh` on the new GPU against the uaB originals: per-member identity, and
   the m88f known case 40/40 or stop. It then resumes the campaign in `/content/c170f` with its done set, through `deploy_l4op.py` (options, one-pass,
   KLO top-16, any top-up file).
+- A new L4 for a card whose state was lost (gold-gpu → gold-l4d): another L4's snapshot as the template, the lost card's untouched share as
+  `/content/m88f_gpu_share.json`, then `bash bringup_l4new.sh`. It uses a fresh campaign directory, `/content/c170g`, and blanks the template's top-up files.
+  It then runs the same `opl4gate2.sh` check, and `deploy_l4op.py`.
+
+The steps are scripted:
+
+- `handover.sh OLD NEW GPU KIND PART DEADLINE` handles a card that ends on its own. It waits for the final snapshot and for the old session to leave
+  `colab sessions`, retries `colab new` while Colab refuses a fourth G4, uploads the kit, starts the bring-up through `launch_bu.py`, and follows
+  `/content/bringup.log` through `peek_bu.py`.
+- `handover_pro.sh OLD NEW GPU KIND ARG AT` is the proactive form, run at ~23 h (the lead, 19:27Z). At time AT, it waits for a batch end on OLD and stops
+  the campaign there. It then takes the final snapshot, pulls the found lines one last time, stops the session to free its slot, and continues as above.
+  For KIND `l4new`, ARG is the new card's share file.
