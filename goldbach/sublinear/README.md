@@ -17,10 +17,12 @@ keep the ones with the fewest rows left, test. One member in e^26 to e^39
 succeeds, depending on the target.
 
 The members with unusually few rows left after the sieve are far more likely
-to succeed, and better numbers exist than the search can afford to find: the
-best N below 10^200 for primes up to 10^7 is about e^10 times better than a
-typical member (`../fscan/cover/brainstorm/`). The question is whether such
-members can be *located* without enumerating all t:
+to succeed, and far better numbers exist than the search can afford to find:
+an explicit family for the primes up to 10^7 is about e^10 times better than
+a typical member (`../fscan/cover/brainstorm/`), and the count in Result 3
+below puts the best ones, by rows left at depth 10^8, some e^27 above the
+members of the best covers. The question is whether such members can be
+*located* without enumerating all t:
 
 > Given the rows R, the progression N0 + tM (0 ≤ t < K) and the sieve primes
 > s ≤ z, find t for which the number of rows q with N0 + tM − q free of prime
@@ -367,12 +369,13 @@ per success:
 Two readings. First, even a perfect search over everything the fleet's sieve
 sees (depth 10^8) would end near 16% with the Colab units that remain, and
 20% (426,140) would still cost it about e^44 tests, e^13 times the budget;
-with today's method 20% costs about e^87. Deeper residues would give more
-(at 213,070 the expected successes of an ideal search go from e^18 at depth
-10^8 to e^27 at depth 10^12), but nobody can sieve them. Second, each line of
-the table is steep: the cost grows like the 1.4th to 1.8th power of the
-target, so a factor e in tests moves any of these methods by about 0.2
-percentage points near 10%.
+with today's method 20% costs about e^87 (extrapolated). Deeper residues
+would give more (at 213,070 the expected successes of an ideal search within
+the budget go from e^18 at depth 10^8 to e^27 at depth 10^12,
+`ideal_tilt_depths.txt`), but nobody can sieve them. Second, each line of the
+table is steep: between neighbouring targets the cost grows like the target
+to a power from 1.2 to 2.3 (same file), so a factor e in tests moves any of
+these methods by 0.2 to 0.3 percentage points.
 
 **The same thing in miniature, exactly** (`toy_exact.c`, `toy_compare.py`,
 `toy_exact_1e9_1000.txt`). Take X = 10^9 instead of 10^200, target Q = 1,000
@@ -442,7 +445,7 @@ divisible by a prime from 7 to 29) contain 4 pairs closer than 1,000 where
 independence predicts 0.09 and the inheritance predicts 2.7. It does not help
 the search. A neighbour keeps only the classes of the primes dividing h, so it
 loses the cover: at 200 digits a neighbour at distance 30,030 of a number
-with g = 157,837 inherits about 6,000 of the 19,050 rows below 213,070 and is
+with g near 158,000 inherits about 6,000 of the 19,050 rows below 213,070 and is
 left with about 1,600 rows at risk, the same as a fresh member of the best
 cover (my count and the Lean session's agree), and it cannot be sieved in
 bulk.
@@ -612,7 +615,8 @@ and `complete_cover.py` checks it and prints N0 (193 digits). For every even
 N = N0 + tM, of which 21,378,978 are below 10^200, each N − q with q an odd
 prime below 15,907 is divisible by a prime ≤ 463: no prime below 15,907 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
-is 0.7% of the ceiling, against 7.4% for the record found by search: as with
+is 0.7% of the ceiling, against 7.4% for the record found by search (158,209
+since 23 November 12:48 UTC, on the 89-prime covers of `../fscan/cover/`): as with
 prime gaps, what can be constructed is far behind what can be found. At
 15,950 and at 16,000 the best covers found on these 89 primes leave one row;
 where exactly complete covers stop is not known. Two more primes still fit

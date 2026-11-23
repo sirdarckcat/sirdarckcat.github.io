@@ -62,3 +62,5 @@ F_9 (p = 3), N = lam * V^3 * x^3, deg V = 9, deg N = 30, lam non-square
   rows of degree 2: 36 monic irreducibles, 36 tested: r even 36, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
 F_25 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam non-square
   rows of degree 2: 300 monic irreducibles, 150 tested: r even 150, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_25 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam non-square
+  rows of degree 2: 300 monic irreducibles, 300 tested: r even 300, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
