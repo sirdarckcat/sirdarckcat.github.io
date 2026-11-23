@@ -31,6 +31,8 @@ import GoldbachGaps.Cap.Layers
 import GoldbachGaps.Cap.Selection
 import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Cap.Tilt
+import GoldbachGaps.Cap.Radius
+import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -106,7 +108,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `Tilt` (selection on a normal count of rows: weighting `N(μ, v)` by `e^{t x}`
                gives `e^{μ t + v t²/2} N(μ + v t, v)`, so the members with at most
                `μ - z √v` rows hold the fraction `Φ(λ - z)` of the successes,
-               `λ = -√v ln(1 - p)`).
+               `λ = -√v ln(1 - p)`; a member `z` standard deviations below the mean is
+               `e^(λ z - λ²/2)` times as likely to succeed as the average one, which caps what
+               any search inside a progression can gain), `Radius` (lattice decoding and the
+               search problem: reaching a smooth part `c` times the typical one needs
+               `c² ≥ e ln K / 4`, so `c ≥ 3.88` for `K = 2^32`; in list form, a list of
+               `2 ≤ ℓ ≤ r/2` classes modulo `r` carries `ln 2 - 2 ln r / r` more nats of
+               information than it contributes to the lattice condition, so inside the
+               Johnson radius only singleton lists, i.e. the cover, are left), `BlackBox` (a
+               method that only asks members whether they are good finds one of the `g` good
+               ones among `K` with `m` questions for at most the fraction `m g / K` of the
+               instances).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

@@ -95,4 +95,20 @@ theorem selection_fraction (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {p : ℝ} (hp
     linear_combination (Real.log (1 - p)) * this
   rw [key]
 
+/-- **What the best member is worth.** A member whose number of rows left is `z` standard
+deviations below the mean is `e^(λ z - λ²/2)` times as likely to succeed as an average member,
+`λ = -√v ln (1 - p)`. Among `K` members the best has `z ≈ √(2 ln K)`, so no search inside a
+progression of `K` members gains more than about `λ √(2 ln K)` nats over testing at random. -/
+theorem enrichment_at (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {p : ℝ} (hp : p < 1) (z : ℝ) :
+    (1 - p) ^ (μ - z * √(v : ℝ)) / (∫ r, (1 - p) ^ r ∂(gaussianReal μ v)) =
+      rexp (-(√(v : ℝ) * Real.log (1 - p)) * z - (√(v : ℝ) * Real.log (1 - p)) ^ 2 / 2) := by
+  have hpos : 0 < 1 - p := by linarith
+  have hpow : ∀ r : ℝ, (1 - p) ^ r = rexp (Real.log (1 - p) * r) :=
+    fun r => Real.rpow_def_of_pos hpos r
+  simp_rw [hpow]
+  rw [integral_exp_mul_gaussianReal μ hv, ← Real.exp_sub]
+  congr 1
+  have := Real.mul_self_sqrt v.coe_nonneg
+  linear_combination (Real.log (1 - p) ^ 2 / 2) * this
+
 end GoldbachGaps.Cap
