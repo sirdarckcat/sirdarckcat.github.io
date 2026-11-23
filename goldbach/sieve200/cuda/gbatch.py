@@ -25,14 +25,15 @@ def _np(a):
 HERE = os.path.dirname(os.path.abspath(__file__))
 _SRC = "".join(open(os.path.join(HERE, f)).read() for f in ("gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh"))
 _BCACHE = {}
-_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_apply")
+_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply")
 
 
-def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt):
-    key = (ks_log, llog, nthreads, tile_log, rg, ppt)
+def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2):
+    key = (ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta)
     if key not in _BCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define KLOG {ks_log}\n#define LLOG {llog}\n#define NTHREADS {nthreads}\n"
-                f"#define S200G_UNROLL 1\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n#define RG {rg}\n#define PPT {ppt}\n")
+                f"#define S200G_UNROLL 1\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n#define RG {rg}\n#define PPT {ppt}\n"
+                f"#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n")
         mod = cp.RawModule(code=head + _SRC)
         _BCACHE[key] = {n: mod.get_function(n) for n in _NAMES}
     return _BCACHE[key]
@@ -40,11 +41,12 @@ def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt):
 
 class BatchFeeder(GpuFeeder):
     def __init__(self, S, INV, U, N0M, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, nthreads=256, split=None, rg=16, ppt=4, gen_threads=256, tile_threads=256,
-                 shared=None, max_rows=None):
+                 shared=None, max_rows=None, staged=False, rcta=2, stage_cap=8192):
         assert ks_log >= tile_log and 1 <= rg <= 64
         super().__init__(S, INV, U, N0M, klog=ks_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, shared=shared, plain_sieve=False,
-                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt), max_rows=max_rows)
+                         kernels=_batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap, rcta), max_rows=max_rows)
         self.tile_log, self.rg, self.tile_threads = tile_log, rg, tile_threads
+        self.staged, self.rcta, self.stage_cap, self.ppt = bool(staged), int(rcta), int(stage_cap), int(ppt)
         self.ntiles = 1 << (ks_log - tile_log)
         Sh = _np(self.sh["S64"])
         split = (1 << tile_log) if split is None else split
@@ -52,7 +54,8 @@ class BatchFeeder(GpuFeeder):
         self.n_large = int(Sh.size - self.n_small)
         self.tabt = cp.empty((self.ntiles * max(self.n_small, 1), 4), dtype=cp.uint32)      # {s, M^-1, invp, c0 of the tile} a (tile, small prime)
         self.tabl = cp.empty((max(self.n_large, 1), 4), dtype=cp.uint32)                    # the large primes, c0 of the batch
-        self.big = gbig.BigStage(self.U, self.tabl, ks_log=ks_log, tile_log=tile_log, rg=rg, ppt=ppt, threads=gen_threads, S=Sh[self.n_small:], kernels=self.k) if self.n_large else None
+        self.big = gbig.BigStage(self.U, self.tabl, ks_log=ks_log, tile_log=tile_log, rg=rg, ppt=ppt, threads=gen_threads, S=Sh[self.n_small:], kernels=self.k,
+                                staged=self.staged, rcta=self.rcta, stage_cap=self.stage_cap) if self.n_large else None
         self.tile_smem = 4 * ((1 << tile_log) // 32)
         if self.tile_smem > 48 * 1024:
             self.k["s200g_tile"].max_dynamic_shared_size_bytes = self.tile_smem
@@ -62,14 +65,14 @@ class BatchFeeder(GpuFeeder):
         # same primes, tables and compiled kernels; the big stage, the tile tables and the matrix are rebuilt for the new feeder
         return BatchFeeder(None, None, U, n0m, ks_log=self.klog, tile_log=self.tile_log, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads,
                            split=int(_np(self.sh["S64"])[self.n_small - 1]) if self.n_small else 0, rg=self.rg, gen_threads=self.big.threads if self.big else 256,
-                           tile_threads=self.tile_threads, shared=self.sh)
+                           tile_threads=self.tile_threads, shared=self.sh, staged=self.staged, rcta=self.rcta, stage_cap=self.stage_cap, ppt=self.ppt)
 
     def with_N0(self, N0, U):
         """as GpuFeeder.with_N0: N0 mod s for every prime is computed on the GPU (a new feeder: its own bit matrix and large-prime stage; use retarget() to reuse this one)"""
         n0m = self._n0m(N0)
         return BatchFeeder(None, None, U, n0m, ks_log=self.klog, tile_log=self.tile_log, llog=self.llog, f=self.f, p_est=self.p_est, nthreads=self.nthreads,
                            split=int(_np(self.sh["S64"])[self.n_small - 1]) if self.n_small else 0, rg=self.rg, gen_threads=self.big.threads if self.big else 256,
-                           tile_threads=self.tile_threads, shared=self.sh)
+                           tile_threads=self.tile_threads, shared=self.sh, staged=self.staged, rcta=self.rcta, stage_cap=self.stage_cap, ppt=self.ppt)
 
     def _sieve_phase(self, k0, ev):
         sh = self.sh

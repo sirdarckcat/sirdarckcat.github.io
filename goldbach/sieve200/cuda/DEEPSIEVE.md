@@ -99,3 +99,23 @@ come back every batch: ~48 ms of Python a 64-slice batch), `--deep-tile-threads`
 Upper bound: max(1.24, 0.75) + 0.1 = 1.35 s, x1.55 over the present batch; what it really gives depends on how the two kernels share the SMs: the Fermat CTAs (5 an SM, 128 threads, 92-102 registers)
 leave ~4,000 registers an SM, so a 256-thread sieve CTA cannot sit beside them (try `--deep-tile-threads 128`); the high priority lets sieve CTAs take an SM as soon as a Fermat CTA (~1 ms) retires.
 `test_overlap_cpu.py` tests the helper (order, run-ahead bound, error propagation, the cache) with a stub cupy.
+
+## The staged generate kernel (`gbig_gen_st`, 2026-11-23; CPU-verified, never run on a GPU)
+
+Pass B of `gbig_gen` is 136-242 ms of the 373 ms window: every mark is its own 4-byte store into one of 1,024 bins of 100-190k entries (430-790 MB, more than the cache): one L2 request a mark.
+The staged kernel makes the same bins with whole runs:
+
+* the host cuts the (ascending) prime list into **chunks** with about the same expected marks (a prime s makes 2^25 / s marks a row: `bigchunks.make_chunks`, 0.75 x `stage_cap` / `rcta` marks a row);
+* a CTA = (chunk, `rcta` rows): pass A counts its marks by (row, tile) bin in shared memory, a Hillis-Steele scan of the counts gives each bin its place in a **staging buffer** of `stage_cap` words
+  (static shared memory, < 48 KB: 8,192 = 34 KB), one global atomic a bin reserves the bin's room as before (same `gcnt` demand counts, same overflow flag and retry), pass B' recomputes the marks and
+  writes them SORTED BY BIN into the buffer (a shared atomic a mark), and a warp a bin copies its run to global memory with lane i on word i: whole 128-byte lines, ~8x fewer L2 requests;
+* a CTA whose chunk has more than `stage_cap` marks (a statistical outlier) writes them the old way, one store a mark: same result (tested with chunks 3x the buffer);
+* the apply / tile kernel is unchanged (bins have the same layout).
+
+SASS (NVRTC 12.9): 26-30 registers, 34.8 KB static shared memory, no spills; the mark loops are 7 (pass A) and 10 (pass B') instructions as before.  Expected: pass B 136-242 -> ~40-60 ms if the L2 request
+rate and partial-sector traffic are the limit (a window 373 -> ~230 ms, ~190 with the apply change).  Costs it adds: a shared atomic and a shared store a mark, the scan and 128 global atomics a CTA
+(~25k CTAs a group), and the TAB (prime table) is read once per (chunk, row pair) instead of once per 16 rows (~25 GB of L2 reads a window, ~5 ms).
+
+Use: `bench_bigprimes.py --staged 1 --rcta 2 --stage-cap 8192` (the sweep script has a staged section), `bench_batch.py --staged 1`, and in a campaign `DEEP_STAGED=1 DEEP_RCTA=2 DEEP_STAGE_CAP=8192`
+in the environment of `search_gpu5.py --deep 1` (`deep_feeder.py` reads them; no new patch).  `--deep-gen-threads` must be at least rcta x 64 and a multiple of 32; 512 threads leave two CTAs an SM busy.
+`python3 test_gbig.py` (kernel vs a brute-force reference: normal chunks, chunks 3x the buffer, a partial last row pair, overflow flag), `test_gbig_cpu.py`, `test_gbatch_cpu.py`, `test_bench_batch_cpu.py` cover it.

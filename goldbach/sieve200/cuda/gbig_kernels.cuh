@@ -91,6 +91,118 @@ extern "C" __global__ void gbig_gen(const u32 *U, const uint4 *TAB, int nP, int 
     }
 }
 
+/* ---- the staged variant of gbig_gen ----------------------------------------------------------------------------------------------------------------------------
+ * gbig_gen writes every mark with a 4-byte store of its own into its bin: one L2 request a mark, into 430-790 MB of bins that do not fit the cache: 49 G marks/s (0.020 ns a
+ * mark) on an RTX PRO 6000, 136-242 ms of the 373 ms a 2^25-member window at B = 1e8.  Here a CTA takes a CHUNK of primes whose marks for RCTA rows are about 3/4 of STAGE_CAP
+ * (the host cuts the prime list so that every chunk has about the same expected marks: a prime s makes 2^KS_LOG / s marks a row), counts them by (row, tile) bin in shared memory,
+ * reserves the room of every bin in global memory with one atomic a bin, writes the marks SORTED BY BIN into shared memory, and copies each bin's run to global memory with
+ * consecutive threads on consecutive words (whole 128-byte lines: ~8x fewer L2 requests, no partial-sector traffic except at the two ends of a run).  A chunk with more than
+ * STAGE_CAP marks (rare) is written the old way.  Same bins, same counts, same overflow protocol as gbig_gen (any bin over `cap`: gcnt[NBINS] = 1 and no writes).
+ * Grid (nchunks, ceil(nrows / RCTA)), blockDim.x a multiple of 32 and >= NB = RCTA * NTILES; static shared memory 4 (STAGE_CAP + 4 NB) bytes (< 48 KB).
+ * pstart[c] .. pstart[c + 1] - 1: the primes (indices into TAB) of chunk c.  RCTA is a power of two, RCTA_LOG its logarithm.
+ */
+#ifndef STAGE_CAP
+#define STAGE_CAP 8192
+#endif
+#ifndef RCTA
+#define RCTA 2
+#endif
+#ifndef RCTA_LOG
+#define RCTA_LOG 1
+#endif
+#define NB (RCTA * NTILES)
+
+extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int *pstart, int row0, int nrows, u32 cap, u32 *gcnt, u32 *bins) {
+    __shared__ u32 stage[STAGE_CAP];
+    __shared__ u32 cnt[NB], pos[NB], cur[NB], base[NB];
+    __shared__ u32 over_s;
+    const int tid = threadIdx.x;
+    const int r0 = blockIdx.y * RCTA;                                   /* first row of this CTA in the group */
+    const int nr = (nrows - r0 < RCTA) ? nrows - r0 : RCTA;
+    const int p_lo = pstart[blockIdx.x], p_hi = pstart[blockIdx.x + 1];
+    const int nitems = (p_hi - p_lo) << RCTA_LOG;                       /* (prime, row) pairs: item = prime * RCTA + row */
+    for (int b = tid; b < NB; b += blockDim.x) cnt[b] = 0;
+    if (tid == 0) over_s = 0;
+    __syncthreads();
+    /* pass A: the marks of every bin of this CTA */
+    for (int it = tid; it < nitems; it += blockDim.x) {
+        const int rr = it & (RCTA - 1);
+        if (rr >= nr) continue;
+        const uint4 t = TAB[p_lo + (it >> RCTA_LOG)];
+        const u32 s = t.x, q = U[row0 + r0 + rr];
+        u32 a = q * t.y - __umulhi(q, t.z) * s;                          /* q M^-1 mod s, in [0, 2s) */
+        if (a >= s) a -= s;
+        u32 j = a + s - t.w;
+        if (j >= s) j -= s;
+        const u32 rb = rr * NTILES;
+        for (; j < KS; j += s) atomicAdd(&cnt[rb + (j >> TILE_LOG)], 1u);
+    }
+    __syncthreads();
+    /* inclusive scan of the counts (Hillis-Steele): pos[b] = marks of bins 0 .. b; bin b's run is stage[pos[b] - cnt[b] .. pos[b]) */
+    if (tid < NB) pos[tid] = cnt[tid];
+    __syncthreads();
+    for (int d = 1; d < NB; d <<= 1) {
+        u32 v = 0;
+        if (tid < NB && tid >= d) v = pos[tid - d];
+        __syncthreads();
+        if (tid < NB && tid >= d) pos[tid] += v;
+        __syncthreads();
+    }
+    const u32 total = pos[NB - 1];
+    if (tid < NB) {                                                     /* the room of bin b in global memory: [base, base + c) of bin (r0 NTILES + b) */
+        const u32 c = cnt[tid];
+        const u32 bs = c ? atomicAdd(&gcnt[r0 * NTILES + tid], c) : 0u;
+        base[tid] = bs;
+        if (bs + c > cap) over_s = 1u;
+        cur[tid] = (total <= STAGE_CAP) ? pos[tid] - c : 0u;
+    }
+    __syncthreads();
+    if (over_s) {
+        if (tid == 0) gcnt[NBINS] = 1u;
+        return;
+    }
+    if (total <= STAGE_CAP) {
+        /* pass B: the same marks again, into the staging buffer at their place in bin order */
+        for (int it = tid; it < nitems; it += blockDim.x) {
+            const int rr = it & (RCTA - 1);
+            if (rr >= nr) continue;
+            const uint4 t = TAB[p_lo + (it >> RCTA_LOG)];
+            const u32 s = t.x, q = U[row0 + r0 + rr];
+            u32 a = q * t.y - __umulhi(q, t.z) * s;
+            if (a >= s) a -= s;
+            u32 j = a + s - t.w;
+            if (j >= s) j -= s;
+            const u32 rb = rr * NTILES;
+            for (; j < KS; j += s) stage[atomicAdd(&cur[rb + (j >> TILE_LOG)], 1u)] = j & TILE_MASK;
+        }
+        __syncthreads();
+        /* flush: a warp a bin at a time, lane i on word i of the run */
+        const int warp = tid >> 5, lane = tid & 31, nwarps = blockDim.x >> 5;
+        for (int b = warp; b < NB; b += nwarps) {
+            const u32 c = cnt[b];
+            const u32 *src = stage + (pos[b] - c);
+            u32 *dst = bins + (size_t)(r0 * NTILES + b) * cap + base[b];
+            for (u32 i = lane; i < c; i += 32) dst[i] = src[i];
+        }
+    } else {
+        for (int it = tid; it < nitems; it += blockDim.x) {                 /* more marks than the buffer: one store a mark, as gbig_gen */
+            const int rr = it & (RCTA - 1);
+            if (rr >= nr) continue;
+            const uint4 t = TAB[p_lo + (it >> RCTA_LOG)];
+            const u32 s = t.x, q = U[row0 + r0 + rr];
+            u32 a = q * t.y - __umulhi(q, t.z) * s;
+            if (a >= s) a -= s;
+            u32 j = a + s - t.w;
+            if (j >= s) j -= s;
+            const u32 rb = rr * NTILES;
+            for (; j < KS; j += s) {
+                const u32 b = rb + (j >> TILE_LOG);
+                bins[(size_t)(r0 * NTILES + b) * cap + base[b] + atomicAdd(&cur[b], 1u)] = j & TILE_MASK;
+            }
+        }
+    }
+}
+
 /* Apply the n entries at e to the shared bitmap bm (every entry clears its bit).  e is 16-byte aligned (cap is a multiple of 32 words).  16-byte loads, GBIG_APPLY_UNROLL of
  * them in flight a thread: with one load at a time the apply is bound by the memory latency (1 CTA of 256 threads an SM keeps ~190 KB in flight, ~200 GB/s: measured 266 GB/s on an
  * RTX PRO 6000 against 1,460 GB/s of the device), so all the loads of an iteration are issued before the first atomic. */

@@ -46,7 +46,8 @@ def check(spec, a):
     B, ks = a.check_b, a.check_ks
     S, INV, N0M = prime_tables(spec, B)
     tile = min(a.tile, ks - 1)
-    bf = BatchFeeder(S, INV, rows, N0M, ks_log=ks, tile_log=tile, llog=min(15, ks), f=a.f, nthreads=256, split=min(a.split, B // 2), rg=a.rg)
+    bf = BatchFeeder(S, INV, rows, N0M, ks_log=ks, tile_log=tile, llog=min(15, ks), f=a.f, nthreads=256, split=min(a.split, B // 2), rg=a.rg,
+                     staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap, gen_threads=256 if not a.staged else max(256, a.rcta * (1 << (ks - tile)) // 32 * 32))
     cover = [int(r) for r, _ in spec.get("cover", [])]
     cf = Feeder(int(spec["N0"]), int(spec["M"]), rows, B=B, L=1 << min(15, ks), logK=ks, f=a.f, exclude=cover)
     ok = True
@@ -73,7 +74,7 @@ def run(spec, a, rg, tile_threads, label=""):
         print("  not enough GPU memory for this batch; use a smaller --ks or fewer rows")
         return None
     bf = BatchFeeder(S, INV, rows, N0M, ks_log=a.ks, tile_log=a.tile, llog=a.llog, f=a.f, nthreads=a.nthreads, split=a.split, rg=rg, ppt=a.ppt,
-                     gen_threads=a.gen_threads, tile_threads=tile_threads)
+                     gen_threads=a.gen_threads, tile_threads=tile_threads, staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap)
     bf.window(0, timings=True)                                         # compile + warm up
     cp.cuda.Device().synchronize()
     acc = {}
@@ -109,6 +110,9 @@ def main():
     ap.add_argument("--nthreads", type=int, default=256)
     ap.add_argument("--gen-threads", type=int, default=256, dest="gen_threads")
     ap.add_argument("--tile-threads", type=int, default=256, dest="tile_threads")
+    ap.add_argument("--staged", type=int, default=0, help="1: the staged large-prime kernel (gbig_gen_st)")
+    ap.add_argument("--rcta", type=int, default=2)
+    ap.add_argument("--stage-cap", type=int, default=8192, dest="stage_cap")
     ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--rows", type=int, default=None, help="use the first N rows (default all)")
     ap.add_argument("--check", action="store_true")

@@ -21,6 +21,9 @@ class _Fn:
         if self.name == "gbig_gen":
             U, TAB, nP, row0, nrows, cap, gcnt, bins = args
             self.lib.cpu_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+        elif self.name == "gbig_gen_st":
+            U, TAB, pstart, row0, nrows, cap, gcnt, bins = args
+            self.lib.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
         else:
             gcnt, bins, cap, out = args
             self.lib.cpu_apply(int(grid[0]), P(gcnt), P(bins), int(cap), P(out), int(block[0]))
@@ -28,8 +31,8 @@ class _Fn:
 
 class _RawModule:
     def __init__(self, code=None):
-        tl, ks, rg, ppt = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("TILE_LOG", "KS_LOG", "RG", "PPT"))
-        self.lib = test_gbig.build(tl, ks, rg, ppt)
+        tl, ks, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("TILE_LOG", "KS_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
+        self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc)
 
     def get_function(self, name):
         return _Fn(self.lib, name)
@@ -60,6 +63,13 @@ if __name__ == "__main__":
         runpy.run_path(os.path.join(HERE, "bench_bigprimes.py"), run_name="__main__")
     except SystemExit as e:                                    # the script ends with sys.exit(main())
         assert e.code in (0, None), "bench_bigprimes --check failed"
+    # the staged kernel through the same glue (bench_bigprimes --staged 1, 2 rows a CTA, 512 marks staged a CTA), then its capacity retry
+    sys.argv = ["bench_bigprimes.py", "--rows", "9", "--plo", "10", "--b", "13", "--ks", "13", "--tile", "10", "--rg", "4", "--ppt", "2", "--threads", "32", "--check",
+                "--staged", "1", "--rcta", "2", "--stage-cap", "512"]
+    try:
+        runpy.run_path(os.path.join(HERE, "bench_bigprimes.py"), run_name="__main__")
+    except SystemExit as e:
+        assert e.code in (0, None), "bench_bigprimes --staged --check failed"
     # the capacity retry: an initial cap of 8 overflows, the demand of the fullest bin sizes the second attempt, the result is the same
     import gbig, bench_bigprimes as bb
     S = gbig.primes_between(1 << 10, 1 << 13)
@@ -71,4 +81,9 @@ if __name__ == "__main__":
     bits = np.unpackbits(out.view(np.uint8), bitorder="little").reshape(4, 1 << 13).astype(bool)
     good = np.array_equal(bits, ref) and st.retries == 1 and st.cap >= 64
     print(f"capacity retry: cap 8 -> {st.cap}, retries {st.retries}, result {'identical to numpy' if good else 'WRONG'}")
-    sys.exit(0 if good else 1)
+    st2 = gbig.BigStage(U, TAB, ks_log=13, tile_log=10, rg=4, ppt=2, threads=32, cap=8, staged=True, rcta=2, stage_cap=512)
+    out2 = np.array(st2.run_group(0, 4))
+    bits2 = np.unpackbits(out2.view(np.uint8), bitorder="little").reshape(4, 1 << 13).astype(bool)
+    good2 = np.array_equal(bits2, ref) and st2.retries == 1 and st2.cap >= 64
+    print(f"staged capacity retry: cap 8 -> {st2.cap}, retries {st2.retries}, result {'identical to numpy' if good2 else 'WRONG'}")
+    sys.exit(0 if (good and good2) else 1)

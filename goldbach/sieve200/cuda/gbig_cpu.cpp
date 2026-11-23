@@ -13,7 +13,7 @@ static inline unsigned __umulhi(unsigned a, unsigned b) { return (unsigned)(((un
 static inline unsigned atomicAnd(unsigned *p, unsigned v) { return __atomic_fetch_and(p, v, __ATOMIC_RELAXED); }
 static inline unsigned atomicAdd(unsigned *p, unsigned v) { return __atomic_fetch_add(p, v, __ATOMIC_RELAXED); }
 struct uint4 { unsigned x, y, z, w; };
-struct dim_t { unsigned x; };
+struct dim_t { unsigned x, y; };
 static thread_local dim_t threadIdx;
 static dim_t blockIdx, blockDim;
 static pthread_barrier_t g_bar;
@@ -52,6 +52,16 @@ static void apply_tramp(void *a) { apply_args *x = (apply_args *)a; gbig_apply(x
 extern "C" void cpu_apply(int nbins, const u32 *gcnt, const u32 *bins, u32 cap, u32 *out, int threads) {
     apply_args a{gcnt, bins, cap, out};
     run_grid(nbins, threads, (size_t)TILE_WORDS * 4, apply_tramp, &a);
+}
+struct gen_st_args { const u32 *U; const uint4 *TAB; const int *pstart; int row0, nrows; u32 cap; u32 *gcnt; u32 *bins; };
+static void gen_st_tramp(void *a) { gen_st_args *x = (gen_st_args *)a; gbig_gen_st(x->U, x->TAB, x->pstart, x->row0, x->nrows, x->cap, x->gcnt, x->bins); }
+/* the staged kernel has a 2-D grid (chunks, row pairs): the emulation runs the CTAs one after the other */
+extern "C" void cpu_gen_st(const u32 *U, const uint4 *TAB, const int *pstart, int nchunks, int row0, int nrows, u32 cap, u32 *gcnt, u32 *bins, int threads) {
+    gen_st_args a{U, TAB, pstart, row0, nrows, cap, gcnt, bins};
+    for (int y = 0; y < (nrows + RCTA - 1) / RCTA; y++) {
+        blockIdx.y = y;
+        run_grid(nchunks, threads, 0, gen_st_tramp, &a);
+    }
 }
 extern "C" int cpu_nbins() { return NBINS; }
 extern "C" int cpu_ntiles() { return NTILES; }

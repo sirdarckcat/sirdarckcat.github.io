@@ -18,7 +18,12 @@ run() {   # label, groups, args...
   printf '%-40s ' "$label"
   timeout 600 python3 bench_bigprimes.py --b 24 --groups "$groups" "$@" 2>&1 | awk '/ns a mark:/ {g=$5; a=$7; t=$9} /of gen:/ {for (i=1;i<=NF;i++) if ($i=="pass" && $(i+1)=="B") {pb=$(i+8)}} /Error|error|Traceback/ {err=1} END {if (err) print "FAILED"; else printf "gen %s apply %s total %s ns/mark; pass B %s\n", g, a, t, pb}'
 }
-echo "--- the default and the primes a thread"
+echo "--- the STAGED kernel (gbig_gen_st): marks sorted by bin in shared memory, whole runs written; rcta = rows a CTA, stage = marks staged a CTA, thr = CTA size"
+for rcta in 1 2 4; do for sc in 4096 8192 11000; do run "staged rcta $rcta stage $sc thr 256" 8 --staged 1 --rcta $rcta --stage-cap $sc --threads 256; done; done
+for thr in 128 512 1024; do run "staged rcta 2 stage 8192 thr $thr" 8 --staged 1 --rcta 2 --stage-cap 8192 --threads $thr; done
+run "staged rcta 2 stage 8192 rg 4" 8 --staged 1 --rcta 2 --stage-cap 8192 --rg 4
+run "staged rcta 2 stage 8192 tile 18" 8 --staged 1 --rcta 2 --stage-cap 8192 --tile 18 --threads 256
+echo "--- the plain kernel: the default and the primes a thread"
 run "ppt 4 rg 16 tile 19 thr 256 (default)" 8 --ppt 4 --rg 16 --threads 256
 for ppt in 1 2 8 16 32; do run "ppt $ppt rg 16 tile 19" 8 --ppt $ppt --rg 16; done
 echo "--- rows a group (bins that fit the L2 cache)"

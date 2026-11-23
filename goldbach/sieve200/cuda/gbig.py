@@ -11,18 +11,20 @@ import os
 import numpy as np
 import cupy as cp
 
+from bigchunks import make_chunks
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 _SRC = open(os.path.join(HERE, "gbig_kernels.cuh")).read()
 _KCACHE = {}
 
 
-def _kernels(tile_log, ks_log, rg, ppt):
-    key = (tile_log, ks_log, rg, ppt)
+def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2):
+    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta)
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n")
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n")
         mod = cp.RawModule(code=head + _SRC)
-        _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_apply")}
+        _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
 
 
@@ -59,8 +61,9 @@ def expected_cap(S, tile_log, margin=1.08):
 
 
 class BigStage:
-    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None):
-        """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity)"""
+    def __init__(self, U, TAB, ks_log=25, tile_log=19, rg=16, ppt=4, threads=256, cap=None, S=None, kernels=None, staged=False, rcta=2, stage_cap=8192):
+        """TAB: a numpy [nP, 4] table (copied to the device) or a cupy one that the caller rebuilds each batch (then pass S, the host array of its primes, for the capacity).
+        staged: the staged generate kernel (gbig_gen_st: a CTA takes a chunk of primes and rcta rows, sorts the marks by bin in shared memory and writes whole runs; threads >= rcta x tiles)"""
         self.U = U.astype(cp.uint32) if isinstance(U, cp.ndarray) else cp.asarray(np.asarray(U, dtype=np.uint32))     # U may already be on the device (BatchFeeder passes its own)
         self.TAB = TAB if isinstance(TAB, cp.ndarray) else cp.asarray(np.ascontiguousarray(TAB, dtype=np.uint32))
         self.nP = int(self.TAB.shape[0])
@@ -68,10 +71,16 @@ class BigStage:
         self.ntiles = 1 << (ks_log - tile_log)
         self.nbins = rg * self.ntiles
         self.tile_words = (1 << tile_log) // 32
-        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt)
+        self.staged, self.rcta, self.stage_cap = bool(staged), int(rcta), int(stage_cap)
+        assert self.rcta >= 1 and self.rcta & (self.rcta - 1) == 0, "rcta must be a power of two"
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta)
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         self.cap = cap or expected_cap(S, tile_log)
+        if self.staged:
+            assert threads % 32 == 0 and threads >= self.rcta * self.ntiles, "the staged kernel needs a CTA of at least rcta x tiles threads (one thread a bin for the scan)"
+            self.pstart = cp.asarray(make_chunks(S, ks_log, 0.75 * self.stage_cap / self.rcta))      # chunks of primes with ~3/4 of the staging buffer in marks
+            self.nchunks = int(self.pstart.size) - 1
         assert self.cap % 4 == 0, "a bin must start 16-byte aligned (the apply loads 16 bytes at a time)"
         self.apply_smem = 4 * self.tile_words
         if self.apply_smem > 48 * 1024:
@@ -102,7 +111,11 @@ class BigStage:
             if use_events:
                 e0, e1 = cp.cuda.Event(), cp.cuda.Event()
                 e0.record()
-            self.k["gbig_gen"]((grid,), (self.threads,), (U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
+            if self.staged:
+                self.k["gbig_gen_st"]((self.nchunks, (nrows + self.rcta - 1) // self.rcta), (self.threads,),
+                                      (U, self.TAB, self.pstart, np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
+            else:
+                self.k["gbig_gen"]((grid,), (self.threads,), (U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
             if use_events:
                 e1.record()
             if int(self.gcnt[self.nbins]) == 0:
@@ -141,7 +154,11 @@ class BigStage:
             self.gcnt[:] = 0
             e0, e1 = cp.cuda.Event(), cp.cuda.Event()
             e0.record()
-            self.k["gbig_gen"]((grid,), (self.threads,), (self.U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(0), self.gcnt, bins))
+            if self.staged:
+                self.k["gbig_gen_st"]((self.nchunks, (nrows + self.rcta - 1) // self.rcta), (self.threads,),
+                                      (self.U, self.TAB, self.pstart, np.int32(row0), np.int32(nrows), np.uint32(0), self.gcnt, bins))
+            else:
+                self.k["gbig_gen"]((grid,), (self.threads,), (self.U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(0), self.gcnt, bins))
             e1.record(); e1.synchronize()
             ms = cp.cuda.get_elapsed_time(e0, e1)
             best = ms if best is None else min(best, ms)

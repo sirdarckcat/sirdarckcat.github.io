@@ -16,11 +16,11 @@ import test_gpu_sieve_cpu as TG
 import test_gsieve
 
 
-def build(ks, llog, nth, tile, rg, ppt):
-    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}.so")
+def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2):
+    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}.so")
     srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}",
+        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}",
                                "-DMAXKEEP_SORT=8192u", "-DS200G_UNROLL=1", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
@@ -35,6 +35,7 @@ def build(ks, llog, nth, tile, rg, ppt):
     lib.cpu_prep_tiles.argtypes = [vp, vp, vp, vp, ctypes.c_uint64, ctypes.c_int, vp, ctypes.c_int]
     lib.cpu_tile.argtypes = [ctypes.c_int, vp, ctypes.c_int, vp, ctypes.c_int, vp, vp, ctypes.c_uint32, vp, ctypes.c_int]
     lib.cpu_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
+    lib.cpu_gen_st.argtypes = [vp, vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     return lib
 
 
@@ -51,14 +52,17 @@ class _Fn(TG._Fn):
         elif self.name == "gbig_gen":
             U, TAB, nP, row0, nrows, cap, gcnt, bins = args
             L.cpu_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+        elif self.name == "gbig_gen_st":
+            U, TAB, pstart, row0, nrows, cap, gcnt, bins = args
+            L.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
         else:
             super().__call__(grid, block, args, shared_mem)
 
 
 class _RawModule:
     def __init__(self, code=None):
-        ks, llog, nth, tile, rg, ppt = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KS_LOG", "LLOG", "NTHREADS", "TILE_LOG", "RG", "PPT"))
-        self.lib = build(ks, llog, nth, tile, rg, ppt)
+        ks, llog, nth, tile, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KS_LOG", "LLOG", "NTHREADS", "TILE_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
+        self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc)
 
     def get_function(self, name):
         return _Fn(self.lib, name)
@@ -77,10 +81,13 @@ def main():
     cover = [r for r, _ in spec["cover"]]
     ok = True
     # (B, ks_log, tile_log, llog, rg, split, f): primes up to B; a batch of 2^ks members in 2^(ks - tile) tiles; the primes above `split` through gbig
-    for B, ks, tile, llog, rg, split, f in ((32768, 15, 12, 11, 4, 4096, 0.9), (20011, 14, 11, 11, 3, 2048, 0.5), (9001, 13, 11, 11, 16, 9001, 0.0), (32768, 14, 12, 11, 7, 0, 0.8)):
+    for B, ks, tile, llog, rg, split, f, staged, rcta, stage_cap in ((32768, 15, 12, 11, 4, 4096, 0.9, False, 2, 8192), (20011, 14, 11, 11, 3, 2048, 0.5, False, 2, 8192),
+                                                                      (9001, 13, 11, 11, 16, 9001, 0.0, False, 2, 8192), (32768, 14, 12, 11, 7, 0, 0.8, False, 2, 8192),
+                                                                      (32768, 15, 12, 11, 4, 4096, 0.9, True, 2, 512), (32768, 14, 12, 11, 7, 0, 0.8, True, 1, 768),
+                                                                      (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)):
         search.G.clear(); search._SIEVE_CACHE.clear()
         search.init_spec(spec, B, 1 << llog)
-        bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=32, tile_threads=64)
+        bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=32, tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
         cf = Feeder(int(spec["N0"]), int(spec["M"]), spec["residual"], B=B, L=1 << llog, logK=ks, f=f, exclude=cover)
         for k0 in (1 << ks, 2 ** 31 + (1 << ks), 4293885952 - 4293885952 % (1 << ks)):
             w = bf.window(k0, timings=(k0 == 1 << ks))
@@ -94,7 +101,7 @@ def main():
                 good &= abs(w.hm_kept[b] - fb.hm_kept) <= 1e-9 * max(fb.hm_kept, 1e-300)
                 pos += n
             good &= pos == len(w.k)
-            print(f"  B={B} batch 2^{ks} tile 2^{tile} L=2^{llog} rg={rg} split={split} ({bf.n_small} small + {bf.n_large} large primes) f={f} k0={k0}: {len(cb)} blocks, {pos} members: "
+            print(f"  B={B} batch 2^{ks} tile 2^{tile} L=2^{llog} rg={rg} split={split} ({bf.n_small} small + {bf.n_large} large primes){' STAGED rcta ' + str(rcta) + ' stage ' + str(stage_cap) if staged else ''} f={f} k0={k0}: {len(cb)} blocks, {pos} members: "
                   f"{'identical to the CPU feeder' if good else 'DIFFERENT'}   gen retries so far {bf.big.retries if bf.big else 0}", flush=True)
             ok &= good
     print("ALL IDENTICAL" if ok else "FAILED")

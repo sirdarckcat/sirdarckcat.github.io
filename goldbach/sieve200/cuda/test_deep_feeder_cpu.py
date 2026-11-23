@@ -67,6 +67,10 @@ def main():
                 print(f"  B={B} 2^{ks} members, {ds.n_small} small + {ds.n_large} large primes, variant {name} ({len(rows)} rows) k0={k0}: {'identical to the CPU feeder' if good else 'DIFFERENT'}", flush=True)
                 ok &= good
         ok &= bool(log) and "primes below" in log[0]
+        want = "staged" if os.environ.get("DEEP_STAGED") == "1" else "plain"
+        good = want in log[0] and ds.fd.staged == (want == "staged")
+        print(f"  the DeepSieve built the {want} large-prime kernel: {'ok' if good else 'FAILED'}", flush=True)
+        ok &= good
 
     # 3. deep_feeder_for keeps one DeepSieve per M (and builds a new one when M changes)
     state = {}

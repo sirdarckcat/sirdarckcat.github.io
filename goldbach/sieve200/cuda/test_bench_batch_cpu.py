@@ -19,9 +19,15 @@ if __name__ == "__main__":
     spec = json.load(open(os.path.join(HERE, "..", "..", "phd", "campaign3", "base_spec.json")))
     spec["residual"] = spec["residual"][:24]
     a = argparse.Namespace(B=1 << 15, ks=15, tile=12, llog=11, split=4096, f=0.9, rg=4, ppt=2, nthreads=64, gen_threads=32, tile_threads=64, reps=1,
-                           check_rows=20, check_b=1 << 15, check_ks=14)
+                           check_rows=20, check_b=1 << 15, check_ks=14, staged=0, rcta=2, stage_cap=8192)
     ok = bb.check(spec, a)
     acc = bb.run(spec, a, a.rg, a.tile_threads)
     assert acc is not None and all(k in acc for k in ("prep", "sieve", "count", "select", "finalize", "wait1", "rows", "wait2", "host", "wall"))
-    print("check", "ok" if ok else "FAILED")
+    # the same with the staged large-prime kernel (2 rows a CTA, 512 marks staged a CTA)
+    a.staged, a.stage_cap = 1, 512
+    ok2 = bb.check(spec, a)
+    acc2 = bb.run(spec, a, a.rg, a.tile_threads)
+    assert acc2 is not None
+    print("check", "ok" if (ok and ok2) else "FAILED")
+    ok = ok and ok2
     sys.exit(0 if ok else 1)

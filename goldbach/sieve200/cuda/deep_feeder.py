@@ -11,6 +11,7 @@ What it saves over `search.init_spec` + `GpuFeeder.from_search_G`: the prime lis
 loops in Python and takes minutes), N0 mod s for every prime is computed on the GPU per variant, and one bit matrix (max_rows rows x 2^ks_log bits: 4.4 GB for 1,100 rows at
 2^25 members) and one large-prime stage are shared by all variants (retarget).  The primes are the same ones init_spec makes: 3 <= s < B, not a cover prime, not dividing M.
 """
+import os
 import time
 
 import numpy as np
@@ -59,18 +60,23 @@ def prime_tables_M(M, cover, B):
 
 class DeepSieve:
     def __init__(self, M, cover, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, ppt=4, nthreads=256, gen_threads=256, tile_threads=256,
-                 max_rows=1100, log=None):
+                 max_rows=1100, log=None, staged=None, rcta=None, stage_cap=None):
+        """staged / rcta / stage_cap: the staged large-prime kernel (gbig_gen_st); None = the environment variables DEEP_STAGED (0), DEEP_RCTA (2), DEEP_STAGE_CAP (8192), so that
+        a driver script can switch it without a new patch"""
         from gbatch import BatchFeeder                                   # (imports cupy)
+        staged = bool(int(os.environ.get("DEEP_STAGED", "0"))) if staged is None else bool(staged)
+        rcta = int(os.environ.get("DEEP_RCTA", "2")) if rcta is None else int(rcta)
+        stage_cap = int(os.environ.get("DEEP_STAGE_CAP", "8192")) if stage_cap is None else int(stage_cap)
         t0 = time.time()
         S, INV = prime_tables_M(M, cover, B)
         t1 = time.time()
         U0 = np.ones(1, dtype=np.uint32)                                 # a placeholder variant: feeder() retargets it
         self.fd = BatchFeeder(S, INV, U0, np.zeros(S.size, dtype=np.uint32), ks_log=ks_log, tile_log=tile_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, split=split, rg=rg,
-                              ppt=ppt, gen_threads=gen_threads, tile_threads=tile_threads, max_rows=max_rows)
+                              ppt=ppt, gen_threads=gen_threads, tile_threads=tile_threads, max_rows=max_rows, staged=staged, rcta=rcta, stage_cap=stage_cap)
         self.M, self.B, self.max_rows = int(M), int(B), int(max_rows)
         self.nprimes, self.n_small, self.n_large = int(S.size), self.fd.n_small, self.fd.n_large
         if log:
-            log(f"deep sieve: M with {len(cover)} cover primes excluded, {S.size:,} primes below {B:,} ({self.n_small:,} in the tile kernel, {self.n_large:,} in the large-prime stage), "
+            log(f"deep sieve: {'staged' if staged else 'plain'} large-prime kernel{f' (rcta {rcta}, stage {stage_cap})' if staged else ''}; M with {len(cover)} cover primes excluded, {S.size:,} primes below {B:,} ({self.n_small:,} in the tile kernel, {self.n_large:,} in the large-prime stage), "
                 f"batches of 2^{ks_log} members, bit matrix {max_rows} x {(1 << ks_log) // 8 / 2**20:.0f} MB; tables {t1 - t0:.1f} s, feeder {time.time() - t1:.1f} s")
 
     def feeder(self, N0, rows):

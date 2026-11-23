@@ -36,6 +36,9 @@ def main():
     ap.add_argument("--rg", type=int, default=16)
     ap.add_argument("--ppt", type=int, default=4)
     ap.add_argument("--threads", type=int, default=256)
+    ap.add_argument("--staged", type=int, default=0, help="1: the staged generate kernel (gbig_gen_st), --rcta rows a CTA, --stage-cap marks staged a CTA")
+    ap.add_argument("--rcta", type=int, default=2)
+    ap.add_argument("--stage-cap", type=int, default=8192, dest="stage_cap")
     ap.add_argument("--groups", type=int, default=None)
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
@@ -45,12 +48,12 @@ def main():
     TAB = make_table(S, rng=rng)
     U = np.sort(rng.choice(np.arange(1, 150000), size=a.rows, replace=False)).astype(np.uint32)
     K = 1 << a.ks
-    st = BigStage(U, TAB, ks_log=a.ks, tile_log=a.tile, rg=a.rg, ppt=a.ppt, threads=a.threads)
+    st = BigStage(U, TAB, ks_log=a.ks, tile_log=a.tile, rg=a.rg, ppt=a.ppt, threads=a.threads, staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap)
     exp_marks_row = K * float(np.sum(1.0 / S.astype(np.float64)))
     ngroups = (a.rows + a.rg - 1) // a.rg
     run_groups = min(ngroups, a.groups or ngroups)
     print(f"{cp.cuda.runtime.getDeviceProperties(0)['name'].decode()}: {a.rows} rows, primes in (2^{a.plo}, 2^{a.b}]: {S.size:,} of them, batch 2^{a.ks} members "
-          f"({st.ntiles} tiles of 2^{a.tile} bits), groups of {a.rg} rows, cap {st.cap:,} entries a bin ({st.nbins * st.cap * 4 / 1e6:.0f} MB of bins)   (setup {time.time() - t0:.1f} s)")
+          f"({st.ntiles} tiles of 2^{a.tile} bits), groups of {a.rg} rows, {'STAGED kernel: ' + str(st.nchunks) + ' chunks of primes, ' + str(a.rcta) + ' rows and up to ' + str(a.stage_cap) + ' marks staged a CTA, ' if a.staged else ''}cap {st.cap:,} entries a bin ({st.nbins * st.cap * 4 / 1e6:.0f} MB of bins)   (setup {time.time() - t0:.1f} s)")
     print(f"expected marks a row {exp_marks_row:,.0f} = {exp_marks_row / K:.1f} a member; pair visits a row {S.size:,}")
     st.run_group(0, min(a.rg, a.rows))                                    # compile + warm up
     cp.cuda.Device().synchronize()
