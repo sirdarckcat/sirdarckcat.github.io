@@ -1,0 +1,5 @@
+# RTX production after the generate unroll (prod_rate3.py, 14:15:30-14:31:00Z): 0.755 s a batch (0.7815 before); design hits 8.91-9.02e-7/s; near-misses >= 158,209 5.74-5.82e-6/s.
+
+gold-g4 [ab] batches 1233 | span 930 s | batch 0.7549 s | near/batch 4.3684e-06 | near/s 5.7870e-06 | hits/s 9.0049e-07 | tests/batch 14117768 | slices/batch 4.000 | first 14:15:30 last 14:31:00
+gold-g4b [ab] batches 1233 | span 930 s | batch 0.7549 s | near/batch 4.3362e-06 | near/s 5.7443e-06 | hits/s 8.9063e-07 | tests/batch 14117465 | slices/batch 4.000 | first 14:15:30 last 14:31:00
+gold-g4c [ab] batches 1232 | span 930 s | batch 0.7555 s | near/batch 4.3953e-06 | near/s 5.8179e-06 | hits/s 9.0182e-07 | tests/batch 14118275 | slices/batch 4.000 | first 14:15:30 last 14:31:00
