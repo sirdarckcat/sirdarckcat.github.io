@@ -399,7 +399,13 @@ must not depend on the depth z at which it is computed. It does not: for
 per 1,000 in the target, which reaches zero near 2.1 million, the ceiling the
 campaign measures against. So at the 10% level one N in 10^25 is a solution
 and one in e^39 among the members of the best covers; the difficulty is
-entirely one of location.
+entirely one of location. The Lean session reaches the same counts by a
+route that shares no code and no method with this one: a closed formula in
+the singular series of N with one constant fitted on its scan of every even
+N ≤ 10^12 (the rows of one N are slightly less dispersed than independent
+ones) gives e^403.2, 395.7, 383.0, 371.5 and 337.9 at the five targets, within
+0.1 nats of the sampler, and one expected N at 2,133,689
+(`goldbach/lean/scripts/lgs_heuristic/` on branch `ccr-36ca7b46-8twf14`).
 
 **How far an ideal search would go** (`ideal_tilt_targets.txt`). The same
 count at higher targets, as the natural logarithm of the number of N tested
@@ -689,6 +695,42 @@ tried and did not pay: complete covers exist up to at least 17,250, but only
 a few hundred thousand could be enumerated at 17,000. So 16,981 is the best
 found. All four certificates (15,907; 16,381; 16,747; 16,981) are checked by
 the Lean kernel (`Records.lean` on the Lean branch, commit 9acf05d).
+
+**The same question exactly, for few primes** (`desert.c`). Let D(n) be the
+largest value, over all residue vectors on the first n odd primes r, of the
+least odd prime q that lies in none of the chosen classes. For an N in those
+classes every odd prime below D(n) is struck (N − q is divisible by some r),
+and D(n) is the first prime that no choice of N strikes; the complete covers
+above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
+fit below 10^200, which D does not ask). A depth-first search on "which
+modulus strikes the smallest unstruck prime" gives the exact values (n ≤ 7
+also by brute force over all vectors):
+
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 |
+
+At n = 89 and 93 the ratio is at least 5.6. So what can be had without luck
+grows faster than the r·ln r of the theorem. A first-moment count says how
+far it could go: there are ∏(r − 1) vectors with nonzero classes, and a
+random one strikes a given prime with probability 1 − ∏(1 − 1/(r − 1)), so,
+treating the primes as independent, complete covers are expected up to the
+y with π(y)·(−ln(1 − ∏(1 − 1/(r − 1)))) = Σ ln(r − 1). That y is 359 at
+n = 8 (D = 163), 857 at n = 12 (D = 331), 32,300 at n = 89 (found: 15,907)
+and 34,600 at n = 93 (found: 16,981): the exact values and the complete
+covers sit at 40 to 50% of the first-moment estimate throughout.
+Asymptotically the estimate is (e^γ/(2C₂))·r·ln r·ln y, of order r·ln² r.
+For N ≤ X (r about ln X) that is a luck-free desert of order
+ln X·(ln ln X)², between the proven ln X·ln ln X and the ln² X·ln ln X
+expected with luck. No proof of anything beyond the constant 1.349 at order
+r·ln r is in sight: it would need the primes below y in classes modulo
+primes almost as large as y.
+(The nearest object in the literature we found
+is the paired Jacobsthal function of Ziller and Morack, which covers all
+integers of an interval with two classes per prime; here the targets are the
+primes only and there is one class per prime.)
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
