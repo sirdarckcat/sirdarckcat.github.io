@@ -16,11 +16,11 @@ import test_gpu_sieve_cpu as TG
 import test_gsieve
 
 
-def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0, hoist=0, gunroll=1):
-    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ".so")
+def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0, hoist=0, gunroll=1, flush2=0, order=0):
+    out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}" + (f"_u{unroll}" if unroll > 1 else "") + ("_pk" if pack else "") + ("_gh" if hoist else "") + (f"_gu{gunroll}" if gunroll > 1 else "") + ("_f2" if flush2 else "") + ("_go" if order else "") + ".so")
     srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
-        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}",
+        subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}", f"-DTILE_UNROLL={unroll}", f"-DBIN_PACK={pack}", f"-DGEN_HOIST={hoist}", f"-DGEN_UNROLL={gunroll}", f"-DGEN_FLUSH2={flush2}", f"-DGEN_ORDER={order}",
                                "-DMAXKEEP_SORT=8192u", "-DS200G_UNROLL=1", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
     lib = ctypes.CDLL(out)
     vp = ctypes.c_void_p
@@ -42,6 +42,8 @@ def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2, unroll=1, pack=0
 
 
 class _Fn(TG._Fn):
+    order = False                                                       # GEN_ORDER: gbig_gen_st's grid is (row slices, chunks)
+
     def __call__(self, grid, block, args, shared_mem=0):
         P = lambda a: a.ctypes.data
         L = self.lib
@@ -56,7 +58,7 @@ class _Fn(TG._Fn):
             L.cpu_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
         elif self.name == "gbig_gen_st":
             U, TAB, pstart, row0, nrows, cap, gcnt, bins = args
-            L.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+            L.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[1] if self.order else grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
         elif self.name == "ghead_gen":
             U, TAB, nP, row0, nrows, cap, gcnt, bins = args
             L.cpu_head_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
@@ -71,10 +73,14 @@ class _RawModule:
     def __init__(self, code=None):
         ks, llog, nth, tile, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("KS_LOG", "LLOG", "NTHREADS", "TILE_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
         m = re.search(r"#define TILE_UNROLL (\d+)", code)
-        self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc, int(m.group(1)) if m else 1, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1)
+        self.lib = build(ks, llog, nth, tile, rg, ppt, sc, rc, int(m.group(1)) if m else 1, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1,
+                         1 if "#define GEN_FLUSH2 1" in code else 0, 1 if "#define GEN_ORDER 1" in code else 0)
+        self.order = "#define GEN_ORDER 1" in code
 
     def get_function(self, name):
-        return _Fn(self.lib, name)
+        fn = _Fn(self.lib, name)
+        fn.order = self.order
+        return fn
 
 
 def main():

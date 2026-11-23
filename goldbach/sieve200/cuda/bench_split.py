@@ -89,7 +89,7 @@ def main(argv=None):
         bins = big._bins_for(max(big.cap, cap))
         for row0, nrows in groups:
             big.gcnt[:] = 0
-            big.k["gbig_gen_st"]((big.nchunks, (nrows + big.rcta - 1) // big.rcta), (big.threads,),
+            big.k["gbig_gen_st"](big.gen_grid(nrows), (big.threads,),
                                  (bf.U, big.TAB, big.pstart, np.int32(row0), np.int32(nrows), np.uint32(cap), big.gcnt, bins))
 
     def launch_tile(gcnt, ns):

@@ -37,6 +37,17 @@ typedef unsigned long long u64;
 #ifndef BIN_PACK
 #define BIN_PACK 0   /* 1: packed bins (the STAGED kernel only): 5 marks of 19 bits in 3 words, 2.4 bytes a mark instead of 4: see "packed bins" below */
 #endif
+#ifndef GEN_ORDER
+#define GEN_ORDER 0  /* 1: gbig_gen_st's grid is (row CTAs, chunks) instead of (chunks, row CTAs): the CTAs of one chunk (the RCTA-row slices of a row group) run together and the chunk's slice of the prime table
+                        is read from DRAM once instead of once a slice: see "grid order" below */
+#endif
+#ifndef GEN_FLUSH2
+#define GEN_FLUSH2 0 /* 1: gbig_gen_st stages the bin of a mark in its word (bin << TILE_LOG | offset = j + row * KS) and copies the staging buffer to the bins in one flat loop (a thread a word, or a group of
+                        5 marks when packed) instead of a warp a bin: see "flat flush" below */
+#endif
+#ifndef FLUSH_UNROLL
+#define FLUSH_UNROLL 4 /* GEN_FLUSH2: words (groups) a thread copies together */
+#endif
 #define TILE_BITS (1u << TILE_LOG)
 #define TILE_MASK (TILE_BITS - 1u)
 #define TILE_WORDS (TILE_BITS / 32u)
@@ -120,15 +131,41 @@ extern "C" __global__ void gbig_gen(const u32 *U, const uint4 *TAB, int nP, int 
 #define RCTA_LOG 1
 #endif
 #define NB (RCTA * NTILES)
+#if GEN_FLUSH2
+static_assert(((unsigned long long)RCTA << KS_LOG) <= (1ull << 32) && (unsigned long long)NB * (1ull << TILE_LOG) <= (1ull << 32), "GEN_FLUSH2: a staged word j + row * KS must fit 32 bits");
+#endif
+
+/* grid order (GEN_ORDER = 1): a row group's CTAs are (chunk, RCTA-row slice) pairs, and every slice of a chunk reads the same chunk of the prime table (pstart[c] .. pstart[c + 1], 16 bytes a prime).  With the
+ * slice index as the SLOW dimension (the default grid (nchunks, slices)) a group streams the whole table, 92 MB at B = 1e8, once a slice, 4 times a group of 32 rows with rcta 8 (14 GB a window of 39 groups), and
+ * the L2 (96-128 MB) holds none of it by the time the next slice comes, with the bins streaming through it.  With the slice index as the FAST dimension (grid (slices, nchunks)) the slices of a chunk are
+ * launched together and the second to last read the chunk's table slice from the L2 the first one filled: 92 MB a group, 3.6 GB a window.  Same marks, same bins (as sets), same counts.
+ *
+ * flat flush (GEN_FLUSH2 = 1): the warp-a-bin flush below costs 36 (plain) / 80 (packed) SASS instructions a bin (every run starts with a 64-bit address setup and ends with a ragged tail) for runs of ~23
+ * marks, 256 bins a CTA: ~19-20k warp instructions a CTA, more than pass A and pass B together (7k + 9k); at 1.0 M CTAs a window that is half of the kernel's 36 G warp instructions.  Here the staged word
+ * carries its bin, (bin << TILE_LOG) | offset, which is j + row * KS (the loop variable of the item's marks, no extra instruction), the scan leaves one word a bin, dlt[b] = (the word index of the bin's run in
+ * `bins`) - (the staging index of its run), and the flush is one flat loop, a thread a word: bins[i + dlt[stage[i] >> TILE_LOG]] = stage[i] & TILE_MASK, ~10 instructions a warp of 32 words.  Packed: every
+ * run is padded to a multiple of 5 marks IN THE STAGING BUFFER (copies of its last mark, after pass B), so a group of 5 never straddles two bins, and a thread takes a group: 5 words in, 3 words out at
+ * 3 g + dlt[b], dlt in groups of 3 words.  The words of a bin, its demand and its padding are those of the warp-a-bin flush.
+ */
+#if GEN_ORDER
+#define GEN_CHUNK_ID blockIdx.y
+#define GEN_RY_ID blockIdx.x
+#else
+#define GEN_CHUNK_ID blockIdx.x
+#define GEN_RY_ID blockIdx.y
+#endif
 
 extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int *pstart, int row0, int nrows, u32 cap, u32 *gcnt, u32 *bins) {
     __shared__ u32 stage[STAGE_CAP];
     __shared__ u32 cnt[NB], pos[NB], cur[NB], base[NB];
+#if GEN_FLUSH2
+    __shared__ u32 dlt[NB];
+#endif
     __shared__ u32 over_s;
     const int tid = threadIdx.x;
-    const int r0 = blockIdx.y * RCTA;                                   /* first row of this CTA in the group */
+    const int r0 = GEN_RY_ID * RCTA;                                    /* first row of this CTA in the group */
     const int nr = (nrows - r0 < RCTA) ? nrows - r0 : RCTA;
-    const int p_lo = pstart[blockIdx.x], p_hi = pstart[blockIdx.x + 1];
+    const int p_lo = pstart[GEN_CHUNK_ID], p_hi = pstart[GEN_CHUNK_ID + 1];
     const int nitems = (p_hi - p_lo) << RCTA_LOG;                       /* (prime, row) pairs: item = prime * RCTA + row */
     for (int b = tid; b < NB; b += blockDim.x) cnt[b] = 0;
     if (tid == 0) over_s = 0;
@@ -139,6 +176,9 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
     const u32 qt = live ? U[row0 + r0 + rrt] : 0u;
     const int pstep = (int)blockDim.x >> RCTA_LOG, np = p_hi - p_lo, pi0 = tid >> RCTA_LOG;
     const u32 rbt = (u32)rrt * NTILES;
+#if GEN_FLUSH2
+    const u32 rowS = (u32)rrt << KS_LOG, limS = KS + rowS;              /* the marks of an item: jw = j + row * KS < limS, bin = jw >> TILE_LOG */
+#endif
 #endif
     /* pass A: the marks of every bin of this CTA */
 #if GEN_HOIST
@@ -159,11 +199,19 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                 if (a >= s) a -= s;
                 u32 jj = a + s - t[u].w;
                 if (jj >= s) jj -= s;
+#if GEN_FLUSH2
+                j[u] = (pb + u * pstep < np) ? jj + rowS : limS;
+#else
                 j[u] = (pb + u * pstep < np) ? jj : (u32)KS;
+#endif
             }
             #pragma unroll
             for (int u = 0; u < GEN_UNROLL; u++)
+#if GEN_FLUSH2
+                for (u32 jj = j[u]; jj < limS; jj += t[u].x) atomicAdd(&cnt[jj >> TILE_LOG], 1u);
+#else
                 for (u32 jj = j[u]; jj < KS; jj += t[u].x) atomicAdd(&cnt[rbt + (jj >> TILE_LOG)], 1u);
+#endif
         }
 #else
         const uint4 *tp = TAB + p_lo + pi0;
@@ -174,7 +222,11 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             if (a >= s) a -= s;
             u32 j = a + s - t.w;
             if (j >= s) j -= s;
+#if GEN_FLUSH2
+            for (j += rowS; j < limS; j += s) atomicAdd(&cnt[j >> TILE_LOG], 1u);
+#else
             for (; j < KS; j += s) atomicAdd(&cnt[rbt + (j >> TILE_LOG)], 1u);
+#endif
         }
 #endif
     }
@@ -188,13 +240,22 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         if (a >= s) a -= s;
         u32 j = a + s - t.w;
         if (j >= s) j -= s;
+#if GEN_FLUSH2
+        const u32 rowS = (u32)rr << KS_LOG;
+        for (j += rowS; j < KS + rowS; j += s) atomicAdd(&cnt[j >> TILE_LOG], 1u);
+#else
         const u32 rb = rr * NTILES;
         for (; j < KS; j += s) atomicAdd(&cnt[rb + (j >> TILE_LOG)], 1u);
+#endif
     }
 #endif
     __syncthreads();
-    /* inclusive scan of the counts (Hillis-Steele): pos[b] = marks of bins 0 .. b; bin b's run is stage[pos[b] - cnt[b] .. pos[b]) */
+    /* inclusive scan of the lengths (Hillis-Steele): pos[b] = staging words of bins 0 .. b; bin b's run is stage[pos[b] - len[b] .. pos[b]).  len = cnt, except in a packed flat flush: cnt rounded up to a multiple of 5 */
+#if GEN_FLUSH2 && BIN_PACK
+    if (tid < NB) pos[tid] = ((cnt[tid] + 4u) / 5u) * 5u;
+#else
     if (tid < NB) pos[tid] = cnt[tid];
+#endif
     __syncthreads();
     for (int d = 1; d < NB; d <<= 1) {
         u32 v = 0;
@@ -204,8 +265,13 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         __syncthreads();
     }
     const u32 total = pos[NB - 1];
-    if (tid < NB) {                                                     /* the room of bin b in global memory: [base, base + c) of bin (r0 NTILES + b) */
+    if (tid < NB) {                                                     /* the room of bin b in global memory: [base, base + w) of bin (r0 NTILES + b) */
         const u32 c = cnt[tid];
+#if GEN_FLUSH2 && BIN_PACK
+        const u32 len = ((c + 4u) / 5u) * 5u;
+#else
+        const u32 len = c;
+#endif
 #if BIN_PACK
         const u32 w = (total <= STAGE_CAP) ? 3u * ((c + 4u) / 5u) : 3u * c;     /* words: 3 a group of 5 marks (the last group padded with copies of the bin's last mark), or 3 a mark when the chunk is too big to stage */
 #else
@@ -214,7 +280,14 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
         const u32 bs = w ? atomicAdd(&gcnt[r0 * NTILES + tid], w) : 0u;
         base[tid] = bs;
         if (bs + w > cap) over_s = 1u;
-        cur[tid] = (total <= STAGE_CAP) ? pos[tid] - c : 0u;
+        cur[tid] = (total <= STAGE_CAP) ? pos[tid] - len : 0u;
+#if GEN_FLUSH2
+#if BIN_PACK
+        dlt[tid] = (u32)(r0 * NTILES + tid) * cap + bs - 3u * ((pos[tid] - len) / 5u);   /* (word of the bin's run in bins) - 3 (group of its run in the staging buffer): a group g of the buffer goes to 3 g + dlt */
+#else
+        dlt[tid] = (u32)(r0 * NTILES + tid) * cap + bs - (pos[tid] - len);               /* (word of the bin's run in bins) - (its staging index): word i goes to i + dlt */
+#endif
+#endif
     }
     __syncthreads();
     if (over_s) {
@@ -241,11 +314,19 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                     if (a >= s) a -= s;
                     u32 jj = a + s - t[u].w;
                     if (jj >= s) jj -= s;
+#if GEN_FLUSH2
+                    j[u] = (pb + u * pstep < np) ? jj + rowS : limS;
+#else
                     j[u] = (pb + u * pstep < np) ? jj : (u32)KS;
+#endif
                 }
                 #pragma unroll
                 for (int u = 0; u < GEN_UNROLL; u++)
+#if GEN_FLUSH2
+                    for (u32 jj = j[u]; jj < limS; jj += t[u].x) stage[atomicAdd(&cur[jj >> TILE_LOG], 1u)] = jj;
+#else
                     for (u32 jj = j[u]; jj < KS; jj += t[u].x) stage[atomicAdd(&cur[rbt + (jj >> TILE_LOG)], 1u)] = jj & TILE_MASK;
+#endif
             }
 #else
             const uint4 *tp = TAB + p_lo + pi0;
@@ -256,7 +337,11 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
                 if (a >= s) a -= s;
                 u32 j = a + s - t.w;
                 if (j >= s) j -= s;
+#if GEN_FLUSH2
+                for (j += rowS; j < limS; j += s) stage[atomicAdd(&cur[j >> TILE_LOG], 1u)] = j;
+#else
                 for (; j < KS; j += s) stage[atomicAdd(&cur[rbt + (j >> TILE_LOG)], 1u)] = j & TILE_MASK;
+#endif
             }
 #endif
         }
@@ -270,11 +355,65 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             if (a >= s) a -= s;
             u32 j = a + s - t.w;
             if (j >= s) j -= s;
+#if GEN_FLUSH2
+            const u32 rowS = (u32)rr << KS_LOG;
+            for (j += rowS; j < KS + rowS; j += s) stage[atomicAdd(&cur[j >> TILE_LOG], 1u)] = j;
+#else
             const u32 rb = rr * NTILES;
             for (; j < KS; j += s) stage[atomicAdd(&cur[rb + (j >> TILE_LOG)], 1u)] = j & TILE_MASK;
+#endif
         }
 #endif
         __syncthreads();
+#if GEN_FLUSH2
+#if BIN_PACK
+        if (tid < NB) {                                                 /* pad every run to a multiple of 5 words with copies of its last word (the same mark: clearing a bit twice is harmless) */
+            const u32 c = cnt[tid], len = ((c + 4u) / 5u) * 5u;
+            if (len > c) {
+                const u32 st = pos[tid] - len, last = stage[st + c - 1u];
+                for (u32 e = c; e < len; e++) stage[st + e] = last;
+            }
+        }
+        __syncthreads();
+        const u32 ngr = total / 5u;                                     /* total is a multiple of 5: whole groups, a group inside one bin's run */
+        for (u32 g0 = tid; g0 < ngr; g0 += blockDim.x * FLUSH_UNROLL) {
+            u32 e[FLUSH_UNROLL][5];
+            #pragma unroll
+            for (int u = 0; u < FLUSH_UNROLL; u++) {
+                const u32 g = g0 + u * blockDim.x;
+                if (g < ngr) {
+                    #pragma unroll
+                    for (int k = 0; k < 5; k++) e[u][k] = stage[5u * g + k];
+                }
+            }
+            #pragma unroll
+            for (int u = 0; u < FLUSH_UNROLL; u++) {
+                const u32 g = g0 + u * blockDim.x;
+                if (g < ngr) {
+                    const u32 d = dlt[e[u][0] >> TILE_LOG] + 3u * g;
+                    const u32 m0 = e[u][0] & TILE_MASK, m1 = e[u][1] & TILE_MASK, m2 = e[u][2] & TILE_MASK, m3 = e[u][3] & TILE_MASK, m4 = e[u][4] & TILE_MASK;
+                    bins[d] = m0 | (m1 << 19);
+                    bins[d + 1u] = (m1 >> 13) | (m2 << 6) | (m3 << 25);
+                    bins[d + 2u] = (m3 >> 7) | (m4 << 12);
+                }
+            }
+        }
+#else
+        for (u32 i0 = tid; i0 < total; i0 += blockDim.x * FLUSH_UNROLL) {
+            u32 w[FLUSH_UNROLL];
+            #pragma unroll
+            for (int u = 0; u < FLUSH_UNROLL; u++) {
+                const u32 i = i0 + u * blockDim.x;
+                if (i < total) w[u] = stage[i];
+            }
+            #pragma unroll
+            for (int u = 0; u < FLUSH_UNROLL; u++) {
+                const u32 i = i0 + u * blockDim.x;
+                if (i < total) bins[i + dlt[w[u] >> TILE_LOG]] = w[u] & TILE_MASK;
+            }
+        }
+#endif
+#else
         /* flush: a warp a bin at a time, lane i on word i of the run */
         const int warp = tid >> 5, lane = tid & 31, nwarps = blockDim.x >> 5;
         for (int b = warp; b < NB; b += nwarps) {
@@ -295,6 +434,7 @@ extern "C" __global__ void gbig_gen_st(const u32 *U, const uint4 *TAB, const int
             for (u32 i = lane; i < c; i += 32) dst[i] = src[i];
 #endif
         }
+#endif
     } else {
         for (int it = tid; it < nitems; it += blockDim.x) {                 /* more marks than the buffer: one store a mark, as gbig_gen */
             const int rr = it & (RCTA - 1);

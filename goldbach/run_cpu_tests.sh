@@ -18,12 +18,18 @@ t "head accounting simulation"                     $S python3 test_head_accounti
 t "bench_split glue"                               $S python3 test_bench_split_cpu.py
 t "large-prime stage vs numpy (+packed, fallback)" $S python3 test_gbig_cpu.py
 t "large-prime stage, hoisted + unroll 2"          $S DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=2 python3 test_gbig_cpu.py
+t "staged kernel vs brute force: every variant"    $S python3 test_gbig.py
+t "large-prime stage, flat flush + grid order"     $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 python3 test_gbig_cpu.py
 [ "$QUICK" = quick ] && { echo "quick: $fail failure(s)"; exit $fail; }
 t "GPU sieve vs CPU feeder"                        $S python3 test_gpu_sieve_cpu.py
 t "batch sieve vs CPU feeder"                      $S python3 test_gbatch_cpu.py
 t "batch sieve, packed bins"                       $S DEEP_BIN_PACK=1 python3 test_gbatch_cpu.py
 t "batch sieve, hoist + packed + gen unroll 4"     $S DEEP_GEN_HOIST=1 DEEP_BIN_PACK=1 DEEP_GEN_UNROLL=4 python3 test_gbatch_cpu.py
 t "batch sieve, tile unroll 4"                     $S DEEP_TILE_UNROLL=4 python3 test_gbatch_cpu.py
+t "batch sieve, flat flush + grid order"           $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
+t "batch sieve, flat flush (alone)"                $S DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
+t "batch sieve, packed + flat flush"               $S DEEP_BIN_PACK=1 DEEP_GEN_FLUSH2=1 python3 test_gbatch_cpu.py
+t "batch sieve, everything (pack hoist unroll 4 flush2 order)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
 t "deferred overflow check"                        $S python3 test_gbatch_defer_cpu.py
 t "deferred overflow check, packed"                $S DEEP_BIN_PACK=1 python3 test_gbatch_defer_cpu.py
 t "DeepSieve over variants"                        $S python3 test_deep_feeder_cpu.py

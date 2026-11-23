@@ -18,11 +18,11 @@ _SRC = open(os.path.join(HERE, "gbig_kernels.cuh")).read()
 _KCACHE = {}
 
 
-def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hoist=False, gunroll=1):
-    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll)
+def _kernels(tile_log, ks_log, rg, ppt, stage_cap=8192, rcta=2, pack=False, hoist=False, gunroll=1, flush2=False, order=False):
+    key = (tile_log, ks_log, rg, ppt, stage_cap, rcta, bool(pack), bool(hoist), gunroll, bool(flush2), bool(order))
     if key not in _KCACHE:
         head = (f"#define S200G_DYNSHARED(type, name) extern __shared__ type name[]\n#define TILE_LOG {tile_log}\n#define KS_LOG {ks_log}\n"
-                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else ""))
+                f"#define RG {rg}\n#define PPT {ppt}\n#define STAGE_CAP {stage_cap}\n#define RCTA {rcta}\n#define RCTA_LOG {rcta.bit_length() - 1}\n" + ("#define BIN_PACK 1\n" if pack else "") + ("#define GEN_HOIST 1\n" if hoist else "") + (f"#define GEN_UNROLL {gunroll}\n" if gunroll > 1 else "") + ("#define GEN_FLUSH2 1\n" if flush2 else "") + ("#define GEN_ORDER 1\n" if order else ""))
         mod = cp.RawModule(code=head + _SRC)
         _KCACHE[key] = {n: mod.get_function(n) for n in ("gbig_gen", "gbig_gen_st", "gbig_apply")}
     return _KCACHE[key]
@@ -79,7 +79,9 @@ class BigStage:
         assert self.rcta >= 1 and self.rcta & (self.rcta - 1) == 0, "rcta must be a power of two"
         self.pack = bool(pack)
         assert not self.pack or (self.staged and tile_log <= 19), "packed bins (19-bit marks, 5 in 3 words) need the staged kernel and tiles of at most 2^19 bits"
-        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")))
+        self.flush2 = self.staged and os.environ.get("DEEP_GEN_FLUSH2", "0") == "1"      # the flat flush of the staging buffer (gbig_kernels.cuh, GEN_FLUSH2); options of the staged kernel only
+        self.order = self.staged and os.environ.get("DEEP_GEN_ORDER", "0") == "1"        # the generate grid is (row slices, chunks): the slices of a chunk run together (GEN_ORDER)
+        self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), self.flush2, self.order)
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
         if self.staged:
@@ -97,6 +99,14 @@ class BigStage:
         self.out = cp.empty(self.nbins * self.tile_words, dtype=cp.uint32)
         self._bins = None
         self.retries = 0
+
+    def gen_grid(self, nrows):
+        """the launch grid of gbig_gen_st for nrows rows: (chunks, row slices), or (row slices, chunks) with DEEP_GEN_ORDER=1"""
+        ny = (nrows + self.rcta - 1) // self.rcta
+        if self.order:
+            assert self.nchunks <= 65535, "DEEP_GEN_ORDER=1 puts the chunks in the y dimension of the grid (at most 65,535)"
+            return (ny, self.nchunks)
+        return (self.nchunks, ny)
 
     def _bins_for(self, cap):
         need = self.nbins * cap
@@ -124,7 +134,7 @@ class BigStage:
                 e0, e1 = cp.cuda.Event(), cp.cuda.Event()
                 e0.record()
             if self.staged:
-                self.k["gbig_gen_st"]((self.nchunks, (nrows + self.rcta - 1) // self.rcta), (self.threads,),
+                self.k["gbig_gen_st"](self.gen_grid(nrows), (self.threads,),
                                       (U, self.TAB, self.pstart, np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
             else:
                 self.k["gbig_gen"]((grid,), (self.threads,), (U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
@@ -173,7 +183,7 @@ class BigStage:
             e0, e1 = cp.cuda.Event(), cp.cuda.Event()
             e0.record()
             if self.staged:
-                self.k["gbig_gen_st"]((self.nchunks, (nrows + self.rcta - 1) // self.rcta), (self.threads,),
+                self.k["gbig_gen_st"](self.gen_grid(nrows), (self.threads,),
                                       (self.U, self.TAB, self.pstart, np.int32(row0), np.int32(nrows), np.uint32(0), self.gcnt, bins))
             else:
                 self.k["gbig_gen"]((grid,), (self.threads,), (self.U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(0), self.gcnt, bins))

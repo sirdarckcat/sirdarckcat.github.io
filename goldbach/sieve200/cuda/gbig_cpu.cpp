@@ -58,10 +58,18 @@ static void gen_st_tramp(void *a) { gen_st_args *x = (gen_st_args *)a; gbig_gen_
 /* the staged kernel has a 2-D grid (chunks, row pairs): the emulation runs the CTAs one after the other */
 extern "C" void cpu_gen_st(const u32 *U, const uint4 *TAB, const int *pstart, int nchunks, int row0, int nrows, u32 cap, u32 *gcnt, u32 *bins, int threads) {
     gen_st_args a{U, TAB, pstart, row0, nrows, cap, gcnt, bins};
-    for (int y = 0; y < (nrows + RCTA - 1) / RCTA; y++) {
+    const int ny = (nrows + RCTA - 1) / RCTA;
+#if GEN_ORDER
+    for (int c = 0; c < nchunks; c++) {                                 /* grid (row slices, chunks): blockIdx.x = slice, blockIdx.y = chunk */
+        blockIdx.y = c;
+        run_grid(ny, threads, 0, gen_st_tramp, &a);
+    }
+#else
+    for (int y = 0; y < ny; y++) {
         blockIdx.y = y;
         run_grid(nchunks, threads, 0, gen_st_tramp, &a);
     }
+#endif
 }
 extern "C" int cpu_nbins() { return NBINS; }
 extern "C" int cpu_ntiles() { return NTILES; }

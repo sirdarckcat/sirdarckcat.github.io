@@ -461,6 +461,7 @@ packed staged bins against numpy, the packed capacity retry (cap 8 -> 256), and 
 
 **To run on a GPU.**  Same fixed windows with and without `DEEP_BIN_PACK=1` (and `DEEP_STAGED=1`, rcta 8, 512 generate threads as in production): the slice lines must be IDENTICAL; `bench_split.py` shows the gen / apply split
 (expected: bin apply 19.9 -> ~12 ms, gen pass B 31.8 -> ~22 ms; estimate -13 ms a window, ~-6% of a batch), `bench_bigprimes.py --staged 1 --pack 1 ...` the stage alone with its bytes.
+**(Measured by the GPU session, 23 Nov 13:13Z, `splitab.sh`: pass B 34.1 -> 32.9, bin apply 19.6 -> 15.9, small-prime marks 14.3 -> 16.3: -1.2 - 3.7 + 2.0 ms, against the -13 ms estimated above.  The estimate assumed pass B was bound by the bin writes; it is not: see "Where the generate kernel's issue slots go" below.)**
 
 
 ### The visit loops of `gbig_gen_st`, hoisted (opt-in `DEEP_GEN_HOIST=1`, `DEEP_GEN_UNROLL=2|4`; same hour; CPU-verified, not yet timed)
@@ -473,3 +474,64 @@ chains computed together, then their mark loops one after the other): 568 / 712 
 CPU: `DEEP_GEN_HOIST=1` with and without `DEEP_BIN_PACK=1`, and `DEEP_GEN_UNROLL=2 | 4`, through `test_gbig_cpu.py` and `test_gbatch_cpu.py`: identical to numpy / to the CPU feeder.  The default build of the whole module stays SASS-identical to the committed one.
 
 `splitab.sh SPEC` runs `bench_split.py` under every opt-in variant of this tree (base, pack, hoist, pack + hoist, unroll 2 / 4, prefetch, the combinations) and prints one line each: gen (pass A / B), the tile kernel (small marks, bin apply), the window's sieve phase.
+
+
+## splitab results (GPU session, gold-g4c RTX PRO 6000, 23 Nov 13:12:54-13:13:48Z, campaign paused, `uarch_measure/`), and where the generate kernel's issue slots go (13:30Z)
+
+ms a 2^24 window (rg 32, rcta 8, 512 generate / 512 tile threads), gen (pass A / pass B), tile kernel (small-prime marks / bin apply), bench_batch's sieve phase:
+
+| variant | gen | tile | sieve phase |
+|---|---|---|---|
+| base | 49.67 (15.58 / 34.09) | 32.60 (14.31 / 19.59) | 83.7 |
+| `DEEP_BIN_PACK=1` | 48.53 (15.68 / 32.85) | 28.91 (16.33 / 15.89) | 78.1 |
+| `DEEP_GEN_HOIST=1` | 47.27 (14.30 / 32.97) | 32.74 (14.44 / 19.74) | 81.2 |
+| PACK + HOIST | 45.80 (14.34 / 31.46) | 28.90 (16.32 / 15.88) | 75.3 |
+| `DEEP_TILE_UNROLL=2` | 49.70 | 29.54 (11.24 / 16.39) | 80.5 |
+| `DEEP_TILE_UNROLL=4` | 49.73 | 25.98 (7.68 / 14.17) | 76.9 |
+| `DEEP_TILE_PREFETCH=256` | 49.68 | 31.98 (13.69 / 18.93) | 83.9 |
+| PACK + HOIST + UNROLL=4 | 45.80 (14.35 / 31.45) | 22.87 (10.28 / 11.03) | 70.3 |
+| + PREFETCH=256 | 45.80 | 20.85 (8.16 / 9.02) | 69.3 |
+
+-14.4 ms a window (-17%) with all four.  What the table says: `TILE_UNROLL=4` is the biggest single item (small-prime marks 14.3 -> 7.7, and the apply falls too: 19.6 -> 14.2); PACK and UNROLL compound on the apply (9.0 ms = 14.4 GB at 1.6 TB/s: the apply is
+DRAM-bound again, at the device's rate); HOIST saves 2.4 ms of the generate kernel (of the ~3.5 the instruction counts promised); **PACK saves only 1.2 ms of pass B** although it writes 40% fewer bytes.  I had estimated -13 ms for PACK: wrong by 10x, because I
+treated pass B as bound by its DRAM writes.  The generate kernel, 45.8 ms of the remaining 69, is not.
+
+### Where the generate kernel's issue slots go (`gbig_gen_st`, hoisted, sm_120 SASS and the real prime list)
+
+Dynamic warp instructions of one CTA (a chunk of primes x 8 rows), from the SASS loop bodies (`sass.py --loops`) and the trip counts of a simulation over the real prime list (primes in (1e6, 1e8], `make_chunks(S, 24, 768)`, random roots):
+6,284 chunks x 4 row slices x 39 groups = **981k CTAs a window**; a CTA has 905 primes = 7,242 (prime, row) items = 6,139 marks; its warps run 227 visit iterations (lanes all busy) and 333 mark steps (58% of the lanes busy: the marks of a visit are 0, 1 or a few).
+
+| phase of a CTA | instructions in the loop (SASS) | warp instructions a CTA |
+|---|---|---|
+| pass A: visits (table load, Shoup, 2 conditional subtracts, loop) | 20 a iteration | 4.5k |
+| pass A: marks (`atomicAdd(&cnt[...])`) | 7 a step | 2.3k |
+| pass B: visits | 27 a iteration | 6.1k |
+| pass B: marks (`stage[atomicAdd(&cur[...])] = ...`) | 9 a step | 3.0k |
+| scan (16 barriers), reservation (one global atomic a bin), zeroing | | ~1.5k |
+| **flush: a warp a bin, runs of ~23 words** | **76 a bin plain, 80 packed** (64-bit address set-up, alignment peeling, ragged tail: ~8 of them move data) | **19.5k plain, 20.5k packed** |
+| total | | **37k plain, 38k packed** = 36-37 G warp instructions a window |
+
+At 188 SMs x 4 schedulers, integer ops at 1 warp instruction every 2 cycles (bench_pipes), ~2.4 GHz: 9e11 warp instructions a second, so **36 G instructions = 40 ms against the measured 45.8 ms** (packed + hoisted): the generate kernel is within 15% of the integer pipes' issue limit,
+and **more than half of its instructions are the flush** (a lane a word, ~23 words a run, so lanes mostly idle).  That also explains the PACK result: the packed flush costs +1k warp instructions a CTA (+5% of the kernel) and the 40% fewer bytes were not what the kernel waited for.
+(Pass A alone: 9.2 ms from the model against 14.35 measured, 64%: latency and the table's DRAM stream take the rest.)
+
+### Two opt-in changes that follow (CPU-verified, not yet timed): `DEEP_GEN_FLUSH2=1` and `DEEP_GEN_ORDER=1`
+
+**`GEN_FLUSH2` (flat flush).**  The staged word carries its bin: `stage[i] = (bin << TILE_LOG) | offset`, which is just `j + row * KS`, the loop variable of the item's marks (so the mark loops get SHORTER: 7 -> 6 and 9 -> 8 instructions, no `& TILE_MASK`, no
+`rbt +`).  The scan leaves one word a bin, `dlt[b] = (word index of the bin's run in bins) - (its index in the staging buffer)`, and the flush is ONE flat loop, a thread a word: `bins[i + dlt[stage[i] >> TILE_LOG]] = stage[i] & TILE_MASK`
+(`FLUSH_UNROLL` = 4 words a thread in flight).  Packed: each run is padded to a multiple of 5 marks IN THE STAGING BUFFER (copies of its last mark, one thread a bin after pass B), so a group of 5 never straddles two bins and a thread takes a group:
+5 words in, 3 out, at `3 g + dlt[b]`.  The words of a bin, its demand `gcnt` and its padding are exactly those of the warp-a-bin flush (same capacity formula, same retry protocol, same fallback for a chunk over the buffer).  SASS (sm_120): the flush loop is
+**50 instructions for 4 words a thread (12.5 a warp-iteration of 32 words) plain, 189 for 4 groups packed, a CTA's flush ~2.4k / ~3.2k instead of 19.5k / 20.5k**; a CTA's total ~18.5k (-50%); 32 / 40 registers, 37.9 KB shared memory (`dlt` adds 1 KB).
+
+**`GEN_ORDER` (grid order).**  `gbig_gen_st`'s grid is (chunks, row slices) and every slice of a chunk reads the chunk's slice of the prime table (16 bytes a prime, 92 MB at B = 1e8): with the slice index as the slow dimension the table streams once a SLICE,
+4 x 39 x 92 MB = **14.4 GB a window**, and the L2 (128 MB, with the bins streaming through it) keeps none of it until the next slice (pass A 14.35 ms = 14.4 GB at 1.0 TB/s: suspiciously close to the DRAM rate).  With the grid (slices, chunks) the 4 slices of a chunk
+run together and the second to fourth read the chunk's table slice from the L2: **3.6 GB a window**.  Same marks, same bins (as sets).  Pass A shows it; if pass A does not move, it was the integer pipes after all.
+
+**CPU.**  `test_gbig.py` (every staged geometry x {plain, hoist, hoist + unroll 2 | 4} x {flat flush, order}: bit matrix and bin demands identical to the brute-force reference, with the stage-overflow fallback and the capacity retry), `test_gbig_cpu.py` with `DEEP_GEN_FLUSH2=1` /
+`DEEP_GEN_ORDER=1` / everything, plain and packed, and `test_gbatch_cpu.py` (identical to sieve200's CPU feeder) with FLUSH2 + ORDER, with PACK + HOIST + UNROLL 4 + FLUSH2 + ORDER, and with each of FLUSH2 and PACK + FLUSH2.  The default build is unchanged.
+
+**Estimate (from the model; my last one was off by 10x, read it as an upper bound).**  Gen at ~18-20 G warp instructions instead of 36: ~22-25 ms of issue time against 45.8 measured; the DRAM floor of gen (table 14.4 GB + packed bins 14.4 GB = 24 ms at 1.2 TB/s;
+15 ms with ORDER) is then the next wall, so the realistic expectation is gen 45.8 -> 25-30 ms, i.e. **-15 to -20 ms a window (-20 to -29% of the 69 ms; ~-7 to -10% of a batch)** on top of the four options already measured.
+**To run:** `splitab.sh SPEC` (the new rows: `DEEP_GEN_FLUSH2=1`, `DEEP_GEN_ORDER=1`, HOIST + FLUSH2, PACK + HOIST + FLUSH2, + ORDER, ALL).  Read pass B for FLUSH2 (31.5 -> ?), pass A for ORDER (14.35 -> ?); then the driver gate as for the other options (identical slice lines
+on the same windows, the known case, the batch time).
+

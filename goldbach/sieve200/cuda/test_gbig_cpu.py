@@ -13,8 +13,8 @@ import test_gbig
 
 
 class _Fn:
-    def __init__(self, lib, name):
-        self.lib, self.name = lib, name
+    def __init__(self, lib, name, order=False):
+        self.lib, self.name, self.order = lib, name, order
 
     def __call__(self, grid, block, args, shared_mem=0):
         P = lambda a: a.ctypes.data
@@ -23,7 +23,7 @@ class _Fn:
             self.lib.cpu_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
         elif self.name == "gbig_gen_st":
             U, TAB, pstart, row0, nrows, cap, gcnt, bins = args
-            self.lib.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+            self.lib.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[1] if self.order else grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))     # GEN_ORDER: the grid is (row slices, chunks)
         else:
             gcnt, bins, cap, out = args
             self.lib.cpu_apply(int(grid[0]), P(gcnt), P(bins), int(cap), P(out), int(block[0]))
@@ -32,10 +32,12 @@ class _Fn:
 class _RawModule:
     def __init__(self, code=None):
         tl, ks, rg, ppt, sc, rc = (int(re.search(rf"#define {n} (\d+)", code).group(1)) for n in ("TILE_LOG", "KS_LOG", "RG", "PPT", "STAGE_CAP", "RCTA"))
-        self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1)
+        self.order = "#define GEN_ORDER 1" in code
+        self.lib = test_gbig.build(tl, ks, rg, ppt, sc, rc, 1 if "#define BIN_PACK 1" in code else 0, 1 if "#define GEN_HOIST 1" in code else 0, int(re.search(r"#define GEN_UNROLL (\d+)", code).group(1)) if "#define GEN_UNROLL" in code else 1,
+                                   1 if "#define GEN_FLUSH2 1" in code else 0, 1 if self.order else 0)
 
     def get_function(self, name):
-        return _Fn(self.lib, name)
+        return _Fn(self.lib, name, self.order)
 
 
 def install_fake_cupy():
