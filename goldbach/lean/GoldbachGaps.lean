@@ -29,6 +29,7 @@ import GoldbachGaps.BitSieve
 import GoldbachGaps.RankSieve
 import GoldbachGaps.RecordGen
 import GoldbachGaps.RecordGenRun
+import GoldbachGaps.RecordInfinite
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -179,6 +180,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                where they break (`8`, `14`, the value `11` for `98`, `124`) is proved not to
                be in the sequence. `scripts/record_gen`: those rules, each right for one term
                more than the last, and a runner (30 terms below `2^27` in 3 minutes).
+* `RecordInfinite` – how far the generator goes. The front exists for every striker
+               (`exists_isFront`, unconditional); the sequence is infinite, and `records X`
+               grows beyond every length, if and only if Goldbach's conjecture holds
+               (`goldbach_iff_records_unbounded`, `goldbach_iff_generator_never_stops`); if
+               it fails, the front stops at the smallest counterexample
+               (`isFront_of_counterexample`).
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
