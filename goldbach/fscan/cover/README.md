@@ -299,8 +299,19 @@ on weighted rows does not improve the supply within a family: at 3.6 million
 covers the weighted cap 1,292.5 and the plain cap 1,250 give the same mean
 weighted rows on the 491 set, because within a family the rows above Q
 hardly vary. The gain is in the choice of family, and the producers can keep
-their plain caps. Local weighted descents from family B and from the covers
-designed for 175,000 find nothing better, and family B stays within 100 in
+their plain caps. Nothing better than family B was found on the weighted
+measure itself. Local weighted descents from family B and from the covers
+designed for 175,000 find nothing. Four weighted tempering runs of 400,000
+sweeps from random starts (`ptcover_wfast`, three on the first 89 primes and
+one on the 491 set) end at 1,290.64, 1,290.64, 1,291.23 and 1,290.78 weighted
+rows, in basins unrelated to family B (74 to 78 of the 89 classes differ, 1,252
+to 1,258 rows below 170,000), and that basin carried over to the 491 set
+gives 1,290.78 again; family B has 1,289.81 on the first 89 and 1,287.19 on
+the 491 set. A cover cannot beat the best sharp design at every threshold at
+once, and family B is within 0, 4.6 and 7 rows of the best covers known for
+170,000, 175,000 and 180,000, which bounds any gain over it at about 3.6
+weighted rows. So family B was a lucky find of the plain search that the
+weighted search does not reproduce, and it stands. It also stays within 100 in
 expected final record of the best cover known for a record of 172,000,
 175,000 or 178,000 (it has 1,341 rows below 180,000 against 1,334 for the
 cover designed for 180,000), so a design hit does not call for new covers.
