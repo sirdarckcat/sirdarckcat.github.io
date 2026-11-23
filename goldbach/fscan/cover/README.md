@@ -57,6 +57,8 @@ campaign 3, found by greedy choice plus annealing, has k = 867.
 | 150,000 | 13,847 | 1,092 | 26.10 | `specs_q150000_128_k1092.json` (and `specs_q150000_128.json` at 1,093) |
 | 155,000 | 14,271 | 1,137 | 27.18 | `specs_q155000_128.json` (1,138 to 1,140); `starts/q155000.txt` |
 | 160,000 | 14,682 | 1,181 | 28.23 | `specs_q160000_128.json` (1,185); `starts/q160000.txt` |
+| 165,000 | 15,134 | 1,221 | 29.19 | `starts/q165000.txt` (two runs of 150,000 sweeps: 1,221 and 1,222) |
+| 170,000 | 15,560 | 1,262 | 30.17 | `starts/q170000.txt` (three runs: 1,262, 1,262, 1,263) |
 
 (60,000 sweeps on one core, about 15 minutes each, from random starts;
 `deliver/run_*.txt`. A first run of 30,000 sweeps on 4 cores gave 856 at
@@ -118,6 +120,10 @@ or below the cap) and prints every cover it visits once.
 | 155,000 | 1,138 | about 900 | 30 s |
 | 160,000 | 1,181 (the best known) | 1,072 | used up |
 | 160,000 | 1,182 | more than 6,000 | 10 s |
+| 165,000 | 1,221 (the best known) | 22 | used up |
+| 165,000 | 1,222 | about 1,150 | 30 s |
+| 170,000 | 1,262 (the best known) | 23 | used up |
+| 170,000 | 1,263 | about 1,550 | 30 s |
 
 One row more multiplies the supply by 30 to 100 and costs 2.4% of the
 success probability per member, so a search that needs 1,700 vectors a day
