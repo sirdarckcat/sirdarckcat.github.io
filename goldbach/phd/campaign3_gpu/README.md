@@ -457,11 +457,34 @@ Version 3 (22 Nov):
     | design hits a second | ×0.934 | ×0.971 | ×1 | ×1.032 | ×1.067 | ×1.102 | ×1.079 |
 
   - A repeat of f = 0.97 came within 0.5%.
-  - At f = 0.985 a card uses its vectors ×1.6 faster, and the vector supply at the row cap is research's question.
-    Production stays at f = 0.97 until the lead decides, since this is a design change.
+  - At f = 0.985 a card uses its vectors ×1.6 faster: 4.26 a second instead of 2.64.
+  - The lead moved the three RTX cards to f = 0.985 at 12:06Z (`v89/deploy_f985.py`). The basis was this sweep and
+    research's supply figure: 12M distinct 89-moduli covers for nine days at about 1,251 rows. The L4s and the T4 stay at
+    0.97.
+  - The producers keep up. `vecgen.sh` holds 12,000 vectors ahead and walks only below that, so its chunk interval tracks
+    consumption. Filling the buffer it made 1,000 vectors every 46 s, about 21.7 a second a card.
+  - The lead's guard (`v89/rowguard.sh`, `rowguard.py`) runs on each RTX card every 5 minutes.
+    - It compares the average row count of the last 2,000 consumed vectors with the average of every vector consumed before
+      the switch: 1249.84 / 1249.88 / 1249.81 on gold-g4 / gold-g4b / gold-g4c.
+    - If the gap passes +2 rows, the card drops itself to f = 0.98 and writes `/content/rowguard_tripped.txt`.
+    - The producers stop at CAPMAX 1,253, so a trip needs the cap at 1,252-1,253 on most vectors.
   - DEEP_RCTA=8 with `--deep-gen-threads 512` gave identical slice lines and 1.498 s a batch against 1.508 / 1.515 s (−0.9%).
     uarch's wcost3 has it at −5.3 ms a 2^24 window of sieve alone (`uarch_measure/wcost3_rtxpro6000.txt`). Both are under
     the agreed 8 ms bar, so it is not deployed.
+- Deep head (uarch 0e45ea8; files in `head/`). It sieves the first 64 rows of each window by the primes in (1e8, 1e9],
+  after the count and the selection. So the kept members are unchanged, and only composite rows leave their lists.
+  - The gate ran on gold-g4c (`headv.sh`, `headv_rtxpro6000.txt`) under the lead's approval and this session's conditions.
+    - `headcheck.py`: OK. The head removes 11.11% of the head rows (modelled 11.11%), and sampled removed rows have a
+      factor in range.
+    - The head costs 11.5 ms a 2^24 window (136.1 to 147.6 ms) and 1.72 GB of device memory.
+    - On the 24 test windows, production and the head driver with no head gave identical slice lines.
+    - With and without the head, the per-member dumps were identical for all 12,091,392 members (k, first-PRP row,
+      success), and tests fell 8.42%. The logged expected near-misses and design hits were ×0.9998.
+    - The dump runs are slow (`savez_compressed`), so they give no timing.
+  - Deployed on gold-g4c at 12:06:49Z, together with f = 0.985. gold-g4c against gold-g4 and gold-g4b (no head, also at
+    f = 0.985) is the production A/B for its batch time.
+- uarch's E5 (`uarch_measure/e5_ffma_rtxpro6000.txt`): a dummy FFMA inside the real Fermat step adds about 1.2 ticks, close
+  to an IADD3 (1.1-1.6), not the ~0 of a free pipe. So the FP32 pipe does not run free beside the multiplier.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
