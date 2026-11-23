@@ -1,0 +1,10 @@
+# DEEP_RCTA=8 with --deep-gen-threads 512 at f = 0.985 on gold-g4 (RTX PRO 6000), r8f.sh, 2026-11-23 12:24:39-12:25:48Z (campaign paused): the 24 test windows alternating
+# base / r8, and the vector known case with DEEP_RCTA=8.
+
+base  : gaps [0.957, 0.921, 0.983, 0.951, 0.667] | mean of batches 2-5 0.953 s | slice lines vs base: IDENTICAL (24) | []
+r8    : gaps [0.918, 0.93, 0.954, 0.91, 0.675] | mean of batches 2-5 0.928 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.923, 0.934, 0.942, 0.954, 0.678] | mean of batches 2-5 0.938 s | slice lines vs base: IDENTICAL (24) | []
+r8_b  : gaps [0.924, 0.94, 0.914, 0.947, 0.667] | mean of batches 2-5 0.931 s | slice lines vs base: IDENTICAL (24) | []
+r8 against base at f = 0.985: 0.930 s against 0.946 s a batch (x0.9831)
+kc8 (DEEP_RCTA=8, gen 512): 23 near-misses >= 46171, identical to the CPU brute force's 23: True | []
+R8F-DONE
