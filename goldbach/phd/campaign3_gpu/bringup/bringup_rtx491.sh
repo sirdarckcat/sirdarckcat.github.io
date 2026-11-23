@@ -11,7 +11,7 @@ PART=${1:?partition}; PHASE=${2:-all}     # PHASE gen: skip restore / install / 
 L=/content/bringup.log
 if [ "$PHASE" != gen ]; then
 echo "$(date -u +%FT%TZ) bring-up start, partition $PART, $(hostname), $(nvidia-smi --query-gpu=name --format=csv,noheader)" >> $L
-cd /content && tar -xzf /content/snap.tgz >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
+cd /content && tar -xzf /content/snap.tgz --exclude="bringup*" >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
 python3 -c 'import gmpy2' 2>/dev/null || pip install -q gmpy2 >> $L 2>&1
 python3 -c 'import gmpy2, cupy; print("gmpy2", gmpy2.version(), "cupy", cupy.__version__)' >> $L 2>&1
 mkdir -p /content/cover491 && tar -xzf /content/cover491.tgz -C /content/cover491 && (cd /content/cover491 && gcc -O3 -march=native -fopenmp -o covergen covergen.c -lm) >> $L 2>&1 \

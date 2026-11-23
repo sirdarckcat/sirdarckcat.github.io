@@ -9,7 +9,7 @@ for d in ("c170v", "c170", "c170f", "c150"):
         if os.path.exists(f"{d}/{f}"):
             keep.append(f"{d}/{f}")
 keep += [f for f in glob.glob("*") if os.path.isfile(f) and not f.endswith((".tgz", ".log")) and os.path.getsize(f) < 50e6]
-keep += [f for f in glob.glob("*.log") if os.path.getsize(f) < 20e6]
+keep += [f for f in glob.glob("*.log") if os.path.getsize(f) < 20e6 and not f.startswith("bringup")]
 if os.path.exists("vec89/made.txt"):
     keep.append("vec89/made.txt")
 t0 = time.time()

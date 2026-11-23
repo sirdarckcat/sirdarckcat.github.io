@@ -6,7 +6,7 @@
 # the options, one-pass, KLO top-16, any top-up file not yet appended), which starts the campaign in c170f with its done set. Log: /content/bringup.log
 L=/content/bringup.log
 echo "$(date -u +%FT%TZ) bring-up start, $(hostname), $(nvidia-smi --query-gpu=name --format=csv,noheader)" >> $L
-cd /content && tar -xzf /content/snap.tgz >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
+cd /content && tar -xzf /content/snap.tgz --exclude="bringup*" >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
 python3 -c 'import gmpy2' 2>/dev/null || pip install -q gmpy2 >> $L 2>&1
 python3 -c 'import gmpy2, cupy; print("gmpy2", gmpy2.version(), "cupy", cupy.__version__)' >> $L 2>&1
 echo "$(cat /content/next_campaign_dir 2>/dev/null)" | grep -q c170f || echo "/content/c170f" > /content/next_campaign_dir

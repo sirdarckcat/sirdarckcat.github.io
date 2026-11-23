@@ -1,0 +1,10 @@
+# research's check 6 (a9e4a27), the lead's condition 1 for the family-B start files (23 Nov 20:00Z): uncovered primes above Q in the consumed 89-moduli vectors. A prime
+# q >= 170,000 is covered when q = N0 mod p for a cover prime p; the rest are rows a design hit still has to pass, so fewer means a design hit stops higher above 170,000.
+# check6.py on gold-g4c (463 family, all 1,000 vectors a chunk), 20:24Z; 419 primes in [170,000, 175,000), 426 in [175,000, 180,000):
+#   c186-c198 (first m89 starts, family A):  57.22 / 60.50   (per chunk 57.03-57.48 / 60.14-60.72)
+#   c200-c204 (58e95e3 starts, A + B):        49.14 / 52.08   (per chunk 47.13-52.35 / 48.64-54.23)
+# check6_491.py on gold-g4d (491 family, bbc8cd8 starts, chunks 0-5): 46.14 / 50.37 (research's family-B prediction ~46 / ~50).
+# Clearly fewer (8 a range against a chunk-to-chunk spread of ~0.1 in family A): condition 1 holds. Deployed: the 491 family-B-only file (a9e4a27, 3,924 covers, a strict
+# subset of bbc8cd8's 4,000) on gold-g4d (20:26Z, its generator reads it every walk) and in the RTX bring-up bundle (gold-g4e, gold-g4f); the m88f file as family B AND the
+# present 3bcdbf6 file (258 of research's 291; the other 33 are not in the present file, the lead's condition 3), for the next m88f batches. The 463 file is not deployed: the
+# 463 cards end by ~20:59Z and their replacements run 491.

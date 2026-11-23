@@ -22,7 +22,8 @@ echo "$r" | grep -q "READY" || { echo "HANDOVER-FAILED $NEW not created"; exit 1
 SNAPF="$SP/snap/$OLD/final_snap.tgz"; [ -s "$SNAPF" ] || SNAPF="$SP/snap/$OLD/snap.tgz"
 c 300 upload -s "$NEW" "$SNAPF" /content/snap.tgz | tail -n 1 | cut -c1-40
 if [ "$KIND" = rtx491 ]; then
-  for f in cover491.tgz vecgen491.sh rowguard491.py rowguard491.sh bringup_rtx491.sh kc_top_check.py; do c 120 upload -s "$NEW" "$B/$f" "/content/$f" | tail -n 1 | cut -c1-40; done
+  for f in cover491.tgz vecgen491.sh rowguard491.py rowguard491.sh bringup_rtx491.sh kc_top_check.py kc_prod.sh; do c 120 upload -s "$NEW" "$B/$f" "/content/$f" | tail -n 1 | cut -c1-40; done
+  c 120 upload -s "$NEW" "$SP/m89/m89_8.json" /content/m89_8.json | tail -n 1 | cut -c1-40
   sed "s/PARTX/$PART/" "$B/launch_bu.py" > "$B/launch_bu_$NEW.py"
 else
   c 120 upload -s "$NEW" "$SP/ua10b/ua10b_cuda.tgz" /content/ua10_cuda.tgz | tail -n 1 | cut -c1-40
