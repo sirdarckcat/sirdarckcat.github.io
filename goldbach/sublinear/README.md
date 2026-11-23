@@ -33,9 +33,11 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419, 499 for n = 1 to 14 (`desert.c`). It grows faster than
-  the r·ln r of the theorem and sits at 40 to 50% of a first-moment estimate
-  of order r·ln² r, as do the certified covers at 89 to 93 primes.
+  181, 223, 271, 331, 419, 499 for n = 1 to 14 (`desert.c`; two programs, and
+  the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
+  The Lean session proved that it also bounds the least summand from above
+  (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
+  for every n" implies Goldbach's conjecture.
 - For the campaign itself the day's gains are in `../fscan/cover/`: the
   89-prime covers on which the fleet found 158,209, the first-88 covers
   (1,255 rows at 170,000) its smaller cards now run, and, late on the 23rd,
@@ -714,8 +716,7 @@ classes every odd prime below D(n) is struck (N − q is divisible by some r),
 and D(n) is the first prime that no choice of N strikes; the complete covers
 above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
 fit below 10^200, which D does not ask). A depth-first search on "which
-modulus strikes the smallest unstruck prime" gives the exact values (n ≤ 7
-also by brute force over all vectors):
+modulus strikes the smallest unstruck prime" gives the exact values:
 
 | n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -723,25 +724,48 @@ also by brute force over all vectors):
 | D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 |
 | D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 |
 
-At n = 89 and 93 the ratio is at least 5.6. So what can be had without luck
-grows faster than the r·ln r of the theorem. A first-moment count says how
-far it could go: there are ∏(r − 1) vectors with nonzero classes, and a
-random one strikes a given prime with probability 1 − ∏(1 − 1/(r − 1)), so,
-treating the primes as independent, complete covers are expected up to the
-y with π(y)·(−ln(1 − ∏(1 − 1/(r − 1)))) = Σ ln(r − 1). That y is 359 at
-n = 8 (D = 163), 857 at n = 12 (D = 331), 32,300 at n = 89 (found: 15,907)
-and 34,600 at n = 93 (found: 16,981): the exact values and the complete
-covers sit at 40 to 50% of the first-moment estimate throughout.
-Asymptotically the estimate is (e^γ/(2C₂))·r·ln r·ln y, of order r·ln² r.
-For N ≤ X (r about ln X) that is a luck-free desert of order
-ln X·(ln ln X)², between the proven ln X·ln ln X and the ln² X·ln ln X
-expected with luck. No proof of anything beyond the constant 1.349 at order
-r·ln r is in sight: it would need the primes below y in classes modulo
-primes almost as large as y.
-(The nearest object in the literature we found
-is the paired Jacobsthal function of Ziller and Morack, which covers all
-integers of an interval with two classes per prime; here the targets are the
-primes only and there is one class per prime.)
+The values to n = 7 are also the result of a brute force over all vectors;
+all fourteen come out the same from the Lean session's separate program, and
+those to n = 8 are theorems checked by the Lean kernel, which runs a search
+proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commit 9dce329 on
+`ccr-36ca7b46-8twf14`; beyond 8 the lower bounds are theorems, one vector
+each, as are the four large covers). Formalising it, the Lean session proved
+three things that make D more than a lower bound:
+
+- g(N) ≤ D(n) for every even N, with n the number of odd primes up to √N: the
+  residues of N itself strike every odd prime below its least summand. So D
+  bounds the least Goldbach summand from above as well.
+- If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
+  most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
+  conjecture, and there is room where D is known: 163 against 841 at n = 8,
+  499 against 2,809 at n = 14.
+- D is strictly increasing, and the first record holders of the least
+  summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
+  from 220 on the records fall short, because there are more residue vectors
+  than even numbers below the next prime square.
+
+At n = 89 and 93 the ratio D/(r ln r) is at least 5.6. So what can be had
+without luck grows faster than the r·ln r of the theorem. How fast is not
+known. A first-moment count (∏(r − 1) vectors with nonzero classes, each
+prime struck with probability 1 − ∏(1 − 1/(r − 1)), primes treated as
+independent) puts the end of complete covers at 359 for n = 8 (D = 163), 857
+for n = 12 (D = 331), 32,300 for n = 89 (found: 15,907) and 34,600 for n = 93
+(found: 16,981), of order r·ln² r asymptotically. The truth sits at 40 to
+50% of that count wherever it is known, with no sign of approaching it, and
+for a known reason: under a random vector the number of unstruck primes is
+much less dispersed than independent strikes allow (a small modulus strikes
+about the same number of primes whatever its class), so the count overstates
+what exists. The same count at 170,000 predicts covers with about 790 rows
+left where tempering finds 1,248. So the estimate is an upper guide, not a
+target, and for N ≤ X (r about ln X) the luck-free desert lies somewhere
+between the proven ln X·ln ln X and order ln X·(ln ln X)², far below the
+ln² X·ln ln X expected with luck. No proof of anything beyond the constant
+1.349 at order r·ln r is in sight: it would need the primes below y in
+classes modulo primes almost as large as y. (The nearest object in the
+literature we found is the paired Jacobsthal function of Ziller and Morack,
+arXiv:1706.00317, where a bound on a covering of all integers of an interval
+with two classes per prime implies Goldbach's conjecture; here the targets
+are the primes only and there is one class per prime.)
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on
