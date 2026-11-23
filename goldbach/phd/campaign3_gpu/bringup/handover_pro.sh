@@ -39,6 +39,8 @@ for i in $(seq 1 40); do
 done
 echo "$(date -u +%T) $NEW: $r"
 echo "$r" | grep -q "READY" || { echo "HANDOVER-FAILED $NEW not created ($GPU)"; exit 1; }
+# the old card's found lines come back with its snapshot: keep them as already copied for the new card (the watcher prints only lines it has not seen)
+[ -s "$SP/found/$OLD.jsonl" ] && cat "$SP/found/$OLD.jsonl" >> "$SP/found/$NEW.jsonl"
 if [ "$KIND" = rtx491 ]; then
   c 300 upload -s "$NEW" "$SP/snap/$OLD/final_snap.tgz" /content/snap.tgz | tail -n 1 | cut -c1-40
   for f in cover491.tgz vecgen491.sh rowguard491.py rowguard491.sh bringup_rtx491.sh resume491.sh kc_top_check.py kc_prod.sh; do c 120 upload -s "$NEW" "$B/$f" "/content/$f" | tail -n 1 | cut -c1-40; done

@@ -704,6 +704,11 @@ Version 3 (22 Nov):
   - gold-gpu → gold-l4d (20:20Z), on gold-gpu's untouched top3 share in `/content/c170g`.
     - It first passed the per-member check and the m88f known case 40/40 on the new GPU.
   - Following the lead (19:27Z), found lines are copied off every card every 2 minutes (`runlogs/found_sync.sh`).
+    That job hit the 2 h limit on background jobs at 22:30Z. Since 22:35Z the fleet watcher does it on each poll,
+    ~3 min apart (`bringup/fjob_watch20.sh`; `peek_v3.py` also returns every found line, and the list ends with a
+    marker).
+    - A replacement starts with its predecessor's lines marked as already copied, so lines restored from a snapshot
+      are not reported again as new.
     From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):
