@@ -131,9 +131,10 @@ Value first: the Fermat rounds are 1.24 s of the 2.10 s deep batch on an RTX PRO
 
 1. **`bench_clock.py`** (5 s; it may run beside production on one RTX: the ticks-per-ns line does not depend on what else runs).  It decides whether every RTX "cycle" of `bench_pipes.py` / `bench_fm28_step.py` is a
    clock64 tick that runs slower than the SM clock: ratio ticks / SM clock = 0.67 explains the whole 1.49x gap of the Fermat step (the model then holds with rho 0.8 and the RTX kernel is at its multiplier floor:
-   876 IMAD.WIDE of ~3.8 real cycles; nothing left to find in the step), ratio 1.0 means the gap is inside the real kernel (then `bench_fm28_step.py` E1-E3).  The one outside datum I found
-   (the GB203 microbenchmark paper: a dependent IMAD measures 4 on an RTX 5080 with clock64) says 1.0; the A100 / L4 fits (ratio 1.0 there) and the variant-to-variant differences on the RTX (1.13-1.30 real cycles for every
-   tick of ALU cost, i.e. rho/r > 1) say < 1.  Five seconds settle it.
+   876 IMAD.WIDE of ~3.8 real cycles; nothing left to find in the step), ratio 1.0 means the gap is inside the real kernel (then `bench_fm28_step.py` E1-E3).  I now expect 1.0: ptxas encodes a stall of 4 for a
+   dependent IMAD on sm_120, and a microbenchmark paper on the RTX 5080 (GB203, also sm_120; Section IV-A, Table III: `mad.lo.s32` chains timed with %clock64, "true latency ... four cycles" for INT32 and FP32 on
+   both GB203 and GH100) measures exactly 4 ticks for it; the paper never says whether clock64 ticks at the SM clock, so it is consistent with both, but a real latency of 6 SM cycles would be odd.  Against 1.0: the
+   RTX variants differ by 1.13-1.30 real cycles for every tick of ALU cost (rho/r > 1 if r = 1).  Five seconds settle it; `bench_fm28_step.py` now prints the same ticks-per-ns (GHz) column at production occupancy.
 2. **`--overlap 1` against `--overlap 0` on one RTX** (`search_gpu5_overlap.patch`; same variants, same slices: tests and PRPs must be identical, then the batch time).  Try `--fermat-cta-sm 3` and `4` with
    `--deep-tile-threads 256`.  A batch near 1.35-1.5 s: keep it, and go to 3.  About 2.1 s: the sieve and Fermat CTAs do not share the SMs (look at `--fermat-cta-sm`, `--deep-tile-threads 128`); report both times.
 3. **A deeper bound B, once overlap works.**  With the sieve hidden under the Fermat rounds, the best B is the largest whose sieve still fits in them.  Marks a 2^25 window for 1,183 rows (Mertens: rows x 2^25 x ln(ln B / ln 1e6)):

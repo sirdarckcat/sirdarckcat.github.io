@@ -15,7 +15,9 @@ plain C products, mul.wide for m * n), s1w = carry-chain step with mul.wide.
       columns: the cycles each one adds inside the real step, to compare with bench_pipes.py's benchmark rows and with costmodel.py's two-pipe model.
   E3  occupancy.  24 limbs at 1 .. 6 CTAs an SM (limited with dynamic shared memory): if cycles per warp-step fall with more warps, the step is latency bound.
 
-Compare the cycles per IMAD.WIDE with bench_pipes.py's part 1 (IMAD.WIDE alone: 2.5 RTX PRO 6000, 4.15 A100, 4.5 L4).
+Compare the cycles per IMAD.WIDE with bench_pipes.py's part 1 (IMAD.WIDE alone: 2.5 RTX PRO 6000, 4.15 A100, 4.5 L4).  The production kernel costs 3,800 cycles a warp-step at the SM clock (2.42 GHz) on an RTX
+PRO 6000: E3 at 5 CTAs an SM should reproduce it in clock64 ticks if clock64 counts SM cycles; the GHz column (ticks per ns of event time) says whether it does, and that is the whole check of bench_clock.py
+at production occupancy.
 """
 import argparse
 import os
@@ -123,35 +125,40 @@ def run_gpu(a):
         out = cp.empty(grid * 128, dtype=cp.uint32)
         cyc = cp.zeros(grid, dtype=cp.int64)
         k((grid,), (128,), (init, out, cyc, np.int32(50)), shared_mem=shared)
-        best = None
+        best, ghz = None, 0.0
+        e0, e1 = cp.cuda.Event(), cp.cuda.Event()
         for _ in range(3):
+            e0.record()
             k((grid,), (128,), (init, out, cyc, np.int32(a.steps)), shared_mem=shared)
-            cp.cuda.Device().synchronize()
+            e1.record()
+            e1.synchronize()
+            ms = cp.cuda.get_elapsed_time(e0, e1)                          # (cupy has no Event.elapsed_time: the module function)
             m = int(cyc.get().max())
-            best = m if best is None else min(best, m)
-        return best / a.steps / c, regs, c
+            if best is None or m < best:
+                best, ghz = m, m / (ms * 1e6)                              # clock64 ticks per ns of wall time over the launch (all CTAs resident at once): the tick rate in GHz
+        return best / a.steps / c, regs, c, ghz
 
-    print("\nE1  loop-body size (cycles per warp-step per scheduler; the last column divides by the IMAD.WIDE of the step)")
-    print(f"{'limbs':>6s} {'IMAD.WIDE':>9s} {'~code KB':>9s} {'regs':>5s} {'CTAs/SM':>8s} {'cycles/step':>12s} {'cyc/IMAD.WIDE':>14s}")
+    print("\nE1  loop-body size (clock64 ticks per warp-step per scheduler; the next to last column divides by the IMAD.WIDE of the step; GHz = clock64 ticks per ns of wall time: the SM clock if clock64 counts SM cycles)")
+    print(f"{'limbs':>6s} {'IMAD.WIDE':>9s} {'~code KB':>9s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'ticks/IMAD.WIDE':>16s} {'GHz':>6s}")
     for NL in (8, 12, 16, 20, 24):
         r = measure(NL, 0, 0, None)
         if r:
-            print(f"{NL:6d} {n_wide(NL):9d} {1.35 * 16 * n_wide(NL) / 1024:9.1f} {r[1]:5d} {r[2]:8d} {r[0]:12.0f} {r[0] / n_wide(NL):14.2f}", flush=True)
-    print("\nE2  extra instructions inside the 24-limb step (cycles a warp-step, difference to the first row, per added instruction)")
-    print(f"{'config':22s} {'regs':>5s} {'CTAs/SM':>8s} {'cycles/step':>12s} {'added':>8s} {'per instruction':>16s}")
+            print(f"{NL:6d} {n_wide(NL):9d} {1.35 * 16 * n_wide(NL) / 1024:9.1f} {r[1]:5d} {r[2]:8d} {r[0]:11.0f} {r[0] / n_wide(NL):16.2f} {r[3]:6.3f}", flush=True)
+    print("\nE2  extra instructions inside the 24-limb step (ticks a warp-step, difference to the first row, per added instruction)")
+    print(f"{'config':22s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'added':>8s} {'per instruction':>16s} {'GHz':>6s}")
     base = measure(24, 0, 0, None)
-    print(f"{'baseline':22s} {base[1]:5d} {base[2]:8d} {base[0]:12.0f}", flush=True)
+    print(f"{'baseline':22s} {base[1]:5d} {base[2]:8d} {base[0]:11.0f} {'':>8s} {'':>16s} {base[3]:6.3f}", flush=True)
     for kind, vals in (("alu", (96, 192, 384)), ("mul", (96, 192, 384))):
         for K in vals:
             r = measure(24, K if kind == "alu" else 0, K if kind == "mul" else 0, base[2])
             if r:
-                print(f"{'+' + str(K) + (' IADD3' if kind == 'alu' else ' IMAD.WIDE'):22s} {r[1]:5d} {r[2]:8d} {r[0]:12.0f} {r[0] - base[0]:8.0f} {(r[0] - base[0]) / K:16.2f}", flush=True)
-    print("\nE3  occupancy (24 limbs)")
-    print(f"{'CTAs/SM':>8s} {'warps/scheduler':>16s} {'cycles/step':>12s} {'cyc/IMAD.WIDE':>14s}")
+                print(f"{'+' + str(K) + (' IADD3' if kind == 'alu' else ' IMAD.WIDE'):22s} {r[1]:5d} {r[2]:8d} {r[0]:11.0f} {r[0] - base[0]:8.0f} {(r[0] - base[0]) / K:16.2f} {r[3]:6.3f}", flush=True)
+    print("\nE3  occupancy (24 limbs): ticks per warp-step per scheduler against the warps a scheduler holds (flat: the pipe is the limit; falling with more warps: latency bound)")
+    print(f"{'CTAs/SM':>8s} {'warps/scheduler':>16s} {'ticks/step':>11s} {'ticks/IMAD.WIDE':>16s} {'GHz':>6s}")
     for c in range(1, 7):
         r = measure(24, 0, 0, c)
         if r:
-            print(f"{c:8d} {c:16d} {r[0]:12.0f} {r[0] / n_wide(24):14.2f}", flush=True)
+            print(f"{c:8d} {c:16d} {r[0]:11.0f} {r[0] / n_wide(24):16.2f} {r[3]:6.3f}", flush=True)
         else:
             print(f"{c:8d}  (the registers do not allow it)")
 

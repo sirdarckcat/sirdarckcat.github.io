@@ -65,11 +65,22 @@ if want B; then
 fi
 
 if want C; then
-  section "C. the Fermat step inside the real kernel (bench_fm28_step.py): E1 loop-body size, E2 extra instructions, E3 occupancy"
+  section "C. the Fermat step inside the real kernel (bench_fm28_step.py): E1 loop-body size, E2 extra instructions, E3 occupancy (the GHz column: clock64 ticks per ns of event time, to compare with the SM clock sampled beside it)"
+  nvidia-smi -i "$GPU" --query-gpu=clocks.sm --format=csv,noheader,nounits -lms 200 > /tmp/exp_clkC_$$.csv 2>/dev/null &
+  SAMPC=$!
   for st in s1r_asm s1rw; do
     echo "--- style $st"
     timeout 1500 python3 "$FC/bench_fm28_step.py" --style $st || echo "FAILED: bench_fm28_step $st"
   done
+  kill $SAMPC 2>/dev/null; wait $SAMPC 2>/dev/null
+  python3 - /tmp/exp_clkC_$$.csv <<'PY'
+import sys, statistics
+v = [float(x) for x in open(sys.argv[1]).read().split() if x.replace('.', '', 1).isdigit()]
+v = [x for x in v if x > 500]                      # idle samples between launches are low
+if len(v) > 4:
+    print(f"  nvidia-smi SM clock during section C (samples above 500 MHz): median {statistics.median(v):.0f} MHz, min {min(v):.0f}, max {max(v):.0f}")
+PY
+  rm -f /tmp/exp_clkC_$$.csv
 fi
 
 if want D; then
