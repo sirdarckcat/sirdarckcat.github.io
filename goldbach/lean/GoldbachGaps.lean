@@ -58,6 +58,7 @@ import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
 import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Cap.Thinning
+import GoldbachGaps.Cap.Hardness
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -288,7 +289,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the rows left is an inequality above `Q`. The research session's continuation of its
                prize table to depth `10^8` by independent rows is therefore a bound in a known
                direction above `Q`; `scripts/thinning_check/` tests the same law below `Q` on
-               that session's tables and derives its `1/ln² z` regularity from it).
+               that session's tables and derives its `1/ln² z` regularity from it),
+               `Hardness` (for arbitrary rows the cover question contains satisfiability:
+               from a formula in conjunctive normal form with `n` variables and `m` clauses,
+               `n` prime moduli and `m (n + 1)` rows of polynomial size such that the formula
+               is satisfiable iff some residue vector covers every row, iff some `N` is
+               congruent to every row modulo one of the moduli, iff the depth-first search of
+               `CoverDepth` says so: `sat_iff_coversList`, `sat_iff_exists_number`,
+               `sat_iff_search`. So a method that is fast for arbitrary rows would decide
+               satisfiability; with `BlackBox`, a method that beats the present search has to
+               use that the rows are the primes, and for that case nothing is proved).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
