@@ -565,6 +565,20 @@ Version 3 (22 Nov):
     - Batch: gold-g4c ×0.967, gold-g4 ×0.957, gold-g4b ×0.963, all with both options.
   - In this regime the sieve thread is busy about 100% of a batch, and beside the Fermat kernels it runs about 3× slower
     than alone.
+  - In production, 13:52:30-14:08Z: 0.7815 s a batch on all three cards (`sievepack/production_1352_1408.txt`). Design hits a
+    second rose ×1.035.
+- uarch's generate unroll with clamped table loads (0d42e4d; `DEEP_GEN_UNROLL=4`), deployed on the three RTX cards at
+  14:14:28-14:14:39Z on top of the six options above.
+  - The tree is `/content/ua_v7`.
+  - After the flat flush the generate kernel was waiting on its 16-byte prime-table loads. The unrolled loops keep 4 loads in
+    flight a warp, at 23-24 instructions a visit like unroll 1.
+  - genab (`sievepack/genab_rtxpro6000.txt`), generate ms a window: 40.30 at unroll 1, 32.43 at 2, 28.74 at 4, 30.10 at 8.
+    Smaller CTAs and rcta 16 are slower. Tile unroll 8 / 16 add nothing over 4.
+  - Each card's own check (`unrab.sh`, `unrab_rtxpro6000.txt`) ran production, ua_v7 with production's options, unroll 4,
+    and unroll 2, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs.
+    - The known case with unroll 4 gave the 23 (k, q).
+    - Batch with unroll 4: gold-g4 ×0.969, gold-g4b ×0.962, gold-g4c ×0.966.
 - The keep fraction, re-swept with the 13:17Z engine (`v89/vsweep3_rtxpro6000.txt`, near-misses from 158,209): ×0.903 /
   ×0.926 / ×0.942 / ×0.975 / ×1.006 at f = 0.975 / 0.9775 / 0.98 / 0.9825 / 0.9875 against 0.985, and a repeat at 0.985
   gave ×0.985. f = 0.985 stays.

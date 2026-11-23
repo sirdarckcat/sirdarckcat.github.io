@@ -1,0 +1,50 @@
+# uarch's generate unroll with clamped loads (DEEP_GEN_UNROLL=4, 0d42e4d) on top of production's six sieve options, on the three RTX PRO 6000s (unrab.sh, then deploy_unroll.py),
+# 2026-11-23 14:12-14:14Z: per card, the 24 test windows base / v7 (ua_v7 with production's options) / + UNROLL=4 / + UNROLL=2, alternating; the known case with UNROLL=4.
+
+=== gold-g4
+/content/unrab/result.txt base  : gaps [0.809, 0.777, 0.785, 0.776, 0.619] | mean of batches 2-5 0.787 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.756, 0.777, 0.827, 0.8, 0.614] | mean of batches 2-5 0.790 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.731, 0.81, 0.728, 0.762, 0.623] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.728, 0.794, 0.773, 0.758, 0.625] | mean of batches 2-5 0.763 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.817, 0.769, 0.766, 0.778, 0.633] | mean of batches 2-5 0.783 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.717, 0.832, 0.748, 0.754, 0.612] | mean of batches 2-5 0.763 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.805, 0.754, 0.737, 0.787, 0.639] | mean of batches 2-5 0.771 s | slice lines vs base: IDENTICAL (24) | []
+phu (GEN_UNROLL=4) 0.760 s (x0.9688) | phup (GEN_UNROLL=2) 0.767 s (x0.9776) | base 0.785 s | v7 with production's options 0.790 s
+known case with phu's settings (the six options + GEN_UNROLL=4): 23 near-misses, identical to the CPU brute force's 23: True
+UNROLL-CHOICE phu x0.9688
+UNROLL-GATE PASSED
+UNRAB-DONE
+/content/unrd.log [du] 14:14:28Z | procs 1 | phu | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'SIEVE200=/content/ua_v7/goldbach/sieve200', 'DEEP_GEN_UNROLL=4']
+UNRD-DONE
+
+=== gold-g4b
+/content/unrab/result.txt base  : gaps [0.82, 0.778, 0.79, 0.777, 0.634] | mean of batches 2-5 0.791 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.8, 0.78, 0.781, 0.77, 0.638] | mean of batches 2-5 0.783 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.771, 0.759, 0.748, 0.755, 0.636] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.796, 0.765, 0.76, 0.753, 0.641] | mean of batches 2-5 0.768 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.732, 0.828, 0.804, 0.778, 0.631] | mean of batches 2-5 0.785 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.759, 0.774, 0.744, 0.757, 0.632] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.795, 0.757, 0.763, 0.74, 0.644] | mean of batches 2-5 0.764 s | slice lines vs base: IDENTICAL (24) | []
+phu (GEN_UNROLL=4) 0.758 s (x0.9621) | phup (GEN_UNROLL=2) 0.766 s (x0.9717) | base 0.788 s | v7 with production's options 0.783 s
+known case with phu's settings (the six options + GEN_UNROLL=4): 23 near-misses, identical to the CPU brute force's 23: True
+UNROLL-CHOICE phu x0.9621
+UNROLL-GATE PASSED
+UNRAB-DONE
+/content/unrd.log [du] 14:14:35Z | procs 1 | phu | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'SIEVE200=/content/ua_v7/goldbach/sieve200', 'DEEP_GEN_UNROLL=4']
+UNRD-DONE
+
+=== gold-g4c
+/content/unrab/result.txt base  : gaps [0.781, 0.805, 0.763, 0.78, 0.624] | mean of batches 2-5 0.782 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.753, 0.785, 0.787, 0.778, 0.642] | mean of batches 2-5 0.776 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.774, 0.753, 0.758, 0.744, 0.648] | mean of batches 2-5 0.757 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.804, 0.761, 0.757, 0.754, 0.633] | mean of batches 2-5 0.769 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.807, 0.782, 0.778, 0.789, 0.609] | mean of batches 2-5 0.789 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.734, 0.796, 0.743, 0.768, 0.621] | mean of batches 2-5 0.760 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.769, 0.777, 0.78, 0.75, 0.621] | mean of batches 2-5 0.769 s | slice lines vs base: IDENTICAL (24) | []
+phu (GEN_UNROLL=4) 0.759 s (x0.9657) | phup (GEN_UNROLL=2) 0.769 s (x0.9787) | base 0.786 s | v7 with production's options 0.776 s
+known case with phu's settings (the six options + GEN_UNROLL=4): 23 near-misses, identical to the CPU brute force's 23: True
+UNROLL-CHOICE phu x0.9657
+UNROLL-GATE PASSED
+UNRAB-DONE
+/content/unrd.log [du] 14:14:39Z | procs 1 | phu | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'SIEVE200=/content/ua_v7/goldbach/sieve200', 'DEEP_GEN_UNROLL=4']
+UNRD-DONE
