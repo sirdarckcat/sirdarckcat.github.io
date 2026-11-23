@@ -419,11 +419,23 @@ against gold-g4 / gold-g4b.  Expected: 8.42% of ~1.15 s of Fermat kernel time a 
 **What is known.**  A 2^24 window (1,248 rows, B = 1e8) takes 88.5 ms of "sieve (gen + tiles)", 99.5 ms with count / select / finalize / rows (bench_batch, wcost2/3).  The GPU session's `bench_pipes.py` on the RTX PRO 6000 (12:26Z):
 a random `ATOMS.AND` costs ~2.7 cycles a warp-op an SM (the same as a random `STS.32` / `LDS.32`), i.e. ~12 marks a clock an SM; every integer op (IADD3, LOP3, SHF, IMAD.U32) ~2 scheduler cycles a warp-op (16 lanes a clock a scheduler);
 a 128-byte-run store 325-1,050 G words/s, a copy of 1 GB 1,460 GB/s.  The tile kernel makes ~1.7e10 marks a window and does ~0.8 marks a clock an SM: **15x below the atomic unit and ~15x below the integer pipes' rate** (3-10 ms each from the counts),
-so neither the atomics nor the arithmetic limits it.  What is left: **latency** (a CTA is 16 warps, 4 a scheduler, 1 CTA an SM because the 2^19-bit bitmap takes 64 KB of shared memory; each prime is a dependent chain: table load, Shoup product,
-two conditional subtractions, a data-dependent loop) and **DRAM** (the large primes make ~6e9 marks a window, 150k per (row, tile) bin, 4 bytes each: 24 GB written by `gbig_gen_st` and 24 GB read by the tile kernel's apply = ~33 ms at the
-copy rate, the size of gen + apply).  `bench_split.py` takes the window apart kernel by kernel (gen, gen pass A, tile, tile without bins / small primes / both) with no host sync in between: it has been asked of the GPU session.
+so neither the atomics nor the arithmetic limits it.  **`bench_split.py` (GPU session, gold-g4c, 12:34Z, `uarch_measure/bench_split_rtxpro6000.txt`) took the window apart (ms a 2^24 window, rg 32, rcta 2 / rcta 8 with 512 generate threads):**
 
-**Three experiments, all opt-in (the default build of every kernel is byte-identical to production), all CPU-verified identical to the CPU feeder (`test_gbatch_cpu.py` with the variable set):**
+| piece | rcta 2 | rcta 8 |
+|---|---|---|
+| gen (`gbig_gen_st`) | 54.5 | 49.6 |
+|   pass A (visits + counting) | 22.8 | 15.6 |
+|   pass B (visits again, stage, flush) | 31.8 | 34.1 |
+| tile kernel | 32.9 | 33.0 |
+|   small-prime marks (78,408 primes) | 14.6 | 14.6 |
+|   **bin apply** | **19.9** | 19.9 |
+|   init + write of the tiles | 1.7 | 1.8 |
+| gen + tile | 87.4 | 82.6 |
+
+and at rg 8 / rg 4: gen 60.8 / 69.6, tile 43.2 / 27.7, **bin apply 25.9 / 9.7**.  So **the large-prime stage (gen + apply = 74 of 87 ms) is bound by the DRAM traffic of its bins, not by arithmetic or atomics**: the 6.0e9 marks a window
+(150k a (row, tile) bin, 4 bytes each) are written (24 GB) and read back (24 GB); the apply reads them at 1.2 TB/s (the DRAM rate) and takes half the time (9.7 ms) when the bins of a group are small enough to sit in the L2 (rg 4), where the generate
+passes grow with the number of groups (more table re-reads and launches) and rg 32 stays cheapest.  The small-prime marks (the kernel the opt-in experiments below aim at) are 14.6 ms.  **The lever is bytes a mark: packed bins (5 marks of 19 bits in 3 words,
+2.4 bytes a mark, -40%) below.**  **Three experiments, all opt-in (the default build of every kernel is byte-identical to production), all CPU-verified identical to the CPU feeder (`test_gbatch_cpu.py` with the variable set):**
 * `DEEP_TILE_UNROLL=2|4` (`TILE_UNROLL` in `gbatch_kernels.cuh`): a thread sets up 2 / 4 primes at once - their 16-byte table entries loaded together, their Shoup chains computed together (independent chains instead of one) - and then runs their mark loops one
   after the other.  Same marks, same bits.  SASS (sm_120): 392 -> 416 / 496 instructions, still 40 registers.
 * `DEEP_TILE_PREFETCH=N` (`TILE_PREFETCH_KB`): at kernel start every thread issues `prefetch.global.L2` (`CCTL.E.PF2`) for the first N KB of this CTA's bin, which the apply reads ~100 us later, after the marks; the DRAM read overlaps the atomics.
