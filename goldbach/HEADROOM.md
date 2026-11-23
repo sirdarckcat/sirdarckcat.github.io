@@ -6,7 +6,7 @@ cards are ~81% of the fleet's Fermat throughput; the L4s and the T4 gain nothing
 stream priorities were tried and are worse: plt7).  A real 2x-5x needs more GPUs, which is a money question, not an engineering one; and a 2x-5x of compute buys only +3,300 to +7,700 on the final record,
 because the return is logarithmic.**
 
-## 0. Status at 13:05Z (23 Nov): what the engine has gained since the 05:30Z audit, measured (RTX PRO 6000, vector mode, the same 24 test windows)
+## 0. Status at 14:05Z (23 Nov): what the engine has gained since the 05:30Z audit, measured (RTX PRO 6000, vector mode, the same 24 test windows)
 
 | step (date, who measured) | batch of 4 windows | note |
 |---|---|---|
@@ -17,8 +17,12 @@ because the return is logarithmic.**
 | + DEEP_RCTA = 8, 512 generate threads | 0.858 s (x0.983) | -10% together |
 | deep head (11:59-12:24Z) | +0.7% worse, taken off | -8.4% tests for 54 ms of sieve a batch |
 | **record g(N) = 158,209** (12:48Z, certified 12:56Z) | | found by this pipeline on gold-g4c |
+| `--target 524288` (13:11Z, GPU session's A/B) | x0.987 | pool round size |
+| packed bins + hoisted generate loops + tile unroll 4 + L2 prefetch (13:17Z, packab gate, 3 cards) | 0.814-0.817 s (x0.959-0.970) | sieve phase of a window 83.7 -> 67.7 ms; slice lines identical, known case 23 / 23 |
+| flat flush of the staging buffer + grid order (13:48Z, flushab gate on gold-g4c; the other two gating) | 0.784 s (x0.967) | sieve phase 67.7 -> 63.5 ms; the batch fell 27 ms for a 17 ms fall of the sieve (the freed integer slots go to the Fermat kernels) |
 
-Where a batch goes now (f = 0.985): ~0.95 s of GPU work (Fermat kernels ~0.57 s alone, sieve ~0.38 s alone) in ~0.86 s: the two share the GPU almost serially, so a millisecond of sieve or Fermat time is worth ~0.5% of a batch.  Window sieve (bench_split, ms of 83-87):
+Where a batch goes now (f = 0.985): Fermat kernels ~0.62 s alone (14.1M tests at 22.8M tests/s; at the integer multiplier's limit, FERMAT28.md), sieve ~0.25 s alone (4 windows x 63.5 ms + count / select / finalize / rows ~7 ms each) in 0.784 s: the two share the GPU
+almost serially, and the sieve's INSTRUCTIONS cost the Fermat kernels as much as its time (the flat flush: batch -27 ms for -17 ms of sieve).  The generate kernel is latency-bound beside its instruction count (DEEPSIEVE.md, "Measured ... the model above was wrong by 3x").  Window sieve (bench_split, ms of 83-87):
 gen 50-55 (pass A 16-23, pass B 32-34), tile kernel 33 (small marks 14.6, bin apply 19.9, init/write 1.7): the large primes' 4-byte marks are written and read back at the DRAM rate.  In flight (opt-in, CPU-verified, not yet timed): packed bins (-40% bytes), hoisted visit
 loops (-30% instructions a visit), tile-kernel latency experiments (DEEPSIEVE.md, last sections).  Closed with data: FP32 beside the multiplier, the shared-memory atomics as a limit, a persistent Fermat kernel, a deeper head at f = 0.985.
 
