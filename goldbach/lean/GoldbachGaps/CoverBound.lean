@@ -13,7 +13,9 @@ assume that `N` has a Goldbach partition:
 * `eventually_exists_even_le_no_summand`: unconditionally, with `c = 0.73`.
 * `eventually_exists_even_le_of_mertensThird`: with Mertens' third theorem
   (`ln w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`, not in Mathlib, a named hypothesis `MertensThird`),
-  for every `c < e^γ / (2 C₂) = 1.349…`, `C₂` the twin-prime constant.
+  for every `c < e^γ / (2 C₂) = 1.349…`, `C₂` the twin-prime constant; and
+  `eventually_exists_even_le_of_mertensThird_explicit` with `c = 1.2` (from `γ > 1/2` and three
+  factors of `C₂`).
 * `eventually_exists_even_le_of_mertensUpper`: the general statement. If
   `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε) / ln w` for every `ε > 0` and all large `w`
   (`MertensUpper κ`), the conclusion holds for every `c < 1/κ`.
@@ -785,5 +787,59 @@ theorem eventually_exists_even_le_of_mertensThird (h : MertensThird) {c : ℝ}
       linarith)
     exact hw.trans (div_le_div_of_nonneg_right (by linarith) hlog.le)
   exact eventually_exists_even_le_of_mertensUpper hκ'0 hM' hcκ'
+
+/-- `C₂ ≤ (3/4)(15/16)(35/36)`: the infimum is at most the partial product over `3, 5, 7`. -/
+theorem twinPrimeConstant_le : twinPrimeConstant ≤ 1575 / 2304 := by
+  have h1 : twinPrimeConstant ≤ twinPartial 7 :=
+    ciInf_le ⟨0, fun _ ⟨w, hw⟩ => hw ▸ twinPartial_nonneg w⟩ 7
+  have hsub : ({3, 5, 7} : Finset ℕ) ⊆ oddPrimesLE 7 := by
+    intro r hr
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hr
+    rw [mem_oddPrimesLE]
+    rcases hr with rfl | rfl | rfl
+    · exact ⟨by omega, by norm_num, by norm_num⟩
+    · exact ⟨by omega, by norm_num, by norm_num⟩
+    · exact ⟨by omega, by norm_num, by norm_num⟩
+  have h2 : twinPartial 7 ≤ ∏ r ∈ ({3, 5, 7} : Finset ℕ), (1 - 1 / ((r : ℝ) - 1) ^ 2) :=
+    Finset.prod_le_prod_of_subset_of_le_one₀ hsub
+      (fun r hr => (twinPartial_factor (three_le_of_mem_oddPrimesLE hr)).1)
+      (fun _ hr _ => (twinPartial_factor (three_le_of_mem_oddPrimesLE hr)).2)
+  refine h1.trans (h2.trans (le_of_eq ?_))
+  rw [Finset.prod_insert (by decide), Finset.prod_insert (by decide), Finset.prod_singleton]
+  norm_num
+
+/-- `e^{-γ} < 0.6066`, from `γ > 1/2`. (The true value is `0.5615`.) -/
+theorem exp_neg_eulerMascheroni_lt : Real.exp (-Real.eulerMascheroniConstant) < 0.6066 := by
+  have hγ := Real.one_half_lt_eulerMascheroniConstant
+  have h1 : Real.exp (-Real.eulerMascheroniConstant) < Real.exp (-(1 / 2)) :=
+    Real.exp_lt_exp.mpr (by linarith)
+  have h2 : Real.exp (-(1 / 2)) < 0.6066 := by
+    have hsq : Real.exp (-(1 / 2)) ^ 2 = Real.exp (-1) := by
+      rw [sq, ← Real.exp_add]
+      norm_num
+    have he : Real.exp (-1) < 0.3678794412 := Real.exp_neg_one_lt_d9
+    have hpos : 0 < Real.exp (-(1 / 2)) := Real.exp_pos _
+    by_contra hcon
+    have hge : (0.6066 : ℝ) ≤ Real.exp (-(1 / 2)) := not_lt.mp hcon
+    have : (0.6066 : ℝ) ^ 2 ≤ Real.exp (-(1 / 2)) ^ 2 := pow_le_pow_left₀ (by norm_num) hge 2
+    rw [hsq] at this
+    norm_num at this
+    linarith
+  exact h1.trans h2
+
+/-- **With Mertens' third theorem, an explicit constant.** For all large `X` there is an even
+`N ≤ X` such that `N - q` is composite for every prime `q < 1.2 · ln X · ln ln X`. (The crude
+bounds `γ > 1/2` and `C₂ ≤ 0.684` are used; the limit of the method is `1.349`.) -/
+theorem eventually_exists_even_le_of_mertensThird_explicit (h : MertensThird) :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, 1.2 * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < 1.2 * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
+  refine eventually_exists_even_le_of_mertensThird h ?_
+  have h1 := twinPrimeConstant_le
+  have h2 := exp_neg_eulerMascheroni_lt
+  have h3 := twinPrimeConstant_nonneg
+  have h4 := Real.exp_pos (-Real.eulerMascheroniConstant)
+  have h5 : twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant) ≤
+      1575 / 2304 * 0.6066 := mul_le_mul h1 h2.le h4.le (by norm_num)
+  nlinarith
 
 end GoldbachGaps
