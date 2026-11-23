@@ -320,3 +320,19 @@ threads = 12,288 each) leave 4,096 free: a sieve CTA can only run by taking the 
 generate kernel is 26 registers) with 128-thread CTAs needs 4,096 registers a CTA = exactly what 5 Fermat CTAs leave, so it never displaces one; with the Fermat streams above the sieve's
 (`FERMAT_STREAM_PRIORITY=high` + `OVERLAP_SIEVE_PRIORITY=0`, `search_gpu5_prio.patch`) the Fermat rounds would never queue behind the sieve and the sieve would take only what the Fermat CTAs leave plus the gaps and
 tails; the sieve's solo speed with 128 threads is lower, so it may become the bottleneck (its slack is ~0.5 s a batch); (d) `--dmax 6` (the waste of 3.1%).
+
+
+## plt3 (GPU session, 23 Nov 09:03-09:07Z, `uarch_measure/plt3_burst_rtxpro6000.txt`): shaping the sieve's bursts buys at most 1.4%; the fitted sieve is destructive
+
+RTX PRO 6000, 6 batches of 2 windows (slice lines identical in all 15 runs), mean of the batches that have a sieve beside them: base (no pipeline) 1.755 s; j0 / j1 (production pipeline, a host check after every row group)
+1.571 / 1.568; **d1** (`GBATCH_GROUP_DELAY_US=1000`: a 1 ms bubble after every group) 1.548 (sieve busy 1.35-1.48 s, idle 0.05-0.16: nearly sieve-bound); d2 (2.5 ms) 1.629 (the sieve falls behind); s2 / s4 (check every
+2nd / 4th group) 1.575 / 1.580; r4 / r8 (4 / 8-row groups) 1.646 / 1.565; **tt512** (tile CTAs of 512 threads: the first time a tile-thread count was really tested) 1.553 (busy 0.83-1.10); tt128 1.639; dm6 1.581;
+fA / fB / fC (the sieve in the 4,096 registers the Fermat CTAs leave: `DEEP_TILE_MAXREG=32`, 128-thread tile and gen CTAs) 1.969 / 1.736 / 1.784.  Nothing beats production by the 2% a change needs; the RTX cards keep j.
+
+What it says about the 0.25 s a batch that the Fermat rounds lose beside the sieve (the probe's single big Fermat launch lost 0.12 s for the same sieve):
+* the loss follows the sieve's WORK, not its intensity: j0 loses 0.26 s with the sieve running at x2.2 (busy 1.0 s), d1 0.24 s with it at x3.2 (busy 1.4 s): ~0.55 s of Fermat per second of sieve work (the probe: 0.28);
+* **the loss is not CTA displacement**: the fitted sieve CTAs (4,096 registers, one per SM beside 5 Fermat CTAs, nothing displaced, Fermat streams at the higher priority in fA) are the WORST case: in fA the sieve finished in
+  0.70 s (x1.6, flat out) and the batch took 1.97 s, longer than sequential (1.755): the Fermat rounds nearly stopped while it ran.  Whatever the sieve takes from the Fermat kernel is a resource that priorities do not
+  arbitrate: the warp issue slots / pipes, or the MIO / LSU queue (the sieve's shared-memory atomics against the Fermat kernel's 88 B of local memory per thread, which is LDL / STL through the same pipe);
+* so the two things that were tried to make room (register fit, stream priorities) cannot help; what is left is a gentler or cheaper sieve (d1 / tt512 / both: 1-2.5%) or finding out whether the Fermat rounds lose GPU time
+  (kernels slower) or host time (the gaps between rounds longer: GIL / CPU contention with the sieve thread): `plt4.sh` (pb / pj: `--profile-pool` with and without the pipeline, a `top -H` snapshot, `nproc`).
