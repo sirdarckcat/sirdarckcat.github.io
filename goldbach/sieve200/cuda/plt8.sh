@@ -7,13 +7,14 @@
 # x1.165 in the driver).  Per-member results are identical (tests counted, PRP, success, first-PRP row: test_fermat28_persist.py compares them with sequential Python pow on the CPU for 1-24 lanes).
 # Runs (6 batches each, the harness of plt3-7; a2 = GBATCH_GROUP_DELAY_US=500, --deep-tile-threads 512, pipeline depth 2, --pool-threads 2 = the deployed setting):
 #   base  production without the pipeline and without persist (reference for the slice lines)      a2   the deployed setting (control)
-#   p1    a2 + --persist 1 (CTAs an SM from the kernel's registers: 5)       p1c4  a2 + --persist 1 --persist-cta-sm 4 (a CTA's room beside the Fermat CTAs for the sieve)
-#   p1t1  a2 + --persist 1 --pool-threads 1 (the leftovers finished by one thread)
-#   pn    --persist 1 WITHOUT the pipeline (the persistent kernel alone against base)             a2b  the control again
+#   a2t   a2 + the TAIL rule (--tail-target 65536 --dtail 256: when few members are left a round costs a test's latency whatever its size, so test up to 256 rows of each in parallel: the ~25 tail
+#         rounds of a half-pool become ~6-10; per-member results identical, test_runpool_tail_fake.py)
+#   p1    a2 + --persist 1 (CTAs an SM from the kernel's registers: 5)     p1t  p1 + the tail rule (for the leftovers of the persistent kernel)     p1c4t  p1t with 4 CTAs an SM
+#   p1t1t p1t with --pool-threads 1 (the leftovers finished by one thread)     pn  --persist 1 + tail WITHOUT the pipeline (the persistent kernel alone against base)     a2b  the control again
 # Needs: /content/ua_v3 (4f8edff, as now); /content/f28p = a copy of /content/f28w (production's Fermat dir) with goldbach/fermat661/cuda/gpu_fermat28.py and fermat28_persist_kernel.cuh from the uarch
 # branch over it (fermat28_kernel.cuh and the step files are unchanged); /content/c3g/search_gpu5_xb5.py = the deployed driver (/content/c3g/search_gpu5.py) + goldbach/fermat661/cuda/search_gpu5_persist.patch
 # (patch -p1 from the repo root; dry-run verified).  Output: /content/plt8/result.txt.
-W=/content/plt8; mkdir -p $W; cd $W; rm -rf base a2 p1 p1c4 p1t1 pn a2b result.txt
+W=/content/plt8; mkdir -p $W; cd $W; rm -rf base a2 a2t p1 p1t p1c4t p1t1t pn a2b result.txt
 T=/content/ua_v3; [ -d $T ] || { echo NO-TREE > result.txt; exit 1; }
 python3 - <<'PY'
 import json
@@ -53,12 +54,15 @@ A2="GBATCH_GROUP_DELAY_US=500"
 TT="--deep-tile-threads 512"
 PL3="--pipeline 1 --pipeline-depth 2 --trace-pipeline 1"
 PF="FERMAT28_DIR=/content/f28p"
+TL="--tail-target 65536 --dtail 256"
 run base  $X $T "" "--pool-threads 2"                                      # production without the pipeline and without persist (the reference for the slice lines)
 run a2    $X $T "$A2" "$PL3 --pool-threads 2 $TT"
+run a2t   $X $T "$A2" "$PL3 --pool-threads 2 $TT $TL"                      # the deployed setting + the tail rule only (few rounds in the tail of the round-based run_pool)
 run p1    $X $T "$A2 $PF" "$PL3 --pool-threads 2 $TT --persist 1"
-run p1c4  $X $T "$A2 $PF" "$PL3 --pool-threads 2 $TT --persist 1 --persist-cta-sm 4"
-run p1t1  $X $T "$A2 $PF" "$PL3 --pool-threads 1 $TT --persist 1"
-run pn    $X $T "$PF" "--pool-threads 2 --persist 1"                       # persist alone, no pipeline, no sieve shaping
+run p1t   $X $T "$A2 $PF" "$PL3 --pool-threads 2 $TT --persist 1 $TL"
+run p1c4t $X $T "$A2 $PF" "$PL3 --pool-threads 2 $TT --persist 1 --persist-cta-sm 4 $TL"
+run p1t1t $X $T "$A2 $PF" "$PL3 --pool-threads 1 $TT --persist 1 $TL"
+run pn    $X $T "$PF" "--pool-threads 2 --persist 1 $TL"                   # persist alone, no pipeline, no sieve shaping
 run a2b   $X $T "$A2" "$PL3 --pool-threads 2 $TT"                          # the control again (noise)
 resume; trap - EXIT
 echo "$(date -u +%FT%TZ) resumed pid ${P:-none}" >> status.txt
@@ -78,7 +82,7 @@ def mem(d):
     v = [int(x) for x in open(f).read().split() if x.isdigit()] if os.path.exists(f) else []
     return max(v) if v else None
 ref = lines("base")
-for d in ("base", "a2", "p1", "p1c4", "p1t1", "pn", "a2b"):
+for d in ("base", "a2", "a2t", "p1", "p1t", "p1c4t", "p1t1t", "pn", "a2b"):
     t = stamps(d)
     g = [round(y - x, 3) for x, y in zip(t, t[1:])]
     beside = sum(g[:-1]) / len(g[:-1]) if len(g) > 1 else float("nan")
