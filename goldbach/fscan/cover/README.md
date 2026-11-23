@@ -272,6 +272,22 @@ on the fleet's size: family B while the expected number of design hits in the
 time that remains is above about 0.5 (B − A is +970 at 2.25 expected hits,
 +450 at 1.1, +50 at 0.55, −170 at 0.27), family A below that.
 
+The mechanism was then tested directly where successes are cheap
+(`brainstorm/ab_rows_above.py`, `ab_rows_above.txt`): at Q = 60,000, two
+covers of one capped walk with 347 rows below Q each and 41 against 55
+uncovered primes in the next 4,000, run on the same 62.9 million members with
+the fleet's selection rule. They give 1,184 and 1,186 successes, the same
+number, as the rows below Q say. Their successes land at a mean g − Q of
+3,766 ± 108 against 3,071 ± 103 (the model: 3,912 and 3,057), with 35.4%
+against 25.8% of them above Q + 4,000 (model 37.1% and 26.4%) and 12.2%
+against 9.8% above Q + 8,000 (13.4% and 8.9%). So at equal rows below Q the
+cover with fewer rows above it places its successes 23% further beyond Q,
+4.7 standard errors, and the size is what the law "a success survives each
+uncovered prime above Q with probability 1 − p" predicts from the two row
+lists alone. The fleet's own check on the vectors it had consumed gave 57.2
+and 60.5 uncovered primes in 170–175k and 175–180k for family A and 46.1 and
+50.4 for family B on the 491 set, as predicted here.
+
 `starts/q170000_m89.txt`, `q170000_m89r491.txt` and `q170000_m88f.txt` now
 hold family B only, best expected record first (224, 3,924 and 291 covers);
 the complete files are in `starts/all/`. `python3 brainstorm/rank_covers.py
