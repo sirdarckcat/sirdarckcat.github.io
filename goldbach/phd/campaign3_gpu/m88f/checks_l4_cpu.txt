@@ -1,0 +1,24 @@
+# m88f checks on gold-l4b (m88f_l4.sh), 2026-11-23 16:10:56-16:14:48Z (campaign stopped, restarted unchanged), and the CPU engine on gold-g4b (cpu_slice.sh).
+# Condition 2, engine identity on q170000_m88f_t1_v1, k in [2^32 - 2^20, 2^32), B = 10^6, block 32768, p-est 0.055:
+#   GPU (search_gpu5.py normal path) f = 0.97: tests=589665 prp=31488 p^=0.0534 alive/k=563.0 E^=30.06 hit%=18.1 found=0')
+#   CPU (search_c.py)                f = 0.97: tests=589665 prp=31488 p^=0.0534 alive/k=563.0 E^=30.06 hit%=18.1 found=0
+#   GPU f = 0.9 (its dir n9):        tests=1971776 prp=104864 p^=0.0532 alive/k=563.0 E^=29.94 hit%=37.8 found=0
+#   CPU f = 0.9:                     tests=1971776 prp=104864 p^=0.0532 alive/k=563.0 E^=29.94 hit%=37.8 found=0
+# Condition 4, members a second: m88f x1.0114 against the campaign's vectors (9.507 / 9.526 s against 9.638 / 9.612 s a batch).
+
+/content/m88f/status.txt 2026-11-23T16:10:56Z stopping the campaign in /content/c170
+2026-11-23T16:10:57Z stopped
+2026-11-23T16:14:48Z campaign restarted in /content/c170 (unchanged)
+/content/m88f/result.txt n97: slice lines [('q170000_m88f_t1_v1@4293918720', 'tests=589665 prp=31488 p^=0.0534 alive/k=563.0 E^=30.06 hit%=18.1 found=0')] | []
+n90: slice lines [] | []
+kc: 40 near-misses >= 45061: [(4294454767, 53857), (4294464281, 53617), (4294473436, 48817), (4294480898, 48049), (4294491537, 51607), (4294541430, 47041), (4294542945, 46861), (4294559947, 53617), (4294567075, 48757), (4294577715, 51691), (4294583129, 51061), (4294594077, 45979), (4294601316, 49171), (4294646766, 52999), (4294649190, 47797), (4294660934, 51517), (4294661226, 55051), (4294675479, 46861), (4294678224, 55057), (4294684842, 46171), (4294689431, 49477), (4294700014, 58687), (4294704723, 48871), (4294723595, 51349), (4294843739, 47041), (4294864526, 46171), (4294867414, 46861), (4294867716, 48817), (4294870650, 48649), (4294874592, 49669), (4294875689, 46867), (4294904695, 48259), (4294905461, 51439), (4294927539, 52189), (4294933892, 75037), (4294934565, 46687), (4294954675, 48757), (4294955845, 45979), (4294957980, 51061), (4294960722, 46441)]
+kc deep-sieve line: ['deep sieve: staged large-prime kernel (rcta 2, stage 8192); M with 88 cover primes excluded, 5,761,366 primes below 100,000,000 (78,409 in the tile kernel, 5,682,957 in the large-prime stage), batches of 2^19 members, bi']
+batch: campaign vectors 9.638 / 9.612 s, m88f vectors 9.507 / 9.526 s: members a second x1.0114 (m88f against the campaign's)
+cur slice lines: [('q170000_g8ffe1_v15@1040187392', 'tests=14078472 prp=1007616 p^=0.0716 alive/k=423.4 E^=30.31 hit%=25.2 found=0'), ('q170000_g8ffe1_v32@1040187392', 'tests=14101785 prp=1007616 p^=0.0715 alive/k=423.4 E^=30.26 hit%=25.2 found=0')]
+new slice lines: [('q170000_m88f_main_v0@1040187392', 'tests=14101396 prp=1007616 p^=0.0715 alive/k=422.2 E^=30.17 hit%=25.2 found=0'), ('q170000_m88f_main_v1@1040187392', 'tests=14064937 prp=1007616 p^=0.0716 alive/k=422.2 E^=30.25 hit%=25.1 found=0')]
+M88F-DONE
+
+=== CPU slices (gold-g4b)
+[q170000_m88f_t1_v1@4293918720] k=[4293918720,4294967296) 1s (881552 k/s) tests=589665 prp=31488 p^=0.0534 alive/k=563.0 E^=30.06 hit%=18.1 found=0
+[q170000_m88f_t1_v1@4293918720] k=[4293918720,4294967296) 3s (350007 k/s) tests=1971776 prp=104864 p^=0.0532 alive/k=563.0 E^=29.94 hit%=37.8 found=0
+CPUSLICE-DONE
