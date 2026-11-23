@@ -1,4 +1,5 @@
 import GoldbachGaps.Basic
+import GoldbachGaps.Effective
 import GoldbachGaps.Covering
 import GoldbachGaps.Counting
 import GoldbachGaps.ECPP
@@ -46,6 +47,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 
 * `Basic`    – definitions; every odd prime is `g(N)` for arbitrarily large even `N`
                (paper Theorem `thm:dirichlet`), hence `g` is unbounded.
+* `Effective` – with Linnik's theorem as a hypothesis (it is not in Mathlib), every odd prime
+               `s` is `g(N)` for an even `N ≤ C · (primorial (s-1))^L + s`.
 * `Covering` – the covering certificate and its unconditional realisation
                (paper Proposition `prop:cover`, Theorem `thm:coverdirichlet`).
 * `Counting` – the counting bound: for large `X` some even `n` in `(X, 2X]` has no
