@@ -165,8 +165,10 @@ Q = 170,000 and 1,609 at 213,070, against 1,262 and 1,623 on the campaign's
 88 moduli; after the larger boost that is E = 30.30 against 30.53 and 39.06
 against 39.27, i.e. 1.27 and 1.23 times the success rate. `./gen_vectors.sh
 Q cap count name seed m89` uses `starts/q<Q>_m89.txt` and sets kmax per
-vector. Starting files exist for 170,000 (1,248 rows; two of four tempering
-runs reach it), 175,000 (1,291; campaign set 1,302), 180,000 (1,334; campaign
+vector. Starting files exist for 170,000 (1,248 rows: four of six tempering
+runs end there, a capped walk finds nothing lower, and three independent
+routes, the runs, the walk and the best first-88 covers extended by a class
+of 463, all land on the same 186 covers), 175,000 (1,291; campaign set 1,302), 180,000 (1,334; campaign
 set 1,352) and 213,070 (1,609). The fleet's record of 23 November, 158,209,
 came from this set at 170,000. With 8.5 fleet-days left and that record in
 hand, `brainstorm/portfolio_budget.py 8.5 29e6 158209 0 m89` gives an expected
