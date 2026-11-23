@@ -362,7 +362,12 @@ count:
 | predicted | 0.9 | 7.9 | 53.8 | 311 | 1,541 | 6,582 | 24,522 | 226,760 | 1,306,248 | 11,450,782 |
 
 Agreement is within 3% wherever the count is large and within sampling noise
-at the bottom, including the single best number of the 158 million.
+at the bottom, including the single best number of the 158 million. The
+other half of the model holds as well: the 256 true successes are distributed
+over the levels as count × (1 − p)^k with p = 0.485 (12, 18, 15, 29, 28, 36,
+34, 30, 18 found at k = 12 to 20 against 8.7, 14.4, 21.2, 27.6, 32.1, 33.3,
+31.1, 26.0, 19.7), and the density of primes among the 200-rough numbers
+below 10^9 is 0.489.
 
 What each prime beyond the line is worth, and costs, in the miniature (N
 ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
