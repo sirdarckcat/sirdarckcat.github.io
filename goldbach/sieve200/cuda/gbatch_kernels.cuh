@@ -21,7 +21,9 @@ extern "C" __global__ void s200g_prep_tiles(const u32 *S, const u32 *INV, const 
     }
 }
 
-/* grid (nrows, NTILES): row rr of the group = row0 + rr, tile blockIdx.y.  nS small primes (the table of every tile), gcnt / bins / cap from gbig_gen (no overflow). */
+/* grid (nrows, NTILES): row rr of the group = row0 + rr, tile blockIdx.y.  nS small primes (the table of every tile), gcnt / bins / cap from gbig_gen.  If a bin of the group overflowed `cap`
+   (gcnt[NBINS] != 0) its entries are incomplete and some slots were never written (stale or uninitialised: an entry is a bit index, read blindly): none is applied and the rows of the group
+   are wrong; the host learns of it from the flag (BigStage.gen_group(defer=...) accumulates it, read once a window) and repeats the window the old way (no round trip a group). */
 extern "C" __global__ void s200g_tile(const u32 *U, int row0, const uint4 *TABT, int nS, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits) {
     S200G_DYNSHARED(u32, bm);
     const int rr = blockIdx.x;
@@ -47,7 +49,8 @@ extern "C" __global__ void s200g_tile(const u32 *U, int row0, const uint4 *TABT,
     }
     __syncthreads();
     const u32 bin = rr * NTILES + tile;
-    const u32 n = gcnt[bin];
+    u32 n = gcnt[bin];
+    if (gcnt[NBINS] != 0u) n = 0u;
     gbig_apply_entries(bm, bins + (size_t)bin * cap, n);
     __syncthreads();
     u32 *dst = bits + (size_t)(row0 + rr) * (KS / 32u) + (size_t)tile * TILE_WORDS;

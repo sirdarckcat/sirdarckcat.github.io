@@ -264,3 +264,28 @@ What it says:
 * Why the cross-batch pipeline and not only a flush per window: the in-batch overlap (window i + 1 under the Fermat of window i) leaves the first window's sieve (217 ms) and the last window's Fermat (0.635 s x 1.0) exposed:
   0.217 + max(0.635 x 1.104, 0.217 x 2.89) + 0.635 + 0.06 = 1.61 s (x1.09); the pipeline (`search_gpu5_xbatch.patch`) keeps the sieve thread ahead across batch boundaries and gets the 1.46 s.
 * L4 / T4: the sieve is ~36% of their batch, so the same x1.25 of work would give ~x1.4-1.5 there; unmeasured (`VARIANT=s1rw MODE=fleet bash run_overlap_probe.sh`).
+
+
+## The overlap inside the real driver (GPU session, 23 Nov 08:06-08:17Z; `uarch_measure/overlap_driver_rtxpro6000.txt`, `pipeline_v1_rtxpro6000.txt`)
+
+In-batch overlap (`--overlap 1`, the sieve of window 2 under the Fermat of window 1) needs a flush per window (`--pool 1e6`), which costs +0.14 s a batch by itself (waste 5.7% against 3.1%, a second flush's tail rounds),
+and it leaves window 1's sieve and window 2's Fermat exposed: even a perfect overlap gives 1.90 - 0.15 = 1.75 s = production's 1.75.  The measured 1.84 (one vector) / 1.88 (a vector a window) said little either way.
+
+**Pipeline v1** (`search_gpu5_xbatch.patch`: `--pipeline 1 --flush-each-window 1`, one sieve thread for the whole campaign, six batches of two windows, slice lines identical to production):
+production 1.752 s a batch; v1 with one Fermat thread 1.801 s; **v1 with two Fermat threads (`--pool-threads 2`) 1.647 s** (x1.06); and its LAST batch, with no sieve beside it, 1.508 s.  Reading:
+* the last batch is the Fermat side alone with a flush per window: 1.508 s against production's one flush of the same members, 1.752 - 0.434 (the sieve) = 1.318 s: **a flush per window costs +0.19 s a batch**
+  (the 2.6% extra waste is 0.033 s of it; the rest is two sets of tail rounds and launch gaps);
+* the steady batch is 1.647 s = 1.508 + 0.14: the sieve (0.434 s alone) costs the batch only 0.14 s, which is the Fermat slowdown beside it (x1.09 of 1.508 s, the probe's x1.104): **the sieve is hidden in the real
+  driver, as the hardware probe said** - the pipeline is Fermat-bound; what is left to remove is the flush-per-window penalty and the 10% Fermat slowdown;
+* so run the pipeline with production's pool: **`--pipeline 1 --pipeline-depth 2`** (`--flush-each-window 0`, `--pool 2097152`, `--pool-threads 2`): the consumer takes both windows of batch n, flushes once (1.318 s x1.09), and
+  the thread sieves both windows of batch n + 1 under that flush (0.434 s x2.9 = 1.25 s: it fits); no extra flush, no extra waste.  Projected steady batch ~1.318 x 1.09 + 0.03 = **~1.47 s (x1.19)**.  Memory: the held pool
+  (2 x 1.6 GB of int32 rows) + 2 windows waiting (2 x 0.8 GB of u16 rows); `search_gpu5_xbatch2.patch` (applies to the unpatched driver at 10210fc) adds `--pipeline-depth` and `--trace-pipeline 1` (per batch: seconds the
+  consumer waited for the sieve = sieve time not hidden; seconds the sieve thread was busy / waited for the consumer; `overlap.Pipeline.take_stats`).
+
+**A host round trip a row group (my code, found while reading why the in-batch runs hid so little).**  `BigStage.gen_group` read the bin-overflow flag `gcnt[NBINS]` with `int(...)` after EVERY row group: ~80 blocking
+round trips a window (1,262 rows / rg 16), each leaving the sieve stream idle until the host relaunched and, in a driver whose main thread is busy in `run_pool`, needing the GIL back.  The probe has them too but its main
+thread sleeps in one launch.  Now: `gen_group(defer=flag)` ORs the flag into a device word (one tiny kernel) and returns at once; `BatchFeeder.window` reads it ONCE after the window (which ends with host reads anyway) and, if it is
+set (a bin overflowed: practically never once the capacity is right), repeats the window the old way, group by group.  The tile kernel applies NO bin of an overflowed group (`gcnt[NBINS] != 0`: the entries are incomplete and some
+slots were never written, and an entry is a bit index read blindly), so nothing stale is read before the repeat.  `GBATCH_DEFER_CHECK=0` restores the per-group check.  CPU emulation (`test_gbatch_defer_cpu.py`, three geometries
+incl. staged): identical windows with the deferred check, no wait in a window, a forced overflow (capacity 32) repeats the window once and gives the per-group result, and the unrepeated attempt is wrong with the flag set (the
+test is not vacuous); `test_gbatch_cpu.py --big` unchanged.  NVRTC sm_120: s200g_tile 384 -> 392 instructions, 40 registers, no spills.  Expected: a few ms a window when alone (bubbles), more beside the Fermat kernel; unmeasured.

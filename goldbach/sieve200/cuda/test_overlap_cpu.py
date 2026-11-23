@@ -101,6 +101,38 @@ def main():
     want = [(n, j) for b in (["a", "b"], ["c"], ["d", "e", "f"]) for n in b for j in range(2)]
     good = order == want and produced == want and peak[0] <= 2
     print(f"  pipeline over 3 batches (6 + 2 + 6 windows): order ok {order == want}, never more than 2 windows alive (peak {peak[0]}), exhaustion ends the loop: {'ok' if good else 'FAILED'}"); ok &= good
+    # 6b. depth 2 with ONE flush a batch (production's pool): the consumer takes both windows of a batch, then "flushes" (sleeps); the thread must have sieved the whole next batch by then, never
+    #     more than the held pool (2 windows) + depth (2) = 4 windows alive, and the counters add up
+    overlap._STREAM.clear()
+    cp, _ = stub()
+    plans = [["a"], ["b"], ["c"]]
+    alive, peak, produced = [0], [0], []
+    def plan_next2():
+        return plans.pop(0) if plans else []
+    def make_windows2(batch):
+        for name in batch:
+            for j in range(2):
+                alive[0] += 1; peak[0] = max(peak[0], alive[0])
+                produced.append((name, j))
+                time.sleep(0.02)
+                yield name, (name, j)
+    pipe = overlap.Pipeline(cp, plan_next2, make_windows2, depth=2)
+    order, ahead = [], []
+    while True:
+        batch = pipe.next_batch()
+        if not batch:
+            break
+        pool = [w for si, w in pipe.windows(2)]                     # the batch's pool: both windows taken at once
+        order.extend(pool)
+        alive[0] -= 0                                               # (the consumer keeps them until the flush is done)
+        time.sleep(0.15)                                            # the flush: Fermat rounds
+        ahead.append(len(produced))
+        alive[0] -= 2
+    st = pipe.take_stats()
+    want = [("a", 0), ("a", 1), ("b", 0), ("b", 1), ("c", 0), ("c", 1)]
+    good = order == want and peak[0] <= 4 and ahead == [4, 6, 6] and st["windows"] == 6 and st["busy"] > 0.1 and st["wait"] >= 0 and pipe.take_stats()["windows"] == 0
+    print(f"  pipeline depth 2, one flush a batch: order ok {order == want}, windows made by the end of each flush {ahead} (4 = the next batch fully sieved under the flush), peak alive {peak[0]} <= 4 (the held pool of 2 + depth 2), "
+          f"counters wait {st['wait']:.2f} busy {st['busy']:.2f} idle {st['idle']:.2f} s over {st['windows']} windows: {'ok' if good else 'FAILED'}"); ok &= good
     overlap._STREAM.clear()
     cp, _ = stub()
     def plan_bad():

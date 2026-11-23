@@ -36,8 +36,9 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
 ## 3. What does give a multiple
 
 1. **Hide the sieve under the Fermat kernel: MEASURED on the RTX PRO 6000 (GPU session, 23 Nov 08:04Z): the sieve runs beside the Fermat kernel (x1.104 on the Fermat kernel, x2.89 on the sieve, x1.25 more work a second) when its stream has the highest
-   priority; projected batch 1.76 -> 1.46 s = x1.20; the carve-out, an 80-register kernel and chunked launches do not help (`sieve200/cuda/DEEPSIEVE.md`, last section).**  Not yet a production number: the driver needs the cross-batch
-   sieve thread (`search_gpu5_xbatch.patch`, `--pipeline 1 --flush-each-window 1`), because a batch of 2 windows exposes the first sieve and the last Fermat.  The L4 / T4 (sieve ~36% of their batch) should gain more, ~x1.4-1.5
+   priority; projected batch 1.76 -> 1.46 s = x1.20; the carve-out, an 80-register kernel and chunked launches do not help (`sieve200/cuda/DEEPSIEVE.md`, last section).**  Inside the real driver (GPU session, 08:16Z, `search_gpu5_xbatch.patch` v1, a flush per window): 1.752 -> 1.647 s a batch (x1.06) with the sieve almost completely hidden (the batch is Fermat-bound: 1.508 s without a sieve
+   beside it, +0.14 s with it) but the flush per window costs +0.19 s itself; with production's single flush and the sieve thread a whole batch ahead (`search_gpu5_xbatch2.patch`, `--pipeline 1 --pipeline-depth 2`) the
+   projection is ~1.47 s (x1.19), untested.  Not yet a production number: the driver needs the cross-batch sieve thread, because a batch of 2 windows exposes the first sieve and the last Fermat.  The L4 / T4 (sieve ~36% of their batch) should gain more, ~x1.4-1.5
    (`run_overlap_probe.sh` with `VARIANT=s1rw MODE=fleet`); the fleet in all ~ +22-26% (3 RTX x1.20 + 0.7 RTX-equivalents of L4 / T4 x ~1.4).  Before the measurement this was a guess (x1.3 / +33%); the 03:10Z trial
    that seemed to say it does not work had one flush a batch and could not have shown anything.
 2. **More GPUs.**  The fleet is ~3.7 RTX-PRO-6000 equivalents of Fermat throughput (3 RTX + 3 L4 at 0.20 + a T4 at 0.11).  An RTX 5090 is 0.9 of one.  Marketplace prices of November 2026: a 5090

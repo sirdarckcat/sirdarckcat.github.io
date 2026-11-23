@@ -60,6 +60,10 @@ class BatchFeeder(GpuFeeder):
         if self.tile_smem > 48 * 1024:
             self.k["s200g_tile"].max_dynamic_shared_size_bytes = self.tile_smem
         self._zero = (cp.zeros(rg * self.ntiles + 1, dtype=cp.uint32), cp.zeros(1, dtype=cp.uint32))     # no large primes: empty bins
+        self.defer_check = os.environ.get("GBATCH_DEFER_CHECK", "1") != "0"      # bin-overflow check once a window instead of a host round trip a row group (see window())
+        self._ovf = cp.zeros(1, dtype=cp.uint32)
+        self._defer = None
+        self.window_retries = 0                                                  # windows repeated because a bin overflowed (the cap then grows; expected: never after the first windows)
 
     def with_variant(self, n0m, U):
         # same primes, tables and compiled kernels; the big stage, the tile tables and the matrix are rebuilt for the new feeder
@@ -74,6 +78,24 @@ class BatchFeeder(GpuFeeder):
                            split=int(_np(self.sh["S64"])[self.n_small - 1]) if self.n_small else 0, rg=self.rg, gen_threads=self.big.threads if self.big else 256,
                            tile_threads=self.tile_threads, shared=self.sh, staged=self.staged, rcta=self.rcta, stage_cap=self.stage_cap, ppt=self.ppt)
 
+    def window(self, k0, f=None, timings=False):
+        """GpuFeeder.window with the large-prime stage's bin-overflow check deferred to the end of the window: the groups are launched back to back (no host round trip a group: ~80 a window
+        before, each of which idled the stream and needed the GIL back from the driver's main thread when the sieve runs in a thread beside the Fermat rounds).  The window ends with host
+        reads (the survivor count, the statistics), so reading the flag afterwards waits for nothing.  A set flag (a bin overflowed the capacity: practically never) repeats the window the
+        old way, group by group, which grows the capacity; GBATCH_DEFER_CHECK=0 always checks per group."""
+        if not (self.defer_check and self.n_large):
+            return super().window(k0, f=f, timings=timings)
+        self._ovf[:] = 0
+        self._defer = self._ovf
+        try:
+            w = super().window(k0, f=f, timings=timings)
+        finally:
+            self._defer = None
+        if int(self._ovf[0]) == 0:
+            return w
+        self.window_retries += 1
+        return super().window(k0, f=f, timings=timings)
+
     def _sieve_phase(self, k0, ev):
         sh = self.sh
         nSs, nL, snt = self.n_small, self.n_large, self.sieve_threads
@@ -86,7 +108,7 @@ class BatchFeeder(GpuFeeder):
         for row0 in range(0, self.nU, self.rg):
             nrows = min(self.rg, self.nU - row0)
             if nL:
-                bins = self.big.gen_group(row0, nrows, U=self.U)
+                bins = self.big.gen_group(row0, nrows, U=self.U, defer=self._defer)
                 gcnt, cap = self.big.gcnt, self.big.cap
             else:
                 gcnt, bins, cap = self._zero[0], self._zero[1], 1

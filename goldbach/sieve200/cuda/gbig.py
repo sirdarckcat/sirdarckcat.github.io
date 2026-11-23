@@ -98,9 +98,13 @@ class BigStage:
             self._bins = cp.empty(need, dtype=cp.uint32)
         return self._bins
 
-    def gen_group(self, row0, nrows, timings=None, U=None):
+    def gen_group(self, row0, nrows, timings=None, U=None, defer=None):
         """gbig_gen for rows row0 .. row0 + nrows - 1 (nrows <= rg), repeated with the capacity the demand asks for if a bin overflowed.  Leaves self.gcnt, the bins and self.cap
-        for gbig_apply / the tile kernel; returns (event before, event after) when timings is a dict (the generate time is added to timings['gen'])."""
+        for gbig_apply / the tile kernel; returns (event before, event after) when timings is a dict (the generate time is added to timings['gen']).
+        defer: a device array of one u32 that the caller zeroed before the window.  Without it the host waits for the device after EVERY group to read the overflow flag gcnt[NBINS] (~80 round
+        trips a window, each of which leaves the stream idle and, in an overlapped driver, needs the GIL back from the main thread).  With it the flag is OR-ed into `defer` by a one-word kernel and
+        the call returns at once: the caller reads `defer` once after the window and, if it is set, repeats the window with defer=None (the tile kernel applies no bin of an overflowed group,
+        so nothing stale is read meanwhile)."""
         assert 1 <= nrows <= self.rg
         U = self.U if U is None else U
         grid = (self.nP + self.threads * self.ppt - 1) // (self.threads * self.ppt)
@@ -118,6 +122,12 @@ class BigStage:
                 self.k["gbig_gen"]((grid,), (self.threads,), (U, self.TAB, np.int32(self.nP), np.int32(row0), np.int32(nrows), np.uint32(self.cap), self.gcnt, bins))
             if use_events:
                 e1.record()
+            if defer is not None:
+                defer |= self.gcnt[self.nbins:self.nbins + 1]
+                if use_events:
+                    e1.synchronize()
+                    timings["gen"] = timings.get("gen", 0.0) + cp.cuda.get_elapsed_time(e0, e1)
+                return bins
             if int(self.gcnt[self.nbins]) == 0:
                 break
             need = int(self.gcnt[:self.nbins].max())                     # the demand of the fullest bin: the size that works

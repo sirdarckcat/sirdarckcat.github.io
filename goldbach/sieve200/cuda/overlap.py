@@ -12,6 +12,7 @@ One item waits in the queue at a time (the sieve runs at most one window ahead o
 import collections
 import queue
 import threading
+import time
 
 _STREAM = {}
 
@@ -64,9 +65,12 @@ class Pipeline:
         for item in pipe.windows(n):                         # exactly n items of make_windows(batch), in order (n = the number of windows of the batch)
             ...
 
-    make_windows(batch) is a generator of (slice index, window) run in the sieve thread on the high-priority stream.  Memory bound: the thread starts a window only when the caller has taken the
-    previous one (`depth` = 1: one window being sieved while one is consumed: two alive, not three).  A batch with fewer windows than the pool threshold still needs a flush per window to overlap anything:
-    the Fermat rounds of window i are what the sieve of window i + 1 hides under.  Errors in the thread are re-raised in the caller at the next call.
+    make_windows(batch) is a generator of (slice index, window) run in the sieve thread on the high-priority stream.  Memory bound: the thread starts a window only when fewer than `depth` windows
+    are waiting for the caller (depth = 1: one window being sieved while the caller works on the one it took: two alive; depth = 2: up to two sieved ahead).  What the sieve hides under is the caller's
+    flush (the Fermat rounds of its pool): with a flush per window (depth 1) the sieve of window i + 1 runs under the Fermat of window i; with ONE flush a batch (production's pool) the caller takes
+    all the windows of batch n at once and flushes, and depth = the windows of a batch (2) lets the thread sieve the whole of batch n + 1 under that flush: no extra flush, no extra waste.
+    Errors in the thread are re-raised in the caller at the next call.  take_stats() gives, since its last call, the seconds the caller waited for the thread (`wait`: sieve time NOT hidden), the
+    seconds the thread spent making windows (`busy`) and waiting for the caller (`idle`: Fermat-bound), and the windows made.
     """
     def __init__(self, cp, plan_next, make_windows, depth=1):
         self.cp, self.plan_next, self.make_windows = cp, plan_next, make_windows
@@ -74,6 +78,12 @@ class Pipeline:
         self.sem = threading.Semaphore(depth)
         self.th = None
         self.dev = cp.cuda.Device().id
+        self.stats = dict(wait=0.0, busy=0.0, idle=0.0, windows=0)
+
+    def take_stats(self):
+        """the counters since the last call (seconds, windows), then reset; diagnostic (the two threads update different keys)"""
+        st, self.stats = self.stats, dict(wait=0.0, busy=0.0, idle=0.0, windows=0)
+        return st
 
     def _work(self):
         try:
@@ -86,12 +96,17 @@ class Pipeline:
                         return
                     gen = self.make_windows(batch)
                     while True:
-                        self.sem.acquire()                          # the caller has taken the previous window
+                        t0 = time.perf_counter()
+                        self.sem.acquire()                          # fewer than `depth` windows are waiting for the caller
+                        t1 = time.perf_counter()
+                        self.stats["idle"] += t1 - t0
                         try:
                             item = next(gen)
                         except StopIteration:
                             self.sem.release()
                             break
+                        self.stats["busy"] += time.perf_counter() - t1
+                        self.stats["windows"] += 1
                         self.q.put(("window", item))
         except BaseException as e:                                  # handed to the caller
             self.q.put(("error", e))
@@ -100,7 +115,9 @@ class Pipeline:
         if self.th is None:
             self.th = threading.Thread(target=self._work, daemon=True)
             self.th.start()
+        t0 = time.perf_counter()
         kind, v = self.q.get()
+        self.stats["wait"] += time.perf_counter() - t0
         if kind == "error":
             raise v
         assert kind == want, f"pipeline out of step: got {kind}, wanted {want}"
