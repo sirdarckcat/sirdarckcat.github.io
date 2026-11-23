@@ -499,8 +499,9 @@ constant 1/2 by counting (one unrefereed preprint); 0.73 unconditionally and
 theorem's count gives 3,830, a greedy choice of classes covers every prime
 below 6,000, and tempering reaches 15,787: the factor 4 is rows sharing a
 mop-up prime, the improvement the theorem leaves as a remark. The finite
-instance (15,787) is being checked by the Lean kernel from N0 alone
-(`CompleteCover.lean` on the Lean branch).
+instance (15,787) has been checked by the Lean kernel from N0 alone, by
+divisibilities only (`CompleteCover.lean`, commit 8c061b4 on the Lean
+branch).
 
 ## Ladder
 
