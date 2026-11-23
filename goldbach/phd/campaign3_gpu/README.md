@@ -521,6 +521,17 @@ Version 3 (22 Nov):
     - Batch: gold-l4b ×0.983, gold-gpu ×0.986, gold-l4c ×0.987, gold-xt4 ×0.983.
   - The keep fraction, re-swept on the new engine (`v89/vsweep2_rtxpro6000.txt`), is flat between 0.985 and 0.9875 (×1.018,
     within the ×1.012 of a repeat at 0.985). f = 0.985 stays.
+- `--target 524288`, the most tests in one Fermat launch, half the default.
+  - In tune2.sh it gave ×0.986, within the noise.
+  - In a production A/B on gold-g4, 12:51:30-13:10:00Z, it ran 0.8473 s a batch against 0.8585 s on gold-g4b and gold-g4c
+    (`fround/ab_target_production.txt`): ×0.987. Expected near-misses a second rose ×1.011.
+  - Rolled out to gold-g4b and gold-g4c at 13:11Z, after each card's own check (`fround/dtgt2.sh`): 24 identical windows
+    and the known case with it.
+- The record of 12:48:45 UTC, g(N) = 158,209 (`../records/budget_1e200_200digit_g158209/`), came from gold-g4c in this
+  configuration.
+  - It was a near-miss of the 89-moduli vector `q170000_m89_p2c00019_v545` at k = 10,814,286.
+  - Since then every card reports near-misses from 158,209 up (`NEAR_MISS=158209`, `v89/set_nm.py`). The L4s and the
+    T4 restarted for it at 12:57Z, the RTX cards with the `--target` roll-out.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).
