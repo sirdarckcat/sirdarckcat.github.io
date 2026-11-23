@@ -591,7 +591,14 @@ prime gaps, what can be constructed is far behind what can be found. At
 where exactly complete covers stop is not known. Two more primes still fit
 below 10^200: with 467 and 479 added (91 primes, 95 members below 10^200)
 a complete cover reaches 16,381 (`complete_cover_16381_91primes.txt`, 1,898
-rows, every N − q divisible by a prime ≤ 479; N0 has 198 digits).
+rows, every N − q divisible by a prime ≤ 479; N0 has 198 digits). And one
+prime beyond the Chinese-remainder line can be had by enumeration, exactly as
+point 3 of "Why nothing known collects the prize" says: on 92 primes (to 487)
+the modulus exceeds 10^200 fivefold, tempering found 17,131 complete covers
+at 16,500 and 16,600, and 3,505 of them (20.5%, against 19.5% expected) have
+their number below 10^200; the best certifies 16,747
+(`complete_cover_16747_92primes.txt`: one 200-digit N with every N − q, q an
+odd prime below 16,747, divisible by a prime ≤ 487).
 
 **Formal status.** Proved by the Lean session, standard axioms only
 (`goldbach/lean/GoldbachGaps/CoverBound.lean`, commit 4a747b6 on

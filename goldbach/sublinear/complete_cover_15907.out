@@ -1,5 +1,5 @@
 89 moduli up to 463; M has 193 digits
 every odd prime q < 15907 (1852 of them, the largest 15901) is in the class of some modulus; first uncovered prime: 15907
 N0 = 3102012187189053048670749865704301840440925401161645549199720542869385118683093828964505281181157552408978113428914580900163049270731688473060546928991203124502823883070619161223740565155681238
-N0 has 193 digits; every N = N0 + t*M (t >= 1; t = 0 too if N0 > 16370) has N - q divisible by a modulus for all 1852 rows
+N0 has 193 digits; every N = N0 + t*M (t >= 0) has N - q divisible by a modulus for all 1852 rows
 members below 10^200: 21378978

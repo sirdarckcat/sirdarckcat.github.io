@@ -6,8 +6,8 @@
 cover.txt holds one line "BEST r:a r:a ..." or "COVER k r:a ..." (ptcover output): a class a for each modulus r.
 The script finds the largest Q such that every odd prime q < Q lies in the class of some modulus (q = a mod r), or
 checks the Q given, builds the even N0 below M = 2*prod(r) in all the classes, and verifies directly that for every
-odd prime q < Q the number N - q is divisible by some r with N - q > r, for N = N0 + M (the first member that is
-certainly large enough) and hence for every N = N0 + t*M, t >= 1.  No primality or compositeness test is used.
+odd prime q < Q the number N - q is divisible by some r with N - q > r, for N = N0 and N = N0 + M and hence for
+every N = N0 + t*M.  No primality or compositeness test is used.
 Consequence: no prime p < Q has N - p prime (for p = 2, N - 2 is even), i.e. g(N) >= Q whenever N has a
 Goldbach partition at all.
 """
@@ -32,13 +32,14 @@ for r, a in cover:
     t = ((a - N0) * pow(M, -1, r)) % r
     N0 += M * t; M *= r
 assert N0 % 2 == 0 and all(N0 % r == a for r, a in cover)
-N = N0 + M
 rows = [q for q in odd if q < Q]
-for q in rows:
-    r = next(r for r, a in cover if q % r == a)
-    assert (N - q) % r == 0 and N - q > r
+assert N0 > Q + max(r for r, _ in cover)                  # so that every divisor below is a proper one, for N0 itself too
+for N in (N0, N0 + M):
+    for q in rows:
+        r = next(r for r, a in cover if q % r == a)
+        assert (N - q) % r == 0 and N - q > r
 print(f"{len(cover)} moduli up to {max(r for r, _ in cover)}; M has {len(str(M))} digits")
 print(f"every odd prime q < {Q} ({len(rows)} of them, the largest {rows[-1]}) is in the class of some modulus; first uncovered prime: {first_bad}")
 print(f"N0 = {N0}")
-print(f"N0 has {len(str(N0))} digits; every N = N0 + t*M (t >= 1; t = 0 too if N0 > {Q + max(r for r, _ in cover)}) has N - q divisible by a modulus for all {len(rows)} rows")
+print(f"N0 has {len(str(N0))} digits; every N = N0 + t*M (t >= 0) has N - q divisible by a modulus for all {len(rows)} rows")
 print(f"members below 10^200: {max(0, (10**200 - 1 - N0) // M + 1)}")
