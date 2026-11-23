@@ -1,0 +1,1 @@
+gmpy2 2.3.2, 2026-11-23: N is even and has 200 digits; g = 158209 is prime; N - p is composite for all 14535 primes p < g (is_prime with 25 rounds returns False, which is definite); N - g is a probable prime (25 rounds; its proof is complement_cert.gp). OK (0s)

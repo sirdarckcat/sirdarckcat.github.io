@@ -1,0 +1,69 @@
+# uarch overlap probe (bench_overlap.py / run_overlap_probe.sh at d737b50) on gold-g4b (RTX PRO 6000), 2026-11-23 08:03:52-08:05:28Z, campaign paused (SIGSTOP).
+# Tree: a copy of the production uarch tree with the d737b50 sources of sieve200/cuda and fermat661/cuda (kernels identical to production's).
+# Spec: the first of six Q = 170,000 vectors (1,262 rows).
+
+2026-11-23T08:03:52Z paused pid 810587; spec /content/probe/s25.json
+name, driver_version, clocks.max.sm [MHz]
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 580.82.07, 2430 MHz
+
+=================================================================== 
+2026-11-23T08:03:52Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, Fermat s1r_asm, 67,108,864 tests a launch, carve-out default, sieve stream highest priority
+  Fermat kernel: 92 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 2.832 s (23.7M tests/s)   sieve window 216.2 ms
+concurrent: Fermat 3.127 s (x1.104 against alone), 5 sieve windows completed meanwhile (mean 626 ms a window: x2.89; 1.60 windows/s against 4.63 alone: sieve slowdown x2.89)
+  the same work one after the other: 3.913 s;  overlapped: 3.127 s  ->  x1.25
+production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s): sequential 1.76 s, overlapped 1.46 s -> x1.20
+OVERLAP WORKS: worth building the cross-batch sieve thread (search_gpu5 --overlap with this configuration)
+
+=================================================================== --carveout 100
+2026-11-23T08:04:11Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, Fermat s1r_asm, 67,108,864 tests a launch, carve-out 100, sieve stream highest priority
+  Fermat kernel: 92 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 2.832 s (23.7M tests/s)   sieve window 216.1 ms
+concurrent: Fermat 3.125 s (x1.103 against alone), 5 sieve windows completed meanwhile (mean 625 ms a window: x2.89; 1.60 windows/s against 4.63 alone: sieve slowdown x2.89)
+  the same work one after the other: 3.913 s;  overlapped: 3.125 s  ->  x1.25
+production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s): sequential 1.76 s, overlapped 1.46 s -> x1.20
+OVERLAP WORKS: worth building the cross-batch sieve thread (search_gpu5 --overlap with this configuration)
+
+=================================================================== --variant s1r_asm_r80 --carveout 100
+2026-11-23T08:04:30Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, Fermat s1r_asm_r80, 67,108,864 tests a launch, carve-out 100, sieve stream highest priority
+  Fermat kernel: 80 registers, 112 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 10,240 of 65,536 registers: 6 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 2.880 s (23.3M tests/s)   sieve window 215.5 ms
+concurrent: Fermat 3.102 s (x1.077 against alone), 3 sieve windows completed meanwhile (mean 810 ms a window: x3.76; 0.97 windows/s against 4.64 alone: sieve slowdown x4.80)
+  the same work one after the other: 3.527 s;  overlapped: 3.102 s  ->  x1.14
+production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s): sequential 1.76 s, overlapped 2.12 s -> x0.83
+no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority
+
+=================================================================== --variant s1r_asm_r80 --carveout 100 --no-priority
+2026-11-23T08:04:49Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, Fermat s1r_asm_r80, 67,108,864 tests a launch, carve-out 100, sieve stream plain non-blocking
+  Fermat kernel: 80 registers, 112 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 10,240 of 65,536 registers: 6 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 2.880 s (23.3M tests/s)   sieve window 215.3 ms
+concurrent: Fermat 2.881 s (x1.000 against alone), 0 sieve windows completed meanwhile (mean 0 ms a window: x0.00; 0.00 windows/s against 4.65 alone: sieve slowdown xinf)
+  the same work one after the other: 2.880 s;  overlapped: 2.881 s  ->  x1.00
+production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s): sequential 1.76 s, overlapped inf s -> x0.00
+no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority
+
+=================================================================== --carveout 100 --cta-sm 4
+2026-11-23T08:05:08Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, Fermat s1r_asm, 67,108,864 tests a launch in chunks of 4 CTAs an SM, carve-out 100, sieve stream highest priority
+  Fermat kernel: 92 registers, 88 B local; sieve: 1262 rows, window 2^25 members, B = 100,000,000, tile CTAs 256 threads, gen CTAs 256
+  one Fermat CTA takes 12,288 of 65,536 registers: 5 CTAs an SM leave 4,096 registers free for a sieve CTA
+alone:      Fermat 3.022 s (22.2M tests/s)   sieve window 214.9 ms
+concurrent: Fermat 3.514 s (x1.163 against alone), 8 sieve windows completed meanwhile (mean 403 ms a window: x1.88; 2.28 windows/s against 4.65 alone: sieve slowdown x2.04)
+  the same work one after the other: 4.741 s;  overlapped: 3.514 s  ->  x1.35
+production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s): sequential 1.76 s, overlapped 1.54 s -> x1.15
+partial overlap: compare the other configurations
+
+done
+2026-11-23T08:05:28Z
+2026-11-23T08:05:28Z resumed pid 810587
+OVP-DONE
+
+

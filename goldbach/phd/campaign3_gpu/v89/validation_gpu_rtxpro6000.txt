@@ -1,0 +1,45 @@
+# 89-moduli validation on gold-g4b (RTX PRO 6000), 2026-11-23 09:48:42-09:49:30Z (gpu89.sh), campaign paused:
+#  (1) check89.py: deep sieve vs sieve200's CPU feeder at k_lo (the first 200-digit k) and k_lo + 2^21 + 12345; kernel-28 flags vs gmpy2 at the new k range;
+#  (2) the new driver against the production driver on the 88-moduli test (12 slices);
+#  (3) the GPU side of the known case: the vector-mode driver on knowncase_spec.json, one 2^19 window from k_lo, --skip-frac 0, --near-miss 46171.
+
+q170000_m89_t1_v0: 89 moduli, 1248 rows, M has 193 digits, k_lo = 2137898 (k_lo mod 2^24 = 2137898), kmax = 21378978
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 2137898: identical to the CPU feeder
+  (1) staged large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 4247395: identical to the CPU feeder
+  (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 2137898: identical to the CPU feeder
+  (1) plain large-prime stage, 40 rows, B = 2^22, 2^21 members, 78408 small + 217449 large primes, k0 = 4247395: identical to the CPU feeder
+  (2) kernel 28 (s1r, asm) on 8192 random (row, k), k in [k_lo, k_lo + 2^24): 218 probable primes; flags identical to gmpy2
+CHECK89 OK
+(2) 88-moduli: slice lines of the new driver IDENTICAL to the production driver (12 / 12 slices)
+    base: 2026-11-23T09:49:05Z batch q170000_g8ffe1_v25@1006632960..q170000_g8ffe1_v28@1006632960 (2 slices) 1.3s: tests 28192724 counted, 29082697 computed (waste 3.1%), 86 launches, expected hits 8.1933e-07, found 0 [v5 gpu-sieve] [near-miss >= 157837]
+      ['rc=2']
+    new: 9Z batch q170000_g8ffe1_v25@1006632960..q170000_g8ffe1_v28@1006632960 (2 slices) 1.3s: tests 28192724 counted, 29082697 computed (waste 3.1%), 86 launches, expected hits 8.1933e-07, expected near>=157837 3.7932e-06, found 0 [v5 gpu-sieve] [near-miss >= 157837]
+      ['rc=2']
+(3) known case driver: ['C3GPU-EXHAUSTED', 'rc=2']
+    slice: [q170000_m89_t1_v0@2137898] k=[2137898,2662186) 5s (101253 k/s) tests=7320248 prp=524288 p^=0.0716 alive/k=420.1 E^=30.09 hit%=100.0 found=0
+    stats: 2026-11-23T09:49:26Z batch q170000_m89_t1_v0@2137898..q170000_m89_t1_v0@2137898 (1 slices) 5.2s: tests 7320248 counted, 8186546 computed (waste 10.6%), 52 launches, expected hits 3.0281e-08, expected near>=46171 3.0741e+01, found 23 [v5 gpu-sieve] [near-miss >= 46171]
+    GPU near-misses (first PRP row >= T): 23
+GPU k=2138520 q=46327 near_miss=True
+GPU k=2179102 q=53551 near_miss=True
+GPU k=2179987 q=49741 near_miss=True
+GPU k=2189571 q=46687 near_miss=True
+GPU k=2193647 q=55381 near_miss=True
+GPU k=2222542 q=56311 near_miss=True
+GPU k=2223210 q=48259 near_miss=True
+GPU k=2249515 q=47317 near_miss=True
+GPU k=2283416 q=61441 near_miss=True
+GPU k=2288959 q=57529 near_miss=True
+GPU k=2343716 q=46441 near_miss=True
+GPU k=2431570 q=51241 near_miss=True
+GPU k=2432966 q=51607 near_miss=True
+GPU k=2438432 q=48157 near_miss=True
+GPU k=2469450 q=48799 near_miss=True
+GPU k=2470026 q=59509 near_miss=True
+GPU k=2472121 q=52009 near_miss=True
+GPU k=2516834 q=51241 near_miss=True
+GPU k=2517629 q=49171 near_miss=True
+GPU k=2518859 q=48157 near_miss=True
+GPU k=2587266 q=52579 near_miss=True
+GPU k=2599668 q=48757 near_miss=True
+GPU k=2636003 q=48817 near_miss=True
+G89-DONE

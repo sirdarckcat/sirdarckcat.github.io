@@ -1,0 +1,113 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -48,6 +48,14 @@
+ ap.add_argument("--deep-max-rows", type=int, default=1100, help="--deep: rows of the bit matrix (the most rows of any variant)")
+ ap.add_argument("--deep-tile-threads", type=int, default=256, help="--deep: CTA size of the tile kernel (128 leaves registers for co-resident Fermat CTAs with --overlap)")
+ ap.add_argument("--deep-gen-threads", type=int, default=256, help="--deep: CTA size of the large-prime generate kernel")
++ap.add_argument("--deep-head-b", type=int, default=0,
++                help="--deep: the DEEP HEAD (sieve200/cuda/ghead.py): the primes in (--sieve-b, this] are applied to the first --deep-head-rows rows of every window AFTER the count / selection, to the kept members' row "
++                     "lists: composite rows leave the lists (8.6% fewer Fermat tests for 64 rows and 1e9), the kept members, the statistics and every member's first PRP row are those of the --sieve-b sieve.  "
++                     "The expected-hit accounting then uses the PRP fraction of the tests PAST each member's head rows (= P(prime | alive on the --sieve-b sieve)) and the pre-head counts (Window.cnt_acc)")
++ap.add_argument("--deep-head-rows", type=int, default=0, help="--deep-head-b: how many of the first rows (ascending q) get the deeper sieve (64)")
++ap.add_argument("--dump-members", default="",
++                help="PREFIX: after every flush write PREFIX.<n>.npz with, per tested member, its variant (sid), k, first-PRP row as a LOCAL row index of the variant (-1: none), success flag and tests counted: two runs of "
++                     "the same windows (with and without --deep-head-b) must give identical sid / k / frow / succ (only the counted tests differ)")
+ ap.add_argument("--fermat-cta-sm", type=int, default=0,
+                 help="with --overlap: launch the Fermat kernel in chunks of this many CTAs an SM (e.g. 3 of the 5 that fit), leaving registers and shared memory free on every SM "
+                      "for the sieve's CTAs to sit beside them; 0 = one launch a round, as before")
+@@ -121,6 +129,7 @@
+ 
+ 
+ _DEEP = {}                          # --deep: the DeepSieve of the current M (one BatchFeeder, one bit matrix for every variant)
++_DUMP_N = [0]                       # --dump-members: the number of the next dump file
+ 
+ 
+ def feeder_for(spec):
+@@ -129,7 +138,8 @@
+         from deep_feeder import deep_feeder_for                  # noqa: E402  (sieve200/cuda)
+         return deep_feeder_for(_DEEP, spec, B=args.sieve_b, ks_log=args.klog, llog=int(math.log2(args.block)), f=args.skip_frac, p_est=args.p_est,
+                                split=args.deep_split, rg=args.deep_rg, max_rows=args.deep_max_rows, nthreads=256, log=lambda m: print(m, flush=True),
+-                               **({k: v for k, v in (("gen_threads", args.deep_gen_threads), ("tile_threads", args.deep_tile_threads)) if v != 256}))   # older trees take neither
++                               **({k: v for k, v in (("gen_threads", args.deep_gen_threads), ("tile_threads", args.deep_tile_threads)) if v != 256}),   # older trees take neither
++                               **({k: v for k, v in (("head_b", args.deep_head_b), ("head_rows", args.deep_head_rows)) if v}))
+     key = (spec["name"].split("@")[0], spec["N0"])
+     if key not in _VAR:
+         search.init_spec(spec, args.sieve_b, args.block)       # S, M^-1 mod s cached per M; N0 mod s per call
+@@ -406,8 +416,9 @@
+     t0 = time.time()
+     tester = MultiTester(batch)
+     L = args.block
+-    st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], near=[], kmax=0) for _ in batch]
+-    pool = []                                                    # (sid, kv, cnt, cols) chunks
++    st = [dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, tests_o=0, prps_o=0, succ=[], near=[], kmax=0) for _ in batch]
++    hrows = args.deep_head_rows if (args.deep and args.deep_head_b > args.sieve_b) else 0      # the deep head's rows: the first hrows rows of every variant
++    pool = []                                                    # (sid, kv, cnt, cols, cnt_acc) chunks
+     npool = [0]
+     gt = [0, 0, 0.0, 0.0]                                        # tests computed, launches, expected hits, expected first-PRP rows >= --near-miss (--log-near-exp)
+ 
+@@ -418,23 +429,43 @@
+         sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
+         kv = cp.concatenate([c[1] for c in pool])
+         cnt = cp.concatenate([c[2] for c in pool])
++        cnt_acc = cnt if not hrows else cp.concatenate([c[4] for c in pool])               # the alive rows on the --sieve-b sieve (the deep head shortens the lists, not the model)
+         cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])      # (a deep window is a pool of its own: no 1.5 GB copy)
+         if args.overlap or args.pipeline:
+             cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
+         pool.clear(); npool[0] = 0
++        offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)]) if (hrows or (args.log_near_exp and args.near_miss)) else None
++        head_n = count_below(cols, offs, sid, cp.asarray([int(o) + hrows for o in tester.off], dtype=cp.int32)).astype(cp.int64) if hrows else None     # head rows left in each list (rows ascend)
+         tests_m, prp_m, succ_m, frow, g, nl = (run_pool_split if args.pool_threads > 1 else run_pool)(tester, kv, cnt, cols)
+         gt[0] += g; gt[1] += nl
++        if args.dump_members:
++            offv = cp.asarray(tester.off, dtype=cp.int64)
++            np.savez_compressed(f"{args.dump_members}.{_DUMP_N[0]}.npz", sid=cp.asnumpy(sid), k=cp.asnumpy(kv), frow=cp.asnumpy(cp.where(frow >= 0, frow - offv[sid], -1)),
++                                succ=cp.asnumpy(succ_m), tests=cp.asnumpy(tests_m.astype(cp.int32)))
++            _DUMP_N[0] += 1
+         tt, pp = int(tests_m.sum()), int(prp_m.sum())
++        if hrows:                                                # p^ = P(prime | alive on the --sieve-b sieve), the quantity the accounting below used without a head.  The tests on head rows have a higher
++            tests_o = cp.maximum(tests_m - head_n, 0)            # rate (a surviving head row: p / (1 - c), c = the fraction of the head rows the head removed, measured here), so: all PRPs over
++            prp_o = prp_m & (tests_m > head_n)                   # (tests on head rows / (1 - c) + tests past them): the same numerator as without the head and a denominator that estimates the same tests
++            tto = int(tests_o.sum())
++            removed = int((cnt_acc - cnt).sum())
++            c_emp = removed / max(removed + int(head_n.sum()), 1)
++            p_mod = pp / ((tt - tto) / (1.0 - c_emp) + tto) if tt else 0.0
++        else:
++            tests_o, prp_o, p_mod = tests_m, prp_m, (pp / tt if tt else 0.0)
+         if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count
+-            gt[2] += float(((1.0 - pp / tt) ** cnt.astype(cp.float64)).sum())
++            gt[2] += float(((1.0 - p_mod) ** cnt_acc.astype(cp.float64)).sum())
+             if args.log_near_exp and args.near_miss:             # ... and of the members whose first PRP row is >= --near-miss: the alive rows below it are all composite
+-                offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
+-                cb = count_below(cols, offs, sid, tester.thr_row)
+-                gt[3] += float(((1.0 - pp / tt) ** cb.astype(cp.float64)).sum())
++                cb = count_below(cols, offs, sid, tester.thr_row).astype(cp.int64)
++                if hrows:
++                    cb = cb + (cnt_acc - cnt)                    # the rows the head removed were all below the threshold row (head rows < --near-miss's row)
++                gt[3] += float(((1.0 - p_mod) ** cb.astype(cp.float64)).sum())
+         for si in range(len(batch)):
+             m = sid == si
+             st[si]["tests"] += int(tests_m[m].sum())
+             st[si]["prps"] += int(prp_m[m].sum())
++            st[si]["tests_o"] += int(tests_o[m].sum())
++            st[si]["prps_o"] += int(prp_o[m].sum())
+             st[si]["succ"].extend(int(k) for k in kv[m & succ_m].tolist())
+         if args.near_miss:                                       # first-PRP row >= the threshold: g(N) = that q
+             qf = cp.where(frow >= 0, tester.qrow[cp.maximum(frow, 0)], -1)
+@@ -455,7 +486,7 @@
+         st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
+         rows32 = w.rows.astype(cp.int32)
+         rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
+-        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
++        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32, w.cnt_acc.astype(cp.int64) if hrows else None))
+         if args.overlap or args.pipeline:
+             cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
+         w.rows = None                                            # after the synchronize (uarch 5499787): the u16 rows go back to the pool only once read
+@@ -485,7 +516,7 @@
+             else:
+                 lines.append(f"  NEARMISS-REJECTED {spec['name']} k={k} q={q} (CPU check failed)")
+         kd = max(s["kdone"], 1)
+-        phat = s["prps"] / s["tests"] if s["tests"] else 0.0
++        phat = s["prps_o"] / s["tests_o"] if s["tests_o"] else 0.0       # (= prps / tests without a deep head: the tests past the head rows only, P(prime | alive on the --sieve-b sieve))
+         e_hat = (s["alive"] / kd) * phat
+         hshare = s["hmk"] / s["hma"] if s["hma"] else 1.0
+         lines.append(f"[{spec['name']}] k=[{spec['kstart']},{s['kmax']}) {dt:.0f}s ({kd/dt:.0f} k/s) tests={s['tests']} "

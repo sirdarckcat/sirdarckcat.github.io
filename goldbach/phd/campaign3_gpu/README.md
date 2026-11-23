@@ -253,6 +253,284 @@ Version 3 (22 Nov):
     the row k0 = m·2^25 in search.log, then sets KMAX = k0. Nothing is skipped, and nothing is rescanned beyond the batches
     in flight. `run_v5_campQ.sh` passes `DEEP_ARGS`
     (`--deep 1 --klog 25 --slice 33554432 --sieve-b 100000000 --p-est 0.0715`, BATCH=2).
+- Near-misses (`search_gpu5.py --near-miss G`, env `NEAR_MISS`; 23 Nov 02:40Z, verified; live from the move to Q = 160,000).
+  - Why: each tested member is tested row by row with q ascending until its first probable prime. Every earlier row is
+    composite (by the cover's class, by the sieve, or by a failed Fermat test), so that first-PRP row is g(N) whatever the
+    design Q. A member that dies at a row above the record in hand is a new record.
+  - What changed: `run_pool` now records each member's first-PRP row. It also checks explicitly that every member's
+    survivor rows are strictly ascending, and the tester checks that each residual list is ascending. After a batch, a
+    member with first-PRP q ≥ G is verified on the CPU (`verify_near_miss`: every prime p < q gives a composite N − p,
+    N − q is a probable prime) and written to found.jsonl with `near_miss: true`. It counts toward found= and the tally's
+    found only as a near-miss. Which members are tested, and how, is unchanged.
+  - `check_nearmiss.sh` on an RTX PRO 6000 (`nearmiss_check/`). The known case is 146,191's member
+    (r200_q140k_c_v77, k = 3,101,585,871) with its vector's residual list taken to Q = 150,000 (1,120 rows).
+    - The normal path with all members tested reports it as a near-miss at g = 146,191, and so does the deep path at
+      f = 0.97.
+    - Slice lines are identical with reporting on and off, on that slice and on two deep production slices.
+    - The final driver, with near-misses and the uarch session's in-place row offset that frees ~4.5 GB a deep window, gives
+      lines identical to the earlier driver.
+  - Rows above 1,100 need `--deep-max-rows` (1,200 for Q = 160,000).
+  - Cost: the first version checked the order over the whole survivor array of a pool (~7·10^8 rows) and cost 0.5 s a
+    batch (2.60 against 2.10 s). The check now runs on the rows actually tested, as they are tested: each row above the
+    member's previous one, about 3·10^7 a batch, sharing the kernel-28 range check's sync.
+- Staged large-prime kernel and the overlap (23 Nov 03:00Z, uarch tree b344e85; `uarch_measure/overlap_trial_rtxpro6000.txt`,
+  `driver_tree_staged_ab_rtxpro6000.txt`). Steady batches of 2 × 2^25 members on an RTX PRO 6000, tests and PRPs identical
+  in every case:
+  - production driver f43e7f9 with the old tree: 2.10 s;
+  - this driver with the new tree: 2.00 s;
+  - plus `DEEP_STAGED=1` (marks sorted by bin in shared memory, written as whole lines): 1.70 s, ×1.24.
+  - `--overlap 1` (the next window's sieve on a second stream) gave no gain: 2.50 → 2.50 s on the slow-check driver.
+    `--fermat-cta-sm 3/4` made it worse (2.60-2.85 s), and so did 128-thread tile CTAs.
+  - In production on the three RTX PRO 6000s since 03:07Z (`deploy_staged.py`): 1.7-1.8 s a batch, from 2.1 s.
+- Q = 170,000 (23 Nov 03:55-04:04Z on all seven GPUs; the lead's decision, from the research session's table with near-misses
+  counted: expected final record 172,300 against 171,200 at 160,000, flat optimum 167,500-175,000).
+  - Vectors: 9,000 from the research generator (`gen_vectors.sh 170000 1263 9000`, starting covers of 07ff825; 71 at 1,262
+    rows, 8,929 at 1,263), checked here with `check_specs.py`. Index: `../campaign3/variants_q170k_index.json`. Split by GPU
+    speed, about 2.4 days of work; more at cap 1,264 to follow. The 12,827 Q = 160,000 vectors stay staged, unused.
+  - Each GPU switched with `switch170.py`: `--deep-max-rows 1300`, the staged kernel, B = 10^8, NEAR_MISS = 157,837. The
+    script waits for the old campaign process to exit before it starts the new one.
+  - The lead's four conditions:
+    - (1) the vectors above, checked;
+    - (2) 1,300 matrix rows;
+    - (3) memory at 1,262-1,263 rows: L4 16-20 GB of 23 GB, T4 13.2 of 15.4 GB (`revert150.py` returns a card to
+      Q = 150,000 if it runs short);
+    - (4) a Q = 170,000 check slice with identical lines with near-misses on and off (`nearmiss_check/c170check_rtxpro6000.txt`).
+  - Batches: RTX PRO 6000 1.8 s, L4 9.9-10.1 s, T4 10.0-10.2 s a slice: +3-7% over Q = 150,000 from the extra rows. Alive
+    rows 424 a member, E^ 30.2.
+  - Sieve bound with the staged kernel (`uarch_measure/bsweep_staged_rtxpro6000.txt`): 10^8 1.70 s, 2.623e-5 expected hits
+    a second; 2^28 1.90 s, 2.543e-5; 10^9 2.80 s, 1.817e-5. So B stays at 10^8.
+- Pool split and round profile (23 Nov 04:15Z, the uarch session's `search_gpu5_roundprof.patch` and `search_gpu5_poolsplit.patch`).
+  - `--profile-pool 1` on an RTX PRO 6000 at Q = 170,000 (`uarch_measure/profile_pool_rtxpro6000.txt`): 44-45 Fermat
+    rounds a pool take 1.27 s on the GPU, and the GPU idles 0.08-0.10 s between rounds, ≈5% of a 1.8 s batch.
+  - `--pool-threads 2` tests a pool as two halves (split at a member boundary) in two threads on two streams.
+    `uarch_measure/poolsplit_check_rtxpro6000.txt`: slice lines identical to the production driver, steady batches 1.80 →
+    1.70 s, and the 146,191 near-miss is still reported.
+  - In production on the three RTX PRO 6000s since 04:16Z (`restart_ps.py`). Not on the L4s or the T4, whose ~10 s batches
+    leave proportionally less idle time.
+- Rows a CTA of the staged large-prime kernel (the uarch session's section H, `uarch_measure/secth_rcta_rtxpro6000.txt`).
+  - At B = 10^8, on a 2^25 window of a Q = 170,000 vector, the sieve column measured rcta 2 193.2 ms, rcta 4 201.9 ms, rcta 8
+    (512 generate threads) 186.6 ms, and rcta 2 again 193.2 ms. Kept members and survivor rows were the same in all four
+    runs.
+  - rcta 8 saves 6.6 ms a window, about 0.75% of a batch, which is under the 20 ms bar for a production change. DEEP_RCTA
+    stays at 2.
+- Sieve under the Fermat kernel (23 Nov 08:03-08:11Z, gold-g4b).
+  - Hardware: the uarch session's `bench_overlap.py` (`uarch_measure/overlap_probe_rtxpro6000.txt`).
+    - Its sieve windows ran on a highest-priority stream beside one Fermat launch of 2^26 tests.
+    - The Fermat kernel ran ×1.10 slower and the sieve ×2.89 slower, which projects a production batch of 1.46 s against
+      1.76 s (×1.20). The default carve-out did as well as carve-out 100.
+    - The 80-register Fermat kernel was worse. Without the stream priority the sieve got no SM time.
+  - Driver (`uarch_measure/overlap_driver_rtxpro6000.txt`).
+    - The 03:10Z `--overlap` trial could not have overlapped anything. With `--pool 2097152`, a batch's two windows
+      (≈1.008M members each) fill the pool only once, at the final flush, so every sieve ran before any Fermat round.
+    - With `--pool 1000000` (one flush a window) the steady batches were:
+
+      | sieve thread | one vector | a new vector every window |
+      |---|---|---|
+      | off | 1.90 s | 1.90 s |
+      | on | 1.84 s | 1.88 s |
+
+    - Production does 1.75-1.76 s, and the smaller pool alone costs +0.14 s.
+    - The hardware probe implies about 0.16 s from hiding the second window's sieve, so something on the host side keeps
+      the thread from sieving under the Fermat rounds.
+    - Slice lines were identical in every run. Production is unchanged.
+- Cross-batch sieve pipeline (23 Nov 08:40Z on the RTX PRO 6000s; the uarch session's `search_gpu5_xbatch2.patch` and
+  `overlap.Pipeline`, its tree a752ea3).
+  - One sieve thread for the whole campaign plans the next batch itself. It sieves that batch's two windows on the
+    highest-priority stream under the current batch's one flush (`--pipeline 1 --pipeline-depth 2`, production's pool of
+    2^21). `--trace-pipeline 1` prints, per batch, how long the consumer waited for the sieve and how long the sieve thread
+    was busy and idle.
+  - The patched driver keeps the old behaviour by default. It is now `search_gpu5.py` here and on the RTX cards, with the old
+    file kept as `search_gpu5_prev.py` on each card. The L4s and the T4 still run the old file.
+  - Measured in campaign mode (`uarch_measure/pipeline_v1_rtxpro6000.txt`, `pipeline_v2_rtxpro6000.txt`; batch ends
+    stamped every 20 ms):
+
+    | configuration | batch |
+    |---|---|
+    | production | 1.744-1.752 s |
+    | v1, a flush per window, two pool threads | 1.647 s (batches 3-5 ≈ 1.69 s) |
+    | v2, sync-free sieve windows | 1.73-1.76 s |
+    | v2, per-group overflow check (`GBATCH_DEFER_CHECK=0`) | 1.55-1.60 s |
+
+    - The sync-free sieve runs at full speed (0.44 s a batch) and the Fermat rounds wait for it.
+    - The per-group check's host round trips let the sieve trickle beside the Fermat rounds (≈1 s busy a batch), and the
+      consumer never waits.
+  - Slice lines were identical to production in every run. The 72 near-misses at a threshold of 63,097 were identical
+    with and without the pipeline. Peak memory is +1.6 GB.
+  - Production since 08:40-08:42Z (`deploy_pl.py`):
+    - tree `/content/ua_v2` (a752ea3 over the previous tree), with `GBATCH_DEFER_CHECK=0`;
+    - deep arguments plus `--pipeline 1 --pipeline-depth 2 --trace-pipeline 1`;
+    - gold-g4b's first 71 batches took 1.594 s each, against 1.76 s before.
+  - Burst shaping (09:03-09:21Z, the uarch session's `plt3.sh`, `plt4.sh` and this session's `plt5.sh`; tree 4f8edff).
+    Results are in `uarch_measure/plt3_burst_rtxpro6000.txt`, `plt4_rtxpro6000.txt` and `plt5_cpu_rtxpro6000.txt`.
+    - A 0.5 ms bubble after each checked row group (`GBATCH_GROUP_DELAY_US=500`) with 512-thread tile CTAs
+      (`--deep-tile-threads 512`, honoured from 4f8edff on) gives 1.526 and 1.529 s against 1.574 and 1.580 s, -3%. Slice
+      lines are identical.
+    - Pausing the host's CPU share (48 niced `search_c.py` processes) changes nothing.
+    - What costs the batch is GPU sharing: beside the sieve, the Fermat kernels of a half-pool take 0.70-0.76 s on the GPU
+      instead of 0.65-0.69 s.
+    - In production on the three RTX PRO 6000s since 09:20-09:21Z (`deploy_a2.py`):
+      - tree `/content/ua_v3`;
+      - driver = the pipeline driver plus the uarch session's inert `search_gpu5_prio.patch` (it is `search_gpu5.py` here);
+      - `GBATCH_GROUP_DELAY_US=500` and `--deep-tile-threads 512`.
+  - Not on the L4s or the T4.
+    - On gold-l4b the pipeline ran 10.000 s a batch against 10.054 s before (08:44-08:48Z), so the card went back to its
+      previous configuration.
+    - The fleet-mode probe on that L4 (`uarch_measure/overlap_probe_l4.txt`): beside the sieve the Fermat kernel runs
+      ×2.1 slower, for ×1.10 work a second at best. Chunked launches and the plain stream do worse.
+- 89-moduli vectors (23 Nov, the lead's gated decision; research's covers on the first 89 odd primes, e24f6e2 on
+  ccr-d4a17dd0-7uu03r). Files are in `v89/`.
+  - The vectors.
+    - At Q = 170,000 they have 1,248-1,250 rows against 1,262-1,263 on the 88 moduli.
+    - M has 192.7 digits, so a vector has only k < 21,378,978. It is k >= 2,137,898 for a 200-digit N.
+    - Only 85.6 of their rows lie at or above the record 157,837, against 67.0 on the 88 moduli. So 32 fewer rows below the
+      record have to be composite for a near-miss that beats it.
+  - Vector mode: `search_gpu5.py --vector-dir DIR`.
+    - Specs come from chunk files `DIR/vec_*.json`, which are read in order as they appear.
+    - Each vector is one slice, the window [k_lo, k_lo + 2^24) from its first 200-digit k. That k is not a multiple of the
+      window, which the sieve and the kernel handle. The vector's window must lie below its kmax.
+    - `cq_limbs` computes N0 - q vectorized, so a new vector every window costs little host time.
+    - `--log-near-exp 1` logs, per batch, the expected number of tested members whose first PRP row is at or above
+      `--near-miss` (design hits included). This is the lead's gate metric.
+    - The 88-moduli path is unchanged: slice lines are identical to the previous driver.
+    - `test_vector_mode_fake.py` covers the stub tests: `cq_limbs` against `to_limbs`; campaign() in vector mode with and
+      without the pipeline (every vector once, k_lo exact, a chunk written mid-run, restart, exhaustion).
+  - The producer (`vecgen.sh`, one per RTX host).
+    - It runs covergen walks from `starts/q170000_m89.txt` at cap 1,250, raised by one when a walk gives nothing new, and
+      keeps the card's share of the covers (`part.py`: md5 mod 3, so no vector reaches two cards).
+    - Each chunk goes through `make_specs.py` (kmax auto, the card's own ledger) and `check_specs.py`, then is published
+      by an atomic rename.
+    - It makes 1,000 vectors every 45 s, and a card uses about 2.6 a second.
+    - Supply: cap 1,249 is exhausted at about 5,700 covers, while cap 1,250 had 131k after 10 min and was not exhausted.
+      Research plans on about 1,251 rows on average over nine days.
+  - Window cost (`wcost_rtxpro6000.txt`): 2^24 windows cost 6.3-6.4 ns a member against 5.5-5.6 ns at 2^25, +15%. 89
+    moduli cost the same as 88.
+  - Validation (`validation_gpu_rtxpro6000.txt`, `knowncase_cpu_brute.txt`).
+    - The deep sieve, staged and plain, is identical to sieve200's CPU feeder at k_lo and at k_lo + 2^21 + 12345.
+    - The kernel-28 flags are identical to gmpy2 on 8,192 random (row, k) with k in [k_lo, k_lo + 2^24).
+    - The known case: on one vector's 524,288 members from k_lo, the GPU path (skip-frac 0, near-miss 46,171) and a CPU
+      brute force (gcd residual, BPSW scan of every member) find the same 23 members, with the same least prime q.
+- 29-bit Fermat kernel (23 Nov, uarch 710585f on ccr-b8c25887-i6tn9f; files in `k29/`), deployed under the lead's standing
+  rule for engine changes.
+  - The kernel has 23 limbs of 29 bits and a 31-bit top Montgomery digit (R = 2^669).
+    - A step costs 805 + 23 multiplications, against 876 + 24 for the 24 × 28-bit kernel.
+    - It covers n < 2^665, against 2^668. N < 10^200 = 2^664.4.
+    - It flags n ≥ 2^665, and the driver then raises.
+  - Step files: `fermat29_step_s1.cuh` (asm 1) on the RTX PRO 6000s, `fermat29_step_s1w.cuh` (asm 0) on the L4s and the T4.
+  - The driver takes uarch's `search_gpu5_k29.patch`: its kernel-28 n-range assertion follows the step file
+    (`gpu_fermat28.step_nmax`).
+  - First light (`t29.sh`, `first_light_*.txt`).
+    - 0 mismatches against gmpy2 on 2,000 candidates, on an 88-moduli spec and on an 89-moduli vector window.
+    - Tests a second rose ×1.057 on both cards: 23.29M to 24.62M on the RTX, 4.47M to 4.73M on the L4.
+  - Each card ran its own check before its deploy.
+    - The RTX cards ran `k29v.sh` and then `deploy_k29r.py` (`identity_rtxpro6000.txt`).
+      - 24 vector windows had slice lines identical to production's, with no range errors.
+      - The vector known case found the same 23 (k, q) as the CPU brute force.
+    - The L4s and the T4 ran `k29l2.sh` (`identity_l4_t4.txt`).
+      - 8 production windows just below 2^30 had identical slice lines.
+      - 146,191's member, under its Q = 150,000 residual (`nm150_v77.json`), was reported with g = 146,191 by both the normal
+        and the deep sieve.
+      - The script deploys only if the 29-bit batch is also at least 1% faster.
+      - The campaign has to be stopped for about 3 minutes: a card that size holds one sieve matrix only. The first version
+        (`k29l.sh`) only paused it, and its runs ran out of memory: the paused process held 22.2 of the L4's 23.0 GB.
+  - Batch times:
+
+    | card | production | 29-bit | change |
+    |---|---|---|---|
+    | gold-g4c (RTX PRO 6000) | 1.582 / 1.575 s | 1.510 s | −4.3% |
+    | gold-g4 (RTX PRO 6000) | 1.577 / 1.570 s | 1.516 s | −3.7% |
+    | gold-g4b (RTX PRO 6000) | 1.564 / 1.567 s | 1.501 s | −4.1% |
+    | gold-l4b (L4) | 10.103 / 10.057 s | 9.705 s | −3.7% |
+    | gold-gpu (L4) | 9.861 / 9.788 s | 9.469 s | −3.6% |
+    | gold-l4c (L4) | 9.871 / 9.901 s | 9.587 s | −3.0% |
+    | gold-xt4 (T4) | 9.633 / 9.611 s | 9.276 s | −3.6% |
+
+    All seven GPUs run it since 11:54Z. In production the RTX cards run 1.517 s a batch (1.575 s before), and gold-l4b
+    9.69 s (about 10.06 s before).
+- Keep fraction in vector mode (`v89/vsweep.sh`, `v89/vsweep_rtxpro6000.txt`; gold-g4, 29-bit kernel, the same 24 windows
+  at each f).
+  - Expected near-misses ≥ 157,837 a second, against f = 0.97:
+
+    | f | 0.96 | 0.965 | 0.97 | 0.975 | 0.98 | 0.985 | 0.99 |
+    |---|---|---|---|---|---|---|---|
+    | batch | 1.890 s | 1.692 s | 1.508 s | 1.324 s | 1.134 s | 0.939 s | 0.751 s |
+    | near-misses a second | ×0.942 | ×0.975 | ×1 | ×1.026 | ×1.054 | ×1.080 | ×1.046 |
+    | design hits a second | ×0.934 | ×0.971 | ×1 | ×1.032 | ×1.067 | ×1.102 | ×1.079 |
+
+  - A repeat of f = 0.97 came within 0.5%.
+  - At f = 0.985 a card uses its vectors ×1.6 faster: 4.26 a second instead of 2.64.
+  - The lead moved the three RTX cards to f = 0.985 at 12:06Z (`v89/deploy_f985.py`). The basis was this sweep and
+    research's supply figure: 12M distinct 89-moduli covers for nine days at about 1,251 rows. The L4s and the T4 stay at
+    0.97.
+  - The producers keep up. `vecgen.sh` holds 12,000 vectors ahead and walks only below that, so its chunk interval tracks
+    consumption. Filling the buffer it made 1,000 vectors every 46 s, about 21.7 a second a card.
+  - The lead's guard (`v89/rowguard.sh`, `rowguard.py`) runs on each RTX card every 5 minutes.
+    - It compares the average row count of the last 2,000 consumed vectors with the average of every vector consumed before
+      the switch: 1249.84 / 1249.88 / 1249.81 on gold-g4 / gold-g4b / gold-g4c.
+    - If the gap passes +2 rows, the card drops itself to f = 0.98 and writes `/content/rowguard_tripped.txt`.
+    - The producers stop at CAPMAX 1,253, so a trip needs the cap at 1,252-1,253 on most vectors.
+  - DEEP_RCTA=8 with `--deep-gen-threads 512` gave identical slice lines and 1.498 s a batch against 1.508 / 1.515 s (−0.9%).
+    uarch's wcost3 has it at −5.3 ms a 2^24 window of sieve alone (`uarch_measure/wcost3_rtxpro6000.txt`). Both are under
+    the agreed 8 ms bar, so it is not deployed.
+- Deep head (uarch 0e45ea8; files in `head/`). It sieves the first 64 rows of each window by the primes in (1e8, 1e9],
+  after the count and the selection. So the kept members are unchanged, and only composite rows leave their lists.
+  - The gate ran on gold-g4c (`headv.sh`, `headv_rtxpro6000.txt`) under the lead's approval and this session's conditions.
+    - `headcheck.py`: OK. The head removes 11.11% of the head rows (modelled 11.11%), and sampled removed rows have a
+      factor in range.
+    - The head costs 11.5 ms a 2^24 window (136.1 to 147.6 ms) and 1.72 GB of device memory.
+    - On the 24 test windows, production and the head driver with no head gave identical slice lines.
+    - With and without the head, the per-member dumps were identical for all 12,091,392 members (k, first-PRP row,
+      success), and tests fell 8.42%. The logged expected near-misses and design hits were ×0.9998.
+    - The dump runs are slow (`savez_compressed`), so they give no timing.
+  - Deployed on gold-g4c at 12:06:49Z together with f = 0.985, for a production A/B against gold-g4 and gold-g4b (no head,
+    also at f = 0.985).
+    - The A/B (`head/ab_production_f0985.txt`) ran 960 s, about 1,010 batches a card. With the head a batch took 0.9514 s,
+      against 0.9449 s on both other cards: +0.7%. Tests fell 8.4%, and the expected near-misses a batch were the same.
+    - At f = 0.985 the sieve is busy about 92% of a batch: 0.87 s of 0.945 s. So the head's extra sieve work, about 13.6 ms a
+      window beside the Fermat kernel, costs more than the 8.4% of tests save.
+    - The head came off gold-g4c at 12:24:38Z (`head/revert_head.py`).
+- uarch's bench_pipes, parts 1-3 (`uarch_measure/bench_pipes_rtxpro6000.txt`).
+  - A random-address ATOMS.AND costs what a random STS.32 or LDS.32 does: about 2.6 cycles a warp-op an SM, against 5.3-6.7
+    for a plain read-modify-write.
+  - So a race-free marking scheme would not speed the tile kernel. That kernel runs at about 0.8 marks a clock an SM, far
+    below the unit's rate.
+- Fused Fermat rounds and rcta 8 (23 Nov; files in `fround/`), deployed under the standing rule on the three RTX cards at
+  12:30:45-12:31:09Z.
+  - Fused rounds: uarch 4639f17, `--fused-rounds 1`.
+    - `run_pool`'s ~100 small cupy kernels and ~6 host syncs a round become ~10 launches and one host read.
+    - The Fermat kernel and the test lists are unchanged.
+    - The driver is k29 plus `search_gpu5_fround.patch` (13e19e57aa0f, now `search_gpu5.py`).
+    - `FERMAT28_DIR=/content/f29fr` is `/content/f29` with `fround.py` and `fround_kernels.cuh`.
+  - rcta 8: `DEEP_RCTA=8` with `--deep-gen-threads 512`, so a generate CTA takes 8 rows at once with 512 threads.
+  - They pay at f = 0.985 because the sieve is busy about 92% of a batch, so both sides of the pipeline are on the critical
+    path.
+  - Measured at f = 0.985 on the 24 test windows, alternating with production; every run had identical slice lines.
+
+    | change | batch | production | factor |
+    |---|---|---|---|
+    | fused rounds alone (`frab_rtxpro6000.txt`) | 0.869 s | 0.940 s | ×0.924 |
+    | rcta 8 alone (`uarch_measure/r8f_rtxpro6000.txt`) | 0.930 s | 0.946 s | ×0.983 |
+    | both, gold-g4 (`comb_rtxpro6000.txt`) | 0.846 s | 0.949 s | ×0.892 |
+    | both, gold-g4b | 0.855 s | 0.948 s | ×0.902 |
+    | both, gold-g4c | 0.847 s | 0.947 s | ×0.894 |
+
+  - Each card's vector known case with the new settings gave the same 23 (k, q) as the CPU brute force.
+  - With `--profile-pool`, the gap a pool beside the sieve fell from 0.33-0.35 s (about half of `run_pool`) to 0.24-0.30 s.
+  - In production the RTX cards run 0.858 s a batch (0.945 s before), about +10% expected near-misses a second.
+  - The L4s and the T4 took fused rounds alone at 12:34-12:41Z (`fround/frl.sh`, `frl_l4_t4.txt`).
+    - Each card was checked in the k29l2.sh pattern: 8 identical windows, and 146,191's member found by both sieves.
+    - Batch: gold-l4b ×0.983, gold-gpu ×0.986, gold-l4c ×0.987, gold-xt4 ×0.983.
+  - The keep fraction, re-swept on the new engine (`v89/vsweep2_rtxpro6000.txt`), is flat between 0.985 and 0.9875 (×1.018,
+    within the ×1.012 of a repeat at 0.985). f = 0.985 stays.
+- uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
+  - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
+    bin apply 19.9).
+  - Bin apply halves at rg 4, where the bins fit in L2, but the generate passes grow with the number of groups.
+- uarch's E5 (`uarch_measure/e5_ffma_rtxpro6000.txt`): a dummy FFMA inside the real Fermat step adds about 1.2 ticks, close
+  to an IADD3 (1.1-1.6), not the ~0 of a free pipe. So the FP32 pipe does not run free beside the multiplier.
+- Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
+  - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
+  - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
+  - s2r_asm (−3.5%) and s4r_asm (−7.9%) only add cost, so production stays on s1r_asm.
 - Skip fraction, re-measured with supply no longer a constraint (`bench_skipfrac.sh`, same 64 slices,
   `sieve_bound/gpu_rtxpro6000_skipfrac.txt`): expected hits ×1.40 / ×1 / ×0.74 / ×0.45 / ×0.29 at f = 0.95 / 0.97 / 0.98 /
   0.99 / 0.995, with tests in proportion to the kept fraction. On production batch times (2.03 s at 0.97, of which ~0.38 s is

@@ -1,0 +1,37 @@
+# uarch plt8.sh on gold-g4c (RTX PRO 6000), campaign paused: the persistent work-stealing Fermat kernel (fermat28_persist_kernel.cuh, gpu_fermat28.persist_pool)
+# and the run_pool tail rule (--tail-target 65536 --dtail 256). Tree /content/ua_v3; Fermat dir /content/f28p = f28w + the uarch gpu_fermat28.py and
+# fermat28_persist_kernel.cuh; drivers = the deployed driver ad33baf + search_gpu5_persist.patch (v1 fbefc59 for round 1, v2 0ca2aa4 for round 2).
+# CPU checks first: test_fermat28_persist.py ALL OK (1-24 lanes, persist_pool host side, edge cases, the out-of-range raise); test_runpool_tail_fake.py OK.
+
+## Round 1 (v1, 10:13:46-10:15:55Z)
+base  : gaps [1.85, 1.822, 1.855, 1.837, 1.812] | batches with a sieve beside them: mean 1.841 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 62150 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2    : gaps [1.55, 1.525, 1.525, 1.545, 1.305] | batches with a sieve beside them: mean 1.536 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63028 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1    : gaps [2.621, 2.693, 2.727, 2.687, 2.619] | batches with a sieve beside them: mean 2.682 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63506 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1c4  : gaps [2.674, 2.711, 2.727, 2.723, 2.635] | batches with a sieve beside them: mean 2.709 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 62762 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1t1  : gaps [2.722, 2.726, 2.773, 2.739, 2.624] | batches with a sieve beside them: mean 2.740 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63334 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+pn    : gaps [2.857, 2.829, 2.839, 2.84, 2.867] | batches with a sieve beside them: mean 2.841 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 61914 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2b   : gaps [1.524, 1.553, 1.525, 1.518, 1.299] | batches with a sieve beside them: mean 1.530 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63028 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+PLT8-DONE
+[pl8] progress: a2 a2b base my_specs.json p1 p1c4 p1t1 pn result.txt status.txt 
+[pl8] campaign state: 1527265 Tl         54:57 python3 /content/c3g/search_gpu5.py --campaign /content/c170 --goldbach /content/c3g --batch 2
+
+[exited with code 0]
+
+## Round 2 (v2, 10:15:59-10:18:41Z)
+base  : gaps [1.829, 1.849, 1.836, 1.838, 1.841] | batches with a sieve beside them: mean 1.838 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 62150 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2    : gaps [1.532, 1.538, 1.529, 1.495, 1.315] | batches with a sieve beside them: mean 1.524 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63006 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2t   : gaps [1.493, 1.53, 1.497, 1.497, 1.259] | batches with a sieve beside them: mean 1.504 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63028 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1    : gaps [2.553, 2.739, 2.74, 2.717, 2.635] | batches with a sieve beside them: mean 2.687 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63406 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1t   : gaps [2.65, 2.704, 2.711, 2.716, 2.624] | batches with a sieve beside them: mean 2.695 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63870 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1c4t : gaps [2.683, 2.72, 2.724, 2.726, 2.653] | batches with a sieve beside them: mean 2.713 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 62862 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p1t1t : gaps [2.666, 2.75, 2.726, 2.712, 2.675] | batches with a sieve beside them: mean 2.713 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63334 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+pn    : gaps [2.8, 2.827, 2.793, 2.819, 2.804] | batches with a sieve beside them: mean 2.810 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 61910 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+a2b   : gaps [1.546, 1.522, 1.502, 1.545, 1.29] | batches with a sieve beside them: mean 1.529 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 63006 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+PLT8-DONE
+[pl8b] progress: a2 a2b a2t base my_specs.json p1 p1c4t p1t p1t1t pn result.txt status.txt 
+[pl8b] campaign state: 1527265 Sl         57:39 python3 /content/c3g/search_gpu5.py --campaign /content/c170 --goldbach /content/c3g --batch 2
+
+[exited with code 0]
+
+# Reading: the persistent kernel is ~1 s a batch SLOWER than the round-based run_pool (pn 2.81-2.84 s against base 1.84 s; with the pipeline 2.68-2.74 s against
+# 1.52-1.54 s). The tail rule alone (a2t) gives 1.504 s against 1.524 / 1.529 s: -1.5%, under the 2% bar. Production unchanged.

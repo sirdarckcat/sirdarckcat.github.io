@@ -1,0 +1,29 @@
+# Driver-level overlap on gold-g4b (RTX PRO 6000), 2026-11-23, production driver search_gpu5.py (ae24e57) with the d737b50 tree (kernels identical
+# to production's), campaign paused (SIGSTOP). Batches of 2 windows of 2^25 members (staged deep sieve, B = 1e8), Q = 170,000 vectors (1,262 rows).
+# Batch times are the driver's per-batch figures (0.1 s steps); 'steady' is the mean of all batches but the first (compile + setup).
+
+## Round 1 (08:06:40-08:07:41Z): 6 vectors x one window each, 3 batches
+#  p: production (--pool 2097152 --pool-threads 2)   a: --overlap 0 --pool 1000000   b: --overlap 1 --pool 1000000
+#  c: b + FERMAT_CARVEOUT=100 DEEP_CARVEOUT=100       d: c + --pool-threads 2         e: b + --pool-threads 2
+p (production: pool 2^21, pool-threads 2): batches [5.9, 1.8, 1.7] steady 1.750 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+a (overlap 0, pool 1e6): batches [6.1, 1.9, 1.9] steady 1.900 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+b (overlap 1, pool 1e6): batches [5.8, 1.9, 1.9] steady 1.900 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+c (overlap 1, pool 1e6, carve-out 100): batches [6.0, 1.9, 1.9] steady 1.900 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+d (overlap 1, pool 1e6, carve-out 100, pool-threads 2): batches [5.9, 1.7, 1.8] steady 1.750 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+e (overlap 1, pool 1e6, pool-threads 2): batches [5.9, 1.8, 1.8] steady 1.800 s | slice lines vs p: IDENTICAL (6 slices) | [] []
+OVD-DONE
+
+## Round 2 (08:09:35-08:11:08Z): 12 windows, 6 batches
+#  one_*: ONE vector at 12 consecutive windows (no variant switch)   many_*: 6 vectors x 2 windows (a variant switch every window, as in production)
+#  _a: --overlap 0 --pool 1000000   _b: --overlap 1 --pool 1000000   one_p: production   one_d: --overlap 1 --pool 1000000 --pool-threads 2
+one_a  : batches [5.8, 1.9, 1.9, 1.9, 1.9, 1.9] steady 1.900 s, batch-end stamps 2.00 s a batch | slice lines vs one_a: IDENTICAL (12) | []
+one_b  : batches [5.5, 1.9, 1.8, 1.8, 1.9, 1.8] steady 1.840 s, batch-end stamps 1.80 s a batch | slice lines vs one_a: IDENTICAL (12) | []
+many_a : batches [6.0, 1.9, 1.9, 1.9, 1.9, 1.9] steady 1.900 s, batch-end stamps 1.80 s a batch | slice lines vs many_a: IDENTICAL (12) | []
+many_b : batches [5.9, 1.9, 1.9, 1.9, 1.9, 1.8] steady 1.880 s, batch-end stamps 2.00 s a batch | slice lines vs many_a: IDENTICAL (12) | []
+one_p  : batches [5.6, 1.7, 1.8, 1.8, 1.8, 1.7] steady 1.760 s, batch-end stamps 1.80 s a batch | slice lines vs one_a: IDENTICAL (12) | []
+one_d  : batches [5.9, 1.7, 1.7, 1.7, 1.8, 1.7] steady 1.720 s, batch-end stamps 1.80 s a batch | slice lines vs one_a: IDENTICAL (12) | []
+OVD2-DONE
+
+# Reading: the hardware probe (overlap_probe_rtxpro6000.txt) implies ~0.16 s a batch for hiding the second window's sieve under the first window's Fermat
+# (pool 1e6); the driver gets 0.06 s with one vector and 0.02 s with a variant switch per window, and a pool of 1e6 costs +0.14 s against production.
+# So something on the host side (GIL, a synchronizing call, the per-window retarget) keeps the sieve thread from running under the Fermat rounds.

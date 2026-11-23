@@ -1,0 +1,26 @@
+# Deep head (uarch 0e45ea8) gate on gold-g4c (RTX PRO 6000), headv.sh, 2026-11-23 11:59:32-12:02:58Z (campaign paused): headcheck.py, then the 24 test vector windows through
+# prod (production driver 4efbb340474d and tree ua_v3), base (search_gpu5_head.py 76b707fa5195, tree ua_v4 = ua_v3 + 0e45ea8's sieve200/cuda, no head, --dump-members) and head
+# (the same with --deep-head-b 1000000000 --deep-head-rows 64). The base / head gaps are slowed by --dump-members (savez_compressed of ~2M members a flush): no timing here.
+
+prod: batches 6 | expected near>=157837 4.5177e-05 | expected hits 6.4415e-06 | tests 169,381,475 | gaps [1.518, 1.518, 1.512, 1.475, 1.261] | ['C3GPU-EXHAUSTED', 'rc=2']
+base: batches 6 | expected near>=157837 4.5177e-05 | expected hits 6.4415e-06 | tests 169,381,475 | gaps [3.596, 3.627, 3.448, 3.405, 3.323] | ['C3GPU-EXHAUSTED', 'rc=2']
+head: batches 6 | expected near>=157837 4.5168e-05 | expected hits 6.4402e-06 | tests 155,111,986 | gaps [3.498, 3.51, 3.506, 3.375, 3.233] | ['deep head: 45,086,079 primes in (100,000,000, 1,000,000,000] on the first 64 rows, applied after the selection (34.0 s tables, 1720 MB of device memory)', 'C3GPU-EXHAUSTED', 'rc=2']
+prod / base slice lines: IDENTICAL (24 / 24)
+head / base: expected near x0.9998, expected hits x0.9998, tests x0.9158
+6 flush files in the base run, 6 in the head run
+12,091,392 members in 6 files; successes 0 / 0; first-PRP row >= 1000: 0 / 0 (base / head)
+counted tests 169,381,475 (base) -> 155,111,986 (head): 8.42% fewer
+DUMPS-IDENTICAL
+compare_dumps rc=0
+deep head: 45,086,079 primes in (100,000,000, 1,000,000,000] on the first 64 rows, applied after the selection (34.6 s tables, 1720 MB of device memory)
+  deep sieve: staged large-prime kernel (rcta 8, stage 8192); M with 89 cover primes excluded, 5,761,365 primes below 100,000,000 (78,408 in the tile kernel, 5,682,957 in the large-prime stage), batches of 2^24 members, bit matrix 1256 x 2 MB; tables 3.9 s, feeder 35.3 s
+1248 rows, window 2^24 from k0 = 2137898, head rows 64, primes in (100,000,000, 1,000,000,000]: 45,086,079; built in 39.2 s
+(1) 503,808 kept members; k, alive_total, hm_all, hm_kept identical with and without the head; cnt_acc == cnt without it; the new CSR consistent: OK
+    the lists of 3000 sampled members: new list is a subset of the old: True; every removed row is among the first 64: True
+(2) rows 192,993,706 -> 191,894,558: the head removed 1,099,148 of the 9,892,086 head rows of the kept members = 11.11% (model 11.11%)
+    predicted Fermat tests of the window: 7,046,266 -> 6,452,320: 8.43% fewer
+(3) 8 removed head rows: every one has a prime factor in the head range: OK
+(3) 8 kept head rows: none has a prime factor in the head range: OK
+(4) a window: 136.1 ms without the head, 147.6 ms with it (best of 5; means 136.2 / 147.8): the head costs 11.5 ms; retries of the head's bins: 0
+HEADCHECK-OK
+HEADV-DONE

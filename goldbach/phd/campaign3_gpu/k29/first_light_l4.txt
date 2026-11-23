@@ -1,0 +1,25 @@
+# 29-bit Fermat kernel (uarch 710585f), first light on an L4 (gold-l4b, 2026-11-23), as first_light_rtxpro6000.txt; s29w_r96 / _r104: the step capped at 96 / 104 registers.
+2026-11-23T11:24:32Z paused pid 123276
+NVIDIA L4, 1530 MHz
+--- 88 moduli: /content/c170/my_specs.json
+device: NVIDIA L4  batch 1048576  threads 128  20 s a variant
+  s1rw: 0 mismatches against gmpy2 in 2000 candidates (46 base-2 PRPs)
+  s1rw     regs  94 local  88 B: median    4,472,473 tests/s  best    4,728,177  (86 loops)
+  s29w: 0 mismatches against gmpy2 in 2000 candidates (43 base-2 PRPs)
+  s29w     regs 110 local  88 B: median    4,728,777 tests/s  best    4,972,747  (91 loops)
+  s29w_r96: 0 mismatches against gmpy2 in 2000 candidates (50 base-2 PRPs)
+  s29w_r96 regs  96 local 112 B: median    4,665,239 tests/s  best    5,026,293  (90 loops)
+  s29w_r104: 0 mismatches against gmpy2 in 2000 candidates (56 base-2 PRPs)
+  s29w_r104 regs 104 local 112 B: median    4,624,587 tests/s  best    5,102,521  (89 loops)
+--- 89-moduli vector window: k in [2137898, 18915114)
+device: NVIDIA L4  batch 1048576  threads 128  20 s a variant
+  s1rw: 0 mismatches against gmpy2 in 2000 candidates (50 base-2 PRPs)
+  s1rw     regs  94 local  88 B: median    4,475,486 tests/s  best    4,744,837  (86 loops)
+  s29w: 0 mismatches against gmpy2 in 2000 candidates (61 base-2 PRPs)
+  s29w     regs 110 local  88 B: median    4,735,569 tests/s  best    4,985,029  (91 loops)
+  s29w_r96: 0 mismatches against gmpy2 in 2000 candidates (44 base-2 PRPs)
+  s29w_r96 regs  96 local 112 B: median    4,685,452 tests/s  best    4,981,776  (90 loops)
+  s29w_r104: 0 mismatches against gmpy2 in 2000 candidates (55 base-2 PRPs)
+  s29w_r104 regs 104 local 112 B: median    4,630,200 tests/s  best    5,144,365  (89 loops)
+2026-11-23T11:27:21Z resumed pid 123276
+T29-DONE

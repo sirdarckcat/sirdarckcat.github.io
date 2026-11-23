@@ -1,0 +1,21 @@
+# uarch bench_fm28_step.py --e5 (02b90fc) on gold-g4b (RTX PRO 6000), e5.sh, 2026-11-23 11:59:36-11:59:40Z (campaign paused): dummy FFMA / IADD3 / IMAD.WIDE inside the real
+# production step (s1r_asm). An FFMA adds ~1.2 ticks, about what an IADD3 adds (1.1-1.6), not ~0: the FP32 pipe is not free beside the multiplier.
+
+2026-11-23T11:59:36Z paused pid 2004561
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 2422 MHz
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, style s1r_asm, 3000 steps a launch, 128 threads a CTA
+E5  FP32 FFMA beside the multiplier pipe (ticks per warp-step per scheduler; 'per instruction' = added ticks / K; ~0: a separate pipe, ~2: shared with the integer ALU, ~4: the multiplier's own cost)
+config                  regs  CTAs/SM  ticks/step    added  per instruction    GHz
+baseline                  80        5        4001                            2.425
++96 FFMA                  92        5        4120      119             1.24  2.425
++192 FFMA                 92        5        4228      227             1.18  2.425
++384 FFMA                 92        5        4448      447             1.16  2.427
++768 FFMA                 92        5        4918      917             1.19  2.425
++96 IADD3                108        4        4105      103             1.08  2.425
++192 IADD3                98        4        4301      300             1.56  2.425
++384 IADD3               100        4        4590      589             1.53  2.424
++96 IMAD.WIDE            120        4        4381      379             3.95  2.424
++192 IMAD.WIDE           118        4        4803      801             4.17  2.425
++384 IMAD.WIDE           118        4        5565     1564             4.07  2.425
+2026-11-23T11:59:40Z resumed pid 2004561
+E5-DONE

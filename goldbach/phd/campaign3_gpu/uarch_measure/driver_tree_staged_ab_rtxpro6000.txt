@@ -1,0 +1,7 @@
+f43      batches [6.0, 2.1, 2.1] steady 2.10s | tests/PRPs vs base: IDENTICAL | []
+new      batches [6.2, 2.0, 2.0] steady 2.00s | tests/PRPs vs base: IDENTICAL | []
+newst    batches [5.9, 1.7, 1.7] steady 1.70s | tests/PRPs vs base: IDENTICAL | []
+f43b     batches [6.0, 2.1, 2.1] steady 2.10s | tests/PRPs vs base: IDENTICAL | []
+newb     batches [6.1, 2.0, 2.0] steady 2.00s | tests/PRPs vs base: IDENTICAL | []
+known near-miss with the new driver: [(3101585871, 146191, True)] []
+OVTEST-DONE

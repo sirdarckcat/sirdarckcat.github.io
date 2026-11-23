@@ -1,0 +1,4 @@
+b8    batches [5.7, 1.7, 1.7] steady 1.70s, expected hits a batch 4.4595e-05, a second 2.6232e-05 | tests 84,527,486 | []
+b28   batches [12.8, 1.9, 1.9] steady 1.90s, expected hits a batch 4.8317e-05, a second 2.5430e-05 | tests 80,247,895 | []
+b9    batches [43.1, 2.8, 2.8] steady 2.80s, expected hits a batch 5.0879e-05, a second 1.8171e-05 | tests 75,110,135 | []
+OVTEST-DONE

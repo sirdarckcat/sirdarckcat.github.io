@@ -1,0 +1,39 @@
+# uarch plt9.sh (c0083d3) on gold-g4c (RTX PRO 6000), 2026-11-23 10:46:46-10:48:22Z, campaign paused: the persistent Fermat kernel v2 (__syncwarp at the loop head;
+# FERMAT_PERSIST_SYNC=0 builds v1), bench_persist.py, and the driver runs. /content/f28p = f28w + c0083d3's gpu_fermat28.py, fermat28_persist_kernel.cuh, bench_persist.py;
+# driver search_gpu5_xb6.py = the deployed driver ad33baf + search_gpu5_persist.patch v2 (0ca2aa4; the script's X was changed from xb5 to xb6 accordingly).
+# CPU checks first: test_fermat28_persist.py ALL OK, test_bench_persist_fake.py OK.
+
+--- bench_persist.py ---
+device NVIDIA RTX PRO 6000 Blackwell Server Edition: 400000 members x 300 rows from 20000 distinct rows (no prime factor below 20000), variant s1r_asm
+  pool built in 2.4 s
+  production kernel: 8388608 tests in 352.6 ms = 23.79M tests/s (best of 3), 92 registers, 3.82% probable primes
+  persistent kernel, sync 0: grid 940 x 128 (5 CTAs/SM, 96 registers): 317.9 ms for 7447671 tests (18.6 a member) = 23.43M tests/s = 0.98 x the production kernel; 115783 members in flight when the queue emptied; results identical to the production kernel on 2000 members
+  persistent kernel, sync 1: grid 940 x 128 (5 CTAs/SM, 96 registers): 318.0 ms for 7452317 tests (18.6 a member) = 23.43M tests/s = 0.98 x the production kernel; 115735 members in flight when the queue emptied; results identical to the production kernel on 2000 members
+BENCH-PERSIST-DONE
+
+--- driver runs ---
+base : gaps [1.842, 1.868, 1.831, 1.833, 1.849] | mean of all but the last batch 1.844 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+a2   : gaps [1.517, 1.556, 1.529, 1.56, 1.296] | mean of all but the last batch 1.540 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+pn1  : gaps [1.767, 1.801, 1.768, 1.791, 1.768] | mean of all but the last batch 1.782 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 1): kernel 1136.3 ms, 26590966 tests done in it (23.40M tests/s), 111831 members in flight when the queue emptied
+        [persist] the 111831 members left in flight (41928378 rows in their lists): finished by the round-based path in 121.3 ms, 16 launches, 2084053 tests computed; the whole persist_pool 1270.4 ms
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 1): kernel 1136.6 ms, 26617248 tests done in it (23.42M tests/s), 111873 members in flight when the queue emptied
+        [persist] the 111873 members left in flight (41943715 rows in their lists): finished by the round-based path in 101.6 ms, 16 launches, 2090815 tests computed; the whole persist_pool 1244.7 ms
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 1): kernel 1137.6 ms, 26645208 tests done in it (23.42M tests/s), 111547 members in flight when the queue emptied
+        [persist] the 111547 members left in flight (41824849 rows in their lists): finished by the round-based path in 97.6 ms, 16 launches, 2083401 tests computed; the whole persist_pool 1241.7 ms
+        ... 12 [persist] lines
+pn0  : gaps [1.796, 1.786, 1.781, 1.778, 1.831] | mean of all but the last batch 1.785 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 0): kernel 1136.3 ms, 26589535 tests done in it (23.40M tests/s), 111861 members in flight when the queue emptied
+        [persist] the 111861 members left in flight (41941257 rows in their lists): finished by the round-based path in 119.5 ms, 16 launches, 2086444 tests computed; the whole persist_pool 1266.6 ms
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 0): kernel 1136.6 ms, 26617887 tests done in it (23.42M tests/s), 111713 members in flight when the queue emptied
+        [persist] the 111713 members left in flight (41882031 rows in their lists): finished by the round-based path in 99.3 ms, 16 launches, 2088578 tests computed; the whole persist_pool 1242.2 ms
+        [persist] 2015232 members, grid 940 x 128 (5 CTAs/SM, 96 registers, sync 0): kernel 1137.6 ms, 26650170 tests done in it (23.43M tests/s), 111555 members in flight when the queue emptied
+        [persist] the 111555 members left in flight (41820800 rows in their lists): finished by the round-based path in 99.6 ms, 16 launches, 2079010 tests computed; the whole persist_pool 1243.7 ms
+        ... 12 [persist] lines
+ps1  : gaps [1.599, 1.701, 1.686, 1.684, 1.606] | mean of all but the last batch 1.667 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+a2b  : gaps [1.554, 1.543, 1.513, 1.528, 1.31] | mean of all but the last batch 1.534 s | slice lines vs base: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+PLT9-DONE
+
+# Reading: the persistent kernel runs at 0.98x the production kernel's tests/s with sync 0 AND sync 1, and pn0 (v1 behaviour) gives 1.785 s, not plt8's ~2.8 s;
+# without the pipeline it beats base (1.782 against 1.844 s, -3.4%), but beside the sieve (ps1) it is 1.667 s against the a2 control's 1.537 s: +8.5%.
+# Production unchanged.

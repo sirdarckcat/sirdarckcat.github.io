@@ -1,0 +1,47 @@
+# uarch wcost2.sh (c9ac59d) on gold-g4c (RTX PRO 6000), 2026-11-23 11:06:46-11:07:24Z: the sieve of an 89-moduli vector alone (bench_batch.py, B = 1e8, staged, 512-thread tiles),
+# a window of 2^24 / 2^23 members against the row-group size; campaign paused.
+
+2026-11-23T11:06:46Z paused pid 1826024
+--- rg 16 ks 24 (control)
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 45.9 GB free (tables 4.2 s)
+  rg=16 tile threads=512 gen threads=256 ppt=4: wall 106.1 ms = 6.322 ns a member (158.2 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.15  sieve (gen + tiles) 95.2  count 1.87  select 0.19  finalize 2.12  wait1 0.15  rows 6.42  wait2 6.43  host 0.02   (ms a batch)
+--- rg 32 ks 24
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 45.9 GB free (tables 4.0 s)
+  rg=32 tile threads=512 gen threads=256 ppt=4: wall 99.6 ms = 5.936 ns a member (168.5 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.14  sieve (gen + tiles) 88.7  count 1.87  select 0.19  finalize 2.10  wait1 0.14  rows 6.39  wait2 6.40  host 0.02   (ms a batch)
+--- rg 64 ks 24
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 45.9 GB free (tables 4.0 s)
+  rg=64 tile threads=512 gen threads=256 ppt=4: wall 99.1 ms = 5.906 ns a member (169.3 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 88.1  count 1.87  select 0.19  finalize 2.11  wait1 0.19  rows 6.43  wait2 6.43  host 0.03   (ms a batch)
+--- rg 128 ks 24
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 45.9 GB free (tables 4.1 s)
+Traceback (most recent call last):
+  File "/content/ua_v3/goldbach/sieve200/cuda/bench_batch.py", line 144, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/content/ua_v3/goldbach/sieve200/cuda/bench_batch.py", line 139, in main
+    run(spec, a, a.rg, a.tile_threads)
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/content/ua_v3/goldbach/sieve200/cuda/bench_batch.py", line 76, in run
+    bf = BatchFeeder(S, INV, rows, N0M, ks_log=a.ks, tile_log=a.tile, llog=a.llog, f=a.f, nthreads=a.nthreads, split=a.split, rg=rg, ppt=a.ppt,
+                     gen_threads=a.gen_threads, tile_threads=tile_threads, staged=bool(a.staged), rcta=a.rcta, stage_cap=a.stage_cap)
+  File "/content/ua_v3/goldbach/sieve200/cuda/gbatch.py", line 49, in __init__
+    assert ks_log >= tile_log and 1 <= rg <= 64
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+FAILED rg 128 ks 24
+--- rg 32 ppt 8 ks 24
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 45.9 GB free (tables 4.2 s)
+  rg=32 tile threads=512 gen threads=256 ppt=8: wall 99.6 ms = 5.936 ns a member (168.5 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.14  sieve (gen + tiles) 88.7  count 1.86  select 0.19  finalize 2.11  wait1 0.13  rows 6.39  wait2 6.39  host 0.02   (ms a batch)
+--- rg 16 ks 23 (per-member part)
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^23 members: bit matrix 1.22 GB of 45.9 GB free (tables 4.3 s)
+  rg=16 tile threads=512 gen threads=256 ppt=4: wall 81.2 ms = 9.681 ns a member (103.3 M members/s); kept 251,904 members, 96,500,127 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 75.5  count 0.96  select 0.16  finalize 0.90  wait1 0.16  rows 3.35  wait2 3.35  host 0.02   (ms a batch)
+--- rg 64 ks 23
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^23 members: bit matrix 1.22 GB of 45.9 GB free (tables 4.2 s)
+  rg=64 tile threads=512 gen threads=256 ppt=4: wall 68.0 ms = 8.101 ns a member (123.4 M members/s); kept 251,904 members, 96,500,127 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.14  sieve (gen + tiles) 62.3  count 0.96  select 0.16  finalize 0.90  wait1 0.13  rows 3.33  wait2 3.33  host 0.02   (ms a batch)
+2026-11-23T11:07:24Z resumed pid 1826024
+WCOST2-DONE

@@ -1,0 +1,32 @@
+# Known case, CPU side (cpu_brute.py, this session's container, 4 processes, 2026-11-23 09:47-10:21Z): every member k in [k_lo, k_lo + 2^19) of knowncase_spec.json
+# (k_lo = 2,137,898, the first 200-digit k), residual rows recomputed from gcd(N0 - q, M), each member's rows scanned in ascending order with gmpy2.is_bpsw_prp
+# until the first prime; listed: every member whose least prime q is >= T = 46,171 (the 400th residual row).
+
+q170000_m89_t1_v0: residual recomputed from gcd: 1248 rows (identical to the spec's), k in [2137898, 2662186), T = 46171
+BRUTE k=2138520 q=46327
+BRUTE k=2179102 q=53551
+BRUTE k=2179987 q=49741
+BRUTE k=2189571 q=46687
+BRUTE k=2193647 q=55381
+BRUTE k=2222542 q=56311
+BRUTE k=2223210 q=48259
+BRUTE k=2249515 q=47317
+BRUTE k=2283416 q=61441
+BRUTE k=2288959 q=57529
+BRUTE k=2343716 q=46441
+BRUTE k=2431570 q=51241
+BRUTE k=2432966 q=51607
+BRUTE k=2438432 q=48157
+BRUTE k=2469450 q=48799
+BRUTE k=2470026 q=59509
+BRUTE k=2472121 q=52009
+BRUTE k=2516834 q=51241
+BRUTE k=2517629 q=49171
+BRUTE k=2518859 q=48157
+BRUTE k=2587266 q=52579
+BRUTE k=2599668 q=48757
+BRUTE k=2636003 q=48817
+BRUTE-DONE 23 members with no prime below 46171
+
+# Against the GPU side (validation_gpu_rtxpro6000.txt: the vector-mode driver, one 2^19 window from k_lo, --skip-frac 0, --near-miss 46171):
+# 23 members on both sides, the same k and the same least prime q for every one: IDENTICAL.

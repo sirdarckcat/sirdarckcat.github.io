@@ -1,0 +1,90 @@
+# uarch plt4.sh (e4eae15) on gold-g4b (RTX PRO 6000), 2026-11-23 09:13:41-09:15:51Z, campaign paused; same harness, tree /content/ua_v3 (4f8edff) and driver
+# search_gpu5_xb3.py as plt3. a1-a5: GBATCH_GROUP_DELAY_US (bubble after each checked group) with --deep-tile-threads 512 / 1024 / --deep-rg 8; a6 = tt512 again.
+# pb / pj (the --profile-pool diagnostic) did not run: the flag needs a value ('--profile-pool 1'); the top -H snapshot of pj caught the j1 run instead and
+# shows the host: 48 cores, load 40, 91% of the CPU niced (the CPU share: 4 drivers x 11 search_c.py processes at nice 5).
+
+base  : gaps [1.737, 1.761, 1.733, 1.736, 1.738] | batches with a sieve beside them: mean 1.742 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 77776 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+j0    : gaps [1.571, 1.582, 1.577, 1.575, 1.306] | batches with a sieve beside them: mean 1.576 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.965 s, idle 0.846 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.993 s, idle 0.603 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.951 s, idle 0.583 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.977 s, idle 0.638 s
+a1    : gaps [1.518, 1.492, 1.52, 1.54, 1.317] | batches with a sieve beside them: mean 1.518 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.296 s, idle 0.052 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.331 s, idle 0.215 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.282 s, idle 0.166 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.312 s, idle 0.245 s
+a2    : gaps [1.525, 1.529, 1.527, 1.522, 1.289] | batches with a sieve beside them: mean 1.526 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.108 s, idle 0.262 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.243 s, idle 0.423 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.142 s, idle 0.280 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.142 s, idle 0.375 s
+a3    : gaps [1.513, 1.417, 1.766, 1.518, 1.299] | batches with a sieve beside them: mean 1.554 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.375 s, idle 0.043 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.360 s, idle 0.138 s
+         [pipeline] waited 0.247 s; sieve 3 windows busy 1.680 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.378 s, idle 0.143 s
+a4    : gaps [1.528, 1.55, 1.531, 1.539, 1.299] | batches with a sieve beside them: mean 1.537 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.296 s, idle 0.043 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.316 s, idle 0.246 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.290 s, idle 0.224 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.309 s, idle 0.241 s
+a5    : gaps [1.685, 1.687, 1.662, 1.681, 1.508] | batches with a sieve beside them: mean 1.679 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78278 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.204 s; sieve 2 windows busy 1.651 s, idle 0.000 s
+         [pipeline] waited 0.197 s; sieve 2 windows busy 1.709 s, idle 0.000 s
+         [pipeline] waited 0.192 s; sieve 2 windows busy 1.615 s, idle 0.000 s
+         [pipeline] waited 0.217 s; sieve 2 windows busy 1.732 s, idle 0.000 s
+         [pipeline] waited 0.198 s; sieve 1 windows busy 0.588 s, idle 0.000 s
+a6    : gaps [1.543, 1.562, 1.554, 1.526, 1.354] | batches with a sieve beside them: mean 1.546 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.859 s, idle 0.870 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.855 s, idle 0.684 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.887 s, idle 0.708 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.886 s, idle 0.656 s
+pb    : gaps [] | batches with a sieve beside them: mean nan s | slice lines vs base: DIFFERENT (0) | peak GPU memory 60139 MiB | ['search_gpu5.py: error: argument --profile-pool: expected one argument', 'rc=2']
+pj    : gaps [] | batches with a sieve beside them: mean nan s | slice lines vs base: DIFFERENT (0) | peak GPU memory 60139 MiB | ['search_gpu5_xb3.py: error: argument --profile-pool: expected one argument', 'rc=2']
+j1    : gaps [1.56, 1.574, 1.577, 1.578, 1.308] | batches with a sieve beside them: mean 1.572 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.979 s, idle 0.866 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.426 s, idle 0.587 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.019 s, idle 0.154 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.958 s, idle 0.548 s
+--- pb: the last 0 of 0 [profile-pool] lines
+--- pj: the last 0 of 0 [profile-pool] lines
+--- top -H of pj (9 s in):
+top - 09:15:46 up 12:50,  0 user,  load average: 40.44, 37.28, 36.49
+Threads: 331 total,  48 running, 228 sleeping,  53 stopped,   2 zombie
+%Cpu(s):  6.3 us,  0.8 sy, 91.0 ni,  1.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st 
+MiB Mem : 181130.0 total, 172682.0 free,   5600.8 used,   4699.8 buff/cache     
+MiB Swap:      0.0 total,      0.0 free,      0.0 used. 175529.2 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+1612435 root      20   0   33.8g 657712 306848 R  99.9   0.4   0:06.40 python3
+1614067 root      20   0   33.8g 657712 306848 R  99.9   0.4   0:01.20 python3
+1614068 root      20   0   33.8g 657712 306848 R  99.9   0.4   0:01.19 python3
+1614162 root      25   5 1948440  85476   7684 R  99.9   0.0   0:00.72 python3
+1614163 root      25   5 1948440  85028   7720 R  99.9   0.0   0:00.72 python3
+1614164 root      25   5 1945296  84568   7652 R  99.9   0.0   0:00.72 python3
+1614165 root      25   5 1948440  85480   7688 R  99.9   0.0   0:00.72 python3
+1614166 root      25   5 1948440  85512   7720 R  99.9   0.0   0:00.72 python3
+1614168 root      25   5 1945296  84616   7700 R  99.9   0.0   0:00.72 python3
+1614170 root      25   5 1945296  84600   7680 R  99.9   0.0   0:00.72 python3
+1614171 root      25   5 1948440  85516   7712 R  99.9   0.0   0:00.72 python3
+1614202 root      25   5 1945168  84492   7840 R  99.9   0.0   0:00.60 python3
+1614204 root      25   5 1949540  87796   7776 R  99.9   0.0   0:00.60 python3
+1614205 root      25   5 1949328  87896   7840 R  99.9   0.0   0:00.60 python3
+1614206 root      25   5 1949540  87796   7776 R  99.9   0.0   0:00.60 python3
+1614207 root      25   5 1949328  87896   7840 R  99.9   0.0   0:00.60 python3
+1614208 root      25   5 1949540  87796   7776 R  99.9   0.0   0:00.60 python3
+1614209 root      25   5 1949540  87796   7776 R  99.9   0.0   0:00.60 python3
+1614256 root      25   5 1949668  87824   7696 R  99.9   0.0   0:00.41 python3
+1614257 root      25   5 1949668  87824   7696 R  99.9   0.0   0:00.42 python3
+1614275 root      25   5 1949656  86888   7696 R  99.9   0.0   0:00.36 python3
+1614277 root      25   5 1949656  86888   7696 R  99.9   0.0   0:00.35 python3
+1614280 root      25   5 1949656  86888   7696 R  99.9   0.0   0:00.30 python3
+
+--- nproc / cpu / memory:
+48
+model name	: AMD EPYC 9B45
+               total        used        free      shared  buff/cache   available
+Mem:             176           5         169           0           4         171
+
+PLT4-DONE

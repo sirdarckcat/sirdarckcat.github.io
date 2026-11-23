@@ -1,0 +1,67 @@
+# plt5.sh (this session) on gold-g4b (RTX PRO 6000), 2026-11-23 09:17:39-09:19:33Z, campaign paused: does the host's CPU share (4 drivers x 11-12 search_c.py
+# processes at nice 5, 48 in all, on 48 cores) slow the GPU driver? Runs with it running (j0, a2, pj, pb) and paused by SIGSTOP (j0c, a2c, pjc, basec).
+# j0 = the deployed pipeline; a2 = GBATCH_GROUP_DELAY_US=500 + --deep-tile-threads 512; pj / pjc = j0 + --profile-pool 1; pb = no pipeline + --profile-pool 1.
+
+j0    : gaps [1.589, 1.598, 1.571, 1.561, 1.295] | mean of batches 2..5 1.580 s (2..6 1.523) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.956 s, idle 0.807 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.023 s, idle 0.631 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.987 s, idle 0.572 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.023 s, idle 0.566 s
+          top: top - 09:17:49 up 12:52,  0 user,  load average: 35.67, 36.46, 36.29 | Threads: 362 total,  38 running, 270 sleeping,  53 stopped,   1 zombie | %Cpu(s):  5.5 us,  0.6 sy, 87.9 ni,  6.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+a2    : gaps [1.544, 1.525, 1.519, 1.529, 1.308] | mean of batches 2..5 1.529 s (2..6 1.485) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.156 s, idle 0.046 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.213 s, idle 0.383 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.140 s, idle 0.307 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.124 s, idle 0.386 s
+          top: top - 09:18:03 up 12:52,  0 user,  load average: 37.06, 36.74, 36.38 | Threads: 328 total,  47 running, 227 sleeping,  53 stopped,   1 zombie | %Cpu(s):  6.0 us,  1.3 sy, 90.8 ni,  1.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+pj    : gaps [1.599, 1.615, 1.615, 1.612, 1.367] | mean of batches 2..5 1.610 s (2..6 1.562) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.923 s, idle 0.890 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.950 s, idle 0.694 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.951 s, idle 0.648 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.920 s, idle 0.668 s
+          [profile-pool] 1007616 members, 44 rounds, 14548956 tests: Fermat kernels 0.743 s on the GPU, run_pool wall 1.543 s, gap 0.799 s (51.8% of run_pool); 19.6M tests/s while a kernel runs, 9.4M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14530658 tests: Fermat kernels 0.695 s on the GPU, run_pool wall 1.544 s, gap 0.849 s (55.0% of run_pool); 20.9M tests/s while a kernel runs, 9.4M over the pool
+          [profile-pool] flush wall 1.583 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          [profile-pool] 1007616 members, 41 rounds, 14516124 tests: Fermat kernels 0.646 s on the GPU, run_pool wall 1.332 s, gap 0.686 s (51.5% of run_pool); 22.5M tests/s while a kernel runs, 10.9M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14566573 tests: Fermat kernels 0.697 s on the GPU, run_pool wall 1.349 s, gap 0.652 s (48.3% of run_pool); 20.9M tests/s while a kernel runs, 10.8M over the pool
+          [profile-pool] flush wall 1.358 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          top: top - 09:18:17 up 12:53,  0 user,  load average: 34.48, 36.18, 36.20 | Threads: 315 total,  28 running, 233 sleeping,  53 stopped,   1 zombie | %Cpu(s):  4.1 us,  0.4 sy, 60.6 ni, 34.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+pb    : gaps [1.789, 1.782, 1.786, 1.802, 1.771] | mean of batches 2..5 1.790 s (2..6 1.786) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+          [profile-pool] 1007616 members, 44 rounds, 14548956 tests: Fermat kernels 0.694 s on the GPU, run_pool wall 1.330 s, gap 0.636 s (47.8% of run_pool); 21.0M tests/s while a kernel runs, 10.9M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14530658 tests: Fermat kernels 0.652 s on the GPU, run_pool wall 1.331 s, gap 0.679 s (51.0% of run_pool); 22.3M tests/s while a kernel runs, 10.9M over the pool
+          [profile-pool] flush wall 1.344 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          [profile-pool] 1007616 members, 41 rounds, 14516124 tests: Fermat kernels 0.688 s on the GPU, run_pool wall 1.321 s, gap 0.633 s (47.9% of run_pool); 21.1M tests/s while a kernel runs, 11.0M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14566573 tests: Fermat kernels 0.654 s on the GPU, run_pool wall 1.329 s, gap 0.675 s (50.8% of run_pool); 22.3M tests/s while a kernel runs, 11.0M over the pool
+          [profile-pool] flush wall 1.341 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          top: top - 09:18:32 up 12:53,  0 user,  load average: 35.66, 36.38, 36.27 | Threads: 328 total,  47 running, 226 sleeping,  53 stopped,   2 zombie | %Cpu(s):  3.6 us,  0.6 sy, 91.5 ni,  4.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+j0c   : gaps [1.571, 1.483, 1.723, 1.568, 1.288] | mean of batches 2..5 1.586 s (2..6 1.527) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.960 s, idle 0.044 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.433 s, idle 0.597 s
+         [pipeline] waited 0.154 s; sieve 3 windows busy 1.221 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.958 s, idle 0.559 s
+          top: top - 09:18:47 up 12:53,  0 user,  load average: 31.62, 35.50, 35.99 | Threads: 329 total,   4 running, 207 sleeping, 117 stopped,   1 zombie | %Cpu(s):  2.2 us,  0.2 sy,  0.0 ni, 97.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+a2c   : gaps [1.508, 1.443, 1.658, 1.507, 1.31] | mean of batches 2..5 1.529 s (2..6 1.485) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.116 s, idle 0.043 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.364 s, idle 0.396 s
+         [pipeline] waited 0.138 s; sieve 3 windows busy 1.403 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.124 s, idle 0.342 s
+          top: top - 09:19:01 up 12:53,  0 user,  load average: 26.99, 34.38, 35.62 | Threads: 329 total,   4 running, 207 sleeping, 117 stopped,   1 zombie | %Cpu(s):  6.2 us,  0.2 sy,  0.0 ni, 93.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+pjc   : gaps [1.591, 1.615, 1.615, 1.593, 1.355] | mean of batches 2..5 1.603 s (2..6 1.554) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.915 s, idle 0.915 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.941 s, idle 0.688 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.907 s, idle 0.671 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.940 s, idle 0.695 s
+          [profile-pool] 1007616 members, 44 rounds, 14548956 tests: Fermat kernels 0.762 s on the GPU, run_pool wall 1.532 s, gap 0.770 s (50.3% of run_pool); 19.1M tests/s while a kernel runs, 9.5M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14530658 tests: Fermat kernels 0.693 s on the GPU, run_pool wall 1.533 s, gap 0.840 s (54.8% of run_pool); 21.0M tests/s while a kernel runs, 9.5M over the pool
+          [profile-pool] flush wall 1.571 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          [profile-pool] 1007616 members, 41 rounds, 14516124 tests: Fermat kernels 0.648 s on the GPU, run_pool wall 1.320 s, gap 0.672 s (50.9% of run_pool); 22.4M tests/s while a kernel runs, 11.0M over the pool
+          [profile-pool] 1007616 members, 45 rounds, 14566573 tests: Fermat kernels 0.654 s on the GPU, run_pool wall 1.328 s, gap 0.674 s (50.8% of run_pool); 22.3M tests/s while a kernel runs, 11.0M over the pool
+          [profile-pool] flush wall 1.335 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+          top: top - 09:19:14 up 12:54,  0 user,  load average: 21.53, 32.81, 35.08 | Threads: 326 total,   2 running, 206 sleeping, 117 stopped,   1 zombie | %Cpu(s):  3.8 us,  0.2 sy,  0.0 ni, 96.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+basec : gaps [1.721, 1.74, 1.739, 1.741, 1.72] | mean of batches 2..5 1.735 s (2..6 1.732) | slice lines vs j0: IDENTICAL (12) | ['C3GPU-EXHAUSTED', 'rc=2']
+          top: top - 09:19:28 up 12:54,  0 user,  load average: 17.27, 31.32, 34.56 | Threads: 327 total,   2 running, 206 sleeping, 117 stopped,   2 zombie | %Cpu(s):  3.8 us,  0.2 sy,  0.0 ni, 96.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+PLT5-DONE
+
+# Reading: the CPU share makes no difference (j0 1.580 / 1.586 s, a2 1.529 / 1.529 s with it running / paused). Beside the sieve the Fermat kernels of a
+# half-pool take 0.70-0.76 s on the GPU instead of 0.65-0.69 s and a half's run_pool wall grows from 1.33 to 1.54 s: GPU sharing, not the host.
+# a2 beats the deployed pipeline by 3.0-3.2% in two rounds (plt4, plt5): in production on the three RTX PRO 6000s since 09:20-09:21Z (deploy_a2.py).

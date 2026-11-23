@@ -6,6 +6,8 @@ FAM = {"/content/c3g_g4": "Q = 122,000, 867-872 rows (v, w families), N < 10^199
        "/content/c3g (search_gpu2.py, full mass)": "Q = 122,000, 867-869 rows, search_gpu2.py at full mass, N < 10^199",
        "/content/c850": "Q = 122,000, 850-862 rows (Lean cover), N < 10^200",
        "/content/c140": "Q = 140,000, 1,011 rows (research cover), N < 10^200",
+       "/content/c170": "Q = 170,000, 1,262-1,264 rows (research generator batches; deep sieve, staged kernel; near-misses reported), N < 10^200",
+       "/content/c160": "Q = 160,000, 1,181-1,184 rows (Lean covers and research generator batches; deep sieve B = 10^8; near-misses reported), N < 10^200",
        "/content/c150": "Q = 150,000, 1,092-1,097 rows (research covers, minted variants, generator batches; deep sieve B = 10^8 since 01:14-01:26Z on 23 Nov), N < 10^200"}
 GPU = {"gold-g4": "RTX PRO 6000 (gold-g4)", "gold-g4b": "RTX PRO 6000 (gold-g4b)", "gold-g4c": "RTX PRO 6000 (gold-g4c)", "gold-a100": "A100 (gold-a100)",
        "gold-gpu": "L4 (gold-gpu)", "gold-gpu_c3g": "L4 (gold-gpu)", "gold-l4b": "L4 (gold-l4b)", "gold-l4c": "L4 (gold-l4c)", "gold-xt4": "T4 (gold-xt4)"}
@@ -41,6 +43,10 @@ for fam in fams:
                      f"{e:.3f} ({r['expected_logged']:.3f} + {r['expected_model']:.3f}) | {r['found']} | {', '.join(f'{g:,}' for g in r['g']) or '-'} |")
         fe += e; ff += r["found"]; fm += r["members"]; fh += r["hit_mass_members"]; gs += r["g"]
     lines += [f"| **all** | | {fm/1e9:.2f}e9 | {fh/1e9:.3f}e9 | | **{fe:.3f}** | **{int(ff)}** | {', '.join(f'{g:,}' for g in sorted(gs, reverse=True)) or '-'} |", ""]
+    nms = [x for r in rs for x in r.get("near_misses", [])]
+    if nms:
+        lines += ["Near-misses (a tested member's first probable-prime row above the record, so g(N) is that row; not counted in found): "
+                  + ", ".join(f"g = {x['g']:,} ({x['name']}, k = {x['k']:,})" for x in sorted(nms, key=lambda x: -x["g"])), ""]
     tot_e += fe; tot_f += ff
     summary.append(dict(family=fam, members=fm, hit_mass_members=fh, expected=fe, found=int(ff), g=sorted(gs, reverse=True)))
 lines += [f"**All covers: expected {tot_e:.2f}, found {int(tot_f)}.**", ""]

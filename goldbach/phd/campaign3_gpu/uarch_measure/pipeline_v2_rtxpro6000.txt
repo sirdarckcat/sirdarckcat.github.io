@@ -1,0 +1,59 @@
+# Cross-batch sieve pipeline v2 (uarch a752ea3: search_gpu5_xbatch2.patch, overlap.Pipeline with depth and counters, sync-free sieve windows) on gold-g4b
+# (RTX PRO 6000), 2026-11-23 08:36:41-08:38:39Z, campaign mode, campaign paused (SIGSTOP); script plt2.sh. 6 Q = 170,000 vectors x 2 windows of 2^25 = 6 batches.
+#   p: production driver + production tree (uarch b344e85)       p2: production driver + a752ea3 tree (sync-free sieve, no pipeline)
+#   h: patched driver + a752ea3 tree, --pipeline 1 --pipeline-depth 2 --trace-pipeline 1 --pool-threads 2 (pool 2097152: one flush a batch)
+#   i: h with --pool-threads 1        j: h with GBATCH_DEFER_CHECK=0 (the per-group overflow check, host round trips as before)
+#   p2_nm / h_nm: p2 / h with --near-miss 63097 (the 536th residual row of the first vector)
+# Batch ends stamped every 20 ms; steady = mean of batches 3..6 (the LAST batch has no next batch to sieve beside it: read batches 3..5 for the campaign).
+# Peak GPU memory includes the paused campaign's ~32 GB. CPU checks before: test_gbatch_defer_cpu.py ALL OK, test_overlap_cpu.py ALL OK,
+# test_xbatch_campaign_fake.py OK on the patched driver.
+
+p     : 6 batch ends, gaps [1.77, 1.741, 1.744, 1.748, 1.743], steady (batches 3..6) 1.744 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 50142 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p2    : 6 batch ends, gaps [1.764, 1.733, 1.735, 1.748, 1.76], steady (batches 3..6) 1.744 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 50142 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+h     : 6 batch ends, gaps [1.734, 1.755, 1.757, 1.733, 1.328], steady (batches 3..6) 1.643 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 51742 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] consumer waited 4.070 s; sieve thread 4 windows in 4.751 s busy, 0.000 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.436 s busy, 1.342 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.439 s busy, 1.307 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.441 s busy, 1.314 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.443 s busy, 1.308 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 0 windows in 0.000 s busy, 1.295 s idle
+i     : 6 batch ends, gaps [1.796, 1.809, 1.776, 1.794, 1.356], steady (batches 3..6) 1.684 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 51404 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] consumer waited 3.949 s; sieve thread 4 windows in 4.611 s busy, 0.000 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.439 s busy, 1.373 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.441 s busy, 1.354 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.437 s busy, 1.346 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.439 s busy, 1.359 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 0 windows in 0.000 s busy, 1.355 s idle
+j     : 6 batch ends, gaps [1.595, 1.566, 1.55, 1.584, 1.314], steady (batches 3..6) 1.503 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 50998 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] consumer waited 4.249 s; sieve thread 4 windows in 5.104 s busy, 0.000 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.949 s busy, 0.859 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 1.046 s busy, 0.635 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.992 s busy, 0.527 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.940 s busy, 0.562 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 0 windows in 0.000 s busy, 0.644 s idle
+p2_nm : 6 batch ends, gaps [2.56, 2.796, 2.508, 3.171, 2.805], steady (batches 3..6) 2.820 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 50142 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+h_nm  : 6 batch ends, gaps [2.682, 2.892, 2.628, 3.209, 2.071], steady (batches 3..6) 2.700 s | slice lines vs p: IDENTICAL (12) | peak GPU memory 51020 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] consumer waited 4.460 s; sieve thread 4 windows in 4.980 s busy, 0.000 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.439 s busy, 1.761 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.447 s busy, 2.239 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.439 s busy, 2.459 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 2 windows in 0.445 s busy, 2.181 s idle
+         [pipeline] consumer waited 0.000 s; sieve thread 0 windows in 0.000 s busy, 2.767 s idle
+near-misses: p2_nm 72, h_nm 72, identical: True
+   ('', 'q170000_g8ffe1_v13@1006632960', 1011420719, 80077)
+   ('', 'q170000_g8ffe1_v13@1006632960', 1012564640, 63541)
+   ('', 'q170000_g8ffe1_v13@1006632960', 1018622040, 64231)
+   ('', 'q170000_g8ffe1_v13@1006632960', 1025720776, 74707)
+   ('', 'q170000_g8ffe1_v13@1006632960', 1039164365, 67651)
+   ('', 'q170000_g8ffe1_v13@1040187392', 1057094361, 63391)
+   ('', 'q170000_g8ffe1_v13@1040187392', 1057752465, 63127)
+   ('', 'q170000_g8ffe1_v18@1006632960', 1015203331, 68539)
+   ('', 'q170000_g8ffe1_v18@1006632960', 1026065016, 70237)
+   ('', 'q170000_g8ffe1_v18@1006632960', 1026391301, 63799)
+   ('', 'q170000_g8ffe1_v18@1006632960', 1030074153, 69859)
+   ('', 'q170000_g8ffe1_v18@1006632960', 1030282534, 66499)
+PLT2-DONE
+
+# Reading. h hides the sieve (the consumer never waits) but gains nothing in batches 3..5 (1.73-1.76 s): the sync-free sieve runs at full speed (0.44 s busy a
+# batch, as alone) on the highest-priority stream and the Fermat rounds wait for it. j, with the per-group check, lets the sieve trickle beside the Fermat rounds
+# (0.94-1.05 s busy a batch) and gives 1.55-1.60 s: -10% against production. In production on the three RTX PRO 6000s since 08:40-08:42Z (deploy_pl.py).

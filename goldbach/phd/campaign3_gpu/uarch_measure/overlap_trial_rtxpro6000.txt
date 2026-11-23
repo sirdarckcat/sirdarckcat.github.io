@@ -1,0 +1,9 @@
+base     batches [7.0, 2.5, 2.5] steady 2.50s | tests/PRPs vs base: IDENTICAL | []
+ov0      batches [6.4, 2.5, 2.5] steady 2.50s | tests/PRPs vs base: IDENTICAL | []
+ov3      batches [6.6, 2.7, 2.7] steady 2.70s | tests/PRPs vs base: IDENTICAL | []
+ov3t128  batches [6.9, 2.8, 2.9] steady 2.85s | tests/PRPs vs base: IDENTICAL | []
+ov4      batches [6.6, 2.6, 2.6] steady 2.60s | tests/PRPs vs base: IDENTICAL | []
+st       batches [6.3, 2.2, 2.2] steady 2.20s | tests/PRPs vs base: IDENTICAL | []
+stov3    batches [6.5, 2.4, 2.4] steady 2.40s | tests/PRPs vs base: IDENTICAL | []
+t1024    batches [6.2, 2.5, 2.5] steady 2.50s | tests/PRPs vs base: IDENTICAL | []
+OVTEST-DONE

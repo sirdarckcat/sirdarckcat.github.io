@@ -1,0 +1,19 @@
+# Fused Fermat rounds (uarch 4639f17) at f = 0.985 on gold-g4b (RTX PRO 6000), frab.sh, 2026-11-23 12:26:28-12:27:56Z (campaign paused): the 24 test windows, production (fr0)
+# against search_gpu5_fr.py --fused-rounds 1 (fr1), alternating; p0 / p1: --profile-pool 1 with --fused-rounds 0 / 1.
+
+fr0 : gaps [0.951, 0.931, 0.95, 0.923, 0.662] | mean of batches 2-5 0.939 s | slice lines vs fr0: IDENTICAL (24) | []
+fr1 : gaps [0.885, 0.858, 0.808, 0.903, 0.673] | mean of batches 2-5 0.864 s | slice lines vs fr0: IDENTICAL (24) | []
+fr0b: gaps [0.949, 0.944, 0.947, 0.927, 0.706] | mean of batches 2-5 0.942 s | slice lines vs fr0: IDENTICAL (24) | []
+fr1b: gaps [0.788, 0.953, 0.889, 0.867, 0.646] | mean of batches 2-5 0.874 s | slice lines vs fr0: IDENTICAL (24) | []
+p0  : gaps [0.961, 0.954, 0.968, 0.971, 0.692] | mean of batches 2-5 0.963 s | slice lines vs fr0: IDENTICAL (24) | []
+p1  : gaps [0.885, 0.872, 0.886, 0.894, 0.746] | mean of batches 2-5 0.884 s | slice lines vs fr0: IDENTICAL (24) | []
+fused rounds against production at f = 0.985: 0.869 s against 0.940 s a batch (x0.9240)
+p0 profile lines: 18; last 3:
+    [profile-pool] 503808 members, 36 rounds, 7499248 tests: Fermat kernels 0.353 s on the GPU, run_pool wall 0.681 s, gap 0.328 s (48.2% of run_pool); 21.3M tests/s while a kernel runs, 11.0M over the pool
+    [profile-pool] 503808 members, 41 rounds, 7479702 tests: Fermat kernels 0.341 s on the GPU, run_pool wall 0.691 s, gap 0.350 s (50.7% of run_pool); 22.0M tests/s while a kernel runs, 10.8M over the pool
+    [profile-pool] flush wall 0.696 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+p1 profile lines: 18; last 3:
+    [profile-pool] [fused rounds] 503808 members, 36 rounds, 7499248 tests: Fermat kernels 0.344 s on the GPU, run_pool wall 0.640 s, gap 0.296 s (46.2% of run_pool); 21.8M tests/s while a kernel runs, 11.7M over the pool
+    [profile-pool] [fused rounds] 503808 members, 41 rounds, 7479702 tests: Fermat kernels 0.411 s on the GPU, run_pool wall 0.646 s, gap 0.235 s (36.4% of run_pool); 18.2M tests/s while a kernel runs, 11.6M over the pool
+    [profile-pool] flush wall 0.651 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)
+FRAB-DONE
