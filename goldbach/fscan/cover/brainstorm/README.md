@@ -130,6 +130,27 @@ production is at 4.64 by the same model, with B = 10^6 and 3% kept.)
 3. One or two more moduli (89 or 90), now that vectors are free
    (`../covergen.c`): +0.1 each.
 
+## The remaining budget (`portfolio_budget.py`)
+
+On 23 November the fleet had about 9.3 days of compute left at 29 million
+effective full-weight members a second (deep sieve included), and 146,191 in
+hand. Expected final record by design threshold:
+
+| design Q | expected successes | as the search reports now | if every first prime row were logged |
+|---|---|---|---|
+| 150,000 | 70 | 168,600 (7.91%) | 168,600 |
+| 160,000 | 8.1 | 170,900 (8.02%) | 170,900 |
+| 165,000 | 3.1 | 170,600 (8.01%), 5% chance of none | 171,400 |
+| 170,000 | 1.1 | 165,500 (7.77%), 32% chance of none | 171,900 (8.07%) |
+| 180,000 | 0.1 | 150,800 | 169,400 |
+
+The search reports a member only when every row below Q is composite, but its
+kernel already knows the row at which each tested member dies (it stops at the
+first probable prime, rows ascending), and that row is g(N). Logging it when it
+beats the record in hand would make a design at the expected record level
+(170,000) the best one, worth about +1,000, and would remove the risk of a
+high design ending empty.
+
 ## Files
 
 - `ideas_research.txt`, `verdicts_on_research_ideas.txt`: this session's 100
