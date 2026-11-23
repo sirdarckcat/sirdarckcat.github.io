@@ -137,12 +137,17 @@ a progression that long, i.e. a cover that has given up 78 or 178 nats of modulu
   = 1.6 · 10^7 such covers for one expected success.
 - Making selection cheaper by a factor `F` moves the cut from `z` to about `z + ln F / z` and
   gains about `λ ln F / z` nats: 0.6 to 0.8 nats per factor of ten at the present cut.
-- The goal 213,070 with the fleet time there is asks for 8.4 nats. The best family exhibited
-  for primes up to 10^7 (`oracle_tilt.py`, not constructive) has `E` = 29.0 against an
-  effective 36.5 today: the whole information in the residues modulo primes up to 10^7 is
-  worth about 7.5 nats by that bound (the true optimum may be a few nats lower). So residue
-  information reaches the goal only with an essentially perfect decoder of one member in
-  `e^200`, and then barely.
+- The goal 213,070 with the fleet time there is asks for 8.4 nats. The information exists:
+  the research session counted (tempering over the residues modulo every prime up to `z`,
+  `goldbach/sublinear/` on its branch, Result 3) how many even `N < 10^200` have `k` rows left
+  at depth `z`, and an ideal search, testing `N` in increasing order of rows left, needs
+  `e^39.3` members at depth 463 (today), `e^35.8` at 1,000, `e^30.5` at 5,000, `e^26.7` at
+  20,000 and `e^24.5` at 50,000. So the prize is 8.8 nats already at depth 5,000 and 14.8 at
+  50,000. (An earlier version of this paragraph said that even a perfect decoder would be
+  marginal; that was wrong. It took the best family exhibited by `oracle_tilt.py`, `E` = 29.0
+  for the primes up to 10^7, for the size of the prize, and it is only a lower bound for it.)
+  The ideal `N` are not members of the best covers (10 to 18 standard deviations below them),
+  and no known method finds them: that is what the statements below say.
 
 What is proved about methods (`Cap/Radius.lean`, `Cap/BlackBox.lean`): the lattice decoders
 (Coppersmith; Guruswami–Sahai–Sudan) need a smooth part 3.88 times the typical one for
