@@ -1,0 +1,86 @@
+# Sieve-burst tuning beside the Fermat rounds (uarch plt3.sh at 4f8edff; tree /content/ua_v3 = a copy of /content/ua_v2 with the 4f8edff sources; driver
+# search_gpu5_xb3.py = the deployed driver d5e5f14 + search_gpu5_prio.patch) on gold-g4b (RTX PRO 6000), 2026-11-23 09:03:33-09:07:17Z, campaign paused.
+# 6 Q = 170,000 vectors x 2 windows of 2^25 = 6 batches; 'mean' = the batches with a sieve beside them (all but the last). Runs (see plt3.sh's header):
+#   base: no pipeline; j0 / j1: the production pipeline (depth 2, --pool-threads 2, a check after every row group); d1 / d2: GBATCH_GROUP_DELAY_US 1000 / 2500;
+#   s2 / s4: GBATCH_SYNC_EVERY 2 / 4; r4 / r8: --deep-rg 4 / 8; tt128 / tt512: --deep-tile-threads; fA / fB / fC: DEEP_TILE_MAXREG=32 with 128-thread tile and
+#   gen CTAs (fA: sieve at the default priority, Fermat streams high, no checks; fB: sieve high priority, checks; fC: as fA with checks); dm6: --dmax 6.
+# Peak GPU memory includes the paused campaign (which runs the pipeline, ~49 GB).
+
+base  : gaps [1.789, 1.749, 1.736, 1.746, 1.774] | batches with a sieve beside them: mean 1.755 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 77776 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+j0    : gaps [1.55, 1.604, 1.573, 1.558, 1.329] | batches with a sieve beside them: mean 1.571 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.990 s, idle 0.645 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.124 s, idle 0.559 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.006 s, idle 0.475 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.976 s, idle 0.554 s
+d1    : gaps [1.538, 1.549, 1.54, 1.565, 1.317] | batches with a sieve beside them: mean 1.548 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.386 s, idle 0.048 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.483 s, idle 0.144 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.398 s, idle 0.056 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.353 s, idle 0.159 s
+d2    : gaps [1.615, 1.486, 1.811, 1.604, 1.308] | batches with a sieve beside them: mean 1.629 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 3 windows busy 2.364 s, idle 0.000 s
+         [pipeline] waited 0.000 s; sieve 1 windows busy 1.218 s, idle 0.011 s
+         [pipeline] waited 0.250 s; sieve 2 windows busy 1.357 s, idle 0.000 s
+         [pipeline] waited 0.019 s; sieve 3 windows busy 2.326 s, idle 0.000 s
+s2    : gaps [1.576, 1.572, 1.568, 1.582, 1.281] | batches with a sieve beside them: mean 1.575 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.943 s, idle 0.986 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.018 s, idle 0.633 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.940 s, idle 0.545 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.943 s, idle 0.634 s
+s4    : gaps [1.576, 1.587, 1.579, 1.578, 1.283] | batches with a sieve beside them: mean 1.580 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.934 s, idle 1.220 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.096 s, idle 0.650 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.927 s, idle 0.478 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.977 s, idle 0.646 s
+r4    : gaps [1.572, 1.674, 1.681, 1.658, 1.452] | batches with a sieve beside them: mean 1.646 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78100 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.060 s; sieve 2 windows busy 1.866 s, idle 0.000 s
+         [pipeline] waited 0.121 s; sieve 2 windows busy 1.734 s, idle 0.000 s
+         [pipeline] waited 0.134 s; sieve 2 windows busy 1.611 s, idle 0.000 s
+         [pipeline] waited 0.160 s; sieve 2 windows busy 1.719 s, idle 0.000 s
+         [pipeline] waited 0.141 s; sieve 1 windows busy 0.423 s, idle 0.000 s
+r8    : gaps [1.556, 1.57, 1.562, 1.572, 1.285] | batches with a sieve beside them: mean 1.565 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78300 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.461 s, idle 0.103 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.528 s, idle 0.096 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.407 s, idle 0.036 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.461 s, idle 0.152 s
+tt128 : gaps [1.645, 1.657, 1.622, 1.632, 1.313] | batches with a sieve beside them: mean 1.639 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.158 s, idle 0.530 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.276 s, idle 0.477 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.166 s, idle 0.372 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.147 s, idle 0.458 s
+tt512 : gaps [1.55, 1.565, 1.542, 1.554, 1.299] | batches with a sieve beside them: mean 1.553 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.831 s, idle 0.916 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.101 s, idle 0.721 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.847 s, idle 0.450 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.869 s, idle 0.699 s
+fA    : gaps [1.979, 1.881, 2.009, 2.008, 1.319] | batches with a sieve beside them: mean 1.969 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 79376 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.701 s, idle 1.344 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.873 s, idle 1.292 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.702 s, idle 0.004 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.702 s, idle 1.299 s
+fB    : gaps [1.765, 1.74, 1.727, 1.712, 1.332] | batches with a sieve beside them: mean 1.736 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.314 s, idle 0.596 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.349 s, idle 0.437 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.336 s, idle 0.394 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.324 s, idle 0.395 s
+fC    : gaps [1.502, 1.816, 1.938, 1.878, 1.761] | batches with a sieve beside them: mean 1.784 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.028 s; sieve 1 windows busy 1.260 s, idle 0.000 s
+         [pipeline] waited 0.396 s; sieve 2 windows busy 1.877 s, idle 0.000 s
+         [pipeline] waited 0.496 s; sieve 2 windows busy 1.887 s, idle 0.000 s
+         [pipeline] waited 0.434 s; sieve 2 windows busy 1.879 s, idle 0.000 s
+         [pipeline] waited 0.418 s; sieve 2 windows busy 1.876 s, idle 0.000 s
+dm6   : gaps [1.588, 1.589, 1.581, 1.566, 1.326] | batches with a sieve beside them: mean 1.581 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78654 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.979 s, idle 0.842 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.041 s, idle 0.607 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.980 s, idle 0.533 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.006 s, idle 0.614 s
+j1    : gaps [1.552, 1.587, 1.574, 1.558, 1.317] | batches with a sieve beside them: mean 1.568 s | slice lines vs base: IDENTICAL (12) | peak GPU memory 78632 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.988 s, idle 0.713 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 1.051 s, idle 0.562 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.946 s, idle 0.531 s
+         [pipeline] waited 0.000 s; sieve 2 windows busy 0.951 s, idle 0.632 s
+PLT3-DONE
+
+# Reading: the best is d1 (1.548 s, -1.4% against j0 / j1 at 1.571 / 1.568 s), then tt512 (1.553 s, -1.1%); nothing beats production by the 2% that a
+# change needs, so the RTX cards keep their configuration. Longer bubbles (d2), smaller row groups (r4), smaller tile CTAs (tt128) and the register-fitting
+# sieve (fA-fC) are worse.
