@@ -1,0 +1,66 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 09:23:25.290118446 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 09:23:25.311922826 +0000
+@@ -54,7 +54,7 @@
+ ap.add_argument("--profile-pool", type=int, default=0, choices=(0, 1),
+                 help="1: time the Fermat kernels of every round of every pool with CUDA events and print, per pool, the rounds, the kernels' GPU seconds, the wall seconds of run_pool and the gap "
+                      "between them (the GPU idle between rounds: the host's syncs and cupy calls), and the wall of the whole flush; no change to the results")
+-ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2),
++ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2, 3, 4),
+                 help="2: a pool's members are tested as two halves in two threads, each on its own CUDA stream (run_pool_split): while one half's host code runs between its Fermat rounds (syncs, ~40 small "
+                      "cupy launches) the other half's kernel keeps the GPU busy; the same per-member results as 1 (counted tests, PRP flags, successes, first-PRP rows)")
+ ap.add_argument("--pipeline", type=int, default=0, choices=(0, 1),
+@@ -290,18 +290,20 @@
+ 
+ 
+ def run_pool_split(tester, kv, cnt, cols):
+-    """run_pool on two halves of the members (split at a member boundary) in two threads, each on its own non-blocking stream.  Same results per member as run_pool; the numbers of computed tests and launches
+-    differ a little (a half's rounds are sized by its own active members)."""
++    """run_pool on N = --pool-threads parts of the members (split at member boundaries) in N threads, each on its own non-blocking stream.  Same results per member as run_pool; the numbers of computed tests
++    and launches differ a little (a part's rounds are sized by its own active members).  Beside the sieve (--pipeline) a part's ~40 small kernels per round queue behind sieve CTAs and the GPU idles between
++    the Fermat kernels of two parts (plt5: the half-pool's wall 1.33 -> 1.54 s while its kernels slow only 8%); more parts keep a Fermat kernel running more of the time."""
+     n = int(kv.size)
+-    if n < 4096:
++    N = args.pool_threads
++    if n < 4096 * N:
+         return run_pool(tester, kv, cnt, cols)
+-    if not _SPLIT_STREAMS:
+-        _SPLIT_STREAMS.extend(_fermat_stream() for _ in range(2))
++    while len(_SPLIT_STREAMS) < N:
++        _SPLIT_STREAMS.append(_fermat_stream())
+     offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])          # (also waits for the caller's stream: kv, cnt and cols are complete before the threads read them)
+-    mid = n // 2
+-    cut, end = int(offs[mid]), int(offs[n])
+-    parts = [(0, mid, 0, cut), (mid, n, cut, end)]
+-    res, err = [None, None], []
++    bounds = [n * i // N for i in range(N + 1)]
++    cuts = [int(c) for c in offs[cp.asarray(bounds, dtype=cp.int64)].get()]
++    parts = [(bounds[i], bounds[i + 1], cuts[i], cuts[i + 1]) for i in range(N)]
++    res, err = [None] * N, []
+     dev = cp.cuda.Device().id
+ 
+     def work(i):
+@@ -309,20 +311,19 @@
+             cp.cuda.Device(dev).use()
+             a, b, ca, cb = parts[i]
+             with _SPLIT_STREAMS[i]:
+-                res[i] = run_pool(tester, kv[a:b], cnt[a:b], cols[ca:cb], target=args.target // 2)         # half the tests a round: the same rows a member per round (the same waste) as one pool
++                res[i] = run_pool(tester, kv[a:b], cnt[a:b], cols[ca:cb], target=args.target // N)         # 1/N of the tests a round: the same rows a member per round (the same waste) as one pool
+                 _SPLIT_STREAMS[i].synchronize()
+         except BaseException as e:                                          # handed to the caller
+             err.append(e)
+-    ths = [threading.Thread(target=work, args=(i,)) for i in range(2)]
++    ths = [threading.Thread(target=work, args=(i,)) for i in range(N)]
+     for t in ths:
+         t.start()
+     for t in ths:
+         t.join()
+     if err:
+         raise err[0]
+-    (t0, p0, s0, f0, g0, l0), (t1, p1, s1, f1, g1, l1) = res
+-    out = (cp.concatenate([t0, t1]), cp.concatenate([p0, p1]), cp.concatenate([s0, s1]), cp.concatenate([f0, f1]), g0 + g1, l0 + l1)
+-    cp.cuda.get_current_stream().synchronize()                              # the concatenations are done before the halves' arrays go back to their streams' free lists
++    out = tuple(cp.concatenate([r[k] for r in res]) for k in range(4)) + (sum(r[4] for r in res), sum(r[5] for r in res))
++    cp.cuda.get_current_stream().synchronize()                              # the concatenations are done before the parts' arrays go back to their streams' free lists
+     return out
+ 
+ 
