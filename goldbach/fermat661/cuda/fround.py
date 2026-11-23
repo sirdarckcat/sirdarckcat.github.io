@@ -10,6 +10,7 @@ cols: int32 rows of all members, concatenated, ascending within a member (global
 See fround_kernels.cuh for the round and test_fround_cpu.py for the comparison with run_pool.  The rounds are independent of the streams: run it inside a `with stream:` block (run_pool_split's halves).
 """
 import os
+import threading
 import time
 
 import numpy as np
@@ -18,13 +19,15 @@ import cupy as cp
 HERE = os.path.dirname(os.path.abspath(__file__))
 NAMES = ("fr_plan", "fr_info", "fr_expand", "fr_post", "fr_compact")
 _K = {}
+_LOCK = threading.Lock()                                        # run_pool_split's two threads call this first at the same time
 
 
 def kernels():
-    if not _K:
-        mod = cp.RawModule(code=open(os.path.join(HERE, "fround_kernels.cuh")).read())
-        for n in NAMES:
-            _K[n] = mod.get_function(n)
+    with _LOCK:
+        if not _K:
+            mod = cp.RawModule(code=open(os.path.join(HERE, "fround_kernels.cuh")).read())
+            for n in NAMES:
+                _K[n] = mod.get_function(n)
     return _K
 
 

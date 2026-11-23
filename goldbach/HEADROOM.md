@@ -74,22 +74,27 @@ For the L4 / T4 (overlap gave nothing there) the plain -3.4% is available, ~+0.6
   and vecgen keeps 12,000 ahead.  A 2^24 window costs 108 ms on an RTX PRO 6000 (sieve 97 ms = ~30 fixed + 67 per 2^24, count / select / finalize / rows 11 ms) and its 5e5 kept members ~0.30 s of Fermat tests.
 * **A 90th modulus** would add ~14 rows (+25% hits per member) but leave a progression of 2^24 / 467 = 3.6e4 members a vector; the sieve's per-vector fixed part (the visit of 5.8e6 primes x 1,248 rows, ~30 ms, with an ideal of ~3-5 ms) would
   dominate: ~120-800 ns a member against 24 now.  The 89th modulus used the last 2^24.  (The 200-digit rule fixes N < 10^200.)
-* **23 limbs of 29 bits** (`fermat661/cuda/FERMAT29.md`): no carry groups needed (a column stays below 2^63.6), 805 + 23 multiplications; measured step (GPU session, `uarch_measure/e4_radix_rtx_l4.txt`): **0.926 of the production step on the RTX PRO 6000
-  (+8% tests/s), 0.951 on the L4**, and a 24 x 28-bit step with the carry chain costs the same as the redundant one (1.002).  With R = 2^667 it would have been unusable (n < 2^663 against windows to 2^664.2); **a 31-bit top Montgomery digit
-  (R = 2^669, n < 2^665, same multiplications) fixes that: CPU-verified end to end (step, kernel, persistent kernel, the 88-moduli range to k = 2^32 and the 89-moduli windows), compiled (sm_120 91 registers like production's 5 CTAs an SM, loop 1,072
-  instructions against 1,104), not yet timed on a GPU.**  Expected ~+8% on the RTX cards (86% of the fleet's output) and ~+5% on the L4 / T4 / A100: the one kernel item left above 5%.
+* **23 limbs of 29 bits** (`fermat661/cuda/FERMAT29.md`): no carry groups needed (a column stays below 2^63.6), 805 + 23 multiplications; with R = 2^667 it would have been unusable (n < 2^663 against windows to 2^664.2); **a 31-bit top
+  Montgomery digit (R = 2^669, n < 2^665, same multiplications) fixes that.  Measured by the GPU session (11:25-11:55Z): kernel **23.29M -> 24.62M tests/s on the RTX PRO 6000 (+5.7%)**, 4.47M -> 4.73M on the L4 (+5.7%),
+  0 mismatches against gmpy2 in 2,000 candidates per variant, slice lines identical on 24 test windows, the known case's 23 near-misses as the CPU brute force found them; **a batch -3.7 to -4.3% on the three RTX cards (1.564-1.582 -> 1.501-1.516 s), -3.7% on
+  the L4, -3.0 to -3.6% on the others; deployed on all seven GPUs.**  Less than my +8% (step ratio 0.926): the kernel costs 0.946 of the old one, which is what the additive model gives (-72 IMAD.WIDE x 4.2 cycles + 40 more ALU instructions
+  for the funnel-shift output x ~1.2 = -250 of 4,000), and a batch is ~76% Fermat kernel time.  The step-level benchmark (E4) overstated it by 2%: its 23-limb step lacked part of the real output stage.
 * **Karatsuba again, with the new data.**  The extra instructions of s2r / s4r (64-bit adds: IADD3 + IADD3.X) cost 2.5-3 cycles each on the RTX (-3.5% / -7.9% for +43 / +120), while the carry chain's +47 LOP3 / LEA cost 0.17 each: op classes differ.
   A Karatsuba squaring saves 66 (one level) to 138 (three levels) IMAD.WIDE (4.2 cycles) but its recombination is ~3 64-bit adds a column (~140-280 IADD3-class instructions, 350-700 cycles): still a loss.
 * **The selection fraction.**  With the measured sieve (6.4 ns a member at 2^24, 0.6 us of Fermat per kept member) and a Gaussian alive-count (sd ~15) the success rate per unit cost has its optimum at keeping 1.5-2.5% (f = 0.975-0.985), +2-3% over f = 0.97: flat, inside the noise.
 
 ## 3d. Two more items built and waiting for the GPU (23 Nov, 11:45-12:15Z)
 
-* **The deep head** (section 4, last bullet; `sieve200/cuda/DEEPSIEVE.md`, last section): -8.4% Fermat tests for ~7-15 ms a window, ~+4-6% of a batch; CPU-verified, run order and gate sent to the GPU session.
+* **The deep head** (section 4, last bullet; `sieve200/cuda/DEEPSIEVE.md`, last section): GPU gate passed on gold-g4c (11:59-12:03Z): 11.11% of the head rows removed, **8.42% fewer Fermat tests, 11.5 ms a window**, slice lines identical,
+  per-member dumps identical for 12.09M members, logged expected hits / near-misses x0.9998; deployed on gold-g4c at 12:06:49Z for a production A/B against gold-g4 / gold-g4b (expected ~-4.5% a batch).
 * **Fused Fermat rounds** (`fermat661/cuda/FROUND.md`): the bookkeeping of `run_pool` (~100 small cupy kernels and ~6 host syncs a round) as 5 small kernels, ~10 launches and one host read a round, the Fermat kernel unchanged, per-member results
-  and test lists identical to the driver's `run_pool` (CPU test against the verbatim function).  Aimed at the 2.2 ms a round of gap alone and the ~0.13 s a batch the sieve adds beside it (8%): 0 to +6% on the RTX cards, not measured.
-* **Not yet measured at all**: FP32 FFMA beside IMAD.WIDE inside the step (`bench_fm28_step.py --e5`, commit 02b90fc): the audit's "FP32 shares the lanes" was an assumption; and the shared-memory atomic rate (`bench_pipes.py` part 2:
-  `ATOMS.AND` with random addresses, plain STS, byte stores) on the RTX PRO 6000, only its part 3 (global memory) ever ran there: the sieve's tile kernel does ~0.8 marks a clock an SM, 20x under its instruction issue rate,
-  which smells of the atomic unit, not of ALU work.
+  and test lists identical to the driver's `run_pool` (CPU test against the verbatim function).  Aimed at the 2.2 ms a round of gap alone and the ~0.13 s a batch the sieve adds beside it (8%): 0 to +6% on the RTX cards, not measured yet.
+* **FP32 beside the multiplier: measured, closed.**  `bench_fm28_step.py --e5` on the RTX PRO 6000 (11:59Z): a dummy FFMA adds 1.16-1.24 ticks inside the production step, the same as a dummy IADD3 (1.1-1.6); an IMAD.WIDE adds 4.0-4.2.  The audit's
+  "FP32 shares the integer lanes" was right; a hybrid integer + floating-point limb kernel has nothing to run on.
+* **Still unmeasured on the RTX**: the shared-memory atomic rate (`bench_pipes.py` part 2: `ATOMS.AND` with random addresses, plain STS, byte stores); only its part 3 (global memory) ever ran there.  The sieve's tile kernel does ~0.8 marks a clock an SM,
+  ~20x under its instruction issue rate, which smells of the atomic unit, not of ALU work.
+* **wcost3 (11:49Z)**: for a 2^24 vector window rcta 8 with 512 generate threads is 83.2 ms against 88.5 ms (-5.3 ms; -0.9% a batch in production: not deployed); rcta 4 / 8 at 256 threads and rcta 16 are slower, so the per-window fixed part is not the
+  generate kernel's pair visits alone.  **Keep fraction in vector mode (vsweep, 11:52Z): f = 0.985 gives x1.080 expected near-misses a second against f = 0.97 (x1.054 at 0.98, x1.046 at 0.99); the lead decided f = 0.985 on the RTX cards (12:06Z).**
 
 ## 4. Everything else (each 1-4%, none worth a GPU slot alone)
 

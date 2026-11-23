@@ -403,3 +403,12 @@ consistent, non-vacuous (removed rows > 0), a bin capacity far too small (overfl
    row / success) and the counted tests ~8.4% lower.  Compare the logged expected hits and the near-miss expectation (`--log-near-exp`) of the two runs: within ~1%.
 3. A batch time with and without it over ~50 batches (a2 pipeline, `DEEP_RCTA=8`, `--deep-gen-threads 512` if wcost3 says so): the gain is the number that decides; below +2% it is not worth the 1.9 GB.
 Not for the L4 / T4 / A100 (overlap gave nothing there; 16-24 GB cards would also pay 1.9 GB).
+
+
+### First GPU results of the deep head (GPU session, gold-g4c RTX PRO 6000, 23 Nov 11:59-12:03Z, `phd/campaign3_gpu/head/headv_rtxpro6000.txt`)
+
+`headcheck.py` (window of 2^24 from k0 = 2,137,898, 1,248 rows, 64 head rows, 45,086,079 primes in (1e8, 1e9]: tables 34 s, 1,720 MB of device memory): kept members, `alive_total`, `hm_all` and `hm_kept` identical with and without the head; **11.11% of the 9,892,086
+head rows of the kept members removed (the model says 11.11%)**; predicted fall of the Fermat tests 8.43%; sampled removed rows have a factor in (1e8, 1e9], sampled kept rows none; **a window 136.1 ms without the head, 147.6 ms with it: the head costs 11.5 ms**
+(my guess was 7-15; the two-pass staged prototype of headcost.sh was 15.4 ms at rcta 8).  Then the 24 test vector windows through the production driver, the base run (`--dump-members`) and the head run: production / base slice lines identical (24 / 24),
+**per-member dumps identical for 12,091,392 members (`compare_dumps.py`: DUMPS-IDENTICAL) with 8.42% fewer counted tests (169,381,475 -> 155,111,986)**, logged expected hits and near-misses x0.9998.  Deployed on gold-g4c at 12:06:49Z for a production A/B
+against gold-g4 / gold-g4b.  Expected: 8.42% of ~1.15 s of Fermat kernel time a batch = -97 ms, minus 4 x 11.5 ms of sieve work x ~0.55 = +25 ms: ~-4.5% a batch.

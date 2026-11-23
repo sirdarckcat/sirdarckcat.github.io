@@ -21,12 +21,15 @@ extern "C" __global__ void ghead_gen(const u32 *U, const uint4 *TAB, int nP, int
     __shared__ u32 q_s[RG];
     for (int i = threadIdx.x; i < nrows; i += blockDim.x) q_s[i] = U[row0 + i];
     __syncthreads();
+    const int r0 = (int)((blockIdx.x * 5u + (threadIdx.x >> 5)) % (u32)nrows);          /* warp-uniform */
     for (int pi = 0; pi < HEAD_PPT; pi++) {
         const int p = blockIdx.x * blockDim.x * HEAD_PPT + pi * blockDim.x + threadIdx.x;
         if (p >= nP) break;
         const uint4 t = TAB[p];
         const u32 s = t.x;
-        for (int rr = 0; rr < nrows; rr++) {
+        for (int r_ = 0; r_ < nrows; r_++) {
+            int rr = r0 + r_;                                           /* every warp starts its walk over the rows elsewhere: the counters of one row are 32 consecutive words (one cache line) and all warps */
+            if (rr >= nrows) rr -= nrows;                               /* walking the rows in step would hammer ONE line of the L2 with the whole GPU's atomics at a time */
             const u32 q = q_s[rr];
             u32 a = q * t.y - __umulhi(q, t.z) * s;                     /* q M^-1 mod s, in [0, 2s) */
             if (a >= s) a -= s;

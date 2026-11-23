@@ -56,3 +56,12 @@ python3 bench_persist.py --variant s29_asm                                      
 ```
 Driver: `--k28-step fermat29_step_s1.cuh --k28-asm 1` (RTX) or `fermat29_step_s1w.cuh --k28-asm 0` (L4 / A100 / T4), with `search_gpu5_k29.patch` (the driver's n-range assertion follows the step file: `gpu_fermat28.step_nmax`).
 The kernel returns flag 2 for n >= 2^665 and the driver raises ("kernel 28 flagged an n outside its range"): nothing can silently go wrong at the edge; the 89-moduli windows end at 2^664.2 and the 88-moduli scan at k = 2^32 - 1 at 2^664.05.
+
+
+## Measured on the GPUs (GPU session, 23 Nov 11:25-12:00Z; `phd/campaign3_gpu/k29/` on its branch)
+
+* **RTX PRO 6000** (gold-g4c, `time_fermat28.py --check`, 2,000 candidates against gmpy2, 20 s a variant): **s1r_asm 23.29M tests/s (92 registers), s29_asm 24.62M (91 registers): +5.7%**; 0 mismatches (36 / 45 PRPs on the 88-moduli spec, 50 / 61 on
+  an 89-moduli vector window).  The step-level E4 benchmark had promised +8% (ratio 0.926); the kernel's 0.946 is what the additive cost model gives (-72 IMAD.WIDE x 4.2 cycles, +40 other instructions for the funnel-shift output x ~1.2).
+* **L4** (gold-l4b): s1rw 4.472M -> s29w 4.729M tests/s (+5.7%, 110 registers); capping the step at 96 / 104 registers (s29w_r96 / _r104) is not better (4.665M / 4.625M medians).
+* **In the driver** (vector mode, 24 test windows, batches of 4): slice lines identical to production on every card, the known case's 23 (k, q) found as the CPU brute force found them; batch **1.564-1.582 -> 1.501-1.516 s on the three RTX cards (-3.7 to
+  -4.3%)**, -3.7% on the L4 (9.705 s against 10.057-10.103 s), -3.0 to -3.6% on the other L4 and the T4.  Deployed on all seven GPUs under the lead's standing rule.
