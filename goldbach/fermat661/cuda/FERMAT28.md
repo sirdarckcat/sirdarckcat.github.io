@@ -103,37 +103,58 @@ The step loop (one squaring step) as the GPU runs it, from NVRTC 12.9 + `nvdisas
   primes, pseudoprimes, real primes).
 * **An explicit `mad.wide.u32` (the "asm" steps) is lowered on sm_80 / 89 to `IMAD.WIDE.U32 Rd, Ra, Rb, RZ` plus a 3-input `IADD3` / `IADD3.X` pair for two products**: 2063 instructions a step,
   worse than plain.  On sm_120 it is one instruction a product and the best of the unmodified steps.
-* **Instruction costs (measured, `bench_pipes.py`, cycles one warp instruction occupies a scheduler; 4 CTAs x 256 threads an SM):**
+* **Instruction costs** (`../../sieve200/cuda/bench_pipes.py` part 1, measured by the GPU session: scheduler cycles one warp instruction occupies; 4 CTAs x 256 threads an SM).  The raw rows; the two
+  IMAD.WIDE rows contain the IADD3 that bumps an operand so that the product cannot be hoisted:
 
-  | instruction | RTX PRO 6000 (sm_120) | A100 (sm_80) | L4 (sm_89) |
+  | row | RTX PRO 6000 (sm_120) | A100 (sm_80) | L4 (sm_89) |
   |---|---|---|---|
-  | IMAD.WIDE.U32 with the 64-bit addend | ~2.5 | ~2.3 | ~2.4 |
-  | IMAD (32-bit) | 2.0 | 2.05 | 2.04 |
-  | IADD3 | 1.8-1.9 | 2.1 | 2.1 |
-  | IADD3 + IADD3.X (a 64-bit add) | 2.8 | 3.1 | 3.1 |
-  | SHF | 1.8 | 2.1 | 2.1 |
+  | IMAD.WIDE+acc, 1 bump | 4.35 | 6.29 | 6.65 |
+  | IMAD.WIDE+acc + k IADD3 (k = 1 / 2 / 3 / 4) | 6.62 / 8.51 / 10.43 / 12.24 | 8.55 / 10.84 / 12.74 / 14.79 | 8.84 / 10.63 / 12.58 / 14.72 |
+  | IMAD (32-bit) +acc | 2.02 | 2.05 | 2.04 |
+  | IADD3 | 1.82 | 2.14 | 2.14 |
+  | IADD3 + IADD3.X (a 64-bit add) | 2.81 | 3.13 | 3.14 |
+  | SHF | 1.82 | 2.13 | 2.13 |
   | LOP3 | 0.75 | 1.07 | 1.07 |
 
-  and the rows "IMAD.WIDE + k IADD3" grow by 1.9-2.1 cycles for every added IADD3: **ALU instructions do not run beside the multiplications, they add to them.**  (My first model had them on a separate
-  pipe, so that only multiplications counted; the benchmark refuted it, and with it the idea that a step with fewer multiplications and more adds could be faster.)
-* **The cost model**: cycles a step = the sum over the loop's SASS instructions of the costs above (branches, uniform-datapath and local-memory instructions excluded).  Its predictions, as tests/s at 100% efficiency
-  (SMs x 4 schedulers x clock x 32 / (655 steps x cycles); 1.41 GHz A100, 2.4 GHz RTX PRO 6000):
+  So **IMAD.WIDE.U32 with the addend alone costs 2.5 (RTX PRO 6000), 4.15 (A100) and 4.5 (L4) cycles** (the first row minus one IADD3), and in that benchmark every added IADD3 adds ~2 cycles.
+  *Correction (2026-11-23):* until then this file listed 2.3 and 2.4 for the A100 and L4, a transcription error of mine.  It made the multiplier 45% too cheap on sm_80 / 89 and is why the "w"
+  steps were predicted at +47% tests/s there (measured: +10% on the A100, +17% on the L4, +2.4% for s1r asm on the RTX PRO 6000).
 
-  | arch | variant | cycles a step | vs s1 plain | tests/s at 100% |
-  |---|---|---|---|---|
-  | sm_80 | s1 plain | 3814 | | 7.8M (measured for the best variant: 6.95M, 89%) |
-  | sm_80 | **s1 plain + w** | **2600** | **-32%** | 11.4M |
-  | sm_80 | s1r plain + w | 2526 | -34% | 11.8M |
-  | sm_80 | s1 asm | 4414 | +16% | 6.7M |
-  | sm_80 | fermat31 / fermat30 (`FERMAT31.md`) | 3825 / 3324 | +0% / -13% | 7.8M / 9.0M |
-  | sm_120 | s1 plain | 2842 | | 31.0M |
-  | sm_120 | s1 asm (the best measured: 22.86M, 74%) | 2616 | -8% | 33.7M |
-  | sm_120 | **s1r asm** | **2555** | -10% (-2.3% vs s1 asm) | 34.5M |
-  | sm_120 | fermat31 / fermat30 | 3817 / 3332 | +34% / +17% | 23.1M / 26.5M |
+* **Measured speeds** (the GPU session's `test_gpu_fermat28.py`, 128 threads a CTA, 2026-11-23 00:17Z):
 
-  The model predicts the A100's measured speed within 11% for fermat28 and for fermat3 (and that the two tie there); it over-predicts the RTX PRO 6000 by 26% (something else costs there:
-  clock, latency, instruction fetch of an 18 KB loop body), so trust its *ratios*.  It predicts **+47% tests/s on an A100 and an L4 from "s1 plain + w"**, +2.4% on an RTX PRO 6000 from "s1r asm".
-  That is for the GPU session to measure: `test_gpu_fermat28.py` lists "s1 plain+w", "s2 plain+w", "s1r plain+w" and "s1r asm".
+  | tests/s | fermat3 (the older kernel) | s1 plain | s1 plain + w | s2 plain + w | s1r plain + w | s1 asm | s1r asm |
+  |---|---|---|---|---|---|---|---|
+  | A100 | 6.94M | 6.95M | 7.55M | 7.51M | 7.63M | | 6.95M |
+  | L4 | 3.92M | 4.00M | 4.57M | | 4.62M | | |
+  | RTX PRO 6000 | 13.08M | | | | 22.74M | 22.85M | 23.39M |
+
+* **The cost model, refitted: `../../sieve200/cuda/costmodel.py`** (reproduces everything below from the SASS).  Cycles a step T = max(T_mul, T_alu) + rho x min(T_mul, T_alu), where T_mul = the number of IMAD.WIDE
+  x the cost of one and T_alu = the sum of the benchmark costs of all other integer instructions of the loop (rho = 0: the two overlap completely; rho = 1: they simply add).
+  **On the A100 one parameter, rho = 0.35 (0.3-0.4), reproduces all six timings within 1.5% (largest 2.2%) at an effective clock of 1.38 GHz (nominal 1.41), including `fermat3`, a different
+  algorithm (651 multiplications and 1,677 other instructions in its loop):**
+
+  | A100 | loop instr. | IMAD.WIDE | T_mul | T_alu | model cycles | measured cycles | tests/s measured | model |
+  |---|---|---|---|---|---|---|---|---|
+  | s1 plain | 1798 | 876 | 3635 | 1777 | 4257 | 4195 | 6.95M | 6.85M |
+  | s1 plain + w | 1198 | 876 | 3635 | 592 | 3842 | 3862 | 7.55M | 7.59M |
+  | s1r plain + w | 1151 | 876 | 3635 | 518 | 3817 | 3821 | 7.63M | 7.64M |
+  | s1r asm | 2016 | 876 | 3635 | 1883 | 4294 | 4195 | 6.95M | 6.79M |
+  | fermat3 | 2328 | 651 | 2702 | 3167 | 4113 | 4201 | 6.94M | 7.09M |
+
+  (The first model of this file, "all integer instructions add up", fitted the plain steps and was wrong about the rest; so was my very first one, "multiplier pipe only".  The truth is in between: ALU
+  instructions are overlapped with the multiplier pipe to about two thirds.)  The L4 fits to 5% at its observed 1.6 GHz with rho = 0.43 (1.2% at 1.75 GHz with rho = 0.63; its clock is power-capped and
+  varies).
+  What it says for sm_80 / sm_89:
+  * **the step is bound by the multiplier pipe: 876 IMAD.WIDE x 4.15 = 3,635 of ~3,850 cycles** for the best variant; the ALU work costs only rho x T_alu = 180 cycles.  A removed dead IADD3 saves
+    0.35 x 2.1 = 0.7 cycles, not 2.1 (that was the over-prediction); `s1r plain + w` is within 6% of the floor 876 x 4.15 of this algorithm.
+  * only fewer multiplications could still help the A100 / L4: the model gives `fermat31` (737 IMAD.WIDE, 1,056 other instructions) 7.99M tests/s on the A100 (+4.6% over s1r plain + w), 4.52M on the L4
+    (-3%), and `fermat30` +1.6% / -2%: not worth 5% of the fleet's output (the A100 is ~5%); on the RTX it is 20-25% slower.
+
+* **The RTX PRO 6000 is not explained** (it is ~86% of the fleet's output).  Its three timings (22.74M / 22.85M / 23.39M tests/s) are 3,770-3,880 cycles a step at the nominal 2.4 GHz, while the model with the
+  RTX benchmark costs (IMAD.WIDE 2.53) gives 2,540-2,610 cycles: **the measured cycles are 1.46-1.49 x the model's.**  Either the cards run at ~1.6 GHz under this load (power-limited; the A100
+  and L4 sit near their nominal clocks, the L4 is power-capped at 72 W) or a multiplication costs ~3.8 cycles inside the kernel instead of 2.5.  The two are told apart by the SM clock during the
+  kernel: `../../sieve200/cuda/measure_all.sh` samples it (nvidia-smi) beside `time_fermat28.py`.  If they are power-clocked, energy per test is the figure to optimise on them (fewer instructions,
+  less instruction fetch), not cycles; if not, something in the 18 KB loop body (fetch, register bank conflicts) is costing 50% and the next step is a benchmark that runs the real step at several loop-body sizes.
 
 ## Verified on the CPU (the same source text, `fermat28_cpu.cpp`)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Micro-benchmarks of the instruction pipes and of shared-memory operations, to settle two design questions with numbers.
 
-    python3 bench_pipes.py            # on a GPU (needs cupy): prints one table
+    python3 bench_pipes.py            # on a GPU (needs cupy): prints one table (--part3: only part 3)
     python3 bench_pipes.py --check sm_80     # on a machine without a GPU: compiles every kernel with NVRTC and prints the SASS
                                               # of its loop, to check that it contains the instruction it is meant to measure
                                               # (needs sass.py's tools, see its docstring)
@@ -276,9 +276,12 @@ def run_gpu_global(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", default=None, help="no GPU: compile for this arch (sm_80, sm_89, sm_120) and print each kernel's loop")
+    ap.add_argument("--part3", action="store_true", help="only part 3 (global memory, scattered marks; needs ~5 GB free)")
     a = ap.parse_args()
     if a.check:
         run_check(a.check)
+    elif a.part3:
+        run_gpu_global(a)
     else:
         run_gpu(a)
         run_gpu_global(a)

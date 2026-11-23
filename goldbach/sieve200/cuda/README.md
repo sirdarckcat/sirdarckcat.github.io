@@ -69,7 +69,14 @@ two PyPI wheels and one NVIDIA redistributable, all downloadable on a CPU box). 
 
 `bench_pipes.py` measures, on a GPU, how many cycles a warp-level `IMAD.WIDE.U32`, `IMAD`, `IADD3`, `IADD3.X`, `LOP3`, `SHF` occupy a scheduler for, how many adds fit beside one
 `IMAD.WIDE` for free, and what `ATOMS.AND`, `STS.32`, `STS.U8`, `LDS` and a plain read-modify-write cost with random and with conflict-free addresses at the shared-memory
-sizes of klog 17, 18 and 19.  `python3 bench_pipes.py --check sm_80` (no GPU) prints the SASS loop of every kernel, to see that it measures what it names.
+sizes of klog 17, 18 and 19.  `python3 bench_pipes.py --check sm_80` (no GPU) prints the SASS loop of every kernel, to see that it measures what it names (`--part3`: only the global-memory part).
+
+`costmodel.py` (no GPU) turns the SASS of the Fermat step loops and `bench_pipes.py`'s instruction costs into cycles a step, T = max(T_mul, T_alu) + rho min(T_mul, T_alu), and fits rho and the clock to
+the GPU session's timings (one parameter reproduces six A100 timings within 1.5%; the RTX PRO 6000 is not explained yet): see `../../fermat661/cuda/FERMAT28.md`.
+
+`measure_all.sh SPEC.json` runs everything that still needs a GPU in one go and writes one text file (GPU and clocks; the Fermat kernels for 20 s each with the SM clock, power and throttle reasons sampled
+beside them (`../../fermat661/cuda/time_fermat28.py`); `bench_pipes.py --part3`; `bench_bigprimes.py` at 2^22 (checked), 2^24, 2^26, 2^28; `test_gpu_sieve.py` with its sweep; `bench_batch.py` at B = 2^26):
+`GPU=0 bash measure_all.sh /path/to/specs_variants.json measure_a100.txt`, once per GPU type, production paused on that GPU, 10-20 minutes.
 
 ## A deeper sieve bound (prototype, not in production): see DEEPSIEVE.md
 
