@@ -8,6 +8,7 @@ of the kept values: rank 1 is a new record, rank 2 a new runner-up, and so on.
     ./lgs_scan 100000000000 cand_1e11.txt hist_1e11.txt        (4 min 13 s on 4 cores)
     python3 -I rank_records.py cand_1e11.txt 10 > ranks_1e11.txt
     python3 -I patterns.py ranks_1e11.txt > patterns_1e11.txt
+    python3 -I spacing.py cand_1e11.txt hist_1e11.txt 1e11 > spacing_1e11.txt
 
 `lgs_scan.c` computes g(N) for every even N in [6, X] with a segmented sieve and prints the N
 above a threshold that stays below the tenth largest value (`rank_records.py` checks the margin).
@@ -27,6 +28,20 @@ The patterns are the same at every rank.
 | pairs (N, g), (N + h, g + h) sharing the prime N − g | 4 pairs | theorem: `IsLeastSummand.add_of_forall`; instances `shift_pairs` |
 | g(N) is at least the distance to the previous prime | always | theorem: `IsLeastSummand.sub_le` |
 | record value over ln²N · ln ln N | 0.9 rising to 1.5 | measured; the conjectured limit is 1/C₂ = 1.51 |
+
+## How the ranks are spaced (`spacing.py`, `spacing_1e11.txt`)
+
+Count the even N ≤ X whose least summand is at least the m-th odd prime: each further prime
+removes a nearly fixed fraction, `T(m + 1) / T(m) = exp(-r / (ln X - 1))`. Up to 10^11 the rate
+`r` falls from 1.99 at the start (the mean of the Goldbach singular series is 2) to about 1.5 to
+1.6 for the 100th to 240th prime; its limit should be 2 C₂ = 1.32, the value for N without small
+odd prime factors, which are the N that last. A geometric tail makes the largest values sit like
+the top of an exponential sample: the j-th and (j + 1)-th largest are about
+`(ln X - 1) / (r j)` primes apart. Measured at the powers of ten from 10^5 to 10^11, the average
+of `j · (π(g_j) - π(g_{j+1})) / (ln X - 1)` over j = 1..9 is 0.645, against `1 / r = 0.667` for
+`r = 1.5`. So the second, third, … largest values carry no pattern of their own: they are the
+next draws from the same tail as the record. Like the tail itself this is the Hardy–Littlewood
+heuristic, not a theorem.
 
 The 39 record holders up to 10^11 (rank 1) agree with OEIS A025018 / A025019; their values are
 kernel-checked in `GoldbachGaps/RankData.lean` (`recordTable_spec`). That no smaller number does
