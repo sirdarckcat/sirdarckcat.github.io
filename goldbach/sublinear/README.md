@@ -290,10 +290,13 @@ under 128, about 0.1 for 128 to 512, 0.4 for 512 to 2,048, 0.7 for 2,048 to
 8,192 and 0.9 above. No prime beyond 512 is pinned to its best class; each is
 in a better-than-average one.
 
-Caveats. (i) Tempering at low temperature is not fully in equilibrium (the
-bottom of the z = 463 table is 20 nats low against direct counts); the error
-moves the cost by about p_z·ΔS/β, 0.2 to 0.5 nats, in the direction of
-understating the prize. (ii) The budget is counted in full-weight members,
+Caveats. (i) Accuracy. For z ≥ 1,000 the answer sits at a temperature where
+the sampler mixes freely: forward and backward free-energy estimates agree
+within 0.1 nats in total down to that temperature, and the same method
+reproduces the exact counts of the miniature below. Only for z = 463, where
+the answer sits near the bottom of the landscape, is the sampler out of
+equilibrium (20 nats low at the very bottom against direct counts), and that
+line is checked against the covers themselves. (ii) The budget is counted in full-weight members,
 that is, with the fleet's deep sieve and 3% rule behind each tested N in every
 line. That selection is worth 2.0 nats today and about 1.8 after an ideal
 search to 20,000, which has already used part of the same information.
