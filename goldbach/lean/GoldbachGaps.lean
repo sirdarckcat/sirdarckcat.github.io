@@ -27,6 +27,8 @@ import GoldbachGaps.RankData
 import GoldbachGaps.RankTable
 import GoldbachGaps.BitSieve
 import GoldbachGaps.RankSieve
+import GoldbachGaps.RecordGen
+import GoldbachGaps.RecordGenRun
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -164,6 +166,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                of `15` `239`, of `21` `269`, of `35` `439`, of `105` `157`, each attained
                (`exists_summand_le_of_dvd_*`); and no multiple of `3` between `1362` and `2^25`
                enters the ten largest least summands (`notAmongTen_of_dvd_6`).
+* `RecordGen`, `RecordGenRun` – a generator for OEIS A025018 / A025019 and the proof that it
+               is correct. `IsRecord N g`: `N ≥ 4` even, `g` its least Goldbach summand, every
+               smaller even number has a smaller one. `records X` builds the terms below `X`
+               by a sieve of translates of the primes (strikers `q = 2, 3, 5, …`; the front is
+               the smallest even number no striker has struck; a striker that hits the front
+               makes it a term with value `q`), on bitmasks. `mem_records`: for every `X`,
+               `(N, g) ∈ records X ↔ N < X ∧ IsRecord N g`; `records_sorted`: in increasing
+               order; `isRecord_iff_front`: a term is a front that its striker hits;
+               `testBit_primeMask`: the prime sieve inside is exact. `RecordGenRun`: the kernel
+               runs the generator to `2^20` (21 terms). `scripts/record_gen`: how simpler
+               rules for the first 2, 3, 4, 5 terms break at the next term, and a runner.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
