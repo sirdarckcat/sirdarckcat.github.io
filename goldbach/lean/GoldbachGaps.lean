@@ -205,8 +205,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                vector strikes together with all smaller ones. A depth-first search decides
                it and is proved correct (`search_iff`); run in the kernel it gives the exact
                values `3, 5, 7, 19, 31, 43, 67, 103, 163` for `0, …, 8` moduli
-               (`isDepth_0` … `isDepth_8`) and lower bounds `181, 223, 271, 331, 419, 499`
-               for `9, …, 14` (`coversBelow_9` … `coversBelow_14`). The depth increases with
+               (`isDepth_0` … `isDepth_8`) and lower bounds `181, 223, 271, 331, 419, 499,
+               613` for `9, …, 15` (`coversBelow_9` … `coversBelow_15`). The depth increases with
                every new modulus (`IsDepth.lt_cons`). The least summand of an even `N` is
                at most the depth of the odd primes up to `√N` (`least_summand_le_depth`);
                if that depth is at most `N - 3`, `N` is a sum of two primes
@@ -218,7 +218,7 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`isRecord_and_isDepth`, `isRecord_220_and_isDepth`). The complete covers of
                the 200-digit search are lower bounds for 89 to 93 moduli
                (`coversBelow_15907` … `coversBelow_16981`). `scripts/cover_depth`: the
-               search in C, the table to `n = 14`.
+               search in C, the table to `n = 15`.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,

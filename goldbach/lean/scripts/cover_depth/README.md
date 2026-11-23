@@ -4,7 +4,8 @@ Give each of the first `n` odd primes `r` one residue class `a_r`. The vector *s
 prime `q` when `q ≡ a_r (mod r)` for some `r`; then every `N ≡ a_r (mod r)` has `r | N − q`.
 `D(n)` is the largest, over all vectors, of the least odd prime that is not struck. The object and
 the values for `n ≤ 12` are the research session's (`goldbach/sublinear`, branch
-`ccr-d4a17dd0-7uu03r`); this directory recomputes them independently and adds `n = 13, 14`.
+`ccr-d4a17dd0-7uu03r`); this directory recomputes them independently and adds `n = 13, 14, 15` (13 and 14 since
+confirmed by the research session's own program).
 
     gcc -O3 -march=native -o depth depth.c
     ./depth 12        plain depth-first search: strike the least unstruck prime with each modulus left
@@ -26,10 +27,11 @@ the values for `n ≤ 12` are the research session's (`goldbach/sublinear`, bran
 | 10 | 31 | 223 | 2.09 | 1369 | 9,864,101 | 259,040 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:5 11:9 13:8 17:7 19:3 23:20 29:23 31:13 |
 | 11 | 37 | 271 | 2.03 | 1681 | 108,505,112 | 2,272,366 | exact by two programs; ≥ in the kernel | 3:2 5:3 7:6 11:9 13:1 17:7 19:18 23:15 29:9 31:19 37:16 |
 | 12 | 41 | 331 | 2.17 | 1849 | 1,302,061,345 | 18,513,174 | exact by two programs; ≥ in the kernel | 3:2 5:3 7:3 11:6 13:8 17:7 19:10 23:1 29:10 31:19 37:0 41:38 |
-| 13 | 43 | 419 | 2.59 | 2209 |  | 155,637,417 | exact by `depth.c` alone; ≥ in the kernel | 3:1 5:3 7:1 11:4 13:11 17:13 19:17 23:18 29:21 31:14 37:5 41:19 43:11 |
-| 14 | 47 | 499 | 2.76 | 2809 |  | 1,523,561,730 | exact by `depth.c` alone; ≥ in the kernel | 3:2 5:2 7:5 11:2 13:4 17:3 19:14 23:7 29:2 31:8 37:3 41:29 43:30 47:40 |
+| 13 | 43 | 419 | 2.59 | 2209 |  | 155,637,417 | exact by two programs; ≥ in the kernel | 3:1 5:3 7:1 11:4 13:11 17:13 19:17 23:18 29:21 31:14 37:5 41:19 43:11 |
+| 14 | 47 | 499 | 2.76 | 2809 |  | 1,523,561,730 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:5 11:2 13:4 17:3 19:14 23:7 29:2 31:8 37:3 41:29 43:30 47:40 |
+| 15 | 53 | 613 | 2.91 | 3481 |  | 18,318,280,161 | exact by `depth.c` alone; ≥ in the kernel | 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:18 29:19 31:3 37:14 41:31 43:34 47:23 53:8 |
 
-Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min (one core).
+Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 15` pruned 66 min (one core).
 
 ## What is proved (`GoldbachGaps/CoverDepth.lean`, `GoldbachGaps/CoverDepthRun.lean`)
 
@@ -37,7 +39,7 @@ Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min (one c
   3, 5, 7, 19, 31, 43, 67, 103, 163 are theorems** (`isDepth_0` … `isDepth_8`). The upper bound is
   the exhaustive part. The kernel keeps every intermediate term (about 45 kB per node), so eight
   moduli are cut into eight checks and nine would need 72 of them (about five minutes); beyond
-  `n = 8` only the lower bound is proved, from one vector each (`coversBelow_9` … `coversBelow_14`).
+  `n = 8` only the lower bound is proved, from one vector each (`coversBelow_9` … `coversBelow_15`).
 * `IsDepth.lt_cons`: a new modulus always increases the depth (it can strike the first unstruck
   prime); `IsDepth.prime`: the depth is an odd prime; `IsDepth.unique`.
 * `least_summand_le_depth`: **the least Goldbach summand of an even `N` is at most the depth of

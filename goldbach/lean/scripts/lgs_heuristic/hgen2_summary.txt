@@ -1,0 +1,16 @@
+24 stretches between consecutive real terms, from 113672 to the term after 21248558888
+depth z = N^theta; open = strikers the heuristic cannot settle for the real next term; place = position of the
+real next term when the numbers of its stretch are taken in the heuristic's order of preference
+
+ theta   median z   median open   named first   place: median   geometric mean   walk / place (nats saved)   nats still missing
+   0.5       7754             0        24/24               1              1.0                   15.7                    0.0
+  0.45       3167             4         2/24              65            110.2                   11.0                    4.7
+   0.4       1294             7         0/24            2431            831.2                    9.0                    6.7
+  0.35        529            12         0/24           23877           4630.7                    7.3                    8.4
+   0.3        216            16         2/24           45370           9561.1                    6.6                    9.2
+  0.25         89            21         1/24           81025          74856.0                    4.5                   11.2
+   0.2         36            29         1/24          154881         224579.9                    3.4                   12.3
+  0.15         15            40         1/24          292993         446881.3                    2.7                   13.0
+   0.1          6            59         1/24         3181633        1223330.1                    1.7                   14.0
+
+walking every even number of a stretch costs e^15.7 numbers on average (geometric mean of the stretch lengths)
