@@ -3,7 +3,7 @@ import glob, json, math, os, re
 # gpu3_stats.log has it, else the model 2^20-slice estimate members * hit% * exp(-1.0275 E^ + 0.33)), found and g.
 out = []
 pat = re.compile(r"^\[(\S+)\] k=\[(\d+),(\d+)\) \S+ \(\S+ k/s\) tests=(\d+) prp=(\d+) p\^=(\S+) alive/k=(\S+) E\^=(\S+) hit%=(\S+) found=(\d+)")
-for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", "/content/c160", "/content/c170", "/content/c170v"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
+for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", "/content/c160", "/content/c170", "/content/c170v", "/content/c170f"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
     if not os.path.exists(d + "/search.log"):
         continue
     logged = {}                                         # slice name -> expected share of its batch
