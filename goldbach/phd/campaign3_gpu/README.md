@@ -515,6 +515,16 @@ Version 3 (22 Nov):
 
   - Each card's vector known case with the new settings gave the same 23 (k, q) as the CPU brute force.
   - With `--profile-pool`, the gap a pool beside the sieve fell from 0.33-0.35 s (about half of `run_pool`) to 0.24-0.30 s.
+  - In production the RTX cards run 0.858 s a batch (0.945 s before), about +10% expected near-misses a second.
+  - The L4s and the T4 took fused rounds alone at 12:34-12:41Z (`fround/frl.sh`, `frl_l4_t4.txt`).
+    - Each card was checked in the k29l2.sh pattern: 8 identical windows, and 146,191's member found by both sieves.
+    - Batch: gold-l4b ×0.983, gold-gpu ×0.986, gold-l4c ×0.987, gold-xt4 ×0.983.
+  - The keep fraction, re-swept on the new engine (`v89/vsweep2_rtxpro6000.txt`), is flat between 0.985 and 0.9875 (×1.018,
+    within the ×1.012 of a repeat at 0.985). f = 0.985 stays.
+- uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
+  - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
+    bin apply 19.9).
+  - Bin apply halves at rg 4, where the bins fit in L2, but the generate passes grow with the number of groups.
 - uarch's E5 (`uarch_measure/e5_ffma_rtxpro6000.txt`): a dummy FFMA inside the real Fermat step adds about 1.2 ticks, close
   to an IADD3 (1.1-1.6), not the ~0 of a free pipe. So the FP32 pipe does not run free beside the multiplier.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
