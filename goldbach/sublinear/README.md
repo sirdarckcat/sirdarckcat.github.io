@@ -406,6 +406,15 @@ exact and fast. And for our lists the problem is the search for intervals
 prime gaps, where the state of the art is also covering congruences followed
 by a sieve over the members.
 
+One structure does exist and does not pay. For a prime s above Q the list is
+the set R of rows itself, a set of numbers below Q, so "N mod s is in the
+list" implies "N mod s is small", an interval condition, and numbers that are
+small modulo many primes at once *can* be found by lattice reduction
+(simultaneous approximation). But R fills under 1% of the interval [0, Q), so
+forcing N mod s below Q costs ln(s/Q) nats and raises the chance of a kill by
+that prime only from k/s to k/Q = 0.8%: a hundred to a thousand times less
+per nat than the last prime of the cover.
+
 In the language of the literature: collecting the prize means solving *noisy
 Chinese remaindering with dense lists* on average — rate 460/1,940 and lists of
 about a third of the classes for depth 2,000 — or equivalently maximum-
