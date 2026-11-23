@@ -457,12 +457,12 @@ ln ln X / ln ln ln X. Neither is attempted here.
 
 **At 200 digits, without luck.** Joint optimisation does much better than
 the asymptotic count suggests. Tempering on the 89 smallest odd primes
-(3 to 463) finds covers that leave *no row at all* up to Q = 15,607:
-`complete_cover_15607.txt` gives a class for each of the 89 primes such that
-every one of the 1,818 odd primes q ≤ 15,601 lies in the class of some r,
+(3 to 463) finds covers that leave *no row at all* up to Q = 15,787:
+`complete_cover_15787.txt` gives a class for each of the 89 primes such that
+every one of the 1,839 odd primes q ≤ 15,773 lies in the class of some r,
 and `complete_cover.py` checks it and prints N0 (193 digits). For every even
 N = N0 + tM, of which 21,378,977 are below 10^200, each N − q with q an odd
-prime below 15,607 is divisible by a prime ≤ 463: no prime below 15,607 is a
+prime below 15,787 is divisible by a prime ≤ 463: no prime below 15,787 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
 is 0.7% of the ceiling, against 7.4% for the record found by search: as with
 prime gaps, what can be constructed is far behind what can be found. At
