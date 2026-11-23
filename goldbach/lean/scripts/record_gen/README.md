@@ -32,6 +32,59 @@ below 2^22 in about a second, 27 below 2^25 in 22 s, 30 below 2^27 in 3 min 12 s
 the first terms of the OEIS b-files). Nothing is searched number by number: the
 cost is one shift and one OR of an X-digit number per striker, plus the prime sieve.
 
+## The N generator: walk the even numbers and say when a record falls
+
+The generator above loops over the strikers and asks where the front is. The same sequence with
+`N` as the loop variable:
+
+    G = 0                                        the largest least summand so far
+    for N = 4, 6, 8, 10, …:
+        if no prime q ≤ G has N − q prime:       N beats every number before it
+            announce N;  G = the least prime q with N − q prime
+
+`GoldbachGaps/RecordWalk.lean` is this program (`walk X`: the numbers announced below `X`) with
+its proof:
+
+| | |
+|---|---|
+| `mem_walk` | `N ∈ walk X ↔ N < X ∧ ∃ g, IsRecord N g`: for every X it announces exactly the terms of A025018 below X |
+| `walk_sorted` | in increasing order |
+| `walk_eq_map_records` | `walk X` is the list of numbers of `records X`: the walker and the sieve are one generator |
+| `walk_two_pow_20` | below 2^20 it announces 21 numbers: 4, 6, 12, 30, 98, …, 503222 |
+| `not_isSummand_iff_neighbours` | the question looks only at the primes within G below N: N is announced iff none of them is at a prime distance from N |
+| `beats_iff_wheels` | or at N alone: N beats G iff its residues modulo the primes r ≤ √N cover the strikers (every prime q ≤ G has such an r with N ≡ q mod r) |
+
+Run it in Lean: `lake env lean scripts/record_gen/Walk.lean` (the 15 terms below 100,000).
+
+`ngen.c` is the same walker made fast. It prints each term the moment it reaches it:
+
+    gcc -O3 -march=native -fopenmp -o ngen ngen.c -lm
+    ./ngen 100000000000          the terms up to 10^11, one "N g(N)" per line
+    ./ngen                       no limit: it keeps walking until it is stopped
+    ./ngen 0 <from> <G>          take the walk up again from a "# state" line it printed
+
+What it carries along: `G`; the odd primes up to `G` (the strikers, a few hundred numbers); the
+primes among the last 2^17 numbers below `N`, as bits; and the primes up to √N, used only to mark
+the primes of the next stretch. Its question to `N`, "is one of N − 3, N − 5, N − 7, N − 11, …
+prime?", is put to 64 consecutive even numbers at once, one AND per striker, and most blocks are
+settled after a hundred strikers. On 3 cores of this machine:
+
+| up to | time | terms announced |
+|---|---|---|
+| 10^9 | 0.7 s | 34 |
+| 10^10 | 6 s | 36 |
+| 10^11 | 65 s | 40 |
+
+all equal to the OEIS b-file. That is about 4 ns of one core per even number at 10^9, and it
+grows slowly (more primes to mark, more strikers): every further factor of 10 costs a little more
+than 10 times as much.
+
+What it cannot do is skip. A number is passed over only because a prime q ≤ G with N − q prime
+was found for it, so the walker meets a Goldbach partition of every even number on its way, and
+its position is bounded by how many numbers one can afford to visit (4·10^18 is the furthest
+anyone has gone). Where the next term is *likely* to be, without visiting anything, is a
+different question with a usable answer: `scripts/lgs_heuristic/forecast.py`.
+
 ## How far does it go?
 
 Nothing about the generator is tied to 2^25. That number is where the *certified table* of
@@ -44,7 +97,8 @@ Nothing about the generator is tied to 2^25. That number is where the *certified
 | new terms, forever | exactly if Goldbach's conjecture is true | `goldbach_iff_generator_never_stops`, `goldbach_iff_records_unbounded` (`GoldbachGaps/RecordInfinite.lean`) |
 | running the proved generator | 2^25 in 20 s, 2^27 in 3 min; by extrapolation about an hour for 10^9 and two days for 10^10 | every sieving prime costs a pass over an X-digit number, so the time grows like X^1.6 |
 | statements checked by the kernel | 2^25 in 90 s; about 2 hours for 10^9; about 1.6 days for 10^10 | measured on single segments: 2.5 s per million numbers near 3·10^7, 8.5 s near 10^9, 21 s near 10^10, with 1 to 6 GB of memory |
-| fast scan, not proved (`scripts/rank_records/lgs_scan.c`) | 10^12 in 63 min: 43 terms | |
+| the walker in C (`ngen.c`: the proved rule, the program itself not proved) | 10^11 in 65 s on 3 cores: 40 terms | it visits every even number; memory is the primes up to √N |
+| fast scan of all least summands, not proved (`scripts/rank_records/lgs_scan.c`) | 10^12 in 63 min: 43 terms | |
 | anyone's computation | 4·10^18: 69 terms (Oliveira e Silva, Herzog and Pardi, Math. Comp. 2014; OEIS b-file) | |
 
 So "to infinity" has a precise meaning. The program is correct to infinity and never runs out of

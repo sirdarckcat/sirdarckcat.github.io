@@ -30,6 +30,7 @@ import GoldbachGaps.RankSieve
 import GoldbachGaps.RecordGen
 import GoldbachGaps.RecordGenRun
 import GoldbachGaps.RecordInfinite
+import GoldbachGaps.RecordWalk
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -186,6 +187,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`goldbach_iff_records_unbounded`, `goldbach_iff_generator_never_stops`); if
                it fails, the front stops at the smallest counterexample
                (`isFront_of_counterexample`).
+* `RecordWalk` – the same sequence as an N generator. `walk X` goes through the even numbers
+               `N = 4, 6, 8, …` below `X`, keeps one number `G` (the largest least summand so
+               far) and announces `N` when its least summand exceeds `G`. `mem_walk`: for
+               every `X`, `N ∈ walk X ↔ N < X ∧ ∃ g, IsRecord N g`; `walk_sorted`;
+               `walk_eq_map_records`: `walk X` is the list of numbers of `records X`, so
+               walker and sieve are one generator; `walk_two_pow_20`: the 21 numbers
+               announced below `2^20`. What the question "does `N` beat `G`?" looks at:
+               the primes within `G` below `N` (`not_isSummand_iff_neighbours`), or `N`
+               alone, through its residues modulo the primes up to `√N`, which must cover
+               every prime `q ≤ G` (`beats_iff_wheels`). `scripts/record_gen/ngen.c`: the
+               walker made fast (64 values of `N` per step; 10^11 in about a minute).
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,

@@ -5,7 +5,7 @@ every step asks whether `front − q` is prime. This directory asks the other qu
 the sequence, and of the least Goldbach summand (LGS) in general, can be obtained *without* testing
 any `N − q` for primality.
 
-Answer: the statistics, almost completely; the individual terms, not at all. Three experiments.
+Answer: the statistics, almost completely; the individual terms, not at all. Four experiments.
 
 ## 1. A model with no primes in it (`model.py` → `model.txt`)
 
@@ -76,18 +76,53 @@ At `z = 101` the term 113,632,822 has 19 of its 182 strikers left open, against 
 number of its interval: a term is a good cover *and* lucky on what the cover leaves. This is the
 "cover and luck" of the 200-digit search, measured on the exact sequence.
 
+## 4. When is the next term? (`forecast.py` → `forecast.txt`)
+
+The N generator (`GoldbachGaps/RecordWalk.lean`, `scripts/record_gen/ngen.c`) walks the even
+numbers and announces `N` when no striker up to the current record `G` hits it. The model gives
+each `N` a chance `u(N, m)` of that, `m` the number of odd primes up to `G`, so after a term the
+expected number of announcements among the next numbers up to `x` is the sum `E(x)` of those
+chances, and the next term is the first ring of a clock of that rate. `forecast.py` inverts
+`E`: from each term alone it gives the points below which the next term falls with probability
+5%, 50% and 95%. This is the front law of section 1 read on the `N` axis; nothing is fitted.
+
+| after the term (value) | 5% | 50% | 95% | the next term really was |
+|---|---|---|---|---|
+| 721013438 (1789) | × 1.69 | × 4.84 | × 9.74 | × 2.56 |
+| 599533546358 (3457) | × 1.28 | × 3.03 | × 5.96 | × 5.22 |
+| 3132059294006 (3463) | × 1.012 | × 1.15 | × 1.55 | × 1.16 |
+| 1047610575836828 (6469) | × 1.90 | × 5.77 | × 11.7 | × 5.97 |
+| 906030579562279642 (9341) | × 1.18 | × 2.47 | × 4.77 | × 3.09 |
+| 2795935116574469638 (9629) | × 1.06 | × 1.62 | × 2.82 | × 1.19 |
+
+Over the 59 terms from 2642 to the 68th: 53 next terms inside the 5%–95% band (53.1 expected),
+4 before it and 2 after it (3 and 3 expected); the mean of P(next ≤ real) is 0.489 (0.5 ± 0.038
+expected). Terms 68 and 69 (`terms_68_69.txt`) entered no earlier test.
+
+So the model knows *about when*: the band is a factor of 3 wide in the median, and narrow after
+a small step (after 3463, a value only 6 above the previous one, the next term was due within
+15% at even odds, and came at 16%), wide after a large one. It cannot know *which* `N`: inside
+the band every candidate looks alike to it.
+
+The first term nobody has computed is the one after 3325581707333960528 (value 9781, the last
+of the b-file; the verification of Oliveira e Silva, Herzog and Pardi ends at 4·10^18 with no
+further term). Given that, the forecast is: 5% below 4.2·10^18, even odds below 6.2·10^18, 95%
+below 1.06·10^19.
+
 ## What this is and is not
 
 * It is not a proof and cannot become one with present methods: `h(N)` is the Hardy–Littlewood
   conjecture, and the model treats the residues of `N` as random.
 * It does not produce the terms. Which `N` is the next front depends on the primes near `N`; the
-  model only says how far away it is likely to be and how large its value is likely to be. An exact
-  generator has to show, for every smaller even number, a summand below the record, and that is a
-  Goldbach calculation for each of them (`GoldbachGaps/RecordGen.lean`).
+  model only says how far away it is likely to be (section 4) and how large its value is likely
+  to be. An exact generator has to show, for every smaller even number, a summand below the
+  record, and that is a Goldbach calculation for each of them (`GoldbachGaps/RecordGen.lean`;
+  with `N` as the loop variable, `GoldbachGaps/RecordWalk.lean`).
 * It found no hidden pattern beyond two effects: the singular series (a term avoids small odd prime
   factors, because each one multiplies the hit chance) and the dependence between summands. With
   these two, the real sequence passes every test above as a typical random outcome.
 
     python3 -I model.py terms.txt ../rank_records/hist_1e12.txt 1000000000000 ../rank_records/hist_1e11.txt 100000000000 > model.txt
     python3 -I simulate.py terms.txt 400 0.92 > simulate.txt          (from this directory; about 15 minutes)
+    python3 -I forecast.py terms.txt 0.92 terms_68_69.txt > forecast.txt      (about 4 minutes)
     gcc -O2 -o cover_rank cover_rank.c -lm && ./cover_rank terms.txt 120000000 3 7 13 31 101 1009 > cover_rank.txt
