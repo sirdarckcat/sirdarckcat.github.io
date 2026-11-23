@@ -155,6 +155,24 @@ selection identity is worth a factor of about 4 (1.4 nats; an estimate, to
 be measured in rung 2), and more if the cover is chosen with parity in mind.
 It does not find members with few rows left without enumeration even there.
 
+**Desert or cover? (the design question, settled by counting.)** A zero
+class at π makes π's factor in the parity symbol +1 for every row; a nonzero
+class makes it a coin flip for the rows with π | Q′ and in exchange kills, by
+divisibility, the rows in that class. A coin flip is worth nothing to a
+search: it leaves the expected number of irreducible N − Q unchanged and only
+says where they are, which is the filter of Result 2 and is free for every N.
+So zero classes buy certainty on the rows with a smooth derivative and cost
+the factor p in degree and the divisibility kills. At equal degree over F_9
+(n = 2,403): the desert kills every quartic, 75.6% of the quintics and 41.4%
+at degree 7; an ordinary cover (nonzero classes on the 285 primes of degree
+≤ 3, plus 400 quartic moduli) leaves 13.8% of the rows of every degree before
+any optimisation, mops up the 223 quartics left with the quartic moduli, and
+so equals the desert at degree J + 1 and beats it above. The desert wins only
+on the deterministic objective at degree exactly J + 1, and only when q/p is
+large (the ratio (1 + 0.56(q − 1)/J)/p of the corollary: 1.5 for F_25 and
+J = 2, 2.1 for F_49). For search, the right design in the toy is an ordinary
+cover, a generic N, and the parity filter on what is left.
+
 ## Result 2: what the parity filter is worth in a toy search
 
 `toy_search.py` is the whole search in miniature over F_3[x]: a greedy cover
