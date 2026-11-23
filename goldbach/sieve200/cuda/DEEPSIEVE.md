@@ -218,3 +218,21 @@ Section H (GPU session, 04:32Z, one Q = 170,000 vector, `uarch_measure/secth_rct
 **the table re-reads are not what limits the stage at 1e8** (rcta 8 saves 6.6 ms a window = 0.8% of a batch); production keeps rcta 2.  What is left, each worth 1-2%: rcta 4 / 8 at the
 production bound (`run_experiments.sh` section H), a fused per-round update kernel for the tail rounds, the unroll-3 variant of the tile kernel, 24 doubling shifts as IADD in the Fermat step.  The estimates of the GPU session's
 timing granularity (0.1 s steady batches) cannot resolve them; batch-end timestamps over hundreds of batches can.
+
+
+## The overlap, again: why the first trial proved nothing, and the cross-batch pipeline (23 Nov 05:45Z)
+
+The `--overlap 1` trial of 03:10Z could not have shown an overlap whatever the hardware does: `flush()` runs when `npool >= --pool`, the runs used `--pool 2097152`, and a deep window keeps ~1.008M members, so the pool
+(2,015,232 members: the `[profile-pool]` lines show exactly one flush a batch) is only tested by the final `flush()`, after ALL the windows of the batch are sieved; the next batch's sieve (a new `overlapped()` generator)
+starts after the last Fermat launch.  Nothing ever ran beside anything; the only information in that table is the cost of chunked Fermat launches.  (My overlap patch assumed a flush per window and I did not check the pool.)
+
+What is needed, in order:
+1. **The hardware question** (do the sieve CTAs and the Fermat CTAs share the SMs at all?): `bench_overlap.py` + `run_overlap_probe.sh` (4 minutes on one paused GPU): the real Fermat launch beside real sieve windows in a
+   high-priority thread, in five configurations (defaults; `--carveout 100` = FERMAT_CARVEOUT / DEEP_CARVEOUT; an 80-register Fermat kernel leaving 14k registers free; the same without stream priority; chunked launches).
+   A projected batch >= x1.15 prints OVERLAP WORKS.
+2. **The driver**: `search_gpu5_xbatch.patch` (applies to the GPU session's driver at 45fa78c): `--flush-each-window 1` (test the pool after every window: the Fermat of window i is what the sieve of window i+1 hides
+   under) and `--pipeline 1` (`overlap.Pipeline`: ONE sieve thread for the whole campaign; it plans the next batch itself, `select_batch` with a `planned` set, and runs into it while the consumer is still testing the last
+   window of the current one; a semaphore bounds it to two windows alive).  Checked on stubs: `test_overlap_cpu.py` (order across batches, at most 2 alive, errors) and `test_xbatch_campaign_fake.py` (the same batches in the
+   same order with and without the pipeline, every slice once, the thread 5 windows ahead of a 4-window batch).  Run: `--pipeline 1 --flush-each-window 1 --pool-threads 1|2` (+ FERMAT_CARVEOUT=100 DEEP_CARVEOUT=100 if the probe says so).
+   Expected on an RTX if the hardware allows it: 1.76 s -> ~1.35 s a batch (x1.3); with a flush per window but no pipeline ~1.5 s.
+3. A flush per window makes two pools a batch, each with its own tail rounds (~20 small rounds): ~+40 ms of Fermat tail, which the sieve of the next window now covers.

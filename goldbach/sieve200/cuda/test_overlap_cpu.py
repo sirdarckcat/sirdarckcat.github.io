@@ -74,6 +74,48 @@ def main():
     except RuntimeError as e:
         good = str(e) == "boom" and seen == [1, 2]
     print(f"  error in the sieve thread re-raised after items {seen}: {'ok' if good else 'FAILED'}"); ok &= good
+    # 6. the cross-batch pipeline: batches planned in the thread, windows in order across batch boundaries, at most 2 windows alive, exhaustion, errors
+    overlap._STREAM.clear()
+    cp, _ = stub()
+    plans = [["a", "b"], ["c"], ["d", "e", "f"]]
+    alive, peak, produced, taken = [0], [0], [], []
+    def plan_next():
+        return plans.pop(0) if plans else []
+    def make_windows(batch):
+        for name in batch:
+            for j in range(2):                                      # two windows a slice
+                alive[0] += 1; peak[0] = max(peak[0], alive[0])
+                produced.append((name, j))
+                time.sleep(0.01)
+                yield name, (name, j)
+    pipe = overlap.Pipeline(cp, plan_next, make_windows)
+    order = []
+    while True:
+        batch = pipe.next_batch()
+        if not batch:
+            break
+        for si, w in pipe.windows(2 * len(batch)):
+            order.append(w)
+            time.sleep(0.03)                                        # a slow consumer: the thread runs ahead as far as the bound lets it
+            alive[0] -= 1
+    want = [(n, j) for b in (["a", "b"], ["c"], ["d", "e", "f"]) for n in b for j in range(2)]
+    good = order == want and produced == want and peak[0] <= 2
+    print(f"  pipeline over 3 batches (6 + 2 + 6 windows): order ok {order == want}, never more than 2 windows alive (peak {peak[0]}), exhaustion ends the loop: {'ok' if good else 'FAILED'}"); ok &= good
+    overlap._STREAM.clear()
+    cp, _ = stub()
+    def plan_bad():
+        return ["x"]
+    def mw_bad(batch):
+        yield 0, "w0"
+        raise RuntimeError("sieve broke")
+    pipe = overlap.Pipeline(cp, plan_bad, mw_bad)
+    try:
+        pipe.next_batch()
+        got = [w for _, w in pipe.windows(2)]
+        good = False
+    except RuntimeError as e:
+        good = "sieve broke" in str(e)
+    print(f"  pipeline error re-raised in the caller: {'ok' if good else 'FAILED'}"); ok &= good
     # 5. no priority calls: a plain non-blocking stream
     overlap._STREAM.clear()
     cp, log = stub(priorities=False)
