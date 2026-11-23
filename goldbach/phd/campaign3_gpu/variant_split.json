@@ -20053,7 +20053,7 @@
   "pt_q150k_t2698",
   "pt_q150k_t2699"
  ],
- "Q = 150,000, k in [2^30, 2^32), not yet on a GPU (Colab refused the L4 that was to replace gold-a100): q150000_g8ffe1_v0..v399": [
+ "since 23 Nov 02:03Z, Q = 150,000, deep sieve B = 10^8: gold-xt4 (a T4, in gold-a100's place), k in [2^30, 2^32): q150000_g8ffe1_v0..v399": [
   "q150000_g8ffe1_v0",
   "q150000_g8ffe1_v1",
   "q150000_g8ffe1_v2",
