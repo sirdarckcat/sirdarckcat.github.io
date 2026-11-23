@@ -1,7 +1,8 @@
 # (rowguard491.py: the 491-family campaign c170r / vec491, its own base after 2,000 vectors.) The lead's guard for f = 0.985 in vector mode (23 Nov 12:01Z): the average row count of the vectors this card's campaign consumed, the last 2,000 of them
 # against the average at the switch (/content/rowguard491_base.txt, written on the first run: every vector consumed before the switch). If the trailing average
 # exceeds the base by more than 2 rows, the card drops to f = 0.98 (SKIPF in /content/next_campaign_env, restart in place) once and writes
-# /content/rowguard491_tripped.txt. Row counts come from the chunk files (cached per chunk in /content/rowidx491). Prints one status line.
+# /content/rowguard491_tripped.txt. Row counts come from the chunk files (cached per chunk in /content/rowidx491, which the snapshots keep, so a replacement card goes on
+# counting its predecessor's vectors; the few consumed after the predecessor's last run are skipped). Prints one status line.
 import json, os, subprocess, sys, time
 IDX = "/content/rowidx491"; os.makedirs(IDX, exist_ok=True)
 cache = {}
@@ -10,12 +11,16 @@ def rows(name):                                       # q170000_m89_p0c00020_v5 
     if c not in cache:
         p = f"{IDX}/{c:06d}.json"
         if not os.path.exists(p):
-            s = json.load(open(f"/content/vec491/vec_{c:06d}.json"))
-            json.dump({x["name"]: len(x["residual"]) if isinstance(x["residual"], list) else len(json.loads(x["residual"])) for x in s}, open(p, "w"))
+            src = f"/content/vec491/vec_{c:06d}.json"
+            if not os.path.exists(src):                # a chunk of the card this one replaced, consumed after that card's last index run: not countable here
+                cache[c] = {}
+                return None
+            s = json.load(open(src))
+            json.dump({x["name"]: len(x["residual"]) if isinstance(x["residual"], list) else len(json.loads(x["residual"])) for x in s}, open(p + ".tmp", "w")); os.replace(p + ".tmp", p)
         cache[c] = json.load(open(p))
-    return cache[c][name]
+    return cache[c].get(name)
 names = [l[1:l.index("@")] for l in open("/content/c170r/search.log") if l.startswith("[q170000_m89r491")]
-r = [rows(n) for n in names]
+r = [x for x in (rows(n) for n in names) if x is not None]
 if len(r) < 2000 and not os.path.exists("/content/rowguard491_base.txt"):
     print(f"[rg] {time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} 491 family: {len(r)} vectors consumed, the base waits for 2,000", flush=True); sys.exit(0)
 now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

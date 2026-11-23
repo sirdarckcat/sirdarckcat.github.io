@@ -720,6 +720,42 @@ Version 3 (22 Nov):
     m89 chunks (family A), 49.1 / 52.1 in the 58e95e3 chunks (A + B), and 46.1 / 50.4 in the 491 chunks.
   - The 491 family-B-only file (3,924 covers, a subset of 4,000) has run since 20:26Z. The m88f file is B ∩ present
     (258 covers).
+  - The 491 pool at ≤ 1,248 rows ran out within the hour: each partition's walk found only covers already in its ledger.
+    The generators raised their cap to 1,249 (gold-g4d 20:25Z, gold-g4e 20:40Z, gold-g4f 21:08Z).
+    - The row guard's base is 1,248.000 and it trips only above +2. With CAPMAX = 1,250 the trailing average cannot get
+      there, so the cap rise cannot trip it.
+    - Research estimates ~290,000 covers at ≤ 1,249 and ~3.7 million at ≤ 1,250. At ~1.5 M vectors a day, cap 1,250
+      lasts ~2.5 days. Then either CAPMAX or the guard must change, which is the lead's call.
+- research's top32 shift for the L4/T4 vectors (4de3423; the lead approved it at 20:34Z behind a three-point gate; `s32/`).
+  - Each vector gets N0 += k_shift·M, with k_shift = 5,603,499,370 or 5,603,499,371, so that k = 2^32 − 1 is its last
+    member below 10^200.
+  - The top 16 levels then hold N from 9.458e199 up to just below 10^200. Unshifted, a vector would cross 10^200 only at
+    k ≈ 9.9e9, and its N at 2^32 is about 4.3e199.
+  - The batch is the shifted twin of the unshifted family-B batch: the same 12,000 covers, in the same order.
+  - The gate:
+    1. `s32_assert.py`, independent of research's `check_specs.py`, matched all 12,000 shifted specs to their unshifted
+       covers: the same M and residual rows, the residues mod the 88 cover primes, N(2^32 − 1) < 10^200 and
+       N(KLO) ≥ 10^199. `check_specs.py` also passed (12,000 OK, all N0 distinct).
+    2. The known case (top4s_v0, the top 2^19 at f = 0, T = 48,397) gave 40 (k, q) on the GPU (gold-l4c) and the same 40
+       in `cpu_brute_k0.py` (`kc/compare_result.txt`).
+    3. On gold-l4c, the same 8 covers, top two levels, shifted against unshifted: expected design hits a batch ×1.0590.
+       The bar was ×1.03 and research predicted ×1.056. Batch time was ×1.006 (`s32gate_l4.txt`).
+  - Ledger: lines 26,041-38,040 hold the unshifted batch's keys and lines 38,041-50,040 the shifted ones
+    (`m88f/ledger_index.txt`). The names mark the shifted vectors (`q170000_m88f_top4s_v*`) and each spec carries its
+    `k_shift`.
+  - gold-l4d has run its share (3,476 vectors) since 21:26Z, switched at a batch end by `switch_top4s.py`. The done set
+    carries over, and the top3 vectors it had done stay done.
+  - gold-l4b and gold-l4c get 3,476 each and gold-xt4 1,572, at tonight's ~23 h replacements. Each share is about 62 h
+    of top-16 levels.
+- Resuming the new campaign dirs (fixed 21:30Z, before any snapshot needed it). `snap.py` had kept only the old dirs.
+  - The next round of replacements would have lost the RTX cards' c170r done sets and 491 ledgers, and gold-l4d's c170g.
+  - The fixes:
+    - `snap.py` keeps c170r, c170g, cover491 with its ledgers, the row guard's row counts (rowidx491) and vec491/made.txt.
+    - `resume491.sh`, run by the RTX bring-up, starts a replacement with nothing ahead (made.txt = vectors consumed) and
+      numbers its chunks after the old card's last one. Without it, the new chunk names would repeat names already in
+      the done set and be skipped. The row guard skips names whose chunks are gone.
+    - `bringup_l4.sh` resumes c170g as well as c170f.
+    - `handover_pro.sh` gained KIND `l4`, which resumes an L4/T4 campaign dir.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

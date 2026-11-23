@@ -2,7 +2,8 @@
 # Proactive replacement at ~23 h (the lead, 23 Nov 19:27Z; the user approved replacements ~20:10Z): at time AT, wait for a batch end on OLD, snapshot it (snap.py) and download,
 # stop its campaign, pull its found lines a last time, stop the OLD session (frees the accelerator slot), create NEW, upload, bring up. One line a step on stdout.
 #   bash handover_pro.sh OLD NEW GPU KIND ARG AT_UTC
-#     KIND rtx491: ARG = the generator partition (bringup_rtx491.sh);  KIND l4new: ARG = a local share file (fresh campaign dir c170g with it, bringup_l4new.sh)
+#     KIND rtx491: ARG = the generator partition (bringup_rtx491.sh; a 491 card's c170r, ledger and chunk numbering go on: resume491.sh);
+#     KIND l4: ARG unused, the old card's campaign dir (c170f or c170g) resumes with its done set (bringup_l4.sh);  KIND l4new: ARG = a local share file (fresh campaign dir c170g, bringup_l4new.sh)
 OLD=${1:?}; NEW=${2:?}; GPU=${3:?}; KIND=${4:?}; ARG=${5:?}; AT=${6:?}
 SP=/tmp/claude-0/-home-user-sirdarckcat-github-io/c77908ea-3de3-53f8-b6bc-c2f767c11b41/scratchpad; B=$SP/bringup
 export PATH="$HOME/.local/bin:$PATH"
@@ -40,9 +41,15 @@ echo "$(date -u +%T) $NEW: $r"
 echo "$r" | grep -q "READY" || { echo "HANDOVER-FAILED $NEW not created ($GPU)"; exit 1; }
 if [ "$KIND" = rtx491 ]; then
   c 300 upload -s "$NEW" "$SP/snap/$OLD/final_snap.tgz" /content/snap.tgz | tail -n 1 | cut -c1-40
-  for f in cover491.tgz vecgen491.sh rowguard491.py rowguard491.sh bringup_rtx491.sh kc_top_check.py kc_prod.sh; do c 120 upload -s "$NEW" "$B/$f" "/content/$f" | tail -n 1 | cut -c1-40; done
+  for f in cover491.tgz vecgen491.sh rowguard491.py rowguard491.sh bringup_rtx491.sh resume491.sh kc_top_check.py kc_prod.sh; do c 120 upload -s "$NEW" "$B/$f" "/content/$f" | tail -n 1 | cut -c1-40; done
   c 120 upload -s "$NEW" "$SP/m89/m89_8.json" /content/m89_8.json | tail -n 1 | cut -c1-40
   sed "s/PARTX/$ARG/" "$B/launch_bu.py" > "$B/launch_bu_$NEW.py"
+elif [ "$KIND" = l4 ]; then        # resume the old card's campaign dir (c170f or c170g) with its done set and share (bringup_l4.sh); ARG unused
+  c 300 upload -s "$NEW" "$SP/snap/$OLD/final_snap.tgz" /content/snap.tgz | tail -n 1 | cut -c1-40
+  c 120 upload -s "$NEW" "$SP/ua10b/ua10b_cuda.tgz" /content/ua10_cuda.tgz | tail -n 1 | cut -c1-40
+  c 120 upload -s "$NEW" "$SP/m88f/kc/kc_spec_m88f.json" /content/kc_m88f.json | tail -n 1 | cut -c1-40
+  c 120 upload -s "$NEW" "$B/bringup_l4.sh" /content/bringup_l4.sh | tail -n 1 | cut -c1-40
+  sed 's#bash /content/bringup_rtx491.sh PARTX#bash /content/bringup_l4.sh#' "$B/launch_bu.py" > "$B/launch_bu_$NEW.py"
 else
   c 300 upload -s "$NEW" "$SP/snap/$OLD/final_snap.tgz" /content/snap.tgz | tail -n 1 | cut -c1-40
   c 300 upload -s "$NEW" "$ARG" /content/m88f_gpu_share.json | tail -n 1 | cut -c1-40

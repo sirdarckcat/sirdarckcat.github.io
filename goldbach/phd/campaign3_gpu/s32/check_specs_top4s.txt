@@ -1,0 +1,2 @@
+specs_q170000_m88f_top4s.json: 12000 specs OK; Q = [170000]; residual sizes 1258..1258 (mean 1258.0); moduli 88; M has 191 digits; largest N has 200 digits; all N0 distinct
+rc=0

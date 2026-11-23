@@ -10,7 +10,9 @@ C=${COVER_DIR:-/content/cover491}; V=$1; CAMP=$2; PART=$3; NPART=$4
 CAP=${CAP:-1248}; CAPMAX=${CAPMAX:-1250}; CHUNK=${CHUNK:-1000}; AHEAD=${AHEAD:-12000}
 mkdir -p $V; cd $C || exit 1
 [ -x ./covergen ] || gcc -O3 -march=native -fopenmp -o covergen covergen.c -lm || exit 1
-seq=$(ls $V 2>/dev/null | grep -c '^vec_.*[.]json$')
+# the next chunk number: above every chunk in V and, on a card that replaced another, at least V/seq0.txt (written by the bring-up from the old card's logs), so no name is reused
+seq=$(ls $V 2>/dev/null | sed -n 's/^vec_0*\([0-9][0-9]*\)[.]json$/\1/p' | sort -n | tail -n 1); seq=$(( ${seq:--1} + 1 ))
+[ -s $V/seq0.txt ] && [ "$(cat $V/seq0.txt)" -gt "$seq" ] && seq=$(cat $V/seq0.txt)
 [ -s $V/made.txt ] || python3 -c "import glob, json, sys; print(sum(len(json.load(open(f))) for f in glob.glob(sys.argv[1] + '/vec_*.json')))" $V > $V/made.txt
 while true; do
   made=$(cat $V/made.txt)

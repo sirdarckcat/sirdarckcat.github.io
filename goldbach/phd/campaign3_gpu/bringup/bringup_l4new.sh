@@ -8,6 +8,7 @@ echo "$(date -u +%FT%TZ) bring-up start (new L4 or T4, fresh campaign dir c170g,
 cd /content && tar -xzf /content/snap.tgz --exclude="bringup*" >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
 python3 -c 'import gmpy2' 2>/dev/null || pip install -q gmpy2 >> $L 2>&1
 python3 -c 'import gmpy2, cupy; print("gmpy2", gmpy2.version(), "cupy", cupy.__version__)' >> $L 2>&1
+[ -d /content/c170g ] && mv /content/c170g /content/c170g_template_$(date +%s)     # a template card's own c170g (its share, its done set) is not this card's
 mkdir -p /content/c170g && cp /content/m88f_gpu_share.json /content/c170g/my_specs.json && echo "/content/c170g" > /content/next_campaign_dir
 echo "[]" > /content/m88f_top3.json; echo "[]" > /content/m88f_top2.json
 python3 -c "import json; s = json.load(open('/content/c170g/my_specs.json')); print(len(s), 'vectors', s[0]['name'], s[-1]['name'])" >> $L

@@ -3,7 +3,7 @@
 #   /content/snap.tgz      the old card's snapshot (snap.py): trees c3g (driver f4a85df2f2d5, top placement), ua_v10 (one-pass), ua_v3/7/9, f29fr (29-bit fused-rounds kernel),
 #                          cover89 + its ledgers (kept for a 463 revert), c150cpu (CPU shares), next_campaign_env (+ _pre_onepass), deep_env_v89 (--vector-place top), scripts
 #   /content/cover491.tgz  research's 491-family generator (bbc8cd8) + part.py
-#   /content/vecgen491.sh, rowguard491.py, rowguard491.sh, kc_top_check.py
+#   /content/vecgen491.sh, rowguard491.py, rowguard491.sh, kc_top_check.py, resume491.sh (a replacement of a 491 card: its done set and ledger go on, chunk names continue)
 #   bash bringup_rtx491.sh PART      (PART = the old card's generator partition: gold-g4 0, gold-g4b 1, gold-g4c 2)
 # Steps: restore, install gmpy2, the production known case on this GPU (kc_prod.sh: 23/23 or stop), the 491 generator for PART (vec491), the campaign in a fresh dir
 # (c170r, vector mode, production's env and deep_env_v89), the 491 row guard (base after 2,000 vectors). Log: /content/bringup.log
@@ -22,6 +22,7 @@ python3 /content/kc_top_check.py >> $L 2>&1
 grep -q "KCTOP PASSED" $L || { echo "BRINGUP-FAILED known case on this GPU" >> $L; exit 1; }
 fi
 mkdir -p /content/vec491 /content/c170r
+bash /content/resume491.sh $PART >> $L 2>&1
 setsid nohup bash /content/vecgen491.sh /content/vec491 /content/c170r $PART 3 >> /content/vecgen491.log 2>&1 < /dev/null &
 for i in $(seq 1 120); do ls /content/vec491/vec_*.json > /dev/null 2>&1 && break; sleep 5; done
 ls /content/vec491/vec_*.json > /dev/null 2>&1 || { echo "BRINGUP-FAILED no 491 chunk after 10 min: $(tail -n 2 /content/vecgen491.log)" >> $L; exit 1; }
