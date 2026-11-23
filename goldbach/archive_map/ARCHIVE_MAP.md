@@ -213,3 +213,13 @@ Next useful steps, in order of value: (a) the Lean session builds the 100-file c
 states reusable lemmas against them; (b) a reader goes through `Formalism.GL3MeanSquares` (PNT-AP and
 zero-density) and `Formalism.LandauZeroFreeBounds` statement-by-statement; (c) only if someone wants the
 claim itself checked: the ~470 core-hour full build on an isolated machine, then `#print axioms riemannHypothesis`.
+
+## 10. Interactive dependency map
+
+`viz/dependency_map.html` is a self-contained page (published as the artifact "Remark Archive Map"):
+58 theorems and 62 dependencies from the claims down to the classical results, each with a plain-words
+summary, a confidence tag, and a written reason for every edge. Edges are explicit name references found by
+`tools/keygraph.py` (47 direct, 15 through short chains; the chain is shown on each edge's card).
+Rebuild: `python3 -I tools/keygraph.py <src> <out> build viz/spec.json viz/graph_raw.json`,
+`... direct viz/spec.json viz/direct.json`, then `python3 -I viz/make_data.py && python3 -I viz/make_page.py`.
+The summaries live in `viz/curation_nodes.py` and `viz/curation_edges.py`.
