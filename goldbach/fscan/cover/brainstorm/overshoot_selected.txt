@@ -1,0 +1,11 @@
+search.py (goldbach/search.py) on the Q = 60,000 cover of cover60000.txt, k in [4,000,000,000, 4,062,914,560), --sieve-b 1000000 --skip-frac 0.97 --p-est 0.0537:
+[sel60k_v0] k=[4002097152,4062914560) 1184s (51364 k/s) tests=34102014 prp=1825116 p^=0.0535 alive/k=154.8 E^=8.28 hit%=8.4 found=1188
+(a first block of 2^21 members with the same settings gave 35 more successes)
+Q = 60000: 1223 successes with selection; rows survived beyond Q: mean 41.0, model 40.8, ratio 1.004 +- 0.029; mean g - Q = 3502
+   survived >=  20 rows: 0.6206   model 0.6162
+   survived >=  40 rows: 0.3810   model 0.3797
+   survived >=  80 rows: 0.1423   model 0.1442
+   survived >= 120 rows: 0.0605   model 0.0547
+   survived >= 160 rows: 0.0245   model 0.0208
+   survived >= 200 rows: 0.0074   model 0.0079
+found against expected over the 60,817,408 members of the main run: 1188 against 1175.7 = members * (1 - p)^346 * hit mass kept (8.4%), ratio 1.010 +- 0.029

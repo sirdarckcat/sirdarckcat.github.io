@@ -88,6 +88,17 @@ number of composite rows already seen (4·10^7 tests at 75,000). The fleet's
 own tally stood at 8 found against about 8.6 expected. So the early excess was
 chance, and there is no slack hidden in the model.
 
+The same question with the fleet's selection rule (`overshoot_selected.py`,
+asked again when nine fleet successes had survived 579 rows beyond their
+thresholds against 367 expected): `goldbach/search.py` at Q = 60,000 with a
+sieve to 10^6 and only the emptiest 3% of the members tested. 60.8 million
+members gave 1,188 successes against 1,175.7 expected, and the 1,223 successes
+in all survived 41.0 rows beyond Q on average against 40.8 (ratio 1.004 ±
+0.029), with the tail as the geometric law says (6.1% survive 120 rows, model
+5.5%; 0.74% survive 200, model 0.79%). The count of successes also bounds any
+member-to-member variation of p: it could lengthen the overshoot at
+Q = 150,000 by 5% at most. The fleet's excess is within chance (z = 1.7).
+
 `crystals.py`: covers in which every modulus takes the class α/β for one
 rational α/β (the residue vectors of numbers with a short description) leave
 2,156 rows at best at Q = 213,070 against 2,283 for random classes and 1,634
@@ -161,6 +172,9 @@ high design ending empty.
   as received, and this session's verdicts as sent.
 - `oracle_floor.py`, `oracle_213070.txt`; `crystals.py`, `crystals.txt`;
   `frailty200.py`, `frailty_*.json`, `frailty_*.txt`, `cover*.txt`;
+  `overshoot_selected.py`, `overshoot_selected.txt`,
+  `overshoot_selected_found.jsonl.gz` (the successes of the selected run);
+  `portfolio_budget.py`, `portfolio_budget.txt`;
   `sieve_depth.py`, `sieve_depth.txt`; `price_list.py`, `price_list.txt`,
   `price/run_*.txt` (cover runs with `ptcover_fast.c` of the uarch session,
   branch `ccr-b8c25887-i6tn9f`).
