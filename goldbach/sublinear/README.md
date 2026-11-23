@@ -323,6 +323,20 @@ could see the deeper residues would reach the first success two hundred times
 sooner. The miniature is also where any proposed method for (P′) below can be
 tested against the truth in seconds.
 
+The miniature also checks the method of this section. The count of N by rows
+left at depth 200 predicted from residue vectors alone (tempering,
+reweighting, and the assumption that the N below X are a fair sample, here at
+e^−168 numbers per residue vector; `toy_tilt_1000_200.txt`) against the exact
+count:
+
+| rows left at depth 200 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 14 | 16 | 20 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| exact | 1 | 12 | 49 | 339 | 1,564 | 6,774 | 24,859 | 229,438 | 1,310,838 | 11,436,352 |
+| predicted | 0.9 | 7.9 | 53.8 | 311 | 1,541 | 6,582 | 24,522 | 226,760 | 1,306,248 | 11,450,782 |
+
+Agreement is within 3% wherever the count is large and within sampling noise
+at the bottom, including the single best number of the 158 million.
+
 What each prime beyond the line is worth, and costs, in the miniature (N
 ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
 100 successes; "overhead" is the number of residue vectors modulo the primes
