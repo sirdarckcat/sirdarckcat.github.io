@@ -33,6 +33,7 @@ import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
+import GoldbachGaps.Cap.Population
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -118,7 +119,14 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                Johnson radius only singleton lists, i.e. the cover, are left), `BlackBox` (a
                method that only asks members whether they are good finds one of the `g` good
                ones among `K` with `m` questions for at most the fraction `m g / K` of the
-               instances).
+               instances), `Population` (independent rows left with probabilities `s_j`:
+               `E [x^R] = ∏ (1 - s_j + s_j x)`; the members with at most `k` rows left
+               contribute at most `u^(-k) ∏ (1 - s_j + s_j y u)` to `E [y^R]`; at most `μ - a`
+               rows left has probability at most `exp (-a²/(2μ))`; whichever `m` members of a
+               population are tested, their hit mass is at most `m y^k` plus that of the
+               members with fewer than `k` rows; a merge of two lists of residue combinations
+               costs at least `2 P / (K √(a b))` per member found, so the constrained primes
+               can exceed the population by `F - C` nats and no more).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
