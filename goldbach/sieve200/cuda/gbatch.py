@@ -24,9 +24,9 @@ def _np(a):
     return a.get() if hasattr(a, "get") else np.asarray(a)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-_SRC = "".join(open(os.path.join(HERE, f)).read() for f in ("gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh"))
+_SRC = "".join(open(os.path.join(HERE, f)).read() for f in ("gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh"))
 _BCACHE = {}
-_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply")
+_NAMES = ("s200g_count", "s200g_select", "s200g_rows", "s200g_n0m", "s200g_finalize", "s200g_prep", "s200g_prep_tiles", "s200g_tile", "gbig_gen", "gbig_gen_st", "gbig_apply", "ghead_gen", "ghead_apply")
 
 
 def _batch_kernels(ks_log, llog, nthreads, tile_log, rg, ppt, stage_cap=8192, rcta=2, tile_lb=None):

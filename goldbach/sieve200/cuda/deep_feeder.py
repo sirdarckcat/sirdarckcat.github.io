@@ -60,9 +60,10 @@ def prime_tables_M(M, cover, B):
 
 class DeepSieve:
     def __init__(self, M, cover, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, ppt=4, nthreads=256, gen_threads=256, tile_threads=256,
-                 max_rows=1100, log=None, staged=None, rcta=None, stage_cap=None):
+                 max_rows=1100, log=None, staged=None, rcta=None, stage_cap=None, head_b=0, head_rows=0):
         """staged / rcta / stage_cap: the staged large-prime kernel (gbig_gen_st); None = the environment variables DEEP_STAGED (0), DEEP_RCTA (2), DEEP_STAGE_CAP (8192), so that
-        a driver script can switch it without a new patch"""
+        a driver script can switch it without a new patch.
+        head_b / head_rows: the DEEP HEAD (ghead.py): the primes in (B, head_b] on the first head_rows rows, applied after the selection to the kept members' lists (0: none)"""
         from gbatch import BatchFeeder                                   # (imports cupy)
         staged = bool(int(os.environ.get("DEEP_STAGED", "0"))) if staged is None else bool(staged)
         rcta = int(os.environ.get("DEEP_RCTA", "2")) if rcta is None else int(rcta)
@@ -74,6 +75,14 @@ class DeepSieve:
         self.fd = BatchFeeder(S, INV, U0, np.zeros(S.size, dtype=np.uint32), ks_log=ks_log, tile_log=tile_log, llog=llog, f=f, p_est=p_est, nthreads=nthreads, split=split, rg=rg,
                               ppt=ppt, gen_threads=gen_threads, tile_threads=tile_threads, max_rows=max_rows, staged=staged, rcta=rcta, stage_cap=stage_cap)
         self.M, self.B, self.max_rows = int(M), int(B), int(max_rows)
+        self.head_b, self.head_rows = int(head_b), int(head_rows)
+        if self.head_b > self.B and self.head_rows > 0:
+            import ghead
+            th = time.time()
+            S2, INV2 = ghead.prime_tables_range(M, cover, B, head_b)
+            self.fd.head = ghead.HeadStage(S2, INV2, head_rows, ks_log, tile_log, rg, self.fd.k, threads=nthreads)
+            if log:
+                log(f"deep head: {S2.size:,} primes in ({B:,}, {head_b:,}] on the first {head_rows} rows, applied after the selection ({time.time() - th:.1f} s tables, {S2.size * 40 / 2**20:.0f} MB of device memory)")
         self.nprimes, self.n_small, self.n_large = int(S.size), self.fd.n_small, self.fd.n_large
         if log:
             log(f"deep sieve: {'staged' if staged else 'plain'} large-prime kernel{f' (rcta {rcta}, stage {stage_cap})' if staged else ''}; M with {len(cover)} cover primes excluded, {S.size:,} primes below {B:,} ({self.n_small:,} in the tile kernel, {self.n_large:,} in the large-prime stage), "
@@ -84,7 +93,8 @@ class DeepSieve:
         return self.fd.retarget(N0, rows)
 
 
-def deep_feeder_for(state, spec, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, max_rows=1100, nthreads=256, gen_threads=256, tile_threads=256, log=print):
+def deep_feeder_for(state, spec, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_est=0.055, split=1_000_000, rg=16, max_rows=1100, nthreads=256, gen_threads=256, tile_threads=256, log=print,
+                    head_b=0, head_rows=0):
     """search_gpu5's feeder_for for the deep sieve: state is a dict kept by the caller (it holds the DeepSieve of the current M); spec a campaign spec (M, N0, residual, cover)."""
     M = int(spec["M"])
     ds = state.get("ds")
@@ -92,5 +102,5 @@ def deep_feeder_for(state, spec, B, ks_log=25, tile_log=19, llog=15, f=0.97, p_e
         state.clear()
         cover = [int(r) for r, _ in spec.get("cover", [])]
         state["ds"] = ds = DeepSieve(M, cover, B, ks_log=ks_log, tile_log=tile_log, llog=llog, f=f, p_est=p_est, split=split, rg=rg, nthreads=nthreads, gen_threads=gen_threads,
-                                      tile_threads=tile_threads, max_rows=max_rows, log=log)
+                                      tile_threads=tile_threads, max_rows=max_rows, log=log, head_b=head_b, head_rows=head_rows)
     return ds.feeder(int(spec["N0"]), [int(q) for q in spec["residual"]])

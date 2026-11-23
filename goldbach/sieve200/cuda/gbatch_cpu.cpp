@@ -3,6 +3,7 @@
 #include "gsieve_cpu.cpp"
 #include "gbig_kernels.cuh"
 #include "gbatch_kernels.cuh"
+#include "ghead_kernels.cuh"
 
 struct gen_args { const u32 *U; const uint4 *TAB; int nP, row0, nrows; u32 cap; u32 *gcnt; u32 *bins; };
 static void gen_tramp(void *a) { gen_args *x = (gen_args *)a; gbig_gen(x->U, x->TAB, x->nP, x->row0, x->nrows, x->cap, x->gcnt, x->bins); }
@@ -39,3 +40,20 @@ extern "C" void cpu_tile(int nrows, const u32 *U, int row0, const uint4 *TABT, i
 extern "C" int cpu_ntiles() { return NTILES; }
 extern "C" int cpu_tile_words() { return TILE_WORDS; }
 extern "C" int cpu_nbins() { return NBINS; }
+struct hgen_args { const u32 *U; const uint4 *TAB; int nP, row0, nrows; u32 cap; u32 *gcnt; u32 *bins; };
+static void hgen_tramp(void *a) { hgen_args *x = (hgen_args *)a; ghead_gen(x->U, x->TAB, x->nP, x->row0, x->nrows, x->cap, x->gcnt, x->bins); }
+extern "C" void cpu_head_gen(const u32 *U, const uint4 *TAB, int nP, int row0, int nrows, u32 cap, u32 *gcnt, u32 *bins, int threads) {
+    hgen_args a{U, TAB, nP, row0, nrows, cap, gcnt, bins};
+    const int per = threads * HEAD_PPT;
+    run_grid((nP + per - 1) / per, threads, 0, hgen_tramp, &a);
+}
+struct happly_args { int row0; const u32 *gcnt, *bins; u32 cap; u32 *bits; const int *slot_of; u32 *dcnt; };
+static void happly_tramp(void *a) { happly_args *x = (happly_args *)a; ghead_apply(x->row0, x->gcnt, x->bins, x->cap, x->bits, x->slot_of, x->dcnt); }
+/* grid (nrows, NTILES): the emulation runs the tiles one after the other, like the tile kernel's */
+extern "C" void cpu_head_apply(int nrows, int row0, const u32 *gcnt, const u32 *bins, u32 cap, u32 *bits, const int *slot_of, u32 *dcnt, int threads) {
+    happly_args a{row0, gcnt, bins, cap, bits, slot_of, dcnt};
+    for (unsigned ty = 0; ty < NTILES; ty++) {
+        blockIdx.y = ty;
+        run_grid(nrows, threads, (size_t)TILE_WORDS * 4, happly_tramp, &a);
+    }
+}

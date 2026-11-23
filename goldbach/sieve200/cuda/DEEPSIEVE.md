@@ -358,3 +358,48 @@ are in flight and the batch grows with it); Fermat streams at the sieve's priori
 so production stays on a2: the three RTX PRO 6000s run 1.543 s a batch over their first ~100 batches (1.76 s this morning: **x1.14**).  What would still be left on the RTX, by the accounting above: the probe says 1.45 s is
 reachable if the driver lost no more than the probe does (Fermat kernels x1.08-1.10 beside the sieve, no gaps), i.e. at most ~6% more, for a re-engineering of the Fermat round (a fused per-round update kernel in place of its
 ~100 small cupy kernels and ~6 host syncs, so that the sieve's priority cannot delay them) and of the sieve's instruction count (the sieve taxes the Fermat kernels in proportion to its work).  Not started.
+
+
+## The deep head (23 Nov 2026, 11:45Z; CPU-verified, not yet run on a GPU): the primes in (1e8, 1e9] on the first 64 rows, applied AFTER the selection
+
+**Idea.**  A member's alive rows (no factor below B = 1e8) are tested in ascending q until the first probable prime, so the first rows carry most of the Fermat tests: a row of index i is reached with probability ~exp(-0.0228 i),
+the first 64 rows take ~74% of all tests and the first ~100 rows ~86-90%.  An alive row has a prime factor in (1e8, 1e9] with probability 1 - ln B / ln B2 = 11.1% (those rows are composite and their Fermat test is wasted).
+A full sieve to 1e9 would cost ~10x the present one (46.8M primes against 5.4M, 1,248 rows); sieving **only the first 64 rows by those primes, only after the count / select / finalize**, costs a visit of 46.8M x 64 pairs and
+~1.3e8 marks (a prime above 2^24 marks a row at most once a window) per 2^24 window: **8.4-8.6% of the Fermat tests disappear for ~7-15 ms of GPU time a window** (headcost: 15.4 ms at rcta 8 for the two-pass
+stage; the single-pass kernel here skips the counting pass: ~9 ms expected, to be measured).  Net at the vector mode's numbers (a batch = 4 windows, 1.2 s of Fermat tests in 1.575 s, a ms of sieve work costs ~0.55 ms of a batch):
+**+4-6% of a batch**, ~86% of the fleet's output.
+
+**What does NOT change.**  The count, the selection of the emptiest 3%, `alive_total`, `hm_all`, `hm_kept` stay those of the B = 1e8 sieve (the head runs after them), so the kept members are the same, every member's first-PRP
+row, its success flag and its near-misses are the same as without the head (only COMPOSITE rows leave a list: a row the head removes has a prime factor and could never have been the first PRP; a success needs all rows composite,
+head-removed ones included), and the members are statistically the members of the production run.  What changes: `cnt` (the list lengths) get shorter, the Window keeps the old counts as `cnt_acc`.
+
+**Kernels** (`ghead_kernels.cuh`, `ghead.py`; `HeadStage`):
+* `ghead_gen` - a thread takes HEAD_PPT = 4 primes, reads each one's table entry ONCE ({s, M^-1, Shoup constant, c0 of the window}, made by the existing `s200g_prep` for the head's primes) and visits all rows of the group
+  (q values in shared memory): `a = q M^-1 mod s` by Shoup's trick, `j = a + s - c0` mod s; a mark (`j < 2^24`) is appended to the bin of (row, tile): `slot = atomicAdd(&gcnt[bin], 1)`, `bins[bin * cap + slot] = j & TILE_MASK`;
+  a slot >= cap sets the overflow flag `gcnt[NBINS]` (not written: the host repeats the head with `cap` grown to the demand; marks are idempotent).  No counting pass and no staging: the marks are rare (17% of the pairs at 1e8, 1.7% at 1e9).
+* `ghead_apply` - a CTA a (row, tile) reads its 64 KB tile of the bit matrix into shared memory, clears the marked bits with `atomicAnd`, and **counts a bit that was still set for its member** (`slot_of[k] >= 0`: a kept member) with
+  `atomicAdd(&dcnt[slot], 1)`: the new `cnt = cnt - dcnt` (a bit cleared by two head primes counts once).  The tile is written back; the CSR offsets are recomputed with a cumsum; the `rows` kernel then writes the shortened lists.
+* Memory: 46.8M primes x 40 B (s, M^-1, Shoup constant, mu, N0 mod s, a 16-byte table) = 1.87 GB of device memory, bins 1,024 x 65k x 4 B = 0.27 MB x 1000 = ~270 MB; host: a numpy sieve to 1e9 once (~1 minute, ~1 GB).
+  `retarget(N0)` (a vector's N0 mod s for 46.8M primes) and `s200g_prep` (the window's c0) cost ~1 ms together a window.
+
+**The expected-hit accounting** (the one thing the driver must change; `search_gpu5_head.patch`).  The driver estimates p^ = PRPs / tests and sums `(1 - p^)^count` over the members for "expected hits" and the near-miss
+expectation.  With the head the tests on the head rows have a higher rate (a surviving head row is prime with p / (1 - c), c = the fraction of head rows removed) and the counts are shorter, so the naive estimate is wrong by 10x
+(`test_head_accounting.py`: 0.09x).  The patch measures c per flush (`removed / (removed + head rows left)`) and uses p_mod = all PRPs / (tests on the head rows / (1 - c) + tests past them) with the PRE-head count `cnt_acc` as the
+exponent (and `cb + (cnt_acc - cnt)` for the near-miss expectation): +0.40% hits and +0.39% near-miss against the production accounting on a 400,000-member simulation with the same random draws, where the first-PRP rows,
+successes and PRP flags are identical and the tests fall 8.40%.  `p^` of the status line (`phat`) is computed from the tests past the head rows only (= P(prime | alive on the B sieve), what it is without a head).
+
+**Tests (all CPU, `sieve200/cuda`)**: `test_ghead_cpu.py` - the head on the CPU emulation of the batch kernels against a numpy brute force (a head prime divides N0 - q + k M) for 3 geometries x 2 windows (staged / plain
+large-prime stage, rcta 2 / 4, rg 3 / 4 / 8, tile 2^11 / 2^12): kept members, `alive_total`, `hm_all`, `hm_kept` identical with and without the head, `cnt_acc` = the old `cnt`, `cnt` / `offs` / `rows` = the brute-force lists, CSR
+consistent, non-vacuous (removed rows > 0), a bin capacity far too small (overflow, repeat) gives the same window, a second call gives the same window; and through `DeepSieve(head_b, head_rows)` over the variants A B A C B and
+`deep_feeder_for` passing the arguments through; `test_head_accounting.py` - the accounting above; the earlier regression suites (`test_gbatch_cpu.py`, `test_gbatch_defer_cpu.py`, `test_gpu_sieve_cpu.py`,
+`test_deep_feeder_cpu.py`) are unchanged by the hooks (ALL IDENTICAL).
+
+**What to run on a GPU, in this order** (the gate the GPU session set: first-PRP rows, successes and near-misses identical to production on the same windows; logged expected values within ~1%):
+1. `python3 headcheck.py /content/m89_8.json --rg 32 --rcta 8` (one RTX; ~1 minute of table building, then a window without and with the head on the first 200-digit k of the vector): checks (1) kept members and statistics identical,
+   `cnt_acc` = the old `cnt`, the new lists are subsets of the old ones and only rows < 64 leave; (2) the fraction removed (11.1% expected) and the predicted fall of the tests (~8.4%); (3) sampled removed rows really have a
+   prime factor in (1e8, 1e9] and sampled kept head rows none (Python integers); (4) the cost of the head in ms.  Prints `HEADCHECK-OK`.
+2. The same fixed windows in the driver with and without the head: `search_gpu5.py ... --deep --deep-head-b 1000000000 --deep-head-rows 64 --dump-members /tmp/head` against the base run `--dump-members /tmp/base`
+   (apply `search_gpu5_head.patch`; it applies together with `search_gpu5_k29.patch`, not after the persistent-kernel patch), then `python3 compare_dumps.py /tmp/base /tmp/head`: **`DUMPS-IDENTICAL`** (per member sid / k / first-PRP
+   row / success) and the counted tests ~8.4% lower.  Compare the logged expected hits and the near-miss expectation (`--log-near-exp`) of the two runs: within ~1%.
+3. A batch time with and without it over ~50 batches (a2 pipeline, `DEEP_RCTA=8`, `--deep-gen-threads 512` if wcost3 says so): the gain is the number that decides; below +2% it is not worth the 1.9 GB.
+Not for the L4 / T4 / A100 (overlap gave nothing there; 16-24 GB cards would also pay 1.9 GB).

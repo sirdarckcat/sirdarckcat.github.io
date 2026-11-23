@@ -61,7 +61,7 @@ def _kernels(klog, llog, nthreads, unroll=1):
 
 
 class Window:
-    __slots__ = ("k", "cnt", "offs", "rows", "block", "alive_total", "hm_all", "hm_kept", "k0", "L", "timings")
+    __slots__ = ("k", "cnt", "offs", "rows", "block", "alive_total", "hm_all", "hm_kept", "k0", "L", "timings", "cnt_acc")      # cnt_acc: the alive rows of the kept members on the B sieve (= cnt without a deep head)
 
 
 class GpuFeeder:
@@ -96,6 +96,7 @@ class GpuFeeder:
             self.k["s200g_sieve_sh"].max_dynamic_shared_size_bytes = self.smem
         self.tab = cp.empty((self.sh["nS"], 4), dtype=cp.uint32) if (self.shoup and plain_sieve) else None     # {s, M^-1, invp, c0} a prime
         self._tmp = {}
+        self.head = None                                                          # a ghead.HeadStage (the deep head: primes in (B, B2] on the first rows, applied after select), set by deep_feeder.DeepSieve
 
     @classmethod
     def from_search_G(cls, G, **kw):
@@ -122,6 +123,8 @@ class GpuFeeder:
         self.nU = int(U.size)
         self.bits = self._bits_root[:self.nU]
         self.N0M = self._n0m(N0)
+        if self.head is not None:
+            self.head.retarget(N0)
         return self
 
     def with_N0(self, N0, U):
@@ -203,6 +206,9 @@ class GpuFeeder:
         self.k["s200g_finalize"]((1,), (nt,), (keys, np.int32(nsel), np.int32(max(nkeep, 1)), np.uint64(k0), cnt, member, kv, offs, total))
         if timings:
             ev[5].record()
+        cnt_acc = cnt
+        if self.head is not None and nsel:                         # the deep head: clear the head primes' marks in the first rows and shorten the kept members' lists (statistics stay on the B sieve)
+            cnt, offs, total = self.head.apply(self, k0, member, cnt, offs, total, nsel)
         tot = int(total[0])                                        # the one wait for the device before the rows can be allocated
         rows = cp.empty(tot, dtype=cp.uint16)
         if timings:
@@ -225,6 +231,7 @@ class GpuFeeder:
         w.alive_total = np.rint(st[:, 0]).astype(np.int64)
         w.hm_all, w.hm_kept = st[:, 1], st[:, 2]
         w.k, w.cnt, w.offs, w.rows = kv, cnt, offs, rows
+        w.cnt_acc = cnt_acc
         w.block = (cp.arange(nsel, dtype=cp.int32) // max(nkeep, 1)).astype(cp.int32)
         return w
 

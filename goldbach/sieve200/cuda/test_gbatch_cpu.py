@@ -18,7 +18,7 @@ import test_gsieve
 
 def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2):
     out = os.path.join(HERE, f"libgbatch_cpu_{ks}_{llog}_{nth}_{tile}_{rg}_{ppt}_{stage_cap}_{rcta}.so")
-    srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh")]
+    srcs = [os.path.join(HERE, f) for f in ("gbatch_cpu.cpp", "gsieve_cpu.cpp", "gsieve_kernels.cuh", "gbig_kernels.cuh", "gbatch_kernels.cuh", "ghead_kernels.cuh")]
     if not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(s) for s in srcs):
         subprocess.check_call(["g++", "-O2", "-std=c++17", f"-DKLOG={ks}", f"-DKS_LOG={ks}", f"-DTILE_LOG={tile}", f"-DLLOG={llog}", f"-DNTHREADS={nth}", f"-DRG={rg}", f"-DPPT={ppt}", f"-DSTAGE_CAP={stage_cap}", f"-DRCTA={rcta}", f"-DRCTA_LOG={rcta.bit_length() - 1}",
                                "-DMAXKEEP_SORT=8192u", "-DS200G_UNROLL=1", "-Wno-unused-variable", "-Wno-unknown-pragmas", "-shared", "-fPIC", "-o", out, srcs[0], "-lpthread"])
@@ -36,6 +36,8 @@ def build(ks, llog, nth, tile, rg, ppt, stage_cap=8192, rcta=2):
     lib.cpu_tile.argtypes = [ctypes.c_int, vp, ctypes.c_int, vp, ctypes.c_int, vp, vp, ctypes.c_uint32, vp, ctypes.c_int]
     lib.cpu_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
     lib.cpu_gen_st.argtypes = [vp, vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
+    lib.cpu_head_gen.argtypes = [vp, vp, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_uint32, vp, vp, ctypes.c_int]
+    lib.cpu_head_apply.argtypes = [ctypes.c_int, ctypes.c_int, vp, vp, ctypes.c_uint32, vp, vp, vp, ctypes.c_int]
     return lib
 
 
@@ -55,6 +57,12 @@ class _Fn(TG._Fn):
         elif self.name == "gbig_gen_st":
             U, TAB, pstart, row0, nrows, cap, gcnt, bins = args
             L.cpu_gen_st(P(U), P(TAB), P(pstart), int(grid[0]), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+        elif self.name == "ghead_gen":
+            U, TAB, nP, row0, nrows, cap, gcnt, bins = args
+            L.cpu_head_gen(P(U), P(TAB), int(nP), int(row0), int(nrows), int(cap), P(gcnt), P(bins), int(block[0]))
+        elif self.name == "ghead_apply":
+            row0, gcnt, bins, cap, bits, slot_of, dcnt = args
+            L.cpu_head_apply(int(grid[0]), int(row0), P(gcnt), P(bins), int(cap), P(bits), P(slot_of), P(dcnt), int(block[0]))
         else:
             super().__call__(grid, block, args, shared_mem)
 
