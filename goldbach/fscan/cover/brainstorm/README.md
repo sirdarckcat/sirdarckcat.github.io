@@ -122,7 +122,7 @@ production is at 4.64 by the same model, with B = 10^6 and 3% kept.)
    instead of per window of 2^19.
    Outcome: in production since 23 Nov 01:30Z on the three RTX PRO 6000s at
    B = 10^8 (the engine session's bucketed large-prime stage; measured mark
-   cost 0.030 ns, 0.10 ns on the L4, which stays at 10^6): 1.42 times the
+   cost 0.030 ns, 0.10 ns on the L4, which stays at 10^6): 1.38 times the
    expected successes per batch for 1.05 times the time, 1.32 times per
    second, about +28% for the fleet (`phd/campaign3_gpu/README.md` on the
    fleet's branch). The model's row for 0.03 ns a mark says 1.3 at 2^28
