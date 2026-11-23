@@ -38,10 +38,11 @@ irreducible factors of `N - Q` is even exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) 
 characteristic, where about half of the rows are killed (`desert_general`).
 
 The desert is larger than the degrees up to `J + 1`. The hypothesis is only that every
-irreducible factor of `Q'` divides `N`, so `N = c · V^p` kills every row, of any degree below
-`deg N`, whose derivative has no irreducible factor of degree above `J` (`desert_smooth`,
-`desert_smooth_general`): a positive proportion of the rows of each degree, and all but about
-`1 / (J + 1)` of those of degree `J + 2`.
+irreducible factor of `Q'` divides `N`, so `N = c · V^p` kills every row, of any degree `d`
+below `deg N` with `p ∤ d`, whose derivative has no irreducible factor of degree above `J`
+(`desert_smooth`): a positive proportion of the rows of each such degree, and all but about
+`1 / (J + 1)` of those of degree `J + 2`. For `p ∣ d` the rows killed are those that also meet
+the sign criterion above (`desert_smooth_general`).
 
 The statement and its numerical confirmation are the research session's
 (`goldbach/sublinear/README.md`, Result 1).
@@ -205,6 +206,103 @@ theorem discr_sub_general_aux {N Q : F[X]} {n d e : ℕ} {lam l : F} (hNn : N.na
   linear_combination (-1 : F) ^ (n * (n - 1) / 2) * key - lam * discr (N - Q) * hs3
     + (-1 : F) ^ (n * (n - 1) / 2) * (-1) ^ n * (-1) ^ (n * e) * (-1) ^ e * (-1) ^ (e * d)
         * (-1) ^ (d * (d - 1) / 2) * l ^ (n - d) * discr Q * hpow
+
+/-- The discriminant of `N - Q` for `N' = 0`, with no condition on the roots of `Q'`, in
+terms of named degrees. -/
+theorem discr_sub_eq_resultant_aux {N Q : F[X]} {n e : ℕ} {lam : F} (hNn : N.natDegree = n)
+    (hNl : N.leadingCoeff = lam) (hQe : (derivative Q).natDegree = e)
+    (hN : derivative N = 0) (hQ' : derivative Q ≠ 0) (hlt : Q.natDegree < n) :
+    discr (N - Q) =
+      (-1) ^ (n * (n - 1) / 2 + n + n * e) * lam ^ (n - 2 - e)
+        * resultant (derivative Q) (N - Q) e n := by
+  have hd0 : Q.natDegree ≠ 0 := by
+    intro h0
+    apply hQ'
+    rw [eq_C_of_natDegree_eq_zero h0, derivative_C]
+  have hed : e < Q.natDegree := by
+    rw [← hQe]
+    exact natDegree_derivative_lt hd0
+  have hN0 : N ≠ 0 := by
+    intro h
+    rw [h, natDegree_zero] at hNn
+    omega
+  have hlam0 : lam ≠ 0 := by
+    rw [← hNl]
+    exact leadingCoeff_ne_zero.mpr hN0
+  have hlt' : Q.natDegree < N.natDegree := by rw [hNn]; exact hlt
+  have hfn : (N - Q).natDegree = n := by
+    rw [natDegree_sub_eq_left_of_natDegree_lt hlt', hNn]
+  have hfl : (N - Q).leadingCoeff = lam := by
+    rw [leadingCoeff_sub_of_degree_lt (degree_lt_degree hlt'), hNl]
+  have hfc : (N - Q).coeff n = lam := by
+    rw [← hfl, leadingCoeff, hfn]
+  have hfpos : 0 < (N - Q).degree := by
+    rw [← natDegree_pos_iff_degree_pos, hfn]
+    omega
+  have hfd : derivative (N - Q) = C (-1 : F) * derivative Q := by
+    rw [derivative_sub, hN, zero_sub, C_neg, C_1, neg_one_mul]
+  have eA : resultant (N - Q) (derivative (N - Q)) n (n - 1) =
+      (-1) ^ (n * (n - 1) / 2) * lam * discr (N - Q) := by
+    have h := resultant_deriv hfpos
+    rwa [hfn, hfl] at h
+  have hk : n - 1 = e + (n - 1 - e) := by omega
+  have eB0 := resultant_add_right_deg (N - Q) (derivative Q) n e (n - 1 - e) (le_of_eq hQe)
+  rw [← hk, hfc] at eB0
+  have eB : resultant (N - Q) (derivative (N - Q)) n (n - 1) =
+      (-1) ^ n * (lam ^ (n - 1 - e) * ((-1) ^ (n * e) *
+        resultant (derivative Q) (N - Q) e n)) := by
+    rw [hfd, resultant_C_mul_right, eB0, resultant_comm (N - Q) (derivative Q) n e]
+  have hs3 : (-1 : F) ^ (n * (n - 1) / 2) * (-1) ^ (n * (n - 1) / 2) = 1 := by
+    rw [← mul_pow]
+    simp
+  have hpow : lam ^ (n - 1 - e) = lam ^ (n - 2 - e) * lam := by
+    rw [← pow_succ]
+    congr 1
+    omega
+  have key : (-1 : F) ^ (n * (n - 1) / 2) * lam * discr (N - Q) =
+      (-1) ^ n * (lam ^ (n - 1 - e) * ((-1) ^ (n * e) *
+        resultant (derivative Q) (N - Q) e n)) := by
+    rw [← eA, eB]
+  apply mul_left_cancel₀ hlam0
+  rw [pow_add, pow_add]
+  linear_combination (-1 : F) ^ (n * (n - 1) / 2) * key - lam * discr (N - Q) * hs3
+    + (-1 : F) ^ (n * (n - 1) / 2) * (-1) ^ n * (-1) ^ (n * e)
+        * resultant (derivative Q) (N - Q) e n * hpow
+
+/-- **The discriminant of `N - Q` for `N' = 0`, in general.** Over any field, with no condition
+on the roots of `Q'`: if `N' = 0`, `Q' ≠ 0` and `deg Q < n = deg N`, then with `λ` the leading
+coefficient of `N` and `e = deg Q'`,
+`discr (N - Q) = (-1)^(n(n-1)/2 + n + ne) · λ^(n-2-e) · Res(Q', N - Q)`.
+So the discriminant, a quantity of degree `2n - 2` in the coefficients, is a resultant with the
+derivative of the row, a polynomial of degree below `deg Q`. -/
+theorem discr_sub_eq_resultant {N Q : F[X]} (hN : derivative N = 0) (hQ' : derivative Q ≠ 0)
+    (hlt : Q.natDegree < N.natDegree) :
+    discr (N - Q) =
+      (-1) ^ (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree
+          + N.natDegree * (derivative Q).natDegree)
+        * N.leadingCoeff ^ (N.natDegree - 2 - (derivative Q).natDegree)
+        * resultant (derivative Q) (N - Q) (derivative Q).natDegree N.natDegree :=
+  discr_sub_eq_resultant_aux rfl rfl rfl hN hQ' hlt
+
+/-- **The discriminant of `N - Q` depends on `N` only through its degree, its leading
+coefficient and its residue modulo `Q'`** (for `N' = 0`). -/
+theorem discr_sub_congr {N₁ N₂ Q : F[X]} (hN₁ : derivative N₁ = 0) (hN₂ : derivative N₂ = 0)
+    (hQ' : derivative Q ≠ 0) (hlt : Q.natDegree < N₁.natDegree)
+    (hdeg : N₁.natDegree = N₂.natDegree) (hlc : N₁.leadingCoeff = N₂.leadingCoeff)
+    (hmod : derivative Q ∣ N₁ - N₂) :
+    discr (N₁ - Q) = discr (N₂ - Q) := by
+  have hlt₂ : Q.natDegree < N₂.natDegree := hdeg ▸ hlt
+  rw [discr_sub_eq_resultant hN₁ hQ' hlt, discr_sub_eq_resultant hN₂ hQ' hlt₂, hdeg, hlc]
+  congr 1
+  have h := resultant_congr_of_roots (g := derivative Q) (h₁ := N₁ - Q) (h₂ := N₂ - Q)
+    (n₁ := N₂.natDegree) (n₂ := N₂.natDegree)
+    (by rw [natDegree_sub_eq_left_of_natDegree_lt hlt, hdeg])
+    (by rw [natDegree_sub_eq_left_of_natDegree_lt hlt₂]) le_rfl
+    (fun π _ hπd => by
+      have e : N₁ - Q - (N₂ - Q) = N₁ - N₂ := by ring
+      rw [e]
+      exact hπd.trans hmod)
+  rw [h, Nat.sub_self, pow_zero, one_mul]
 
 /-- **The general discriminant identity.** Over any field: if `N' = 0`, `Q` is monic with
 `Q' ≠ 0` and `deg Q < deg N`, and every irreducible factor of `Q'` divides `N`, then with
@@ -690,6 +788,46 @@ theorem desert_smooth_general (hF : ringChar F ≠ 2)
   intro hirr
   rw [normalizedFactors_irreducible hirr, Multiset.card_singleton] at hev
   exact absurd hev (by decide)
+
+/-- **The parity of the number of irreducible factors of `N - Q` for `N' = 0`, in general.**
+Over a finite field of odd characteristic, with no condition on the roots of `Q'`: if `N' = 0`,
+`Q' ≠ 0`, `deg Q < n = deg N` and `N - Q` is squarefree, then with `r` the number of
+irreducible factors of `N - Q`, `λ` the leading coefficient of `N` and `e = deg Q'`,
+`(-1)^(n + r) = χ(-1)^(n(n-1)/2 + n + ne) · χ(λ)^(n-2-e) · χ(Res(Q', N - Q))`.
+The last factor is a quadratic symbol of `N - Q` modulo `Q'`; it is what the parity filter of
+the research session computes. -/
+theorem parity_card_factors_resultant (hF : ringChar F ≠ 2) {N Q : F[X]}
+    (hN : derivative N = 0) (hQ' : derivative Q ≠ 0) (hlt : Q.natDegree < N.natDegree)
+    (hsq : Squarefree (N - Q)) :
+    (-1 : ℤ) ^ (N.natDegree + Multiset.card (normalizedFactors (N - Q))) =
+      quadraticChar F (-1) ^ (N.natDegree * (N.natDegree - 1) / 2 + N.natDegree
+          + N.natDegree * (derivative Q).natDegree)
+        * quadraticChar F N.leadingCoeff ^ (N.natDegree - 2 - (derivative Q).natDegree)
+        * quadraticChar F
+            (resultant (derivative Q) (N - Q) (derivative Q).natDegree N.natDegree) := by
+  have h1 := stickelbergerSwan F hF (N - Q) hsq
+  rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h1
+  rw [← h1, discr_sub_eq_resultant hN hQ' hlt, map_mul, map_mul, map_pow, map_pow]
+
+/-- **The parity depends on `N` only through its degree, its leading coefficient and its
+residue modulo `Q'`.** If `N₁` and `N₂` have zero derivative, the same degree `> deg Q` and the
+same leading coefficient, and `Q'` divides `N₁ - N₂`, then `N₁ - Q` and `N₂ - Q` (both
+squarefree) have numbers of irreducible factors of the same parity. -/
+theorem parity_card_factors_congr (hF : ringChar F ≠ 2) {N₁ N₂ Q : F[X]}
+    (hN₁ : derivative N₁ = 0) (hN₂ : derivative N₂ = 0) (hQ' : derivative Q ≠ 0)
+    (hlt : Q.natDegree < N₁.natDegree) (hdeg : N₁.natDegree = N₂.natDegree)
+    (hlc : N₁.leadingCoeff = N₂.leadingCoeff) (hmod : derivative Q ∣ N₁ - N₂)
+    (hsq₁ : Squarefree (N₁ - Q)) (hsq₂ : Squarefree (N₂ - Q)) :
+    (-1 : ℤ) ^ Multiset.card (normalizedFactors (N₁ - Q)) =
+      (-1 : ℤ) ^ Multiset.card (normalizedFactors (N₂ - Q)) := by
+  have hlt₂ : Q.natDegree < N₂.natDegree := hdeg ▸ hlt
+  have h1 := stickelbergerSwan F hF (N₁ - Q) hsq₁
+  have h2 := stickelbergerSwan F hF (N₂ - Q) hsq₂
+  rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h1
+  rw [natDegree_sub_eq_left_of_natDegree_lt hlt₂] at h2
+  rw [discr_sub_congr hN₁ hN₂ hQ' hlt hdeg hlc hmod, h2, hdeg, pow_add, pow_add] at h1
+  have hn0 : (-1 : ℤ) ^ N₂.natDegree ≠ 0 := pow_ne_zero _ (by norm_num)
+  exact (mul_left_cancel₀ hn0 h1).symm
 
 end FiniteField
 

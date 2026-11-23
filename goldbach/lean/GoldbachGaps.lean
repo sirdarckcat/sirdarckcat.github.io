@@ -2,6 +2,7 @@ import GoldbachGaps.Basic
 import GoldbachGaps.Effective
 import GoldbachGaps.Covering
 import GoldbachGaps.Counting
+import GoldbachGaps.Mertens
 import GoldbachGaps.CoverBound
 import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
@@ -13,8 +14,14 @@ import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
-import GoldbachGaps.Cover15787
+import GoldbachGaps.Cover15907
 import GoldbachGaps.Records
+import GoldbachGaps.Needles
+import GoldbachGaps.NeedlePairs
+import GoldbachGaps.NeedleClusters
+import GoldbachGaps.RankPatterns
+import GoldbachGaps.RankData
+import GoldbachGaps.RankTable
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -38,6 +45,7 @@ import GoldbachGaps.Cap.Tilt
 import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
+import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -47,6 +55,7 @@ import GoldbachGaps.Gpu28.Final
 import GoldbachGaps.Gpu28.Kernel
 import GoldbachGaps.FunctionField.Stickelberger
 import GoldbachGaps.FunctionField.ParityDesert
+import GoldbachGaps.FunctionField.DesertDegree
 
 /-!
 # Least Goldbach summands in Lean
@@ -62,14 +71,21 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (paper Proposition `prop:cover`, Theorem `thm:coverdirichlet`).
 * `Counting` – the counting bound: for large `X` some even `n` in `(X, 2X]` has no
                Goldbach summand below `log X · log log X / 48`.
+* `Mertens`  – Mertens' third theorem, `log w · ∏_{p ≤ w} (1 - 1/p) → e^{-γ}`
+               (`Mertens.mertens_third`), which is not in Mathlib (November 2026), proved from
+               Mathlib by the classical route: Mertens' first theorem from `log N!` and
+               Chebyshev's bound, Abel summation to `∑_{n ≤ t} Λ(n)/(n log n) - log log t → c`,
+               the Dirichlet series `log ζ(s)` of the same sum, and the integral for `γ` as
+               `s → 1` to get `c = γ`.
 * `CoverBound` – the same order by a covering construction, with a better constant: for
                all large `X` there is an even `N ≤ X` with `N - q` composite for every prime
-               `q < 0.73 · log X · log log X` (`eventually_exists_even_le_no_summand`;
-               counting pairs cannot exceed `1/2`), and for every
-               `c < e^γ / (2 C₂) = 1.349…` if Mertens' third theorem is granted (a named
-               hypothesis, `eventually_exists_even_le_of_mertensThird`). Inputs: the layered
-               cover of `Cap.Layers`, the prime number theorem from Mathlib, and an elementary
-               bound `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ 1.367 / log w`.
+               `q < c · log X · log log X`, for every `c < e^γ / (2 C₂) = 1.349…`
+               (`eventually_exists_even_le_of_mul_lt_one`, no hypothesis; counting pairs
+               cannot exceed `1/2`), explicitly for `c = 1.2`
+               (`eventually_exists_even_le_no_summand_six_fifths`), and for `c = 0.73` without
+               Mertens' theorem (`eventually_exists_even_le_no_summand`). Inputs: the layered
+               cover of `Cap.Layers`, the prime number theorem from Mathlib, `Mertens`, and an
+               elementary bound `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ 1.367 / log w`.
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
@@ -77,12 +93,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                of a block has `N - q` divisible by a covering modulus, so the bound on the
                least summand needs no primality or compositeness test
                (`scripts/gen_cover.py` generates instances).
-* `Cover15787` – generated instance: a 193-digit even `N` (and the 21,378,977 members
+* `Cover15907` – generated instance: a 193-digit even `N` (and the 21,378,978 members
                `N + t M` of its progression below `10^200`) with `N - q` divisible by a prime
-               `r ≤ 463` for each of the 1,840 primes `q < 15787`. It is the complete cover on
+               `r ≤ 463` for each of the 1,853 primes `q < 15907`. It is the complete cover on
                the 89 odd primes up to 463 found by the research session
-               (`goldbach/sublinear/complete_cover_15787.txt`, branch `ccr-d4a17dd0-7uu03r`);
-               closed statements in `Records`.
+               (`goldbach/sublinear/complete_cover_15907.txt`, branch `ccr-d4a17dd0-7uu03r`,
+               commit `9e99b06`), the best of three on 2026-11-23; the certificates of the
+               earlier covers to 15787 and 15877 were at commits `8c061b4` and `7c4568c` of
+               this branch and their statements are now corollaries. Closed statements in
+               `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
@@ -93,6 +112,27 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `…_g157837` and `…_g158209` on the same branch): 200-digit `N` with
                `g(N) = 146191`, `g(N) = 157837` and, the standing record, `g(N) = 158209`.
 * `Records`  – the bounded record games as closed theorems.
+* `Needles`, `NeedlePairs`, `NeedleClusters` – what two needles (numbers with no Goldbach
+               summand below `Q`) have in common. Rows are numbers: `N + h` inherits from a
+               needle `N` every row `q'` with `q' - h` prime (`IsNeedle.add_of_forall`), 97 of
+               168 rows for `Q = 1000`, `h = 30`; numbers at distance `Q` or more share no row
+               (`row_ne_of_add_le`). Kernel-checked instances: four pairs of needles at level
+               `1000` below `10^9` at distances 30, 30, 126, 210 (`needle_pairs_lt_1000`),
+               where independent positions would give 0.09 such pairs among the 303 needles of
+               the exhaustive enumeration (`scripts/mini_check/needle_pairs.txt`). Needles are
+               not independent, and nothing here says they are random.
+* `RankPatterns`, `RankData`, `RankTable` – the experiment of `scripts/rank_records`: the ten
+               largest least Goldbach summands among the even numbers up to `10^11`, and the
+               numbers that arrive at each rank. Proved: the relations that hold exactly
+               (`3 ∣ N + g(N)` when `3 ∤ N`; `g(N + h) ≤ g(N) + h` when `g(N) + h` is prime,
+               with equality as soon as the rows that are not inherited are composite; the
+               least summand is at least the distance to the previous prime); the prime race
+               behind the residue bias of the arrivals, in the kernel for every level up to
+               4096 (class 2 against class 1 modulo 3) and 3528 (non-residues against residues
+               modulo 5); the least summands of the 39 record holders up to `10^11`
+               (`RankData.recordTable_spec`) and of the clustered arrivals (`shift_pairs`,
+               `records_42_apart`). That the table is complete, and that record holders avoid
+               multiples of 3 and prefer non-residue classes, are measurements.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
@@ -148,7 +188,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                population are tested, their hit mass is at most `m y^k` plus that of the
                members with fewer than `k` rows; a merge of two lists of residue combinations
                costs at least `2 P / (K √(a b))` per member found, so the constrained primes
-               can exceed the population by `F - C` nats and no more).
+               can exceed the population by `F - C` nats and no more), `ListGain` (restricting
+               `N` modulo one prime to a list of classes buys at most `(W - μ) / ln (W / μ)`
+               rows for each nat it costs, `W` the most rows in a class and `μ` the average;
+               for a prime above `Q = 213070` with at most 1609 rows left that is 0.207 rows a
+               nat whatever the shape of the list).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
@@ -198,9 +242,19 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                exactly when `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` (`even_card_factors_iff`), which
                decides every row, also of a degree divisible by the characteristic
                (`desert_general`). The desert is not confined to the degrees up to `J + 1`:
-               `N = c · V^p` kills every row of any degree whose derivative has no
-               irreducible factor of degree above `J` (`desert_smooth`), a positive proportion
-               of the rows of each degree. `scripts/parity_check/` compares the general formula
+               `N = c · V^p` kills every row of any degree `d < deg N` with `p ∤ d` whose
+               derivative has no irreducible factor of degree above `J` (`desert_smooth`), a
+               positive proportion of the rows of each such degree; for `p ∣ d`, those that
+               also meet the sign criterion (`desert_smooth_general`). Without any condition
+               on the roots of `Q'`: `discr (N - Q) = ± λ^(n-2-e) Res(Q', N - Q)` for every
+               `N` with `N' = 0` (`discr_sub_eq_resultant`), so the parity of the number of
+               factors of `N - Q` is a quadratic symbol of `N - Q` modulo `Q'`
+               (`parity_card_factors_resultant`) and depends on `N` only through its degree,
+               its leading coefficient and `N mod Q'` (`parity_card_factors_congr`).
+               `DesertDegree`: for
+               `J ≥ 1` the condition `deg Q < deg N` of `desert` is automatic, because
+               `x^(q^J) - x` divides `V` (`desert_of_one_le`); for `J = 0` the statement is
+               false. `scripts/parity_check/` compares the general formula
                with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
                the rows of higher degree with a smooth derivative (`smooth_rows.py`).
 

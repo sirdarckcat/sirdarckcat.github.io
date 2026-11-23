@@ -1,0 +1,19 @@
+303 needles at level 1000 below 10^9 (even N in [1200, 10^9) with N - q composite for all primes q < 1000)
+
+pairs closer than Q: 4; expected for independent uniform positions: 0.092
+  N = 723090434, N + 30: 97 of the 167 odd rows of N + 30 are rows of N
+  N = 792038384, N + 30: 97 of the 167 odd rows of N + 30 are rows of N
+  N = 821176592, N + 126: 73 of the 167 odd rows of N + 126 are rows of N
+  N = 793940696, N + 210: 87 of the 167 odd rows of N + 210 are rows of N
+model, sum over needles N and even 0 < h < Q of the chance that N + h is a needle:
+  rows inherited from N counted as composite: 2.69; ignoring that: 0.116
+
+residues (needles per class; odd primes below Q per class):
+  mod  3: [0, 62, 241] ; [0, 80, 86]
+  mod  5: [0, 42, 139, 72, 50] ; [0, 40, 46, 42, 38]
+  mod  7: [5, 40, 30, 64, 36, 66, 62] ; [0, 28, 26, 30, 26, 29, 27]
+  mod 11: [8, 28, 33, 34, 23, 30, 37, 23, 29, 27, 31] ; [0, 17, 17, 18, 16, 17, 18, 17, 15, 15, 16]
+  mod 13: [8, 20, 27, 19, 18, 35, 25, 22, 29, 16, 23, 33, 28] ; [0, 13, 16, 14, 13, 14, 15, 14, 14, 13, 15, 13, 12]
+
+positions: Kolmogorov-Smirnov distance from uniform 0.233 (5% critical value 0.078);
+  needles per quarter of [0, 10^9): [27, 55, 101, 120]

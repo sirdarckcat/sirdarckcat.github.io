@@ -5,7 +5,7 @@ import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
-import GoldbachGaps.Cover15787
+import GoldbachGaps.Cover15907
 
 /-!
 # The bounded record games, as kernel-checked theorems
@@ -62,30 +62,68 @@ theorem exists_lt_ten_pow_200_least_summand_158209 :
     ∃ N < 10 ^ 200, IsLeastSummand N 158209 :=
   ⟨Record200_g158209.N, Record200_g158209.N_lt, Record200_g158209.isLeastSummand⟩
 
-/-- **A bound by divisibility alone.** Some even `N < 10^200` has, for every prime `q < 15787`,
+/-- **A bound by divisibility alone.** Some even `N < 10^200` has, for every prime `q < 15907`,
 a divisor `r` of `N - q` with `2 ≤ r ≤ 463` and `r < N - q`; in particular no prime below
-`15787` is a Goldbach summand of `N`. No primality or compositeness test enters the proof:
+`15907` is a Goldbach summand of `N`. No primality or compositeness test enters the proof:
 it is the complete cover on the 89 odd primes up to `463` found by the research session
-(`Cover15787`). The record `157837` above needs luck on top of its cover; this is what the
-cover alone certifies. -/
+(`Cover15907`, the best of its three covers of 2026-11-23, after `15787` and `15877`). The
+records above need luck on top of their covers; this is what a cover alone certifies. -/
+theorem exists_lt_ten_pow_200_complete_cover_15907 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 15907, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 15907, ¬ IsSummand N q :=
+  ⟨Cover15907.N, lt_trans Cover15907.N_lt (by norm_num), Cover15907.complete_cover.2.1,
+    Cover15907.complete_cover.2.2.1, Cover15907.complete_cover.2.2.2⟩
+
+/-- The same for a whole arithmetic progression: `21378978` numbers `N + t M` below `10^200`,
+all even, all with every `N + t M - q` (`q < 15907` prime) divisible by some `r ≤ 463`. -/
+theorem exists_progression_complete_cover_15907 :
+    ∃ N M : ℕ, 0 < M ∧ ∀ t < 21378978, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
+      (∀ q < 15907, q.Prime →
+        ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
+      ∀ q < 15907, ¬ IsSummand (N + t * M) q := by
+  refine ⟨Cover15907.N, Cover15907.M, ?_, fun t ht => ?_⟩
+  · rw [Cover15907.M_eq]
+    norm_num
+  · obtain ⟨h1, h2, h3⟩ := Cover15907.complete_cover_family t
+    exact ⟨Cover15907.family_lt t ht, h1, h2, h3⟩
+
+/-! The bounds `15787` and `15877` of the two earlier covers, under the names they were
+announced with. They are consequences of the cover to `15907` (the witness is that cover's
+`N`, not the earlier ones). -/
+
+theorem exists_lt_ten_pow_200_complete_cover_15877 :
+    ∃ N < 10 ^ 200, Even N ∧
+      (∀ q < 15877, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N - q ∧ r ∣ N - q) ∧
+      ∀ q < 15877, ¬ IsSummand N q := by
+  obtain ⟨N, hN, he, h1, h2⟩ := exists_lt_ten_pow_200_complete_cover_15907
+  exact ⟨N, hN, he, fun q hq => h1 q (by omega), fun q hq => h2 q (by omega)⟩
+
 theorem exists_lt_ten_pow_200_complete_cover_15787 :
     ∃ N < 10 ^ 200, Even N ∧
       (∀ q < 15787, q.Prime → ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N - q ∧ r ∣ N - q) ∧
-      ∀ q < 15787, ¬ IsSummand N q :=
-  ⟨Cover15787.N, lt_trans Cover15787.N_lt (by norm_num), Cover15787.complete_cover.2.1,
-    Cover15787.complete_cover.2.2.1, Cover15787.complete_cover.2.2.2⟩
+      ∀ q < 15787, ¬ IsSummand N q := by
+  obtain ⟨N, hN, he, h1, h2⟩ := exists_lt_ten_pow_200_complete_cover_15907
+  exact ⟨N, hN, he, fun q hq => h1 q (by omega), fun q hq => h2 q (by omega)⟩
 
-/-- The same for a whole arithmetic progression: `21378977` numbers `N + t M` below `10^200`,
-all even, all with every `N + t M - q` (`q < 15787` prime) divisible by some `r ≤ 463`. -/
+theorem exists_progression_complete_cover_15877 :
+    ∃ N M : ℕ, 0 < M ∧ ∀ t < 21378978, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
+      (∀ q < 15877, q.Prime →
+        ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
+      ∀ q < 15877, ¬ IsSummand (N + t * M) q := by
+  obtain ⟨N, M, hM, h⟩ := exists_progression_complete_cover_15907
+  refine ⟨N, M, hM, fun t ht => ?_⟩
+  obtain ⟨h0, he, h1, h2⟩ := h t ht
+  exact ⟨h0, he, fun q hq => h1 q (by omega), fun q hq => h2 q (by omega)⟩
+
 theorem exists_progression_complete_cover_15787 :
     ∃ N M : ℕ, 0 < M ∧ ∀ t < 21378977, N + t * M < 10 ^ 200 ∧ Even (N + t * M) ∧
       (∀ q < 15787, q.Prime →
         ∃ r, 2 ≤ r ∧ r ≤ 463 ∧ r < N + t * M - q ∧ r ∣ N + t * M - q) ∧
       ∀ q < 15787, ¬ IsSummand (N + t * M) q := by
-  refine ⟨Cover15787.N, Cover15787.M, ?_, fun t ht => ?_⟩
-  · rw [Cover15787.M_eq]
-    norm_num
-  · obtain ⟨h1, h2, h3⟩ := Cover15787.complete_cover_family t
-    exact ⟨Cover15787.family_lt t ht, h1, h2, h3⟩
+  obtain ⟨N, M, hM, h⟩ := exists_progression_complete_cover_15907
+  refine ⟨N, M, hM, fun t ht => ?_⟩
+  obtain ⟨h0, he, h1, h2⟩ := h t (by omega)
+  exact ⟨h0, he, fun q hq => h1 q (by omega), fun q hq => h2 q (by omega)⟩
 
 end GoldbachGaps
