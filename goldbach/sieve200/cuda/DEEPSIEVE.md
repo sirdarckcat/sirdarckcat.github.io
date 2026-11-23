@@ -272,13 +272,14 @@ In-batch overlap (`--overlap 1`, the sieve of window 2 under the Fermat of windo
 and it leaves window 1's sieve and window 2's Fermat exposed: even a perfect overlap gives 1.90 - 0.15 = 1.75 s = production's 1.75.  The measured 1.84 (one vector) / 1.88 (a vector a window) said little either way.
 
 **Pipeline v1** (`search_gpu5_xbatch.patch`: `--pipeline 1 --flush-each-window 1`, one sieve thread for the whole campaign, six batches of two windows, slice lines identical to production):
-production 1.752 s a batch; v1 with one Fermat thread 1.801 s; **v1 with two Fermat threads (`--pool-threads 2`) 1.647 s** (x1.06); and its LAST batch, with no sieve beside it, 1.508 s.  Reading:
+production 1.752 s a batch; v1 with one Fermat thread 1.801 s; **v1 with two Fermat threads (`--pool-threads 2`) 1.647 s** (mean of batches 3-6; (x1.06) - but its last batch, with no sieve beside it, takes 1.508 s and the batches
+with a sieve beside them 1.67-1.70 s, mean 1.69 s: x1.037 against production).  Reading:
 * the last batch is the Fermat side alone with a flush per window: 1.508 s against production's one flush of the same members, 1.752 - 0.434 (the sieve) = 1.318 s: **a flush per window costs +0.19 s a batch**
   (the 2.6% extra waste is 0.033 s of it; the rest is two sets of tail rounds and launch gaps);
-* the steady batch is 1.647 s = 1.508 + 0.14: the sieve (0.434 s alone) costs the batch only 0.14 s, which is the Fermat slowdown beside it (x1.09 of 1.508 s, the probe's x1.104): **the sieve is hidden in the real
-  driver, as the hardware probe said** - the pipeline is Fermat-bound; what is left to remove is the flush-per-window penalty and the 10% Fermat slowdown;
+* a steady batch is 1.69 s = 1.508 + 0.18: the sieve (0.434 s alone) costs the batch only ~0.18 s, which is the Fermat slowdown beside it (x1.12 of 1.508 s; the probe said x1.10): **the sieve is hidden in the real
+  driver, as the hardware probe said** - the pipeline is Fermat-bound; what is left to remove is the flush-per-window penalty and the 10-12% Fermat slowdown;
 * so run the pipeline with production's pool: **`--pipeline 1 --pipeline-depth 2`** (`--flush-each-window 0`, `--pool 2097152`, `--pool-threads 2`): the consumer takes both windows of batch n, flushes once (1.318 s x1.09), and
-  the thread sieves both windows of batch n + 1 under that flush (0.434 s x2.9 = 1.25 s: it fits); no extra flush, no extra waste.  Projected steady batch ~1.318 x 1.09 + 0.03 = **~1.47 s (x1.19)**.  Memory: the held pool
+  the thread sieves both windows of batch n + 1 under that flush (0.434 s x2.9 = 1.25 s: it fits); no extra flush, no extra waste.  Projected steady batch ~1.318 x 1.12 + 0.03 = **~1.5 s (x1.17)**.  Memory: the held pool
   (2 x 1.6 GB of int32 rows) + 2 windows waiting (2 x 0.8 GB of u16 rows); `search_gpu5_xbatch2.patch` (applies to the unpatched driver at 10210fc) adds `--pipeline-depth` and `--trace-pipeline 1` (per batch: seconds the
   consumer waited for the sieve = sieve time not hidden; seconds the sieve thread was busy / waited for the consumer; `overlap.Pipeline.take_stats`).
 
