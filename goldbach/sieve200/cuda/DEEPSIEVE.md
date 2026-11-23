@@ -722,3 +722,32 @@ sieve200's CPU feeder) on production's stack + one-pass with `--big` (8 and 16 r
 **To run on a GPU:** `bash onepassab.sh SPEC` (production, one-pass at 40 slots, the same at 40 registers, at unroll 8, 30 slots with 6144-word chunks, 25 slots with 4096-word chunks at 3 CTAs an SM, production again; with one pass the
 printed "pass A" is all the visits and "pass B" is the flush); then the driver gate as usual with `DEEP_GEN_ONEPASS=1` added to production's environment (it needs `DEEP_GEN_HOIST=1`, which production has; slice
 lines identical on the 24 windows, known case 23 / 23, >= 1% of a batch).  **2^25-member windows** (64 tiles, as on the L4): 40 slots x 8 rows a CTA is over the 48 KB of static shared memory (a static_assert says so); use `DEEP_GEN_SLOT_C=20` with 8 rows (~12 marks a bin there: overflow stays rare) or `DEEP_RCTA=4` with 40 slots.
+
+### Measured and deployed (GPU session, 23 Nov 18:00-18:11Z, `sievepack/opab_rtxpro6000.txt`, `opgate_rtxpro6000.txt` on its branch, 2745f74)
+
+bench_split on gold-g4b, ms a 2^24 window of m89_8, production's options (gold-g4b has no LEAN):
+
+| row | gen (pass A / pass B) | sieve phase |
+|---|---|---|
+| production | 28.75 (10.79 / 17.96) | 51.2 / 52.2 |
+| flag unset (the new source) | 28.75 | 50.8 |
+| **ONEPASS, 40 slots** | **22.15 (13.80 / 8.35)** | **44.4** |
+| ONEPASS, 40 slots, 40 registers (`DEEP_GEN_LB=512,3`) | 22.16 | 43.9 |
+| ONEPASS, unroll 8 | 22.89 | |
+| ONEPASS, 30 slots, stage 6144 | 23.84 | |
+| ONEPASS, 25 slots, stage 4096, 3 CTAs an SM | 22.98 | 47.1 |
+| ONEPASS + LEAN | 22.01 | 44.7 |
+| LEAN alone | 27.52 | 50.4 |
+
+**Generate -23%, sieve phase -14%.**  Driver gate on the 24 test vectors (deep_env_v89, f = 0.985, top placement; slice lines identical in every run, known case 23 / 23): gold-g4 x0.9735 (one-pass) /
+x0.9728 (with the launch bounds), gold-g4b x0.9638 / x0.9566, gold-g4c x0.9725 / x0.9733: **-2.7% to -4.3% of a batch**, deployed 18:09:59-18:11:05Z (the bounded variant on gold-g4 and gold-g4b).
+**My estimate was too optimistic:** I expected gen 17-21 ms; it is 22.15.  The single pass ("pass A" in the bench) grew 10.79 -> 13.80 ms, more than the ~2.3k instructions a CTA of slot stores I had
+counted (the store waits on the counting atomic's result, a dependent shared-memory chain the old pass A did not have), and the flush alone ("pass B") is 8.35 ms, close to the ~9 ms the bins' 14.4 GB
+take at the DRAM rate: that floor is now most of what is left of pass B.  The batch gain is near the low end of my -3% to -8%.
+
+**Sizing the slots for other geometries (uarch, 18:20Z).**  A CTA's chunk holds ~3/4 of `STAGE_CAP` marks spread over `RCTA x NTILES` bins, so a bin gets ~lambda = 0.75 STAGE_CAP / (RCTA NTILES) marks a CTA
+(Poisson): 24 on the RTX (8 rows x 32 tiles), but **48 on the L4** (2^25 windows: 64 tiles, `rcta 2`, stage 8192), where 40 slots would mean ~1,073 overflow entries a CTA, a full list and the slow
+fallback on nearly every CTA (slower than without the flag; the static_assert does not catch it: 22.5 KB).  There use **75 slots** (0.04 entries a CTA, 40.5 KB; 70: 0.40, 37.9 KB).  `gbig.BigStage` now
+computes this for its actual stage_cap / rcta / tiles and refuses to start above 32 expected entries a CTA, naming the slot count to use (`gbig.onepass_slots_for`); the RTX deployment (0.55) passes
+unchanged; `DEEP_GEN_SLOT_C_ANY=1` lets the CPU tests that force overflow on purpose through.
+

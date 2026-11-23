@@ -22,7 +22,7 @@ t "large-prime stage, hoisted + unroll 2"          $S DEEP_GEN_HOIST=1 DEEP_GEN_
 t "staged kernel vs brute force: every variant"    $S python3 test_gbig.py
 t "large-prime stage, flat flush + grid order"     $S DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 python3 test_gbig_cpu.py
 t "large-prime stage, one-pass kernel (40 slots)"  $S DEEP_GEN_HOIST=1 DEEP_GEN_ONEPASS=1 python3 test_gbig_cpu.py
-t "large-prime stage, one-pass, 10 slots (overflow list, fallback)" $S DEEP_GEN_HOIST=1 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=10 python3 test_gbig_cpu.py
+t "large-prime stage, one-pass, 10 slots (overflow list, fallback)" $S DEEP_GEN_HOIST=1 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=10 DEEP_GEN_SLOT_C_ANY=1 python3 test_gbig_cpu.py
 t "window tail: rows2 + parallel finalize vs the originals" $S python3 test_rest2_cpu.py
 t "GPU sieve window, DEEP_REST2=1"                 $S DEEP_REST2=1 python3 test_gpu_sieve_cpu.py
 t "GPU sieve window, DEEP_FIN2=1 DEEP_ROWS3=1"       $S DEEP_FIN2=1 DEEP_ROWS3=1 python3 test_gpu_sieve_cpu.py
@@ -44,8 +44,8 @@ t "batch sieve, packed + flat flush"               $S DEEP_BIN_PACK=1 DEEP_GEN_F
 t "batch sieve, everything (pack hoist unroll 4 flush2 order)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 python3 test_gbatch_cpu.py
 t "batch sieve, pipelined tile kernel (tiny chunks)"  $S DEEP_TILE_PIPE=1 DEEP_TILE_PIPE_AT=32 DEEP_TILE_PIPE_CH=96 python3 test_gbatch_cpu.py
 t "batch sieve, pipelined tile + the whole stack"     $S DEEP_TILE_PIPE=1 DEEP_TILE_PIPE_AT=32 DEEP_TILE_PIPE_CH=96 DEEP_BIN_PACK=1 DEEP_TILE_UNROLL=4 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 python3 test_gbatch_cpu.py
-t "batch sieve, one-pass + the production stack (+big)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_ORDER=1 DEEP_GEN_MINRED=1 DEEP_TILE_UNROLL=4 DEEP_GEN_ONEPASS=1 python3 test_gbatch_cpu.py --big
-t "batch sieve, one-pass unpacked, 7 slots"      $S DEEP_GEN_HOIST=1 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=7 python3 test_gbatch_cpu.py
+t "batch sieve, one-pass + the production stack (+big)" $S DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_UNROLL=4 DEEP_GEN_ORDER=1 DEEP_GEN_MINRED=1 DEEP_TILE_UNROLL=4 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C_ANY=1 python3 test_gbatch_cpu.py --big
+t "batch sieve, one-pass unpacked, 7 slots"      $S DEEP_GEN_HOIST=1 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=7 DEEP_GEN_SLOT_C_ANY=1 python3 test_gbatch_cpu.py
 t "deferred overflow check"                        $S python3 test_gbatch_defer_cpu.py
 t "deferred overflow check, packed"                $S DEEP_BIN_PACK=1 python3 test_gbatch_defer_cpu.py
 t "DeepSieve over variants"                        $S python3 test_deep_feeder_cpu.py

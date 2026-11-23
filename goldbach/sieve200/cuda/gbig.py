@@ -43,6 +43,26 @@ def lean_flags():
     return out
 
 
+def onepass_overflow(stage_cap, rcta, ntiles, slot_c):
+    """expected overflow entries a CTA of the one-pass kernel: the CTA's rcta x ntiles bins each get ~Poisson(lam) marks, lam = (3/4 of stage_cap marks a CTA, the chunks' target) / bins; a bin's marks past
+    slot_c go to the overflow list (OVF_CAP entries, then the slow whole-CTA fallback)"""
+    lam = 0.75 * stage_cap / (rcta * ntiles)
+    p, ex = math.exp(-lam), 0.0
+    for k in range(1, int(lam + 20 * math.sqrt(lam) + 50)):
+        p *= lam / k
+        if k > slot_c:
+            ex += (k - slot_c) * p
+    return lam, rcta * ntiles * ex
+
+
+def onepass_slots_for(stage_cap, rcta, ntiles, max_entries=1.0):
+    """the smallest multiple of 5 slots a bin with at most max_entries overflow entries a CTA expected"""
+    c = 5
+    while onepass_overflow(stage_cap, rcta, ntiles, c)[1] > max_entries:
+        c += 5
+    return c
+
+
 def defines(names):
     """the #define lines of lean_flags() entries"""
     return "".join(f"#define {n.replace('=', ' ')}\n" if "=" in n else f"#define {n} 1\n" for n in names)
@@ -102,6 +122,12 @@ class BigStage:
         self.flush2 = self.staged and os.environ.get("DEEP_GEN_FLUSH2", "0") == "1"      # the flat flush of the staging buffer (gbig_kernels.cuh, GEN_FLUSH2); options of the staged kernel only
         self.order = self.staged and os.environ.get("DEEP_GEN_ORDER", "0") == "1"
         self.lean = lean_flags() if self.staged else ()        # the generate grid is (row slices, chunks): the slices of a chunk run together (GEN_ORDER)
+        if self.staged and "GEN_ONEPASS" in self.lean:                   # one-pass slots sized for this geometry: too few and most CTAs fill the overflow list and take the slow fallback
+            slot_c = next((int(n.split("=")[1]) for n in self.lean if n.startswith("SLOT_C=")), 40)
+            lam, ent = onepass_overflow(self.stage_cap, self.rcta, self.ntiles, slot_c)
+            assert ent <= 32.0 or os.environ.get("DEEP_GEN_SLOT_C_ANY", "0") == "1", (                        # a quarter of the list; DEEP_GEN_SLOT_C_ANY=1: the CPU tests that force overflow on purpose
+                f"DEEP_GEN_ONEPASS: {slot_c} slots a bin for ~{lam:.0f} marks a bin a CTA (stage_cap {self.stage_cap}, rcta {self.rcta}, {self.ntiles} tiles) means ~{ent:.0f} overflow entries a CTA: "
+                f"the 128-entry list fills and the CTAs write the slow way; set DEEP_GEN_SLOT_C={onepass_slots_for(self.stage_cap, self.rcta, self.ntiles)} (or a smaller stage_cap / more rows a CTA)")
         self.k = kernels if kernels is not None else _kernels(tile_log, ks_log, rg, ppt, self.stage_cap, self.rcta, self.pack, os.environ.get("DEEP_GEN_HOIST", "0") == "1", int(os.environ.get("DEEP_GEN_UNROLL", "1")), self.flush2, self.order, self.lean)
         if S is None:
             S = self.TAB[:, 0].get() if hasattr(self.TAB, "get") else self.TAB[:, 0]
