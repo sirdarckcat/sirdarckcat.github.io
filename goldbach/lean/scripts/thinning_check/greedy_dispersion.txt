@@ -1,0 +1,15 @@
+real rows, greedy from the small primes up: prime, rows left before it, mean per class, largest class, variance/mean
+     3  19050   9524.50   9545   0.044
+     5   9505   2376.25   2394   0.112
+     7   7111   1185.00   1212   0.150
+    11   5899    589.90    599   0.058
+    31   3895    129.80    142   0.209
+   101   2802     28.02     38   0.524
+   211   2246     10.70     18   0.636
+   307   1994      6.52     15   0.681
+   401   1795      4.49     11   0.760
+   463   1689      3.66      9   0.791
+rows left by the greedy cover on the real rows: 1680;  for a typical N: 2278.0
+same greedy rule, Poisson class counts: 1449.7 rows left (sd 32.2 over 20 runs)
+same greedy rule, multinomial class counts: 1445.0 rows left (sd 17.8 over 20 runs)
+mean variance/mean of the class counts on the real greedy path: primes below 50: 0.216; 50 to 200: 0.555; above 200: 0.747

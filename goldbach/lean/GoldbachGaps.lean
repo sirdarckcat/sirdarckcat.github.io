@@ -49,6 +49,7 @@ import GoldbachGaps.Cap.Radius
 import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
 import GoldbachGaps.Cap.ListGain
+import GoldbachGaps.Cap.Thinning
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -205,7 +206,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `N` modulo one prime to a list of classes buys at most `(W - μ) / ln (W / μ)`
                rows for each nat it costs, `W` the most rows in a class and `μ` the average;
                for a prime above `Q = 213070` with at most 1609 rows left that is 0.207 rows a
-               nat whatever the shape of the list).
+               nat whatever the shape of the list), `Thinning` (moduli that separate the rows,
+               in particular all moduli `≥ Q` for rows below `Q`: a class vector kills at most
+               one row per modulus, so the sum over class vectors of `y^(rows left)` is at
+               most `∏ m · (1 - (1 - y) θ)^k`, `θ = ∏ (1 - 1/m)`, the value for rows killed
+               independently; hence the class vectors leaving at most `K` of `k` rows are at
+               most the binomial Chernoff bound. The research session's continuation of its
+               prize table to depth `10^8` by independent rows is therefore a bound in a known
+               direction above `Q`; `scripts/thinning_check/` tests the same law below `Q` on
+               that session's tables and derives its `1/ln² z` regularity from it).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
