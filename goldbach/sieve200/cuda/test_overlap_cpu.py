@@ -19,7 +19,6 @@ def stub(priorities=True):
         def use(self): log.append(("use", self.i))
     rt = types.SimpleNamespace()
     if priorities:
-        rt.deviceGetStreamPriorityRange = lambda: (0, -5)
         rt.streamCreateWithPriority = lambda flags, prio: (flags, prio)
     cp.cuda = types.SimpleNamespace(Device=Dev, Stream=Stream, ExternalStream=lambda ptr: Stream(ptr), runtime=rt)
     return cp, log

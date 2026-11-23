@@ -20,8 +20,9 @@ def sieve_stream(cp):
     """a non-blocking stream of the highest priority (a plain non-blocking stream if the priority calls are missing); one per process"""
     if "s" not in _STREAM:
         try:
-            lo, hi = cp.cuda.runtime.deviceGetStreamPriorityRange()
-            _STREAM["s"] = cp.cuda.ExternalStream(cp.cuda.runtime.streamCreateWithPriority(1, hi))       # 1 = cudaStreamNonBlocking, hi = the greatest priority (a number <= 0)
+            # 1 = cudaStreamNonBlocking; priority -100 is outside every device's range [-5 .. 0] and the driver clamps it to the greatest priority (cupy has no wrapper of
+            # cudaDeviceGetStreamPriorityRange, only of cudaStreamCreateWithPriority)
+            _STREAM["s"] = cp.cuda.ExternalStream(cp.cuda.runtime.streamCreateWithPriority(1, -100))
         except Exception as e:
             print(f"overlap: no stream priorities ({e}); a plain non-blocking stream", flush=True)
             _STREAM["s"] = cp.cuda.Stream(non_blocking=True)
