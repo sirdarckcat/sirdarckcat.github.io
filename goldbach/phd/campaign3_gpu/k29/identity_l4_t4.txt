@@ -1,0 +1,20 @@
+# 29-bit Fermat kernel on the L4s and the T4, 88 moduli (k29l2.sh: campaign stopped, checks, campaign restarted), 2026-11-23.
+# base / base_b: production (driver d07b998acabb, /content/f28w, fermat28_step_s1rw.cuh asm 0); k29w: search_gpu5_k29.py (4efbb340474d), /content/f29, fermat29_step_s1w.cuh asm 0.
+# 4 of the card's Q = 170,000 vectors x 2 windows of 2^25 just below 2^30, the card's batch size; gaps: seconds between batch ends after the first.
+# kca / kcc: 146,191's member (r200_q140k_c_v77, k = 3,101,585,871) under its Q = 150,000 residual (nm150_v77.json), its 2^20 window, f = 0, near-misses >= 140,000.
+# (gold-l4b ran the script before its speed condition was added; its k29w batch was x0.963 of production's.)
+
+=== gold-l4b
+/content/k29l/status.txt 2026-11-23T11:42:32Z stopping the campaign in /content/c170 (slice 33554432, test windows k in [1006632960, 2^30))
+2026-11-23T11:42:33Z stopped
+2026-11-23T11:45:38Z checks done
+2026-11-23T11:45:38Z campaign restarted in /content/c170 with FERMAT28_DIR=/content/f29 K28_STEP=fermat29_step_s1w.cuh 
+2026-11-23T11:45:58Z procs 1
+/content/k29l/result.txt base  : gaps [10.036, 10.138, 10.134] | mean after the first batch 10.103 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+k29w  : gaps [9.669, 9.726, 9.721] | mean after the first batch 9.705 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+base_b: gaps [10.043, 10.038, 10.09] | mean after the first batch 10.057 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+kca: known case (normal sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+kcc: known case (deep sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+K29L-GATE PASSED
+K29L-DONE
+/content/k29l/deploy.txt deployed: driver search_gpu5_k29.py as search_gpu5.py (the old one kept as search_gpu5_prev_k28.py), FERMAT28_DIR=/content/f29, K28_STEP=fermat29_step_s1w.cuh

@@ -1,0 +1,42 @@
+# uarch wcost3.sh (15045cf) on gold-g4c (RTX PRO 6000), 2026-11-23 11:49:42-11:50:23Z: the sieve of an 89-moduli vector alone (bench_batch.py, B = 1e8, staged,
+# 512-thread tiles, 2^24 window) against the rows a generate CTA (rcta), its threads and the row-group size; campaign paused. Read "sieve (gen + tiles)".
+# Best: rg 32 rcta 8 gen 512, 83.2 ms against 88.5 ms for production (rg 32 rcta 2 gen 256): -5.3 ms, under the 8 ms bar; rcta 4/8 at 256 threads and rcta 16 at 1024 are slower.
+
+2026-11-23T11:49:42Z paused pid 1959993
+--- rg 32 rcta 2 gen 256 (production)
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.2 s)
+  rg=32 tile threads=512 gen threads=256 ppt=4: wall 99.5 ms = 5.930 ns a member (168.6 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.15  sieve (gen + tiles) 88.5  count 1.85  select 0.19  finalize 2.09  wait1 0.18  rows 6.39  wait2 6.39  host 0.11   (ms a batch)
+--- rg 32 rcta 4 gen 256
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.2 s)
+  rg=32 tile threads=512 gen threads=256 ppt=4: wall 116.5 ms = 6.946 ns a member (144.0 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.14  sieve (gen + tiles) 105.7  count 1.84  select 0.19  finalize 2.10  wait1 0.13  rows 6.45  wait2 6.45  host 0.02   (ms a batch)
+--- rg 32 rcta 8 gen 256
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.3 s)
+  rg=32 tile threads=512 gen threads=256 ppt=4: wall 122.4 ms = 7.293 ns a member (137.1 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 111.3  count 1.87  select 0.19  finalize 2.11  wait1 0.22  rows 6.52  wait2 6.52  host 0.02   (ms a batch)
+--- rg 32 rcta 8 gen 512
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.2 s)
+  rg=32 tile threads=512 gen threads=512 ppt=4: wall 94.0 ms = 5.602 ns a member (178.5 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.14  sieve (gen + tiles) 83.2  count 1.86  select 0.19  finalize 2.10  wait1 0.11  rows 6.42  wait2 6.42  host 0.02   (ms a batch)
+--- rg 64 rcta 8 gen 512
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.2 s)
+  rg=64 tile threads=512 gen threads=512 ppt=4: wall 94.7 ms = 5.644 ns a member (177.2 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 83.8  count 1.85  select 0.19  finalize 2.10  wait1 0.15  rows 6.44  wait2 6.44  host 0.02   (ms a batch)
+--- rg 32 rcta 16 gen 1024 stage 6144
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.1 s)
+  rg=32 tile threads=512 gen threads=1024 ppt=4: wall 126.4 ms = 7.532 ns a member (132.8 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.15  sieve (gen + tiles) 115.4  count 1.86  select 0.19  finalize 2.09  wait1 0.16  rows 6.47  wait2 6.47  host 0.02   (ms a batch)
+--- rg 64 rcta 16 gen 1024 stage 6144
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+1248 rows, 5,761,365 primes up to 100000000 (78,408 through the tile kernel, 5,682,957 through gbig), batch 2^24 members: bit matrix 2.44 GB of 56.7 GB free (tables 4.4 s)
+  rg=64 tile threads=512 gen threads=1024 ppt=4: wall 127.1 ms = 7.578 ns a member (132.0 M members/s); kept 503,808 members, 193,003,183 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 116.2  count 1.85  select 0.19  finalize 2.11  wait1 0.20  rows 6.39  wait2 6.39  host 0.03   (ms a batch)
+2026-11-23T11:50:23Z resumed pid 1959993
+WCOST3-DONE

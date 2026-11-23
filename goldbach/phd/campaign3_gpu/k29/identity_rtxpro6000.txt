@@ -1,0 +1,41 @@
+# 29-bit Fermat kernel on the three RTX PRO 6000 cards, vector mode (89 moduli), k29v.sh then deploy_k29r.py (k29rd.sh), 2026-11-23.
+# v0 / v0b: production (driver 62605e2ed947, /content/f28w, fermat28_step_s1r.cuh asm 1); k29: search_gpu5_k29.py (4efbb340474d), /content/f29, fermat29_step_s1.cuh asm 1.
+# 24 test vectors, one 2^24 window each from k_lo, batches of 4, the production vector config (r32). gaps: seconds between batch ends; the last batch is the tail.
+# kc29: the known case (q170000_m89_t1_v0, one 2^19 window from k_lo, f = 0, near-misses >= 46,171) with the 29-bit kernel; the CPU brute force
+# (v89/knowncase_cpu_brute.txt) has the same 23 (k, q).
+
+=== gold-g4c
+/content/k29v/status.txt 2026-11-23T11:29:33Z paused pid 1891394
+2026-11-23T11:30:36Z resumed pid 1891394
+/content/k29v/result.txt v0  : gaps [1.642, 1.569, 1.562, 1.555, 1.31] | mean of batches 2..5 1.582 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+k29 : gaps [1.493, 1.51, 1.535, 1.504, 1.269] | mean of batches 2..5 1.510 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+v0b : gaps [1.606, 1.558, 1.556, 1.578, 1.341] | mean of batches 2..5 1.575 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 driver: ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 near-misses (first PRP row >= 46171): 23
+K29V-DONE
+K29 members: 23, identical to the CPU brute force's 23: yes
+
+=== gold-g4
+/content/k29v/status.txt 2026-11-23T11:42:41Z paused pid 1816996
+2026-11-23T11:43:45Z resumed pid 1816996
+/content/k29v/result.txt v0  : gaps [1.586, 1.573, 1.568, 1.581, 1.324] | mean of batches 2..5 1.577 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+k29 : gaps [1.531, 1.523, 1.496, 1.516, 1.264] | mean of batches 2..5 1.516 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+v0b : gaps [1.567, 1.555, 1.59, 1.566, 1.324] | mean of batches 2..5 1.570 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 driver: ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 near-misses (first PRP row >= 46171): 23
+K29V-DONE
+K29 members: 23, identical to the CPU brute force's 23: yes
+
+=== gold-g4b
+/content/k29v/status.txt 2026-11-23T11:43:05Z paused pid 1928317
+2026-11-23T11:44:08Z resumed pid 1928317
+/content/k29v/result.txt v0  : gaps [1.595, 1.548, 1.544, 1.568, 1.336] | mean of batches 2..5 1.564 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+k29 : gaps [1.504, 1.512, 1.488, 1.501, 1.292] | mean of batches 2..5 1.501 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+v0b : gaps [1.581, 1.577, 1.547, 1.564, 1.334] | mean of batches 2..5 1.567 s | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 driver: ['C3GPU-EXHAUSTED', 'rc=2']
+kc29 near-misses (first PRP row >= 46171): 23
+K29V-DONE
+K29 members: 23, identical to the CPU brute force's 23: yes
+
+=== gold-g4c deploy (deploy_k29r.py alone: its k29v.sh had passed at 11:30Z)
+[dk] 11:40:52Z | driver 4efbb340474d | procs 1 | ['FERMAT28_DIR=/content/f29', 'K28_STEP=fermat29_step_s1.cuh', 'K28_ASM=1']
