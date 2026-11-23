@@ -1,4 +1,4 @@
-import Mathlib
+import GoldbachGaps.FunctionField.Stickelberger
 
 /-!
 # A parity desert over `F_q[x]`
@@ -18,8 +18,8 @@ irreducible factor of `Q'` divides `N`, then
 `n` and `λ`.
 
 Over a finite field of odd characteristic the quadratic character of a discriminant is the
-parity of the number of irreducible factors (Stickelberger 1897, Swan 1962; Pellet's formula).
-That theorem is not in Mathlib; it is the named hypothesis `StickelbergerSwan`. With it:
+parity of the number of irreducible factors (Stickelberger 1897, Swan 1962; Pellet's formula),
+proved in `GoldbachGaps.FunctionField.Stickelberger`. With it, unconditionally:
 
 * `parity_card_factors`: `N - Q` is squarefree and the parity of the number of its irreducible
   factors is given by `n`, `d` and the quadratic characters of `-1`, `λ` and `d`;
@@ -245,19 +245,11 @@ open UniqueFactorizationMonoid
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
-/-- **Stickelberger's theorem in Swan's form** (Pellet's formula), for one finite field of odd
-characteristic: the quadratic character of the discriminant of a squarefree polynomial `g` is
-`(-1)^(deg g - r)`, `r` the number of irreducible factors of `g`. Not in Mathlib; a hypothesis
-of the theorems below. -/
-def StickelbergerSwan (F : Type*) [Field F] [Fintype F] [DecidableEq F] : Prop :=
-  ringChar F ≠ 2 → ∀ g : F[X], Squarefree g →
-    quadraticChar F (discr g) = (-1) ^ (g.natDegree + Multiset.card (normalizedFactors g))
-
 /-- **The parity theorem.** Under the hypotheses of `discr_sub`, with `Q` irreducible:
 `N - Q` is squarefree, and the parity of the number `r` of its irreducible factors is
 determined by `n = deg N`, `d = deg Q` and the quadratic characters of `-1`, of the leading
 coefficient of `N` and of `d`. -/
-theorem parity_card_factors (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) {N Q : F[X]}
+theorem parity_card_factors (hF : ringChar F ≠ 2) {N Q : F[X]}
     (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
     (hd : (Q.natDegree : F) ≠ 0) (hlt : Q.natDegree < N.natDegree)
     (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N) :
@@ -270,8 +262,8 @@ theorem parity_card_factors (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) 
           * (-1) ^ (Q.natDegree + 1) := by
   have hsq := squarefree_sub hQi hN (derivative_ne_zero_of_monic hQ hd) hrad
   refine ⟨hsq, ?_⟩
-  have h1 := hSS hF (N - Q) hsq
-  have h2 := hSS hF Q hQi.squarefree
+  have h1 := stickelbergerSwan F hF (N - Q) hsq
+  have h2 := stickelbergerSwan F hF Q hQi.squarefree
   rw [normalizedFactors_irreducible hQi, Multiset.card_singleton] at h2
   rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h1
   rw [← h1, discr_sub hQ hN hd hlt hrad, map_mul, map_mul, map_mul, map_pow, map_pow, map_pow,
@@ -279,14 +271,14 @@ theorem parity_card_factors (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) 
 
 /-- If `-1` and `deg Q` are squares in the field and the leading coefficient of `N` is not,
 the number of irreducible factors of `N - Q` is even. -/
-theorem even_card_factors (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) {N Q : F[X]}
+theorem even_card_factors (hF : ringChar F ≠ 2) {N Q : F[X]}
     (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
     (hd : (Q.natDegree : F) ≠ 0) (hlt : Q.natDegree < N.natDegree)
     (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N)
     (hm1 : IsSquare (-1 : F)) (hdsq : IsSquare (Q.natDegree : F))
     (hlam : ¬IsSquare N.leadingCoeff) :
     Even (Multiset.card (normalizedFactors (N - Q))) := by
-  obtain ⟨-, h⟩ := parity_card_factors hF hSS hQ hQi hN hd hlt hrad
+  obtain ⟨-, h⟩ := parity_card_factors hF hQ hQi hN hd hlt hrad
   rw [(quadraticChar_one_iff_isSquare (neg_ne_zero.mpr one_ne_zero)).mpr hm1,
     (quadraticChar_one_iff_isSquare hd).mpr hdsq,
     quadraticChar_neg_one_iff_not_isSquare.mpr hlam, one_pow, one_pow, one_mul, mul_one,
@@ -299,7 +291,7 @@ theorem even_card_factors (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) {N
   exact (neg_one_pow_eq_one_iff_even (by norm_num)).mp h1
 
 /-- ... and so `N - Q` is not irreducible, although no factor is exhibited. -/
-theorem not_irreducible_sub (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) {N Q : F[X]}
+theorem not_irreducible_sub (hF : ringChar F ≠ 2) {N Q : F[X]}
     (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
     (hd : (Q.natDegree : F) ≠ 0) (hlt : Q.natDegree < N.natDegree)
     (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N)
@@ -307,7 +299,7 @@ theorem not_irreducible_sub (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F) 
     (hlam : ¬IsSquare N.leadingCoeff) :
     ¬Irreducible (N - Q) := by
   intro hirr
-  have h := even_card_factors hF hSS hQ hQi hN hd hlt hrad hm1 hdsq hlam
+  have h := even_card_factors hF hQ hQi hN hd hlt hrad hm1 hdsq hlam
   rw [normalizedFactors_irreducible hirr, Multiset.card_singleton] at h
   exact absurd h (by decide)
 
@@ -341,14 +333,14 @@ theorem isSquare_intCast_of_isSquare_card (hF : ringChar F ≠ 2)
 
 /-- **Corollary.** Over a finite field of odd characteristic with a square number of elements:
 if the leading coefficient of `N` is not a square, `N - Q` is not irreducible. -/
-theorem not_irreducible_sub_of_isSquare_card (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F)
+theorem not_irreducible_sub_of_isSquare_card (hF : ringChar F ≠ 2)
     (hq : IsSquare (Fintype.card F)) {N Q : F[X]}
     (hQ : Q.Monic) (hQi : Irreducible Q) (hN : derivative N = 0)
     (hd : (Q.natDegree : F) ≠ 0) (hlt : Q.natDegree < N.natDegree)
     (hrad : ∀ π : F[X], Irreducible π → π ∣ derivative Q → π ∣ N)
     (hlam : ¬IsSquare N.leadingCoeff) :
     ¬Irreducible (N - Q) :=
-  not_irreducible_sub hF hSS hQ hQi hN hd hlt hrad
+  not_irreducible_sub hF hQ hQi hN hd hlt hrad
     (by simpa using isSquare_intCast_of_isSquare_card hF hq (-1))
     (by simpa using isSquare_intCast_of_isSquare_card hF hq (Q.natDegree : ℤ)) hlam
 
@@ -358,7 +350,7 @@ elements, let `V` be monic and divisible by every irreducible polynomial of degr
 irreducible for every monic irreducible `Q` of degree at most `J + 1` and less than `deg N`,
 the degree `J + 1` being allowed when `p` does not divide it. For `deg Q ≤ J` the factor is
 `Q` itself; for `deg Q = J + 1` no factor is exhibited. -/
-theorem desert (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F)
+theorem desert (hF : ringChar F ≠ 2)
     (hq : IsSquare (Fintype.card F)) {V : F[X]} {J : ℕ} {c : F} (hVm : V.Monic)
     (hV : ∀ π : F[X], Irreducible π → π.natDegree ≤ J → π ∣ V) (hc : ¬IsSquare c)
     {Q : F[X]} (hQ : Q.Monic) (hQi : Irreducible Q) (hQJ : Q.natDegree ≤ J + 1)
@@ -383,7 +375,7 @@ theorem desert (hF : ringChar F ≠ 2) (hSS : StickelbergerSwan F)
     rw [natDegree_sub_eq_left_of_natDegree_lt hlt] at h
     omega
   · have hd : (Q.natDegree : F) ≠ 0 := hdeg.resolve_left hdJ
-    refine not_irreducible_sub_of_isSquare_card hF hSS hq hQ hQi hN' hd hlt ?_ ?_
+    refine not_irreducible_sub_of_isSquare_card hF hq hQ hQi hN' hd hlt ?_ ?_
     · intro π hπ hπQ'
       have h1 := natDegree_le_of_dvd hπQ' (derivative_ne_zero_of_monic hQ hd)
       have h2 := natDegree_derivative_le Q

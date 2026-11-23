@@ -38,6 +38,7 @@ import GoldbachGaps.Gpu28.Conv
 import GoldbachGaps.Gpu28.Step
 import GoldbachGaps.Gpu28.Final
 import GoldbachGaps.Gpu28.Kernel
+import GoldbachGaps.FunctionField.Stickelberger
 import GoldbachGaps.FunctionField.ParityDesert
 
 /-!
@@ -131,19 +132,24 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                as the exact 32 × 32 → 64 product and multiply-add; `scripts/gpu28_check`
                compares the model with every generated step file compiled for the CPU, set-up
                included.
-* `FunctionField.ParityDesert` – the toy setting `F_q[x]` of the research programme in
+* `FunctionField.*` – the toy setting `F_q[x]` of the research programme in
                `goldbach/sublinear/` (branch `ccr-d4a17dd0-7uu03r`), where "`N - Q` is
                reducible for every monic irreducible `Q` of small degree" replaces a Goldbach
-               gap. Over any field: if `N' = 0`, `Q` is monic of degree `d < n = deg N` with
-               `d ≠ 0` in the field and every irreducible factor of `Q'` divides `N`, then
-               `discr (N - Q) = ± λ^(n-d-1) d^(n-d) discr Q` (`discr_sub`), and `N - Q` is
-               squarefree. With Stickelberger's theorem in Swan's form as the named hypothesis
-               `StickelbergerSwan` (it is not in Mathlib): the parity of the number of
+               gap. `Stickelberger`: Stickelberger's theorem in Swan's form (Pellet's formula),
+               which is not in Mathlib: over a finite field of odd characteristic,
+               `χ(discr g) = (-1)^(deg g - r)` for squarefree `g` with `r` irreducible factors
+               (`stickelbergerSwan`), from `discr (f g) = discr f · discr g · Res(f, g)²`
+               (`discr_mul`) and the action of the Frobenius on a Vandermonde determinant.
+               `ParityDesert`: over any field, if `N' = 0`, `Q` is monic of degree
+               `d < n = deg N` with `d ≠ 0` in the field and every irreducible factor of `Q'`
+               divides `N`, then `discr (N - Q) = ± λ^(n-d-1) d^(n-d) discr Q` (`discr_sub`) and
+               `N - Q` is squarefree; hence over a finite field the parity of the number of
                irreducible factors of `N - Q` (`parity_card_factors`); over a field with a
                square number of elements and for a non-square `λ`, `N - Q` is not irreducible
                (`not_irreducible_sub_of_isSquare_card`); and `N = c · V^p` has `N - Q`
-               reducible for every monic irreducible `Q` of degree at most `J + 1` when `V`
-               is divisible by all irreducibles of degree at most `J` (`desert`).
+               reducible for every monic irreducible `Q` of degree at most `J + 1` when `V` is
+               divisible by all irreducibles of degree at most `J` (`desert`): a desert with
+               no factor exhibited and no congruence paid for the top degree.
 
 ## Building
 
