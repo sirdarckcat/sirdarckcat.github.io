@@ -3,21 +3,24 @@
 #   /content/snap.tgz      the old card's snapshot (snap.py): trees c3g (driver f4a85df2f2d5, top placement), ua_v10 (one-pass), ua_v3/7/9, f29fr (29-bit fused-rounds kernel),
 #                          cover89 + its ledgers (kept for a 463 revert), c150cpu (CPU shares), next_campaign_env (+ _pre_onepass), deep_env_v89 (--vector-place top), scripts
 #   /content/cover491.tgz  research's 491-family generator (bbc8cd8) + part.py
-#   /content/vecgen491.sh, rowguard491.py, rowguard491.sh
+#   /content/vecgen491.sh, rowguard491.py, rowguard491.sh, kc_top_check.py
 #   bash bringup_rtx491.sh PART      (PART = the old card's generator partition: gold-g4 0, gold-g4b 1, gold-g4c 2)
 # Steps: restore, install gmpy2, the production known case on this GPU (kc_prod.sh: 23/23 or stop), the 491 generator for PART (vec491), the campaign in a fresh dir
 # (c170r, vector mode, production's env and deep_env_v89), the 491 row guard (base after 2,000 vectors). Log: /content/bringup.log
-PART=${1:?partition}
+PART=${1:?partition}; PHASE=${2:-all}     # PHASE gen: skip restore / install / known case (already done on this card)
 L=/content/bringup.log
+if [ "$PHASE" != gen ]; then
 echo "$(date -u +%FT%TZ) bring-up start, partition $PART, $(hostname), $(nvidia-smi --query-gpu=name --format=csv,noheader)" >> $L
 cd /content && tar -xzf /content/snap.tgz >> $L 2>&1 || { echo "BRINGUP-FAILED restore" >> $L; exit 1; }
 python3 -c 'import gmpy2' 2>/dev/null || pip install -q gmpy2 >> $L 2>&1
 python3 -c 'import gmpy2, cupy; print("gmpy2", gmpy2.version(), "cupy", cupy.__version__)' >> $L 2>&1
 mkdir -p /content/cover491 && tar -xzf /content/cover491.tgz -C /content/cover491 && (cd /content/cover491 && gcc -O3 -march=native -fopenmp -o covergen covergen.c -lm) >> $L 2>&1 \
   || { echo "BRINGUP-FAILED covergen" >> $L; exit 1; }
+# kc_prod.sh runs production's deep_env_v89, which places the window at the TOP since 17:29Z: the reference is the top known case (25 = cpu_brute_k0.py, kc_top_check.py)
 bash /content/kc_prod.sh >> $L 2>&1
-grep -h "KCPROD\|known case" /content/kc_prod/result.txt >> $L
-grep -q "KCPROD PASSED" /content/kc_prod/result.txt || { echo "BRINGUP-FAILED known case on this GPU" >> $L; exit 1; }
+python3 /content/kc_top_check.py >> $L 2>&1
+grep -q "KCTOP PASSED" $L || { echo "BRINGUP-FAILED known case on this GPU" >> $L; exit 1; }
+fi
 mkdir -p /content/vec491 /content/c170r
 setsid nohup bash /content/vecgen491.sh /content/vec491 /content/c170r $PART 3 >> /content/vecgen491.log 2>&1 < /dev/null &
 for i in $(seq 1 120); do ls /content/vec491/vec_*.json > /dev/null 2>&1 && break; sleep 5; done

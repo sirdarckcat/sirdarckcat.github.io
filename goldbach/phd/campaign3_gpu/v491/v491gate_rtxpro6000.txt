@@ -92,3 +92,6 @@ Traceback (most recent call last):
     assert not pack or (staged and tile_log <= 19 and int(rcta) >= 1), "DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits"
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: DEEP_BIN_PACK=1 needs the staged large-prime kernel (DEEP_STAGED=1) and tiles of at most 2^19 bits
+
+# Known case: GPU 46 = CPU 46 (knowncase491_cpu_brute.txt); generator: on gold-g4d (bring-up 20:17Z) chunks of 1,000 vectors at 1,248 rows every ~40 s (chunks 0-2 within
+# 1.5 min; consumption ~5.5 a second), so supply runs ahead. All six points of the gate hold; the lead's rate conditions hold (x1.061 / x0.9995).

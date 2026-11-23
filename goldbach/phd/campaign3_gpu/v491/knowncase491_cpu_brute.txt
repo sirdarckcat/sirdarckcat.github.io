@@ -1,0 +1,55 @@
+# The 491-family known case, CPU side (cpu_brute_k0.py, this session's container, 4 processes, 2026-11-23 19:19:16-~19:58Z): every member k in [19635522, 20159810) (the top
+# 2^19 of q170000_m89r491_t491a_v0, kc491_spec.json; kend = 20,159,810), residual rows recomputed from gcd(N0 - q, M), rows scanned in ascending order with is_bpsw_prp until
+# the first prime; listed: every member whose least prime q is >= T = 48,661 (its 400th residual row).
+
+q170000_m89r491_t491a_v0: residual recomputed from gcd: 1245 rows (identical to the spec's), k in [19635522, 20159810), T = 48661
+BRUTE k=19640353 q=48817
+BRUTE k=19642688 q=55609
+BRUTE k=19642756 q=51817
+BRUTE k=19646266 q=50707
+BRUTE k=19667428 q=49207
+BRUTE k=19677796 q=50527
+BRUTE k=19694467 q=51151
+BRUTE k=19714273 q=53239
+BRUTE k=19737410 q=56569
+BRUTE k=19760353 q=54547
+BRUTE k=19768899 q=54361
+BRUTE k=19773428 q=59629
+BRUTE k=19784501 q=55201
+BRUTE k=19790669 q=57427
+BRUTE k=19810510 q=53857
+BRUTE k=19814108 q=48817
+BRUTE k=19821409 q=51151
+BRUTE k=19838290 q=49927
+BRUTE k=19848363 q=78241
+BRUTE k=19849951 q=51991
+BRUTE k=19867727 q=52009
+BRUTE k=19876713 q=63577
+BRUTE k=19935519 q=67339
+BRUTE k=19948679 q=53089
+BRUTE k=19954688 q=68071
+BRUTE k=19968828 q=52639
+BRUTE k=19982484 q=48889
+BRUTE k=20004977 q=64189
+BRUTE k=20014870 q=56857
+BRUTE k=20024603 q=55621
+BRUTE k=20027638 q=62131
+BRUTE k=20054024 q=53017
+BRUTE k=20057104 q=48817
+BRUTE k=20057573 q=53857
+BRUTE k=20061806 q=63841
+BRUTE k=20064567 q=57397
+BRUTE k=20072573 q=52321
+BRUTE k=20082604 q=48817
+BRUTE k=20089890 q=51817
+BRUTE k=20092725 q=51829
+BRUTE k=20112319 q=50929
+BRUTE k=20112851 q=54547
+BRUTE k=20139286 q=55117
+BRUTE k=20151888 q=48817
+BRUTE k=20157338 q=52711
+BRUTE k=20158740 q=54001
+BRUTE-DONE 46 members with no prime below 48661
+
+# Against the GPU (v491gate_rtxpro6000.txt, kc: production's deep path, --vector-place top --klog 19, f = 0): 46 = 46, the same k and q for every one: IDENTICAL.
+# And the full top 2^24 window at f = 0 (pm_new, one-pass fast path): its 46 near-misses inside this range are the same 46.

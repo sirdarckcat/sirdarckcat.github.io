@@ -17,5 +17,6 @@ bash /content/opl4gate2.sh >> $L 2>&1
 cat /content/opl4g2/result.txt >> $L 2>/dev/null
 grep -q "L4-GATE2 PASSED" /content/opl4g2/result.txt || { echo "BRINGUP-FAILED per-member / known-case check on this GPU" >> $L; cp /content/next_campaign_env_deployed /content/next_campaign_env; cp /content/deep_env_deployed /content/deep_env; exit 1; }
 pkill -f 'run_v[345]_[a-zA-Z0-9_]*[.]sh'; sleep 1; pkill -f 'search_gpu[345][.]py --campaign '; sleep 5
+C=$(cat /content/next_campaign_dir); touch $C/gpu3_stats.log $C/search.log; [ -f /content/ua10_cuda.tgz ] || { echo "BRINGUP-FAILED /content/ua10_cuda.tgz missing (upload ua10b_cuda.tgz with the snapshot)" >> $L; exit 1; }
 python3 /content/deploy_l4op.py >> $L 2>&1
 echo BRINGUP-DONE >> $L
