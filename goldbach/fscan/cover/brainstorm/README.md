@@ -187,6 +187,10 @@ nothing lower; `starts/q213070.txt` holds 106 covers at 1,623 and 900 at
 | 200,000 | 1,657 | 0.0078% | 116,000 | 166,200 |
 | 213,070 | 1,623 | 0.0177% | 50,700 | 164,500 |
 
+On the first 89 odd primes the cover for 213,070 has 1,609 rows
+(`starts/q213070_m89.txt`), another factor 1.23 if the engine takes vectors
+of 2·10^7 members: 41,000 fleet-days for one expected crossing.
+
 So the best design is ten times better for the 10% event than the design
 that maximises the expected record, and it still needs about 5,600 times
 the remaining budget (140 years of the present fleet, about 600 card-years)

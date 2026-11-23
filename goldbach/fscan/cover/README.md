@@ -157,6 +157,17 @@ session's sampler (`phd/cap200`), which are better than this sampler's
 with 778 found here. `specs_to_covers.py` and the `--ledger` form also read
 that session's pool files.
 
+**One more modulus.** With vectors free, the progression of one vector does
+not have to be long, and the modulus set can grow until a vector holds just
+over half a sieve window. On the first 89 odd primes (3 to 463; M has 192.7
+digits, 2.14·10^7 members a vector) the optimiser reaches 1,248 rows at
+Q = 170,000 and 1,609 at 213,070, against 1,262 and 1,623 on the campaign's
+88 moduli; after the larger boost that is E = 30.30 against 30.53 and 39.06
+against 39.27, i.e. 1.27 and 1.23 times the success rate. (The plain first 88
+odd primes give 1,259 to 1,261 and 1,619: equal or slightly better than the
+campaign's set, with a longer progression.) `./gen_vectors.sh Q cap count
+name seed m89` uses `starts/q<Q>_m89.txt` and sets kmax per vector.
+
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
 below the best, lower the cap when something better turns up. From the long

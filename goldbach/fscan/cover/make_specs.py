@@ -2,6 +2,7 @@
 """Turn covers found by ptcover or covergen into search specs (the JSON format of goldbach/phd/campaign3).
 
     python3 make_specs.py Q name kmax covers.txt out.json [max_covers] [kmax_residual] [ledger.txt]
+        (kmax "auto": each spec gets the largest kmax that keeps N below 10^200, for modulus sets other than the 88)
     python3 make_specs.py --ledger ledger.txt file [more files ...]
 
 covers.txt holds lines "COVER k r:a r:a ..." or "BEST r:a r:a ..." (ptcover / covergen output).  Every cover is
@@ -51,6 +52,7 @@ def spec(Q, rows, cover, name, kmax):
     residual = residual_of(rows, cover)
     N0, M = crt_even(cover)
     assert N0 % 2 == 0 and all(N0 % r == a for r, a in cover)
+    if kmax is None: kmax = (10 ** 200 - 1 - N0) // M + 1        # "auto": every member below 10^200
     boost = 2.0
     for r, _ in cover: boost *= r / (r - 1)
     nd = math.log10(M) + math.log10(kmax)
@@ -80,7 +82,8 @@ if __name__ == "__main__":
                 if h not in have: have.add(h); new.append(h)
         with open(sys.argv[2], "a") as g: g.write("".join(h + "\n" for h in new))
         print(f"{len(new)} vectors added to {sys.argv[2]} ({len(have)} in all)"); sys.exit()
-    Q, name, kmax, src, dst = int(sys.argv[1]), sys.argv[2], int(float(sys.argv[3])), sys.argv[4], sys.argv[5]
+    Q, name, src, dst = int(sys.argv[1]), sys.argv[2], sys.argv[4], sys.argv[5]
+    kmax = None if sys.argv[3] == "auto" else int(float(sys.argv[3]))
     limit = int(sys.argv[6]) if len(sys.argv) > 6 else 10 ** 9
     kcap = int(sys.argv[7]) if len(sys.argv) > 7 else 10 ** 9
     ledger = sys.argv[8] if len(sys.argv) > 8 else None
@@ -113,5 +116,5 @@ if __name__ == "__main__":
         with open(ledger, "a") as g: g.write("".join(h + "\n" for h in new))
     ks = [len(s["residual"]) for s in specs]
     print(f"{len(specs)} specs written to {dst}: residual sizes {min(ks)}..{max(ks)}, E {specs[0]['E']:.3f}..{specs[-1]['E']:.3f}, "
-          f"M has {specs[0]['m_digits']:.2f} digits, N below 10^{specs[0]['n_digits_est']:.2f} for k < {kmax}"
+          f"M has {specs[0]['m_digits']:.2f} digits, N below 10^{specs[0]['n_digits_est']:.2f} for k < {specs[0]['kmax']}"
           + (f"; {skipped} covers skipped as already in {ledger}" if ledger else ""))
