@@ -142,6 +142,13 @@ Version 3 (22 Nov):
     28 on 12 production slices on that GPU first).
   - gold-l4c, a third L4 (00:48Z, same checks): t3100..t3499.
   - t3500..t10133 are in reserve.
+- The research generator (`gen_vectors.sh` on ccr-d4a17dd0-7uu03r at 5bc33a1, with every vector above added to its ledger first)
+  gives 1,092-row vectors, 2-4 rows better than the minted ones (≈ +5-10% hit rate). Batch g8ffe1 (23 Nov 01:00Z): 400 at
+  1,092 rows, checked again here with `check_specs.py` and against the 15,108 earlier vectors. Index:
+  `../campaign3/variants_q150k_g8ffe1_index.json`; sha256 54d87d6c751da532f7d3c35efebde1f5dbd9ac7f86ef697f1cbc0bc55d14e755.
+  - k ≥ 2^32 (CPU shares): v0..v63 the lead's container (`../campaign3/q150k_cpu/specs_lead.json`), v64..v127 the helper
+    session (`specs_helper.json`), v128..v191 this session's container.
+  - k in [2^30, 2^32): v0..v399 on the L4 that replaces the A100.
 - Cost per GPU type, from the Colab usage rate as runtimes were added (22 Nov): RTX PRO 6000 10.05 compute units an hour, A100
   6.73, L4 1.94, CPU runtime 0.26. Full-weight members/s per unit an hour: L4 0.57M, RTX PRO 6000 0.54M, A100 0.27M. A fourth
   RTX PRO 6000 is refused ("precondition failed"); a second and a third L4 were granted, a fourth refused (seven GPUs in all).
