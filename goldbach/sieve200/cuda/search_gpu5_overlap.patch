@@ -121,10 +121,10 @@
 +        st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
 +        rows32 = w.rows.astype(cp.int32)
 +        rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows (1.5 GB a deep window), not two
-+        w.rows = None                                            # the u16 rows are not needed again: back to the pool at once
 +        pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
 +        if args.overlap:
 +            cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
++        w.rows = None                                            # the u16 rows are not needed again: back to the pool, AFTER the synchronize (cupy's pool is per stream: freed earlier, the block could be handed to the sieve thread while the copy still reads it)
 +        npool[0] += int(w.k.size)
 +        if npool[0] >= args.pool:
 +            flush()
