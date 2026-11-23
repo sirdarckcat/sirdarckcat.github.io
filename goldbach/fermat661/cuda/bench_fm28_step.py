@@ -13,6 +13,9 @@ plain C products, mul.wide for m * n), s1w = carry-chain step with mul.wide.
       occupancy: cycles per IMAD.WIDE.  If it rises with the body size, the instruction cache (or register pressure) is what costs.
   E2  extra instructions.  24 limbs plus K dummy IADD3 (two adds into a private register) or K dummy IMAD.WIDE (x_a * x_b into a private 64-bit accumulator) spread over the
       columns: the cycles each one adds inside the real step, to compare with bench_pipes.py's benchmark rows and with costmodel.py's two-pipe model.
+  E5  the FP32 pipe.  The same step plus K dummy FFMA (fa x fb added into 4 private float accumulators, spread over the columns; --e5): the cycles each one adds.  ~0 per FFMA means the FP32 pipe runs
+      beside the multiplier (a hybrid integer + floating-point limb kernel would be worth designing: the integer step is multiplier-bound at ~94% and leaves ~70% of the issue slots free); ~2 (like a dummy IADD3)
+      means FP32 and INT32 share the lanes ("unified cores") and the idea is closed.  The same run prints dummy IADD3 and LOP3-class rows at the same counts for comparison.
   E3  occupancy.  24 limbs at 1 .. 6 CTAs an SM (limited with dynamic shared memory): if cycles per warp-step fall with more warps, the step is latency bound.
 
 Compare the cycles per IMAD.WIDE with bench_pipes.py's part 1 (IMAD.WIDE alone: 2.5 RTX PRO 6000, 4.15 A100, 4.5 L4).  The production kernel costs 3,800 cycles a warp-step at the SM clock (2.42 GHz) on an RTX
@@ -71,20 +74,22 @@ def n_wide(NL):
     return NL * (NL + 1) // 2 + NL * NL            # squaring products (incl. diagonal) + reduction products m_i n_j (the last m_k n_0 counted in NL^2)
 
 
-def source(NL, style, extra_alu=0, extra_mul=0):
+def source(NL, style, extra_alu=0, extra_mul=0, extra_fma=0):
     S, red, mulw, opts, W = STYLES[style]
-    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul, W, RB_OF.get(style)) + KERNEL % dict(NL=NL, MK="MASK%d" % W, MV=(1 << W) - 1), list(opts)
+    return HEAD + gen.generate(NL, S, red, mulw, extra_alu, extra_mul, W, RB_OF.get(style), extra_fma=extra_fma) + KERNEL % dict(NL=NL, MK="MASK%d" % W, MV=(1 << W) - 1), list(opts)
 
 
 def run_check(arch, style):
     import collections
+    import re
     import sass as SS
     nv = SS.Nvrtc()
     print(f"{style}, {arch}: instructions in the step loop (the biggest loop of the kernel)")
-    print(f"{'config':26s} {'loop':>6s} {'IMAD.WIDE':>9s} {'IADD3':>6s} {'(+.X)':>6s} {'SHF':>5s} {'LOP3':>5s} {'IMAD':>5s}")
-    cfgs = [(NL, 0, 0) for NL in (8, 12, 16, 20, 24)] + [(24, a, 0) for a in (96, 192, 384)] + [(24, 0, m) for m in (96, 192, 384)]
-    for NL, ea, em in cfgs:
-        src, opts = source(NL, style, ea, em)
+    print(f"{'config':26s} {'loop':>6s} {'IMAD.WIDE':>9s} {'IADD3':>6s} {'(+.X)':>6s} {'SHF':>5s} {'LOP3':>5s} {'IMAD':>5s} {'FFMA':>5s} {'regs':>5s}")
+    cfgs = ([(NL, 0, 0, 0) for NL in (8, 12, 16, 20, 24)] + [(24, a, 0, 0) for a in (96, 192, 384)] + [(24, 0, m, 0) for m in (96, 192, 384)]
+            + [(24, 0, 0, f) for f in (96, 384, 1536)])
+    for NL, ea, em, ef in cfgs:
+        src, opts = source(NL, style, ea, em, ef)
         funcs = SS.parse_sass(SS.disassemble(nv.compile(src, arch, opts, "cubin")))
         instrs, labels = funcs["bench"]
         lp = sorted(set(SS.loops(instrs, labels)), key=lambda x: x[1] - x[0], reverse=True)[0]
@@ -94,8 +99,13 @@ def run_check(arch, style):
         iadd3x = sum(v for k, v in c.items() if k.startswith("IADD3.X"))
         iadd3 = sum(v for k, v in c.items() if k.startswith("IADD3") and not k.startswith("IADD3.X"))
         other = lambda name: sum(v for k, v in c.items() if k == name or k.startswith(name + "."))
-        label = f"NL={NL}" + (f" +{ea} IADD3" if ea else "") + (f" +{em} IMAD.WIDE" if em else "")
-        print(f"{label:26s} {len(body):6d} {wide:9d} {iadd3:6d} {iadd3x:6d} {other('SHF'):5d} {other('LOP3'):5d} {other('IMAD') - wide:5d}")
+        try:
+            m = re.search(r"Used (\d+) registers", SS.ptxas_info(nv.compile(src, "compute_" + arch[3:], opts, "ptx"), arch))
+            regs = m.group(1) if m else "?"
+        except Exception:
+            regs = "?"
+        label = f"NL={NL}" + (f" +{ea} IADD3" if ea else "") + (f" +{em} IMAD.WIDE" if em else "") + (f" +{ef} FFMA" if ef else "")
+        print(f"{label:26s} {len(body):6d} {wide:9d} {iadd3:6d} {iadd3x:6d} {other('SHF'):5d} {other('LOP3'):5d} {other('IMAD') - wide:5d} {other('FFMA'):5d} {regs:>5s}")
 
 
 def run_e4(measure, props):
@@ -123,6 +133,30 @@ def run_e4(measure, props):
             print(f"{label:34s} {wide:5d} {r[1]:5d} {r[2]:8d} {r[0]:11.0f} {r[0] / ref:7.3f} {r[3]:6.3f}", flush=True)
 
 
+def run_e5(measure):
+    """E5  the FP32 pipe.  The 24-limb step plus K dummy instructions of one kind spread over the columns: ticks per warp-step per scheduler, and what each dummy instruction adds.  Rows: FFMA (the question: does FP32 run
+    beside IMAD.WIDE?), IADD3 (the known cost: ~2 cycles a dummy IADD3 on the RTX PRO 6000) and IMAD.WIDE (the multiplier itself).  Every row is measured 3 times in turn; the best is kept.  The FFMA rows use
+    4 more registers than the step: the CTAs an SM column says whether the occupancy fell (the ticks are normalised by it, so the rows stay comparable while the multiplier pipe is the limit)."""
+    print("\nE5  FP32 FFMA beside the multiplier pipe (ticks per warp-step per scheduler; 'per instruction' = added ticks / K; ~0: a separate pipe, ~2: shared with the integer ALU, ~4: the multiplier's own cost)")
+    print(f"{'config':22s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'added':>8s} {'per instruction':>16s} {'GHz':>6s}")
+    base = None
+    for rep in range(3):
+        r = measure(24, 0, 0, None)
+        if r and (base is None or r[0] < base[0]):
+            base = r
+    print(f"{'baseline':22s} {base[1]:5d} {base[2]:8d} {base[0]:11.0f} {'':>8s} {'':>16s} {base[3]:6.3f}", flush=True)
+    for kind in ("fma", "alu", "mul"):
+        for K in (96, 192, 384, 768) if kind == "fma" else (96, 192, 384):
+            best = None
+            for rep in range(3):
+                r = measure(24, K if kind == "alu" else 0, K if kind == "mul" else 0, None, ef=K if kind == "fma" else 0)
+                if r and (best is None or r[0] < best[0]):
+                    best = r
+            if best:
+                name = "+%d %s" % (K, {"fma": "FFMA", "alu": "IADD3", "mul": "IMAD.WIDE"}[kind])
+                print(f"{name:22s} {best[1]:5d} {best[2]:8d} {best[0]:11.0f} {best[0] - base[0]:8.0f} {(best[0] - base[0]) / K:16.2f} {best[3]:6.3f}", flush=True)
+
+
 def run_gpu(a):
     import cupy as cp
     import numpy as np
@@ -137,11 +171,11 @@ def run_gpu(a):
     init = cp.asarray(rng.integers(0, 1 << 32, 1024 * 49, dtype=np.uint64).astype(np.uint32))
     cache = {}
 
-    def measure(NL, ea, em, c, style=None):
+    def measure(NL, ea, em, c, style=None, ef=0):
         style = style or a.style
-        key = (NL, ea, em, style)
+        key = (NL, ea, em, style, ef)
         if key not in cache:
-            src, opts = source(NL, style, ea, em)
+            src, opts = source(NL, style, ea, em, ef)
             cache[key] = cp.RawModule(code=src, options=tuple(opts)).get_function("bench")
         k = cache[key]
         regs = int(k.attributes["num_regs"])
@@ -174,6 +208,9 @@ def run_gpu(a):
     if a.e4:
         run_e4(measure, props)
         return
+    if a.e5:
+        run_e5(measure)
+        return
     print("\nE1  loop-body size (clock64 ticks per warp-step per scheduler; the next to last column divides by the IMAD.WIDE of the step; GHz = clock64 ticks per ns of wall time: the SM clock if clock64 counts SM cycles)")
     print(f"{'limbs':>6s} {'IMAD.WIDE':>9s} {'~code KB':>9s} {'regs':>5s} {'CTAs/SM':>8s} {'ticks/step':>11s} {'ticks/IMAD.WIDE':>16s} {'GHz':>6s}")
     for NL in (8, 12, 16, 20, 24):
@@ -204,6 +241,7 @@ def main():
     ap.add_argument("--style", default="s1r_asm", choices=sorted(STYLES))
     ap.add_argument("--steps", type=int, default=3000)
     ap.add_argument("--e4", action="store_true", help="GPU: only E4, the radix comparison (about 1 minute)")
+    ap.add_argument("--e5", action="store_true", help="GPU: only E5, dummy FFMA / IADD3 / IMAD.WIDE inside the step: is the FP32 pipe free beside the multiplier? (about 1 minute)")
     ap.add_argument("--check", default=None, help="no GPU: compile for this arch (sm_80, sm_89, sm_120) and print the loop's instruction counts")
     a = ap.parse_args()
     if a.check:

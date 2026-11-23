@@ -94,7 +94,7 @@ def main():
     install()
     import bench_fm28_step as B
     for style in ("s1r_asm", "s1rw"):
-        a = types.SimpleNamespace(style=style, steps=300)
+        a = types.SimpleNamespace(style=style, steps=300, e4=False, e5=False)
         buf = io.StringIO()
         with contextlib.redirect_stdout(buf):
             B.run_gpu(a)
@@ -106,6 +106,20 @@ def main():
         tick = [int(x) for x in re.findall(r"^\s*5\s+5\s+(\d+)", txt, re.M)]
         assert tick and tick[0] == int(TICKS_PER_STEP), tick                       # E3 at 5 CTAs an SM reproduces the stub's 3,800 ticks
         print(f"  {style}: {len(ghz)} GHz values, all {CLOCK_GHZ} +- 0.01; E3 at 5 CTAs an SM: {tick[0]} ticks a step: ok")
+    # E4 (the radix rows) and E5 (dummy FFMA / IADD3 / IMAD.WIDE rows): the stub's step costs the same whatever the code, so every ratio is 1.000 and every added-per-instruction value 0.00
+    for flag in ("e4", "e5"):
+        a = types.SimpleNamespace(style="s1r_asm", steps=300, e4=flag == "e4", e5=flag == "e5")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            B.run_gpu(a)
+        txt = buf.getvalue()
+        print(txt)
+        if flag == "e4":
+            assert "E4" in txt and len(re.findall(r"\s1\.000\s", txt)) >= 3, txt
+        else:
+            assert "E5" in txt and txt.count("FFMA") >= 4 and txt.count("IADD3") >= 3 and txt.count("IMAD.WIDE") >= 3, txt
+            assert all(abs(float(x)) < 1e-9 for x in re.findall(r"\s(-?\d+\.\d\d)\s+2\.420\s*$", txt, re.M)), txt
+        print(f"  {flag}: ok")
     print("OK")
 
 

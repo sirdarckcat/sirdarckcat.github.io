@@ -15,9 +15,9 @@ Then the carry chain of x2^b. All indices are static, so every array is in regis
 import sys
 
 
-def generate(NL=24, S=2, RED=False, MULW=False, extra_alu=0, extra_mul=0, W=28, RB=None):
+def generate(NL=24, S=2, RED=False, MULW=False, extra_alu=0, extra_mul=0, W=28, RB=None, extra_fma=0):
     """The text of fermat28_step*.cuh.  NL != 24 and extra_* != 0 are for timing experiments only (bench_fm28_step.py): the result is then NOT a Montgomery step of 28 x 24 bits.
-    extra_alu / extra_mul: that many dummy IADD3 (two adds into a private accumulator) / dummy IMAD.WIDE (x_a x_b into a private 64-bit accumulator) per step, spread over the columns
+    extra_alu / extra_mul: that many dummy IADD3 (two adds into a private accumulator) / dummy IMAD.WIDE (x_a x_b into a private 64-bit accumulator) per step, spread over the columns; extra_fma: that many dummy FFMA (fa * fb added into one of 4 private float accumulators) per step, spread over the columns (the pipe experiment E5 of bench_fm28_step.py: does FP32 FMA run beside IMAD.WIDE?)
     and folded into the output at the end (their results are never used otherwise)."""
     assert not (RED and W != 28), "redundant limbs need 3 bits of headroom in the 64-bit column sums: only the 28-bit radix has them (FERMAT28.md)"
     MK = "MASK%d" % W
@@ -54,19 +54,22 @@ def generate(NL=24, S=2, RED=False, MULW=False, extra_alu=0, extra_mul=0, W=28, 
     w("  u64 c = 0;")
     if EX:
         w("  u64 b0 = 0;                          /* the part of column %d that does not depend on the top digit m%d: known before it, because bits %d and up of T come from it */" % (NL, NL - 1, W * NL))
-    NDZ, NDM = 8, 4
+    NDZ, NDM, NDF = 8, 4, 4
     if extra_alu:
         w("  u32 " + ", ".join("dz%d = x%d" % (j, j % NL) for j in range(NDZ)) + ";")
     if extra_mul:
         w("  u64 " + ", ".join("dm%d = x%d" % (j, (j + 1) % NL) for j in range(NDM)) + ";")
+    if extra_fma:
+        w("  const float fa = __uint_as_float(0x3f800000u | (x%d & 0x7fffffu)), fb = __uint_as_float(0x3f800000u | (n%d & 0x7fffffu));      /* in [1, 2): the chains stay finite */" % (1 % NL, 2 % NL))
+        w("  float " + ", ".join("df%d = __uint_as_float(0x3f800000u | (x%d & 0x7fffffu))" % (j, (j + 3) % NL) for j in range(NDF)) + ";")
     ncol = 2 * NL - 1
-    cnt = {"alu": 0, "mul": 0}
+    cnt = {"alu": 0, "mul": 0, "fma": 0}
     dummy_pairs = [("x%d" % a, "x%d" % b) for a in range(NL) for b in range(a + 1, NL)] + [("d%d" % b, "x%d" % a) for a in range(NL) for b in range(a + 1, NL)]
 
     def extras(col):
         """the dummy statements of column col: the totals are spread evenly"""
         lines = []
-        for kind, total, nacc in (("alu", extra_alu, NDZ), ("mul", extra_mul, NDM)):
+        for kind, total, nacc in (("alu", extra_alu, NDZ), ("mul", extra_mul, NDM), ("fma", extra_fma, NDF)):
             if not total:
                 continue
             want = (total * (col + 1)) // ncol - (total * col) // ncol
@@ -77,6 +80,8 @@ def generate(NL=24, S=2, RED=False, MULW=False, extra_alu=0, extra_mul=0, W=28, 
                 if kind == "alu":
                     a, b = (t * 5 + 1) % NL, (t * 7 + 3) % NL
                     lines.append("    asm volatile(\"add.u32 %%0, %%0, %%1; add.u32 %%0, %%0, %%2;\" : \"+r\"(dz%d) : \"r\"(x%d), \"r\"(n%d));" % (j, a, b))
+                elif kind == "fma":
+                    lines.append("    asm volatile(\"fma.rn.f32 %%0, %%1, %%2, %%0;\" : \"+f\"(df%d) : \"f\"(fa), \"f\"(fb));" % j)
                 else:
                     # distinct products that the step does not make itself (it makes d_i x_j for i < j and x_i x_i): x_a x_b and d_b x_a for a < b, in a scrambled order
                     assert extra_mul <= len(dummy_pairs), "at most %d dummy products" % len(dummy_pairs)
@@ -139,12 +144,14 @@ def generate(NL=24, S=2, RED=False, MULW=False, extra_alu=0, extra_mul=0, W=28, 
     for k in range(NL, 2 * NL - 1):
         column(k, False)
     w("  y%d = (u32)c;" % (NL - 1))
-    if extra_alu or extra_mul:
+    if extra_alu or extra_mul or extra_fma:
         fold = []
         if extra_alu:
             fold.append(" ^ ".join("dz%d" % j for j in range(NDZ)))
         if extra_mul:
             fold.append(" ^ ".join("(u32)dm%d ^ (u32)(dm%d >> 32)" % (j, j) for j in range(NDM)))
+        if extra_fma:
+            fold.append(" ^ ".join("__float_as_uint(df%d)" % j for j in range(NDF)))
         w("  y0 ^= %s;" % " ^ ".join(fold))
     if RED:
         # redundant limbs: x_i = y_i << b < 2^29, the value is 2 Y exactly; the column sums of the next step stay below 2^63 (FERMAT28.md)
