@@ -208,7 +208,15 @@ distinct covers at ≤ 1,257 rows and 36,800 at ≤ 1,258 in 40 seconds.
 `starts/q170000_m88f.txt` (2 covers at 1,255, 99 at 1,256, 2 at 1,257, 188
 at 1,258 since the selection below; about 2,200 exist at ≤ 1,257) and sets kmax per vector (9,898,466,666 for these; cap it at 2^32
 if the kernel needs 32-bit k). The fleet's four smaller cards have run this
-set since 23 November.
+set since 23 November. With 32-bit k the range [0, 2^32) of such a vector
+ends at N ≈ 0.43·10^200, while the vector goes on to 10^200:
+`GEN_KMAX=top32 ./gen_vectors.sh ...` (`make_specs.py ... top32 ...`) moves N0
+up by a multiple of M so that k = 2^32 − 1 is the last member below 10^200.
+ln N is then 0.83 larger on the top levels, the chance that a row holds a
+prime falls by 0.18%, and with 30 expected primes a member that is 5.6% more
+successes per member for no other change (the spec records the move as
+`k_shift`, `check_specs.py` allows for it, and the cover can be handed out
+again for its top range even if its low range was used).
 
 **Rows above the design level: two families.** The optimiser counts the
 uncovered rows below Q and nothing else. A member that passes all of them

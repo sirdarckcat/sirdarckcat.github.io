@@ -22,7 +22,7 @@ for sp in specs:
         assert 0 < a < r, (sp["name"], r, a)
         assert N0 % r == a, (sp["name"], "N0 residue", r)
         prod *= r
-    assert prod == M and N0 % 2 == 0 and 0 <= N0 < M, sp["name"]
+    assert prod == M and N0 % 2 == 0 and 0 <= N0 - sp.get("k_shift", 0) * M < M, sp["name"]      # k_shift: make_specs.py "top32"
     assert all(M % r == 0 for r, _ in cover) and len({r for r, _ in cover}) == len(cover)
     uncovered = [q for q in rows if gcd(N0 - q, M) == 1]
     assert uncovered == sp["residual"], (sp["name"], len(uncovered), len(sp["residual"]))

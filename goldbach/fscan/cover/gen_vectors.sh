@@ -15,6 +15,7 @@ Q=$1; KCAP=$2; COUNT=$3; NAME=$4; SEED=${5:-1}; TAG=$6
 [ -n "$NAME" ] || { echo "usage: $0 Q kcap count name [seed] [tag]" >&2; exit 1; }
 [ -x ./covergen ] || gcc -O3 -march=native -fopenmp -o covergen covergen.c -lm
 SUF=${TAG:+_$TAG}; KMAX=5.4e9; [ -n "$TAG" ] && KMAX=auto
+[ -n "$GEN_KMAX" ] && KMAX=$GEN_KMAX      # e.g. GEN_KMAX=top32: 32-bit k ranges that end at 10^200 (see make_specs.py)
 START=starts/q$Q$SUF.txt; LEDGER=starts/ledger_q$Q$SUF.txt; OUT=specs_q${Q}${SUF}_$NAME.json
 TMP=$(mktemp); trap 'rm -f "$TMP"' EXIT
 # the walk is asked for more than count: some of what it finds was handed out before
