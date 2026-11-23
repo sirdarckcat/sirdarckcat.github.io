@@ -36,7 +36,7 @@ PIPE_BODIES = {
     "IMAD.U32 (lo) +acc":         "asm volatile(\"mad.lo.u32 %0, %1, %2, %0;\" : \"+r\"(x[{c}]) : \"r\"(a[{c}]), \"r\"(b[{c}]));",
     "IADD3 (2 adds fused)":       "asm volatile(\"add.u32 %0, %0, %1; add.u32 %0, %0, %2;\" : \"+r\"(x[{c}]) : \"r\"(a[{c}]), \"r\"(b[{c}]));",
     "IADD3 + IADD3.X (64-bit add)": "asm volatile(\"add.cc.u32 %0, %0, %2; addc.u32 %1, %1, %3;\" : \"+r\"(x[{c}]), \"+r\"(y[{c}]) : \"r\"(a[{c}]), \"r\"(b[{c}]));",
-    "LOP3":                       "asm volatile(\"and.b32 %0, %0, %1; xor.b32 %0, %0, %2;\" : \"+r\"(x[{c}]) : \"r\"(a[{c}]), \"r\"(b[{c}]));",
+    "LOP3":                       "asm volatile(\"and.b32 %0, %0, %1; xor.b32 %0, %0, %2;\" : \"+r\"(x[{c}]) : \"r\"(x[({c} + 1) % 8]), \"r\"(a[{c}]));",   # operands change each iteration: with fixed a, b ptxas folded the unrolled chain to 15 LOP3 for 32 chain-ops (found 2026-11-23)
     "SHF":                        "asm volatile(\"shf.l.wrap.b32 %0, %0, %1, 5;\" : \"+r\"(x[{c}]) : \"r\"(a[{c}]));",
 }
 # one IMAD.WIDE with the addend, its operand bump, plus k further IADD3 on other chains

@@ -117,7 +117,13 @@ The step loop (one squaring step) as the GPU runs it, from NVRTC 12.9 + `nvdisas
   | IADD3 | 1.82 | 2.14 | 2.14 |
   | IADD3 + IADD3.X (a 64-bit add) | 2.81 | 3.13 | 3.14 |
   | SHF | 1.82 | 2.13 | 2.13 |
-  | LOP3 | 0.75 | 1.07 | 1.07 |
+  | LOP3 (see the correction below: not a cost a LOP3) | 0.75 | 1.07 | 1.07 |
+
+  *Correction (2026-11-23, second):* the LOP3 row is not a cost a LOP3.  `bench_pipes.py --check sm_80` / `sm_120` shows that ptxas folded its chain `x = (x & a) ^ b` (fixed a, b) across the
+  unrolled iterations: **15 LOP3 for the 32 chain-ops of a loop iteration**.  Per LOP3 the same rows are 0.75 x 32 / 15 = **1.6 cycles on sm_120** and 1.07 x 32 / 15 = 2.28 on sm_80 / 89 (2.0 per integer-pipe
+  instruction of that loop: the half-rate pipe, as IADD3).  The row is rewritten (`x[c] = (x[c] & x[c+1]) ^ a[c]`: 36 LOP3 for 32 chain-ops, `--check` shows it); `costmodel.py` uses 1.6 / 2.14 / 2.14.  The step has
+  only 47-71 LOP3, so the fits move by < 1% (A100 rho 0.27, spread 0.3%; RTX rho 0.81), but the row would have told a reader that LOP3 runs at 1.3-1.4 per cycle on a scheduler that issues one.  All the other
+  rows have the loop `--check` expects (32 instructions of the row's opcode, plus a few loop-control ones).
 
   So **IMAD.WIDE.U32 with the addend alone costs 2.5 (RTX PRO 6000), 4.15 (A100) and 4.5 (L4) cycles** (the first row minus one IADD3), and in that benchmark every added IADD3 adds ~2 cycles.
   *Correction (2026-11-23):* until then this file listed 2.3 and 2.4 for the A100 and L4, a transcription error of mine.  It made the multiplier 45% too cheap on sm_80 / 89 and is why the "w"

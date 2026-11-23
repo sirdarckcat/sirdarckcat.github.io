@@ -53,6 +53,9 @@ B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` st
   600 dead adds a step on an A100 / L4; the GPU session measured +9-14%.  The refitted model T = max(T_mul, T_alu) + rho min(T_mul, T_alu) with the benchmark's costs and one parameter (rho = 0.35) reproduces six A100
   timings within 1.5% (`sieve200/cuda/costmodel.py`, `fermat661/cuda/FERMAT28.md`), including the older `fermat3`, a different algorithm.  It does not explain the RTX PRO 6000 (measured cycles 1.5x the model's at the
   nominal clock: the clock under load or something in the kernel; `measure_all.sh` samples the clock).
+* **Count the instructions of a benchmark's loop before believing its row** (`bench_pipes.py --check`): the LOP3 row of the pipe benchmark said 0.75 / 1.07 cycles a LOP3 because ptxas had folded the chain
+  `x = (x & a) ^ b` to 15 LOP3 for 32 chain-ops (it is 1.6 / 2.14 a LOP3).  It was a 5-second check that I did the day after the measurement; an issue rate above one instruction a cycle was the clue.
+  The other rows were fine.  The correction moves the cost model's fits by under 1%.
 * **Mistakes that were caught by tests, not by reading**: a 10-plane vertical counter overflows above 1,023 rows (Q = 150,000 has 1,093);
   `fermat28`'s lazy reduction needs 16n < R, so n < 2^668 (669-bit inputs gave a wrong residue in 0.3% of cases, invisible in verdicts,
   which are 0 for almost every random number: the final residue 2^(1-n) mod n is what to compare).

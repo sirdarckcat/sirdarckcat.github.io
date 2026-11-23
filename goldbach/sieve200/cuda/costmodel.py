@@ -31,10 +31,12 @@ import sass as S
 
 # cycles a warp instruction occupies a scheduler (bench_pipes.py part 1, GPU session 2026-11-22 23:10Z)
 COST = {
-    "sm_80": {"WIDE": 4.15, "IADD3": 2.14, "IADD3.X": 1.0, "IMAD": 2.04, "SHF": 2.13, "LOP3": 1.07, "LEA": 2.1, "SEL": 1.07, "ISETP": 2.1, "MOV": 0.3, "HFMA2": 0.3, "*": 2.0},
-    "sm_89": {"WIDE": 4.5, "IADD3": 2.14, "IADD3.X": 1.0, "IMAD": 2.04, "SHF": 2.13, "LOP3": 1.07, "LEA": 2.1, "SEL": 1.07, "ISETP": 2.1, "MOV": 0.3, "HFMA2": 0.3, "*": 2.0},
-    "sm_120": {"WIDE": 2.53, "IADD3": 1.82, "IADD3.X": 1.0, "IADD": 1.82, "IMAD": 2.02, "SHF": 1.82, "LOP3": 0.75, "LEA": 1.82, "SEL": 0.75, "ISETP": 1.82, "MOV": 0.3, "HFMA2": 0.3, "*": 1.8},
+    "sm_80": {"WIDE": 4.15, "IADD3": 2.14, "IADD3.X": 1.0, "IMAD": 2.04, "SHF": 2.13, "LOP3": 2.14, "LEA": 2.1, "SEL": 2.14, "ISETP": 2.1, "MOV": 0.3, "HFMA2": 0.3, "*": 2.0},
+    "sm_89": {"WIDE": 4.5, "IADD3": 2.14, "IADD3.X": 1.0, "IMAD": 2.04, "SHF": 2.13, "LOP3": 2.14, "LEA": 2.1, "SEL": 2.14, "ISETP": 2.1, "MOV": 0.3, "HFMA2": 0.3, "*": 2.0},
+    "sm_120": {"WIDE": 2.53, "IADD3": 1.82, "IADD3.X": 1.0, "IADD": 1.82, "IMAD": 2.02, "SHF": 1.82, "LOP3": 1.6, "LEA": 1.82, "SEL": 1.6, "ISETP": 1.82, "MOV": 0.3, "HFMA2": 0.3, "*": 1.8},
 }
+# LOP3 correction (2026-11-23): the benchmark row "LOP3" (x = (x & a) ^ b, fixed a, b) was folded by ptxas to 15 LOP3 for the 32 chain-ops of a loop iteration (bench_pipes.py --check), so
+# its 0.75 / 1.07 / 1.07 cycles a chain-op are 1.6 (sm_120) and 2.28 (sm_80 / 89: 2.0 for the 17 integer-pipe instructions of the loop) cycles a LOP3.  Used here: 1.6 and 2.14 (as IADD3).
 SKIP = {"BRA", "BSSY", "BSYNC", "UMOV", "UIADD3", "UISETP", "UIMAD", "ULDC", "NOP", "YIELD", "LDL", "STL", "EXIT", "S2R", "CS2R", "LDC", "BAR", "WARPSYNC", "ULOP3", "USHF"}
 # measured by the GPU session, tests/s, 128 threads a CTA (2026-11-23 00:17Z).  key: (gpu, variant)
 MEASURED = {
