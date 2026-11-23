@@ -702,7 +702,7 @@ theorem twinPartial_factor {r : ℕ} (hr : 3 ≤ r) :
   exact ⟨by linarith, by linarith⟩
 
 theorem twinPartial_nonneg (w : ℕ) : 0 ≤ twinPartial w :=
-  Finset.prod_nonneg fun r hr => (twinPartial_factor (three_le_of_mem_oddPrimesLE hr)).1
+  Finset.prod_nonneg fun _ hr => (twinPartial_factor (three_le_of_mem_oddPrimesLE hr)).1
 
 theorem twinPartial_antitone : Antitone twinPartial := by
   intro w w' hww
