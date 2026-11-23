@@ -5,7 +5,7 @@ every step asks whether `front − q` is prime. This directory asks the other qu
 the sequence, and of the least Goldbach summand (LGS) in general, can be obtained *without* testing
 any `N − q` for primality.
 
-Answer: the statistics, almost completely; the individual terms, not at all. Four experiments.
+Answer: the statistics, almost completely; the individual terms, only the first five. Five experiments.
 
 ## 1. A model with no primes in it (`model.py` → `model.txt`)
 
@@ -109,6 +109,52 @@ of the b-file; the verification of Oliveira e Silva, Herzog and Pardi ends at 4�
 further term). Given that, the forecast is: 5% below 4.2·10^18, even odds below 6.2·10^18, 95%
 below 1.06·10^19.
 
+## 5. A heuristic N generator (`hgen.py` → `hgen.txt`)
+
+A program that prints the numbers `N` at which it expects a new record, from nothing, and never
+asks whether any `N − q` is prime. It has two rules.
+
+**Rule A, covering.** Take the first `n` odd primes as moduli and give each one residue class. A
+class `a mod r` strikes an odd prime `q` when `q ≡ a (mod r)`: then `r | N − q` for every
+`N ≡ a (mod r)`. Among all choices of classes take those that strike the longest run of odd primes
+3, 5, 7, …, and announce the least even number beyond the previous term that carries one of them.
+
+| moduli | best classes strike every odd prime below | announced | real term |
+|---|---|---|---|
+| none | 3 | 6 | 6 |
+| 3 | 5 | 12 | 12 |
+| 3, 5 | 7 | 30 | 30 |
+| 3, 5, 7 | 19 | 98 | 98 |
+| 3, 5, 7, 11 | 31 | 1118 | 220 |
+
+So the terms 4, 6, 12, 30, 98 come out of a rule with no primality in it, and this is a theorem:
+they attain the cover depth of their small primes (`GoldbachGaps/CoverDepth.lean`,
+`isRecord_and_isDepth`). At the sixth term the rule breaks, for a counting reason: with four moduli
+there are 1155 vectors and only two best ones, so the best one first occurs near 1118, while the
+record only has to beat 19 and a merely good vector does that at 220.
+
+**Rule B, the clock.** After a term `N` with value `G`, every later even number has in the model
+of section 1 a chance of escaping the odd primes up to `G`; the next term is announced where these
+chances add up to 1, and its value is the prime `1/h` strikers after `G`. Started at 98 and left
+alone (no real term is used after that), it generates 63 more numbers up to 4·10^18:
+
+| up to | generated terms | real terms | generated value | real value |
+|---|---|---|---|---|
+| 10^3 | 8 | 9 | 73 | 73 |
+| 10^6 | 18 | 21 | 547 | 523 |
+| 10^9 | 29 | 34 | 1553 | 1789 |
+| 10^12 | 41 | 43 | 3301 | 3457 |
+| 10^15 | 53 | 57 | 5653 | 5569 |
+| 10^18 | 66 | 67 | 8971 | 9341 |
+| 4·10^18 | 68 | 69 | 9533 | 9781 |
+
+It keeps pace with the real sequence over fifteen orders of magnitude, in how many terms there
+are and in how large their values are. It does not name the terms: none of its 63 numbers is a
+real term, and section 4 says how far off a single one is (a factor of 3 is typical). That is the
+limit of any generator of this kind. Between two terms the candidates differ only in what their
+residues modulo primes up to `√N` leave open (section 3), and reading those residues is the exact
+calculation.
+
 ## What this is and is not
 
 * It is not a proof and cannot become one with present methods: `h(N)` is the Hardy–Littlewood
@@ -125,4 +171,5 @@ below 1.06·10^19.
     python3 -I model.py terms.txt ../rank_records/hist_1e12.txt 1000000000000 ../rank_records/hist_1e11.txt 100000000000 > model.txt
     python3 -I simulate.py terms.txt 400 0.92 > simulate.txt          (from this directory; about 15 minutes)
     python3 -I forecast.py terms.txt 0.92 terms_68_69.txt > forecast.txt      (about 4 minutes)
+    python3 -I hgen.py terms.txt 0.92 terms_68_69.txt > hgen.txt              (about 3 minutes)
     gcc -O2 -o cover_rank cover_rank.c -lm && ./cover_rank terms.txt 120000000 3 7 13 31 101 1009 > cover_rank.txt

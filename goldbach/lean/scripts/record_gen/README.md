@@ -95,7 +95,7 @@ Nothing about the generator is tied to 2^25. That number is where the *certified
 | the proof that the program is right | every X | `mem_records` is a statement about all X |
 | the front (the next candidate) | exists for every striker, forever | `exists_isFront`, no hypothesis |
 | new terms, forever | exactly if Goldbach's conjecture is true | `goldbach_iff_generator_never_stops`, `goldbach_iff_records_unbounded` (`GoldbachGaps/RecordInfinite.lean`) |
-| running the proved generator | 2^25 in 20 s, 2^27 in 3 min; by extrapolation about an hour for 10^9 and two days for 10^10 | every sieving prime costs a pass over an X-digit number, so the time grows like X^1.6 |
+| running the proved generator | 2^25 in 20 s, 2^27 in 3 min; 2^30 (about 10^9) was stopped unfinished after 2 hours | every sieving prime costs a pass over an X-digit number, so the time grows at least like X^1.6 |
 | statements checked by the kernel | 2^25 in 90 s; about 2 hours for 10^9; about 1.6 days for 10^10 | measured on single segments: 2.5 s per million numbers near 3·10^7, 8.5 s near 10^9, 21 s near 10^10, with 1 to 6 GB of memory |
 | the walker in C (`ngen.c`: the proved rule, the program itself not proved) | 10^11 in 65 s on 3 cores: 40 terms | it visits every even number; memory is the primes up to √N |
 | fast scan of all least summands, not proved (`scripts/rank_records/lgs_scan.c`) | 10^12 in 63 min: 43 terms | |
@@ -131,6 +131,13 @@ At 98 that stops: 98 − 3 = 5·19, 98 − 5 = 3·31, 98 − 7 = 7·13, 98 − 1
 98 − 17 = 3⁴: one small prime now kills several summands at once (3 kills 5, 11, 17; 5 kills 3
 and 13), which is the covering mechanism of the large searches. And from 98 on strikers miss, so
 A025019 skips primes; the number of misses before a hit grows like ln N.
+
+One rule with no primality in it does survive five terms: "take the residue classes of the first
+n odd primes that strike the longest run of primes, and announce the least even number carrying
+them" gives 6, 12, 30, 98 for n = 0, 1, 2, 3 and then says 1118 where the sixth term is 220
+(`scripts/lgs_heuristic/hgen.py`, rule A; `GoldbachGaps/CoverDepth.lean`, `isRecord_and_isDepth`).
+The first five terms are the best possible coverings; from the sixth on a term is only the best
+covering that happens to occur in time.
 
 What forcing does not give: a way to jump to the next front without the sieve. The next front
 is the smallest N with N − q composite for all primes q up to the last value, and no rule that
