@@ -15,6 +15,9 @@ import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
 import GoldbachGaps.Cover15907
+import GoldbachGaps.Cover16381
+import GoldbachGaps.Cover16747
+import GoldbachGaps.Cover16981
 import GoldbachGaps.Records
 import GoldbachGaps.Needles
 import GoldbachGaps.NeedlePairs
@@ -102,6 +105,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                earlier covers to 15787 and 15877 were at commits `8c061b4` and `7c4568c` of
                this branch and their statements are now corollaries. Closed statements in
                `Records`.
+* `Cover16381`, `Cover16747`, `Cover16981` – generated instances on more primes, from the
+               research session's files `complete_cover_16381_91primes.txt`,
+               `…_16747_92primes.txt` and `…_16981_93primes.txt` (same branch, commit
+               `10648a4`): even `N < 10^200` with `N - q` divisible by a prime `r ≤ 479`
+               for the 1,898 odd primes `q < 16381` (198 digits, 95 members of the progression
+               below `10^200`), by `r ≤ 487` for `q < 16747` and by `r ≤ 491` for the 1,956
+               odd primes `q < 16981` (200 digits each, one member: the modulus exceeds
+               `10^200`, so these were found by enumerating residue choices, not read off a
+               progression). `16981` is the largest bound on the least summand proved here
+               without any primality or compositeness test. Closed statements in `Records`.
 * `Record150`, `Record199` – generated certificates (see `scripts/gen_record.py`) for the
                150-digit record `g = 104527` and the 199-digit record `g = 119419`.
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
