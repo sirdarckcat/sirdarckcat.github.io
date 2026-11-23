@@ -1,0 +1,34 @@
+# uarch genab.sh and splitab.sh (0d42e4d) on gold-g4c (RTX PRO 6000), genab_run.sh, 2026-11-23 14:08:37-14:11:11Z (campaign paused), ms a 2^24 window, in /content/ua_v7.
+# genab: the generate kernel on top of production's six options. DEEP_GEN_UNROLL=4 at the production geometry: gen 40.30 -> 28.74 ms.
+
+2026-11-23T14:08:37Z paused pid 2343298
+--- genab.sh
+unroll 1 (gen 512, rcta 8, stage 8192)         gen   40.30 (A  13.67 B  26.64)
+unroll 2                                       gen   32.43 (A  11.68 B  20.76)
+unroll 4                                       gen   28.74 (A  10.78 B  17.96)
+unroll 8                                       gen   30.10 (A  11.18 B  18.92)
+gen 256, stage 8192 (2 CTAs, 8 warps), unroll 4 gen   36.27 (A  12.70 B  23.57)
+gen 256, stage 6144 (3 CTAs an SM), unroll 4   gen   29.97 (A  10.63 B  19.33)
+gen 256, stage 4096 (4 CTAs an SM), unroll 4   gen   29.95 (A  10.30 B  19.65)
+gen 256, stage 4096, unroll 1                  gen   41.08 (A  13.18 B  27.90)
+gen 512, rcta 16, stage 8192, unroll 4         gen   32.91 (A  11.66 B  21.25)
+--- splitab.sh
+base (rcta 8, 512)                 gen   49.72 (A  15.61 B  34.11)  tile   32.84 (small  14.54 apply  19.81)  bench_batch sieve   83.7
+DEEP_BIN_PACK=1                    gen   48.50 (A  15.63 B  32.87)  tile   28.78 (small  16.21 apply  15.76)  bench_batch sieve   77.9
+DEEP_GEN_HOIST=1                   gen   47.24 (A  14.30 B  32.94)  tile   32.77 (small  14.44 apply  19.80)  bench_batch sieve   81.1
+PACK + HOIST                       gen   45.76 (A  14.31 B  31.45)  tile   28.83 (small  16.27 apply  15.84)  bench_batch sieve   75.4
+DEEP_TILE_UNROLL=2                 gen   49.76 (A  15.64 B  34.12)  tile   29.43 (small  11.13 apply  16.31)  bench_batch sieve   80.2
+DEEP_TILE_UNROLL=4                 gen   49.71 (A  15.58 B  34.13)  tile   26.07 (small   7.78 apply  14.24)  bench_batch sieve   77.0
+DEEP_TILE_PREFETCH=256             gen   49.72 (A  15.60 B  34.13)  tile   32.13 (small  13.84 apply  19.11)  bench_batch sieve   83.3
+PACK + HOIST + UNROLL=4            gen   45.76 (A  14.31 B  31.46)  tile   22.47 (small   9.90 apply  10.65)  bench_batch sieve   69.2
+PACK + HOIST + UNROLL=4 + PF       gen   45.77 (A  14.33 B  31.44)  tile   20.87 (small   8.20 apply   9.02)  bench_batch sieve   69.1
+DEEP_GEN_FLUSH2=1                  gen   45.34 (A  15.67 B  29.68)  tile   32.83 (small  14.54 apply  19.86)  bench_batch sieve   80.3
+DEEP_GEN_ORDER=1                   gen   49.08 (A  14.90 B  34.19)  tile   32.78 (small  14.50 apply  19.80)  bench_batch sieve   84.1
+HOIST + FLUSH2                     gen   43.06 (A  14.53 B  28.53)  tile   32.83 (small  14.54 apply  19.86)  bench_batch sieve   78.3
+PACK + HOIST + FLUSH2              gen   42.22 (A  14.41 B  27.82)  tile   28.73 (small  16.16 apply  15.74)  bench_batch sieve   73.3
+PACK + HOIST + FLUSH2 + ORDER      gen   40.33 (A  13.75 B  26.57)  tile   28.78 (small  16.17 apply  15.75)  bench_batch sieve   71.8
+ALL (+ UNROLL=4 + PF)              gen   40.31 (A  13.67 B  26.65)  tile   20.86 (small   8.20 apply   9.01)  bench_batch sieve   64.4
+TILE_UNROLL=8 (+ PACK HOIST FLUSH2 ORDER PF) gen   40.30 (A  13.67 B  26.63)  tile   21.56 (small   8.88 apply   9.73)  bench_batch sieve   64.5
+TILE_UNROLL=16 (+ PACK HOIST FLUSH2 ORDER PF) gen   40.30 (A  13.67 B  26.64)  tile   21.75 (small   9.08 apply   9.92)  bench_batch sieve   64.8
+2026-11-23T14:11:11Z resumed pid 2343298
+GENAB-DONE
