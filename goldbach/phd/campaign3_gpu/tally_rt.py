@@ -3,15 +3,19 @@ import glob, json, math, os, re
 # gpu3_stats.log has it, else the model 2^20-slice estimate members * hit% * exp(-1.0275 E^ + 0.33)), found and g.
 out = []
 pat = re.compile(r"^\[(\S+)\] k=\[(\d+),(\d+)\) \S+ \(\S+ k/s\) tests=(\d+) prp=(\d+) p\^=(\S+) alive/k=(\S+) E\^=(\S+) hit%=(\S+) found=(\d+)")
-for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", "/content/c160", "/content/c170"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
+for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", "/content/c160", "/content/c170", "/content/c170v"):   # /content/c3g (L4, seeded with July CPU lines) is tallied locally
     if not os.path.exists(d + "/search.log"):
         continue
     logged = {}                                         # slice name -> expected share of its batch
+    near_logged = 0.0                                   # --log-near-exp: expected first-PRP rows >= the near-miss threshold (design hits included), summed over the batches
     if os.path.exists(d + "/gpu3_stats.log"):
         for l in open(d + "/gpu3_stats.log"):
             m = re.search(r"batch (\S+)\.\.(\S+) \((\d+) slices\).*expected hits ([\d.e+-]+)", l)
             if m:
                 logged[m.group(2)] = (int(m.group(3)), float(m.group(4)))   # keyed by the batch's last slice
+            mn = re.search(r"expected near>=(\d+) ([\d.e+-]+)", l)
+            if mn:
+                near_logged += float(mn.group(2))
     rows, cur, seen = [], [], set()
     for l in open(d + "/search.log"):
         m = pat.match(l)
@@ -42,11 +46,11 @@ for d in ("/content/c3g_g4", "/content/c850", "/content/c140", "/content/c150", 
     fl = [f for f in fa if not f.get("near_miss")]                       # design-Q successes (what "expected" predicts)
     near = [{k: f[k] for k in ("name", "k", "g", "digits")} for f in fa if f.get("near_miss")]   # first-PRP rows above the record
     fams = sorted(set(re.sub(r"_v\d+$|_w\d+$", "", r["name"].split("@")[0]) for r in rows))
-    Q = json.load(open(d + "/my_specs.json"))[0]["Q"] if os.path.exists(d + "/my_specs.json") else None
+    Q = json.load(open(d + "/my_specs.json"))[0]["Q"] if os.path.exists(d + "/my_specs.json") else (170000 if d.endswith("c170v") else None)
     out.append(dict(dir=d, Q=Q, families=fams[:6], slices=len(rows), members=mem,
                     hit_mass_members=sum(r["k"] * r["hit"] for r in rows),
                     mean_E=sum(r["k"] * r["E"] for r in rows) / max(mem, 1),
                     tests=sum(r["tests"] for r in rows), prps=sum(r["prps"] for r in rows),
-                    expected_logged=exp_logged, slices_logged=n_logged, expected_model=max(exp_model, 0.0), slices_model=n_model,
+                    expected_logged=exp_logged, slices_logged=n_logged, expected_near_logged=near_logged, expected_model=max(exp_model, 0.0), slices_model=n_model,
                     found=len(fl), g=[f["g"] for f in fl], hits=[{k: f[k] for k in ("name", "k", "g", "digits")} for f in fl], near_misses=near))
 print("[ty]", json.dumps(out))
