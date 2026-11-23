@@ -23,7 +23,10 @@ grep -q "KCTOP PASSED" $L || { echo "BRINGUP-FAILED known case on this GPU" >> $
 fi
 mkdir -p /content/vec491 /content/c170r
 bash /content/resume491.sh $PART >> $L 2>&1
-setsid nohup bash /content/vecgen491.sh /content/vec491 /content/c170r $PART 3 >> /content/vecgen491.log 2>&1 < /dev/null &
+# CAPMAX 1,252: the lead's advance decision (23 Nov 21:35Z): at the first 'no chunk at cap 1250' the cap goes to 1,251 (then 1,252), the row guard's base steps with it
+CAPS="CAPMAX=1252"; [ -s /content/vec491/cap0.txt ] && CAPS="CAP=$(cat /content/vec491/cap0.txt) CAPMAX=1252"
+echo "$(date -u +%FT%TZ) generator: $CAPS" >> $L
+setsid nohup env $CAPS bash /content/vecgen491.sh /content/vec491 /content/c170r $PART 3 >> /content/vecgen491.log 2>&1 < /dev/null &
 for i in $(seq 1 120); do ls /content/vec491/vec_*.json > /dev/null 2>&1 && break; sleep 5; done
 ls /content/vec491/vec_*.json > /dev/null 2>&1 || { echo "BRINGUP-FAILED no 491 chunk after 10 min: $(tail -n 2 /content/vecgen491.log)" >> $L; exit 1; }
 echo "$(date -u +%FT%TZ) first 491 chunk: $(tail -n 1 /content/vecgen491.log | cut -c1-220)" >> $L

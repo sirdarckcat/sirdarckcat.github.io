@@ -10,8 +10,9 @@ if [ -s /content/c170r/search.log ] && ! ls /content/vec491/vec_*.json > /dev/nu
   s0=$(grep -o '^[0-9T:-]*Z chunk [0-9]*:' /content/vecgen491.log 2>/dev/null | awk '{print $3}' | tr -d : | sort -n | tail -n 1)
   s1=$(grep -o '^\[q170000_m89r491_p[0-9]*c[0-9]*' /content/c170r/search.log | sed 's/.*c0*\([0-9][0-9]*\)$/\1/' | sort -n | tail -n 1)
   seq0=$(( $(printf '%s\n%s\n' "${s0:--1}" "${s1:--1}" | sort -n | tail -n 1) + 1 ))
-  echo "$used" > /content/vec491/made.txt; echo "$seq0" > /content/vec491/seq0.txt
-  echo "$(date -u +%FT%TZ) resume: c170r done set $(grep -c '^\[' /content/c170r/search.log) slices ($used 491 vectors consumed), chunks continue at $seq0 (old log $s0, search.log $s1), ledger_p$PART $(wc -l < /content/cover491/ledger_p$PART.txt 2>/dev/null) covers, row-guard base $(cat /content/rowguard491_base.txt 2>/dev/null | cut -c1-40)"
+  cap=$(grep -o '^cap raised to [0-9]*$' /content/vecgen491.log 2>/dev/null | awk '{print $4}' | tail -n 1)     # start at the old card's last cap: its lower pools are spent
+  echo "$used" > /content/vec491/made.txt; echo "$seq0" > /content/vec491/seq0.txt; echo "${cap:-1248}" > /content/vec491/cap0.txt
+  echo "$(date -u +%FT%TZ) resume: c170r done set $(grep -c '^\[' /content/c170r/search.log) slices ($used 491 vectors consumed), chunks continue at $seq0 (old log $s0, search.log $s1), cap ${cap:-1248}, ledger_p$PART $(wc -l < /content/cover491/ledger_p$PART.txt 2>/dev/null) covers, row-guard base $(cat /content/rowguard491_base.txt 2>/dev/null | cut -c1-40)"
 else
   echo "$(date -u +%FT%TZ) resume: nothing to resume (fresh c170r or chunks present)"
 fi

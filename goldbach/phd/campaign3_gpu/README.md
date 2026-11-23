@@ -726,6 +726,17 @@ Version 3 (22 Nov):
       there, so the cap rise cannot trip it.
     - Research estimates ~290,000 covers at ≤ 1,249 and ~3.7 million at ≤ 1,250. At ~1.5 M vectors a day, cap 1,250
       lasts ~2.5 days. Then either CAPMAX or the guard must change, which is the lead's call.
+    - The lead decided at 21:19Z and 21:35Z, and both rules are now in place:
+      - The guard's base is the mean measured at the first cap (1,248.000), plus one row for each of the generator's cap
+        steps (its `cap raised to N` lines). The +2 trip is relative to that, so a planned cap step can never lower f.
+        It went live on gold-g4d, g4e and g4f at 21:38-21:46Z: base 1,249.000 at cap 1,249, trailing +0.000.
+      - At the first `no chunk at cap 1250`, the cap goes on to 1,251, then 1,252. The live generators keep CAPMAX 1,250,
+        since their pool outlasts these runtimes. Every replacement starts its generator at the old card's last cap with
+        CAPMAX 1,252.
+      - Watcher 19 reports cap steps (for the regular reports), a stall at CAPMAX, fewer than 2,000 vectors ahead, and a
+        dead generator (`peek_rg.py`'s supply fields).
+    - The tail before a cap step: at 1,248 on gold-g4d, a walk's new covers fell from 1,000 to 1 over 28 walks in
+      ~3 min. The 12,000-vector buffer (~35 min) covered that easily.
 - research's top32 shift for the L4/T4 vectors (4de3423; the lead approved it at 20:34Z behind a three-point gate; `s32/`).
   - Each vector gets N0 += k_shift·M, with k_shift = 5,603,499,370 or 5,603,499,371, so that k = 2^32 − 1 is its last
     member below 10^200.
