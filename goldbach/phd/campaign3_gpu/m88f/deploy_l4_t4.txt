@@ -24,3 +24,9 @@
 #   [mr] rows: old 243 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.5
 #   [mr] members/s x1.0033 | expected hits/s x1.0633 | hits/s old 4.5484e-08 new 4.8365e-08
 #   gold-l4c (16:52:30-17:02Z): members/s x1.0075 | expected hits/s x1.0641 | hits/s old 9.1296e-08 new 9.7151e-08 | rows: residual mean 1263.0 -> 1258.6, alive/k 423.8 -> 422.5
+# Supply (the lead's 16:41Z check before the L4 keep-fraction A/B): one generator walk (gen_vectors.sh 170000 1259 6000 cap1 7 m88f, ~1 min of covergen on 2 walkers,
+# 7.5 min in all with check_specs) found 20,000 covers at <= 1,259 rows (1,612 at 1,258, 18,388 at 1,259) and made 6,000 new checked specs at 1,258-1,259 rows
+# (mean 1,258.8; 759 covers skipped as already handed out). The ledger is now 8,040 vectors. Top-up shares are on the cards as /content/m88f_topup1.json, not yet used:
+# 1,800 vectors each for gold-gpu, gold-l4b and gold-l4c (q170000_m88f_cap1_v0..v5399), 600 for gold-xt4 (v5400..v5999).
+# Consumption at f = 0.97: 96 slices of 2^25 a vector, ~194 vectors a day an L4, ~95 the T4 (~677 a day in all). 8,040 vectors last ~9-12 days even with
+# the L4s at f = 0.985, against ~9 days of compute units, so supply does not bind.
