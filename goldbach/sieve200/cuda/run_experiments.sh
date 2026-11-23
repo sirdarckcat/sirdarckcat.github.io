@@ -9,13 +9,14 @@
 # D. bench_pipes.py --warps: do the instruction costs shrink with more warps a scheduler?
 # E. Nsight Compute on the Fermat kernel, if `ncu` works on this host (stall reasons, issue slots, pipe utilisation)
 # F. bench_clock.py: does clock64() tick at the SM clock?  (5 seconds; every "cycle" of the pipe benchmarks is a clock64 difference)
+# H. the staged large-prime kernel at the PRODUCTION bound (B = 1e8): rows a CTA 2 / 4 / 8, per-phase ms of a 2^25 window (bench_batch.py), ~2 minutes
 # G. the production Fermat step with 1, 2 and 4 independent accumulators a column (time_fermat28.py, ~1 minute): if the RTX step is latency bound the 2 and 4 are faster; the cost model says -2.5% / -7%
 # SECTIONS="B C" runs only those; every section is time-limited and a failure does not stop the next one.  Then: summarize / commit the file and tell the uarch session.
 set -u
 SPEC=${1:?usage: GPU=0 bash run_experiments.sh SPEC.json [OUT.txt]}
 GPU=${GPU:-0}
 OUT=${2:-experiments_$(hostname)_gpu${GPU}.txt}
-SECTIONS=${SECTIONS:-"F G A B C D E"}
+SECTIONS=${SECTIONS:-"F G H A B C D E"}
 export CUDA_VISIBLE_DEVICES=$GPU
 HERE=$(cd "$(dirname "$0")" && pwd)
 FC=$HERE/../../fermat661/cuda
@@ -45,6 +46,14 @@ fi
 if want G; then
   section "G. accumulators a column and warps an SM: s1r_asm (production) against s2r_asm, s4r_asm (cost model for a throughput-bound step: -2.5% and -7%) and the register-capped s1r_asm_r80 / r72 (6 / 7 CTAs an SM, a few spills: ptxas says +1.5% / +4% instructions; an occupancy fit says +3-4% / +5-7% throughput): tests/s, --check against gmpy2"
   timeout 900 python3 "$FC/time_fermat28.py" "$SPEC" --variant s1r_asm s2r_asm s4r_asm s1r_asm_r80 s1r_asm_r72 --seconds 15 --check || echo "FAILED: time_fermat28 s2r_asm / s4r_asm"
+fi
+
+if want H; then
+  section "H. staged large-prime kernel at B = 1e8, rows a CTA 2 (production) / 4 / 8 (the table of 91 MB is read rows / rcta x 2 times a window from the L2: 115 / 58 / 29 GB): per-phase ms of a 2^25 window"
+  for cfg in "--rcta 2" "--rcta 4" "--rcta 8 --gen-threads 512" "--rcta 2"; do
+    echo "--- $cfg"
+    timeout 900 python3 bench_batch.py "$SPEC" --B 100000000 --ks 25 --f 0.97 --staged 1 --reps 3 $cfg || echo "FAILED: bench_batch $cfg"
+  done
 fi
 
 if want A; then
