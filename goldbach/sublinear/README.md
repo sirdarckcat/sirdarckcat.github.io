@@ -273,22 +273,22 @@ So the prize is 3.5 nats for the primes up to 1,000, 5.9 to 2,000, 8.8 to
 5,000, 12.6 to 20,000 and 14.8 to 50,000, from 4.5 nats per factor e in depth
 at the start to 2.4 at the end. An ideal search to depth 5,000 would bring the
 10% record within the Colab units that remain; to 20,000 it would bring fifty
-of them. The last line shows where
-the count goes with the whole sieve: it is the statement, already in the
-brainstorm notes, that the best N for the primes up to 10^7 or 10^8 is
-enormously better than anything the search can afford to find.
+of them. The last line shows where the count goes with the whole sieve: it is
+the statement, already in the brainstorm notes, that the best N for the primes
+up to 10^7 or 10^8 is enormously better than anything the search can afford to
+find.
 
 The fourth column is measured on 20,000 random members of a cover with 1,609
-rows (mean ± standard deviation; `member_depth.py`). The ideal N are *not* members of the best
-covers: 1,319 rows at depth 1,000 is 10.6 standard deviations below the mean
-of such members, 685 at depth 20,000 is 17.5 below, and the e^39 members of
-all the covers within a few rows of 1,609 reach about 9 standard deviations.
-The ideal N give up a few rows on the small primes and are aligned, mildly,
-with all the primes above: at the temperature that matters, a class change is
-accepted with
-probability below 0.01 for moduli under 128, about 0.1 for 128 to 512, 0.4 for
-512 to 2,048, 0.7 for 2,048 to 8,192 and 0.9 above. No prime beyond 512 is
-pinned to its best class; each is in a better-than-average one.
+rows (mean ± standard deviation; `member_depth.py`). The ideal N are *not*
+members of the best covers: 1,319 rows at depth 1,000 is 10.6 standard
+deviations below the mean of such members, 685 at depth 20,000 is 17.5 below,
+and the e^39 members of all the covers within a few rows of 1,609 reach about
+9 standard deviations. The ideal N give up a few rows on the small primes and
+are aligned, mildly, with all the primes above: at the temperature that
+matters, a class change is accepted with probability below 0.01 for moduli
+under 128, about 0.1 for 128 to 512, 0.4 for 512 to 2,048, 0.7 for 2,048 to
+8,192 and 0.9 above. No prime beyond 512 is pinned to its best class; each is
+in a better-than-average one.
 
 Caveats. (i) Tempering at low temperature is not fully in equilibrium (the
 bottom of the z = 463 table is 20 nats low against direct counts); the error
@@ -337,11 +337,12 @@ line, and the line is sharp for a structural reason.
    and that is all.
 4. *Hashing for near neighbours.* Writing N = u + v, the agreement of a pair
    is an inner product of a one-hot vector with a set indicator, block by
-   block. The sets are sum-sets of random-looking class lists, so any
+   block. The sets are translates of random-looking class lists, so a
    locality-sensitive scheme collides on a good pair at most about twice as
-   often as on a random one for a bucket of the same size; the exponent is
-   0.88, i.e. K^0.94 work for a population K. Populations here are e^80 and
-   more against e^33 operations available.
+   often as on a random one for a bucket of the same size. The exponents we
+   computed are 0.88 (this session) and 0.99 (the Lean session, for its
+   variant), i.e. at best K^0.94 work for a population K. Populations here
+   are e^80 and more against e^33 operations available.
 5. *Linear-time scoring.* What remains is to score every member, which is
    what the fleet's sieve does at 23 ns a member. Under that cost the present
    design is at its optimum: the gain of selection depends only on the kept
@@ -367,7 +368,8 @@ by a sieve over the members.
 In the language of the literature: collecting the prize means solving *noisy
 Chinese remaindering with dense lists* on average — rate 460/1,940 and lists of
 about a third of the classes for depth 2,000 — or equivalently maximum-
-likelihood decoding of a Chinese-remainder code far below the Johnson radius.
+likelihood decoding of a Chinese-remainder code with far less agreement than
+the Johnson bound requires.
 The polynomial version was proposed as a hardness assumption (Naor–Pinkas) and
 lattice attacks are known only for short lists (Bleichenbacher–Nguyen). Nothing
 here proves that no algorithm exists. The claim is narrower: the prize is
