@@ -1,9 +1,9 @@
 # Headroom: where could the search be 2x-5x faster? (uarch session, 23 Nov 2026, 05:30Z)
 
 Question asked: find further performance improvements on GPU, CPU or anything else, aiming for 2x-5x.  This file is the audit.  Short answer: **kernel and algorithm work on the GPUs the fleet has gave
-one lever worth having and it is deployed: hiding the sieve beside the Fermat kernel (cross-batch sieve thread), measured on the three RTX PRO 6000s at 1.744 -> 1.576-1.607 s a batch (x1.09-1.11; those cards are
-~81% of the fleet's Fermat throughput; the L4s and the T4 gain nothing), about +8% for the fleet; the remaining kernel / algorithm items are 1-4% each (section 4) and a few percent more may come from tuning the
-sieve's bursts (`sieve200/cuda/plt3.sh`, untested).  A real 2x-5x needs more GPUs, which is a money question, not an engineering one; and a 2x-5x of compute buys only +3,300 to +7,700 on the final record,
+one lever worth having and it is deployed: hiding the sieve beside the Fermat kernel (cross-batch sieve thread + a tuned burst shape), measured on the three RTX PRO 6000s at 1.76 -> 1.527 s a batch (x1.15; those
+cards are ~81% of the fleet's Fermat throughput; the L4s and the T4 gain nothing), about +12% for the fleet; the remaining kernel / algorithm items are 1-4% each (section 4), and a few percent more may come from more
+Fermat threads (`sieve200/cuda/plt7.sh`, untested).  A real 2x-5x needs more GPUs, which is a money question, not an engineering one; and a 2x-5x of compute buys only +3,300 to +7,700 on the final record,
 because the return is logarithmic.**
 
 ## 1. Where an RTX PRO 6000 batch goes (2 x 2^25 members, Q = 170,000, 1.76 s)
@@ -37,15 +37,16 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
 
 ## 3. What does give a multiple
 
-1. **Hide the sieve beside the Fermat kernel: DONE on the RTX PRO 6000s, x1.09-1.11 measured in production, nothing on the L4 / T4.**  Probe (GPU session, 08:04Z): the sieve runs beside the Fermat kernel when its stream has
+1. **Hide the sieve beside the Fermat kernel: DONE on the RTX PRO 6000s, x1.15 measured in production (1.76 -> 1.527 s a batch), nothing on the L4 / T4.**  Probe (GPU session, 08:04Z): the sieve runs beside the Fermat kernel when its stream has
    the highest priority (Fermat x1.104, sieve x2.89, work rate x1.25; projected batch 1.76 -> 1.45 s); without the priority it gets no SM time.  In the real driver the cross-batch sieve thread (`overlap.Pipeline`,
    `search_gpu5_xbatch2.patch`: `--pipeline 1 --pipeline-depth 2`, production's pool, one flush a batch) gives batches of 1.576 / 1.587 / 1.607 s on gold-g4 / g4b / g4c against 1.76 s, with identical slice lines and
    near-misses, since 08:40-08:42Z.  Two things I got wrong on the way, both found by the GPU session's measurements: (a) a flush per window (v1) costs +0.19 s a batch and leaves little (1.69 s); (b) my "sync-free
    sieve" (no host round trip a row group, thought to free the sieve thread from the GIL) made the overlap WORSE (1.73-1.76 s = none): a flat-out sieve on the highest-priority stream takes the SMs at full speed and the
    Fermat rounds wait, while the old per-group host check makes the sieve arrive in short bursts that the Fermat CTAs fill in between (sieve x2.2, hidden); the production tree keeps the per-group check
-   (`GBATCH_SYNC_EVERY=1`, the default again).  In the driver the work rate beside the sieve is x1.165 (Fermat x1.36 / sieve x2.2 while both run, the sieve busy 1.0 s of a 1.58 s batch) against the probe's x1.25: the
+   (`GBATCH_SYNC_EVERY=1`, the default again).  Tuning of the sieve's bursts (plt3 / plt4 / plt5, GPU session): a 0.5-1 ms bubble after each row group (`GBATCH_GROUP_DELAY_US`) with 512-thread tile CTAs (`--deep-tile-threads 512`; the
+   tile-thread setting had never had any effect before 4f8edff) takes the batch from 1.575 to 1.527 s (-3%), in production since 09:21Z ("a2"); the host's niced CPU share costs nothing (plt5: paused or running, same batch).  In the driver the work rate beside the sieve is x1.165 (Fermat x1.36 / sieve x2.2 while both run, the sieve busy 1.0 s of a 1.58 s batch) against the probe's x1.25: the
    Fermat rounds (many launches, host gaps) lose more than one big launch does; `plt3.sh` tries gentler / shorter / smaller-footprint sieve bursts.  L4 (GPU session, 08:44-08:51Z): batch 10.000 s against 10.054 s; the
-   probe's work rate beside the sieve is x1.0-1.10 (Fermat x2.1, sieve x1.9: the two just share the 58 SMs), so the L4s and the T4 stay as they were.  Fleet: +8% (3 RTX x1.10 of ~3.0 of 3.7 RTX-equivalents).
+   probe's work rate beside the sieve is x1.0-1.10 (Fermat x2.1, sieve x1.9: the two just share the 58 SMs), so the L4s and the T4 stay as they were.  Beside the sieve the Fermat KERNELS slow only x1.08 (plt5 `--profile-pool`: 0.65-0.69 -> 0.70-0.76 s a half-pool, the probe's x1.10); the rest of the loss is gaps between the Fermat kernels of the two halves.  Fleet: +12% (3 RTX x1.15 of ~3.0 of 3.7 RTX-equivalents).
 2. **More GPUs.**  The fleet is ~3.7 RTX-PRO-6000 equivalents of Fermat throughput (3 RTX + 3 L4 at 0.20 + a T4 at 0.11).  An RTX 5090 is ~0.9 of one, an RTX 4090 ~0.55-0.7 (an estimate from the L4's measured 0.20,
    SM count x clock).  Prices are third-party aggregator figures of Oct-Nov 2026 (live prices move by the hour): RTX 5090 on Vast.ai median ~$0.78 an hour, range $0.49-1.12
    ([ThunderCompute](https://www.thundercompute.com/blog/nvidia-rtx-5090-pricing)); market median $0.72 over 18 providers ([Getdeploying](https://getdeploying.com/reference/cloud-gpu/nvidia-rtx-5090)), $0.50-1.25 with median $0.72
@@ -63,7 +64,7 @@ Sizes as of 09:30Z, after the pipeline: the sieve is now hidden, but it still ta
 percent of Fermat work removed is worth 1%.  Fermat side: fused per-round update kernel for the tail rounds (+1%), the 24 doubling shifts as IADD in the Fermat step (+1%), exponent prefix of 9-10 bits instead of
 6 (+0.6%), a smaller waste than 3.1% (`--dmax 6` gave nothing: 1.581 against 1.571 s).  Sieve side (each % of its work x 0.55): the unroll-3 variant of the tile kernel (~-22% of its integer instructions: ~+2%), pruned
 apply (+1.5%), a deeper sieve for the first 60 rows (it adds sieve work: ~+2% net).  Sieve bursts (plt3): a 1 ms bubble after each row group +1.4%, 512-thread tile CTAs +1.1% (not applied: under the 2% a change needs;
-plt4 tries the two together).  L4 / T4: per-GPU-type (B, f) (+1-2% of the fleet's 19%).  Together at most ~x1.08 if all were done; measured so far: `--pool-threads 2` +2.7%, the pipeline +10% on the RTX cards.
+plt4 tries the two together).  L4 / T4: per-GPU-type (B, f) (+1-2% of the fleet's 19%).  Together at most ~x1.08 if all were done; measured so far: `--pool-threads 2` +2.7%, the pipeline + burst shape +15% on the RTX cards.
 
 The Fermat kernel itself has no hot local memory (its 88 B of local memory is the 84-byte exponent array, one load per 32 steps), no shared memory, and is bound by one shared integer pipe (the additive cost model);
 anything the sieve issues on that pipe is paid by the Fermat kernel, which is why neither stream priorities nor a sieve that fits in the leftover registers help.

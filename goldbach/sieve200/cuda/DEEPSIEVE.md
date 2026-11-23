@@ -336,3 +336,16 @@ What it says about the 0.25 s a batch that the Fermat rounds lose beside the sie
   arbitrate: the warp issue slots / pipes, or the MIO / LSU queue (the sieve's shared-memory atomics against the Fermat kernel's 88 B of local memory per thread, which is LDL / STL through the same pipe);
 * so the two things that were tried to make room (register fit, stream priorities) cannot help; what is left is a gentler or cheaper sieve (d1 / tt512 / both: 1-2.5%) or finding out whether the Fermat rounds lose GPU time
   (kernels slower) or host time (the gaps between rounds longer: GIL / CPU contention with the sieve thread): `plt4.sh` (pb / pj: `--profile-pool` with and without the pipeline, a `top -H` snapshot, `nproc`).
+
+
+## plt4 / plt5 (GPU session, 23 Nov 09:13-09:19Z): a2 deployed (1.527 s); the Fermat kernels slow x1.08 beside the sieve and the rest of the loss is gaps; the host is not the cause
+
+plt4 (`uarch_measure/plt4_rtxpro6000.txt`): j0 1.576 s; **a1** (1 ms bubble after each row group + 512-thread tile CTAs) 1.518; **a2** (0.5 ms) 1.526; a4 (1 ms, 1024 threads) 1.537; a6 (512 threads alone) 1.546; a3 (1.5 ms) 1.554 (the
+sieve falls behind in some batches); a5 (+ 8-row groups) 1.679 (sieve-bound).  plt5 (`plt5_cpu_rtxpro6000.txt`): the host is 48 vCPUs at load 36-40, 90% of it niced (4 drivers x 11-12 `search_c.py` at nice 5), and pausing that CPU share changes
+nothing (j0 1.580 running / 1.586 paused, a2 1.529 / 1.529): **my GIL / CPU-contention explanation (and plt6.sh) is moot.**  The `--profile-pool` lines (per half-pool of 1,007,616 members, 44-45 rounds): without the pipeline the
+Fermat kernels take 0.65-0.69 s on the GPU, the run_pool wall is 1.33 s (the halves' gaps are filled by each other's kernels: the GPU is ~busy), the flush 1.34 s; beside the sieve the kernels take 0.70-0.76 s (**x1.08**: GPU sharing, the
+probe's x1.10), the wall 1.54 s and the flush 1.58 s (against 1.36 s in the batches with no sieve beside them): of the 0.23 s the flush loses, ~0.11 s is the slower kernels and ~0.12 s is gaps, GPU idle between the Fermat kernels
+of the two halves, which is where the sieve's higher stream priority hurts the ~40 small kernels (gathers, cumsum, searchsorted, scatter_min ...) of each round.  Deployed on the three RTX PRO 6000s since 09:20-09:21Z:
+`GBATCH_GROUP_DELAY_US=500 --deep-tile-threads 512` with the pipeline: **1.526-1.529 s a batch against 1.744-1.76 s at the start: x1.15.**
+Next (`plt7.sh`, `search_gpu5_poolsplitn.patch`): 3 or 4 Fermat parts (`--pool-threads 3 / 4`) so a Fermat kernel is in flight more of the time; Fermat streams at the sieve's priority (`FERMAT_STREAM_PRIORITY=high`) so the small kernels
+do not queue behind the sieve.
