@@ -360,6 +360,18 @@ Version 3 (22 Nov):
     - tree `/content/ua_v2` (a752ea3 over the previous tree), with `GBATCH_DEFER_CHECK=0`;
     - deep arguments plus `--pipeline 1 --pipeline-depth 2 --trace-pipeline 1`;
     - gold-g4b's first 71 batches took 1.594 s each, against 1.76 s before.
+  - Burst shaping (09:03-09:21Z, the uarch session's `plt3.sh`, `plt4.sh` and this session's `plt5.sh`; tree 4f8edff).
+    Results are in `uarch_measure/plt3_burst_rtxpro6000.txt`, `plt4_rtxpro6000.txt` and `plt5_cpu_rtxpro6000.txt`.
+    - A 0.5 ms bubble after each checked row group (`GBATCH_GROUP_DELAY_US=500`) with 512-thread tile CTAs
+      (`--deep-tile-threads 512`, honoured from 4f8edff on) gives 1.526 and 1.529 s against 1.574 and 1.580 s, -3%. Slice
+      lines are identical.
+    - Pausing the host's CPU share (48 niced `search_c.py` processes) changes nothing.
+    - What costs the batch is GPU sharing: beside the sieve, the Fermat kernels of a half-pool take 0.70-0.76 s on the GPU
+      instead of 0.65-0.69 s.
+    - In production on the three RTX PRO 6000s since 09:20-09:21Z (`deploy_a2.py`):
+      - tree `/content/ua_v3`;
+      - driver = the pipeline driver plus the uarch session's inert `search_gpu5_prio.patch` (it is `search_gpu5.py` here);
+      - `GBATCH_GROUP_DELAY_US=500` and `--deep-tile-threads 512`.
   - Not on the L4s or the T4.
     - On gold-l4b the pipeline ran 10.000 s a batch against 10.054 s before (08:44-08:48Z), so the card went back to its
       previous configuration.
