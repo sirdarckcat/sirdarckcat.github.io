@@ -382,6 +382,41 @@ best covers give 1,439 ± 11 and nothing below about 1,340 within any budget
 considered here. A solution is worth 3.5 nats (a factor of 30) at the 10%
 target, and the same question at depth 5,000 (910 rows) is worth 8.8.
 
+## A provable lower bound (work in progress with the Lean session)
+
+The game is an instance of a question with almost no literature: how large
+can g(N) be made, provably? The conjectured maximal order is ln² N · ln ln N
+(Granville, van de Lune and te Riele 1989), the same order as the model
+ceiling the campaign measures against. The only lower bound we have found is
+in a 2026 preprint (W. Shi,
+arXiv:2605.21529, Theorem 6.22 by its numbering; unrefereed; the author writes
+that he has not found such bounds in the literature): the maximum of g(N)
+over even N ≤ X is at least (1/2 + o(1)) ln X · ln ln X, by counting (each
+prime p accounts for at most π(X) values of N, so π(z) ≥ ln X / 2 primes are
+needed to account for all of them).
+
+A cover gives more, and constructively. Let P1 be the odd primes up to αy and
+P2 the primes in (αy, y]. With classes for P1 chosen at random among the
+nonzero ones, an odd prime q < Q stays uncovered with probability
+∏_{r ∈ P1}(1 − 1/(r − 1)) ≈ 2·C₂·e^(−γ)/ln(αy) (C₂ the twin-prime constant),
+so some choice leaves at most that fraction of the π(Q) rows; if they are no
+more than |P2|, each gets a prime of P2 of its own. The even N in [M, 2M),
+M = 2·∏_{3≤r≤y} r, lying in all these classes then has every N − q divisible
+by some r ≤ y, so g(N) ≥ Q. With α → 0 slowly this gives
+
+    max over even N ≤ X of g(N) ≥ (e^γ/(2·C₂) − o(1)) · ln X · ln ln X,   e^γ/(2·C₂) = 1.349.
+
+Letting each large prime cover two rows (pairs q, q′ with r | q − q′, the
+Maier–Pomerance device) would double the constant but needs prime pairs with a
+prescribed difference on average; several rows per prime, as in the large-gap
+theorems of Ford, Green, Konyagin, Maynard and Tao, would give an extra factor
+ln ln X / ln ln ln X. Neither is attempted here. For 200 digits the provable
+bound is in the low thousands, against 157,837 found by search: as with prime
+gaps, constructions are far behind luck at any size one can compute.
+
+Status: proposed to the Lean session on 23 November as the theorem to
+formalise next (needs Mertens' product in one direction and Chebyshev bounds).
+
 ## Ladder
 
 | rung | what | who | state |
@@ -407,6 +442,11 @@ target, and the same question at depth 5,000 (910 rows) is worth 8.8.
 - V. Guruswami, A. Vardy, Maximum-likelihood decoding of Reed–Solomon codes
   is NP-hard (2005). Q. Cheng, D. Wan, on the decodability of Reed–Solomon
   codes and discrete logarithms.
+- A. Granville, J. van de Lune, H. J. J. te Riele, Checking the Goldbach
+  conjecture on a vector computer, in Number Theory and Applications (1989).
+  W. Shi, A matrix-theoretic exact formula for counting primes in intervals
+  between consecutive odd squares, arXiv:2605.21529 (2026), for the counting
+  lower bound on the least Goldbach prime.
 - K. Manders, L. Adleman, NP-complete decision problems for binary quadratics,
   J. Comput. System Sci. 16 (1978) (Garey–Johnson problem AN1).
 - M. Naor, B. Pinkas, Oblivious transfer and polynomial evaluation, STOC 1999
