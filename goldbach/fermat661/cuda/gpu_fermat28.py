@@ -31,6 +31,12 @@ def kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxreg=None):
     if key not in _K:
         opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ())
         _K[key] = cp.RawKernel(source(step_file), "fermat28", options=opts)
+        carve = os.environ.get("FERMAT_CARVEOUT", "")
+        if carve:                       # FERMAT_CARVEOUT=100: ask for the largest shared-memory carve-out of the SM's L1 / shared memory, the configuration the sieve kernels (64 KB of shared memory a CTA)
+            try:                        # need: a kernel that asks for none may leave an SM configured so that a sieve CTA cannot sit beside the Fermat CTAs (see sieve200/cuda/DEEPSIEVE.md, overlap)
+                _K[key].preferred_shared_memory_carveout = int(carve)
+            except Exception as e:      # an old cupy or a driver that refuses: the hint is optional
+                print(f"FERMAT_CARVEOUT={carve} ignored: {e}", flush=True)
     return _K[key]
 
 

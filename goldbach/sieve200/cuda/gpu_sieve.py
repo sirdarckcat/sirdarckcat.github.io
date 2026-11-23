@@ -35,6 +35,20 @@ _SRC = open(os.path.join(HERE, "gsieve_kernels.cuh")).read()
 _KCACHE = {}
 
 
+def apply_carveout(kernels, env="DEEP_CARVEOUT"):
+    """DEEP_CARVEOUT=100 (percent of an SM's shared-memory capacity): the same hint for every sieve kernel as FERMAT_CARVEOUT gives the Fermat kernel, so that, when the two run at once on
+    different streams (search_gpu5 --overlap 1), the SM does not have to be reconfigured between a kernel that asked for little shared memory and one that needs 64 KB.  Unset: the driver's choice."""
+    v = os.environ.get(env, "")
+    if not v:
+        return
+    for name, f in kernels.items():
+        try:
+            f.preferred_shared_memory_carveout = int(v)
+        except Exception as e:
+            print(f"{env}={v} ignored for {name}: {e}", flush=True)
+            return
+
+
 def _kernels(klog, llog, nthreads, unroll=1):
     key = (klog, llog, nthreads, unroll)
     if key not in _KCACHE:
@@ -72,6 +86,7 @@ class GpuFeeder:
         self.nU = int(self.U.size)
         assert self.nU < 4096
         self.k = kernels if kernels is not None else _kernels(klog, llog, nthreads, self.unroll)
+        apply_carveout(self.k)
         self._bits_root = cp.empty((max(self.nU, int(max_rows or 0)), self.K // 32), dtype=cp.uint32)     # room for max_rows rows: retarget() may point the feeder at a variant with more rows
         self.bits = self._bits_root[:self.nU]
         self.counts = cp.empty(self.K, dtype=cp.uint16)
