@@ -377,6 +377,38 @@ Version 3 (22 Nov):
       previous configuration.
     - The fleet-mode probe on that L4 (`uarch_measure/overlap_probe_l4.txt`): beside the sieve the Fermat kernel runs
       ×2.1 slower, for ×1.10 work a second at best. Chunked launches and the plain stream do worse.
+- 89-moduli vectors (23 Nov, the lead's gated decision; research's covers on the first 89 odd primes, e24f6e2 on
+  ccr-d4a17dd0-7uu03r). Files are in `v89/`.
+  - The vectors.
+    - At Q = 170,000 they have 1,248-1,250 rows against 1,262-1,263 on the 88 moduli.
+    - M has 192.7 digits, so a vector has only k < 21,378,978. It is k >= 2,137,898 for a 200-digit N.
+    - Only 85.6 of their rows lie at or above the record 157,837, against 67.0 on the 88 moduli. So 32 fewer rows below the
+      record have to be composite for a near-miss that beats it.
+  - Vector mode: `search_gpu5.py --vector-dir DIR`.
+    - Specs come from chunk files `DIR/vec_*.json`, which are read in order as they appear.
+    - Each vector is one slice, the window [k_lo, k_lo + 2^24) from its first 200-digit k. That k is not a multiple of the
+      window, which the sieve and the kernel handle. The vector's window must lie below its kmax.
+    - `cq_limbs` computes N0 - q vectorized, so a new vector every window costs little host time.
+    - `--log-near-exp 1` logs, per batch, the expected number of tested members whose first PRP row is at or above
+      `--near-miss` (design hits included). This is the lead's gate metric.
+    - The 88-moduli path is unchanged: slice lines are identical to the previous driver.
+    - `test_vector_mode_fake.py` covers the stub tests: `cq_limbs` against `to_limbs`; campaign() in vector mode with and
+      without the pipeline (every vector once, k_lo exact, a chunk written mid-run, restart, exhaustion).
+  - The producer (`vecgen.sh`, one per RTX host).
+    - It runs covergen walks from `starts/q170000_m89.txt` at cap 1,250, raised by one when a walk gives nothing new, and
+      keeps the card's share of the covers (`part.py`: md5 mod 3, so no vector reaches two cards).
+    - Each chunk goes through `make_specs.py` (kmax auto, the card's own ledger) and `check_specs.py`, then is published
+      by an atomic rename.
+    - It makes 1,000 vectors every 45 s, and a card uses about 2.6 a second.
+    - Supply: cap 1,249 is exhausted at about 5,700 covers, while cap 1,250 had 131k after 10 min and was not exhausted.
+      Research plans on about 1,251 rows on average over nine days.
+  - Window cost (`wcost_rtxpro6000.txt`): 2^24 windows cost 6.3-6.4 ns a member against 5.5-5.6 ns at 2^25, +15%. 89
+    moduli cost the same as 88.
+  - Validation (`validation_gpu_rtxpro6000.txt`, `knowncase_cpu_brute.txt`).
+    - The deep sieve, staged and plain, is identical to sieve200's CPU feeder at k_lo and at k_lo + 2^21 + 12345.
+    - The kernel-28 flags are identical to gmpy2 on 8,192 random (row, k) with k in [k_lo, k_lo + 2^24).
+    - The known case: on one vector's 524,288 members from k_lo, the GPU path (skip-frac 0, near-miss 46,171) and a CPU
+      brute force (gcd residual, BPSW scan of every member) find the same 23 members, with the same least prime q.
 - Fermat step on the RTX PRO 6000 (`uarch_measure/run_experiments_FGC_rtxpro6000.txt`).
   - clock64 counts SM cycles (2.43 GHz), but a dependent IMAD costs 6 cycles on sm_120.
   - The cost per IMAD.WIDE is flat at 4.57 ticks from two warps a scheduler up, so the step is at its multiplier floor.
