@@ -188,7 +188,7 @@ can be changed to roll the reduction loop.  Things to try, in this order: `pytho
 variant's registers, local bytes and tests/s next to `fermat2`); 64 / 128 / 256 threads per block; `asm_mad=True`; 1 / 2 / 4 accumulators.
 
 
-## The persistent pool kernel (`fermat28_persist_kernel.cuh`, 23 Nov): v1 measured ~1 s a batch SLOWER (plt8); v2 with `__syncwarp` awaiting plt9
+## The persistent pool kernel (`fermat28_persist_kernel.cuh`, 23 Nov): v1 (plt8) was ~1 s a batch slower, v2 (plt9) runs at 0.98 x production; beside the sieve it loses the overlap (plt10 next)
 
 The round-based `run_pool` of `search_gpu5.py` tests a pool in ~45 rounds: each round builds its work list with ~100 small cupy kernels and ~6 host syncs, launches one Fermat kernel of ~1M tests, and reads the first PRPs back; it
 computes ~3% tests past a member's first PRP and leaves the GPU idle between the Fermat kernels of its two halves (`--pool-threads 2` hides most of it; `--profile-pool`: flush 1.34 s against 1.27 s of kernels; beside the sieve 1.58 s,
@@ -223,3 +223,16 @@ are written as successes inside it, no `continue`).  SASS: `WARPSYNC.COLLECTIVE`
 identical per-member results).  The cost of the sync is one fetch latency (~3 us) a test of ~5 ms.  `FERMAT_PERSIST_TRACE=1` prints per flush the kernel's own milliseconds, the tests it did, the members left in flight and the wall of the
 round-based finish; `bench_persist.py` (`test_bench_persist_fake.py` runs it on CPU stand-ins) times the production kernel and the persistent kernel (sync 0 and 1) on a synthetic pool and checks every result against the production
 kernel's flags: **if the diagnosis is right sync 0 shows ~0.5 x and sync 1 ~1.0 x the production tests/s; if sync 1 is still ~0.5 x the diagnosis is wrong and the persistent kernel should be dropped** (it was a +3-8% idea).  `plt9.sh` runs both.
+
+### plt9 (GPU session, RTX PRO 6000 `gold-g4c`, 10:46-10:48Z, commit c0083d3): the restructured kernel is right and as fast as production; the diagnosis above was right about the cause, and `__syncwarp` was not needed
+
+`bench_persist.py` (400,000 members of 300 sieved rows, 4% PRPs, kernel time only): production kernel 23.79M tests/s (92 registers); **persistent kernel 23.43M tests/s = 0.98 x with `__syncwarp` and 0.98 x without it**
+(115,700 members in flight when the queue emptied, results identical to the production kernel's flags on 2,000 members).  In the driver, persistent alone without the pipeline: **1.782 s a batch against base 1.844 s (-3.4%)**
+(kernel 1,136 ms for 26.6M tests at 23.4M/s, then 112k members left in flight finished by the round-based path in 100-120 ms, 16 launches).  So plt8's 2.8 s was the first kernel's control flow, not the idea.  Why `FM28_PSYNC=0` is fast too: the SASS of
+v2 without the sync has `BSSY B0` / `BSYNC B0` around the fetch block (the structured `if (m < 0) { for (;;) {...} }` is a proper diamond for ptxas), so the lanes that fetched a member and those that did not meet before the test; v1's `if` held
+`continue` and `break` and got no such pair (only the `BSSY.RELIABLE` / `BSYNC.RELIABLE` around the whole loop body).  The explicit `__syncwarp()` stays (it is free, and it guarantees the property instead of leaving it to the compiler).
+
+**Beside the sieve (a2 pipeline), ps1 1.667 s against a2's 1.537 s: +8.5% WORSE.**  Reading: 940 persistent CTAs (5 an SM, 96 registers x 128 threads = 61,440 of 65,536 registers) never retire, so a sieve CTA (512 threads x 40 registers = 20,480
+registers, 64 KB of shared memory) has no room until the kernel ends; the round-based Fermat kernels free a slot every ~5 ms and the a2 setting (sieve on the highest-priority stream, bursts throttled by the per-group host check) lives on
+that.  Also `persist_kernel()` did not apply `FERMAT_CARVEOUT` (it does now).  `plt10.sh` tests the persistent kernel with 4 / 3 / 2 CTAs an SM (the step loop is flat from 2 warps a scheduler) and the carve-out hints, with the a2 sieve and with
+the sieve flat out.  Where the sieve does not overlap anyway (L4, T4: overlap measured no gain) the persistent kernel is a plain -3.4% (use `--persist-maxreg 96` there).

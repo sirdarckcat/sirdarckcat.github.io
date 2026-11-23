@@ -67,6 +67,12 @@ def persist_kernel(limbs=21, step_file="fermat28_step.cuh", asm_mad=False, maxre
     if key not in _K:
         opts = (("-DFM28_ASM=1",) if asm_mad else ()) + ((f"--maxrregcount={maxreg}",) if maxreg else ()) + (f"-DFM28_PSYNC={int(psync)}",)
         _K[key] = cp.RawKernel(persist_source(step_file), "fermat28_persist", options=opts)
+        carve = os.environ.get("FERMAT_CARVEOUT", "")           # as kernel(): the sieve's 64 KB-shared-memory CTAs can only sit beside Fermat CTAs on an SM configured with a large shared-memory carve-out
+        if carve:
+            try:
+                _K[key].preferred_shared_memory_carveout = int(carve)
+            except Exception as e:
+                print(f"FERMAT_CARVEOUT={carve} ignored: {e}", flush=True)
     return _K[key]
 
 
