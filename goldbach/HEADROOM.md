@@ -58,11 +58,27 @@ Time per kept member: 0.87 us = 14 Fermat tests (0.6 us) to find one prime among
 3. **The return on compute is logarithmic**: raising the target by 1,000 costs 0.21 nats (8.7 more uncovered rows), so x2 compute = +0.69 nats = +3,300 on the expected final record (172,300 -> ~175,600), x5 = +7,700
    (~180,000).  Speed is worth having; it does not change the order of magnitude of the answer.
 
-## 3b. One more structural item, found late: the Fermat round loop (23 Nov, 10:30Z)
+## 3b. The Fermat round loop: a persistent kernel (23 Nov, 10:30-11:00Z) - right, as fast as production, and alone -3.4%; beside the sieve it loses the overlap
 
-The round-based `run_pool` computes ~3% tests past a member's first PRP, issues ~100 small kernels and ~6 host syncs a round for ~45 rounds a half-pool, and beside the sieve loses ~0.14 s of GPU gaps (the sieve's higher stream priority
-delays those small kernels) on top of the x1.08 slower Fermat kernels.  A persistent work-stealing Fermat kernel (`fermat661/cuda/fermat28_persist_kernel.cuh`, `search_gpu5_persist.patch`, CPU-verified identical per-member results,
-see `FERMAT28.md`) does a pool in one launch and finishes the ~6% of the work still in flight when the queue is empty with the old code: modelled -8% of a batch on the RTX cards, a few % on the L4 / T4; **not yet timed** (`sieve200/cuda/plt8.sh`).
+The round-based `run_pool` computes ~3% tests past a member's first PRP, issues ~100 small kernels and ~6 host syncs a round for ~45 rounds a half-pool, and beside the sieve loses ~0.14 s of GPU gaps.  A persistent work-stealing Fermat
+kernel (`fermat661/cuda/fermat28_persist_kernel.cuh`, `search_gpu5_persist.patch`; CPU-verified identical per-member results, see `FERMAT28.md`) does a pool in one launch and finishes the ~6% of the work in flight when the queue empties with the old code.
+Measured by the GPU session on an RTX PRO 6000 (plt8 10:13Z, plt9 10:46Z): **the first kernel was ~1 s a batch SLOWER (2.8 s against 1.84 s)** - its `continue` / `break` in the member-fetch block left ptxas no reconvergence point before
+the 660-step test (SASS), so the lanes that fetched a member ran the step loop out of step with the rest; **the restructured kernel runs at 0.98 x the production kernel's tests/s (23.4M, `bench_persist.py`), and in the driver without the sieve
+beside it a batch takes 1.782 s against base 1.844 s (-3.4%)**; **beside the sieve with the a2 pipeline it is 1.667 s against a2's 1.537 s (+8.5% worse)**: 940 persistent CTAs hold 61,440 of an SM's 65,536 registers for the whole kernel, so a sieve CTA
+has no room until the kernel ends and the overlap that makes a2 x1.2 is gone.  Still open (`plt10.sh`): the persistent kernel with 2-4 CTAs an SM (the step loop is flat from 2 warps a scheduler) leaving room for the sieve; best case ~+4% over a2.
+For the L4 / T4 (overlap gave nothing there) the plain -3.4% is available, ~+0.6% of the fleet.
+
+## 3c. Measured today, and ruled out with numbers (23 Nov, 10:15-11:00Z)
+
+* **Vector supply is not a limit** (89-moduli mode): `covergen` makes 20,000 distinct covers in 6 s on 4 threads (3,300/s); `make_specs.py` 1.4 s per 1,000 vectors; `check_specs.py` 65 s per 1,000 (65 ms each, pure Python): a card consumes ~2.7 vectors a second
+  and vecgen keeps 12,000 ahead.  A 2^24 window costs 108 ms on an RTX PRO 6000 (sieve 97 ms = ~30 fixed + 67 per 2^24, count / select / finalize / rows 11 ms) and its 5e5 kept members ~0.30 s of Fermat tests.
+* **A 90th modulus** would add ~14 rows (+25% hits per member) but leave a progression of 2^24 / 467 = 3.6e4 members a vector; the sieve's per-vector fixed part (the visit of 5.8e6 primes x 1,248 rows, ~30 ms, with an ideal of ~3-5 ms) would
+  dominate: ~120-800 ns a member against 24 now.  The 89th modulus used the last 2^24.  (The 200-digit rule fixes N < 10^200.)
+* **23 limbs of 29 bits** (`FERMAT31.md` addendum): no carry groups needed (a column stays below 2^63.5), 805 + 23 multiplications; measured step (GPU session, `uarch_measure/e4_radix_rtx_l4.txt`): **0.926 of the production step on the RTX PRO 6000 (+8% tests/s), 0.951 on the L4**,
+  and a 24 x 28-bit step with the carry chain costs the same as the redundant one (1.002) - the carry chain's LOP3 / LEA are nearly free there.  **Unusable for the campaign**: R = 2^667 needs n < 2^663, the vector windows run to 2^664.2.
+* **Karatsuba again, with the new data.**  The extra instructions of s2r / s4r (64-bit adds: IADD3 + IADD3.X) cost 2.5-3 cycles each on the RTX (-3.5% / -7.9% for +43 / +120), while the carry chain's +47 LOP3 / LEA cost 0.17 each: op classes differ.
+  A Karatsuba squaring saves 66 (one level) to 138 (three levels) IMAD.WIDE (4.2 cycles) but its recombination is ~3 64-bit adds a column (~140-280 IADD3-class instructions, 350-700 cycles): still a loss.
+* **The selection fraction.**  With the measured sieve (6.4 ns a member at 2^24, 0.6 us of Fermat per kept member) and a Gaussian alive-count (sd ~15) the success rate per unit cost has its optimum at keeping 1.5-2.5% (f = 0.975-0.985), +2-3% over f = 0.97: flat, inside the noise.
 
 ## 4. Everything else (each 1-4%, none worth a GPU slot alone)
 
