@@ -143,24 +143,33 @@ production is at 4.64 by the same model, with B = 10^6 and 3% kept.)
 
 ## The remaining budget (`portfolio_budget.py`)
 
-On 23 November the fleet had about 9.3 days of compute left at 29 million
-effective full-weight members a second (deep sieve included), and 146,191 in
-hand. Expected final record by design threshold:
+State on 23 November 02:40Z: record in hand 157,837 (7.41%), about 10 days
+of compute left at 29 million effective full-weight members a second (deep
+sieve included), and the fleet's search now reports near-misses: its kernel
+stops each tested member at its first probable prime with the rows ascending,
+that row is g(N), and it is reported whenever it beats the record in hand
+(suggested here, implemented by the fleet the same night). With that, a
+member counts whatever the design threshold, and the best cover is the one
+with the fewest uncovered rows at the level where the record is expected to
+end. Expected final record by design threshold, each with its own best cover:
 
-| design Q | expected successes | as the search reports now | if every first prime row were logged |
-|---|---|---|---|
-| 150,000 | 70 | 168,600 (7.91%) | 168,600 |
-| 160,000 | 8.1 | 170,900 (8.02%) | 170,900 |
-| 165,000 | 3.1 | 170,600 (8.01%), 5% chance of none | 171,400 |
-| 170,000 | 1.1 | 165,500 (7.77%), 32% chance of none | 171,900 (8.07%) |
-| 180,000 | 0.1 | 150,800 | 169,400 |
+| design Q | rows below Q | successes only | near-misses counted | chance of no improvement |
+|---|---|---|---|---|
+| 150,000 | 1,092 | 168,900 | 168,900 (7.93%) | 0.02% |
+| 160,000 | 1,181 | 171,200 | 171,200 (8.04%) | 0.00% |
+| 165,000 | 1,221 | 171,500 | 171,700 (8.06%) | 0.09% |
+| 167,500 | 1,243 | 171,100 | 172,300 (8.08%) | 0.01% |
+| 170,000 | 1,262 | 169,700 | 172,300 (8.09%) | 0.03% |
+| 172,500 | 1,284 | 167,800 | 172,500 (8.10%) | 0.4% |
+| 175,000 | 1,302 | 165,500 | 172,300 (8.09%) | 0.2% |
+| 180,000 | 1,352 | 161,300 | 170,000 (7.98%) | 2.9% |
 
-The search reports a member only when every row below Q is composite, but its
-kernel already knows the row at which each tested member dies (it stops at the
-first probable prime, rows ascending), and that row is g(N). Logging it when it
-beats the record in hand would make a design at the expected record level
-(170,000) the best one, worth about +1,000, and would remove the risk of a
-high design ending empty.
+The optimum is flat from 167,500 to 175,000 (differences there are within the
+scatter between individual covers) and about 1,000 above a design at 160,000.
+Staying another 20 hours at 150,000 first costs about 200. With 8 days
+instead of 10 the best design is 167,500 to 172,500 at 171,200 to 171,300;
+at 40 million members a second it is 172,500 at 174,200. Supply at 170,000:
+about 1,400 covers with at most 1,263 rows and more than 50,000 at 1,264.
 
 ## Files
 
