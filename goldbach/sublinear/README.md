@@ -301,6 +301,13 @@ the statement, already in the brainstorm notes, that the best N for the primes
 up to 10^7 or 10^8 is enormously better than anything the search can afford to
 find.
 
+An empirical regularity over this range (not a law; the last line of the
+table already departs from it): the cost times ln z is nearly constant, 241,
+248, 254, 260, 265, 265 for the six depths, and the rows left for the ideal N
+times ln² z likewise (61,000 to 67,200). A typical number loses rows like
+1/ln z as the sieve deepens (Mertens); the ideal ones lose them like 1/ln² z,
+as if every prime struck twice.
+
 The fourth column is measured on 20,000 random members of a cover with 1,609
 rows (mean ± standard deviation; `member_depth.py`). The ideal N are *not*
 members of the best covers: 1,319 rows at depth 1,000 is 10.6 standard
