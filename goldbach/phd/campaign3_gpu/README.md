@@ -131,6 +131,14 @@ Version 3 (22 Nov):
 - Q = 150,000 supply: 4,462 residue-swap variants of the research vectors pt_q150k_v0..v3 (`gen_variants.variants(base, 1500, pair_pool=80)` per base, |U| ≤ 1,097 kept; |U| 1,094-1,097 against the best 1,093). Each was checked independently
   (congruences, M, residual list, ceiling 200), and N0 is distinct from the research 128. Index:
   `../campaign3/variants_q150k_minted_index.json`; full list sha256 b864f9f8915b0fe196282d5bb617b96c3a4ad34a885762eee6e866fb99d436ac.
+- More Q = 150,000 supply (23 Nov 00:06Z): 10,134 residue-swap variants pt_q150k_t0..t10133 of the 1,092-row research vectors
+  pt_q150k_b_v0..v7 (same call, |U| ≤ 1,096 kept; |U| 1,092-1,096, mean 1,094.0). `check_specs.py` (rows covered exactly when
+  gcd(N0 − q, M) > 1, from the integers) passes on all of them, and every N0 is distinct from the 4,974 earlier Q = 140,000 and
+  150,000 vectors. Index: `../campaign3/variants_q150k_minted_t_index.json`; full list sha256
+  ebdb6d0f04bcbf38fb394d15e9f027b8234f1989796f729fbe25f837dca90d8a.
+  - gold-g4c: t0..t1999 since 00:09Z, after its share of the research 128 ran out at 00:08Z.
+  - gold-a100: t2000..t2699 when it finishes the research 128 in [2^30, 2^31) (`chain_next.sh`).
+  - t2700..t10133 are in reserve.
 - Kernel 28 (22 Nov 21:44Z, production on the three RTX PRO 6000s, `--kernel 28`): the uarch session's `gpu_fermat28.py`
   (branch ccr-b8c25887-i6tn9f at 554e85c, goldbach/fermat661/cuda; files used in `fermat28_used.sha256`). It has 24 limbs of 28 bits,
   so each product is one IMAD.WIDE with no carry chain; a dedicated, fully unrolled squaring; lazy reduction; and the start value
