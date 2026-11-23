@@ -444,7 +444,7 @@ Decision rule: a variant is worth a deployment test if the TILE KERNEL line of `
 If the large-prime stage is DRAM-bound, the next step is fewer bytes a mark (3 marks of 21 bits in a u64: -33%), not more occupancy.
 
 
-## Packed bins (23 Nov 2026, 13:20Z; CPU-verified, opt-in `DEEP_BIN_PACK=1`, not yet timed on a GPU)
+## Packed bins (23 Nov 2026, 13:00Z; CPU-verified, opt-in `DEEP_BIN_PACK=1`, not yet timed on a GPU)
 
 **Why.**  bench_split (above): the large-prime stage is bound by the DRAM traffic of its bins - 6.0e9 marks a 2^24 window, 4 bytes each, written by `gbig_gen_st` (24 GB) and read by the tile kernel's apply (24 GB, 19.9 ms = 1.2 TB/s; 9.7 ms when
 the bins sit in the L2).  A mark is a 19-bit offset in a 2^19-bit tile: 4 bytes is 13 bits of waste.

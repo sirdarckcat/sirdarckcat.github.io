@@ -6,7 +6,7 @@ cards are ~81% of the fleet's Fermat throughput; the L4s and the T4 gain nothing
 stream priorities were tried and are worse: plt7).  A real 2x-5x needs more GPUs, which is a money question, not an engineering one; and a 2x-5x of compute buys only +3,300 to +7,700 on the final record,
 because the return is logarithmic.**
 
-## 0. Status at 13:30Z (23 Nov): what the engine has gained since the 05:30Z audit, measured (RTX PRO 6000, vector mode, the same 24 test windows)
+## 0. Status at 13:05Z (23 Nov): what the engine has gained since the 05:30Z audit, measured (RTX PRO 6000, vector mode, the same 24 test windows)
 
 | step (date, who measured) | batch of 4 windows | note |
 |---|---|---|
