@@ -1,6 +1,6 @@
 # campaign3 on the GPUs: expected against found
 
-Updated 2026-11-22 23:56 UTC. Regenerated from the runtimes' own logs:
+Updated 2026-11-23 01:54 UTC. Regenerated from the runtimes' own logs:
 - `tally_rt.py` runs on each runtime and reads its search.log, gpu3_stats.log and found.jsonl;
 - this page is written from those results.
 
@@ -12,16 +12,18 @@ Columns:
   - *model*: for slices from before that accounting (20:22-20:50 UTC), members × hit% × exp(−1.0275·E^ + 0.33) from each slice's own line. On the slices where both exist, this formula is within ~16% of the logged figure.
 - **found**: successes, each re-checked by `search.verify_success`; certified records are in `goldbach/records/`.
 
-## Q = 150,000, 1,093-1,094 rows (research cover), N < 10^200
+## Q = 150,000, 1,092-1,097 rows (research covers, minted variants, generator batches; deep sieve B = 10^8 since 01:14-01:26Z on 23 Nov), N < 10^200
 
 | GPU | slices | members | hit mass | mean E^ | expected (logged + model) | found | g |
 |---|---|---|---|---|---|---|---|
-| A100 (gold-a100) | 66,048 | 69.26e9 | 11.414e9 | 26.19 | 0.033 (0.033 + 0.000) | 0 | - |
-| RTX PRO 6000 (gold-g4) | 81,856 | 85.83e9 | 14.162e9 | 26.20 | 0.041 (0.041 + 0.000) | 0 | - |
-| RTX PRO 6000 (gold-g4b) | 80,960 | 84.89e9 | 14.005e9 | 26.19 | 0.041 (0.041 + 0.000) | 0 | - |
-| RTX PRO 6000 (gold-g4c) | 238,016 | 249.58e9 | 40.564e9 | 26.16 | 0.121 (0.121 + 0.000) | 0 | - |
-| L4 (gold-gpu) | 12,928 | 13.56e9 | 2.237e9 | 26.20 | 0.006 (0.006 + 0.000) | 0 | - |
-| **all** | | 503.12e9 | 82.382e9 | | **0.242** | **0** | - |
+| A100 (gold-a100) | 131,072 | 137.44e9 | 22.652e9 | 26.20 | 0.065 (0.065 + 0.000) | 0 | - |
+| RTX PRO 6000 (gold-g4) | 230,818 | 303.47e9 | 53.979e9 | 26.20 | 0.157 (0.157 + 0.000) | 0 | - |
+| RTX PRO 6000 (gold-g4b) | 222,776 | 295.75e9 | 52.738e9 | 26.19 | 0.155 (0.155 + 0.000) | 0 | - |
+| RTX PRO 6000 (gold-g4c) | 383,274 | 463.59e9 | 79.759e9 | 26.16 | 0.239 (0.239 + 0.000) | 0 | - |
+| L4 (gold-gpu) | 48,066 | 58.79e9 | 10.235e9 | 26.20 | 0.030 (0.030 + 0.000) | 0 | - |
+| L4 (gold-l4b) | 15,074 | 27.31e9 | 5.235e9 | 26.17 | 0.016 (0.016 + 0.000) | 0 | - |
+| L4 (gold-l4c) | 13,122 | 24.23e9 | 4.655e9 | 26.15 | 0.014 (0.014 + 0.000) | 0 | - |
+| **all** | | 1310.57e9 | 229.252e9 | | **0.676** | **0** | - |
 
 ## Q = 122,000, 867-872 rows (v, w families), N < 10^199
 
@@ -58,7 +60,7 @@ Columns:
 | L4 (gold-gpu) | 180 | 0.19e9 | 0.189e9 | 21.02 | 0.110 (0.000 + 0.110) | 0 | - |
 | **all** | | 0.19e9 | 0.189e9 | | **0.110** | **0** | - |
 
-**All covers: expected 8.74, found 8.**
+**All covers: expected 9.18, found 8.**
 
 ## How far past Q the hits went (`overshoot.py`)
 
