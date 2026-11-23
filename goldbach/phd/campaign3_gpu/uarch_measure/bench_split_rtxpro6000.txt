@@ -1,0 +1,62 @@
+# uarch bench_split.py (2c49ba1) on gold-g4c (RTX PRO 6000), bsplit.sh, 2026-11-23 12:34:45-12:35:08Z, campaign paused: a vector window's sieve, kernel by kernel, at four
+# configurations. Bin apply halves at rg 4 (L2-resident bins), but the generate passes grow with the number of groups, so rg 32 stays cheapest.
+
+2026-11-23T12:34:45Z paused pid 2111310
+--- --rg 32 --rcta 2 --gen-threads 256 --tile-threads 512
+1248 rows, 5,761,365 primes up to 100,000,000 (78,408 in the tile kernel, 5,682,957 in the staged large-prime stage), window 2^24, rg 32, tile threads 512, gen threads 256, rcta 2, stage cap 8192
+whole window (bench_batch's phases, ms): sieve 89.4  count 1.87  select 0.19  finalize 2.11  rows 6.39  wall 100.3
+ms a window (39 groups of up to 32 rows; every row, back to back):
+  gen (staged large-prime kernel)         54.52
+    pass A (visits + counting)            22.77
+    pass B (stage, flush)                 31.75
+  tile kernel                             32.92
+    small-prime marks                     14.58   (78,408 primes; tile - tile without them)
+    bin apply                             19.90   (tile - tile with empty bins)
+    init + write of the tiles              1.71   (tile with neither)
+  gen + tile                              87.44   (bench_batch's sieve phase: 89.4)
+  per 2^24 members: marks of the last group's bins 154,428,231 (all bins, 32 rows)
+SPLIT-DONE
+--- --rg 32 --rcta 8 --gen-threads 512 --tile-threads 512
+1248 rows, 5,761,365 primes up to 100,000,000 (78,408 in the tile kernel, 5,682,957 in the staged large-prime stage), window 2^24, rg 32, tile threads 512, gen threads 512, rcta 8, stage cap 8192
+whole window (bench_batch's phases, ms): sieve 83.5  count 1.88  select 0.19  finalize 2.08  rows 6.28  wall 94.2
+ms a window (39 groups of up to 32 rows; every row, back to back):
+  gen (staged large-prime kernel)         49.64
+    pass A (visits + counting)            15.58
+    pass B (stage, flush)                 34.07
+  tile kernel                             32.97
+    small-prime marks                     14.58   (78,408 primes; tile - tile without them)
+    bin apply                             19.92   (tile - tile with empty bins)
+    init + write of the tiles              1.75   (tile with neither)
+  gen + tile                              82.61   (bench_batch's sieve phase: 83.5)
+  per 2^24 members: marks of the last group's bins 154,428,231 (all bins, 32 rows)
+SPLIT-DONE
+--- --rg 8 --rcta 2 --gen-threads 256 --tile-threads 512
+1248 rows, 5,761,365 primes up to 100,000,000 (78,408 in the tile kernel, 5,682,957 in the staged large-prime stage), window 2^24, rg 8, tile threads 512, gen threads 256, rcta 2, stage cap 8192
+whole window (bench_batch's phases, ms): sieve 112.5  count 1.86  select 0.19  finalize 2.09  rows 6.44  wall 123.4
+ms a window (156 groups of up to 8 rows; every row, back to back):
+  gen (staged large-prime kernel)         60.82
+    pass A (visits + counting)            25.72
+    pass B (stage, flush)                 35.10
+  tile kernel                             43.21
+    small-prime marks                     24.34   (78,408 primes; tile - tile without them)
+    bin apply                             25.90   (tile - tile with empty bins)
+    init + write of the tiles              1.69   (tile with neither)
+  gen + tile                             104.03   (bench_batch's sieve phase: 112.5)
+  per 2^24 members: marks of the last group's bins 38,600,819 (all bins, 8 rows)
+SPLIT-DONE
+--- --rg 4 --rcta 2 --gen-threads 256 --tile-threads 512
+1248 rows, 5,761,365 primes up to 100,000,000 (78,408 in the tile kernel, 5,682,957 in the staged large-prime stage), window 2^24, rg 4, tile threads 512, gen threads 256, rcta 2, stage cap 8192
+whole window (bench_batch's phases, ms): sieve 130.1  count 1.87  select 0.19  finalize 2.12  rows 6.43  wall 141.0
+ms a window (312 groups of up to 4 rows; every row, back to back):
+  gen (staged large-prime kernel)         69.56
+    pass A (visits + counting)            29.74
+    pass B (stage, flush)                 39.81
+  tile kernel                             27.66
+    small-prime marks                     22.25   (78,408 primes; tile - tile without them)
+    bin apply                              9.72   (tile - tile with empty bins)
+    init + write of the tiles              1.91   (tile with neither)
+  gen + tile                              97.21   (bench_batch's sieve phase: 130.1)
+  per 2^24 members: marks of the last group's bins 19,301,270 (all bins, 4 rows)
+SPLIT-DONE
+2026-11-23T12:35:08Z resumed pid 2111310
+BSPLIT-DONE
