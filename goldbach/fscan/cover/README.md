@@ -267,7 +267,10 @@ third of them, the 1,000 with the fewest rows) gives 1,302.2 weighted rows
 and 174,680 from family A starts, 1,293.0 and 175,690 from family B starts,
 at the same 1,250.4 rows below Q. The advantage needs time to pay: with less
 than about two days of the present fleet left, family A is ahead by 100 to
-200, since then the record is decided below Q.
+200, since then the record is decided below Q. As a rule that does not depend
+on the fleet's size: family B while the expected number of design hits in the
+time that remains is above about 0.5 (B − A is +970 at 2.25 expected hits,
++450 at 1.1, +50 at 0.55, −170 at 0.27), family A below that.
 
 `starts/q170000_m89.txt`, `q170000_m89r491.txt` and `q170000_m88f.txt` now
 hold family B only, best expected record first (224, 3,924 and 291 covers);
