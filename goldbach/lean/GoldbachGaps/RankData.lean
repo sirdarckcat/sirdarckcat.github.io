@@ -13,7 +13,7 @@ namespace GoldbachGaps.RankData
 
 /-- Trial divisors for the primes below the largest value. -/
 def smallPrimes : List ℕ :=
-  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53]
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59]
 
 /-- Prime divisors of the numbers `6 - q`, `q < 3` prime. -/
 def mods6 : List ℕ :=
@@ -825,6 +825,64 @@ theorem leastSummand_35884080836 : IsLeastSummand 35884080836 2803 := by
     primality
   exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
 
+/-- Prime divisors of the numbers `105963812462 - q`, `q < 3061` prime. -/
+def mods105963812462 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 53, 59, 61, 67, 71, 73, 79, 83, 113, 131,
+   139, 157, 163, 167, 191, 197, 199, 211, 229, 251, 347, 383, 389, 421, 461, 541, 571, 577,
+   733, 787, 797, 823, 839, 947, 1063, 1459, 1553, 1609, 1783, 2389, 2767, 3037, 3119, 3253,
+   3299, 3851, 6719, 8011, 8263, 10391, 11471, 11821, 13037, 17053, 19501, 58657, 65957, 88093,
+   99929, 108961, 117319, 149119, 185099, 192617, 197273, 209267, 245269, 284083, 309359]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_105963812462 : IsLeastSummand 105963812462 3061 := by
+  have hl : desertListsCheck 105963812462 3061 mods105963812462 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 105963812462 0 3061 mods105963812462 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (105963812462 - 3061) := by
+    rw [show (105963812462 : ℕ) - 3061 = 105963809401 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `244885595672 - q`, `q < 3163` prime. -/
+def mods244885595672 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 71, 73, 79, 101, 103,
+   109, 137, 139, 163, 181, 197, 241, 271, 283, 389, 431, 461, 463, 487, 491, 509, 557, 653,
+   683, 727, 743, 809, 997, 1129, 1283, 1367, 1433, 1487, 2251, 3671, 5437, 5443, 5557, 7669,
+   7993, 8731, 9439, 28051, 29587, 38611, 40939, 50359, 97171, 141833, 148157, 153533, 211229,
+   242639, 265747, 315059, 350747, 416201, 424001, 454501, 464327]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_244885595672 : IsLeastSummand 244885595672 3163 := by
+  have hl : desertListsCheck 244885595672 3163 mods244885595672 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 244885595672 0 3163 mods244885595672 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (244885595672 - 3163) := by
+    rw [show (244885595672 : ℕ) - 3163 = 244885592509 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
+/-- Prime divisors of the numbers `599533546358 - q`, `q < 3457` prime. -/
+def mods599533546358 : List ℕ :=
+  [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 37, 41, 43, 47, 53, 59, 67, 71, 73, 83, 89, 101, 103,
+   113, 127, 131, 137, 139, 149, 151, 157, 173, 179, 197, 223, 227, 229, 241, 251, 263, 271,
+   281, 307, 337, 347, 367, 383, 389, 421, 439, 463, 547, 601, 617, 641, 683, 709, 953, 997,
+   1237, 1297, 1423, 1433, 1571, 1597, 1621, 1669, 2549, 2957, 3203, 3251, 3617, 4481, 4643,
+   5279, 6053, 6287, 12653, 26903, 33617, 33863, 36451, 41617, 48523, 54037, 57719, 72461,
+   124693, 154787, 210943, 224617]
+
+set_option maxRecDepth 1000000 in
+theorem leastSummand_599533546358 : IsLeastSummand 599533546358 3457 := by
+  have hl : desertListsCheck 599533546358 3457 mods599533546358 smallPrimes = true := by decide +kernel
+  have hb : desertBlockCheck 599533546358 0 3457 mods599533546358 smallPrimes [] = true := by
+    decide +kernel
+  have hn := (covered_of_desertBlockCheck_nil hl hb).noSummandIn hl (by norm_num)
+  have hc : Nat.Prime (599533546358 - 3457) := by
+    rw [show (599533546358 : ℕ) - 3457 = 599533542901 by norm_num]
+    primality
+  exact isLeastSummand_of_noSummandIn (fun q h0 hq => hn q h0 (by omega)) (by primality) hc
+
 /-- The table `record`: pairs `(N, g(N))`. -/
 def recordTable : List (ℕ × ℕ) :=
   [(6, 3),
@@ -865,12 +923,15 @@ def recordTable : List (ℕ × ℕ) :=
    (11001080372, 1879),
    (12703943222, 2029),
    (21248558888, 2089),
-   (35884080836, 2803)]
+   (35884080836, 2803),
+   (105963812462, 3061),
+   (244885595672, 3163),
+   (599533546358, 3457)]
 
 theorem recordTable_spec : ∀ x ∈ recordTable, IsLeastSummand x.1 x.2 := by
   intro x hx
   simp only [recordTable, List.mem_cons, List.not_mem_nil, or_false] at hx
-  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   · exact leastSummand_6
   · exact leastSummand_12
   · exact leastSummand_30
@@ -910,6 +971,9 @@ theorem recordTable_spec : ∀ x ∈ recordTable, IsLeastSummand x.1 x.2 := by
   · exact leastSummand_12703943222
   · exact leastSummand_21248558888
   · exact leastSummand_35884080836
+  · exact leastSummand_105963812462
+  · exact leastSummand_244885595672
+  · exact leastSummand_599533546358
 
 /-- The table `cluster`: pairs `(N, g(N))`. -/
 def clusterTable : List (ℕ × ℕ) :=

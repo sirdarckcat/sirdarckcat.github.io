@@ -136,14 +136,14 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the exhaustive enumeration (`scripts/mini_check/needle_pairs.txt`). Needles are
                not independent, and nothing here says they are random.
 * `RankPatterns`, `RankData`, `RankTable` – the experiment of `scripts/rank_records`: the ten
-               largest least Goldbach summands among the even numbers up to `10^11`, and the
+               largest least Goldbach summands among the even numbers up to `10^12`, and the
                numbers that arrive at each rank. Proved: the relations that hold exactly
                (`3 ∣ N + g(N)` when `3 ∤ N`; `g(N + h) ≤ g(N) + h` when `g(N) + h` is prime,
                with equality as soon as the rows that are not inherited are composite; the
                least summand is at least the distance to the previous prime); the prime race
                behind the residue bias of the arrivals, in the kernel for every level up to
                4096 (class 2 against class 1 modulo 3) and 3528 (non-residues against residues
-               modulo 5); the least summands of the 39 record holders up to `10^11`
+               modulo 5); the least summands of the 42 record holders up to `10^12`
                (`RankData.recordTable_spec`) and of the clustered arrivals (`shift_pairs`,
                `records_42_apart`). That the table is complete, and that record holders avoid
                multiples of 3 and prefer non-residue classes, are measurements.
