@@ -43,8 +43,8 @@ PY
 fi
 
 if want G; then
-  section "G. accumulators a column: s1r_asm (production) against s2r_asm and s4r_asm (tests/s, --check against gmpy2; the cost model for a throughput-bound step: -2.5% and -7%)"
-  timeout 900 python3 "$FC/time_fermat28.py" "$SPEC" --variant s1r_asm s2r_asm s4r_asm --seconds 15 --check || echo "FAILED: time_fermat28 s2r_asm / s4r_asm"
+  section "G. accumulators a column and warps an SM: s1r_asm (production) against s2r_asm, s4r_asm (cost model for a throughput-bound step: -2.5% and -7%) and the register-capped s1r_asm_r80 / r72 (6 / 7 CTAs an SM, a few spills: ptxas says +1.5% / +4% instructions; an occupancy fit says +3-4% / +5-7% throughput): tests/s, --check against gmpy2"
+  timeout 900 python3 "$FC/time_fermat28.py" "$SPEC" --variant s1r_asm s2r_asm s4r_asm s1r_asm_r80 s1r_asm_r72 --seconds 15 --check || echo "FAILED: time_fermat28 s2r_asm / s4r_asm"
 fi
 
 if want A; then
