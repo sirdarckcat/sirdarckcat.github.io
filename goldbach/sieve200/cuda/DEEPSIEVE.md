@@ -198,3 +198,7 @@ more (`act.size` after a boolean-mask compaction, `rem.max()`, `total`) and some
 d6aed28's `search_gpu5.py`; `--profile-pool 1`, off by default, results unchanged: checked on a numpy fake with identical outputs) brackets each round's `tester.test` with CUDA events and prints per pool
 `[profile-pool] N members, R rounds, T tests: Fermat kernels X s on the GPU, run_pool wall Y s, gap Y-X s (..% of run_pool)` and the wall of the whole flush.  If the gap is above ~5% of the batch, the fix is to split a pool's members in
 two halves on two streams (two threads) so that one half's kernel runs while the host updates the other: no kernel change, ~1-3% a batch per half-percent of gap recovered; if it is under 3%, drop the idea.
+**Built already** (`search_gpu5_poolsplit.patch`, applies on top of the roundprof patch: `--pool-threads 2`, default 1): `run_pool_split` tests a pool's members as two halves in two threads on two long-lived non-blocking
+streams (made once: cupy's pool is per stream, a stream per pool would strand its blocks), each half's rounds sized by half the target so that the rows a member gets per round, hence the waste, are those of one pool.  Checked on a numpy
+fake: identical counted tests, PRP flags, successes and first-PRP rows for four pool shapes; computed tests equal (109,957 = 109,957), rounds doubled.  The caller's stream is synchronized before the threads start and after the
+results are concatenated (the same free-list hazard as the overlap).  GPU timing: unmeasured; the profile line tells whether it is worth running.
