@@ -709,6 +709,15 @@ Version 3 (22 Nov):
     marker).
     - A replacement starts with its predecessor's lines marked as already copied, so lines restored from a snapshot
       are not reported again as new.
+  - Proactive replacements at ~23 h, each onto its share of the shifted family-B vectors in a fresh c170g:
+    gold-l4b → gold-l4e (23:38-23:45Z) and gold-l4c → gold-l4f (23:41-23:47Z). Each new GPU passed the per-member check
+    (129 = 129 near-misses at production f) and the m88f known case (40 = 40) before deploying.
+    - gold-l4f's first bring-up stopped after 34 s because gold-l4c's snapshot had no `opl4gate2.sh` (the L4 gate had
+      run on gold-l4b only). The script was uploaded from the repo and the bring-up re-run. Now the handover scripts
+      upload it themselves.
+    - Lesson: an edit to `handover_pro.sh` while a handover was running it broke that job with a syntax error (bash
+      reads a script as it runs). Only the local follow-up died; the card's bring-up finished on its own. Scripts in use
+      are not edited in place.
     From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):

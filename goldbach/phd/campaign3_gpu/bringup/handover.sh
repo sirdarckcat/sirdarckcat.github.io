@@ -28,6 +28,7 @@ if [ "$KIND" = rtx491 ]; then
 else
   c 120 upload -s "$NEW" "$SP/ua10b/ua10b_cuda.tgz" /content/ua10_cuda.tgz | tail -n 1 | cut -c1-40
   c 120 upload -s "$NEW" "$SP/m88f/kc/kc_spec_m88f.json" /content/kc_m88f.json | tail -n 1 | cut -c1-40
+  c 120 upload -s "$NEW" "$SP/l4op/opl4gate2.sh" /content/opl4gate2.sh | tail -n 1 | cut -c1-40     # not in every L4's snapshot (gold-l4c never ran the gate itself)
   c 120 upload -s "$NEW" "$B/bringup_l4.sh" /content/bringup_l4.sh | tail -n 1 | cut -c1-40
   sed 's#bash /content/bringup_rtx491.sh PARTX#bash /content/bringup_l4.sh#' "$B/launch_bu.py" > "$B/launch_bu_$NEW.py"
 fi
