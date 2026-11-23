@@ -349,3 +349,12 @@ of the two halves, which is where the sieve's higher stream priority hurts the ~
 `GBATCH_GROUP_DELAY_US=500 --deep-tile-threads 512` with the pipeline: **1.526-1.529 s a batch against 1.744-1.76 s at the start: x1.15.**
 Next (`plt7.sh`, `search_gpu5_poolsplitn.patch`): 3 or 4 Fermat parts (`--pool-threads 3 / 4`) so a Fermat kernel is in flight more of the time; Fermat streams at the sieve's priority (`FERMAT_STREAM_PRIORITY=high`) so the small kernels
 do not queue behind the sieve.
+
+
+## plt7 (GPU session, 23 Nov 09:26-09:28Z, `uarch_measure/plt7_rtxpro6000.txt`): more Fermat threads and equal stream priorities are worse; a2 stays
+
+Mean of the batches with a sieve beside them (slice lines identical): a2 (deployed) 1.554 / 1.532 s in two runs; 3 parts (`--pool-threads 3`) 1.591; 4 parts 1.671 (the sieve busy 1.23-1.41 s: it slows down as more Fermat kernels
+are in flight and the batch grows with it); Fermat streams at the sieve's priority (`FERMAT_STREAM_PRIORITY=high`) 1.651 with 2 parts (the sieve busy 1.6-1.8 s, idle 0, the consumer waiting), 1.696 with 3.  Nothing beats the control,
+so production stays on a2: the three RTX PRO 6000s run 1.543 s a batch over their first ~100 batches (1.76 s this morning: **x1.14**).  What would still be left on the RTX, by the accounting above: the probe says 1.45 s is
+reachable if the driver lost no more than the probe does (Fermat kernels x1.08-1.10 beside the sieve, no gaps), i.e. at most ~6% more, for a re-engineering of the Fermat round (a fused per-round update kernel in place of its
+~100 small cupy kernels and ~6 host syncs, so that the sieve's priority cannot delay them) and of the sieve's instruction count (the sieve taxes the Fermat kernels in proportion to its work).  Not started.
