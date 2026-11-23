@@ -236,3 +236,31 @@ What is needed, in order:
    same order with and without the pipeline, every slice once, the thread 5 windows ahead of a 4-window batch).  Run: `--pipeline 1 --flush-each-window 1 --pool-threads 1|2` (+ FERMAT_CARVEOUT=100 DEEP_CARVEOUT=100 if the probe says so).
    Expected on an RTX if the hardware allows it: 1.76 s -> ~1.35 s a batch (x1.3); with a flush per window but no pipeline ~1.5 s.
 3. A flush per window makes two pools a batch, each with its own tail rounds (~20 small rounds): ~+40 ms of Fermat tail, which the sieve of the next window now covers.
+
+
+## The overlap on the hardware: it works (GPU session, RTX PRO 6000, 23 Nov 08:04-08:05Z, `phd/campaign3_gpu/uarch_measure/overlap_probe_rtxpro6000.txt`)
+
+`run_overlap_probe.sh` (`bench_overlap.py`: the real Fermat launch of 2^26 tests on the default stream, real sieve windows of the production configuration in a thread on a high-priority stream; Q = 170,000 spec, 1,262 rows).
+Alone: Fermat 2.832 s (23.7M tests/s), one sieve window 216 ms.
+
+| configuration | Fermat under the sieve | sieve windows meanwhile (slowdown) | same work sequential -> overlapped | projected batch (sequential 1.76 s) |
+|---|---|---|---|---|
+| defaults (92-register kernel, high-priority sieve stream) | 3.127 s (x1.104) | 5 (x2.89) | 3.913 -> 3.127 s, x1.25 | **1.46 s, x1.20** |
+| `--carveout 100` | 3.125 s (x1.103) | 5 (x2.89) | x1.25 | 1.46 s, x1.20 |
+| 80-register kernel (`s1r_asm_r80`) + carve-out | 3.102 s (x1.077 of its own 2.880 s) | 3 (x4.80) | x1.14 | 2.12 s, x0.83 |
+| the same, sieve stream without priority | 2.881 s (x1.000) | **0** | x1.00 | no overlap |
+| `--carveout 100 --cta-sm 4` (chunked, 4 CTAs an SM) | 3.514 s (x1.163 of its own 3.022 s) | 8 (x2.04) | 4.741 -> 3.514 s, x1.35 | 1.64 s, x1.07 (the file's 1.54 is against the chunked launch; see below) |
+
+What it says:
+* **The hardware co-schedules the sieve beside five 92-register Fermat CTAs with the default shared-memory carve-out.**  The carve-out hint changes nothing (so an L1 / shared-memory split switch was not what blocked the 03:10Z trial; that
+  trial had one flush a batch and could not show anything anyway).  1/1.104 + 1/2.89 = 1.25: while both run, the SM does 1.25 units of "alone" work a second.
+* **The stream priority is what makes it work.**  Without it the sieve got NO SM time in 2.9 s: the Fermat CTAs (~1 ms each) are replaced by Fermat CTAs from the same launch before a sieve CTA is considered; with the highest
+  priority the block scheduler gives a freed slot to the sieve first.  `overlap.sieve_stream` already creates the stream that way (`cudaStreamCreateWithPriority`, priority -100, clamped to the device's best).
+* The 80-register kernel is WORSE for the sieve (x4.8 instead of x2.9): six Fermat CTAs an SM take more warp slots and issue slots from the sieve warps than the room they leave in the register file gives back.  Chunked launches (4 CTAs an SM)
+  give the sieve more (x2.0) but cost the Fermat kernel 7% on its own (3.022 vs 2.832 s) and x1.163 on top; charged against the production kernel's one-launch 2.832 s the batch projects to 1.27 x 3.514 / 2.832 + 0.06 = 1.64 s,
+  worse than the defaults.  (The probe's own projection divided by the chunked alone time, 1.54 s: fixed in 050d369, `--ref-variant`.)  **Keep the production Fermat launch as it is, with the high-priority sieve stream.**
+* The balance is almost exact: a production batch needs 1.27 s of Fermat (x1.104 = 1.40 s) and 0.43 s of sieve (x2.89 = 1.24 s), so the sieve finishes ~0.16 s before the Fermat does: projected batch 1.40 + 0.06 = **1.46 s (x1.20)**.
+  The sieve now has ~13% of slack (0.485 s of alone-time a batch against 0.43 s used): a slightly deeper sieve (f, B) may pay once the pipeline runs; the optimum was found in the sequential regime where every sieve second counted in full.
+* Why the cross-batch pipeline and not only a flush per window: the in-batch overlap (window i + 1 under the Fermat of window i) leaves the first window's sieve (217 ms) and the last window's Fermat (0.635 s x 1.0) exposed:
+  0.217 + max(0.635 x 1.104, 0.217 x 2.89) + 0.635 + 0.06 = 1.61 s (x1.09); the pipeline (`search_gpu5_xbatch.patch`) keeps the sieve thread ahead across batch boundaries and gets the 1.46 s.
+* L4 / T4: the sieve is ~36% of their batch, so the same x1.25 of work would give ~x1.4-1.5 there; unmeasured (`VARIANT=s1rw MODE=fleet bash run_overlap_probe.sh`).
