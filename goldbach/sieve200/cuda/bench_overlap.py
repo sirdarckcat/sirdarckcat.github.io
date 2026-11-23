@@ -13,7 +13,7 @@ shared-memory atomics and L2 traffic, the Fermat step by the integer multiplier,
 What it does: (1) Fermat alone: one launch of --tests real candidates (events); (2) the sieve alone: one 2^25-member window of the production configuration (staged large primes, B = 1e8,
 the spec's rows); (3) both: the Fermat launch on the default stream, the sieve windows back to back in a thread on a high-priority non-blocking stream until the Fermat launch is done.
 It prints the Fermat slowdown under the overlap, the sieve slowdown, the windows completed, and a projection of a production batch (Fermat 1.27 s, sieve 0.43 s, other 0.06 s):
-    sequential = F + S + O,  overlapped = max(F x slowdown_F, S x slowdown_S) + O.
+    sequential = F + S + O,  overlapped = max(F x slowdown_F, S x slowdown_S) + O   (slowdown_F against the production kernel's own one-launch time, --ref-variant).
 Success = a projected batch clearly below the sequential 1.76 s (x1.15 or more).  Needs a GPU, cupy and the tree of sieve200/cuda + fermat661/cuda; ~3 minutes; stop production on that GPU first.
 """
 import argparse
@@ -49,6 +49,9 @@ def parse():
     ap.add_argument("--rg", type=int, default=16)
     ap.add_argument("--tile-threads", type=int, default=256, dest="tile_threads")
     ap.add_argument("--gen-threads", type=int, default=256, dest="gen_threads")
+    ap.add_argument("--ref-variant", default="s1r_asm", choices=sorted(VARIANTS), dest="ref_variant",
+                    help="the production kernel of this GPU (s1r_asm on the RTX PRO 6000, s1rw on the L4 / T4 / A100): the projection compares the overlapped Fermat time with ITS unchunked launch, "
+                         "so a variant or a chunked launch that is slower on its own is charged for it")
     ap.add_argument("--no-priority", action="store_true", help="the sieve stream without the highest priority (a plain non-blocking stream)")
     ap.add_argument("--reps", type=int, default=2)
     ap.add_argument("--proj-fermat", type=float, default=1.27, help="seconds of Fermat kernels in a production batch (projection)")
@@ -139,6 +142,24 @@ def main():
         s_alone.append(time.perf_counter() - t0)
     F, S = min(f_alone), min(s_alone[1:])
     print(f"alone:      Fermat {F:.3f} s ({a.tests / F / 1e6:.1f}M tests/s)   sieve window {S * 1e3:.1f} ms", flush=True)
+    # the reference of the projection: the production kernel in one launch (a chunked launch or another variant is slower on its own, and that cost belongs to the configuration)
+    if a.variant == a.ref_variant and not a.cta_sm:
+        F_ref = F
+    else:
+        ra = argparse.Namespace(**vars(a))
+        ra.variant = a.ref_variant
+        Tr, idxr, kvr, _ = make_tester(cp, spec, ra)
+        Tr.test(idxr[:8192], kvr[:8192])
+        dev.synchronize()
+        f_ref = []
+        for _ in range(a.reps):
+            dev.synchronize()
+            e0, e1 = fermat_pass(cp, Tr, idxr, kvr, 0, nsm)
+            e1.synchronize()
+            f_ref.append(cp.cuda.get_elapsed_time(e0, e1) / 1e3)
+        F_ref = min(f_ref)
+        del Tr, idxr, kvr
+        print(f"            production kernel ({a.ref_variant}, one launch) alone: {F_ref:.3f} s ({a.tests / F_ref / 1e6:.1f}M tests/s): this configuration alone is x{F / F_ref:.3f} of it", flush=True)
 
     # 3. both
     results = []
@@ -180,6 +201,7 @@ def main():
         results.append((fc, tw1 - tw0, len(done), sum(done) / max(len(done), 1)))
     fc, wall, nwin, sc = min(results, key=lambda r: r[0])
     slow_f = fc / F
+    slow_fp = fc / F_ref                                                # against the production kernel's own launch: what a production batch would pay
     # the sieve's rate under load: windows completed inside the Fermat launch (the one in flight when it ends is not counted, so it is a slight under-estimate)
     rate_alone = 1.0 / S
     rate_conc = nwin / wall
@@ -190,7 +212,9 @@ def main():
     print(f"  the same work one after the other: {work_seq:.3f} s;  overlapped: {fc:.3f} s  ->  x{work_seq / fc:.2f}")
     # projection of a production batch
     seq = a.proj_fermat + a.proj_sieve + a.proj_other
-    ov = max(a.proj_fermat * slow_f, a.proj_sieve * slow_s) + a.proj_other
+    ov = max(a.proj_fermat * slow_fp, a.proj_sieve * slow_s) + a.proj_other
+    if F_ref != F:
+        print(f"  Fermat under overlap against the production kernel alone: x{slow_fp:.3f} (against this configuration alone: x{slow_f:.3f})")
     print(f"production batch (Fermat {a.proj_fermat} s, sieve {a.proj_sieve} s, other {a.proj_other} s): sequential {seq:.2f} s, overlapped {ov:.2f} s -> x{seq / ov:.2f}")
     verdict = ("OVERLAP WORKS: worth building the cross-batch sieve thread (search_gpu5 --overlap with this configuration)" if seq / ov >= 1.15 else
                "no useful overlap in this configuration: try --carveout 100, --variant s1r_asm_r80, --cta-sm 4, --no-priority" if seq / ov < 1.05 else "partial overlap: compare the other configurations")
