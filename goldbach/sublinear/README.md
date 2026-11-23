@@ -292,8 +292,10 @@ in a better-than-average one.
 
 Caveats. (i) Accuracy. For z ≥ 1,000 the answer sits at a temperature where
 the sampler mixes freely: forward and backward free-energy estimates agree
-within 0.1 nats in total down to that temperature, and the same method
-reproduces the exact counts of the miniature below. Only for z = 463, where
+within 0.1 nats in total down to that temperature, a second seed on a
+shorter temperature ladder gives e^33.31 and e^30.46 for depths 2,000 and
+5,000 (first run: e^33.37 and e^30.50), and the same method reproduces the
+exact counts of the miniature below. Only for z = 463, where
 the answer sits near the bottom of the landscape, is the sampler out of
 equilibrium (20 nats low at the very bottom against direct counts), and that
 line is checked against the covers themselves. (ii) The budget is counted in full-weight members,
