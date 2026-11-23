@@ -197,7 +197,55 @@ def onepass_tests(rng):
         print(f"  ONEPASS slots {op[0]} ovf {op[1]}: {lst} CTAs used the overflow list ({ent} entries), {fb} took the fallback", flush=True)
     paths = all(STATS_1P[op][0] - STATS_1P[op][1] > 0 for op in ((40, 128), (20, 128))) and STATS_1P[(10, 4)][1] > 0
     print(f"  ONEPASS paths: overflow list without fallback at 40 and 20 slots, fallback at a list of 4: {'all exercised' if paths else 'NOT ALL EXERCISED'}", flush=True)
-    return ok and paths
+    return ok and paths and onepass_wide(rng)
+
+
+def onepass_wide(rng):
+    """the one-pass kernel at the shape of a 2^25-member window with 8 rows a CTA (the L4's): 64 tiles a row x 8 rows = 512 bins, 20 slots a bin (40 would not fit in 48 KB), 512 threads;
+    packed and unpacked, unroll 4 with the grid order and unroll 1 without; bits (and unpacked bin counts) against the brute-force reference, the overflow flag at a capacity too small"""
+    ok = True
+    tile_log, ks_log, rg, threads, rcta, stage_cap = 8, 14, 8, 512, 8, 2048
+    for bpack in (0, 1):
+        for gunroll, order in ((4, 1), (1, 0)):
+            lib = build(tile_log, ks_log, rg, 1, stage_cap, rcta, bpack, 1, gunroll, 0, order, (0, 0, 1), (20, 128))
+            NB, NT, TW = lib.cpu_nbins(), lib.cpu_ntiles(), lib.cpu_tile_words()
+            KS = 1 << ks_log
+            S = primes_between(1 << tile_log, 1 << (ks_log + 2))
+            M = 1
+            for p in (3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43):
+                M *= p
+            N0 = int(rng.integers(1, 1 << 60)) * M + 12345
+            k0 = int(rng.integers(0, 1 << 40))
+            U = np.sort(rng.choice(np.arange(1, 150000), size=rg, replace=False)).astype(np.uint32)
+            INV = np.array([pow(M % int(s), -1, int(s)) for s in S], dtype=np.uint32)
+            INVP = ((INV.astype(np.uint64) << 32) // S.astype(np.uint64)).astype(np.uint32)
+            C0 = np.array([(N0 * int(i) + k0) % int(s) for i, s in zip(INV, S)], dtype=np.uint32)
+            TAB = np.ascontiguousarray(np.stack([S, INV, INVP, C0], axis=1).astype(np.uint32))
+            ps = make_chunks(S, ks_log, 0.75 * stage_cap / rcta).astype(np.int32)
+            refw = pack(reference(U, S, INV, C0, KS))
+            cnt = np.zeros(NB, dtype=np.int64)
+            for r in range(rg):
+                for s_, inv, c0 in zip(S.tolist(), INV.tolist(), C0.tolist()):
+                    j = (int(U[r]) * inv - c0) % s_
+                    while j < KS:
+                        cnt[r * NT + (j >> tile_log)] += 1
+                        j += s_
+            for cap, expect_overflow in ((8, True), ((int(cnt.max()) + 2) * (3 if bpack else 1) + 64, False)):
+                gcnt = np.zeros(NB + 1, dtype=np.uint32)
+                bins = np.zeros(NB * cap, dtype=np.uint32)
+                lib.cpu_gen_st(U.ctypes.data, TAB.ctypes.data, ps.ctypes.data, len(ps) - 1, 0, rg, cap, gcnt.ctypes.data, bins.ctypes.data, threads)
+                over = bool(gcnt[NB])
+                good = over == expect_overflow
+                if not expect_overflow:
+                    out = np.zeros(NB * TW, dtype=np.uint32)
+                    lib.cpu_apply(rg * NT, gcnt.ctypes.data, bins.ctypes.data, cap, out.ctypes.data, 64)
+                    good &= np.array_equal(out[:rg * NT * TW].reshape(rg, NT * TW), refw[:rg])
+                    if not bpack:
+                        good &= np.array_equal(gcnt[:rg * NT].astype(np.int64), cnt[:rg * NT])
+                print(f"  ONEPASS wide: {NT} tiles x {rcta} rows = {NB} bins, 20 slots, {'packed' if bpack else 'unpacked'}, unroll {gunroll}, order {order}, cap {cap}: "
+                      f"{'overflow flag ' + ('set' if over else 'NOT SET') if expect_overflow else ('identical to the reference' if good else 'DIFFERENT')}", flush=True)
+                ok &= good
+    return ok
 
 
 if __name__ == "__main__":

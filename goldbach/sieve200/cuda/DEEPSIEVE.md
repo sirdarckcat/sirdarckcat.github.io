@@ -716,9 +716,9 @@ gen not falling with the instruction count (then the kernel waits on the bins' w
 **CPU** (the pthread emulation of the kernel source): `test_gbig.py` (`onepass_tests`: 40 slots / 20 slots / 10 slots with a 4-entry list, unroll 1 and 4, both grid orders, the min-based reduction,
 unpacked and packed, the 6 staged geometries including 3x-coarse chunks and 2-row CTAs over 128 tiles, a capacity too small then large enough) against the brute-force reference: bits identical, unpacked bin
 counts identical, the overflow flag set when it must be; a CPU-only counter checks that every path ran (CTAs that used the overflow list without the fallback at 40 and 20 slots, CTAs that took the fallback at a
-list of 4).  `test_gbig_cpu.py` with `DEEP_GEN_ONEPASS=1` at 40 and 10 slots (the cupy glue, packed and unpacked, the stage-overflow chunks, the capacity retry); `test_gbatch_cpu.py` (BatchFeeder against
+list of 4); `onepass_wide` runs the shape of a 2^25-member window at 8 rows a CTA (64 tiles x 8 rows = 512 bins, 20 slots: 40 would not fit in 48 KB), packed and unpacked.  `test_gbig_cpu.py` with `DEEP_GEN_ONEPASS=1` at 40 and 10 slots (the cupy glue, packed and unpacked, the stage-overflow chunks, the capacity retry); `test_gbatch_cpu.py` (BatchFeeder against
 sieve200's CPU feeder) on production's stack + one-pass with `--big` (8 and 16 rows a CTA), and unpacked at 7 slots: every window identical.  `run_cpu_tests.sh` has the new lines.
 
 **To run on a GPU:** `bash onepassab.sh SPEC` (production, one-pass at 40 slots, the same at 40 registers, at unroll 8, 30 slots with 6144-word chunks, 25 slots with 4096-word chunks at 3 CTAs an SM, production again; with one pass the
 printed "pass A" is all the visits and "pass B" is the flush); then the driver gate as usual with `DEEP_GEN_ONEPASS=1` added to production's environment (it needs `DEEP_GEN_HOIST=1`, which production has; slice
-lines identical on the 24 windows, known case 23 / 23, >= 1% of a batch).
+lines identical on the 24 windows, known case 23 / 23, >= 1% of a batch).  **2^25-member windows** (64 tiles, as on the L4): 40 slots x 8 rows a CTA is over the 48 KB of static shared memory (a static_assert says so); use `DEEP_GEN_SLOT_C=20` with 8 rows (~12 marks a bin there: overflow stays rare) or `DEEP_RCTA=4` with 40 slots.
