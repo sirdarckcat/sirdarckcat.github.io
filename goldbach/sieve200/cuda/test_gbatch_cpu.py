@@ -81,7 +81,8 @@ def main():
     spec["residual"] = spec["residual"][:a.rows]
     cover = [r for r, _ in spec["cover"]]
     ok = True
-    BIG = ((500009, 12, 11, 11, 4, 2048, 0.8, False, 2, 8192), (500009, 12, 11, 11, 4, 2048, 0.8, True, 2, 512), (500009, 13, 12, 11, 8, 4096, 0.9, True, 1, 1024)) if a.big else ()
+    BIG = ((500009, 12, 11, 11, 4, 2048, 0.8, False, 2, 8192), (500009, 12, 11, 11, 4, 2048, 0.8, True, 2, 512), (500009, 13, 12, 11, 8, 4096, 0.9, True, 1, 1024),
+           (20011, 14, 11, 11, 16, 2048, 0.5, True, 8, 512), (20011, 14, 11, 11, 16, 2048, 0.5, True, 16, 256)) if a.big else ()      # the last two: 8 and 16 rows a CTA (DEEP_RCTA=8 / 16)
     # (B, ks_log, tile_log, llog, rg, split, f): primes up to B; a batch of 2^ks members in 2^(ks - tile) tiles; the primes above `split` through gbig
     for B, ks, tile, llog, rg, split, f, staged, rcta, stage_cap in ((32768, 15, 12, 11, 4, 4096, 0.9, False, 2, 8192), (20011, 14, 11, 11, 3, 2048, 0.5, False, 2, 8192),
                                                                       (9001, 13, 11, 11, 16, 9001, 0.0, False, 2, 8192), (32768, 14, 12, 11, 7, 0, 0.8, False, 2, 8192),
@@ -89,7 +90,7 @@ def main():
                                                                       (20011, 14, 11, 11, 3, 2048, 0.5, True, 4, 256)) + BIG:
         search.G.clear(); search._SIEVE_CACHE.clear()
         search.init_spec(spec, B, 1 << llog)
-        bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=32, tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
+        bf = gbatch.BatchFeeder.from_search_G(search.G, ks_log=ks, tile_log=tile, llog=llog, f=f, nthreads=64, split=split, rg=rg, ppt=2, gen_threads=max(32, -(-rcta * (1 << (ks - tile)) // 32) * 32), tile_threads=64, staged=staged, rcta=rcta, stage_cap=stage_cap)
         cf = Feeder(int(spec["N0"]), int(spec["M"]), spec["residual"], B=B, L=1 << llog, logK=ks, f=f, exclude=cover)
         for k0 in (1 << ks, 2 ** 31 + (1 << ks), 4293885952 - 4293885952 % (1 << ks)):
             w = bf.window(k0, timings=(k0 == 1 << ks))

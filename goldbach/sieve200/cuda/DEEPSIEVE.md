@@ -168,3 +168,25 @@ Steady batches of 2 windows (2 x 2^25 members), near-miss driver with its 0.5 s 
 * **The chunked runs are an occupancy curve of the Fermat kernel** (5 CTAs / 20 warps an SM = 1.24 s; 4 = 1.34; 3 = 1.44 a batch of 2 windows; ~4% of the +8% / +17% is launch gaps and the tail of each 3-4 ms chunk): throughput 0.93 / 0.86 of
   the 5-CTA value at 4 / 3 warps a scheduler.  A saturating fit puts the half-saturation point at ~1-1.6 warps and the 5-warp kernel at ~76-82% of its many-warps throughput: a mild latency component (+10% from doubling the
   independent work a warp has, minus the extra adds), not a dependent-chain wall (that would make 3 warps 0.6 of 5).  `time_fermat28.py --variant s1r_asm s2r_asm s4r_asm` (section G) tests it directly; E3 (`bench_fm28_step.py`) draws the curve.
+
+## The sieve-bound sweep with the staged kernel (GPU session, 23 Nov 03:58Z, RTX PRO 6000; `uarch_measure/bsweep_staged_rtxpro6000.txt`) and what my estimate missed
+
+DEEP_STAGED=1, 6 variants x 2^25 members, 3 batches of 2 slices, f = 0.97, `--p-est` scaled by ln B / ln 1e8, tests and PRPs counted:
+
+| B | batch | expected hits a batch | expected hits a second | tests | first batch builds tables |
+|---|---|---|---|---|---|
+| 1e8 | 1.70 s | 4.4595e-5 | 2.623e-5 | 84.5M | |
+| 2^28 | 1.90 s | 4.8317e-5 (x1.083) | 2.543e-5 (-3%) | 80.2M (x0.95) | 12.8 s |
+| 1e9 | 2.80 s | 5.0879e-5 (x1.141) | 1.817e-5 (-31%) | 75.1M (x0.89) | 43.1 s |
+
+The selection gains are what the CPU model said (hits a test x1.28 at 1e9) but the stage cost was not: +0.20 s and +1.10 s a batch, against my +0.07 / +0.15 s.  **My estimate counted marks only (cost proportional to
+marks, Mertens) and the staged kernel's cost at large B is not in the marks: it is the table.**  A CTA is (chunk of primes, `rcta` rows) and reads its chunk of the large-prime table (16 bytes a prime) in both passes, so the table
+is read rows / rcta x 2 times a window: 91 MB at 1e8 (inside the 128 MB L2: free), 233 MB at 2^28 (mostly from HBM), 813 MB at 1e9 (all from HBM: ~2 TB of reads a batch at rcta = 2, ~1.4 s at 1.46 TB/s; measured +1.1 s
+including the extra marks and the tests saved).  The plain kernel groups 16 rows a table read, so it would have paid 8x less of this and 3x more per mark.
+* `DEEP_RCTA=8` (with `--deep-gen-threads 512`: one thread a bin, rcta x 64 bins; 41 KB of static shared memory at stage 8192, 26-30 registers, no spills; rcta 1-4 are CPU-verified, the CPU test of 8 and 16 (`test_gbatch_cpu.py --big`) was still running when this was written: see the next commit) divides the table traffic by 4: model +0.08 s (2^28) and +0.35 s (1e9)
+  a batch instead of +0.30 / +1.41.  rcta 16 needs `DEEP_STAGE_CAP` <= ~7,000 (49,168 bytes of static shared memory at 8192: 16 bytes over the 48 KB limit) and 1,024 threads.
+* With rcta = 8 and the measured selection gains: 2^28 ~ +2.6% expected hits a second (batch ~1.80 s), 1e9 ~ -2.5% (~2.0 s).  **B = 1e8 stays**; the only candidate that could pay is 2^28 with rcta 8 and the gain is inside the noise.
+* The bound would only go deeper with a different design for the primes above 2^25 (at most one mark a row and window: a CTA a chunk of primes looping over ALL rows with the row offsets by recurrence,
+  p(row j+1) = p(row j) - inv x (q(j+1) - q(j)) mod s, a table of inv x d for the ~100 distinct gaps d, one table read a prime a window instead of rows / rcta; marks appended to the bins with plain atomics: ~7e9 scattered
+  marks at 1e9, ~0.15 s a window).  Not built: the measured selection gain (x1.14 at 1e9) does not pay for it.
+* Lesson (UARCH.md): a cost model that counts the work (marks) misses the traffic that the algorithm's blocking implies (table re-reads); the second estimate of this stage that was off by a large factor (the first: 3x, the L2 request rate).

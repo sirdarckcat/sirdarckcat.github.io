@@ -53,6 +53,9 @@ B is 1e6 to 3e6 (deeper loses 5-15% to the CPU sieve), so `--sieve-b 1000000` st
   600 dead adds a step on an A100 / L4; the GPU session measured +9-14%.  The refitted model T = max(T_mul, T_alu) + rho min(T_mul, T_alu) with the benchmark's costs and one parameter (rho = 0.35) reproduces six A100
   timings within 1.5% (`sieve200/cuda/costmodel.py`, `fermat661/cuda/FERMAT28.md`), including the older `fermat3`, a different algorithm.  It does not explain the RTX PRO 6000 (measured cycles 1.5x the model's at the
   nominal clock: the clock under load or something in the kernel; `measure_all.sh` samples the clock).
+* **Count the traffic the blocking implies, not only the work.**  I estimated the staged large-prime stage at larger sieve bounds from the marks (Mertens: +41% marks at 1e9, +0.15 s a batch); the GPU session measured +1.10 s.
+  The kernel reads its table of 16-byte prime records once a row pair and pass, so the traffic is rows / rcta x table bytes: free while the table fits the L2 (91 MB at 1e8), HBM-bound above (813 MB at 1e9).
+  The same mistake in a new place: the first estimate of this stage was off by 3x for the L2 request rate, the second for a term that was not in the work count at all.
 * **Count the instructions of a benchmark's loop before believing its row** (`bench_pipes.py --check`): the LOP3 row of the pipe benchmark said 0.75 / 1.07 cycles a LOP3 because ptxas had folded the chain
   `x = (x & a) ^ b` to 15 LOP3 for 32 chain-ops (it is 1.6 / 2.14 a LOP3).  It was a 5-second check that I did the day after the measurement; an issue rate above one instruction a cycle was the clue.
   The other rows were fine.  The correction moves the cost model's fits by under 1%.
