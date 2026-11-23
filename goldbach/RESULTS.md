@@ -1,5 +1,37 @@
 # Goldbach Desert Records
 
+## The 200-digit budget game (2026-11-23, 12:48 UTC): g(N) = 158,209 below 10^200
+
+**g(N) = 158,209** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g158209/`). It is the largest g known
+below 10^200, 372 above the 157,837 of 02:08 UTC. Its N (5.06·10^199) is also smaller than those of 157,837 and 146,191,
+so it dominates both on the frontier.
+
+- **Closeness.** 7.45% of the largest g expected at 200 digits, 97.5× a typical number of that size (157,837: 7.42%).
+- **How.** A near-miss of the Q = 170,000 vector campaign: the member's first prime row, 158,209, lies below the design
+  Q, and every one of its 1,168 lower residual rows is composite.
+  - Vector: `q170000_m89_p2c00019_v545`, from the research session's covers on the first 89 odd primes (1,250 residual
+    primes below 170,000, M with 192.7 digits), walked and checked on the card.
+  - Member: k = 10,814,286, in the vector's first 200-digit window.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py` in vector mode on an RTX PRO 6000 (Colab G4).
+    - The deep sieve to 10^8 with rcta 8, keep fraction 0.985.
+    - Fermat kernel 28 with uarch's 29-bit step and the fused Fermat rounds.
+  - It came after 0.106 expected near-misses at or above 157,837 on the three RTX cards, 2.4 hours into the vector
+    campaign.
+- **The engine since the last record.** On the RTX PRO 6000s the expected near-misses beating the record per GPU-second
+  rose about ×2.0 against the 88-moduli production of the morning:
+  - 89-moduli vectors (×1.605 at the gate);
+  - row groups of 32 without a bubble;
+  - the 29-bit Fermat kernel (−4% a batch);
+  - f = 0.985 (×1.080);
+  - fused Fermat rounds with rcta 8 (−10% a batch).
+  Every change passed an identity check against production on the same windows and the known cases
+  (`phd/campaign3_gpu/README.md`).
+- **Checked** the five usual ways (`certify_c3.sh`, `CLAIM_Q=157837`):
+  - 14,535 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 157,837, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
 ## The 200-digit budget game (2026-11-23, 02:08 UTC): g(N) = 157,837 below 10^200
 
 **g(N) = 157,837** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g157837/`). It is the largest g known
