@@ -42,3 +42,15 @@ n = 2..26, including n = 25 (2) and n = 26 (12), the two counts first made with 
    M=25 Y=1567 COUNT: 2 vectors strike every odd prime below 1567 with every modulus used; nodes=4562625 seconds=3.7
    M=26 Y=1669 COUNT: 12 vectors strike every odd prime below 1669 with every modulus used; nodes=14347162 seconds=12.0
    M=27 Y=1801 COUNT: 10 vectors strike every odd prime below 1801 with every modulus used; nodes=19307434 seconds=18.2
+   M=27 Y=1801 COUNT: 10 vectors strike every odd prime below 1801 with every modulus used; nodes=19307434 seconds=18.2
+   M=28 Y=1933 COUNT: 1 vectors strike every odd prime below 1933 with every modulus used; nodes=92692472 seconds=89.3
+
+D(29) = 2137 (findD.py 29 1933, 2 threads, 91.5 s; research's sampling scan had predicted 2,137 before the run):
+   n=29: a cover of every odd prime below 1933 (729422 nodes, 0.5 s); its least unstruck prime 1987
+   n=29: a cover of every odd prime below 1993 (2622061 nodes, 1.8 s); its least unstruck prime 2011
+   n=29: a cover of every odd prime below 2017 (5739895 nodes, 3.5 s); its least unstruck prime 2017
+   n=29: a cover of every odd prime below 2027 (21297322 nodes, 16.3 s); its least unstruck prime 2029
+   n=29: a cover of every odd prime below 2039 (9980030 nodes, 10.3 s); its least unstruck prime 2089
+   n=29: a cover of every odd prime below 2099 (6219720 nodes, 6.6 s); its least unstruck prime 2137
+   n=29: NO COVER below 2141 (51620752 nodes, 52.5 s)
+   FINDD n=29 D=2137 (attained by the vector; no vector strikes every odd prime below 2141) seconds=91.5 vector: 3:2 5:3 7:3 11:2 13:7 17:15 19:3 23:22 29:8 31:5 37:16 41:22 43:42 47:45 53:15 59:42 61:59 67:30 71:24 73:7 79:24 83:22 89:19 97:66 101:83 103:61 107:2 109:73 113:105
