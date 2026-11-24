@@ -383,6 +383,35 @@ polished by a weighted descent (`wdescend.py`) and anything below it is
 logged as CANDIDATE. About forty such runs here re-found family B one time in
 four and nothing better.
 
+**Families at the campaign's target** (24 November; `family_search/frame_rank.py`,
+`frame_floor.py`, `frame_search.py`, `frames_rank6_top2000.txt`). A family is
+fixed by its frame, the classes of the smallest moduli: every cover the fleet
+uses has 3:2 5:3 7:5 11:6 13:5 17:4 19:10 23:4 29:21 31:13 37:20 41:1, and the
+runner-up family of the plain search (best 1,249 rows on the first 89 primes)
+has 11:4 13:6 17:4 with other classes from 19 on. That makes the search for a
+better family a finite list: 92,160 frames on the six smallest moduli.
+
+- By the weighted rows the six classes leave alive, the frames run from
+  3,807.0 to about 3,950 (mean 3,880.1, sd 18.7); family B's frame leaves
+  3,822.9 and is 121st, the runner-up's is 13th. This count is what decides
+  between families where complete covers exist (`../../sublinear/README.md`,
+  "Families"), but not here: the twelve frames that leave the fewest rows
+  alive, given the same tempering as family B's frame (20,000 sweeps inside
+  the frame, `frame_search.py`), end at 1,320.4 to 1,327.4 weighted rows,
+  against 1,313.6, 1,311.0, 1,310.4 and 1,311.3 for four seeds in family B's
+  frame and 1,317.8 in the runner-up's. Inside family B's frame the tempering
+  finds family B's classes on 19 to 41 by itself.
+- A cheaper score orders them the same way: the family's floor −ln Z/β at
+  β = 0.99, from a 20-second run with the frame held fixed
+  (`frame_floor.py`). Family B 1,230.5 to 1,232.4 (three runs), the runner-up
+  1,231.5 and 1,233.2, the two frames with the fewest rows alive 1,235.0 to
+  1,236.6, and 26 frames ranked 1,201 to 1,612 by rows alive 1,240.6 to
+  1,255.1.
+- The scan: the contractor session is scoring the frames ranked 1 to 1,200
+  (from 20:11 UTC on 24 November), every frame within family B's own range
+  (1,232.5) then gets the tempering inside it, and anything that ends below
+  1,308.67 is a candidate. Result to follow here.
+
 **What each design level buys** (`brainstorm/design_menu.py`,
 `design_menu.txt`). The same model gives, for the best cover known at each
 design level on the first 89 primes, the chances of the final record passing

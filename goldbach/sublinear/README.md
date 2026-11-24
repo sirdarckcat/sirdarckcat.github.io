@@ -1399,6 +1399,42 @@ tempered reach and 6% beyond it, the line through the last interval within
 4% of it. So from 30 to 108 moduli, as at 89, tempering reaches the end of
 the complete covers or comes within a few percent of it.
 
+*Families.* The two families at 167 moduli are the rule and not an accident
+of that size. Call a frame one nonzero class for each of the six smallest
+moduli (92,160 frames) and a family the class vectors that share it; the
+sampler can hold a frame fixed (`COVER_FLOOR_FRAME`, checked against a brute
+force on seven moduli) and count the complete covers of one family. On the
+45 moduli up to 199, for 24 frames drawn at random at each target:
+
+| Q (share of the way to 4,909) | 2,000 (41%) | 3,000 (61%) | 4,000 (81%) |
+|---|---|---|---|
+| ln g0, all families together | 110.7 | 79.2 | 38.4 |
+| the same per frame, if all families held equal shares | 99.3 | 67.8 | 27.0 |
+| ln g0 of a family: mean over the 24 | 89.5 | 46.3 | 15 of 24 have no complete cover |
+| standard deviation, lowest and highest | 3.7; 83.0 to 99.4 | 9.2; 30.2 to 63.9 | highest 25.4 |
+| rows the frame leaves alive, range over the 24 | 68 to 79 | 94 to 113 | 123 to 137 |
+| correlation of ln g0 with that number, and slope | −0.91; −1.38 per row | −0.96; −1.86 per row | −0.85; −2.9 per row (9 families) |
+
+So a typical family holds e^(−10) of an equal share at 41% of the way and
+e^(−21) at 61%, and at 81% most families hold nothing: the complete covers
+sit in a small minority of the families, and more so the nearer the end.
+Which families is decided almost entirely by one number, the rows that the
+frame's six classes leave alive: each row more costs the family 1.4 nats at
+41% of the way, 1.9 at 61% and 2.9 at 81%. That slope is the price of an
+alive row of the recursion above, here measured directly, and it rises
+toward the end as the recursion says it should. (At 4,000 the families with
+at most 128 rows alive have complete covers and those with 134 or more have
+none.) This is also the natural reading of the bend before the end: the
+recursion adds up the classes of each modulus as if there were many of them,
+and for the smallest moduli, where the price is high near the end and the
+classes are few, the sum is carried by the best class alone.
+
+Far above the end, at the campaign's target, the count of rows left alive
+orders the families only roughly (see `../fscan/cover/README.md`, "Families
+at the campaign's target"): the family all the fleet's covers belong to is
+121st of the 92,160 by that count, and the dozen that leave the fewest rows
+alive are 9 to 16 rows worse than it at equal effort.
+
 *Why a straight line with slope 1/ln² x* (a heuristic that reproduces the
 form and, within about 15%, the constant; not a proof). Count the complete
 covers modulus by modulus, smallest first. Let V(s, A) be the logarithm of
