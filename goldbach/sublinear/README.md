@@ -1654,10 +1654,11 @@ looked at directly. On 1,500 complete covers at Q = 12,000 on the 89 moduli
 | fullest class / mean, along the covers | 1.13 | 1.32 | 1.89 | 2.49 | 3.17 | 5.15 | 6.52 | 8.46 | 9.80 | 20.2 | 26.7 | 45 | 103 |
 
 The factor by which a complete cover beats an average class grows from 1.1
-at the eleventh part of the way to 20 and more near the end, and the
-recursion has it within 15% up to s = 373, with nothing fitted; only over
-the last few moduli, where a cover simply takes very nearly the fullest
-class, does it fall short. So the prices are not a device for getting the
+at the small moduli to 20 and more near the end, and the recursion has it
+within 16% at every modulus up to s = 263, with nothing fitted (the file has
+all of them); from 293 on the covers strike more than it says (by 31% at
+293, 14% at 337, 3% at 373, 23% at 409, 56% at 443), as a cover comes to take
+very nearly the fullest class. So the prices are not a device for getting the
 count right: they are what the covers do. One thing the recursion does not
 do, and it was tried: along the covers the alive rows are a thinned set and
 their dispersion over the classes is higher than for random vectors (0.65
