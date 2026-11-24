@@ -1,2 +1,3 @@
 27 reruns
 x=127 Q=2333 seed=2: k 1, first sweep at best k 1389, identical True (29 s)
+x=127 Q=2333 seed=4: k 1, first sweep at best k 1606, identical True (28 s)
