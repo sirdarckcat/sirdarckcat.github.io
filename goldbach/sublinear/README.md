@@ -976,6 +976,17 @@ precisely, D(n) is of order r_n·ln² r_n up to a factor that varies at most
 like ln ln r_n, so that the summands forced away by divisibility alone reach
 about ln N·(ln ln N)².
 
+For the frame, what is known from above (standard sieve theory, not written
+out here): for every even N and every large y there is a prime q ≤ y with
+N − q free of prime factors up to y^(1/4 − ε), by the linear sieve with the
+Bombieri–Vinogradov theorem, uniformly in N; that is D(n) ≤ r_n^(4 + ε) for
+large n. With level of distribution 1 (Elliott–Halberstam) the same argument
+gives r_n^(2 + ε), and r_n² itself is the Goldbach barrier: the Lean session's
+implication above says that D(n) < (next prime)² − 2 for all n is enough for
+Goldbach's conjecture. So the proven window is r·ln r ≪ D(n) ≪ r^(4 + ε),
+and the computed values (0.7 to 0.9 times r·ln² r for every n from 8 to 167
+moduli) sit near its lower end.
+
 ## Ladder
 
 | rung | what | who | state |
