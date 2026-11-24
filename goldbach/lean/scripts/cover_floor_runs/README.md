@@ -17,8 +17,9 @@ The files `n89C_Q<Q>.txt` are the runs started from that session's complete cove
 
     COVER_FLOOR_REACH=20000 ./cover_floor Q 'odd<=463' cover_floor_betas_deep.txt 1000000 250000 n89C_Q<Q>.txt 5 complete_cover_15907.txt
 
-and `n89L_Q<Q>_s<seed>.txt` the ten times longer runs from random vectors (4000000 sweeps, 1000000
-of burn-in).
+and `n89L_Q14500_s3.txt` is one ten times longer run from random vectors (4000000 sweeps, 1000000
+of burn-in, target 14,500, seed 3). Eight such runs were planned; the research session called the
+series off after the first, because the runs from the complete cover had settled the question.
 
 Each file is self-describing (a header line, then the lines the program writes). The analysis is the
 research session's (`python3 cover_floor.py --reach files...`).
