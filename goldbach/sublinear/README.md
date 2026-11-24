@@ -1255,6 +1255,36 @@ constant over ln² x. With b = 1.12 the constant is 1; the measured b is 1.3
 for most moduli and less for the smallest. Whether c is exactly 1 the
 heuristic does not say: it gives c as a quotient of constants.
 
+*The same calculation above the end: how few rows a cover can leave.* With
+a finite price β for a row left at the end, instead of an infinite one, the
+price equation gives the whole partition function of the previous section,
+
+    ln Z(β) = θ(x) − c·(Q/ln² x)·E(b·β·ln x/ln Q),    E(y) = exp(−2·∫ from y to ∞ of dt/(t + e^t − 1)),
+
+with E(y) = y/K for small y (so that ln Z = θ − β·(rows left by random
+classes) at high temperature, as it must be) and E → 1 as β → ∞ (the
+counting law). For Q beyond the end D the entropy of this ensemble reaches
+zero at a finite temperature, where no covers are left to count; that is at
+y* with E(y*) − y*·E′(y*) = D/Q, and the rows left there are K·E′(y*) times
+those left by random classes:
+
+| D/Q | 0.5 | 0.3 | 0.2 | 0.134 | 0.096 | 0.077 | 0.05 | 0.02 | 0.01 |
+|---|---|---|---|---|---|---|---|---|---|
+| fewest rows left / rows left by random classes | 0.22 | 0.37 | 0.48 | 0.57 | 0.63 | 0.67 | 0.73 | 0.83 | 0.88 |
+
+For large Q the ratio is 1 − √(K·D/Q), K = 1.516: what the best cover saves
+over a random one is a share of the rows that falls like the inverse square
+root of the target. Nothing in the table is fitted, and it depends on the
+moduli only through D. On the campaign's 89 moduli (D = 16,300; random
+nonzero classes leave 1,853 rows at 170,000 and 2,278 at 213,070) it gives
+1,172 and 1,527 rows; the floors measured above are 1,214 to 1,248 and 1,554
+to 1,609, and the best covers found have 1,248 and 1,609 (ratios 0.673 and
+0.706 against the predicted 0.633 and 0.670). So the calculation is 5 to 6%
+on the optimistic side, as its Poisson-like tail for the fullest classes
+would make it, and it explains the size of what tempering finds: the covers
+of the campaign are not good by accident of search, they are where the count
+of covers runs out.
+
 **Conjecture (counting law).** For x → ∞ and x ≤ Q ≤ (1 − ε)·θ(x)·ln² x/c,
 the number of class vectors modulo the odd primes up to x that strike every
 odd prime below Q is exp(θ(x) − (c + o(1))·Q/ln² x), with a constant c that
