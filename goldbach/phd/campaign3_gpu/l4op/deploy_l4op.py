@@ -6,7 +6,7 @@
 # OPTIONS=0 below (set by the launcher) applies only KLO and the append (for a card whose own options gate has not passed).
 import json
 OPTIONS = 1
-KLO_TOP16 = (1 << 32) - 16 * (1 << 25)
+KLO_TOP16 = (1 << 32) - 32 * (1 << 25)   # widened to 32 levels (the lead's pre-approval of 23 Nov), 24 Nov
 import os, shutil, subprocess, time
 ENV_ADD = "DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=75".split()
 ARGS_ADD = "--deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512".split()

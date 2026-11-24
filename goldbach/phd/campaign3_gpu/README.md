@@ -737,6 +737,19 @@ Version 3 (22 Nov):
   - Since 17:14-17:20Z every card reports near-misses from 160,357 up (`NEAR_MISS=160357`, `rec160357/raise_nm.py`).
     Each card restarted in place at a batch end; the generators and row guards were not touched.
   - The RTX cards had logged 1.60 expected near-misses at or above 158,209 since the previous record.
+- The second round of ~23 h replacements (24 Nov 19:13-19:59Z) was the first to resume the new campaign dirs.
+  - gold-g4d → gold-g4g and gold-g4e → gold-g4h each passed the production known case and resumed its c170r:
+    451,396 / 452,096 done slices, its partition's ledger and the row-guard base. Chunk numbering continued at 576 / 572,
+    and the generators restarted at cap 1,250 with CAPMAX 1,252.
+  - gold-l4d → gold-l4g resumed c170g (20,676 slices) after its gate (129 = 129, known case 40 = 40).
+  - gold-g4f (partition 2) was stopped and snapshotted at 19:59Z, but Colab refused a new G4 (412 Precondition Failed,
+    40 tries over 21 min). Partition 2 waits in gold-g4f's final snapshot, and `bringup/retry_g4i.sh` keeps retrying.
+  - The 491 ledgers (~5 MB xz a card a day) are not committed to `runlogs/`. They live in the snapshots carried card to
+    card and in the local final snapshots; the summaries give their size and hash.
+- L4/T4 levels: at ~3.9 h a level the top 16 would end around 26 Nov 10-15Z. KLO was widened to 32 levels at
+  20:23-20:26Z (the lead's pre-approval of 24-32; `l4op/set_klo32.py`, and `deploy_l4op.py` to match).
+  - The scan goes level by level from the top, so nothing changes before level 16. After it the cards go on to levels
+    17-32 (N from 8.9e199 to 9.46e199 on the shifted vectors, ~0.5% fewer design hits a member) instead of running out.
     From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):
