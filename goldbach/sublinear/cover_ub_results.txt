@@ -75,3 +75,11 @@ Calibration (research's request): proof-mode cost at n = 30 against Y above D(30
    M=30 Y=3467 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 3467, so D(30) < 3467; nodes=12589 (cut by f: 2815, dead: 0, children not built (ARGM): 27392; 567 prefixes at depth 4) seconds=0.0
    M=30 Y=4637 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 4637, so D(30) < 4637; nodes=854 (cut by f: 353, dead: 0, children not built (ARGM): 2109; 345 prefixes at depth 4) seconds=0.0
    M=30 Y=6947 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 6947, so D(30) < 6947; nodes=115 (cut by f: 53, dead: 0, children not built (ARGM): 296; 0 prefixes at depth 31) seconds=0.0
+
+D(31) = 2521 (findD.py 31 2311, 4 threads, 146 s):
+   n=31: a cover of every odd prime below 2311 (3454259 nodes, 2.2 s); its least unstruck prime 2311
+   n=31: a cover of every odd prime below 2333 (46053350 nodes, 28.5 s); its least unstruck prime 2341
+   n=31: a cover of every odd prime below 2347 (45810974 nodes, 29.3 s); its least unstruck prime 2437
+   n=31: a cover of every odd prime below 2441 (33958860 nodes, 22.9 s); its least unstruck prime 2521
+   n=31: NO COVER below 2531 (89423756 nodes, 63.4 s)
+   FINDD n=31 D=2521 (attained by the vector; no vector strikes every odd prime below 2531) seconds=146.3 vector: 3:2 5:3 7:2 11:7 13:7 17:12 19:3 23:19 29:2 31:22 37:17 41:14 43:22 47:14 53:31 59:52 61:33 67:32 71:9 73:35 79:44 83:75 89:38 97:12 101:9 103:21 107:4 109:53 113:52 127:67 131:100
