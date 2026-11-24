@@ -1154,6 +1154,98 @@ chance and 1,295 for an even chance (the planning model of
 comes within 80 rows of the first of these figures. Better covers are not a
 way to 10%: on this side the search has what there is.
 
+**How many complete covers there are: a law, and where they end** (the same
+tools; runs here and on the Lean session's machine, whose raw output is in
+`goldbach/lean/scripts/cover_floor_runs/` on its branch at 86f11bd and
+5075080). Let g0(Q) be the number of class vectors on the odd primes up to x
+that strike every odd prime below Q, so that D is the largest Q with
+g0(Q) > 0 and g0(0) = ∏ r = e^θ(x). Measured as above (ln Z at the cold end
+and the share of the samples there that leave no row), at eight sizes:
+
+| x | moduli | θ(x) | targets Q | (θ − ln g0)·ln² x / Q | end of the fitted line | best cover known |
+|---|---|---|---|---|---|---|
+| 73 | 20 | 65.2 | 700 to 1,020 | 1.09 to 1.15 | 1,082 | 1,051 (exact) |
+| 127 | 30 | 111.2 | 500 to 2,000 | 1.09 to 1.22 | 2,297 | 2,311 (tempering; a wall) |
+| 199 | 45 | 187.9 | 1,000 to 4,000 | 1.02 to 1.09 | 5,099 | 4,909 |
+| 293 | 61 | 276.3 | 1,500 to 7,000 | 1.02 to 1.13 | 8,687 | 8,311 |
+| 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 | 15,907 |
+| 997 | 167 | 955.6 | 15,000 to 33,000 | 0.992 to 1.008 | 45,700 | 40,111 |
+| 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.989 to 1.035 | 185,000 | 135,511 (greedy) |
+| 9,973 | 1,228 | 9,895.3 | 100,000 | 1.006 | | 614,101 (greedy) |
+
+So the logarithm of the number of complete covers is a straight line in the
+target, from the full count at Q = 0 down to the end:
+
+    ln g0(Q) = θ(x) − c·Q/ln² x,    c = 1.00 within a few percent.
+
+In other words a class vector drawn at random strikes every odd prime below Q
+with probability e^(−Q/ln² x). At x = 463 ten targets from 500 to 14,000 lie
+within 5 nats of one line (two seeds agreeing to 0.1 from 6,000 on; slope
+1.013/ln² x, value at Q = 0 within 3.5 of θ); at x = 997 five targets
+from 15,000 to 33,000 lie within 4.5 of the line with c = 1 exactly; at the
+smaller sizes the points step around it, as D(n) itself does, and the
+fitted c is 1.02 to 1.13 (`cover_floor_law.txt` has every point; raw runs
+made here are in `cover_floor_runs/count/`). Three things follow.
+
+- D(n) = θ(r_n)·ln² r_n/c, that is r·ln² r with a constant near 1, not only
+  up to a slowly varying factor: 1,082 against the exact 1,051 at n = 20,
+  and 16,300, 45,700 and 185,000 for 89, 167 and 429 moduli.
+- Tempering's 15,907 on the campaign's 89 moduli is within 3% of the end,
+  and the uarch session's exhaustive neighbourhood search from that cover
+  (free up to 32 moduli, keep the rest, search exactly) finds nothing beyond
+  it. At 167 moduli tempering is about 12% short, at 429 and 1,228 moduli
+  the greedy choice reaches 0.73 of the end.
+- The first-moment count of the earlier section is wrong by a known factor:
+  it expects π(Q)·∏(1 − 1/(r − 1)) = 0.741·Q/(ln Q·ln x) for the loss, the
+  law says Q/ln² x, larger by 1.349·ln Q/ln x (the constant e^γ/(2·C₂) of
+  the theorem again). That is why the count put the end at 32,300 for 89
+  moduli.
+
+Above about 85% of the range the measurement is not clean (the runs sample a
+handful of covers; at 463 the points at 14,500 and 15,000 fall 10 to 25 below
+the line, and it is not settled whether the line bends there or the sampling
+fails; runs from the known complete cover are being made).
+
+*Why a straight line with slope 1/ln² x* (a heuristic that reproduces the
+form and, within about 15%, the constant; not a proof). Count the complete
+covers modulus by modulus, smallest first. Let V(s, A) be the logarithm of
+the number of ways the moduli from s on can finish when A rows are still
+alive. The classes of s hold K alive rows each, with mean μ = A/(s − 1), and
+V(s, A) = ln Σ over the classes of exp(V(s⁺, A − K)). With V = const − p·A,
+a price p per alive row, this gives p before s equal to p after s minus
+κ(p)/(s − 1), where μ·κ is the cumulant generating function of K. If the
+alive rows fell into the classes like Poisson counts, κ = e^p − 1, the price
+would be p = −ln(1 − ln s/ln x), infinite at the last modulus and equal to
+∏(1 − 1/(r − 1)) at the first, and the loss would be the first-moment count.
+They do not: measured on random vectors, the variance of the number of alive
+rows in a class of s is b·(ln s/ln Q) times its mean, with b between 1.2 and
+1.4 for every s above 30 at both sizes tried (x = 463 with Q = 10,000 and
+x = 997 with Q = 25,000; below 30 it is smaller still). This is the law of
+Montgomery and Hooley for primes in progressions, up to the constant: the
+further Q is above the modulus, the more evenly the primes fill its classes.
+With variance v times the mean, κ = (e^(vp) − 1)/v, and for v = b·ln s/ln Q
+the price equation becomes, for y = v·p as a function of ln s,
+dy/d(ln ln s) = y + e^y − 1. Its solution through y = ∞ at the last modulus
+is y = K·(ln s/ln x)² for the small moduli, K = 1.516 (the exponential of
+twice the limit of ∫ from y to ∞ of dt/(t + e^t − 1) plus ½·ln y). So the
+price at the first modulus is (K/b)·(ln Q/ln x)·∏(1 − 1/(r − 1)), and the
+loss is
+
+    π(Q)·(K/b)·(ln Q/ln x)·2·C₂·e^(−γ)/ln x = (1.124/b)·Q/ln² x.
+
+The factor ln Q that turns the number of rows into Q comes from the
+dispersion law, so the line is straight whatever Q is, and its slope is a
+constant over ln² x. With b = 1.12 the constant is 1; the measured b is 1.3
+for most moduli and less for the smallest. Whether c is exactly 1 the
+heuristic does not say: it gives c as a quotient of constants.
+
+**Conjecture (counting law).** For x → ∞ and x ≤ Q ≤ (1 − ε)·θ(x)·ln² x/c,
+the number of class vectors modulo the odd primes up to x that strike every
+odd prime below Q is exp(θ(x) − (c + o(1))·Q/ln² x), with a constant c that
+the measurements put at 1.00 ± 0.03; consequently D(n) = (1/c + o(1))·r_n·ln² r_n,
+and the least Goldbach summand that divisibility by the primes up to ln N
+alone can force is of the exact order ln N·(ln ln N)².
+
 ## Ladder
 
 | rung | what | who | state |
