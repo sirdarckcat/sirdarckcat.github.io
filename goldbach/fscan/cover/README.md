@@ -342,6 +342,31 @@ but with a record of 172,000 or 175,000 in hand those covers score no better
 than the ones in the file (175,665 against 175,820; 177,164 against 177,171),
 because they pay for the rows above 175,000 with rows below.
 
+**What each design level buys** (`brainstorm/design_menu.py`,
+`design_menu.txt`). The same model gives, for the best cover known at each
+design level on the first 89 primes, the chances of the final record passing
+far thresholds (8.0 days left, the fleet's measured rate, record 158,209; a
+design with more rows below its own level is slowed in proportion to half of
+the extra rows, the sieve's share of the work):
+
+| designed for | P(≥ 170k) | ≥ 175k | ≥ 180k | ≥ 185k | ≥ 190k | ≥ 200k | ≥ 213,070 | expected final record |
+|---|---|---|---|---|---|---|---|---|
+| 170,000, family B | 0.89 | 0.52 | 0.19 | 0.068 | 0.017 | 0.0017 | 0.00007 | 175,900 |
+| 170,000, family A | 0.89 | 0.43 | 0.12 | 0.037 | 0.010 | 0.0007 | 0.00004 | 174,900 |
+| 175,000 | 0.83 | 0.54 | 0.20 | 0.072 | 0.023 | 0.0023 | 0.00009 | 175,600 |
+| 180,000 | 0.75 | 0.47 | 0.22 | 0.068 | 0.017 | 0.0016 | 0.00008 | 174,900 |
+| 190,000 | 0.63 | 0.36 | 0.15 | 0.077 | 0.032 | 0.0027 | 0.00010 | 173,000 |
+| 200,000 | 0.46 | 0.26 | 0.11 | 0.052 | 0.021 | 0.0041 | 0.00016 | 170,400 |
+| 213,070 | 0.40 | 0.25 | 0.10 | 0.043 | 0.015 | 0.0029 | 0.00029 | 170,000 |
+
+Family B at 170,000 has the highest expected record and is within a few
+points of the best design for every threshold up to 185,000. A design aimed
+at a far threshold raises the chance of that threshold by a factor of two to
+four and no more (190,000: 3.2% against 1.7%; 200,000: 0.41% against 0.17%;
+10%: 0.03% against 0.007%), and pays 3,000 to 6,000 in expected record for
+it. Starting files for 190,000 and 200,000 exist (`starts/q190000_m89.txt`,
+1,420 rows; `starts/q200000_m89.txt`, 1,502 rows; one tempering run each).
+
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
 walks: walk with the cap one or two rows above the best, keep what is at or
 below the best, lower the cap when something better turns up. From the long
