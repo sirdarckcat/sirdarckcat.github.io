@@ -729,6 +729,14 @@ Version 3 (22 Nov):
     <count> <name> <seed> m88f`.
   - Research: with a record of 172,000-178,000 these covers come within 100 of the best known, so only the row lists
     change, not the family.
+- The record of 2026-11-24 17:11:16 UTC, g(N) = 160,357 (`../records/budget_1e200_200digit_g160357/`), came from gold-g4d.
+  - It was a near-miss of the 491 family-B vector `q170000_m89r491_p0c00524_v232` at k = 19,221,795, in the top window.
+    The watcher copied the line off the card at once.
+  - `rec160357/quick_check.py` checked it here first (gmpy2, from the vector's spec). `certify_c3.sh` (`CLAIM_Q=158209`)
+    then certified it at 17:13Z.
+  - Since 17:14-17:20Z every card reports near-misses from 160,357 up (`NEAR_MISS=160357`, `rec160357/raise_nm.py`).
+    Each card restarted in place at a batch end; the generators and row guards were not touched.
+  - The RTX cards had logged 1.60 expected near-misses at or above 158,209 since the previous record.
     From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):
