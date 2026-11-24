@@ -12,5 +12,13 @@ and run as
     COVER_FLOOR_REACH=20000 ./cover_floor Q 'odd<=463' cover_floor_betas_deep.txt 400000 100000 n89_Q<Q>_s<seed>.txt <seed>
     COVER_FLOOR_REACH=60000 ./cover_floor Q 'odd<=997' cover_floor_betas_deep.txt 400000 100000 n167_Q<Q>_s<seed>.txt <seed>
 
+The files `n89C_Q<Q>.txt` are the runs started from that session's complete cover
+(`goldbach/sublinear/complete_cover_15907.txt` at commit `2552688`):
+
+    COVER_FLOOR_REACH=20000 ./cover_floor Q 'odd<=463' cover_floor_betas_deep.txt 1000000 250000 n89C_Q<Q>.txt 5 complete_cover_15907.txt
+
+and `n89L_Q<Q>_s<seed>.txt` the ten times longer runs from random vectors (4000000 sweeps, 1000000
+of burn-in).
+
 Each file is self-describing (a header line, then the lines the program writes). The analysis is the
 research session's (`python3 cover_floor.py --reach files...`).
