@@ -96,7 +96,17 @@ Three conclusions.
    0.4 nats, not the several nats that a "perfect rounding" of the
    fractional cover would give. This is a heuristic certificate (it rests
    on the sampler being in equilibrium down to β ≈ 4, which the 13-modulus
-   check supports), not a proof.
+   check supports), not a proof. On 24 November it was measured from both
+   sides at Q = 170,000 on the first 89 primes (`../../sublinear/cover_floor.c`
+   and the section "A floor under every cover" of `../../sublinear/README.md`):
+   a run from random covers and a run from the best cover known (1,248 rows)
+   agree up to the temperature at which no cover can have fewer than 1,214
+   rows, and the run from the best cover puts the end of the landscape at
+   1,247 or 1,248 rows, with between 50 and 270 covers at 1,248 (186 have
+   been found). The entropy of a run from random covers, as used in this
+   section, vanishes about ten rows too early there, which is why covers a
+   few rows below that point keep being found; the conclusion stands and is
+   sharper: the covers in use are the best there are to within a row.
 2. **Covers are not scarce.** For Q = 122,000 the entropy is 27 nats at
    ⟨k⟩ = 866 and 45 nats at 871: there are about e^27 residue vectors
    within 10 rows (0.24 nats) of the best. A search is therefore limited by
@@ -484,7 +494,14 @@ later prime covers at most its fullest class" leaves a capacity of about
 (Hunter–Worsley) over the moduli over-counts every row covered by primes
 that are not adjacent in the tree; bounded-difference and Bernstein
 inequalities for the lower tail of k are dominated by the small primes. The
-entropy estimate above therefore stays a measurement.
+entropy estimate above therefore stays a measurement. (One number for scale,
+24 November: with the classes of the 22 smallest moduli fixed as in the best
+cover at Q = 170,000, 2,321 rows are alive; the fullest classes of the other
+67 moduli add up to 1,218 and a linear programme over them allows 1,151,
+where the cover strikes 1,073. So for a given choice of the small classes
+the bound is within 13% and a floor of 1,170 rows is certified by the
+programme; what cannot be done is the enumeration over the e^77 choices of
+those 22 classes.)
 
 ## The brainstorm of 22 November 2026 (`brainstorm/`)
 
