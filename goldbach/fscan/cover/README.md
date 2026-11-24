@@ -240,6 +240,13 @@ record at 158,209:
 |---|---|---|---|---|---|---|---|---|
 | weight | 1.00 | 0.93 | 0.83 | 0.67 | 0.39 | 0.19 | 0.12 | 0.03 |
 
+(The 8.2 days were this session's assumption that evening. The units in fact
+last 8.9 days from 24 November 04:05 UTC, and with that horizon, the fleet's
+day-one rate and a family-B cover as the reference the weights are 1.00,
+0.97, 0.92, 0.81, 0.58, 0.35, 0.23 and 0.07: the rows above 170,000 count
+for more, not less. Family B remains the best cover known under them, by 80
+to 300 in expected final record over the other basins found since.)
+
 A row just above the record weighs the same as a row below it: near-misses
 there are expected a dozen times over anyway, and what limits the final
 record is the range 168,000 to 180,000. Measured this way, the near-optimal
@@ -259,8 +266,9 @@ tell apart:
 of `starts/all/`.) Family B has about six more rows below the record and
 about thirty fewer between 170,000 and 190,000: 13% fewer near-misses just
 above the record, the same number of design hits within 1%, 28% more members
-expected to pass 175,000 and 69% more to pass 180,000. In weighted rows it is 9 to 11 better, about a quarter
-more of the rate that decides the final record, and worth about +1,000 in
+expected to pass 175,000 and 69% more to pass 180,000. In weighted rows it
+is 9 to 11 better, about a quarter more of the rate that decides the final
+record, and worth about +1,000 in
 expected final record. A capped walk keeps the family of its starting cover:
 an emulation of the fleet's producer (walks of 11,000 covers at cap 1,251, a
 third of them, the 1,000 with the fewest rows) gives 1,302.2 weighted rows
