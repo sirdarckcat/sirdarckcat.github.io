@@ -33,8 +33,8 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419, 499 for n = 1 to 14 (`desert.c`; two programs, and
-  the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
+  181, 223, 271, 331, 419, 499, 613 for n = 1 to 15 (`desert.c`; two
+  programs, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -738,7 +738,7 @@ a few hundred thousand could be enumerated at 17,000. So 16,981 is the best
 found. All four certificates (15,907; 16,381; 16,747; 16,981) are checked by
 the Lean kernel (`Records.lean` on the Lean branch, commit 9acf05d).
 
-**The same question exactly, for few primes** (`desert.c`). Let D(n) be the
+**The same question exactly, for few primes** (`desert.c`, `desert_fast.c`). Let D(n) be the
 largest value, over all residue vectors on the first n odd primes r, of the
 least odd prime q that lies in none of the chosen classes. For an N in those
 classes every odd prime below D(n) is struck (N − q is divisible by some r),
@@ -747,14 +747,16 @@ above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
 fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values:
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 |
 
 The values to n = 7 are also the result of a brute force over all vectors;
-all fourteen come out the same from the Lean session's separate program, and
+all fifteen come out the same from the Lean session's separate program
+(D(15) = 613 took 1.6·10^10 nodes here, `desert_fast.c`, the same search on
+bit sets and in parallel, and 1.8·10^10 there), and
 those to n = 8 are theorems checked by the Lean kernel, which runs a search
 proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commit 9dce329 on
 `ccr-36ca7b46-8twf14`; beyond 8 the lower bounds are theorems, one vector
@@ -767,7 +769,7 @@ three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14.
+  499 against 2,809 at n = 14, 613 against 3,479 at n = 15.
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
