@@ -24,7 +24,8 @@ it, both in "A floor under every cover" and the section after it:
   1.9); the same calculation predicts within 6% how few rows the best cover
   leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,000 on 89
-  moduli, where 15,907 has been found.
+  moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 37,000,
+  the upper end by an exhaustive search of the uarch session.
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
