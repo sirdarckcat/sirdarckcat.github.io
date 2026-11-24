@@ -18,9 +18,11 @@ it, both in "A floor under every cover" and the section after it:
   need. So better covers are not a way to 10%.
 - A law. The number of class vectors on the odd primes up to x that strike
   every odd prime below Q is exp(θ(x) − c·Q/ln² x) with c = 1.00 ± 0.03,
-  measured from 45 to 1,228 moduli and explained, up to the value of c, by a
-  short calculation, which also predicts within 6% how few rows the best
-  cover leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
+  measured from 45 to 1,228 moduli and derived, constant included and
+  nothing fitted, from the Hardy–Littlewood count of prime pairs (within 1 to
+  5% at nine points, where the first-moment count is off by a factor 1.5 to
+  1.9); the same calculation predicts within 6% how few rows the best cover
+  leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,000 on 89
   moduli, where 15,907 has been found.
 
@@ -1290,11 +1292,62 @@ Q = 170,000 over the temperatures that are in equilibrium (β ≤ 0.6, where
 thousand with c = 1.027 and b = 1.196, where that b predicts c = 1.028; the
 spread of the alive rows over the classes measured directly at that target
 has b between 1.1 and 1.4 for the moduli above 30, as at 10,000 and 25,000.
-So the constant is understood: c = 2·C₂·e^(−γ)·K/b times π(Q)·ln Q/Q, the
-one empirical number being the constant b of the dispersion law, about
-1.25. It is 1.00 in the range measured by the accident that π(Q)·ln Q/Q is
-1.1 there; for very large x it tends to about 0.9, and D(n) to about
-1.1·r·ln² r.
+So with the measured dispersion the constant comes out right.
+
+*The dispersion derived, and the law with nothing fitted*
+(`cover_dispersion.py`, `cover_price.py` and their `.txt` files). The spread
+of the alive rows over the classes of s is a statement about pairs: two
+primes q, q′ below Q in one class of s are both alive with probability
+∏(1 − ν_t/(t − 1)) over the smaller moduli t, ν_t = 1 if t divides q′ − q
+and 2 if not. Summed over the pairs with the Hardy–Littlewood count of
+prime pairs at each difference, the weight of the sieve and the singular
+series of the pair multiply to a function of the difference whose mean is
+exactly the Poisson value: at leading order the classes are Poisson. The
+departure is the second-order term of the average of singular series, the
+−(H/2)·ln H in Σ over h ≤ H of (H − h)·𝔖(h) (Montgomery and Soundararajan),
+the term that also makes the variance of primes in progressions x·ln q
+instead of x·ln x. Taken over the differences 6·s·j it gives
+
+    variance/mean = 1 − 6·φ(s)·(s/(s − 1))·(π(Q)/Q)·ln(Q/(6·s)),    φ(s) = ∏ over odd primes t < s of (1 − 1/(t − 1)),
+
+with no constant to choose. Measured on random vectors against the formula:
+
+| modulus s (Q = 10,000) | 43 | 71 | 101 | 131 | 163 | 193 | 263 | 337 | 463 |
+|---|---|---|---|---|---|---|---|---|---|
+| variance/mean measured | 0.47 | 0.59 | 0.67 | 0.72 | 0.75 | 0.75 | 0.82 | 0.80 | 0.85 |
+| formula | 0.47 | 0.60 | 0.67 | 0.72 | 0.75 | 0.78 | 0.82 | 0.85 | 0.89 |
+
+(the same within 0.04 at Q = 25,000 and 170,000 for every modulus above 50;
+below about 30 the formula fails, the mean per class being no longer small
+against Q/(6·s), and it is cut off at 0.02 in what follows, where those
+moduli do not matter because their prices are small). With this dispersion
+in the price recursion, the price before the first modulus being the largest
+that the recursion can carry to the last one (any price there above ln x − 1
+gives the same answer within 1%):
+
+| x | 463 | 463 | 997 | 997 | 997 | 2,999 | 2,999 | 9,973 | 9,973 |
+|---|---|---|---|---|---|---|---|---|---|
+| Q | 10,000 | 14,000 | 15,000 | 25,000 | 38,000 | 50,000 | 100,000 | 100,000 | 300,000 |
+| θ − ln g0 measured | 271 | 381 | 316 | 520 | 802 | 772 | 1,589 | 1,186 | 3,582 |
+| by the recursion | 279 | 388 | 328 | 540 | 812 | 791 | 1,545 | 1,191 | 3,414 |
+| by the first moment | 158 | 212 | 200 | 314 | 456 | 499 | 932 | 806 | 2,181 |
+
+Within 1 to 5% at every point, where the first-moment count is off by a
+factor 1.5 to 1.9. The end of complete covers by the same recursion:
+
+| x | 73 | 107 | 199 | 463 | 997 | 2,999 | 9,973 | 30,000 | 100,000 |
+|---|---|---|---|---|---|---|---|---|---|
+| end by the recursion | 1,123 | 1,997 | 4,969 | 15,973 | 44,917 | 194,203 | 905,951 | 3.51·10^6 | 1.51·10^7 |
+| / (x·ln² x) | 0.84 | 0.86 | 0.89 | 0.92 | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 |
+| known | 1,051 exact | 1,801 exact | 4,909 found | 16,000 measured | > 40,111 | | | | greedy 9.65·10^6 |
+
+At the campaign's 89 moduli it gives 15,973 where the measurement says
+about 16,000 and tempering found 15,907. So the constant of the law is not a
+number but a slowly moving quantity. The correction to Poisson classes is of
+order 1/ln x, so for x → ∞ the law tends to the first-moment count and
+D(n)/(r·ln² r) to e^γ/(2·C₂) = 1.349, the constant of the theorem; but it
+gets there like 1/ln x, and for every size within reach, 20 to 10,000
+moduli, D(n) lies between 0.84 and 1.14 times r·ln² r.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1345,14 +1398,15 @@ table. At the 10% target (19,050 rows):
 worth, is the same quantity as the floor under the covers, seen at other
 depths: one function of 460·ln² z/Q.
 
-**Conjecture (counting law).** For x → ∞ and Q between x and a fixed
-fraction of θ(x)·ln² x, the number of class vectors modulo the odd primes up
-to x that strike every odd prime below Q is
-exp(θ(x) − (c + o(1))·π(Q)·ln Q/ln² x), with a constant c that the
-measurements put at 0.91 ± 0.02 (in the range measured this is the same as
-1.00·Q/ln² x); consequently D(n) is r_n·ln² r_n times a constant close to 1,
-and the least Goldbach summand that divisibility by the primes up to ln N
-alone can force is of the exact order ln N·(ln ln N)².
+**Conjecture (counting law).** For Q between x and a fixed fraction of
+θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
+strike every odd prime below Q is exp(θ(x) − c·π(Q)·ln Q/ln² x), where c is
+given by the price recursion above: 0.91 ± 0.02 for x from 463 to 9,973 (the
+same as 1.00·Q/ln² x there), tending to 2·C₂·e^(−γ) = 0.741 as x → ∞.
+Consequently D(n) = (e^γ/(2·C₂) + o(1))·r_n·ln² r_n, with the ratio between
+0.84 and 1.14 for 20 to 10,000 moduli, and the least Goldbach summand that
+divisibility by the primes up to ln N alone can force is asymptotic to
+1.349·ln N·(ln ln N)².
 
 ## Ladder
 
