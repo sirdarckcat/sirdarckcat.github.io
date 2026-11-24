@@ -83,3 +83,11 @@ D(31) = 2521 (findD.py 31 2311, 4 threads, 146 s):
    n=31: a cover of every odd prime below 2441 (33958860 nodes, 22.9 s); its least unstruck prime 2521
    n=31: NO COVER below 2531 (89423756 nodes, 63.4 s)
    FINDD n=31 D=2521 (attained by the vector; no vector strikes every odd prime below 2531) seconds=146.3 vector: 3:2 5:3 7:2 11:7 13:7 17:12 19:3 23:19 29:2 31:22 37:17 41:14 43:22 47:14 53:31 59:52 61:33 67:32 71:9 73:35 79:44 83:75 89:38 97:12 101:9 103:21 107:4 109:53 113:52 127:67 131:100
+
+D(32) = 2647 (findD.py 32 2521, 4 threads, 549 s):
+   n=32: a cover of every odd prime below 2521 (3897105 nodes, 2.7 s); its least unstruck prime 2551
+   n=32: a cover of every odd prime below 2557 (105680 nodes, 0.1 s); its least unstruck prime 2557
+   n=32: a cover of every odd prime below 2579 (5837509 nodes, 3.7 s); its least unstruck prime 2617
+   n=32: a cover of every odd prime below 2621 (144817196 nodes, 101.8 s); its least unstruck prime 2647
+   n=32: NO COVER below 2657 (603371797 nodes, 440.4 s)
+   FINDD n=32 D=2647 (attained by the vector; no vector strikes every odd prime below 2657) seconds=548.7 vector: 3:2 5:3 7:5 11:10 13:7 17:3 19:3 23:21 29:2 31:2 37:10 41:5 43:18 47:8 53:16 59:55 61:59 67:18 71:57 73:61 79:48 83:82 89:29 97:69 101:64 103:26 107:97 109:59 113:71 127:24 131:80 137:75
