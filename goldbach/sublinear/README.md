@@ -877,7 +877,21 @@ theorem's count at x = 997 gives 9,290. Tempering does better than greedy
 on those 167 moduli, as it does at 463: it finds classes that strike every
 odd prime below 40,111 (`complete_cover_40111_167primes.txt`, checked
 independently; 0.84·x·ln² x and 4.3 times the theorem's count), and nothing
-complete at 41,000 in runs of the same length. A mean-field model of the
+complete at 41,000 in runs of the same length. The best reach known for
+each set of moduli, exact for the first two and by tempering for the others
+(`complete_covers_97_199_293.txt`, `complete_cover_15907.txt`,
+`complete_cover_40111_167primes.txt`):
+
+| primes up to x | 23 | 53 | 97 | 199 | 293 | 463 | 997 |
+|---|---|---|---|---|---|---|---|
+| moduli | 8 | 15 | 24 | 45 | 61 | 89 | 167 |
+| every odd prime struck below | 163 | 613 | 1,471 | 4,909 | 8,311 | 15,907 | 40,111 |
+| / (x ln x) | 2.26 | 2.91 | 3.31 | 4.66 | 4.99 | 5.60 | 5.83 |
+| / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.84 |
+
+(The last entry comes from shorter runs relative to its size and is probably
+not the end.) Against x·ln x the reach keeps growing; against x·ln² x it is
+between 0.7 and 0.9 throughout. A mean-field model of the
 same procedure, in which the remaining primes fall into the classes of each
 r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
