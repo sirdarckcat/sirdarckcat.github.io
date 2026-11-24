@@ -17,7 +17,8 @@ for d in c170v c170 c170f c170g c170r; do
   echo "$CARD $d: $n slices, $b batches, found lines $f, expected design hits (sum) $eh, expected near-misses (sum, where logged) $en, first $(head -c 19 "$T/$d/gpu3_stats.log" 2>/dev/null) last $(tail -n 1 "$T/$d/gpu3_stats.log" 2>/dev/null | cut -c1-19)" >> "$OUT/summary.txt"
 done
 for f in "$T"/cover89/ledger_p*.txt; do [ -f "$f" ] && xz -9 -c "$f" > "$OUT/$(basename "$f").xz"; done
-for f in "$T"/cover491/ledger_p*.txt; do [ -f "$f" ] && xz -9 -c "$f" > "$OUT/cover491_$(basename "$f").xz"; done
+# the 491 ledgers grow ~460,000 keys (~5 MB xz) a card a day: they stay in the snapshots (carried card to card) and the local final_snap.tgz, not in the repo; only their size here
+for f in "$T"/cover491/ledger_p*.txt; do [ -f "$f" ] && echo "$CARD cover491 $(basename "$f"): $(wc -l < "$f") covers, sha256 $(sha256sum < "$f" | cut -c1-16)" >> "$OUT/summary.txt"; done
 [ -f "$T/vecgen491.log" ] && { grep -c ' chunk [0-9]*: ' "$T/vecgen491.log" | sed "s/^/$CARD vecgen491 chunks /"; grep '^cap raised to' "$T/vecgen491.log" | tr '\n' ' '; echo; } >> "$OUT/summary.txt"
 [ -f "$T/rowguard491.log" ] && echo "$CARD row guard: $(tail -n 1 "$T/rowguard491.log" | cut -c1-240)" >> "$OUT/summary.txt"
 for f in "$T"/c150cpu/goldbach/phd/campaign3_hi*/found.jsonl; do [ -s "$f" ] && cp "$f" "$OUT/cpushare_$(basename "$(dirname "$f")")_found.jsonl"; done
