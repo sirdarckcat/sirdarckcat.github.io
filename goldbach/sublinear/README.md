@@ -829,6 +829,49 @@ divisibilities only (`Records.lean` on the Lean branch):
 `…_16981`, and the progression forms for 89 primes (all 21,378,978 members
 below 10^200) and 91 primes (95 members).
 
+**Why 1.349 is not the truth, and what a proof of more would need** (a
+sketch; nothing in this paragraph is proved). In the theorem each of the
+largest primes, about x/ln x of them, strikes one surviving prime. It could
+strike several. Take y = C·x·ln x. A class of a prime r′ near x holds about C
+of the primes below y, and each of them survives the small primes with
+probability of order 1/ln x, so the survivors, about C·x/(1.349·ln x) of
+them, are spread over the x classes of r′ like balls in boxes: about x/ln² x
+pairs of survivors share a class, and the fullest classes hold about
+ln x/ln ln x of them. If a proportion φ of the large primes could each be
+given j survivors, disjointly, the constant would be 1.349·(1 + φ(j − 1)),
+and with nearly all of them and j growing the bound would be of order
+ln X·(ln ln X)²/ln ln ln X, which is where the exact values and the
+certified covers point (the ratio D/(r ln r) is 5.6 at r = 463, and
+1.349·ln r/ln ln r is 4.6 there).
+
+Pigeonhole cannot give this, because the survivors are fewer than the
+classes, and the greedy choice of classes for the small primes leaves a set
+one cannot control. With classes drawn at random for the small primes the
+averages are computable: the expected number of survivors is the one the
+greedy choice guarantees, and the expected number of surviving pairs in a
+common class of r′ is at least (number of pairs of primes below y in a common
+class) × (chance that both survive), where the first factor is at least
+r′·C(C − 1)/2 by convexity alone as soon as C > 1, and the second is
+∏(1 − 2/(r − 1)) over the small primes. A deletion argument (mark each such
+pair with a small probability; keep the large primes with exactly one marked
+pair that meets no other marked pair) would then give a positive proportion
+of large primes striking two survivors, provided two counts are bounded
+above up to constants: the second moment of the pair counts and the number
+of conflicts between pairs of different primes. Both reduce to upper-bound
+sieves for primes r′ with v + j·r′ prime (Brun, Selberg), which lose only
+constant factors. That would prove (1 + δ)·1.349 for some small explicit
+δ > 0. It is not written out and not formalised.
+
+For "every constant" nearly all large primes must strike j survivors each,
+which is a near-perfect matching in a hypergraph (Pippenger–Spencer, the
+Rödl nibble) and needs the degrees asymptotically, not up to constants. That
+is the machinery of Ford, Green, Konyagin, Maynard and Tao for long gaps
+between primes, in an easier regime: there a class of a large prime holds far
+fewer than one prime on average and rich classes have to be found with the
+Maynard sieve; here it holds C. So we state as a conjecture, supported by
+D(n) and by the covers: for every A there are infinitely many even N with no
+Goldbach summand below A·ln N·ln ln N.
+
 ## Ladder
 
 | rung | what | who | state |
