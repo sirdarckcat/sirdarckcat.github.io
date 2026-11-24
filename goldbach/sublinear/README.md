@@ -33,8 +33,9 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419, 499, 613 for n = 1 to 15 (`desert.c`; two
-  programs, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
+  181, 223, 271, 331, 419, 499, 613, 709, 739, 859 for n = 1 to 18
+  (`desert.c`; two programs to n = 15, the uarch session's faster search
+  beyond, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -747,17 +748,26 @@ above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
 fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values:
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 | 59 | 61 | 67 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 | 709 | 739 | 859 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 |
 
 The values to n = 7 are also the result of a brute force over all vectors;
-all fifteen come out the same from the Lean session's separate program
+the first fifteen come out the same from the Lean session's separate program
 (D(15) = 613 took 1.6·10^10 nodes here, `desert_fast.c`, the same search on
-bit sets and in parallel, and 1.8·10^10 there), and
-those to n = 8 are theorems checked by the Lean kernel, which runs a search
+bit sets and in parallel, and 1.8·10^10 there). D(16) to D(18) are from the
+uarch session's version of the search (`desert_fast3.c` on branch
+`ccr-b8c25887-i6tn9f`, commit a81cc6f), which keeps the search and the cut
+and changes the order: the moduli that can strike the branching prime are
+tried most-struck-primes-first, and the branching prime is the unstruck prime
+with the fewest moduli still able to strike it. That takes D(15) from
+1.6·10^10 nodes to 1.1·10^7 and D(18) to 2.9·10^8 nodes in half a minute;
+it reproduces D(1) to D(15), gives the same D(16) to D(18) for two orders of
+the children, and its three vectors were rechecked here (every odd prime
+below 709, 739 and 859 struck). All of it
+agrees, and the values to n = 8 are theorems checked by the Lean kernel, which runs a search
 proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commit 9dce329 on
 `ccr-36ca7b46-8twf14`; beyond 8 the lower bounds are theorems, one vector
 each, as are the four large covers). Formalising it, the Lean session proved
@@ -769,7 +779,7 @@ three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 613 against 3,479 at n = 15.
+  499 against 2,809 at n = 14, 859 against 5,039 at n = 18.
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
