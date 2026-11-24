@@ -762,7 +762,9 @@ modulus strikes the smallest unstruck prime" gives the exact values:
 | D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 |
 | optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 12 | |
 
-("Optimal vectors": how many of the ∏ r class vectors reach D(n).)
+("Optimal vectors": how many of the ∏ r class vectors reach D(n). A search of
+the OEIS for the first twelve values on 24 November 2026 returned no
+sequence.)
 
 The values to n = 7 are also the result of a brute force over all vectors;
 the first fifteen come out the same from the Lean session's separate program
