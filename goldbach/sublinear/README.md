@@ -1638,6 +1638,37 @@ recursion is good to about 5% whichever way the dispersion is taken, and the
 better dispersion does not make it better: what is left is in the recursion
 itself (one price per row, and class counts of scaled-Poisson shape).
 
+*The mechanism checked on covers themselves* (`cover_tilt.py`,
+`cover_tilt.txt`). The recursion says more than a count: after the modulus s
+the remaining problem prices an alive row at p_s, so the class chosen for s
+should strike e^(v_s·p_s) times the rows of an average class. That can be
+looked at directly. On 1,500 complete covers at Q = 12,000 on the 89 moduli
+(sampled by one tempering run), modulus by modulus, smallest first:
+
+| modulus s | 11 | 19 | 43 | 71 | 101 | 163 | 193 | 229 | 263 | 337 | 373 | 409 | 443 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| rows alive before s, along the covers | 442 | 330 | 238 | 188 | 154 | 108 | 90 | 73 | 59 | 36 | 25.5 | 16 | 7.1 |
+| the same for random vectors | 450 | 348 | 277 | 247 | 229 | 208 | 201 | 195 | 190 | 183 | 180 | 177 | 174 |
+| rows struck by the chosen class / mean of a class | 1.11 | 1.31 | 1.84 | 2.38 | 2.81 | 4.70 | 5.97 | 7.27 | 8.18 | 17.8 | 22.9 | 40 | 94 |
+| the recursion's e^(v·p) | 1.08 | 1.30 | 1.90 | 2.48 | 3.13 | 4.96 | 6.02 | 7.35 | 9.17 | 15.7 | 22.3 | 33 | 60 |
+| fullest class / mean, along the covers | 1.13 | 1.32 | 1.89 | 2.49 | 3.17 | 5.15 | 6.52 | 8.46 | 9.80 | 20.2 | 26.7 | 45 | 103 |
+
+The factor by which a complete cover beats an average class grows from 1.1
+at the eleventh part of the way to 20 and more near the end, and the
+recursion has it within 15% up to s = 373, with nothing fitted; only over
+the last few moduli, where a cover simply takes very nearly the fullest
+class, does it fall short. So the prices are not a device for getting the
+count right: they are what the covers do. One thing the recursion does not
+do, and it was tried: along the covers the alive rows are a thinned set and
+their dispersion over the classes is higher than for random vectors (0.65
+against 0.49 at s = 43, 0.81 against 0.65 at 101, 0.95 against 0.79 at 263,
+close to what independent thinning of the random-vector figure gives), but
+putting that dispersion into the recursion makes it worse, not better (the
+loss comes out 8 to 22% too small at the 36 points measured, where the
+dispersion of random vectors gives it within 7%). The recursion as it
+stands is the consistent approximation at the level of pairs of rows, and
+the correction for thinning belongs to an order it does not have.
+
 *Where the constant ends up* (`cover_limit.py`, `cover_limit.txt`; a
 heuristic like the rest, nothing fitted). The pair sum has a limit shape. To
 leading order R(m) = (a·c/2)·M(m), where M(m) = Σ over squarefree d ≤ m of
