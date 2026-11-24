@@ -357,6 +357,17 @@ but with a record of 172,000 or 175,000 in hand those covers score no better
 than the ones in the file (175,665 against 175,820; 177,164 against 177,171),
 because they pay for the rows above 175,000 with rows below.
 
+The search for a family better than B can be continued by anyone with spare
+cores: `family_search/family_search.sh workdir id` runs plain tempering on the
+first 89 primes from random starts at thresholds around 170,000 and measures
+every dump in weighted rows (`family_search/weights_8.9days.txt`: 8.9 days
+left, the fleet's day-one rate, record 158,209), as it is and with 463
+replaced by every prime up to 590 (`family_eval.py`); covers within two
+weighted rows of family B on the 491 set (1,308.67 under these weights) are
+polished by a weighted descent (`wdescend.py`) and anything below it is
+logged as CANDIDATE. About forty such runs here re-found family B one time in
+four and nothing better.
+
 **What each design level buys** (`brainstorm/design_menu.py`,
 `design_menu.txt`). The same model gives, for the best cover known at each
 design level on the first 89 primes, the chances of the final record passing
