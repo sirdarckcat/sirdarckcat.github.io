@@ -214,3 +214,11 @@ container reclaimed again (idle session); driver restarted 20:58:14 (resumes fro
   x=997 Q=41640 seed=1 sweeps=160000 start=mod_997_start40111.txt: best k 2  (538 s)
   x=997 Q=41640 seed=2 sweeps=160000 start=mod_997_start40111.txt: best k 1  (541 s)
 x=997: largest Q reached 41640, smallest Q missed by all seeds 41768
+  x=1499 Q=75315 seed=1 sweeps=20000: best k 30  (115 s)
+  x=1499 Q=62762 seed=1 sweeps=20000: best k 1  (123 s)
+  x=1499 Q=66946 seed=1 sweeps=20000: best k 8  (125 s)
+  x=1499 Q=71131 seed=1 sweeps=20000: best k 20  (139 s)
+  x=1499 Q=59275 seed=1 sweeps=160000: best k 0  (873 s)
+  x=1499 Q=59275 seed=2 sweeps=160000: best k 0  (888 s)
+  x=1499 Q=59275 seed=3 sweeps=160000: best k 0  (890 s)
+  x=1499 Q=59275 seed=4 sweeps=160000: best k 0  (899 s)
