@@ -720,6 +720,15 @@ Version 3 (22 Nov):
     - Lesson: an edit to `handover_pro.sh` while a handover was running it broke that job with a syntax error (bash
       reads a script as it runs). Only the local follow-up died; the card's bring-up finished on its own. Scripts in use
       are not edited in place.
+- After a design hit (the lead, 23 Nov 21:19Z): keep the covers and raise the near-miss threshold to the new record.
+  Moving Q needs the lead first. For that move, research has stand-by family-B start files at Q = 180,000, with the covers
+  counted to 180,000:
+  - `starts/q180000_m89r491.txt` (2,770 covers at 1,340-1,344 rows): `./gen_vectors.sh 180000 1344 <count> <name> <seed>
+    m89r491`.
+  - `starts/q180000_m88f.txt` (a9ee33a; 291 covers at 1,350-1,355 rows): `GEN_KMAX=top32 ./gen_vectors.sh 180000 1356
+    <count> <name> <seed> m88f`.
+  - Research: with a record of 172,000-178,000 these covers come within 100 of the best known, so only the row lists
+    change, not the family.
     From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):
