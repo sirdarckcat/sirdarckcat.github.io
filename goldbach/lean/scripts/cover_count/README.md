@@ -69,6 +69,15 @@ What this is and is not:
   of the covering bound, which `GoldbachGaps/CoverBound.lean` now states
   (`eventually_exists_classes_of_mul_lt_one`: classes modulo the odd primes up to `y` that cover
   every odd prime below `c y ln y`). The explicit `c = 1.2` is `eventually_prod_le_g0_six_fifths`.
+* The same two theorems give the count at the same set of moduli (`eventually_prod_le_g0_self`):
+  with `κ = 2 C₂ e^{-γ} = 0.7413…`, for every `c < 1/κ`, every `ε > 0` and all large `y`,
+
+      ln g0(y, c y ln y) ≥ θ(y) - θ((c κ + ε) y),
+
+  a loss of at most about `(c κ + ε) y = κ Q / ln y + ε y`. This is the explicit form of "the
+  construction produces not one cover but many": in its range the number of complete covers is at
+  least `e^{(1 - c κ - ε) y}` to leading order. It is linear in `Q` with slope `κ / ln y`; the law's
+  slope is `1 / ln² y`.
 * A bound of the law's shape for all `x` (loss at most a constant times `Q / ln² x`) would put the
   depth at `x ln² x` or beyond, which nothing here proves.
 

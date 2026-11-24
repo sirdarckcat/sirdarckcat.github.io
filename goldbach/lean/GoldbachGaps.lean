@@ -275,7 +275,9 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `y` is at least `c y ln y`). Hence `g0(y, ⌊c y ln y⌋) > 0` for all large `y`
                (`eventually_g0_pos`) and, for every `x ≥ y`,
                `ln g0(x, c y ln y) ≥ θ(x) - θ(y)` (`eventually_prod_le_g0`; with the explicit
-               `c = 1.2`, `eventually_prod_le_g0_six_fifths`).
+               `c = 1.2`, `eventually_prod_le_g0_six_fifths`). At the same set of moduli
+               (`eventually_prod_le_g0_self`): `ln g0(y, c y ln y) ≥ θ(y) - θ((c κ + ε) y)`
+               with `κ = 2 C₂ e^{-γ}`, so the count is exponentially large in `y` there.
 * `CoverPairs` – two rows in one class of a modulus `s`: the exact step of the research
                session's derivation of the law. The pair weight `rho t d` of a smaller modulus
                (classes drawn among the `t - 1` nonzero ones; exact counts

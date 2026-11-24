@@ -110,7 +110,9 @@ the combinatorial step.
 `CoverCountAsymptotic.lean` (namespace `GoldbachGaps.CoverCount`) reads this as a statement about
 the number `g0 x Q` of class vectors modulo the odd primes up to `x` that cover every odd prime
 below `Q` (`CoverCount.lean`): it is positive at `Q = ⌊c y ln y⌋`, `x = y`, and for every `x ≥ y` it
-is at least the product of the odd primes in `(y, x]`.
+is at least the product of the odd primes in `(y, x]`. Used with a smaller set of moduli inside the
+same one (`eventually_prod_le_g0_self`), it gives the count at `x = y` itself: at least the product
+of the odd primes in `((c κ + ε) y, y]`, `κ = 2 C₂ e^{-γ}`.
 
 ```lean
 @eventually_exists_classes_of_mul_lt_one : ∀ {c : ℝ},
@@ -130,6 +132,17 @@ is at least the product of the odd primes in `(y, x]`.
       ∀ᶠ (y : ℕ) in Filter.atTop, ∀ x ≥ y, ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊c * ↑y * Real.log ↑y⌋₊
 eventually_prod_le_g0_six_fifths : ∀ᶠ (y : ℕ) in Filter.atTop,
   ∀ x ≥ y, ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊1.2 * ↑y * Real.log ↑y⌋₊
+@eventually_prod_le_g0_self : ∀ {c ε : ℝ},
+  0 < c →
+    c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1 →
+      0 < ε →
+        ∀ᶠ (y : ℕ) in Filter.atTop,
+          ∏
+              r ∈
+                rowsBelow (y + 1) \
+                  rowsBelow (⌈(c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) + ε) * ↑y⌉₊ + 1),
+              r ≤
+            g0 y ⌊c * ↑y * Real.log ↑y⌋₊
 def GoldbachGaps.CoverCount.g0 : ℕ → ℕ → ℕ :=
 fun x Q => coverCount (rowsBelow (x + 1)) (rowsBelow Q)
 def GoldbachGaps.CoverCount.rowsBelow : ℕ → Finset ℕ :=
