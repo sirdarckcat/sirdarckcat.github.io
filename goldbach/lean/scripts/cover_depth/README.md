@@ -103,7 +103,8 @@ the two that gave 134,839 to 135,511.
 | moduli | largest prime | certified: every odd prime below | `1.349 · x ln x` | ratio |
 |---|---|---|---|---|
 | 89 to 93 | 463 to 491 | 15,907 to 16,981 (research session's covers) | 3,830 to 4,100 | 4.1 |
-| 167 | 997 | 32,971 | 9,290 | 3.5 |
+| 167 | 997 | 32,971 (greedy) | 9,290 | 3.5 |
+| 167 | 997 | 40,111 (research session's tempered vector, `tempered_997_vector.txt`, `coversBelow_40111`) | 9,290 | 4.3 |
 | 429 | 2,999 | 135,511 | 32,390 | 4.2 |
 
     python3 -I greedy.py 23 53 100 200 463 1000 3000 10000 > greedy.txt

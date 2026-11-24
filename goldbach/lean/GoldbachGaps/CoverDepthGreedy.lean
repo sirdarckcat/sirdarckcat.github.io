@@ -1,5 +1,6 @@
 import GoldbachGaps.CoverDepth
 import GoldbachGaps.Cover32971
+import GoldbachGaps.Cover40111
 import GoldbachGaps.Cover135511
 
 /-!
@@ -17,6 +18,9 @@ For comparison: `e^γ/(2 C₂) · x ln x` is `9,300` at `x = 997`, and `0.7 · x
 
 A second vector, on the 429 odd primes up to `2999`, covers every odd prime below `135511`
 (`GoldbachGaps/Cover135511.lean`); there `e^γ/(2 C₂) · x ln x` is `32,400`, a quarter of it.
+
+On the 167 moduli the research session's sampler does better than the greedy rule: its vector
+covers every odd prime below `40111` (`GoldbachGaps/Cover40111.lean`, `coversBelow_40111`).
 -/
 
 namespace GoldbachGaps.CoverDepth
@@ -29,6 +33,12 @@ theorem coversBelow_32971 : CoversBelow (oddPrimesBelow 998) 32971 :=
 
 theorem length_oddPrimesBelow_998 : (oddPrimesBelow 998).length = 167 := by
   decide +kernel
+
+/-- **The 167 odd primes up to `997` cover every odd prime below `40111`** (the research
+session's vector). -/
+theorem coversBelow_40111 : CoversBelow (oddPrimesBelow 998) 40111 :=
+  coversBelow_of_complete_cover (R := 997) (by norm_num) Cover40111.complete_cover.2.1
+    Cover40111.complete_cover.2.2.1
 
 /-- **The 429 odd primes up to `2999` cover every odd prime below `135511`.** -/
 theorem coversBelow_135511 : CoversBelow (oddPrimesBelow 3000) 135511 :=
