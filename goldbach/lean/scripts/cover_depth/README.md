@@ -38,18 +38,18 @@ Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 
 The values for `n = 16, 17, 18` are from a faster search of the uarch session (`desert_fast3.c`, branch
 `ccr-b8c25887-i6tn9f`), not from `depth.c`.
 
-For `n = 19, …, 33` that session's exhaustive searches (`desert_fast5.c`, `cover_ub.c`) give
+For `n = 19, …, 34` that session's exhaustive searches (`desert_fast5.c`, `cover_ub.c`) give
 
-| n | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| D(n) | 907 | 1051 | 1213 | 1279 | 1381 | 1471 | 1567 | 1669 | 1801 | 1933 | 2137 | 2311 | 2521 | 2647 | 2749 |
+| n | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| D(n) | 907 | 1051 | 1213 | 1279 | 1381 | 1471 | 1567 | 1669 | 1801 | 1933 | 2137 | 2311 | 2521 | 2647 | 2749 | 2953 |
 
-`exact_depth_vectors.txt` has one vector attaining each of these except `n = 27` and `28`, taken from
-that session's result files (commit `187753f`) with the reach of each recomputed here.
-`GoldbachGaps/CoverDepthMore.lean`, generated from it by `scripts/gen_coverdepth_more.py`, proves the
-thirteen lower bounds in the kernel (`coversBelow_19` … `coversBelow_26`, `coversBelow_29` …
-`coversBelow_33`). That no vector goes further is the uarch session's computation and is not checked
-here.
+`exact_depth_vectors.txt` has one vector attaining each of these: from that session's result files
+for all but `n = 27` and `28`, which its files do not list and which were found here with its
+`cover_ub.c` (0.3 and 14 seconds). The reach of each vector was recomputed here.
+`GoldbachGaps/CoverDepthMore.lean`, generated from the file by `scripts/gen_coverdepth_more.py`, proves
+the sixteen lower bounds in the kernel (`coversBelow_19` … `coversBelow_34`). That no vector goes
+further is the uarch session's computation and is not checked here.
 
 ## What is proved (`GoldbachGaps/CoverDepth.lean`, `GoldbachGaps/CoverDepthRun.lean`)
 
