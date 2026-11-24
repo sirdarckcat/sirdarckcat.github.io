@@ -5,6 +5,7 @@ import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
+import GoldbachGaps.Record200_g160357
 import GoldbachGaps.Cover15907
 import GoldbachGaps.Cover16381
 import GoldbachGaps.Cover16747
@@ -58,12 +59,20 @@ theorem exists_lt_ten_pow_200_least_summand_157837 :
     ∃ N < 10 ^ 200, IsLeastSummand N 157837 :=
   ⟨Record200_g157837.N, Record200_g157837.N_lt, Record200_g157837.isLeastSummand⟩
 
-/-- Budget game, the standing record of 2026-11-23 12:48 UTC, the first on 89 covering
-moduli (a near-miss of a `Q = 170000` design, vector `q170000_m89_p2c00019_v545`,
-`k = 10814286`): there is an `N` below `10^200` whose least Goldbach summand is `158209`. -/
+/-- Budget game, record of 2026-11-23 12:48 UTC, the first on 89 covering moduli (a near-miss
+of a `Q = 170000` design, vector `q170000_m89_p2c00019_v545`, `k = 10814286`): there is an `N`
+below `10^200` whose least Goldbach summand is `158209`. -/
 theorem exists_lt_ten_pow_200_least_summand_158209 :
     ∃ N < 10 ^ 200, IsLeastSummand N 158209 :=
   ⟨Record200_g158209.N, Record200_g158209.N_lt, Record200_g158209.isLeastSummand⟩
+
+/-- Budget game, the standing record of 2026-11-24 17:11 UTC (a near-miss of a `Q = 170000`
+design on 89 covering moduli, the first 88 odd primes and `491`, vector
+`q170000_m89r491_p0c00524_v232`, `k = 19221795`): there is an `N` below `10^200` whose least
+Goldbach summand is `160357`. -/
+theorem exists_lt_ten_pow_200_least_summand_160357 :
+    ∃ N < 10 ^ 200, IsLeastSummand N 160357 :=
+  ⟨Record200_g160357.N, Record200_g160357.N_lt, Record200_g160357.isLeastSummand⟩
 
 /-- **A bound by divisibility alone.** Some even `N < 10^200` has, for every prime `q < 15907`,
 a divisor `r` of `N - q` with `2 ≤ r ≤ 463` and `r < N - q`; in particular no prime below

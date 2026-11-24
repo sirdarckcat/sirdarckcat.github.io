@@ -122,6 +122,6 @@ the two that gave 134,839 to 135,511.
 ## What it means for the 200-digit search
 
 Nothing changes in the cost model. The depth is the part of a least summand that divisibility
-alone can force; the records at 200 digits (158,209) are about nine times the certified covers
+alone can force; the records at 200 digits (160,357) are about nine times the certified covers
 (16,981), and the difference is luck on what the cover leaves. `D(n)` measures how good a cover
 can be at all, not how to find one below `10^200`.
