@@ -124,3 +124,8 @@ D(35) = 3079 (findD.py 35 2953, 3 threads, 6,226 s; research's forecast before t
    n=35: a cover of every odd prime below 3067 (2792437784 nodes, 1033.4 s); its least unstruck prime 3079
    n=35: NO COVER below 3083 (8973037043 nodes, 3476.4 s)
    FINDD n=35 D=3079 (attained by the vector; no vector strikes every odd prime below 3083) seconds=6225.7 vector: 3:2 5:2 7:3 11:2 13:6 17:6 19:13 23:15 29:20 31:27 37:9 41:7 43:9 47:45 53:39 59:18 61:26 67:32 71:37 73:8 79:24 83:69 89:8 97:12 101:29 103:43 107:56 109:39 113:92 127:95 131:98 137:88 139:25 149:122 151:98
+
+Floor at Y = 170,000, j = 10 (FIXORDER=1, 1 thread):
+   M=89 Y=170000 FLOOR depth 10 (the first j moduli): every vector leaves at least 777 of the 15496 odd primes below 170000 unstruck; nodes=726699931 (cut by f: 666744667, ARGM: 467347593; 1155 prefixes) seconds=12243.6
+   So every vector on the 89 moduli leaves >= 401 / 644 / 777 of the 15,496 odd primes below 170,000 unstruck (j = 6 / 8 / 10); the
+   best cover known (tempering) leaves 1,248.
