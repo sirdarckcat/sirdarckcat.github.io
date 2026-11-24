@@ -1357,14 +1357,14 @@ gives the same answer within 1%):
 Within 1 to 5% at every point, where the first-moment count is off by a
 factor 1.5 to 1.9. The end of complete covers by the same recursion:
 
-| x | 73 | 107 | 127 | 149 | 199 | 251 | 293 | 349 | 397 | 463 | 599 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| moduli | 20 | 27 | 30 | 34 | 45 | 53 | 61 | 69 | 77 | 89 | 108 |
-| end by the recursion | 1,123 | 1,997 | 2,389 | 3,001 | 4,969 | 6,607 | 8,467 | 10,391 | 12,577 | 15,973 | 22,109 |
-| best cover known | 1,051 | 1,801 | 2,311 | 2,953 | 4,909 | 6,451 | 8,311 | 10,159 | 12,163 | 15,907 | 21,067 |
-| recursion / known | 1.07 | 1.11 | 1.03 | 1.02 | 1.01 | 1.02 | 1.02 | 1.02 | 1.03 | 1.00 | 1.05 |
+| x | 73 | 107 | 109 | 127 | 149 | 199 | 251 | 293 | 349 | 397 | 463 | 599 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| moduli | 20 | 27 | 28 | 30 | 34 | 45 | 53 | 61 | 69 | 77 | 89 | 108 |
+| end by the recursion | 1,123 | 1,997 | 2,113 | 2,389 | 3,001 | 4,969 | 6,607 | 8,467 | 10,391 | 12,577 | 15,973 | 22,109 |
+| best cover known | 1,051 | 1,801 | 1,933 | 2,311 | 2,953 | 4,909 | 6,451 | 8,311 | 10,159 | 12,163 | 15,907 | 21,067 |
+| recursion / known | 1.07 | 1.11 | 1.09 | 1.03 | 1.02 | 1.01 | 1.02 | 1.02 | 1.02 | 1.03 | 1.00 | 1.05 |
 
-(The first two are exact values of D; 2,311, 2,953 and 6,451 are walls,
+(The first three are exact values of D; 2,311, 2,953 and 6,451 are walls,
 where the Opus session's tempering stopped one row short at the next target
 in runs four times longer; from 349 on the best cover is limited by run
 length.) And beyond what any search has reached:
@@ -1376,8 +1376,9 @@ length.) And beyond what any search has reached:
 | / (x·ln² x) | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 |
 | best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 |
 
-So the recursion gives the luck-free depth within a few percent wherever it
-can be checked, from 30 to 108 moduli, and at the campaign's 89 moduli it
+So the recursion gives the luck-free depth within 5% wherever it can be
+checked from 30 to 108 moduli (and 7 to 11% too high below that, where D(n)
+moves in steps of 5 to 10% from one n to the next), and at the campaign's 89 moduli it
 gives 15,973 where the measurement says about 16,000 and tempering found
 15,907. The constant of the law is therefore not a number but a slowly
 moving quantity: by the recursion the loss falls slowly against
