@@ -1359,11 +1359,27 @@ So the recursion gives the luck-free depth within a few percent wherever it
 can be checked, from 30 to 108 moduli, and at the campaign's 89 moduli it
 gives 15,973 where the measurement says about 16,000 and tempering found
 15,907. The constant of the law is therefore not a number but a slowly
-moving quantity. The correction to Poisson classes is of
-order 1/ln x, so for x → ∞ the law tends to the first-moment count and
-D(n)/(r·ln² r) to e^γ/(2·C₂) = 1.349, the constant of the theorem; but it
-gets there like 1/ln x, and for every size within reach, 20 to 10,000
-moduli, D(n) lies between 0.84 and 1.14 times r·ln² r.
+moving quantity: by the recursion the loss falls slowly against
+π(Q)·ln Q/ln² x as x grows (0.93 at 89 moduli, 0.86 to 0.88 at 1,228), and
+D(n)/(r·ln² r) rises from 0.84 at 20 moduli to about 1.1 at 10,000. Where
+that ends is not settled here. In the closed formula the correction to
+Poisson classes is of order 1/ln x, which would take the law to the
+first-moment count and D(n)/(r·ln² r) to e^γ/(2·C₂) = 1.349, the constant of
+the theorem; but the closed formula stands for the full Hardy–Littlewood sum
+only as far as it has been compared with it (Q up to 300,000, where the two
+give 0.86 and 0.88), and for the moduli in the middle the full sum may keep
+a correction of order one. So the limit of D(n)/(r·ln² r), if there is one,
+lies between the 1.1 seen at the largest sizes and 1.349.
+
+A caution on the two largest sizes in the tables. The runs at 2,999 and
+9,973 moduli are short (20,000 and 12,000 sweeps), and the one at
+Q = 300,000 was not in equilibrium: its mean row counts at the middle
+temperatures were still falling by 1 to 2% between the first and the last
+quarter, which makes the measured loss too large. The recursion says by how
+much: a long run should give 3,330 to 3,414 there, not 3,582 (and about
+1,545 instead of 1,589 at 2,999 moduli and Q = 100,000). That is a
+prediction, made before the long runs (which the Lean session's machine is
+making) are in.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1438,11 +1454,11 @@ and prove Goldbach's conjecture for large N, by the implication above.
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
 strike every odd prime below Q is exp(θ(x) − c·π(Q)·ln Q/ln² x), where c is
 given by the price recursion above: 0.91 ± 0.02 for x from 463 to 9,973 (the
-same as 1.00·Q/ln² x there), tending to 2·C₂·e^(−γ) = 0.741 as x → ∞.
-Consequently D(n) = (e^γ/(2·C₂) + o(1))·r_n·ln² r_n, with the ratio between
-0.84 and 1.14 for 20 to 10,000 moduli, and the least Goldbach summand that
-divisibility by the primes up to ln N alone can force is asymptotic to
-1.349·ln N·(ln ln N)².
+same as 1.00·Q/ln² x there), and between that and 2·C₂·e^(−γ) = 0.741 for
+larger x. Consequently D(n) = κ_n·r_n·ln² r_n with κ_n between 0.84 and 1.14
+for 20 to 10,000 moduli and at most e^γ/(2·C₂) = 1.349 in the limit, and the
+least Goldbach summand that divisibility by the primes up to ln N alone can
+force is of the exact order ln N·(ln ln N)².
 
 ## Ladder
 
