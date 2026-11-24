@@ -270,7 +270,12 @@ than about two days of the present fleet left, family A is ahead by 100 to
 200, since then the record is decided below Q. As a rule that does not depend
 on the fleet's size: family B while the expected number of design hits in the
 time that remains is above about 0.5 (B − A is +970 at 2.25 expected hits,
-+450 at 1.1, +50 at 0.55, −170 at 0.27), family A below that.
++450 at 1.1, +50 at 0.55, −170 at 0.27), family A below that. Those figures
+are for the first 89 primes. On the 491 set, whose family B has half a row
+less below 170,000 than its family A, B stays ahead until about 0.35 expected
+design hits remain (+270 with two days of the fleet left, +46 with 1.25, −24
+with one day), and family A's gain below that is under 25: there the cards
+keep family B to the end.
 
 The mechanism was then tested directly where successes are cheap
 (`brainstorm/ab_rows_above.py`, `ab_rows_above.txt`): at Q = 60,000, two
