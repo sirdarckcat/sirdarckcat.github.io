@@ -9,10 +9,11 @@ def primes(lim):
 P = primes(20000)
 ok = True
 for line in sys.stdin:
-    m = re.search(r"n=(\d+) .*D=(\d+).*vector:(.*)", line)
-    if not m: continue
+    m = re.search(r"\bn=(\d+) r=\d+ (?:COUNT )?D=(\d+)\b", line)            # the first D= of the line (COUNT lines also carry "above D=")
+    v = re.search(r"vector:(.*)", line)
+    if not m or not v: continue
     n, D = int(m.group(1)), int(m.group(2))
-    vec = [tuple(map(int, t.split(":"))) for t in m.group(3).split()]
+    vec = [tuple(map(int, t.split(":"))) for t in v.group(1).split()]
     q = next(p for p in P if all(p % r != c for r, c in vec))
     good = q == D and KNOWN.get(n, D) == D and len(vec) == n
     print(f"  n={n}: D={D} (published {KNOWN.get(n, '?')}), the vector's least unstruck prime {q}: {'ok' if good else 'WRONG'}")
