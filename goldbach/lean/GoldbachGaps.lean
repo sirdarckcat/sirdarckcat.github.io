@@ -42,6 +42,8 @@ import GoldbachGaps.Cover40111
 import GoldbachGaps.Cover135511
 import GoldbachGaps.Cover614101
 import GoldbachGaps.CoverDepthGreedy
+import GoldbachGaps.CoverCount
+import GoldbachGaps.CoverCountRun
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -248,6 +250,22 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`coversBelow_1471`, `coversBelow_4909`, `coversBelow_8311`). The proved bound `1.349 x ln x` gives `9,290`
                and `32,390` there; the greedy reach follows `0.6` to `0.7` times `x ln² x` in
                everything computed.
+* `CoverCount`, `CoverCountRun` – the number of complete covers: `coverCount mods rows`, the
+               class vectors on `mods` (one residue class for each modulus) that cover every
+               row, and `g0 x Q`, the research session's count for the odd primes up to `x`
+               against the odd primes below `Q`. The exact identity behind the count is
+               inclusion–exclusion over the sets `T` of rows left uncovered:
+               `coverCount / ∏ r = ∑ (-1)^|T| ∏ (1 - ν_r(T)/r)`
+               (`coverCount_div_prod_eq_sum`, `g0_div_prod_eq_sum`). The count is positive
+               exactly when a cover exists, so the depth is where it reaches zero
+               (`isDepth_iff_coverCount`, `isDepth_iff_g0`; `g0_29_181`: positive at `181`,
+               zero at `182`, for nine moduli). A cover on fewer moduli gives a lower bound
+               (`coverCount_mul_prod_le`, `prod_le_g0`): if the odd primes up to `x'` cover
+               the odd primes below `Q`, then `ln g0(x, Q) ≥ θ(x) - θ(x')` for all `x ≥ x'`;
+               stated for the certified covers (`prod_le_g0_15907` … `prod_le_g0_614101`).
+               The measured law `ln g0 = θ(x) - Q/ln² x` is not proved.
+               `scripts/cover_count`: the constant `K` of the research session's heuristic,
+               bracketed by exact rational arithmetic.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
