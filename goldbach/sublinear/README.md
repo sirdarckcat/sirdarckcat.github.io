@@ -1063,6 +1063,78 @@ Goldbach's conjecture. So the proven window is r·ln r ≪ D(n) ≪ r^(4 + ε),
 and the computed values (0.7 to 0.9 times r·ln² r for every n from 8 to 167
 moduli) sit near its lower end.
 
+**A floor under every cover** (`cover_floor.c`, `cover_floor.py`,
+`cover_floor_q170000.txt`; measurements, not proofs). The searches say what
+can be found; this says what exists. Fix the moduli and a target Q, let k(a)
+be the number of odd primes below Q that the class vector a leaves, and
+Z(β) = Σ e^(−β·k(a)) over all ∏ r vectors. The best vector alone contributes
+e^(−β·k_min), so for every β > 0
+
+    k_min ≥ −ln Z(β)/β.
+
+Z(0) = ∏ r exactly, and ln Z(β) is measured by parallel tempering at all
+temperatures: the change between neighbouring temperatures comes from their
+two histograms (Bennett's acceptance ratio), so the floor at β uses nothing
+colder than β, and no search has to succeed for it. It is as good as the
+equilibrium at β, and the test of that is to make the same run from random
+vectors and from the best vector known and to see where the two agree.
+
+Checks against exact answers:
+
+- Seven moduli, all 4.8 million vectors enumerated: the mean of k, the
+  entropy and the floor agree with the exact values to 0.01 at every
+  temperature, for plain rows and for weighted rows.
+- D(n). A complete cover forces Z(β) ≥ 1. With the target scanned upward,
+  complete covers are sampled up to the proven D(20) = 1,051 and
+  D(21) = 1,213 and not beyond. The same scan gave 1,279 and 1,381 for
+  n = 22 and 23 before this session had read the exhaustive results, which
+  are 1,279 and 1,381; at n = 24 it gives 1,471.
+- Counting complete covers. A vector with k = 0 has weight 1 at every
+  temperature, so the complete covers sampled at any temperature are uniform
+  over all complete covers at that target, and the share of them whose least
+  unstruck prime is at least y is g0(y)/g0(Q), g0 being the number of
+  complete covers. A chain of five runs at n = 20 follows ln g0 from 23.5 at
+  700 through 11.6 (860), 6.5 (960) and 5.0 (1,020) to 0 ± 0.5 at 1,051,
+  where the exhaustive count is one vector.
+- A limit. Where complete covers are very few, runs of this length do not
+  sample them in proportion: at n = 24, just below D(24), Z comes out thirty
+  times too small although complete covers were sampled. The cold end of a
+  run from random vectors is a search like any other.
+
+At the campaign's size, the 89 smallest odd primes and Q = 170,000 (15,496
+rows; random nonzero classes leave 1,853, the best cover known 1,248), two
+runs of a million sweeps, one from random covers and one from that cover:
+
+| β | 0.59 | 0.83 | 0.95 | 1.07 | 1.19 | 1.31 | 1.45 | 1.65 | 2.05 | 2.45 | 3.5 | 5.0 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| mean rows, random start | 1,557.6 | 1,461.2 | 1,420.3 | 1,386.0 | 1,357.5 | 1,334.0 | 1,312.6 | 1,291.9 | 1,270.3 | 1,261.9 | 1,254.8 | 1,250.4 |
+| mean rows, start at the best cover | 1,557.8 | 1,461.2 | 1,420.2 | 1,385.3 | 1,355.5 | 1,330.4 | 1,307.3 | 1,285.9 | 1,266.2 | 1,256.8 | 1,249.7 | 1,248.3 |
+| ln(number of covers that matter) | 358 | 290 | 253 | 218 | 184 | 153 | 121 | 88 | 52 | 31 | 12 | 6 |
+| floor, start at the best cover | 951 | 1,112 | 1,154 | 1,182 | 1,201 | 1,214 | 1,224 | 1,232 | 1,241 | 1,244 | 1,246 | 1,247 |
+| floor, random start | 951 | 1,112 | 1,154 | 1,182 | 1,201 | 1,214 | 1,225 | 1,234 | 1,243 | 1,247 | 1,250 | 1,251 |
+
+- Up to β = 1.07 the two runs agree within a row in the mean and within 0.1
+  in the floor, and up to β = 1.31 within 0.4 in the floor (in runs ten
+  times shorter they still differed there by 14 rows in the mean and by 3 in
+  the floor). So no cover on these moduli leaves fewer than about 1,214
+  rows, 34 fewer than the best known, unless the equilibrium at that
+  temperature is dominated by covers that neither start reaches in a million
+  sweeps. In the rate of the search that is a factor 2.3 at the very most.
+- Colder than that the run from random covers is out of equilibrium (its
+  floor passes 1,248, which exists), and the other run is the one to read:
+  1,241 at β = 2.05, 1,244 at 2.45, 1,247 at the cold end. There it is not a
+  bound in the strict sense, because a run started at the best cover known
+  cannot report a better one that it does not find, and after a million
+  sweeps it has drifted a little above equilibrium itself (see the next
+  point). What it shows is that the covers found sit where the number of
+  covers runs out.
+- The bottom, from the run started at the best cover: e^4.0 covers with
+  1,248 rows (e^5.6 in the run ten times shorter, which had drifted less;
+  186 different ones have been found, e^5.2), fifty times as many with
+  1,249, then a factor 22 falling to 11 over the next nine rows. One row lower
+  the count is of order one, so the best cover on these moduli has 1,247 or
+  1,248 rows.
+
 ## Ladder
 
 | rung | what | who | state |
