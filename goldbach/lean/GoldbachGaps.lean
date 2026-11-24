@@ -42,6 +42,7 @@ import GoldbachGaps.Cover32971
 import GoldbachGaps.Cover40111
 import GoldbachGaps.Cover40459
 import GoldbachGaps.Cover41047
+import GoldbachGaps.Cover41659
 import GoldbachGaps.Cover135511
 import GoldbachGaps.Cover614101
 import GoldbachGaps.CoverDepthGreedy
@@ -242,8 +243,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`coversBelow_15907` … `coversBelow_16981`). `scripts/cover_depth`: the
                search in C, the table to `n = 15`.
                `CoverDepthMore` (generated): lower bounds from explicit vectors for
-               `19, …, 34` moduli, `907, 1051, 1213, 1279, 1381, 1471, 1567, 1669, 1801, 1933,
-               2137, 2311, 2521, 2647, 2749, 2953` (`coversBelow_19` … `coversBelow_34`), the
+               `19, …, 35` moduli, `907, 1051, 1213, 1279, 1381, 1471, 1567, 1669, 1801, 1933,
+               2137, 2311, 2521, 2647, 2749, 2953, 3079` (`coversBelow_19` … `coversBelow_35`), the
                values the uarch session's exhaustive searches found; that no vector goes
                further is not checked here.
 * `Cover32971`, `Cover40111`, `Cover135511`, `CoverDepthGreedy` – three generated
@@ -274,10 +275,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`coverCount_mul_prod_le`, `prod_le_g0`): if the odd primes up to `x'` cover
                the odd primes below `Q`, then `ln g0(x, Q) ≥ θ(x) - θ(x')` for all `x ≥ x'`;
                stated for the certified covers (`prod_le_g0_15907` … `prod_le_g0_614101`).
-               `Cover40459`, `Cover41047` (generated) and `coversBelow_40459`,
-               `coversBelow_41047`: two better covers on the 167 odd primes up to `997`,
-               complete to `40459` and to `41047` (found by another session with the research
-               session's sampler and by its own tempering); `41047` is the best known.
+               `Cover40459`, `Cover41047`, `Cover41659` (generated) and `coversBelow_40459`,
+               `coversBelow_41047`, `coversBelow_41659`: three better covers on the 167 odd
+               primes up to `997`, complete to `40459`, `41047` and `41659` (found by another
+               session with the research session's sampler and by its own tempering); `41659`
+               is the best known.
                The measured law `ln g0 = θ(x) - Q/ln² x` is not proved.
                `scripts/cover_count`: the constant `K` of the research session's heuristic,
                bracketed by exact rational arithmetic.
