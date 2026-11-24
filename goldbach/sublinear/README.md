@@ -5,8 +5,23 @@ this session (experiments, number theory) and the Lean session (proofs). This
 file is the running record of what has been tried, what is proved, what is
 only measured, and what is open.
 
-**Where it stands (23 November, evening).** No method was found, and the
-reason is now understood and quantified.
+**Where it stands (24 November, evening).** No method was found, and the
+reason is now understood and quantified. Two results of the 24th sharpen
+it, both in "A floor under every cover" and the section after it:
+
+- The covers in use are the best there are. A measurement that needs no
+  search to succeed (the partition function over all class vectors, run from
+  a random start and from the best cover and compared) puts a floor of 1,214
+  rows under every cover on the 89 moduli at Q = 170,000 where the two starts
+  agree, and 1,247 or 1,248 at the bottom; the best cover found has 1,248.
+  At the 10% target no cover comes within 80 rows of what a 1% chance would
+  need. So better covers are not a way to 10%.
+- A law. The number of class vectors on the odd primes up to x that strike
+  every odd prime below Q is exp(θ(x) − c·Q/ln² x) with c = 1.00 ± 0.03,
+  measured from 45 to 1,228 moduli and explained, up to the value of c, by a
+  short calculation. It gives D(n) = r·ln² r/c: the luck-free depth is known
+  to a few percent at every size, and at 200 digits it ends near 16,300 on 89
+  moduli, where 15,907 has been found.
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -35,7 +50,8 @@ reason is now understood and quantified.
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
   1,381, 1,471, 1,567, 1,669, 1,801 for n = 1 to 27 (`desert.c`; two programs to n = 15, the uarch
-  session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem.
+  session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
+  like r·ln² r, by the law above.
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
