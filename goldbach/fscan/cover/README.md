@@ -407,10 +407,33 @@ better family a finite list: 92,160 frames on the six smallest moduli.
   1,231.5 and 1,233.2, the two frames with the fewest rows alive 1,235.0 to
   1,236.6, and 26 frames ranked 1,201 to 1,612 by rows alive 1,240.6 to
   1,255.1.
+- Which families carry the weight, from one unrestricted run with every
+  sample counted by its frame (`COVER_FLOOR_FAMILIES` of
+  `../../sublinear/cover_floor.c`, read with `cover_floor_families.py`;
+  400,000 sweeps to β = 2.0): at β = 2.0 eight frames are visited and five
+  hold 99.7% of the samples, all with 3:2 5:3 7:5 — 11:7 13:8 17:5 (share
+  0.38), 11:7 13:5 17:4 (0.23), 11:8 13:5 17:4 (0.16), the runner-up 11:4 13:6
+  17:4 (0.11) and family B 11:6 13:5 17:4 (0.11), with family floors from
+  1,306.2 to 1,306.8. Family B is one of five near-equal families at that
+  temperature, and three of them had never been searched on their own.
+- The bottom of a family is a measurable number: 300,000 sweeps inside a
+  frame end at the same cover for three seeds (two of them run by the
+  contractor session). 11:8 13:5 17:4 ends at 1,309.94 weighted rows (1,254
+  rows below 170,000, against family B's 1,245: fewer rows above 170,000, more
+  below), 11:7 13:8 17:5 at 1,313.20 (1,259 below 170,000); family B stands at
+  1,308.67. By `rank_covers.py` at the record of 24 November (8.2 days, 52
+  million members a second, 160,357 in hand) the best cover of the first is
+  worth 176,055 against 176,341 for family B's. The share of a family at
+  β = 2 does not tell its bottom: the family with the largest share is 4.5
+  weighted rows worse than family B.
+- The unrestricted run from random vectors of `../../sublinear/README.md`
+  (a million sweeps) ended at 1,309.36 in a family that is none of these
+  three.
 - The scan: the contractor session is scoring the frames ranked 1 to 1,200
-  (from 20:11 UTC on 24 November), every frame within family B's own range
-  (1,232.5) then gets the tempering inside it, and anything that ends below
-  1,308.67 is a candidate. Result to follow here.
+  (from 20:40 UTC on 24 November); every frame scoring 1,233.5 or less gets
+  20,000 sweeps inside it, every one that then reaches 1,312.5 or less gets
+  300,000, and anything that ends below 1,308.67 is a candidate. Result to
+  follow here.
 
 **What each design level buys** (`brainstorm/design_menu.py`,
 `design_menu.txt`). The same model gives, for the best cover known at each
