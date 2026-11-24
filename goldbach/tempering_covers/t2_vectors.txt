@@ -1,0 +1,6 @@
+# odd primes up to 127: every odd prime below 2,311 lies in the class of some modulus (first odd prime in no class: 2311); found by ptcover_fast at Q = 2300, seed 4, 80000 sweeps; rechecked by reach.py
+3:2 5:3 7:5 11:10 13:11 17:6 19:3 23:21 29:12 31:7 37:31 41:14 43:27 47:24 53:19 59:55 61:56 67:59 71:9 73:66 79:78 83:82 89:10 97:30 101:80 103:57 107:97 109:40 113:98 127:106
+# odd primes up to 149: every odd prime below 2,953 lies in the class of some modulus (first odd prime in no class: 2953); found by ptcover_fast at Q = 2921, seed 2, 80000 sweeps; rechecked by reach.py
+3:2 5:2 7:2 11:8 13:3 17:8 19:13 23:20 29:20 31:23 37:32 41:26 43:31 47:40 53:21 59:2 61:10 67:19 71:69 73:30 79:15 83:37 89:50 97:37 101:69 103:73 107:58 109:90 113:109 127:97 131:107 137:135 139:72 149:88
+# odd primes up to 251: every odd prime below 6,421 lies in the class of some modulus (first odd prime in no class: 6421); found by ptcover_fast at Q = 6400, seed 1, 80000 sweeps; rechecked by reach.py
+3:2 5:3 7:3 11:6 13:8 17:11 19:14 23:14 29:10 31:15 37:8 41:19 43:30 47:12 53:33 59:40 61:11 67:9 71:34 73:11 79:63 83:75 89:83 97:62 101:9 103:10 107:67 109:10 113:73 127:7 131:108 137:75 139:30 149:20 151:38 157:83 163:118 167:158 173:111 179:155 181:30 191:39 193:22 197:144 199:181 211:159 223:86 227:184 229:190 233:230 239:153 241:37 251:166
