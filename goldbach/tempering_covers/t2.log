@@ -191,3 +191,8 @@ x=797: largest Q reached 30916, smallest Q missed by all seeds 31009
   x=997 Q=41000 seed=2 sweeps=160000 start=mod_997_start40111.txt: best k 0  (1134 s)
   x=997 Q=41000 seed=4 sweeps=160000 start=mod_997_start40111.txt: best k 0  (1148 s)
   x=997 Q=41000 seed=3 sweeps=160000 start=mod_997_start40111.txt: best k 2  (1152 s)
+  x=997 Q=43050 seed=1 sweeps=160000 start=mod_997_start40111.txt: best k 5  (774 s)
+  x=997 Q=43050 seed=3 sweeps=160000 start=mod_997_start40111.txt: best k 5  (784 s)
+  x=997 Q=43050 seed=2 sweeps=160000 start=mod_997_start40111.txt: best k 5  (785 s)
+  x=997 Q=43050 seed=4 sweeps=160000 start=mod_997_start40111.txt: best k 6  (789 s)
+container restarted again at about 19:55 UTC; driver restarted 19:56:14 (resumes from t2_runs.jsonl)
