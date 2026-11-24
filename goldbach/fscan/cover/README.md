@@ -407,15 +407,21 @@ better family a finite list: 92,160 frames on the six smallest moduli.
   1,231.5 and 1,233.2, the two frames with the fewest rows alive 1,235.0 to
   1,236.6, and 26 frames ranked 1,201 to 1,612 by rows alive 1,240.6 to
   1,255.1.
-- Which families carry the weight, from one unrestricted run with every
-  sample counted by its frame (`COVER_FLOOR_FAMILIES` of
-  `../../sublinear/cover_floor.c`, read with `cover_floor_families.py`;
-  400,000 sweeps to β = 2.0): at β = 2.0 eight frames are visited and five
-  hold 99.7% of the samples, all with 3:2 5:3 7:5 — 11:7 13:8 17:5 (share
-  0.38), 11:7 13:5 17:4 (0.23), 11:8 13:5 17:4 (0.16), the runner-up 11:4 13:6
-  17:4 (0.11) and family B 11:6 13:5 17:4 (0.11), with family floors from
-  1,306.2 to 1,306.8. Family B is one of five near-equal families at that
-  temperature, and three of them had never been searched on their own.
+- Which families an unrestricted run ends in, with every sample counted by
+  its frame (`COVER_FLOOR_FAMILIES` of `../../sublinear/cover_floor.c`, read
+  with `cover_floor_families.py`; three runs of 400,000 to 500,000 sweeps,
+  to β = 2.0 or 2.45). At the cold end each run holds five to ten frames, all
+  with 3:2 5:3 7:5, and which ones depends on the seed. Run 1: 11:7 13:8 17:5
+  (share 0.38 at β = 2.0), 11:7 13:5 17:4 (0.23), 11:8 13:5 17:4 (0.16), the
+  runner-up 11:4 13:6 17:4 (0.11) and family B 11:6 13:5 17:4 (0.11). Run 2:
+  11:7 13:8 17:5 (0.48 at β = 2.45), 11:8 13:9 17:4 (0.28), 11:10 13:5 17:4
+  (0.13), 11:8 13:5 17:4 (0.09); family B never visited at β ≥ 2. Run 3:
+  11:8 13:5 17:4 (0.86), 11:7 13:8 17:5 (0.13); family B never visited. So
+  the shares of one run are not equilibrium shares: at these lengths the cold
+  replicas keep the families they fell into, and family B is found by some
+  runs only, as the random-start searches had shown one time in four. What
+  the three runs do give is the list of families that random starts reach,
+  and three of the first five had never been searched on their own.
 - The bottom of a family is a measurable number: 300,000 sweeps inside a
   frame end at the same cover for three seeds (two of them run by the
   contractor session). 11:8 13:5 17:4 ends at 1,309.94 weighted rows (1,254
@@ -425,9 +431,9 @@ better family a finite list: 92,160 frames on the six smallest moduli.
   the other 83 moduli, ends at exactly 1,308.67 with 1,245 rows below 170,000
   in 17 minutes on one core. By `rank_covers.py` at the record of 24 November (8.2 days, 52
   million members a second, 160,357 in hand) the best cover of the first is
-  worth 176,055 against 176,341 for family B's. The share of a family at
-  β = 2 does not tell its bottom: the family with the largest share is 4.5
-  weighted rows worse than family B.
+  worth 176,055 against 176,341 for family B's. A family's share in a run
+  does not tell its bottom: the family most visited over the three runs is
+  4.5 weighted rows worse than family B.
 - The unrestricted run from random vectors of `../../sublinear/README.md`
   (a million sweeps) ended at 1,309.36 in a family that is none of these
   three. Twenty more frames given 20,000 sweeps each (the twelve that leave
