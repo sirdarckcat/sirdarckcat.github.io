@@ -20,6 +20,9 @@
 // replica starts from; without it every replica starts from a random cover.  Every class of every modulus is
 // allowed, zero included, so the states are all residue vectors and their number is the product of the moduli.
 //
+// Frame: with COVER_FLOOR_FRAME="3:2 5:3 7:5" the listed moduli keep the listed classes for the whole run in every
+// replica (a family of covers), and ln(states) counts the other moduli only, so that Z, the floor and the count of
+// complete covers are those of the family.
 // Reach: with COVER_FLOOR_REACH=Y (plain rows only) every sampled cover that leaves no row below Q is followed up to
 // Y: its reach is the least odd prime in none of its classes.  A cover with k = 0 has the same weight at every
 // temperature, so these samples are uniform over the complete covers at Q, and the fraction with reach >= y is the
@@ -95,9 +98,19 @@ int main(int argc, char **argv) {
     // rows by class, per modulus
     uint16_t **off = malloc(nmod * sizeof(*off)), **mem = malloc(nmod * sizeof(*mem));
     double lnstates = 0; int maxmod = 0;
+    int *frame = malloc(nmod * sizeof(int)), nframe = 0; for (int m = 0; m < nmod; m++) frame[m] = -1;       // frame[m] >= 0: modulus m is frozen in that class
+    if (getenv("COVER_FLOOR_FRAME")) {
+        char *t = strdup(getenv("COVER_FLOOR_FRAME")); int r, a;
+        for (char *w = strtok(t, " ,"); w; w = strtok(NULL, " ,")) if (sscanf(w, "%d:%d", &r, &a) == 2) {
+            int found = 0; for (int m = 0; m < nmod; m++) if (mod[m] == r && a >= 0 && a < r) { frame[m] = a; found = 1; }
+            if (!found) { fprintf(stderr, "COVER_FLOOR_FRAME: %s is not a class of one of the moduli\n", w); return 1; }
+        }
+        free(t); for (int m = 0; m < nmod; m++) nframe += frame[m] >= 0;
+    }
     for (int m = 0; m < nmod; m++) {
         int s = mod[m]; if (s < 3 || s > 65521) { fprintf(stderr, "modulus %d out of range\n", s); return 1; }
-        lnstates += log((double)s); if (s > maxmod) maxmod = s;
+        if (frame[m] < 0) lnstates += log((double)s);
+        if (s > maxmod) maxmod = s;
         off[m] = calloc(s + 1, sizeof(uint16_t)); mem[m] = malloc(nrows * sizeof(uint16_t));
         int *c = calloc(s + 1, sizeof(int));
         for (int i = 0; i < nrows; i++) c[row[i] % s + 1]++;
@@ -123,7 +136,7 @@ int main(int argc, char **argv) {
         R[i].a = malloc(nmod * sizeof(uint16_t)); R[i].cnt = calloc(nrows, 1);
         for (int j = 0; j < 4; j++) R[i].rng.s[j] = splitmix(&sm);
         for (int m = 0; m < nmod; m++) {
-            int s = mod[m], a = start ? start[m] : (int)(rnd(&R[i].rng) % (uint64_t)s); R[i].a[m] = (uint16_t)a;
+            int s = mod[m], a = frame[m] >= 0 ? frame[m] : start ? start[m] : (int)(rnd(&R[i].rng) % (uint64_t)s); R[i].a[m] = (uint16_t)a;
             for (int j = off[m][a]; j < off[m][a + 1]; j++) R[i].cnt[mem[m][j]]++;
         }
         int E = 0; for (int r = 0; r < nrows; r++) if (R[i].cnt[r] == 0) E += wt[r]; R[i].E = E; at[i] = i;
@@ -144,6 +157,7 @@ int main(int argc, char **argv) {
         for (int i = 0; i < nb; i++) {
             rep_t *r = &R[at[i]]; double b = beta[i] / unit; long la = 0;
             for (int m = 0; m < nmod; m++) {
+                if (frame[m] >= 0) continue;
                 int s = mod[m], a = r->a[m], a2 = (a + 1 + (int)(rnd(&r->rng) % (uint64_t)(s - 1))) % s;
                 const uint16_t *o = off[m], *me = mem[m]; int lose = 0, gain = 0;
                 if (weighted) {
@@ -182,7 +196,7 @@ int main(int argc, char **argv) {
         if ((sw + 1) % 5000 == 0) fprintf(stderr, "sweep %ld (%.0f s): k at the coldest beta %.2f, lowest seen there %.2f\n", sw + 1, omp_get_wtime() - t0, (double)R[at[nb - 1]].E / unit, (double)minE[nb - 1] / unit);
     }
     FILE *f = fopen(argv[6], "w");
-    fprintf(f, "# Q=%d rows=%d moduli=%d largest=%d ln(states)=%.6f betas=%d sweeps=%ld burn=%ld seed=%llu start=%s weighted=%d\n", Q, nrows, nmod, maxmod, lnstates, nb, sweeps, burn, (unsigned long long)seed, start ? "given" : "random", weighted);
+    fprintf(f, "# Q=%d rows=%d moduli=%d largest=%d ln(states)=%.6f betas=%d sweeps=%ld burn=%ld seed=%llu start=%s weighted=%d frozen=%d\n", Q, nrows, nmod, maxmod, lnstates, nb, sweeps, burn, (unsigned long long)seed, start ? "given" : "random", weighted, nframe);
     for (int i = 0; i < nb; i++) {
         long n = en[i]; long *h = hist + (size_t)i * nbins;
         double mean = n ? esum[i] / n / unit : 0, sd = n ? sqrt(fmax(0, esum2[i] / n - (esum[i] / n) * (esum[i] / n))) / unit : 0;

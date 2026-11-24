@@ -15,3 +15,4 @@ cover/covergen
 cover/specs_q*_*.json
 cover/ptcover_w
 cover/ptcover_wfast
+cover/cover_floor_frame
