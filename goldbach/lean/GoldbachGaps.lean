@@ -40,6 +40,7 @@ import GoldbachGaps.Cover4909
 import GoldbachGaps.Cover8311
 import GoldbachGaps.Cover32971
 import GoldbachGaps.Cover40111
+import GoldbachGaps.Cover40459
 import GoldbachGaps.Cover135511
 import GoldbachGaps.Cover614101
 import GoldbachGaps.CoverDepthGreedy
@@ -272,6 +273,9 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`coverCount_mul_prod_le`, `prod_le_g0`): if the odd primes up to `x'` cover
                the odd primes below `Q`, then `ln g0(x, Q) ≥ θ(x) - θ(x')` for all `x ≥ x'`;
                stated for the certified covers (`prod_le_g0_15907` … `prod_le_g0_614101`).
+               `Cover40459` (generated) and `coversBelow_40459`: the best cover known on the
+               167 odd primes up to `997`, complete to `40459` (found by another session with
+               the research session's sampler).
                The measured law `ln g0 = θ(x) - Q/ln² x` is not proved.
                `scripts/cover_count`: the constant `K` of the research session's heuristic,
                bracketed by exact rational arithmetic.
