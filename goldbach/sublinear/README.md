@@ -891,7 +891,12 @@ each set of moduli, exact for the first two and by tempering for the others
 
 (The last entry comes from shorter runs relative to its size and is probably
 not the end.) Against x·ln x the reach keeps growing; against x·ln² x it is
-between 0.7 and 0.9 throughout. A mean-field model of the
+between 0.7 and 0.9 throughout. Four of these sizes are theorems checked by
+the Lean kernel from the classes alone (`scripts/cover_depth/README.md` on
+the Lean branch, commits 68d90e6 to 8940e8c): 15,907 to 16,981 on 89 to 93
+moduli, 32,971 (greedy) and 40,111 (the vector above) on the 167 moduli up to
+997, and 135,511 on the 429 moduli up to 2,999 (a greedy vector with ties
+broken at random; the theorem's count there is 32,390). A mean-field model of the
 same procedure, in which the remaining primes fall into the classes of each
 r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
