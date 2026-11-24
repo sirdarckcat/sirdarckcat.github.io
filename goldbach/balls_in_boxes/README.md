@@ -6,8 +6,7 @@ primes A (odd primes up to w) each get one nonzero class, drawn uniformly and in
 targets in none of these classes. The large primes B (primes in (w, x]) can then strike survivors: r′ strikes q when q is
 in its class. Report A measures how S sits in the classes of the large primes, which is what the proof outline needs.
 Report B lets each large prime take the class with the most remaining survivors. Settings: x ∈ {3,000; 10,000; 30,000;
-100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10^6 point is a reduced run, reported at the
-end.
+100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10⁶ point is a reduced run, reported in its own section at the end.
 
 Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
 
@@ -225,6 +224,35 @@ E = Σ_c C(n_c, 2) summed over the large primes (pairs of survivors in a common 
 | 100,000 | x^0.9 | 1.35 | 0.042 | 0.068 | 0.092 | 0.087 | 0.069 | 0.043 | 0.019 | 0.006 | 0.001 | 0.000 |
 | 100,000 | x^0.9 | 2.0 | 0.044 | 0.074 | 0.109 | 0.120 | 0.109 | 0.083 | 0.047 | 0.020 | 0.005 | 0.000 |
 | 100,000 | x^0.9 | 4.0 | 0.046 | 0.081 | 0.131 | 0.169 | 0.177 | 0.163 | 0.125 | 0.079 | 0.031 | 0.006 |
+
+## x = 10⁶ (reduced run)
+
+This run used 4 draws, C ∈ {1.35, 2, 4}, Report B bisection on [0.25, 10] in 9 steps, and no exact pair expectation. The run's
+JSON was lost when the container restarted before its last order (random, w = x^0.9) finished, so these numbers are the summary
+lines of `t1_x1000000.log`.
+
+| w | C | mean \|S\| | predicted | E / balls | E² ratio | conflicts | good max (θ) |
+|---|---|---|---|---|---|---|---|
+| x/2 | 1.35 | 67,157 | 67,230 | 0.572 | 1.005 | 4.026 | 0.114 (0.35) |
+| x/2 | 2 | 97,234 | 97,151 | 0.662 | 1.001 | 4.008 | 0.146 (0.35) |
+| x/2 | 4 | 186,440 | 186,228 | 0.790 | 1.000 | 3.998 | 0.203 (0.5) |
+| x^0.9 | 1.35 | 71,006 | 70,950 | 0.651 | 1.003 | 4.015 | 0.088 (0.2) |
+| x^0.9 | 2 | 102,642 | 102,525 | 0.727 | 1.001 | 4.007 | 0.114 (0.35) |
+| x^0.9 | 4 | 196,639 | 196,531 | 0.831 | 1.000 | 3.999 | 0.170 (0.5) |
+
+C* (Report B), by the order of the large primes:
+
+| w | increasing | decreasing | random |
+|---|---|---|---|
+| x/2 | 2.170 (draws 2.17 – 2.19) | 2.096 | 2.114 |
+| x^0.9 | 4.471 (draws 4.45 – 4.49) | 4.183 | lost in the restart |
+
+- The trends of the smaller x continue. With w = x^0.9, C* = 1.39, 1.93, 2.47, 3.14 and now 4.47, so C*/ln x = 0.32. With
+  w = x/2, C* = 1.12, 1.40, 1.56, 1.78 and now 2.17. Increasing order beats decreasing by 3.5% and 6.9%.
+- The fraction of good large primes at C = 1.35 is 0.09 to 0.11, as before, and the conflicts stay at 4.
+- E / balls grows slowly with x at fixed C: 0.57 at x = 10⁶ (w = x/2, C = 1.35), against 0.38 to 0.87 over the smaller runs.
+- The θ = 0.9 hybrid of T3 measured C* = 4.477 at x = 10⁶ independently, with 2 other draws and a bracketed bisection. That
+  agrees with 4.471 here.
 
 ## Files and checks
 

@@ -8,3 +8,4 @@ x=1000000 w=x^0.9 C=1.35: |S| 71006 (pred 70950); E 1.726e+08 exact 0 balls 2.65
 x=1000000 w=x^0.9 C=2.0: |S| 102642 (pred 102525); E 4.033e+08 exact 0 balls 5.544e+08; 2nd 1.001; confl 4.007; good max 0.1142 at 0.35  [8050s]
 x=1000000 w=x^0.9 C=4.0: |S| 196639 (pred 196531); E 1.691e+09 exact 0 balls 2.035e+09; 2nd 1.000; confl 3.999; good max 0.1698 at 0.5  [9075s]
 x=1000000 w=x^0.9 order=increasing: C* = 4.471 (per-draw 4.45..4.49); nothing-left fraction on the grid [1.0, 1.0, 1.0]  [10984s]
+x=1000000 w=x^0.9 order=decreasing: C* = 4.183 (per-draw 4.17..4.19); nothing-left fraction on the grid [1.0, 1.0, 1.0]  [13545s]
