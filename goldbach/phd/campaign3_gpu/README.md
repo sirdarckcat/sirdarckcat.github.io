@@ -744,6 +744,14 @@ Version 3 (22 Nov):
   - gold-l4d → gold-l4g resumed c170g (20,676 slices) after its gate (129 = 129, known case 40 = 40).
   - gold-g4f (partition 2) was stopped and snapshotted at 19:59Z, but Colab refused a new G4 (412 Precondition Failed,
     40 tries over 21 min). Partition 2 waits in gold-g4f's final snapshot, and `bringup/retry_g4i.sh` keeps retrying.
+  - The lead's stopgap, an extra L4 on 3,476 new shifted family-B vectors (`top5s`, ledger to 53,516), was refused too
+    at 6 active sessions (21:01-21:12Z).
+  - The lead's test (`bringup/test_cap.sh`) settled the question.
+    - At 21:16Z gold-xt4b was stopped at a batch end after its snapshot. With 5 active, a G4 was still refused 10 times.
+    - A T4 was granted at once. gold-xt4c resumed gold-xt4b's c170g after its gate, so the T4 was down 11 min.
+    - So the limit is on G4s (now 2, or no capacity), not on sessions; the L4 refusal points to 3 L4s at most.
+  - `bringup/g4_poll.sh` tries a G4 every 10 minutes and resumes partition 2 when one comes.
+  - The lead's rule whenever sessions are capped: G4 first, then L4, T4 last.
   - The 491 ledgers (~5 MB xz a card a day) are not committed to `runlogs/`. They live in the snapshots carried card to
     card and in the local final snapshots; the summaries give their size and hash.
 - L4/T4 levels: at ~3.9 h a level the top 16 would end around 26 Nov 10-15Z. KLO was widened to 32 levels at
