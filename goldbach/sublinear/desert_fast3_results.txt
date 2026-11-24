@@ -24,3 +24,8 @@ n=17 r=61 D=739 nodes=99075684 (below the 4080 split prefixes) rebuilds=5390 zer
 n=18 r=67 D=859 nodes=289334617 (below the 4896 split prefixes) rebuilds=5992 zero-option cuts=1825 seconds=29.2 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:8 31:23 37:5 41:40 43:21 47:3 53:48 59:31 61:11 67:19
 n=16 r=59 D=709 nodes=25113487 (below the 3360 split prefixes) rebuilds=4368 zero-option cuts=5511 seconds=2.6 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:19 31:3 37:2 41:31 43:34 47:3 53:6 59:34
 n=17 r=61 D=739 nodes=101544409 (below the 4080 split prefixes) rebuilds=5326 zero-option cuts=63591 seconds=10.9 vector: 3:2 5:3 7:6 11:1 13:5 17:7 19:18 23:19 29:19 31:23 37:24 41:36 43:36 47:33 53:17 59:41 61:12
+# n = 19, 20 (OMP_NUM_THREADS=2), default build (CORDER 2), then the cross-check with CORDER 1 (smallest modulus first):
+n=19 r=71 D=907 nodes=1513885046 (below the 5814 split prefixes) rebuilds=7349 zero-option cuts=5375 seconds=141.3 vector: 3:2 5:3 7:5 11:2 13:5 17:3 19:12 23:5 29:7 31:27 37:9 41:4 43:27 47:20 53:38 59:12 61:22 67:32 71:47
+n=20 r=73 D=1051 nodes=4949557226 (below the 6840 split prefixes) rebuilds=8346 zero-option cuts=73849 seconds=471.1 vector: 3:2 5:2 7:6 11:1 13:10 17:7 19:5 23:19 29:3 31:7 37:5 41:36 43:34 47:26 53:2 59:31 61:29 67:28 71:45 73:30
+n=19 r=71 D=907 nodes=1527521006 (below the 5814 split prefixes) rebuilds=7009 zero-option cuts=5710 seconds=127.3 vector: 3:2 5:3 7:5 11:2 13:5 17:3 19:12 23:5 29:7 31:27 37:9 41:4 43:27 47:20 53:38 59:12 61:22 67:32 71:47
+n=20 r=73 D=1051 nodes=4986418752 (below the 6840 split prefixes) rebuilds=8477 zero-option cuts=61840 seconds=441.0 vector: 3:2 5:2 7:6 11:1 13:10 17:7 19:5 23:19 29:3 31:7 37:5 41:36 43:34 47:26 53:2 59:31 61:29 67:28 71:45 73:30
