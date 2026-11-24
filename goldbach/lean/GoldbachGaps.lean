@@ -278,7 +278,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `c = 1.2`, `eventually_prod_le_g0_six_fifths`).
 * `CoverPairs` – two rows in one class of a modulus `s`: the exact step of the research
                session's derivation of the law. The pair weight `rho t d` of a smaller modulus
-               (classes drawn among the `t - 1` nonzero ones; `card_free_nonzero_classes`) and
+               (classes drawn among the `t - 1` nonzero ones; exact counts
+               `card_free_nonzero_classes`, `card_pair_uncovered`, `prod_rho_eq`) and
                the Hardy–Littlewood factor `sigma t d`, the two local cancellations as that
                session wrote them (`local_cancellation_below`, `local_cancellation_above`),
                their meaning (`sum_rho_mul_sigma`, `sum_sigma`: mean `1` over a period), the

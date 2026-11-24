@@ -109,6 +109,8 @@ Hardy–Littlewood density of prime pairs, has mean exactly `6 s/(s - 1)` over t
 | theorem | statement |
 |---|---|
 | `card_free_nonzero_classes` | two rows in nonzero classes modulo `t` leave `t - 1 - ν_t(d)` nonzero classes free, `ν_t(d)` = 1 if `t ∣ d`, else 2 |
+| `card_pair_uncovered`, `card_single_uncovered` | over a set of moduli, the class vectors with nonzero classes that leave both rows uncovered number `∏ (t - 1 - ν_t(d))`; one row, `∏ (t - 2)` |
+| `prod_rho_eq` | `∏ rho` is (vectors leaving both uncovered) · (all vectors) / (vectors leaving one uncovered)² |
 | `rho_of_dvd`, `rho_of_not_dvd` | the pair weight `(1 - ν/(t-1)) / (1 - 1/(t-1))²` is `(t-1)/(t-2)` if `t ∣ d`, `1 - 1/(t-2)²` if not (at `t = 3`: `2` and `0`) |
 | `sigma_of_dvd`, `sigma_of_not_dvd` | the Hardy–Littlewood factor `(1 - ν/t) / (1 - 1/t)²` is `t/(t-1)` if `t ∣ d`, `1 - 1/(t-1)²` if not |
 | `local_cancellation_below`, `local_cancellation_above` | the two rational identities, as the research session wrote them |

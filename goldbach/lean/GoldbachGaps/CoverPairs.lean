@@ -11,8 +11,10 @@ ones; the two rows occupy `ν_t(d)` of them (`nuPair`: one if `t ∣ d`, two oth
 
 * `card_free_nonzero_classes`: the classes of `t` that contain neither row number
   `t - 1 - ν_t(d)`. So both rows stay uncovered by `t` with probability `1 - ν_t(d)/(t - 1)`,
-  and relative to independence the pair carries the weight
-  `rho t d = (1 - ν_t(d)/(t - 1)) / (1 - 1/(t - 1))²`:
+  and over a set of moduli the class vectors leaving both rows uncovered number
+  `∏ (t - 1 - ν_t(d))` (`card_pair_uncovered`; one row: `∏ (t - 2)`, `card_single_uncovered`).
+  Relative to independence the pair carries the weight
+  `rho t d = (1 - ν_t(d)/(t - 1)) / (1 - 1/(t - 1))²`, the ratio of these counts (`prod_rho_eq`):
   `(t - 1)/(t - 2)` if `t ∣ d` and `1 - 1/(t - 2)²` if not (`rho_of_dvd`, `rho_of_not_dvd`; at
   `t = 3` these are `2` and `0`, the research session's "zero unless `3 ∣ d`, then `2`").
 * `sigma t d = (1 - ν_t(d)/t) / (1 - 1/t)²` is the factor of `t` in the Hardy–Littlewood density
@@ -140,6 +142,88 @@ theorem sigma_of_not_dvd {t d : ℕ} (ht : 2 ≤ t) (h : ¬ t ∣ d) :
   push_cast
   field_simp
   ring
+
+/-- Counting the classes modulo `t` with a property: over `Fin t` or over `range t`. -/
+theorem card_fin_filter (t : ℕ) (p : ℕ → Prop) [DecidablePred p] :
+    #{c : Fin t | p c.1} = #{c ∈ range t | p c} := by
+  rw [← card_map Fin.valEmbedding]
+  congr 1
+  ext x
+  simp only [mem_map, mem_filter, mem_univ, true_and, Fin.valEmbedding_apply, mem_range]
+  constructor
+  · rintro ⟨c, hc, rfl⟩
+    exact ⟨c.2, hc⟩
+  · rintro ⟨hx, h⟩
+    exact ⟨⟨x, hx⟩, h, rfl⟩
+
+open CoverCount in
+/-- **Both rows stay uncovered: the exact count.** Among the class vectors on `mods` with nonzero
+classes, those that cover neither `q` nor `q + d` number `∏ t (t - 1 - ν_t(d))`, when neither row
+is divisible by a modulus. Divided by the `∏ (t - 1)` vectors with nonzero classes this is the
+research session's `∏ (1 - ν_t/(t - 1))`. -/
+theorem card_pair_uncovered (mods : Finset ℕ) {q d : ℕ} (hq : ∀ t ∈ mods, q % t ≠ 0)
+    (hq' : ∀ t ∈ mods, (q + d) % t ≠ 0) :
+    #{a : ClassVector mods | (∀ t, (a t).1 ≠ 0) ∧ ¬ Covers a q ∧ ¬ Covers a (q + d)} =
+      ∏ t ∈ mods, (t - 1 - nuPair t d) := by
+  have h : ({a : ClassVector mods | (∀ t, (a t).1 ≠ 0) ∧ ¬ Covers a q ∧ ¬ Covers a (q + d)} :
+      Finset (ClassVector mods)) =
+      Fintype.piFinset fun t : mods =>
+        {c : Fin t.1 | c.1 ≠ 0 ∧ c.1 ≠ q % t.1 ∧ c.1 ≠ (q + d) % t.1} := by
+    ext a
+    simp only [mem_filter, mem_univ, true_and, Fintype.mem_piFinset, Covers, not_exists]
+    constructor
+    · rintro ⟨h0, h1, h2⟩ t
+      exact ⟨h0 t, fun e => h1 t e.symm, fun e => h2 t e.symm⟩
+    · intro h
+      exact ⟨fun t => (h t).1, fun t e => (h t).2.1 e.symm, fun t e => (h t).2.2 e.symm⟩
+  rw [h, Fintype.card_piFinset]
+  have hfac : ∀ t : mods, #{c : Fin t.1 | c.1 ≠ 0 ∧ c.1 ≠ q % t.1 ∧ c.1 ≠ (q + d) % t.1} =
+      t.1 - 1 - nuPair t.1 d := fun t => by
+    rw [card_fin_filter t.1 fun c => c ≠ 0 ∧ c ≠ q % t.1 ∧ c ≠ (q + d) % t.1]
+    exact card_free_nonzero_classes (hq t.1 t.2) (hq' t.1 t.2)
+  simp only [hfac]
+  exact prod_coe_sort mods fun t => t - 1 - nuPair t d
+
+open CoverCount in
+/-- **One row stays uncovered: the exact count**, `∏ t (t - 2)` of the `∏ t (t - 1)` class
+vectors with nonzero classes. This is the product `∏ (r - 2)/(r - 1)` of
+`GoldbachGaps/CoverBound.lean`. -/
+theorem card_single_uncovered (mods : Finset ℕ) {q : ℕ} (hq : ∀ t ∈ mods, q % t ≠ 0) :
+    #{a : ClassVector mods | (∀ t, (a t).1 ≠ 0) ∧ ¬ Covers a q} = ∏ t ∈ mods, (t - 2) := by
+  have h := card_pair_uncovered mods (q := q) (d := 0) hq hq
+  simp only [Nat.add_zero, and_self, nuPair_of_dvd (dvd_zero _)] at h
+  rw [h]
+  exact prod_congr rfl fun t _ => by omega
+
+/-- **The pair weight as a ratio of exact counts**: (vectors leaving both rows uncovered) times
+(all vectors with nonzero classes), over the square of (vectors leaving one row uncovered). -/
+theorem prod_rho_eq (mods : Finset ℕ) (h3 : ∀ t ∈ mods, 3 ≤ t) (d : ℕ) :
+    ∏ t ∈ mods, rho t d =
+      (∏ t ∈ mods, ((t - 1 - nuPair t d : ℕ) : ℚ)) * (∏ t ∈ mods, ((t - 1 : ℕ) : ℚ)) /
+        (∏ t ∈ mods, ((t - 2 : ℕ) : ℚ)) ^ 2 := by
+  rw [← prod_mul_distrib, ← prod_pow, ← prod_div_distrib]
+  refine prod_congr rfl fun t ht => ?_
+  have ht3 := h3 t ht
+  have h3q : (3 : ℚ) ≤ t := by exact_mod_cast ht3
+  have h2 : (t : ℚ) - 2 ≠ 0 := (by linarith : (0 : ℚ) < (t : ℚ) - 2).ne'
+  have c1 : ((t - 1 : ℕ) : ℚ) = (t : ℚ) - 1 := by
+    rw [Nat.cast_sub (by omega)]
+    norm_num
+  have c2 : ((t - 2 : ℕ) : ℚ) = (t : ℚ) - 2 := by
+    rw [Nat.cast_sub (by omega)]
+    norm_num
+  by_cases hd : t ∣ d
+  · have c3 : ((t - 1 - nuPair t d : ℕ) : ℚ) = (t : ℚ) - 2 := by
+      rw [nuPair_of_dvd hd, Nat.sub_sub, Nat.cast_sub (by omega)]
+      norm_num
+    rw [rho_of_dvd ht3 hd, c1, c2, c3]
+    field_simp
+  · have c3 : ((t - 1 - nuPair t d : ℕ) : ℚ) = (t : ℚ) - 3 := by
+      rw [nuPair_of_not_dvd hd, Nat.sub_sub, Nat.cast_sub (by omega)]
+      norm_num
+    rw [rho_of_not_dvd ht3 hd, c1, c2, c3]
+    field_simp
+    ring
 
 /-- **The local cancellation for a modulus below `s`**, as the research session states it: the
 pair weight off the multiples of `t`, times the correction for the multiples, times the
