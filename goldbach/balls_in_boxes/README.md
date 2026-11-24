@@ -9,6 +9,8 @@ Report B lets each large prime take the class with the most remaining survivors.
 100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10^6 point is a reduced run, reported at the
 end.
 
+Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
+
 ## Findings
 
 1. **The survivors are not independent balls modulo the large primes; they are thinned targets.** Pairs of survivors
@@ -18,6 +20,13 @@ end.
    C·ln x terms below y, and it holds only about C targets. Each target survives with probability about 0.07 to 0.10,
    so a class can never hold more survivors than it has targets. Independent balls ignore that cap, so the picture
    "fullest classes hold about ln x / ln ln x survivors" overstates what the large primes can collect at C near 1.35.
+   Capacity explains only part of the shortfall (`capacity_check.py`, `capacity_check.txt`). At x = 10⁵, w = x/2,
+   C = 1.35, classes with three or more survivors number 8,638 measured, 37,556 if each class's targets were thinned
+   independently with the survival probability, and 72,597 for balls. The rest comes from the small primes. The
+   targets of a class of r′ form a progression with difference r′, which is not divisible by 3, so they cycle through
+   all three residues mod 3. Every survivor lies in the one unstruck class mod 3, so only the targets with one residue
+   mod 3 can survive together, and likewise, more weakly, mod 5, 7, and so on. For four or more survivors the measured
+   count is 1, against 550 thinned and 2,191 for balls.
 2. **The pair formula of the outline is zero as written; with r = 3 treated exactly it is good.** N·∏_{3≤r≤w}(1 − 2/(r − 1))
    is 0 because of r = 3. A nonzero class mod 3 strikes every prime in one of the two classes, so all survivors share a
    class mod 3. A pair can survive only if it is congruent mod 3, and then it survives with probability 1/2. The corrected

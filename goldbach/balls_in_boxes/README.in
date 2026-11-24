@@ -9,6 +9,8 @@ Report B lets each large prime take the class with the most remaining survivors.
 100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10^6 point is a reduced run, reported at the
 end.
 
+Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
+
 ## Findings
 
 1. **The survivors are not independent balls modulo the large primes; they are thinned targets.** Pairs of survivors

@@ -1,2 +1,3 @@
 x=1000000 w=x/2 C=1.35: |S| 67157 (pred 67230); E 6.624e+07 exact 0 balls 1.159e+08; 2nd 1.005; confl 4.026; good max 0.1144 at 0.35  [179s]
 x=1000000 w=x/2 C=2.0: |S| 97234 (pred 97151); E 1.609e+08 exact 0 balls 2.43e+08; 2nd 1.001; confl 4.008; good max 0.1457 at 0.35  [576s]
+x=1000000 w=x/2 C=4.0: |S| 186440 (pred 186228); E 7.058e+08 exact 0 balls 8.933e+08; 2nd 1.000; confl 3.998; good max 0.2025 at 0.5  [1132s]
