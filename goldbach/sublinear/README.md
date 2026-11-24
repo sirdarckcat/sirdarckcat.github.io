@@ -1464,13 +1464,13 @@ where the Opus session's tempering stopped one row short at the next target
 in runs four times longer; from 349 on the best cover is limited by run
 length.) And beyond what any search has reached:
 
-| x | 997 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 |
-|---|---|---|---|---|---|---|
-| moduli | 167 | 429 | 1,228 | 3,244 | 9,591 | 25,996 |
-| end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 |
-| / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 |
-| / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 |
-| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 | |
+| x | 997 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 | 1,000,000 |
+|---|---|---|---|---|---|---|---|
+| moduli | 167 | 429 | 1,228 | 3,244 | 9,591 | 25,996 | 78,497 |
+| end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 | 2.21·10^8 |
+| / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 | 1.16 |
+| / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 | 1.19 |
+| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 | | |
 
 So the recursion gives the luck-free depth within 4% wherever it can be
 checked from 20 to 89 moduli, the three exact values of D included, and at
@@ -1561,7 +1561,7 @@ because two corrections of opposite sign die out at different rates: the
 dispersion is below its limit by c(α)/ln Q, which lowers D, and ln x/ln D is
 below 1 by about 2·ln ln x/ln x, which raises it. With both in the continuum
 equation D/(x·ln² x) is 1.09 at x = 10^4, 1.14 at 10^5 and 1.16 at 10^6 (the
-recursion over the actual primes gives 1.08 and 1.13, and 1.14 at 300,000),
+recursion over the actual primes gives 1.08, 1.13 and 1.16),
 reaches a maximum of 1.20 between 10^12 and 10^15, and comes down through
 1.19 at 10^20 and 1.17 at 10^50 to 1.14 at 10^200. So the c = 1.00 of the
 law at the sizes measured is where the two corrections happen to leave it
@@ -1700,8 +1700,8 @@ with Λ given by the price equation and the limit profile above. At the sizes
 measured (x from 463 to 9,973) the recursion over the actual primes puts the
 loss at 1.00·Q/ln² x within 5%; in the limit Λ(1) = 1.19639 and the loss is
 0.887·Q/ln² x. Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91
-for the values known (20 to 89 moduli), rises by the recursion to 1.14 at
-26,000 moduli and to a maximum of about 1.20, and tends to
+for the values known (20 to 89 moduli), rises by the recursion to 1.16 at
+78,497 moduli and to a maximum of about 1.20, and tends to
 e^γ/(2·C₂·Λ(1)) = 1.1275 (independent rows would give 1.349); and the least
 Goldbach summand that divisibility by the primes up to ln N alone can force
 is (1.1275 + o(1))·ln N·(ln ln N)².
