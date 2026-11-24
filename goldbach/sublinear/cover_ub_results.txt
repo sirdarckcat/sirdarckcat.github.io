@@ -1,0 +1,7 @@
+   M=89 Y=120000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 120000, so D(89) < 120000; nodes=9231 (cut by f: 8394, dead: 6; 713 prefixes at depth 4) seconds=0.3
+   M=89 Y=80000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 80000, so D(89) < 80000; nodes=93820 (cut by f: 87027, dead: 72; 890 prefixes at depth 4) seconds=0.4
+   M=89 Y=60000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 60000, so D(89) < 60000; nodes=438508 (cut by f: 378130, dead: 8509; 1051 prefixes at depth 4) seconds=1.5
+   M=89 Y=50000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 50000, so D(89) < 50000; nodes=2201281 (cut by f: 2008509, dead: 27961; 1132 prefixes at depth 4) seconds=4.7
+   M=89 Y=45000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 45000, so D(89) < 45000; nodes=17745606 (cut by f: 16270886, dead: 102761; 1140 prefixes at depth 4) seconds=33.0
+   M=89 Y=40000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 40000, so D(89) < 40000; nodes=92610951 (cut by f: 82046192, dead: 1728629; 1150 prefixes at depth 4) seconds=160.9
+   M=89 Y=170000 NO COVER: (first run, before the log file) nodes=6240 (cut by f: 5640, dead: 5; 476 prefixes at depth 4) seconds=0.2
