@@ -42,17 +42,28 @@
 // Fix (24 Nov, 16:40Z): the modulus-branching children were listed in ord[MAXN] (32 entries); a modulus with more than 32 qualifying classes
 // overflowed it into the frame's other arrays.  ord is now MAXR long, and the run prints how many modulus branchings had more than 32
 // classes ("over 32 classes"): a run of the old program is the same search as the fixed one exactly when that count is 0.
+// -DBIG (with -fno-tree-loop-distribute-patterns; run with OMP_STACKSIZE=64M): up to 64 moduli below 256 (n <= 53), primes up to 8,161; the same
+// search (node counts equal to the normal build's: n = 20, 22, 23 proofs), about 17% slower a node.
 // Needs AVX2.  Moduli must be below 128 (n <= 30); MAXN 32; NP 512 primes (D < 3,671).
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <omp.h>
+#ifdef BIG            /* -DBIG: up to 64 moduli below 256 (n <= 53), primes up to 8,161 (NP 1024); also -fno-tree-loop-distribute-patterns */
+#define MAXN 64
+#define NP 1024
+#define MAXR 256
+#define HR 256
+#define NQW 8
+#else
 #define MAXN 32
 #define NP 512
-#define W (NP / 64)
 #define MAXR 128
 #define HR 128          /* histogram row: classes 0 .. 127 (moduli below 128, n <= 30) */
+#define NQW 4           /* 32-class words of a row */
+#endif
+#define W (NP / 64)
 static int nmod, mod_[MAXN];
 static int primes[NP];
 static unsigned char res[MAXN][NP];          /* res[m][i] = primes[i] mod mod_[m] */
@@ -119,6 +130,20 @@ static void build(const st_t *s, const uint64_t *st, int bi, hist_t *H) {
     H->bi = bi; H->nu = nu;
 }
 #include <immintrin.h>
+#ifdef BIG
+static inline int maxallowed(const unsigned char *h, const unsigned char *f, int nv) {   /* max over the classes c < 32 nv with f[c] == 0 of h[c] */
+    const __m256i z = _mm256_setzero_si256();
+    __m256i v = z;
+    for (int q = 0; q < nv; q++) {
+        const __m256i hh = _mm256_load_si256((const __m256i *)(h + 32 * q)), ff = _mm256_loadu_si256((const __m256i *)(f + 32 * q));
+        v = _mm256_max_epu8(v, _mm256_and_si256(hh, _mm256_cmpeq_epi8(ff, z)));
+    }
+    __m128i x = _mm_max_epu8(_mm256_castsi256_si128(v), _mm256_extracti128_si256(v, 1));
+    x = _mm_max_epu8(x, _mm_srli_epi16(x, 8));
+    x = _mm_minpos_epu16(_mm_andnot_si128(x, _mm_set1_epi16(0xFF)));
+    return 255 - (_mm_cvtsi128_si32(x) & 0xFFFF);
+}
+#else
 static inline int maxallowed(const unsigned char *h, const unsigned char *f, int nv) {   /* max over the classes c < 32 nv with f[c] == 0 of h[c] */
     const __m256i z = _mm256_setzero_si256();
     __m256i v;
@@ -135,6 +160,7 @@ static inline int maxallowed(const unsigned char *h, const unsigned char *f, int
     x = _mm_minpos_epu16(_mm_andnot_si128(x, _mm_set1_epi16(0xFF)));             /* 255 - max, minimized */
     return 255 - (_mm_cvtsi128_si32(x) & 0xFFFF);
 }
+#endif
 /* the class of a modulus's row holding its fullest allowed count mxv, if exactly one does (0xFF otherwise, and when mxv = 0) */
 static inline int argmax1(const unsigned char *h, const unsigned char *f, int nv, int mxv) {
     if (mxv == 0) return 0xFF;
@@ -147,12 +173,18 @@ static inline int argmax1(const unsigned char *h, const unsigned char *f, int nv
     }
     return cnt == 1 ? pos : 0xFF;
 }
+#ifdef BIG
+static inline void copyrow(unsigned char *d, const unsigned char *s, int nv) {   /* build with -fno-tree-loop-distribute-patterns */
+    for (int q = 0; q < nv; q++) _mm256_store_si256((__m256i *)(d + 32 * q), _mm256_load_si256((const __m256i *)(s + 32 * q)));
+}
+#else
 static inline void copyrow(unsigned char *d, const unsigned char *s, int nv) {    /* explicit: a loop here becomes a memcpy call */
     _mm256_store_si256((__m256i *)d, _mm256_load_si256((const __m256i *)s));
     if (nv > 1) { _mm256_store_si256((__m256i *)(d + 32), _mm256_load_si256((const __m256i *)(s + 32)));
         if (nv > 2) { _mm256_store_si256((__m256i *)(d + 64), _mm256_load_si256((const __m256i *)(s + 64)));
             if (nv > 3) _mm256_store_si256((__m256i *)(d + 96), _mm256_load_si256((const __m256i *)(s + 96))); } }
 }
+#endif
 static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     s->nodes++;
     int i = -1;
@@ -180,11 +212,11 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     const int bounded = i <= bi;
     int mx[MAXN], cap = 0, nu = 0;                                      /* mx[m]: modulus m's fullest allowed class over U; cap = their sum */
     int br = i;                                                         /* the prime this node branches on */
-    uint32_t qual[MAXN][4];                                             /* QSKIP: the qualifying classes of each free modulus (bounded nodes) */
+    uint32_t qual[MAXN][NQW];                                             /* QSKIP: the qualifying classes of each free modulus (bounded nodes) */
     unsigned char av[MAXN] __attribute__((aligned(32))); int have_av = 0;   /* the single fullest class of each free modulus (0xFF: none or several) */
     int have_qual = 0;
     int forced_m = -1, forced_c = -1;                                   /* or a forced modulus and its class */
-    int mbr_m = -1; uint32_t mbr_qb[4] = {0};                           /* or a modulus to branch on, over its qualifying classes */
+    int mbr_m = -1; uint32_t mbr_qb[NQW] = {0};                           /* or a modulus to branch on, over its qualifying classes */
     if (bounded) {
         if (H->bi != bi) { build(s, st, bi, H); s->rebuilds++; }
         nu = H->nu;
@@ -204,7 +236,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                in such a vector every free modulus is in one of its "qualifying" classes.  A prime of U struck by no qualifying class cuts the
                node; one free modulus with a single qualifying class is forced into it. */
             int margin = cap - nu;
-            int fm = -1, fc = -1, bm = -1, bnq = 99; uint32_t bqb[4] = {0};
+            int fm = -1, fc = -1, bm = -1, bnq = 99; uint32_t bqb[NQW] = {0};
             unsigned char mt[MAXN] = {0};                                   /* MATCH: m is in a matched pair (its threshold is 1 lower) */
 #if MATCH
             /* two free moduli whose single fullest classes share a prime of U strike together at most mx_a + mx_b - 1 primes of U (in their
@@ -238,9 +270,9 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                 for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
 #else
                 const int thr = mx[m] - margin - mt[m];
-                if (thr <= 0) { for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w]; qual[m][0] = qual[m][1] = qual[m][2] = qual[m][3] = ~0u; }
+                if (thr <= 0) { for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w]; for (int q = 0; q < NQW; q++) qual[m][q] = ~0u; }
                 else {              /* qualifying: allowed, h >= thr; disqualified: allowed, 0 < h < thr.  e = U's primes in qualifying classes */
-                    uint32_t qb[4] = {0}, db[4] = {0}; int nq = 0, nd = 0;
+                    uint32_t qb[NQW] = {0}, db[NQW] = {0}; int nq = 0, nd = 0;
                     const __m256i z = _mm256_setzero_si256(), tv = _mm256_set1_epi8((char)thr);
                     for (int q = 0; q < nvec[m]; q++) {
                         const __m256i hh = _mm256_load_si256((const __m256i *)(H->h[m] + 32 * q)), ff = _mm256_loadu_si256((const __m256i *)(s->forb[m] + 32 * q));
@@ -257,9 +289,9 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                         for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
                         for (int q = 0; q < nvec[m]; q++) for (uint32_t b = db[q]; b; b &= b - 1) { const uint64_t *mk = mask[m][32 * q + __builtin_ctz(b)]; for (int w = 0; w < wb; w++) e[w] &= ~mk[w]; }
                     }
-                    qual[m][0] = qb[0]; qual[m][1] = qb[1]; qual[m][2] = qb[2]; qual[m][3] = qb[3];
+                    for (int q = 0; q < NQW; q++) qual[m][q] = qb[q];
                     if (nq == 1 && fm < 0) { fm = m; for (int q = 0; q < nvec[m]; q++) if (qb[q]) { fc = 32 * q + __builtin_ctz(qb[q]); break; } }
-                    if (nq < bnq) { bnq = nq; bm = m; for (int q = 0; q < 4; q++) bqb[q] = qb[q]; }
+                    if (nq < bnq) { bnq = nq; bm = m; for (int q = 0; q < NQW; q++) bqb[q] = qb[q]; }
                 }
 #endif
                 for (int w = 0; w < wb; w++) { cov[w] |= e[w]; eS[k][w] = e[w]; }
@@ -284,7 +316,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                     if (ua & ~c0[w] & c1[w]) lv = lv < 2 ? lv : 2;
                     else if (ua & c0[w] & c1[w]) lv = lv < 3 ? lv : 3;
                 }
-                if (MBRPOL >= 2 || bnq < lv + MBRPOL) { mbr_m = bm; for (int q = 0; q < 4; q++) mbr_qb[q] = bqb[q]; }
+                if (MBRPOL >= 2 || bnq < lv + MBRPOL) { mbr_m = bm; for (int q = 0; q < NQW; q++) mbr_qb[q] = bqb[q]; }
             }
 #endif
 #if MRV
@@ -305,7 +337,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     if (forced_m >= 0) { s->forced++; no = 1; ord[0] = forced_m; }
     else if (mbr_m >= 0) {
         s->mbr++;
-        for (int q = 0; q < 4; q++) for (uint32_t b = mbr_qb[q]; b; b &= b - 1) {
+        for (int q = 0; q < NQW; q++) for (uint32_t b = mbr_qb[q]; b; b &= b - 1) {
             const int c = 32 * q + __builtin_ctz(b), v = H->h[mbr_m][c];
             int j = nmc++; while (j > 0 && H->h[mbr_m][mcls[j - 1]] < v) { mcls[j] = mcls[j - 1]; j--; } mcls[j] = c;
         }
@@ -351,13 +383,25 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
 #if ARGM
         if (bounded && !cut && left > 1) {
             const __m256i avv = _mm256_load_si256((const __m256i *)av);
+#ifdef BIG
+            const __m256i avv1 = _mm256_load_si256((const __m256i *)(av + 32));
+            __m256i hit1 = _mm256_setzero_si256();
+#endif
             __m256i hit = _mm256_setzero_si256();
             for (int w = 0; w <= (bi >> 6); w++) {
                 uint64_t x = uB[w] & mask[m][c][w];
                 while (x) { const int p = w * 64 + __builtin_ctzll(x); x &= x - 1;
-                            hit = _mm256_or_si256(hit, _mm256_cmpeq_epi8(_mm256_loadu_si256((const __m256i *)resT[p]), avv)); }
+                            hit = _mm256_or_si256(hit, _mm256_cmpeq_epi8(_mm256_loadu_si256((const __m256i *)resT[p]), avv));
+#ifdef BIG
+                            hit1 = _mm256_or_si256(hit1, _mm256_cmpeq_epi8(_mm256_loadu_si256((const __m256i *)(resT[p] + 32)), avv1));
+#endif
+                }
             }
+#ifdef BIG
+            const int r1 = __builtin_popcountll(((uint64_t)(uint32_t)_mm256_movemask_epi8(hit) | ((uint64_t)(uint32_t)_mm256_movemask_epi8(hit1) << 32)) & ~(1ull << m));
+#else
             const int r1 = __builtin_popcount((uint32_t)_mm256_movemask_epi8(hit) & ~(1u << m));
+#endif
             cut = cap - mx[m] - r1 < nu - H->h[m][c];
         }
 #endif
@@ -468,7 +512,7 @@ int main(int argc, char **argv) {
     if (count_mode && !known) { fprintf(stderr, "count mode needs D as the known value\n"); return 1; }
     static char comp[20000]; int np = 0;
     for (int i = 2; i < 20000 && np < NP; i++) if (!comp[i]) { if (i > 2) primes[np++] = i; for (int j = i * i; j < 20000; j += i) comp[j] = 1; }
-    if (n > MAXN || primes[n - 1] >= MAXR || primes[n - 1] >= HR) { fprintf(stderr, "n too large (moduli must be below HR = %d: build with -DHR=128)\n", HR); return 1; }
+    if (n > MAXN || primes[n - 1] >= MAXR || primes[n - 1] >= HR) { fprintf(stderr, "n too large (moduli must be below %d: build with -DBIG for n <= 53)\n", HR); return 1; }
     nmod = n;
     for (int m = 0; m < n; m++) { mod_[m] = primes[m]; nvec[m] = (mod_[m] + 31) / 32;
         for (int i = 0; i < NP; i++) { res[m][i] = resT[i][m] = primes[i] % mod_[m]; mask[m][res[m][i]][i >> 6] |= 1ull << (i & 63); } }
