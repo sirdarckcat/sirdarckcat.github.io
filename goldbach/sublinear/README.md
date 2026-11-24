@@ -865,7 +865,16 @@ D(8) = 163 and D(15) = 613; at x = 463 tempering has 15,907. The greedy
 vectors for x = 463 and 1,000 were rechecked independently.) Every one of
 these is an unconditional statement about the even numbers in one residue
 class modulo the product of the primes up to x; what is missing is a proof
-that the greedy choice keeps working for all x.
+that the greedy choice keeps working for all x. A mean-field model of the
+same procedure, in which the remaining primes fall into the classes of each
+r like independent balls and the prime takes the fullest class
+(`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
+10^5 and 0.84 at 3·10^5: the same order, a quarter above the real greedy
+choice at small x (real primes are spread more evenly over the classes of a
+small r than independent balls would be), and slowly falling, as a fullest
+class of about ln x/ln ln x for the largest primes would give. So the
+measured reach and the model agree on x·ln² x up to a factor that moves, if
+at all, like ln ln x.
 
 Pigeonhole cannot give this, because the survivors are fewer than the
 classes, and the greedy choice of classes for the small primes leaves a set
@@ -894,8 +903,9 @@ fewer than one prime on average and rich classes have to be found with the
 Maynard sieve; here it holds C. So we state as a conjecture, supported by
 D(n), by the covers and by the greedy table: for every A there are infinitely
 many even N with no Goldbach summand below A·ln N·ln ln N; and, more
-precisely, D(n) is of order r_n·ln² r_n, so that the summands forced away by
-divisibility alone reach order ln N·(ln ln N)².
+precisely, D(n) is of order r_n·ln² r_n up to a factor that varies at most
+like ln ln r_n, so that the summands forced away by divisibility alone reach
+about ln N·(ln ln N)².
 
 ## Ladder
 
