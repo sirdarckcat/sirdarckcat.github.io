@@ -65,3 +65,13 @@ D(30) = 2311 (findD.py 30 2137, 2 threads, 89.5 s; equal to the tempering value 
    n=30: a cover of every odd prime below 2287 (14660156 nodes, 10.9 s); its least unstruck prime 2311
    n=30: NO COVER below 2333 (55774293 nodes, 46.0 s)
    FINDD n=30 D=2311 (attained by the vector; no vector strikes every odd prime below 2333) seconds=89.5 vector: 3:2 5:3 7:5 11:10 13:11 17:6 19:3 23:21 29:12 31:7 37:31 41:14 43:27 47:24 53:19 59:55 61:56 67:59 71:9 73:65 79:78 83:82 89:10 97:30 101:80 103:22 107:97 109:40 113:26 127:106
+
+Calibration (research's request): proof-mode cost at n = 30 against Y above D(30) = 2311 (Y = the first prime above f * D, f = 1.00 .. 3.00):
+   M=30 Y=2333 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2333, so D(30) < 2333; nodes=55774293 (cut by f: 2767441, dead: 0, children not built (ARGM): 92432235; 749 prefixes at depth 4) seconds=38.9
+   M=30 Y=2437 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2437, so D(30) < 2437; nodes=19710621 (cut by f: 1061078, dead: 0, children not built (ARGM): 34224564; 725 prefixes at depth 4) seconds=13.8
+   M=30 Y=2543 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2543, so D(30) < 2543; nodes=5569895 (cut by f: 367824, dead: 0, children not built (ARGM): 9937862; 712 prefixes at depth 4) seconds=4.5
+   M=30 Y=2777 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2777, so D(30) < 2777; nodes=422662 (cut by f: 47342, dead: 0, children not built (ARGM): 816942; 670 prefixes at depth 4) seconds=0.4
+   M=30 Y=3011 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 3011, so D(30) < 3011; nodes=150536 (cut by f: 19343, dead: 0, children not built (ARGM): 298278; 624 prefixes at depth 4) seconds=0.2
+   M=30 Y=3467 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 3467, so D(30) < 3467; nodes=12589 (cut by f: 2815, dead: 0, children not built (ARGM): 27392; 567 prefixes at depth 4) seconds=0.0
+   M=30 Y=4637 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 4637, so D(30) < 4637; nodes=854 (cut by f: 353, dead: 0, children not built (ARGM): 2109; 345 prefixes at depth 4) seconds=0.0
+   M=30 Y=6947 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 6947, so D(30) < 6947; nodes=115 (cut by f: 53, dead: 0, children not built (ARGM): 296; 0 prefixes at depth 31) seconds=0.0
