@@ -21,5 +21,12 @@ and `n89L_Q14500_s3.txt` is one ten times longer run from random vectors (400000
 of burn-in, target 14,500, seed 3). Eight such runs were planned; the research session called the
 series off after the first, because the runs from the complete cover had settled the question.
 
+The files `x2999_Q100000_s<seed>.txt` (429 moduli) and `x9973_Q300000_s<seed>.txt` (1,228 moduli)
+are the research session's test of its prediction of 18:10 UTC, with its denser ladder
+`cover_floor_betas_deep2.txt` (139 temperatures, commit `1d8a44b`):
+
+    COVER_FLOOR_REACH=105000 ./cover_floor 100000 'odd<=2999' cover_floor_betas_deep2.txt 150000 50000 x2999_Q100000_s<seed>.txt <seed>
+    COVER_FLOOR_REACH=310000 ./cover_floor 300000 'odd<=9973' cover_floor_betas_deep2.txt 150000 50000 x9973_Q300000_s<seed>.txt <seed>
+
 Each file is self-describing (a header line, then the lines the program writes). The analysis is the
 research session's (`python3 cover_floor.py --reach files...`).
