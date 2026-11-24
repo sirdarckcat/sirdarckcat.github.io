@@ -1398,6 +1398,23 @@ table. At the 10% target (19,050 rows):
 worth, is the same quantity as the floor under the covers, seen at other
 depths: one function of 460·ln² z/Q.
 
+*What of this is proved.* The object is: the Lean session defined the count
+and proved the identity behind it in the kernel (`CoverCount.lean`, commit
+c9354bc on `ccr-36ca7b46-8twf14`, standard axioms): g0(x, Q)/∏ r is the sum
+over all sets T of rows of (−1)^|T|·∏(1 − ν_r(T)/r), ν_r(T) the number of
+residues of T modulo r; g0 decreases as rows are added; it is positive
+exactly when a cover exists, so D is where it reaches zero (instance:
+g0(29, 181) > 0 and g0(29, 182) = 0). It also proved the one rigorous bound
+on the loss there is: a cover on fewer moduli stays a cover whatever the
+other classes are, so ln g0(x, Q) ≥ θ(x) − θ(x′) whenever the odd primes up
+to x′ cover the odd primes below Q, stated for the ten certified covers
+(for x ≥ 997 the loss at Q = 15,907 is at most θ(463) = 442.9, where the law
+says 334). And the constant K is 1.5164516079595025850511213122…, enclosed
+to 28 digits by exact rational arithmetic (`scripts/cover_count/` there).
+The law itself and its derivation are a measurement and a heuristic; an
+upper bound for g0 of this shape would bound D(n) by a multiple of r·ln² r
+and prove Goldbach's conjecture for large N, by the implication above.
+
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
 strike every odd prime below Q is exp(θ(x) − c·π(Q)·ln Q/ln² x), where c is
