@@ -1,0 +1,17 @@
+python3 greedy_cover.py 23 53 100 200 463 1000 2000 3000 10000 30000 100000 300000   (24 November 2026)
+x = 23: greedy strikes every odd prime below about 126; ratio to x ln x: 1.75; to 1.349 x ln x: 1.29; ln x / ln ln x = 2.74
+x = 53: greedy strikes every odd prime below about 372; ratio to x ln x: 1.77; to 1.349 x ln x: 1.31; ln x / ln ln x = 2.88
+x = 100: greedy strikes every odd prime below about 1021; ratio to x ln x: 2.22; to 1.349 x ln x: 1.64; ln x / ln ln x = 3.02
+x = 200: greedy strikes every odd prime below about 3315; ratio to x ln x: 3.13; to 1.349 x ln x: 2.32; ln x / ln ln x = 3.18
+x = 463: greedy strikes every odd prime below about 10428; ratio to x ln x: 3.67; to 1.349 x ln x: 2.72; ln x / ln ln x = 3.38
+x = 1000: greedy strikes every odd prime below about 30184; ratio to x ln x: 4.37; to 1.349 x ln x: 3.24; ln x / ln ln x = 3.57
+x = 2000: greedy strikes every odd prime below about 77979; ratio to x ln x: 5.13; to 1.349 x ln x: 3.80; ln x / ln ln x = 3.75
+x = 3000: greedy strikes every odd prime below about 132567; ratio to x ln x: 5.52; to 1.349 x ln x: 4.09; ln x / ln ln x = 3.85
+x = 10000: greedy strikes every odd prime below about 601525; ratio to x ln x: 6.53; to 1.349 x ln x: 4.84; ln x / ln ln x = 4.15
+x = 30000: greedy strikes every odd prime below about 2298470; ratio to x ln x: 7.43; to 1.349 x ln x: 5.51; ln x / ln ln x = 4.42
+x = 100000: greedy strikes every odd prime below about 9650028; ratio to x ln x: 8.38; to 1.349 x ln x: 6.21; ln x / ln ln x = 4.71
+x = 300000: greedy strikes every odd prime below about 34610715; ratio to x ln x: 9.15; to 1.349 x ln x: 6.78; ln x / ln ln x = 4.98
+
+ratio to x ln^2 x: 0.557 0.445 0.481 0.590 0.598 0.633 0.675 0.689 0.709 0.721 0.728 0.725
+checked independently for x = 463 (89 moduli, every odd prime below 10,428 struck, first unstruck 10,429) and x = 1,000 (167 moduli, below 30,184, first unstruck 30,211).
+the vector for x = 463: 3:2 5:3 7:3 11:10 13:11 17:11 19:3 23:3 29:8 31:15 37:10 41:9 43:18 47:7 53:45 59:25 61:46 67:28 71:32 73:38 79:67 83:49 89:10 97:1 101:9 103:45 107:2 109:4 113:14 127:5 131:73 137:19 139:7 149:34 151:16 157:25 163:24 167:35 173:71 179:24 181:51 191:91 193:11 197:20 199:9 211:26 223:2 227:68 229:97 233:76 239:28 241:40 251:73 257:79 263:170 269:99 271:167 277:2 281:44 283:146 293:21 307:154 311:4 313:1 317:69 331:69 337:28 347:161 349:9 353:99 359:95 367:23 373:2 379:34 383:10 389:203 397:7 401:5 409:21 419:7 421:32 431:36 433:66 439:14 443:6 449:108 457:173 461:266 463:1

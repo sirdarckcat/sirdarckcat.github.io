@@ -820,9 +820,10 @@ there). With "p is a summand of N" meaning p and N − p both prime:
 So the state of the question, as far as we can tell: order ln X · ln ln X with
 constant 1/2 by counting (one unrefereed preprint); every constant below
 1.349 by covering (here, formal and unconditional). At y = 463 the
-theorem's count gives 3,830, a greedy choice of classes covers every prime
-below 6,000, and tempering reaches 15,907: the factor 4 is rows sharing a
-mop-up prime, the improvement the theorem leaves as a remark. The finite
+theorem's count gives 3,830, a plain greedy choice of classes strikes every
+prime below 10,428 (below), and tempering reaches 15,907: the factor 3 to 4
+is rows sharing a mop-up prime, the improvement the theorem leaves as a
+remark. The finite
 instances are checked by the Lean kernel from the classes alone, by
 divisibilities only (`Records.lean` on the Lean branch):
 `exists_lt_ten_pow_200_complete_cover_15907`, `…_16381`, `…_16747`,
@@ -843,6 +844,28 @@ and with nearly all of them and j growing the bound would be of order
 ln X·(ln ln X)²/ln ln ln X, which is where the exact values and the
 certified covers point (the ratio D/(r ln r) is 5.6 at r = 463, and
 1.349·ln r/ln ln r is 4.6 there).
+
+The simplest algorithm already does it, and its reach can be measured far
+beyond the sizes where the exact value or tempering are available
+(`greedy_cover.py`, `greedy_cover.txt`): take the odd primes r ≤ x in
+increasing order and give each the nonzero class that holds the most primes
+below y not yet struck; G(x) is a y for which nothing is left.
+
+| x | 23 | 53 | 100 | 200 | 463 | 1,000 | 3,000 | 10^4 | 3·10^4 | 10^5 | 3·10^5 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| G(x) | 126 | 372 | 1,021 | 3,315 | 10,428 | 30,184 | 132,567 | 601,525 | 2,298,470 | 9,650,028 | 34,610,715 |
+| G(x) / (x ln x) | 1.75 | 1.77 | 2.22 | 3.13 | 3.67 | 4.37 | 5.52 | 6.53 | 7.43 | 8.38 | 9.15 |
+| G(x) / (x ln² x) | 0.56 | 0.45 | 0.48 | 0.59 | 0.60 | 0.63 | 0.69 | 0.71 | 0.72 | 0.73 | 0.73 |
+
+So with the primes up to 300,000 the greedy vector strikes every odd prime
+below 34.6 million, 6.8 times what the theorem's count allows, and from
+x = 10^4 on its reach is 0.71 to 0.73 times x·ln² x: the order of the
+first-moment count, not of x·ln x. (For x = 23 and 53 the exact values are
+D(8) = 163 and D(15) = 613; at x = 463 tempering has 15,907. The greedy
+vectors for x = 463 and 1,000 were rechecked independently.) Every one of
+these is an unconditional statement about the even numbers in one residue
+class modulo the product of the primes up to x; what is missing is a proof
+that the greedy choice keeps working for all x.
 
 Pigeonhole cannot give this, because the survivors are fewer than the
 classes, and the greedy choice of classes for the small primes leaves a set
@@ -869,8 +892,10 @@ is the machinery of Ford, Green, Konyagin, Maynard and Tao for long gaps
 between primes, in an easier regime: there a class of a large prime holds far
 fewer than one prime on average and rich classes have to be found with the
 Maynard sieve; here it holds C. So we state as a conjecture, supported by
-D(n) and by the covers: for every A there are infinitely many even N with no
-Goldbach summand below A·ln N·ln ln N.
+D(n), by the covers and by the greedy table: for every A there are infinitely
+many even N with no Goldbach summand below A·ln N·ln ln N; and, more
+precisely, D(n) is of order r_n·ln² r_n, so that the summands forced away by
+divisibility alone reach order ln N·(ln ln N)².
 
 ## Ladder
 
