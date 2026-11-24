@@ -34,6 +34,7 @@ import GoldbachGaps.RecordInfinite
 import GoldbachGaps.RecordWalk
 import GoldbachGaps.CoverDepth
 import GoldbachGaps.CoverDepthRun
+import GoldbachGaps.CoverDepthMore
 import GoldbachGaps.Cover1471
 import GoldbachGaps.Cover4909
 import GoldbachGaps.Cover8311
@@ -238,6 +239,11 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the 200-digit search are lower bounds for 89 to 93 moduli
                (`coversBelow_15907` … `coversBelow_16981`). `scripts/cover_depth`: the
                search in C, the table to `n = 15`.
+               `CoverDepthMore` (generated): lower bounds from explicit vectors for
+               `19, …, 26` and `29, …, 33` moduli, `907, 1051, 1213, 1279, 1381, 1471, 1567,
+               1669` and `2137, 2311, 2521, 2647, 2749` (`coversBelow_19` … `coversBelow_33`),
+               the values the uarch session's exhaustive searches found; that no vector goes
+               further is not checked here.
 * `Cover32971`, `Cover40111`, `Cover135511`, `CoverDepthGreedy` – three generated
                certificates and their statements: the 167 odd primes up to `997` cover every
                odd prime below `32971` (`coversBelow_32971`, a greedy vector) and below `40111`
