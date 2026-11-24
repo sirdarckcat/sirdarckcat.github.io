@@ -85,3 +85,7 @@ x=251: largest Q reached 6440, smallest Q missed by all seeds 6480
   x=349 Q=10241 seed=1 sweeps=80000: best k 1  (190 s)
   x=349 Q=10241 seed=4 sweeps=80000: best k 1  (190 s)
   x=349 Q=10241 seed=3 sweeps=80000: best k 1  (190 s)
+  x=349 Q=10116 seed=1 sweeps=80000: best k 1  (217 s)
+  x=349 Q=10116 seed=2 sweeps=80000: best k 1  (217 s)
+  x=349 Q=10116 seed=3 sweeps=80000: best k 1  (217 s)
+  x=349 Q=10116 seed=4 sweeps=80000: best k 1  (218 s)
