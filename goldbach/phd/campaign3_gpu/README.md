@@ -752,6 +752,13 @@ Version 3 (22 Nov):
     - So the limit is on G4s (now 2, or no capacity), not on sessions; the L4 refusal points to 3 L4s at most.
   - `bringup/g4_poll.sh` tries a G4 every 10 minutes and resumes partition 2 when one comes.
   - The lead's rule whenever sessions are capped: G4 first, then L4, T4 last.
+  - At 22:39-22:42Z the L4 handovers showed L4s held at 2 as well. With gold-l4e stopped, its replacement was refused;
+    after gold-l4f stopped, gold-l4i was granted at once and resumed (gate passed). gold-l4e's share waits in its
+    snapshot, and `bringup/l4_poll.sh` retries every 10 min.
+  - The account had 5 active assignments at 22:47Z, exactly ours, so the caps are Colab's own, not other sessions'.
+  - New rule (the lead, 22:46Z): no proactive stops. A card runs to Colab's 24 h end. It is snapshotted at ~23 h and
+    ~23.75 h without stopping, and replaced only after Colab has ended it (`bringup/handover_end.sh`). With shrinking caps,
+    stopping a card first can lose it. At most ~15 min of its last slices are redone or lost from the done records.
   - The 491 ledgers (~5 MB xz a card a day) are not committed to `runlogs/`. They live in the snapshots carried card to
     card and in the local final snapshots; the summaries give their size and hash.
 - L4/T4 levels: at ~3.9 h a level the top 16 would end around 26 Nov 10-15Z. KLO was widened to 32 levels at
