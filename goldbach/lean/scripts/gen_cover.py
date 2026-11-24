@@ -96,7 +96,11 @@ def main():
     L.append(f"/-- The {len(mods)} covering moduli (`2` covers the row `q = 2`). -/")
     L.append("def coverMods : List ℕ :=\n" + lean_list(mods))
     L.append("")
-    L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide")
+    if len(mods) > 100:
+        L.append("set_option maxRecDepth 1000000 in")
+        L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide +kernel")
+    else:
+        L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide")
     L.append("")
     L.append("/-- Trial divisors, enough to discard every composite `q < Q`. -/")
     L.append("def smallPrimes : List ℕ :=\n" + lean_list(small_primes))
@@ -167,7 +171,8 @@ def main():
     L.append("    have h2 := hl.2 r hr")
     L.append("    have : N ≤ N + t * M := Nat.le_add_right _ _")
     L.append("    exact ⟨h2.1, by omega⟩")
-    L.append("  have h2M : 2 ∣ M := List.dvd_prod (by decide)")
+    L.append("  have h2M : 2 ∣ M := List.dvd_prod (List.mem_of_mem_head? rfl)" if len(mods) > 100 else
+             "  have h2M : 2 ∣ M := List.dvd_prod (by decide)")
     L.append("  refine ⟨N_even.add (Even.mul_left (even_iff_two_dvd.mpr h2M) t), fun q hq hqp => ?_,")
     L.append("    fun q hq => hcov.noSummandIn_of_lt hmods q (Nat.zero_le q) hq⟩")
     L.append("  obtain ⟨r, hr, hrq⟩ := hcov q (Nat.zero_le q) hq hqp")

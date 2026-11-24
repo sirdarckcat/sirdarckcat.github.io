@@ -63,6 +63,38 @@ Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 
   search are lower bounds: the depth of the 89, 91, 92, 93 odd primes up to 463, 479, 487, 491 is
   at least 15907, 16381, 16747, 16981.
 
+## The greedy rule, and a certified vector on 167 moduli (`greedy.py`, `greedy.txt`)
+
+The research session measured how far the plainest rule reaches: take the odd primes up to `x` in
+increasing order and give each the nonzero class that contains the most odd primes below `y` not
+yet covered. `greedy.py` recomputes its table with independent code:
+
+| x | moduli | first odd prime not covered | research session | / (x ln x) | / (x ln² x) |
+|---|---|---|---|---|---|
+| 23 | 8 | 127 | 126 | 1.76 | 0.56 |
+| 53 | 15 | 379 | 372 | 1.80 | 0.45 |
+| 100 | 24 | 1,039 | 1,021 | 2.26 | 0.49 |
+| 200 | 45 | 3,343 | 3,315 | 3.15 | 0.60 |
+| 463 | 89 | 9,769 | 10,428 | 3.44 | 0.56 |
+| 1,000 | 167 | 29,581 | 30,184 | 4.28 | 0.62 |
+| 3,000 | 429 | 131,203 | 132,567 | 5.46 | 0.68 |
+| 10,000 | 1,228 | 600,697 | 601,525 | 6.52 | 0.71 |
+
+The two codes agree within a few percent; the differences come from how ties are broken and
+from the fact that "nothing is left" is not monotone in `y`, so a bisection finds one threshold
+among several. Both show the same thing: the reach grows like `0.6` to `0.7` times `x ln² x`,
+faster than the `1.349 · x ln x` that is proved (`GoldbachGaps/CoverBound.lean`).
+
+Scanning `y` and breaking ties at random does better than the bisection: on the 167 odd primes
+up to 997 one vector covers every odd prime below **32,971** (`greedy_997_vector.txt`). That
+vector is certified by the kernel, by divisibility alone (`GoldbachGaps/Cover32971.lean`, a
+416-digit `N`), and `coversBelow_32971` in `GoldbachGaps/CoverDepthGreedy.lean` states it as a
+lower bound for the cover depth of 167 moduli. For comparison `1.349 · x ln x` is 9,290 at
+`x = 997` and `0.7 · x ln² x` is 33,300. No run out of 40 left nothing uncovered for any `y` from
+33,000 to 37,000.
+
+    python3 -I greedy.py 23 53 100 200 463 1000 3000 10000 > greedy.txt
+
 ## What it means for the 200-digit search
 
 Nothing changes in the cost model. The depth is the part of a least summand that divisibility
