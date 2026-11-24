@@ -841,19 +841,18 @@ divisibilities only (`Records.lean` on the Lean branch):
 below 10^200) and 91 primes (95 members).
 
 **Why 1.349 is not the truth, and what a proof of more would need** (a
-sketch; nothing in this paragraph is proved). In the theorem each of the
-largest primes, about x/ln x of them, strikes one surviving prime. It could
-strike several. Take y = C·x·ln x. A class of a prime r′ near x holds about C
-of the primes below y, and each of them survives the small primes with
-probability of order 1/ln x, so the survivors, about C·x/(1.349·ln x) of
-them, are spread over the x classes of r′ like balls in boxes: about x/ln² x
-pairs of survivors share a class, and the fullest classes hold about
-ln x/ln ln x of them. If a proportion φ of the large primes could each be
-given j survivors, disjointly, the constant would be 1.349·(1 + φ(j − 1)),
-and with nearly all of them and j growing the bound would be of order
-ln X·(ln ln X)²/ln ln ln X, which is where the exact values and the
-certified covers point (the ratio D/(r ln r) is 5.6 at r = 463, and
-1.349·ln r/ln ln r is 4.6 there).
+sketch and measurements; nothing in this part is proved). In the theorem
+each of the largest primes, about x/ln x of them, strikes one surviving
+prime. It could strike more. Take y = C·x·ln x. A class of a prime r′ near x
+holds about C of the primes below y, and each of them survives the small
+primes with probability of order 1/ln x, so among the survivors, about
+C·x/(1.349·ln x) of them, of the order of x/ln² x pairs share a class of r′.
+If a proportion φ of the large primes could each be given two survivors,
+disjointly, the constant would be 1.349·(1 + φ). A class of r′ holds only
+about C primes in all, so the largest primes can never strike more than a
+handful each; the much longer reach of the covers actually found comes from
+the primes in the middle range, whose classes hold many primes and whose
+fullest class is well above the average.
 
 The simplest algorithm already does it, and its reach can be measured far
 beyond the sizes where the exact value or tempering are available
@@ -912,36 +911,62 @@ r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
 10^5 and 0.84 at 3·10^5: the same order, a quarter above the real greedy
 choice at small x (real primes are spread more evenly over the classes of a
-small r than independent balls would be), and slowly falling, as a fullest
-class of about ln x/ln ln x for the largest primes would give. So the
-measured reach and the model agree on x·ln² x up to a factor that moves, if
-at all, like ln ln x.
+small r than independent balls would be, and a class of a prime near x holds
+only about C primes, which independent balls ignore), and slowly falling. So
+the measured reach and the model agree on x·ln² x up to a factor that moves,
+if at all, like ln ln x.
 
 Pigeonhole cannot give this, because the survivors are fewer than the
 classes, and the greedy choice of classes for the small primes leaves a set
 one cannot control. With classes drawn at random for the small primes the
 averages are computable: the expected number of survivors is the one the
 greedy choice guarantees, and the expected number of surviving pairs in a
-common class of r′ is at least (number of pairs of primes below y in a common
-class) × (chance that both survive), where the first factor is at least
-r′·C(C − 1)/2 by convexity alone as soon as C > 1, and the second is
-∏(1 − 2/(r − 1)) over the small primes. A deletion argument (mark each such
-pair with a small probability; keep the large primes with exactly one marked
-pair that meets no other marked pair) would then give a positive proportion
-of large primes striking two survivors, provided two counts are bounded
-above up to constants: the second moment of the pair counts and the number
-of conflicts between pairs of different primes. Both reduce to upper-bound
-sieves for primes r′ with v + j·r′ prime (Brun, Selberg), which lose only
-constant factors. That would prove (1 + δ)·1.349 for some small explicit
-δ > 0. It is not written out and not formalised.
+common class of r′ is a finite sum over the pairs of primes below y in a
+common class, each weighted by its chance of surviving, ∏(1 − ν_r/(r − 1))
+with ν_r the number of distinct residues of the pair modulo r. (For r = 3
+this is zero unless the two primes are congruent modulo 3, since a class
+modulo 3 strikes half of all primes; so only pairs congruent modulo 3 count,
+with a factor 1/2, and the product runs from r = 5.) A deletion argument
+(mark each such pair with a small probability; keep the large primes with
+exactly one marked pair that meets no other marked pair) then gives a
+positive proportion of large primes striking two survivors, provided two
+counts are bounded above up to constants: the second moment of the pair
+counts and the number of conflicts between pairs of different primes. Both
+reduce to upper-bound sieves for primes r′ with v + j·r′ prime (Brun,
+Selberg), which lose only constant factors. That would prove (1 + δ)·1.349
+for some δ > 0. It is not written out and not formalised.
 
-For "every constant" nearly all large primes must strike j survivors each,
-which is a near-perfect matching in a hypergraph (Pippenger–Spencer, the
-Rödl nibble) and needs the degrees asymptotically, not up to constants. That
+The Opus session measured every quantity of this outline (`goldbach/
+balls_in_boxes/` on branch `ccr-c6e00296-3g7fp9`, commit 621315a; x from
+3,000 to 100,000, C from 1 to 8, classes drawn at random for the primes up to
+w = x/2 or x^0.9, twenty draws each). The survivors number what the product
+formula says, within 1%. The pairs of survivors in a common class match the
+exact expectation within 4%, and are 1.00 to 1.15 times the bound with
+r = 3 treated as above. They are *not* what independent balls would give:
+0.4 to 0.9 of it, and classes holding three or more survivors are far rarer
+than Poisson, because of the cap of about C primes per class. The second
+moment of the pair counts is at most 1.26 times the squared mean and tends
+to 1; the conflict count is 4 in the normalisation where independent degrees
+give 4. So the two bounds the outline needs hold with small constants. The
+deletion step itself keeps 9 to 11% of the large primes at C = 1.35 (12 to
+14% at C = 2), with no trend in x: carried through, the outline would give a
+constant near 1.5, not 2. Letting the large primes simply take their fullest
+class of survivors, in increasing order, does more and grows with x: with
+random classes up to w = x^0.9, everything is struck up to C = 1.39, 1.93,
+2.47 and 3.14 at x = 3,000, 10^4, 3·10^4 and 10^5 (1.12, 1.40, 1.56, 1.78
+with w = x/2), the large primes striking two to four survivors each; the
+all-greedy rule reaches 5.5 to 8.4 at the same x, so choosing the small
+primes' classes well is worth another factor of 3 to 4.
+
+For "every constant" the primes of a growing middle range must each strike
+several survivors, nearly all of them, which is a near-perfect matching in a
+hypergraph (Pippenger–Spencer, the Rödl nibble) and needs the degrees
+asymptotically, not up to constants. That
 is the machinery of Ford, Green, Konyagin, Maynard and Tao for long gaps
 between primes, in an easier regime: there a class of a large prime holds far
 fewer than one prime on average and rich classes have to be found with the
-Maynard sieve; here it holds C. So we state as a conjecture, supported by
+Maynard sieve; here it holds C, and a class of a prime in the middle range
+holds many. So we state as a conjecture, supported by
 D(n), by the covers and by the greedy table: for every A there are infinitely
 many even N with no Goldbach summand below A·ln N·ln ln N; and, more
 precisely, D(n) is of order r_n·ln² r_n up to a factor that varies at most
