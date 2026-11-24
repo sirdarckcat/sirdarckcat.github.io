@@ -46,6 +46,7 @@ import GoldbachGaps.CoverCount
 import GoldbachGaps.CoverCountRun
 import GoldbachGaps.CoverCountAsymptotic
 import GoldbachGaps.CoverPairs
+import GoldbachGaps.CoverPairSums
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -290,6 +291,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                pair weight times the Hardy–Littlewood factors has mean exactly `6 s/(s - 1)`,
                for every truncation of the two products. What the derivation does after this
                step rests on the Hardy–Littlewood conjecture and is not formalised.
+* `CoverPairSums` – the pair weight in product form and its partial sums (the research
+               session's items of 19:11 UTC). `pairWeight_eq_prod`:
+               `W(j) = a · c · ∏_{t ∣ j} (1 + u_t)` with `a = 6 s/(s - 1)`, `u_t = 2/(t - 3)` for
+               a modulus carrying a pair weight and `1/(t - 2)` otherwise, `c = ∏ (1 + u_t/t)⁻¹`
+               (`prod_w0_mul_sum`). `sum_Ioc_pairWeight`: `∑_{j ≤ m} W(j) = a c ∑_D u(D) ⌊m/d(D)⌋`
+               over the subsets `D` of the primes. `pairWeight_defect` and
+               `sum_Ioc_pairWeight_le`: the defect `a m - ∑_{j ≤ m} W(j)` is a sum of
+               nonnegative terms, so the partial sums never exceed the mean. The two local
+               identities `local_ratio_below`, `local_ratio_above`; `C₂ ≥ 1/2`
+               (`one_half_le_twinPrimeConstant`) and
+               `∏_{5 ≤ t ≤ w} (t - 1)²/(t (t - 2)) → 3/(4 C₂)` (`tendsto_prod_sq_div`).
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,

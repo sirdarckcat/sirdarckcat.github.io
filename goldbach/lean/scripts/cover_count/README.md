@@ -131,6 +131,24 @@ The mean is the same for every truncation of the two products, so no statement a
 involved. The next step of the derivation, the second-order term of the average of singular series,
 rests on the Hardy–Littlewood conjecture and is not formalised.
 
+`GoldbachGaps/CoverPairSums.lean` adds the forms the research session computes with (its items 3a and
+3b of 19:11 UTC). Write `W(j)` for the weight above at `d = 6 s j` (`pairWeight s A B j`),
+`a = 6 s/(s - 1)`, `u_t = 2/(t - 3)` for `t ∈ A` and `1/(t - 2)` for the other primes of `B`.
+
+| theorem | statement |
+|---|---|
+| `pairWeight_eq_prod` | `W(j) = a · c · ∏ (1 + u_t)` over the primes of `B` dividing `j`, with `c = ∏_B w0` |
+| `w0_mul`, `prod_w0_mul_sum` | `w0 · (1 + u_t/t) = 1`, so `c = ∏ (1 + u_t/t)⁻¹` |
+| `sum_Ioc_pairWeight` | `∑_{j ≤ m} W(j) = a c ∑_D u(D) ⌊m/d(D)⌋`, `D` over the subsets of `B`, `u(D) = ∏_D u_t`, `d(D) = ∏_D t` |
+| `pairWeight_defect` | `a m - ∑_{j ≤ m} W(j) = a c ∑_D u(D) (m/d(D) - ⌊m/d(D)⌋)` |
+| `sum_Ioc_pairWeight_le` | `∑_{j ≤ m} W(j) ≤ a m` for every `m` |
+| `local_ratio_below`, `local_ratio_above` | `(1 + u)(1 - 1/t)/(1 + u/t)` is `(t - 1)/(t - 2)` for `u = 2/(t - 3)` and `1` for `u = 1/(t - 2)` |
+| `one_half_le_twinPrimeConstant` | `C₂ ≥ 1/2` |
+| `tendsto_prod_sq_div` | `∏_{5 ≤ t ≤ w} (t - 1)²/(t (t - 2)) → 3/(4 C₂)` |
+
+The limit profile of the spread, the price equation and the constant `1.1275` that the research session
+derives from these are heuristic and are not formalised.
+
 ## 5. Exact counts for small sets of moduli
 
 `g0_exact.c` goes through every class vector modulo the first `n` odd primes, records the first odd
