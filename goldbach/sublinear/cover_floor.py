@@ -3,6 +3,8 @@
 
     python3 cover_floor.py run.txt [run2.txt ...]          the floor from each run, and the runs side by side
     python3 cover_floor.py --exact Q moduli.txt betas.txt [weights.txt]   the same by enumerating every cover (small sets)
+    python3 cover_floor.py --reach run.txt [run2.txt ...]  the number of complete covers as a function of the target, from
+                                                           runs with COVER_FLOOR_REACH (see cover_floor.c)
 
 Z(b) = sum over all covers of exp(-b k), k = rows left.  Z(0) is the number of covers (the product of the moduli).
 Between neighbouring temperatures ln Z changes by an amount estimated from the two histograms (Bennett's acceptance
@@ -81,7 +83,30 @@ def exact(Q, moduli, betas, wfile=None):
         lz = lse(lng - b * E); mk = float(np.sum(np.exp(lng - b * E - lz) * E))
         print(f"  {b:5.2f} {mk:8.3f} {lz + b * mk:9.3f} " + (f"{-lz / b:9.3f}" if b > 0 else "     -inf"))
 
+def reach(paths):
+    """ln of the number of complete covers as a function of the target, from runs made with COVER_FLOOR_REACH"""
+    print("# ln g0(y) = ln(number of class vectors that strike every odd prime below y); each run gives it at its own Q from ln Z at the")
+    print("# coldest temperature and the share of samples with k = 0 there, and beyond Q from the reach of its complete covers")
+    pts = []
+    for path in paths:
+        par, reps = analyse(path); Q = int(par["Q"]); cold = reps[-1]
+        z = cold["H"][cold["E"] == 0].sum()
+        line = [l for l in open(path) if l.startswith("REACH")]
+        if z == 0 or not line: print(f"# {path}: Q={Q}: no complete cover sampled at the coldest temperature"); continue
+        S0 = cold["lnZ"] + math.log(z / cold["n"])
+        h = np.array([[int(v) for v in u.split(":")] for u in line[0].split()[1:]]); tot = h[:, 1].sum(); tail = np.cumsum(h[::-1, 1])[::-1]
+        print(f"# {path}: Q={Q} moduli={par['moduli']} sweeps={par['sweeps']}: ln g0({Q}) = {S0:.2f}; {tot} samples of complete covers, reach up to {h[-1, 0]}")
+        pts.append((Q, S0, 0, path))
+        for y, c in zip(h[:, 0], tail):
+            if y > Q and c >= 20: pts.append((int(y), S0 + math.log(c / tot), int(c), path))
+    pts.sort()
+    print("#      y   ln g0(y)   samples beyond   run")
+    for y, s, c, path in pts: print(f"  {y:7d} {s:9.2f} {c if c else '':>12}   {path}")
+    return pts
+
 if __name__ == "__main__":
+    if sys.argv[1] == "--reach":
+        reach(sys.argv[2:]); sys.exit(0)
     if sys.argv[1] == "--exact":
         exact(int(sys.argv[2]), [int(v) for v in open(sys.argv[3]).read().split()], [float(v) for v in open(sys.argv[4]).read().split()], sys.argv[5] if len(sys.argv) > 5 else None)
         sys.exit(0)

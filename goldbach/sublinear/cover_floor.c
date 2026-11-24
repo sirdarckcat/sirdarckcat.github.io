@@ -16,9 +16,15 @@
 //   gcc -O3 -march=native -fopenmp -o cover_floor cover_floor.c -lm
 //   ./cover_floor Q moduli.txt betas.txt sweeps burn out.txt [seed] [start.txt]
 //
-// moduli.txt: the moduli, white space between them.  start.txt: r:a pairs (other words are ignored), the cover every
+// moduli.txt: the moduli, white space between them, or the word odd<=463 for every odd prime up to 463.  start.txt: r:a pairs (other words are ignored), the cover every
 // replica starts from; without it every replica starts from a random cover.  Every class of every modulus is
 // allowed, zero included, so the states are all residue vectors and their number is the product of the moduli.
+//
+// Reach: with COVER_FLOOR_REACH=Y (plain rows only) every sampled cover that leaves no row below Q is followed up to
+// Y: its reach is the least odd prime in none of its classes.  A cover with k = 0 has the same weight at every
+// temperature, so these samples are uniform over the complete covers at Q, and the fraction with reach >= y is the
+// number of complete covers at y divided by the number at Q.  Printed as a REACH line: reach:count pairs
+// (reach Y means "not below Y").
 //
 // Weighted rows: with the environment variable COVER_FLOOR_WEIGHTS=file ("q weight" lines, 64 = a full row, as
 // written by ../fscan/cover/brainstorm/soft_weights.py) the rows are the primes of that file, whatever Q, and the
@@ -53,7 +59,11 @@ int main(int argc, char **argv) {
     if (argc < 7) { fprintf(stderr, "usage: %s Q moduli.txt betas.txt sweeps burn out.txt [seed] [start.txt]\n", argv[0]); return 1; }
     int Q = atoi(argv[1]); long sweeps = atol(argv[4]), burn = atol(argv[5]);
     uint64_t seed = argc > 7 ? strtoull(argv[7], 0, 10) : 1;
-    int mod[4096], nmod = 0; { FILE *f = fopen(argv[2], "r"); if (!f) { perror(argv[2]); return 1; } while (nmod < 4096 && fscanf(f, "%d", &mod[nmod]) == 1) nmod++; fclose(f); }
+    int mod[4096], nmod = 0;
+    if (!strncmp(argv[2], "odd<=", 5)) {             // every odd prime up to the bound
+        int z = atoi(argv[2] + 5);
+        for (int i = 3; i <= z && nmod < 4096; i += 2) { int p = 1; for (int d = 3; d * d <= i; d += 2) if (i % d == 0) { p = 0; break; } if (p) mod[nmod++] = i; }
+    } else { FILE *f = fopen(argv[2], "r"); if (!f) { perror(argv[2]); return 1; } while (nmod < 4096 && fscanf(f, "%d", &mod[nmod]) == 1) nmod++; fclose(f); }
     double beta[4096]; int nb = 0; { FILE *f = fopen(argv[3], "r"); if (!f) { perror(argv[3]); return 1; } while (nb < 4096 && fscanf(f, "%lf", &beta[nb]) == 1) nb++; fclose(f); }
     if (nmod < 1 || nb < 2 || beta[0] != 0) { fprintf(stderr, "need moduli, and betas starting at 0\n"); return 1; }
     int nrows = 0, *row = NULL, *wt = NULL, weighted = 0; const char *wfile = getenv("COVER_FLOOR_WEIGHTS");
@@ -69,6 +79,15 @@ int main(int argc, char **argv) {
         if (nrows > MAXROWS) { fprintf(stderr, "too many rows\n"); return 1; }
         row = malloc(nrows * sizeof(int)); wt = malloc(nrows * sizeof(int)); nrows = 0; for (int i = 3; i < Q; i++) if (!comp[i]) { row[nrows] = i; wt[nrows] = 1; nrows++; }
         free(comp);
+    }
+    // rows beyond Q for the reach of complete covers
+    int nx = 0, *xrow = NULL; long *rhist = NULL; const char *rs = getenv("COVER_FLOOR_REACH"); int Y = rs ? atoi(rs) : 0;
+    if (Y > Q && !weighted) {
+        char *comp = calloc(Y + 1, 1);
+        for (int i = 2; (long)i * i <= Y; i++) if (!comp[i]) for (int j = i * i; j <= Y; j += i) comp[j] = 1;
+        for (int i = Q; i < Y; i++) if (i > 2 && !comp[i]) nx++;
+        xrow = malloc((nx + 1) * sizeof(int)); nx = 0; for (int i = Q; i < Y; i++) if (i > 2 && !comp[i]) xrow[nx++] = i;
+        free(comp); rhist = calloc(nx + 1, sizeof(long));
     }
     const int unit = weighted ? 64 : 1, binw = weighted ? 16 : 1;      // energy units per row; histogram bin width in energy units
     long wtot = 0; for (int i = 0; i < nrows; i++) wtot += wt[i];
@@ -144,6 +163,12 @@ int main(int argc, char **argv) {
             if (quarter >= 0) {
                 hist[(size_t)i * nbins + r->E / binw]++; if (hoff) hoff[(size_t)i * nbins + r->E / binw] += (float)(r->E % binw); acc[i] += la; tried[i] += nmod; qsum[(size_t)i * NQ + quarter] += r->E; qn[(size_t)i * NQ + quarter]++;
                 esum[i] += r->E; esum2[i] += (double)r->E * r->E; en[i]++;
+                if (rhist && r->E == 0) {
+                    int j = 0;
+                    for (; j < nx; j++) { int q = xrow[j], hit = 0; for (int m = 0; m < nmod && !hit; m++) hit = q % mod[m] == r->a[m]; if (!hit) break; }
+                    #pragma omp atomic
+                    rhist[j]++;
+                }
                 if (start) { int c = 0; for (int m = 0; m < ncore; m++) c += r->a[m] == start[m]; csum[(size_t)i * NQ + quarter] += c; }
             }
             if (r->E < minE[i]) minE[i] = r->E;
@@ -166,6 +191,11 @@ int main(int argc, char **argv) {
         if (start) { fprintf(f, " core%d", ncore); for (int k = 0; k < NQ; k++) fprintf(f, " %.3f", qn[(size_t)i * NQ + k] ? csum[(size_t)i * NQ + k] / qn[(size_t)i * NQ + k] : -1.0); }
         fprintf(f, "\nH");
         for (long e = 0; e < nbins; e++) if (h[e]) { if (weighted) fprintf(f, " %.4f:%ld", (e * binw + (double)hoff[(size_t)i * nbins + e] / h[e]) / unit, h[e]); else fprintf(f, " %ld:%ld", e, h[e]); }
+        fprintf(f, "\n");
+    }
+    if (rhist) {
+        fprintf(f, "REACH");
+        for (int j = 0; j <= nx; j++) if (rhist[j]) fprintf(f, " %d:%ld", j < nx ? xrow[j] : Y, rhist[j]);
         fprintf(f, "\n");
     }
     fclose(f);
