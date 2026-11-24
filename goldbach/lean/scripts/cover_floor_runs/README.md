@@ -28,5 +28,10 @@ are the research session's test of its prediction of 18:10 UTC, with its denser 
     COVER_FLOOR_REACH=105000 ./cover_floor 100000 'odd<=2999' cover_floor_betas_deep2.txt 150000 50000 x2999_Q100000_s<seed>.txt <seed>
     COVER_FLOOR_REACH=310000 ./cover_floor 300000 'odd<=9973' cover_floor_betas_deep2.txt 150000 50000 x9973_Q300000_s<seed>.txt <seed>
 
+`x9973_Q300000_s1_500k.txt` is the same 1,228-moduli run at 500,000 sweeps with 200,000 of burn-in
+(seed 1; 600,000 were asked for, 500,000 is what fits in the two hours one job may run here), and
+`x9973_Q300000_cover.txt` the 150,000-sweep run started from the certified cover of
+`GoldbachGaps/Cover614101.lean` (`scripts/cover_depth/greedy_9973_vector.txt` as the start file).
+
 Each file is self-describing (a header line, then the lines the program writes). The analysis is the
 research session's (`python3 cover_floor.py --reach files...`).
