@@ -10,10 +10,8 @@
 // smallest such modulus on ties), over those classes: the children differ in that modulus's class, so every vector lies below exactly one
 // node of each depth, and the floor at depth j (the least f over the depth-j nodes, pruned subtrees having f >= the final value) is a lower
 // bound for every vector.  Proof mode also cuts a node with a row of U that no qualifying class of any free modulus strikes ("dead").
-// ARGM (default on): a child (m, c) whose rows T meet the single fullest class of r1 other free moduli leaves >= f + mx[m] - h[m][c] + r1 rows
-// (each such modulus's fullest class loses a row, its other classes being below it): a child at or above the incumbent is not built
-// (89 moduli, Y = 45,000: 17.7M -> 2.3M nodes, 36.5 -> 11.8 s).  The histogram update after a child writes every modulus's entry through
-// precomputed absolute indices (an assigned modulus's row is never read).
+// FIXORDER=1 (environment): always branch on the smallest free modulus, so that floor mode's depth j means "the first j moduli fixed".
+// DEADTEST=1 (compile): also cut a node with a row no qualifying class strikes (off by default: no node savings with ARGM, 21% slower).
 //   gcc -O3 -march=native -fopenmp -o cover_ub cover_ub.c
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,11 +21,14 @@
 #include <immintrin.h>
 
 #define MAXM 128
-static int M, N, Y, mode, jdepth;                     /* mode 0: proof, 1: floor */
+static int M, N, Y, mode, jdepth, fixorder;           /* mode 0: proof, 1: floor; fixorder (env FIXORDER=1): branch on the smallest free modulus */
 static int rmod[MAXM], off[MAXM], len16[MAXM], HTOT;   /* modulus m's row: hist[off[m] .. off[m] + len16[m]) (classes >= r are 0) */
 static int *prow;                                      /* the rows (odd primes below Y) */
 static uint16_t *resT;                                 /* resT[p * MAXM + m] = prow[p] mod rmod[m] */
 static uint16_t *idxT;                                 /* idxT[p * MAXM + m] = off[m] + resT[p * MAXM + m] (m < M): row p's entry in every histogram row */
+#ifndef DEADTEST
+#define DEADTEST 0     /* the dead-row cut (proof mode): valid, but at 89 moduli it saved < 1% of the nodes for 21% more time */
+#endif
 #ifndef ARGM
 #define ARGM 1
 #endif
@@ -102,9 +103,9 @@ static void dfs(work_t *w, int d) {
         const int m = fl[k], thr = mx[m] - slack;
         const int nq = thr <= 0 ? rmod[m] : count_ge16(L->hist + off[m], len16[m], thr);
         if (thr <= 0) allpos = 0;
-        if (nq < bnq) { bnq = nq; best = m; }
+        if (fixorder ? best < 0 : nq < bnq) { bnq = nq; best = m; }
     }
-    if (mode == 0 && allpos) {                                            /* dead: a row no qualifying class strikes */
+    if (mode == 0 && allpos && DEADTEST) {                                /* dead: a row no qualifying class strikes */
         for (int i = 0; i < nu; i++) {
             const uint16_t *rp = resT + (size_t)L->U[i] * MAXM; int ok = 0;
             for (int k = 0; k < nfree && !ok; k++) { const int m = fl[k]; ok = L->hist[off[m] + rp[m]] >= mx[m] - slack; }
@@ -179,6 +180,7 @@ int main(int argc, char **argv) {
     if (argc < 4) { fprintf(stderr, "usage: cover_ub M Y proof | cover_ub M Y floor j [inc]\n"); return 1; }
     M = atoi(argv[1]); Y = atoi(argv[2]); mode = !strcmp(argv[3], "floor");
     if (mode) { jdepth = argc > 4 ? atoi(argv[4]) : 6; inc = argc > 5 ? atoi(argv[5]) : 1 << 30; } else inc = 1;
+    fixorder = getenv("FIXORDER") && atoi(getenv("FIXORDER"));
     if (M < 1 || M > MAXM) { fprintf(stderr, "M must be 1..%d\n", MAXM); return 1; }
     char *comp = calloc(Y + 1, 1); int *pr = malloc(sizeof(int) * (Y / 2 + 2)), np = 0;
     for (long i = 2; i <= Y; i++) if (!comp[i]) { if (i > 2) pr[np++] = (int)i; for (long j = i * i; j <= Y; j += i) comp[j] = 1; }
@@ -228,7 +230,7 @@ int main(int argc, char **argv) {
             printf("\n");
         } else printf("M=%d Y=%d NO COVER: no vector on the first %d odd primes strikes every odd prime below %d, so D(%d) < %d; nodes=%lld (cut by f: %lld, dead: %lld, children not built (ARGM): %lld; %d prefixes at depth %d) seconds=%.1f\n",
                       M, Y, M, Y, M, Y, nodes, cf, cd, ca, npre, P, secs);
-    } else printf("M=%d Y=%d FLOOR depth %d: every vector leaves at least %d of the %d odd primes below %d unstruck; nodes=%lld (cut by f: %lld, ARGM: %lld; %d prefixes) seconds=%.1f\n",
-                  M, Y, jdepth, inc, N, Y, nodes, cf, ca, npre, secs);
+    } else printf("M=%d Y=%d FLOOR depth %d%s: every vector leaves at least %d of the %d odd primes below %d unstruck; nodes=%lld (cut by f: %lld, ARGM: %lld; %d prefixes) seconds=%.1f\n",
+                  M, Y, jdepth, fixorder ? " (the first j moduli)" : "", inc, N, Y, nodes, cf, ca, npre, secs);
     return 0;
 }

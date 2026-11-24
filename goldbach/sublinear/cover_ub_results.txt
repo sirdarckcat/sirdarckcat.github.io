@@ -24,3 +24,9 @@ cover_ub.c with ARGM and absolute histogram indices (same validation: cover_ub_v
    M=89 Y=60000: 438,508 -> 119,427 nodes, 2.0 -> 1.0 s;  M=89 Y=45000: 17,745,606 -> 2,255,667 nodes, 36.5 -> 11.8 s (4 threads)
    (the pair bound, the exact best union of two consecutive free moduli from their joint histogram, cut nodes by 25% at Y = 45,000 but saved
    no time; not kept)
+
+Floor at Y = 170,000 on the 89 moduli (floor mode, FIXORDER=1: the first j moduli 3, 5, 7, ... fixed; the least over their classes of
+|U| - (sum of the other moduli's fullest classes among U); checked against a brute-force floor on 6 and 7 moduli):
+   M=89 Y=170000 FLOOR depth 6 (the first j moduli): every vector leaves at least 401 of the 15496 odd primes below 170000 unstruck; nodes=106026 (cut by f: 98254, ARGM: 14023; 1155 prefixes) seconds=3.2
+   M=89 Y=170000 FLOOR depth 4 (the first j moduli): every vector leaves at least -68 of the 15496 odd primes below 170000 unstruck; nodes=1174 (cut by f: 1047, ARGM: 0; 0 prefixes) seconds=0.1
+   M=89 Y=170000 FLOOR depth 8 (the first j moduli): every vector leaves at least 644 of the 15496 odd primes below 170000 unstruck; nodes=4468093 (cut by f: 2689813, ARGM: 31137375; 1155 prefixes) seconds=176.0
