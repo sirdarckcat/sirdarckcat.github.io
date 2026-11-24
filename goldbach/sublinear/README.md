@@ -1208,8 +1208,8 @@ smaller sizes the points step around it, as D(n) itself does, and the
 fitted c is 1.02 to 1.13 (`cover_floor_law.txt` has every point; raw runs
 made here are in `cover_floor_runs/count/`). Three things follow.
 
-- D(n) = θ(r_n)·ln² r_n/c, that is r·ln² r with a constant near 1, not only
-  up to a slowly varying factor: 1,082 against the exact 1,051 at n = 20,
+- D(n) = θ(r_n)·ln² r_n/c, that is r·ln² r with a constant near 1 at these
+  sizes: 1,082 against the exact 1,051 at n = 20,
   and 16,300, 45,400 and 185,000 for 89, 167 and 429 moduli (the true end
   lies a few percent before the end of the line, see below).
 - Tempering's 15,907 on the campaign's 89 moduli is at the end or within 1%
@@ -1286,7 +1286,8 @@ produces is π(Q)·ln Q rather than Q, and in the range measured that is 9 to
 0.93 at every size from 463 to 9,973, and the calculation gives 1.124/b,
 which is 0.90 for b = 1.25. Second, the same price equation with a finite
 price β at the end gives the whole partition function of the previous
-section (the formula is in the next paragraph), and fitted to the run at
+section (the formula is given below, under "The same calculation above the
+end"), and fitted to the run at
 Q = 170,000 over the temperatures that are in equilibrium (β ≤ 0.6, where
 θ − ln Z goes from 110 to 1,000) it reproduces θ − ln Z to one part in a
 thousand with c = 1.027 and b = 1.196, where that b predicts c = 1.028; the
@@ -1352,13 +1353,13 @@ length.) And beyond what any search has reached:
 | moduli | 167 | 429 | 1,228 | 3,244 | 9,591 |
 | end by the recursion | 44,917 | 194,203 | 905,951 | 3.51·10^6 | 1.51·10^7 |
 | / (x·ln² x) | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 |
-| best cover known | 40,111 | 135,511 | 614,101 | | 9.65·10^6 |
+| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 |
 
 So the recursion gives the luck-free depth within a few percent wherever it
 can be checked, from 30 to 108 moduli, and at the campaign's 89 moduli it
 gives 15,973 where the measurement says about 16,000 and tempering found
-15,907. So the constant of the law is not a
-number but a slowly moving quantity. The correction to Poisson classes is of
+15,907. The constant of the law is therefore not a number but a slowly
+moving quantity. The correction to Poisson classes is of
 order 1/ln x, so for x → ∞ the law tends to the first-moment count and
 D(n)/(r·ln² r) to e^γ/(2·C₂) = 1.349, the constant of the theorem; but it
 gets there like 1/ln x, and for every size within reach, 20 to 10,000
@@ -1384,7 +1385,7 @@ those left by random classes:
 For large Q the ratio is 1 − √(K·D/Q), K = 1.516: what the best cover saves
 over a random one is a share of the rows that falls like the inverse square
 root of the target. Nothing in the table is fitted, and it depends on the
-moduli only through D. On the campaign's 89 moduli (D = 16,300; random
+moduli only through D. On the campaign's 89 moduli (with D = 16,300; random
 nonzero classes leave 1,853 rows at 170,000 and 2,278 at 213,070) it gives
 1,172 and 1,527 rows; the floors measured above are 1,214 to 1,248 and 1,554
 to 1,609, and the best covers found have 1,248 and 1,609 (ratios 0.673 and
