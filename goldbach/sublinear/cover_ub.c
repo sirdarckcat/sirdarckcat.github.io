@@ -10,6 +10,10 @@
 // smallest such modulus on ties), over those classes: the children differ in that modulus's class, so every vector lies below exactly one
 // node of each depth, and the floor at depth j (the least f over the depth-j nodes, pruned subtrees having f >= the final value) is a lower
 // bound for every vector.  Proof mode also cuts a node with a row of U that no qualifying class of any free modulus strikes ("dead").
+// ARGM (default on): a child (m, c) whose rows T meet the single fullest class of r1 other free moduli leaves >= f + mx[m] - h[m][c] + r1 rows
+// (each such modulus's fullest class loses a row, its other classes being below it): a child at or above the incumbent is not built
+// (89 moduli, Y = 45,000: 17.7M -> 2.3M nodes, 36.5 -> 11.8 s).  The histogram update after a child writes every modulus's entry through
+// precomputed absolute indices (an assigned modulus's row is never read).
 //   gcc -O3 -march=native -fopenmp -o cover_ub cover_ub.c
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,12 +27,16 @@ static int M, N, Y, mode, jdepth;                     /* mode 0: proof, 1: floor
 static int rmod[MAXM], off[MAXM], len16[MAXM], HTOT;   /* modulus m's row: hist[off[m] .. off[m] + len16[m]) (classes >= r are 0) */
 static int *prow;                                      /* the rows (odd primes below Y) */
 static uint16_t *resT;                                 /* resT[p * MAXM + m] = prow[p] mod rmod[m] */
+static uint16_t *idxT;                                 /* idxT[p * MAXM + m] = off[m] + resT[p * MAXM + m] (m < M): row p's entry in every histogram row */
+#ifndef ARGM
+#define ARGM 1
+#endif
 static volatile int inc;                               /* incumbent: proof mode 1; floor mode the least depth-j f found */
 static volatile int found; static int foundcls[MAXM];
 static long long nodes_total, cut_f, cut_dead;
 
 typedef struct { uint16_t *hist; int *U, *buf; int nu; } level_t;
-typedef struct { level_t lv[MAXM + 1]; int cls[MAXM]; unsigned char freem[MAXM]; long long nodes, cf, cd; } work_t;
+typedef struct { level_t lv[MAXM + 1]; int cls[MAXM]; unsigned char freem[MAXM]; long long nodes, cf, cd, ca; } work_t;
 
 static inline int rowmax16(const uint16_t *h, int n16) {
     __m256i v = _mm256_setzero_si256();
@@ -45,6 +53,16 @@ static inline int count_ge16(const uint16_t *h, int n16, int thr) {      /* clas
         c += __builtin_popcount((unsigned)_mm256_movemask_epi8(_mm256_cmpeq_epi16(_mm256_max_epu16(hh, t), hh)));
     }
     return c / 2;
+}
+static inline int argmax1_16(const uint16_t *h, int n16, int mxv) {
+    if (mxv == 0) return 0xFFFF;
+    const __m256i t = _mm256_set1_epi16((short)mxv);
+    int cnt = 0, pos = -1;
+    for (int q = 0; q < n16; q += 16) {
+        const unsigned b = (unsigned)_mm256_movemask_epi8(_mm256_cmpeq_epi16(_mm256_load_si256((const __m256i *)(h + q)), t));
+        if (b) { cnt += __builtin_popcount(b) / 2; if (pos < 0) pos = q + __builtin_ctz(b) / 2; }
+    }
+    return cnt == 1 ? pos : 0xFFFF;
 }
 static void build_root(level_t *L) {
     memset(L->hist, 0, sizeof(uint16_t) * HTOT);
@@ -103,16 +121,35 @@ static void dfs(work_t *w, int d) {
     { int pos[512]; memcpy(pos, start, sizeof(int) * r); for (int i = 0; i < nu; i++) { const int p = L->U[i]; L->buf[pos[resT[(size_t)p * MAXM + m]]++] = p; } }
     w->freem[m] = 0;
     level_t *C = &w->lv[d + 1];
+#if ARGM
+    /* ARGM: a child (m, c) striking T lowers by >= 1 the fullest class of every other free modulus whose single fullest class T meets (its other
+       classes are below it), so it leaves >= f + mx[m] - h[m][c] + (those moduli) rows: a child at or above the incumbent is not built */
+    uint16_t av[MAXM] __attribute__((aligned(32)));
+    for (int q = 0; q < MAXM; q++) av[q] = 0xFFFF;
+    for (int k = 0; k < nfree; k++) { const int mm = fl[k]; if (mm != m) av[mm] = (uint16_t)argmax1_16(L->hist + off[mm], len16[mm], mx[mm]); }
+#endif
     for (int t = 0; t < ncl && !found; t++) {
         const int c = cl[t];
         if (mode == 1 && f + mx[m] - L->hist[off[m] + c] >= inc) continue;   /* the incumbent may have dropped since the list was made */
+#if ARGM
+        {   __m256i hit[MAXM / 16];
+            for (int q = 0; q < MAXM / 16; q++) hit[q] = _mm256_setzero_si256();
+            for (int i = start[c]; i < start[c + 1]; i++) {
+                const uint16_t *rp = resT + (size_t)L->buf[i] * MAXM;
+                for (int q = 0; q < MAXM / 16; q++)
+                    hit[q] = _mm256_or_si256(hit[q], _mm256_cmpeq_epi16(_mm256_loadu_si256((const __m256i *)(rp + 16 * q)), _mm256_load_si256((const __m256i *)(av + 16 * q))));
+            }
+            int r1 = 0; for (int q = 0; q < MAXM / 16; q++) r1 += __builtin_popcount((unsigned)_mm256_movemask_epi8(hit[q])) / 2;
+            if (f + mx[m] - L->hist[off[m] + c] + r1 >= inc) { w->ca++; continue; }
+        }
+#endif
         memcpy(C->hist, L->hist, sizeof(uint16_t) * HTOT);
         int nc = 0;
         for (int i = 0; i < start[c]; i++) C->U[nc++] = L->buf[i];
         for (int i = start[c + 1]; i < nu; i++) C->U[nc++] = L->buf[i];
-        for (int i = start[c]; i < start[c + 1]; i++) {                    /* the rows class c strikes leave every free modulus's histogram */
-            const uint16_t *rp = resT + (size_t)L->buf[i] * MAXM;
-            for (int k = 0; k < nfree; k++) { const int mm = fl[k]; C->hist[off[mm] + rp[mm]]--; }
+        for (int i = start[c]; i < start[c + 1]; i++) {                    /* the rows class c strikes leave every histogram (an assigned modulus's row is not read) */
+            const uint16_t *ip = idxT + (size_t)L->buf[i] * MAXM;
+            for (int mm = 0; mm < M; mm++) C->hist[ip[mm]]--;
         }
         C->nu = nc;
         w->cls[m] = c;
@@ -153,6 +190,9 @@ int main(int argc, char **argv) {
     HTOT = 0; for (int m = 0; m < M; m++) { off[m] = HTOT; len16[m] = (rmod[m] + 15) / 16 * 16; HTOT += len16[m]; }
     resT = malloc(sizeof(uint16_t) * (size_t)N * MAXM);
     for (int p = 0; p < N; p++) for (int m = 0; m < MAXM; m++) resT[(size_t)p * MAXM + m] = m < M ? (uint16_t)(prow[p] % rmod[m]) : 0;
+    idxT = malloc(sizeof(uint16_t) * (size_t)N * MAXM);
+    for (int p = 0; p < N; p++) for (int m = 0; m < MAXM; m++) idxT[(size_t)p * MAXM + m] = m < M ? (uint16_t)(off[m] + resT[(size_t)p * MAXM + m]) : 0;
+    if (HTOT > 65535) { fprintf(stderr, "histogram too long for 16-bit indices\n"); return 1; }
     const double t0 = omp_get_wtime();
     /* the prefixes: depth P with a few hundred nodes or more */
     work_t *w0 = new_work(); for (int m = 0; m < M; m++) w0->freem[m] = 1;
@@ -160,24 +200,24 @@ int main(int argc, char **argv) {
     int P = 0; save = save_node;
     for (P = 1; P <= M; P++) {
         for (int i = 0; i < npre; i++) { free(pre[i].hist); free(pre[i].U); }
-        npre = 0; stopd = P; w0->nodes = w0->cf = w0->cd = 0; dfs(w0, 0);
+        npre = 0; stopd = P; w0->nodes = w0->cf = w0->cd = w0->ca = 0; dfs(w0, 0);
         if (found || npre >= 256 || (mode == 1 && P >= jdepth)) break;
     }
-    long long nodes = w0->nodes, cf = w0->cf, cd = w0->cd;
+    long long nodes = w0->nodes, cf = w0->cf, cd = w0->cd, ca = w0->ca;
     stopd = -1;
     #pragma omp parallel
     {
         work_t *w = new_work();
-        #pragma omp for schedule(dynamic, 1) reduction(+:nodes, cf, cd)
+        #pragma omp for schedule(dynamic, 1) reduction(+:nodes, cf, cd, ca)
         for (int t = 0; t < npre; t++) {
             if (found) continue;
             pre_t *Q = &pre[t];
             memcpy(w->cls, Q->cls, sizeof w->cls); memcpy(w->freem, Q->freem, sizeof w->freem);
             memcpy(w->lv[Q->d].hist, Q->hist, sizeof(uint16_t) * HTOT); memcpy(w->lv[Q->d].U, Q->U, sizeof(int) * Q->nu); w->lv[Q->d].nu = Q->nu;
-            w->nodes = w->cf = w->cd = 0;
+            w->nodes = w->cf = w->cd = w->ca = 0;
             w->nodes--;                                                   /* the prefix node was counted when saved */
             dfs(w, Q->d);
-            nodes += w->nodes; cf += w->cf; cd += w->cd;
+            nodes += w->nodes; cf += w->cf; cd += w->cd; ca += w->ca;
         }
     }
     const double secs = omp_get_wtime() - t0;
@@ -186,9 +226,9 @@ int main(int argc, char **argv) {
             printf("M=%d Y=%d COVER FOUND (so D(%d) >= %d): nodes=%lld seconds=%.1f vector:", M, Y, M, Y, nodes, secs);
             for (int m = 0; m < M; m++) printf(" %d:%d", rmod[m], foundcls[m] < 0 ? 0 : foundcls[m]);
             printf("\n");
-        } else printf("M=%d Y=%d NO COVER: no vector on the first %d odd primes strikes every odd prime below %d, so D(%d) < %d; nodes=%lld (cut by f: %lld, dead: %lld; %d prefixes at depth %d) seconds=%.1f\n",
-                      M, Y, M, Y, M, Y, nodes, cf, cd, npre, P, secs);
-    } else printf("M=%d Y=%d FLOOR depth %d: every vector leaves at least %d of the %d odd primes below %d unstruck; nodes=%lld (cut by f: %lld; %d prefixes) seconds=%.1f\n",
-                  M, Y, jdepth, inc, N, Y, nodes, cf, npre, secs);
+        } else printf("M=%d Y=%d NO COVER: no vector on the first %d odd primes strikes every odd prime below %d, so D(%d) < %d; nodes=%lld (cut by f: %lld, dead: %lld, children not built (ARGM): %lld; %d prefixes at depth %d) seconds=%.1f\n",
+                      M, Y, M, Y, M, Y, nodes, cf, cd, ca, npre, P, secs);
+    } else printf("M=%d Y=%d FLOOR depth %d: every vector leaves at least %d of the %d odd primes below %d unstruck; nodes=%lld (cut by f: %lld, ARGM: %lld; %d prefixes) seconds=%.1f\n",
+                  M, Y, jdepth, inc, N, Y, nodes, cf, ca, npre, secs);
     return 0;
 }

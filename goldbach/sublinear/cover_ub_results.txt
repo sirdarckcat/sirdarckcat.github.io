@@ -19,3 +19,8 @@ D(89) upper bounds (proof mode, M = 89 moduli 3..463, 4 threads): no vector stri
    M=89 Y=50000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 50000, so D(89) < 50000; nodes=2201281 (cut by f: 2008509, dead: 27961; 1132 prefixes at depth 4) seconds=4.7
    M=89 Y=45000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 45000, so D(89) < 45000; nodes=17745606 (cut by f: 16270886, dead: 102761; 1140 prefixes at depth 4) seconds=33.0
    M=89 Y=40000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 40000, so D(89) < 40000; nodes=92610951 (cut by f: 82046192, dead: 1728629; 1150 prefixes at depth 4) seconds=160.9
+
+cover_ub.c with ARGM and absolute histogram indices (same validation: cover_ub_validate.sh 2..27 OK; floor mode = brute force on the 7 cases):
+   M=89 Y=60000: 438,508 -> 119,427 nodes, 2.0 -> 1.0 s;  M=89 Y=45000: 17,745,606 -> 2,255,667 nodes, 36.5 -> 11.8 s (4 threads)
+   (the pair bound, the exact best union of two consecutive free moduli from their joint histogram, cut nodes by 25% at Y = 45,000 but saved
+   no time; not kept)
