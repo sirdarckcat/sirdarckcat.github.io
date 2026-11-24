@@ -15,5 +15,6 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(251) = 231.43 (odd primes), ln²x = 30
 - least-squares line through the 8 points: intercept 238.54 against θ(x) = 231.43 (+7.12); c = 1.094; end 6,656 = 1.032 × the tempered reach. With c = 1 through θ(x) the end would be θ(x)·ln²x = 7,066 (1.095 × reach).
 - residuals of the mean from that line: -0.91 at 3,871, +1.04 at 4,838, +1.40 at 5,483, -1.54 at 5,999; seed-to-seed differences: 0.03, 0.22, 0.27, 0.15
 - the 93% point against the line through the first three: -3.92 (seed difference there 0.15): below by more than the seed difference
+- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 22.28, against 21.94 and 22.09 from random starts
 - independent check from the tail of the 5,483 run: ln g0(5,779) = 35.70 (1130 samples) against 31.15 between the 85% and 93% points and 33.50 on the line through the first three
 
