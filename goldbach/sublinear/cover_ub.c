@@ -2,6 +2,8 @@
 // Rows: the odd primes below Y.  Moduli: the first M odd primes.  A vector: one class per modulus (class 0 allowed: it strikes r itself).
 //   ./cover_ub M Y proof         does some vector strike every row?  "NO COVER" proves D(M) < Y; a cover found is printed (then D(M) >= Y).
 //   ./cover_ub M Y floor j [inc] the least, over the nodes at depth j, of f = |U| - cap: every vector leaves at least that many rows unstruck.
+//   ./cover_ub M Y count         at Y = D(M): the number of vectors striking every odd prime below Y (each uses every modulus: a free one could
+//                                take Y's class and beat D(M); a cover reached with moduli free is reported, meaning Y is not D(M)).
 // Node: U = the rows still unstruck, the free moduli, h[m][c] = |U & class (m, c)|, mx[m] = max_c h[m][c], cap = sum of mx over the free
 // moduli; any vector below the node leaves >= f = |U| - cap rows unstruck.  A child that puts free modulus m in class c has
 // f' >= f + mx[m] - h[m][c] (its U loses h[m][c] rows, its cap loses mx[m] at least), so f never decreases along a path, and with an
@@ -21,6 +23,7 @@
 #include <immintrin.h>
 
 #define MAXM 128
+static long long ncover, nabove;                        /* count mode: covers with every modulus assigned; covers reached with moduli still free */
 static int M, N, Y, mode, jdepth, fixorder;           /* mode 0: proof, 1: floor; fixorder (env FIXORDER=1): branch on the smallest free modulus */
 static int rmod[MAXM], off[MAXM], len16[MAXM], HTOT;   /* modulus m's row: hist[off[m] .. off[m] + len16[m]) (classes >= r are 0) */
 static int *prow;                                      /* the rows (odd primes below Y) */
@@ -73,11 +76,18 @@ static void build_root(level_t *L) {
 /* the node at depth d of work w; prefix mode: stop at depth stopd and hand the node to save() */
 static int stopd = -1; static void (*save)(work_t *, int);
 static void dfs(work_t *w, int d) {
-    if (found) return;
+    if (found && mode != 2) return;
     level_t *L = &w->lv[d];
     w->nodes++;
     const int nu = L->nu;
-    if (mode == 0 && nu == 0) {                                           /* every row struck: a cover */
+    if (mode != 1 && nu == 0) {                                           /* every row struck: a cover */
+        if (mode == 2) {                                                  /* count mode: at Y = D(n) a cover uses every modulus */
+            int nf = 0; for (int m = 0; m < M; m++) nf += w->freem[m];
+            #pragma omp critical
+            { if (nf) nabove++; else ncover++;
+              if (!found) { found = 1; for (int m = 0; m < M; m++) foundcls[m] = w->freem[m] ? -1 : w->cls[m]; } }
+            return;
+        }
         #pragma omp critical
         if (!found) { found = 1; for (int m = 0; m < M; m++) foundcls[m] = w->freem[m] ? -1 : w->cls[m]; }
         return;
@@ -129,7 +139,7 @@ static void dfs(work_t *w, int d) {
     for (int q = 0; q < MAXM; q++) av[q] = 0xFFFF;
     for (int k = 0; k < nfree; k++) { const int mm = fl[k]; if (mm != m) av[mm] = (uint16_t)argmax1_16(L->hist + off[mm], len16[mm], mx[mm]); }
 #endif
-    for (int t = 0; t < ncl && !found; t++) {
+    for (int t = 0; t < ncl && !(found && mode != 2); t++) {
         const int c = cl[t];
         if (mode == 1 && f + mx[m] - L->hist[off[m] + c] >= inc) continue;   /* the incumbent may have dropped since the list was made */
 #if ARGM
@@ -178,8 +188,8 @@ static void save_node(work_t *w, int d) {
 }
 int main(int argc, char **argv) {
     if (argc < 4) { fprintf(stderr, "usage: cover_ub M Y proof | cover_ub M Y floor j [inc]\n"); return 1; }
-    M = atoi(argv[1]); Y = atoi(argv[2]); mode = !strcmp(argv[3], "floor");
-    if (mode) { jdepth = argc > 4 ? atoi(argv[4]) : 6; inc = argc > 5 ? atoi(argv[5]) : 1 << 30; } else inc = 1;
+    M = atoi(argv[1]); Y = atoi(argv[2]); mode = !strcmp(argv[3], "floor") ? 1 : !strcmp(argv[3], "count") ? 2 : 0;
+    if (mode == 1) { jdepth = argc > 4 ? atoi(argv[4]) : 6; inc = argc > 5 ? atoi(argv[5]) : 1 << 30; } else inc = 1;
     fixorder = getenv("FIXORDER") && atoi(getenv("FIXORDER"));
     if (M < 1 || M > MAXM) { fprintf(stderr, "M must be 1..%d\n", MAXM); return 1; }
     char *comp = calloc(Y + 1, 1); int *pr = malloc(sizeof(int) * (Y / 2 + 2)), np = 0;
@@ -202,8 +212,8 @@ int main(int argc, char **argv) {
     int P = 0; save = save_node;
     for (P = 1; P <= M; P++) {
         for (int i = 0; i < npre; i++) { free(pre[i].hist); free(pre[i].U); }
-        npre = 0; stopd = P; w0->nodes = w0->cf = w0->cd = w0->ca = 0; dfs(w0, 0);
-        if (found || npre >= 256 || (mode == 1 && P >= jdepth)) break;
+        npre = 0; stopd = P; w0->nodes = w0->cf = w0->cd = w0->ca = 0; ncover = nabove = 0; dfs(w0, 0);
+        if ((found && mode != 2) || npre >= 256 || (mode == 1 && P >= jdepth)) break;
     }
     long long nodes = w0->nodes, cf = w0->cf, cd = w0->cd, ca = w0->ca;
     stopd = -1;
@@ -212,7 +222,7 @@ int main(int argc, char **argv) {
         work_t *w = new_work();
         #pragma omp for schedule(dynamic, 1) reduction(+:nodes, cf, cd, ca)
         for (int t = 0; t < npre; t++) {
-            if (found) continue;
+            if (found && mode != 2) continue;
             pre_t *Q = &pre[t];
             memcpy(w->cls, Q->cls, sizeof w->cls); memcpy(w->freem, Q->freem, sizeof w->freem);
             memcpy(w->lv[Q->d].hist, Q->hist, sizeof(uint16_t) * HTOT); memcpy(w->lv[Q->d].U, Q->U, sizeof(int) * Q->nu); w->lv[Q->d].nu = Q->nu;
@@ -223,7 +233,10 @@ int main(int argc, char **argv) {
         }
     }
     const double secs = omp_get_wtime() - t0;
-    if (mode == 0) {
+    if (mode == 2) {
+        printf("M=%d Y=%d COUNT: %lld vectors strike every odd prime below %d with every modulus used%s; nodes=%lld seconds=%.1f\n", M, Y, ncover, Y,
+               nabove ? " AND SOME COVERS LEAVE MODULI FREE (Y is not D(M))" : "", nodes, secs);
+    } else if (mode == 0) {
         if (found) {
             printf("M=%d Y=%d COVER FOUND (so D(%d) >= %d): nodes=%lld seconds=%.1f vector:", M, Y, M, Y, nodes, secs);
             for (int m = 0; m < M; m++) printf(" %d:%d", rmod[m], foundcls[m] < 0 ? 0 : foundcls[m]);

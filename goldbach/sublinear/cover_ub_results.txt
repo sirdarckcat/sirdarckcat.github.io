@@ -30,3 +30,15 @@ Floor at Y = 170,000 on the 89 moduli (floor mode, FIXORDER=1: the first j modul
    M=89 Y=170000 FLOOR depth 6 (the first j moduli): every vector leaves at least 401 of the 15496 odd primes below 170000 unstruck; nodes=106026 (cut by f: 98254, ARGM: 14023; 1155 prefixes) seconds=3.2
    M=89 Y=170000 FLOOR depth 4 (the first j moduli): every vector leaves at least -68 of the 15496 odd primes below 170000 unstruck; nodes=1174 (cut by f: 1047, ARGM: 0; 0 prefixes) seconds=0.1
    M=89 Y=170000 FLOOR depth 8 (the first j moduli): every vector leaves at least 644 of the 15496 odd primes below 170000 unstruck; nodes=4468093 (cut by f: 2689813, ARGM: 31137375; 1155 prefixes) seconds=176.0
+
+Count mode (cover_ub M D(M) count; a separate program from desert_fast5's count mode): the number of optimal vectors equals the table for every
+n = 2..26, including n = 25 (2) and n = 26 (12), the two counts first made with the desert_fast5 build that had the ord[MAXN] overflow:
+   M=2 Y=7 COUNT: 2 vectors strike every odd prime below 7 with every modulus used; nodes=5 seconds=0.0
+   M=20 Y=1051 COUNT: 1 vectors strike every odd prime below 1051 with every modulus used; nodes=53925 seconds=0.0
+   M=21 Y=1213 COUNT: 2 vectors strike every odd prime below 1213 with every modulus used; nodes=27391 seconds=0.0
+   M=22 Y=1279 COUNT: 2 vectors strike every odd prime below 1279 with every modulus used; nodes=196128 seconds=0.2
+   M=23 Y=1381 COUNT: 1 vectors strike every odd prime below 1381 with every modulus used; nodes=547435 seconds=0.4
+   M=24 Y=1471 COUNT: 1 vectors strike every odd prime below 1471 with every modulus used; nodes=1478748 seconds=1.1
+   M=25 Y=1567 COUNT: 2 vectors strike every odd prime below 1567 with every modulus used; nodes=4562625 seconds=3.7
+   M=26 Y=1669 COUNT: 12 vectors strike every odd prime below 1669 with every modulus used; nodes=14347162 seconds=12.0
+   M=27 Y=1801 COUNT: 10 vectors strike every odd prime below 1801 with every modulus used; nodes=19307434 seconds=18.2
