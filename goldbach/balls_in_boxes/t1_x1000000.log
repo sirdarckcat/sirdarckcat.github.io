@@ -6,3 +6,4 @@ x=1000000 w=x/2 order=decreasing: C* = 2.096 (per-draw 2.10..2.10); nothing-left
 x=1000000 w=x/2 order=random: C* = 2.114 (per-draw 2.11..2.11); nothing-left fraction on the grid [1.0, 1.0, 0.0]  [6619s]
 x=1000000 w=x^0.9 C=1.35: |S| 71006 (pred 70950); E 1.726e+08 exact 0 balls 2.653e+08; 2nd 1.003; confl 4.015; good max 0.0875 at 0.2  [7285s]
 x=1000000 w=x^0.9 C=2.0: |S| 102642 (pred 102525); E 4.033e+08 exact 0 balls 5.544e+08; 2nd 1.001; confl 4.007; good max 0.1142 at 0.35  [8050s]
+x=1000000 w=x^0.9 C=4.0: |S| 196639 (pred 196531); E 1.691e+09 exact 0 balls 2.035e+09; 2nd 1.000; confl 3.999; good max 0.1698 at 0.5  [9075s]

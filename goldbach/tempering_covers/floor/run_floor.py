@@ -4,6 +4,7 @@
 # end Q + ln g0(Q) / |slope| from the last interval.  Runs are single-threaded (OMP_NUM_THREADS=1: the result does not depend
 # on the thread count, and one thread does not spin on a shared machine), several at a time; a run whose output exists is skipped.
 #   python3 run_floor.py run [procs] [x ...]      the runs
+#   python3 run_floor.py start [procs] [x ...]    the 93% target once more, started from the best tempered cover
 #   python3 run_floor.py report [x ...]           ln g0 per target and seed, slopes, ends (floor_report.md, floor_points.json)
 import json, math, os, subprocess, sys, re
 from concurrent.futures import ThreadPoolExecutor
@@ -38,6 +39,26 @@ def one(job):
     os.rename(tmp, out); print(f"done x={x} Q={Q} seed={s}", flush=True)
     return out
 
+def best_vector(x):
+    best = None
+    for l in open(os.path.join(T2, "t2_runs.jsonl")):
+        r = json.loads(l)
+        if r["x"] == x and r["k"] == 0 and (best is None or r["Q"] > best["Q"]): best = r
+    return best["best"]
+
+def start_name(x, Q): return os.path.join(HERE, "runs", f"out_x{x}_Q{Q}_s1_start.txt")
+
+def one_start(job):
+    x, Q, Y = job
+    out = start_name(x, Q)
+    if os.path.exists(out): return out
+    sf = os.path.join(HERE, "runs", f"start_x{x}.txt"); open(sf, "w").write(best_vector(x) + "\n")
+    log = open(out.replace(".txt", ".log"), "w")
+    subprocess.run([os.path.join(HERE, "cover_floor"), str(Q), f"odd<={x}", os.path.join(HERE, "cover_floor_betas_deep.txt"), str(SWEEPS), str(BURN), out + ".part", "1", sf],
+                   env=dict(os.environ, OMP_NUM_THREADS="1", COVER_FLOOR_REACH=str(Y)), stdout=log, stderr=subprocess.STDOUT, check=True)
+    os.rename(out + ".part", out); print(f"done x={x} Q={Q} start at the tempered cover", flush=True)
+    return out
+
 def reach_points(paths):
     """run cover_floor.py --reach on the given outputs; returns [(y, ln g0, samples beyond, path)]"""
     txt = subprocess.run([sys.executable, os.path.join(HERE, "cover_floor.py"), "--reach"] + paths, capture_output=True, text=True, check=True).stdout
@@ -56,6 +77,10 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(HERE, "runs"), exist_ok=True)
         jobs = [(x, Q, s, 2 * R[x][0]) for x in xs for Q in targets(R[x][0]) for s in SEEDS]
         with ThreadPoolExecutor(procs) as ex: list(ex.map(one, jobs))
+    elif mode == "start":
+        procs = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+        xs = [int(a) for a in sys.argv[3:]] or list(XS)
+        with ThreadPoolExecutor(procs) as ex: list(ex.map(one_start, [(x, targets(R[x][0])[-1], 2 * R[x][0]) for x in xs]))
     elif mode == "report":
         xs = [int(a) for a in sys.argv[2:]] or list(XS)
         rep, allpts = [], {}
@@ -86,6 +111,47 @@ if __name__ == "__main__":
                 rep.append(f"\nSlope of the last interval: {slope:.2f} per 1,000. Straight-line end: " + (f"{end:,.0f} ({end / reach:.3f} × the tempered reach)." if end else "none (not falling)."))
             if tail:
                 rep.append(f"Tail of the {Qd[-1]:,} run (seed 1): ln g0 = " + ", ".join(f"{v:.1f} at {y:,}" for y, v, c in tail[::max(1, len(tail) // 6)]) + ".")
+            # the research session's line: ln g0(Q) = theta(x) - c Q / ln^2 x, theta(x) = sum of ln r over the odd primes r <= x
+            L2 = math.log(x) ** 2; th = sum(math.log(p) for p in range(3, x + 1, 2) if all(p % d for d in range(3, int(p ** 0.5) + 1, 2)))
+            cons = [(-(mean[b] - mean[a]) / (b - a) * L2) for a, b in zip(Qd, Qd[1:])]
+            xs_, ys_ = [Q for (Q, s) in sorted(at)], [at[(Q, s)] for (Q, s) in sorted(at)]
+            if len(set(xs_)) >= 2:
+                n = len(xs_); mx = sum(xs_) / n; my = sum(ys_) / n
+                b1 = sum((u - mx) * (v - my) for u, v in zip(xs_, ys_)) / sum((u - mx) ** 2 for u in xs_); b0 = my - b1 * mx
+                c_fit = -b1 * L2; end_ls = -b0 / b1
+                res = {Q: mean[Q] - (b0 + b1 * Q) for Q in Qd}
+                sd = {Q: abs(at[(Q, 1)] - at[(Q, 2)]) for Q in Qd if (Q, 1) in at and (Q, 2) in at}
+                allpts[x].update(theta=th, ln2x=L2, slopes_c=cons, ls_intercept=b0, ls_c=c_fit, ls_end=end_ls, residuals={str(k): v for k, v in res.items()},
+                                 seed_diff={str(k): v for k, v in sd.items()}, c1_end=th * L2)
+                rep.append(f"\nThe line ln g0 = θ(x) − c·Q/ln²x: θ({x}) = {th:.2f} (odd primes), ln²x = {L2:.2f}.")
+                rep.append("- slope between consecutive targets, in units of 1/ln²x: " + ", ".join(f"{c:.3f} ({a:,}–{b:,})" for c, (a, b) in zip(cons, zip(Qd, Qd[1:]))))
+                rep.append(f"- least-squares line through the {n} points: intercept {b0:.2f} against θ(x) = {th:.2f} ({b0 - th:+.2f}); c = {c_fit:.3f}; "
+                           f"end {end_ls:,.0f} = {end_ls / reach:.3f} × the tempered reach. With c = 1 through θ(x) the end would be θ(x)·ln²x = {th * L2:,.0f} ({th * L2 / reach:.3f} × reach).")
+                rep.append("- residuals of the mean from that line: " + ", ".join(f"{res[Q]:+.2f} at {Q:,}" for Q in Qd) +
+                           "; seed-to-seed differences: " + ", ".join(f"{sd[Q]:.2f}" for Q in Qd if Q in sd))
+                if len(Qd) == 4:
+                    u = Qd[:3]; m3 = sum(u) / 3; v3 = [mean[q] for q in u]; mv = sum(v3) / 3
+                    s3 = sum((a - m3) * (b - mv) for a, b in zip(u, v3)) / sum((a - m3) ** 2 for a in u); i3 = mv - s3 * m3
+                    dev = mean[Qd[3]] - (i3 + s3 * Qd[3])
+                    allpts[x].update(dev93_from_3pt_line=dev)
+                    rep.append(f"- the 93% point against the line through the first three: {dev:+.2f} (seed difference there {sd.get(Qd[3], float('nan')):.2f})"
+                               + (": below by more than the seed difference" if dev < -sd.get(Qd[3], 0) else ""))
+                    st = start_name(x, Qd[3])
+                    if os.path.exists(st):
+                        _, sp = reach_points([st]); v = [w for y, w, c, p in sp if y == Qd[3] and c == 0]
+                        if v:
+                            allpts[x].update(start93=v[0])
+                            rep.append(f"- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = {v[0]:.2f}, against "
+                                       + " and ".join(f"{at[(Qd[3], s)]:.2f}" for s in SEEDS if (Qd[3], s) in at) + " from random starts")
+                    # independent check of the last interval: the reach tail of the 85% runs (uniform samples of the complete covers at
+                    # that target) at the largest y it still resolves (>= 20 samples), against the two lines
+                    tl = [(y, v, c, p) for y, v, c, p in pts if c > 0 and re.search(rf"_Q{Qd[2]}_s\d\.txt$", p) and Qd[2] < y <= Qd[3]]
+                    if tl:
+                        y, v, c, p = max(tl)
+                        lin = mean[Qd[2]] + (mean[Qd[3]] - mean[Qd[2]]) * (y - Qd[2]) / (Qd[3] - Qd[2]); l3 = i3 + s3 * y
+                        allpts[x].update(tail85=dict(y=y, ln_g0=v, samples=c, interp=lin, line3=l3))
+                        rep.append(f"- independent check from the tail of the {Qd[2]:,} run: ln g0({y:,}) = {v:.2f} ({c} samples) against {lin:.2f} between the 85% "
+                                   f"and 93% points and {l3:.2f} on the line through the first three")
             rep.append("")
         open(os.path.join(HERE, "floor_report.md"), "w").write("\n".join(rep) + "\n")
         json.dump(allpts, open(os.path.join(HERE, "floor_points.json"), "w"), indent=1)
