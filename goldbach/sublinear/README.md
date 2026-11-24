@@ -1286,6 +1286,25 @@ would make it, and it explains the size of what tempering finds: the covers
 of the campaign are not good by accident of search, they are where the count
 of covers runs out.
 
+The same formula covers the table of Result 3, which was made the day
+before with a different sampler and for a different purpose. A number below
+10^200 has 460 nats to spend on its residues, whatever the depth z, so the
+count of such numbers with few rows left at depth z runs out where the
+entropy above equals θ(z) − 460 instead of zero: put D = 460·ln² z/c in the
+table. At the 10% target (19,050 rows):
+
+| depth z | 463 | 1,000 | 2,000 | 5,000 | 20,000 | 50,000 |
+|---|---|---|---|---|---|---|
+| rows left by random classes | 2,278 | 2,037 | 1,853 | 1,655 | 1,425 | 1,305 |
+| predicted fewest rows of any N < 10^200 | 1,505 | 1,262 | 1,081 | 888 | 665 | 550 |
+| cutoff of the ideal search, measured (Result 3) | 1,620 | 1,319 | 1,116 | 910 | 685 | 574 |
+
+(The cutoff of the ideal search lies a few rows above the fewest that exist:
+11 at depth 463, where the fewest is 1,609.) So the prize of Result 3, the
+3.5 to 14.8 nats that an ideal search to depth 1,000 to 50,000 would be
+worth, is the same quantity as the floor under the covers, seen at other
+depths: one function of 460·ln² z/Q.
+
 **Conjecture (counting law).** For x → ∞ and x ≤ Q ≤ (1 − ε)·θ(x)·ln² x/c,
 the number of class vectors modulo the odd primes up to x that strike every
 odd prime below Q is exp(θ(x) − (c + o(1))·Q/ln² x), with a constant c that
