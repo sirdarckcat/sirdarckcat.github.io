@@ -1276,8 +1276,25 @@ loss is
 The factor ln Q that turns the number of rows into Q comes from the
 dispersion law, so the line is straight whatever Q is, and its slope is a
 constant over ln² x. With b = 1.12 the constant is 1; the measured b is 1.3
-for most moduli and less for the smallest. Whether c is exactly 1 the
-heuristic does not say: it gives c as a quotient of constants.
+for most moduli and less for the smallest.
+
+Two checks of the calculation, and what they say about c. First, what it
+produces is π(Q)·ln Q rather than Q, and in the range measured that is 9 to
+13% more than Q. Written with π(Q)·ln Q the measured constant is 0.89 to
+0.93 at every size from 463 to 9,973, and the calculation gives 1.124/b,
+which is 0.90 for b = 1.25. Second, the same price equation with a finite
+price β at the end gives the whole partition function of the previous
+section (the formula is in the next paragraph), and fitted to the run at
+Q = 170,000 over the temperatures that are in equilibrium (β ≤ 0.6, where
+θ − ln Z goes from 110 to 1,000) it reproduces θ − ln Z to one part in a
+thousand with c = 1.027 and b = 1.196, where that b predicts c = 1.028; the
+spread of the alive rows over the classes measured directly at that target
+has b between 1.1 and 1.4 for the moduli above 30, as at 10,000 and 25,000.
+So the constant is understood: c = 2·C₂·e^(−γ)·K/b times π(Q)·ln Q/Q, the
+one empirical number being the constant b of the dispersion law, about
+1.25. It is 1.00 in the range measured by the accident that π(Q)·ln Q/Q is
+1.1 there; for very large x it tends to about 0.9, and D(n) to about
+1.1·r·ln² r.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1328,10 +1345,12 @@ table. At the 10% target (19,050 rows):
 worth, is the same quantity as the floor under the covers, seen at other
 depths: one function of 460·ln² z/Q.
 
-**Conjecture (counting law).** For x → ∞ and x ≤ Q ≤ (1 − ε)·θ(x)·ln² x/c,
-the number of class vectors modulo the odd primes up to x that strike every
-odd prime below Q is exp(θ(x) − (c + o(1))·Q/ln² x), with a constant c that
-the measurements put at 1.00 ± 0.03; consequently D(n) = (1/c + o(1))·r_n·ln² r_n,
+**Conjecture (counting law).** For x → ∞ and Q between x and a fixed
+fraction of θ(x)·ln² x, the number of class vectors modulo the odd primes up
+to x that strike every odd prime below Q is
+exp(θ(x) − (c + o(1))·π(Q)·ln Q/ln² x), with a constant c that the
+measurements put at 0.91 ± 0.02 (in the range measured this is the same as
+1.00·Q/ln² x); consequently D(n) is r_n·ln² r_n times a constant close to 1,
 and the least Goldbach summand that divisibility by the primes up to ln N
 alone can force is of the exact order ln N·(ln ln N)².
 
