@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """An independent check of D(n) by a SAT solver (no code shared with desert_fast*.c).
 
-    python3 desert_sat.py n D [solver]          (solver: a pysat name, default cadical195)
+    python3 desert_sat.py n D [solver] [--drat FILE] [--cnf FILE]     (solver: a pysat name, default cadical195)
+    python3 desert_sat.py n D [solver] --count                        (count the optimal vectors)
 
 Variables x[m][c]: modulus m (the m-th odd prime r) takes class c, 0 <= c < r.  Exactly one class per modulus (one clause "at least one" and a
 cardinality encoding "at most one").  For an odd prime q, the clause OR_m x[m][q mod r_m] says some modulus strikes q.
@@ -10,6 +11,9 @@ cardinality encoding "at most one").  For an odd prime q, the clause OR_m x[m][q
   * "every odd prime below D is struck" must be SAT, and the model is a vector whose least unstruck odd prime is checked here to be >= D.
 Together: D(n) = D.  With --drat FILE the UNSAT run also writes a DRAT proof (solvers that support it), and with --cnf FILE the UNSAT formula in
 DIMACS: a DRAT checker (e.g. drat-trim FILE.cnf FILE.drat, or a verified one) can check the pair.
+With --count it enumerates the models of "every odd prime below D is struck" projected on the x variables (one solver, a blocking clause on the
+x variables after each model), so it counts the vectors whose least unstruck odd prime is >= D: with D = D(n), the optimal vectors (an
+independent check of desert_fast4's count mode).
 """
 import sys, time
 from pysat.formula import CNF
@@ -65,6 +69,19 @@ def solve(n, X, solver="cadical195", drat=None, cnf_path=None):
     return sat, vec, mods, dt, len(cnf.clauses)
 
 
+def count(n, D, solver="cadical195"):
+    """the vectors on the first n odd primes striking every odd prime below D, each once (blocking clauses on the class variables)"""
+    cnf, var, mods = build(n, D)
+    t0, vecs = time.time(), []
+    with Solver(name=solver, bootstrap_with=cnf.clauses) as s:
+        while s.solve():
+            pos = set(l for l in s.get_model() if l > 0)
+            vec = [next(c for c in range(r) if var[(m, c)] in pos) for m, r in enumerate(mods)]
+            vecs.append(vec)
+            s.add_clause([-var[(m, c)] for m, c in enumerate(vec)])
+    return vecs, mods, time.time() - t0
+
+
 def least_unstruck(vec, mods):
     for q in primes_upto(20000):
         if all(q % r != c for r, c in zip(mods, vec)):
@@ -74,6 +91,16 @@ def least_unstruck(vec, mods):
 def main():
     n, D = int(sys.argv[1]), int(sys.argv[2])
     solver = sys.argv[3] if len(sys.argv) > 3 and not sys.argv[3].startswith("--") else "cadical195"
+    if "--count" in sys.argv:
+        vecs, mods, dt = count(n, D, solver)
+        qs = [least_unstruck(v, mods) for v in vecs]
+        ok = all(q >= D for q in qs) and len(set(map(tuple, vecs))) == len(vecs)
+        above = sum(q > D for q in qs)
+        print(f"SAT-COUNT n={n} D={D}: {len(vecs)} vectors strike every odd prime below {D} ({above} of them also strike {D}) in {dt:.1f} s ({solver})"
+              + ("" if ok else " WRONG"), flush=True)
+        for v in vecs:
+            print("  " + " ".join(f"{r}:{c}" for r, c in zip(mods, v)))
+        sys.exit(0 if ok else 1)
     drat = sys.argv[sys.argv.index("--drat") + 1] if "--drat" in sys.argv else None
     P = primes_upto(20000)
     nxt = next(p for p in P if p > D)

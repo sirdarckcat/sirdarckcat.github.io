@@ -1,0 +1,30 @@
+desert_fast5.c (uarch, 24 Nov 2026): checks and runs.  Machine: 4 vCPUs (Xeon @ 2.1 GHz), shared with the desert_fast4 queue, so wall times
+at 4 threads are roughly doubled by the contention; "CPU" = single-thread user time.
+
+1. Verification.  bash desert_verify.sh ./desert_fast5 19 20 20 (5.3 s):
+   * D(1..19) found from scratch equal the table, and every printed vector's least unstruck odd prime is D (desert_check.py);
+   * the counts of optimal vectors for n = 2..20 equal desert_fast4's count mode (n = 2..9 also the brute force desert_brute_count.c, n = 1..12
+     also desert_sat.py --count, a SAT enumeration sharing no code), with no vector above D;
+   * the proof runs (known = the next prime after D) say NOT ATTAINED for n = 2..20.
+   The suite also passes (n <= 17, counts and proofs n <= 18) with each option off: -DLOOK=0, -DFORCE=0, -DMBR=0, -DLOOK=0 -DMBR=0.
+
+2. Nodes of the n = 18 proof run (no vector strikes every odd prime below 863), by option:
+      all on 361,024 | FORCE=0 361,591 | LOOK=0 388,133 | MBR=0 1,326,897 | LOOK=0 MBR=0 1,926,624 | EOPT=0 (LOOK only) 10,227,359
+      EOPT=0 LOOK=0 38,255,513  = desert_fast4's 38,255,513 exactly (the base search is unchanged).
+   CPU, n = 18 proof: desert_fast4 8.6 s; LOOK only 3.2 s; + EOPT + FORCE (AVX2) 0.59 s; all (+ MBR) 0.2 s.
+
+3. Proof runs, nodes: desert_fast4 -> desert_fast5 (CPU of desert_fast5)
+      n = 17 (743):  13,628,207 -> 202,414 (0.1 s)        n = 20 (1061):   597,460,236 -> 3,075,996 (1.3 s)
+      n = 18 (863):  38,255,513 -> 361,024 (0.2 s)        n = 21 (1217): 1,187,854,349 -> 6,095,117 (1.5 s wall, 4 threads)
+      n = 19 (911): 182,172,299 -> 2,293,629 (0.9 s)      n = 22 (1283): 5,019,500,873 -> 36,897,272 (9.2 s wall, 4 threads)
+
+4. Runs (4 threads; lines as printed, the vector at the end of the line; the first five are from the same search before its counters were
+   renamed, "zero-option cuts" = dead):
+   n=21 r=79 D=1213 nodes=13489108 (below the 7980 split prefixes) rebuilds=10472 zero-option cuts=2382002 seconds=3.2 vector: 3:2 5:2 7:6 11:1 13:10 17:7 19:5 23:11 29:19 31:27 37:15 41:38 43:7 47:26 53:2 59:31 61:55 67:28 71:61 73:3 79:14
+   n=22 r=83 D=1279 nodes=49707773 (below the 9240 split prefixes) rebuilds=12213 zero-option cuts=9011118 seconds=13.0 vector: 3:2 5:2 7:6 11:2 13:12 17:13 19:5 23:22 29:22 31:7 37:19 41:3 43:2 47:31 53:2 59:33 61:12 67:39 71:57 73:61 79:66 83:80
+   n=21 r=79 NOT ATTAINED: no vector strikes every odd prime below 1217, so D(21) < 1217; nodes=6095117 (below the 7980 split prefixes) skipped=1113950 seconds=1.5
+   n=22 r=83 NOT ATTAINED: no vector strikes every odd prime below 1283, so D(22) < 1283; nodes=36897272 (below the 9240 split prefixes) skipped=8724358 seconds=9.2
+   n=21 r=79 COUNT D=1213 optimal vectors=2 above D=0 nodes=7676848 (below the 7980 split prefixes) seconds=1.8 vector: 3:2 5:2 7:6 11:1 13:10 17:7 19:5 23:11 29:19 31:27 37:15 41:38 43:7 47:26 53:2 59:31 61:55 67:28 71:61 73:3 79:14
+   n=22 r=83 COUNT D=1279 optimal vectors=2 above D=0 nodes=40705411 (below the 9240 split prefixes) dead=7061765 skipped=8157778 forced=5176570 modulus-branchings=5546458 rebuilds=9240 seconds=10.1 vector: 3:2 5:2 7:6 11:2 13:12 17:13 19:5 23:22 29:22 31:7 37:19 41:3 43:2 47:31 53:2 59:33 61:12 67:39 71:57 73:61 79:66 83:80
+   desert_fast4 (the old search, an independent check of the new cuts): D(22) = 1279, 8,409,768,046 nodes, 964 s; proof below 1283 NOT ATTAINED,
+   5,019,500,873 nodes, 469 s.  desert_fast_order.c (research's desert_fast.c + the child order): D(20) = 1051, 1,899,123,476 nodes, 1697 s (2 threads).
