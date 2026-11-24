@@ -23,3 +23,7 @@ x=251 Q=6440 seed=1: k 0, first sweep at best k 25585, identical True (51 s)
 x=349 Q=10116 seed=1: k 1, first sweep at best k 57384, identical True (72 s)
 x=349 Q=10116 seed=2: k 1, first sweep at best k 46820, identical True (74 s)
 x=349 Q=10116 seed=3: k 1, first sweep at best k 53220, identical True (75 s)
+x=349 Q=10116 seed=4: k 1, first sweep at best k 16891, identical True (76 s)
+x=349 Q=10085 seed=2: k 0, first sweep at best k 21895, identical True (71 s)
+x=349 Q=10085 seed=1: k 0, first sweep at best k 49821, identical True (72 s)
+0 reruns
