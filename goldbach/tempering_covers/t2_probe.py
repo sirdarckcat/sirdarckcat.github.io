@@ -9,9 +9,12 @@ from t2_firsthit import finished
 if __name__ == "__main__":
     factor = int(sys.argv[1]) if len(sys.argv) > 1 else 4
     procs = int(sys.argv[2]) if len(sys.argv) > 2 else 2
-    only = {int(a) for a in sys.argv[3:]}
+    args = sys.argv[3:]; seeds = t2.SEEDS
+    if "--seeds" in args:
+        i = args.index("--seeds"); seeds = tuple(int(v) for v in args[i + 1].split(",")); args = args[:i] + args[i + 2:]
+    only = {int(a) for a in args}
     t2.DONE = t2.logged()
-    jobs = [(x, hi, s, factor * t2.sweeps_for(x)) for x, (lo, hi) in sorted(finished().items()) if not only or x in only for s in t2.SEEDS]
+    jobs = [(x, hi, s, factor * t2.sweeps_for(x)) for x, (lo, hi) in sorted(finished().items()) if not only or x in only for s in seeds]
     with ThreadPoolExecutor(procs) as ex:
         rs = list(ex.map(lambda j: t2.one(*j), jobs))
     for x in sorted({j[0] for j in jobs}):
