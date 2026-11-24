@@ -1722,7 +1722,12 @@ kept at every temperature (chance would be 1.1). The middle temperatures
 forget the start within the burn-in; the slow mode is something else, most
 likely the families of the earlier paragraph taking their shares. So at
 1,228 moduli the test stands as: approached from above to within 1.3%, not
-yet reached, and no way found here to bound it from below.
+yet reached, and no way found here to bound it from below. (A power law in
+the length of the run through the three values, loss = L + A·t^(−a), has
+L = 3,388 to 3,393 with a = 0.36 to 0.38, whether t is the whole run or the
+middle of its sampled part. Three points and three parameters: that is an
+estimate of where the series is heading, next to the 3,394 on record, and
+not a test.)
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
