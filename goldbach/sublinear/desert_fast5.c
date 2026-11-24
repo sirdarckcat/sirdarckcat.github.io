@@ -52,7 +52,10 @@
 #include <omp.h>
 #ifdef BIG            /* -DBIG: up to 64 moduli below 256 (n <= 53), primes up to 8,161 (NP 1024); also -fno-tree-loop-distribute-patterns */
 #define MAXN 64
-#define NP 1024
+#ifndef NPB
+#define NPB 1024      /* -DNPB=512: primes up to 3,671 (D < 3,671), 8% faster */
+#endif
+#define NP NPB
 #define MAXR 256
 #define HR 256
 #define NQW 8
