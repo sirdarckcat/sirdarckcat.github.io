@@ -30,8 +30,13 @@ confirmed by the research session's own program, with another best vector at `n 
 | 13 | 43 | 419 | 2.59 | 2209 |  | 155,637,417 | exact by two programs; ≥ in the kernel | 3:1 5:3 7:1 11:4 13:11 17:13 19:17 23:18 29:21 31:14 37:5 41:19 43:11 |
 | 14 | 47 | 499 | 2.76 | 2809 |  | 1,523,561,730 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:5 11:2 13:4 17:3 19:14 23:7 29:2 31:8 37:3 41:29 43:30 47:40 |
 | 15 | 53 | 613 | 2.91 | 3481 |  | 18,318,280,161 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:18 29:19 31:3 37:14 41:31 43:34 47:23 53:8 |
+| 16 | 59 | 709 | 2.95 | 3721 |  |  | exact by the uarch session's program (rechecked by the research session); ≥ in the kernel | 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:19 31:3 37:2 41:31 43:34 47:3 53:6 59:34 |
+| 17 | 61 | 739 | 2.95 | 4489 |  |  | exact by the uarch session's program (rechecked by the research session); ≥ in the kernel | 3:2 5:3 7:6 11:1 13:5 17:7 19:18 23:19 29:19 31:23 37:24 41:36 43:36 47:33 53:17 59:41 61:12 |
+| 18 | 67 | 859 | 3.05 | 5041 |  |  | exact by the uarch session's program (rechecked by the research session); ≥ in the kernel | 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:8 31:23 37:5 41:40 43:21 47:3 53:48 59:31 61:11 67:19 |
 
 Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 15` pruned 66 min (one core).
+The values for `n = 16, 17, 18` are from a faster search of the uarch session (`desert_fast3.c`, branch
+`ccr-b8c25887-i6tn9f`), not from `depth.c`.
 
 ## What is proved (`GoldbachGaps/CoverDepth.lean`, `GoldbachGaps/CoverDepthRun.lean`)
 
@@ -39,7 +44,7 @@ Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 
   3, 5, 7, 19, 31, 43, 67, 103, 163 are theorems** (`isDepth_0` … `isDepth_8`). The upper bound is
   the exhaustive part. The kernel keeps every intermediate term (about 45 kB per node), so eight
   moduli are cut into eight checks and nine would need 72 of them (about five minutes); beyond
-  `n = 8` only the lower bound is proved, from one vector each (`coversBelow_9` … `coversBelow_15`).
+  `n = 8` only the lower bound is proved, from one vector each (`coversBelow_9` … `coversBelow_18`).
 * `IsDepth.lt_cons`: a new modulus always increases the depth (it can strike the first unstruck
   prime); `IsDepth.prime`: the depth is an odd prime; `IsDepth.unique`.
 * `least_summand_le_depth`: **the least Goldbach summand of an even `N` is at most the depth of

@@ -215,7 +215,7 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                it and is proved correct (`search_iff`); run in the kernel it gives the exact
                values `3, 5, 7, 19, 31, 43, 67, 103, 163` for `0, …, 8` moduli
                (`isDepth_0` … `isDepth_8`) and lower bounds `181, 223, 271, 331, 419, 499,
-               613` for `9, …, 15` (`coversBelow_9` … `coversBelow_15`). The depth increases with
+               613, 709, 739, 859` for `9, …, 18` (`coversBelow_9` … `coversBelow_18`). The depth increases with
                every new modulus (`IsDepth.lt_cons`). The least summand of an even `N` is
                at most the depth of the odd primes up to `√N` (`least_summand_le_depth`);
                if that depth is at most `N - 3`, `N` is a sum of two primes
