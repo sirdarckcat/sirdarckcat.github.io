@@ -55,12 +55,14 @@ def main():
     assert all(r >= 2 for r in mods)
     assert all(r + Q < N for r in mods) and Q + 2 < N, "N is too small for the moduli"
     rows = primes_below(Q)
-    bad = [q for q in rows if not any((N - q) % r == 0 for r in mods)]
+    residues = {r: N % r for r in mods}
+    bad = [q for q in rows if not any(q % r == residues[r] for r in mods)]
     assert not bad, "the cover is not complete: %d primes left, the first is %d" % (len(bad), bad[0])
     small_primes = primes_below(int(Q ** 0.5) + 2)
     # every composite q < Q must have a proper divisor among the trial divisors
+    row_set = set(rows)
     for q in range(2, Q):
-        if q not in set(rows):
+        if q not in row_set:
             assert any(d < q and q % d == 0 for d in small_primes)
     big = max(mods)
     digits = len(str(N))
