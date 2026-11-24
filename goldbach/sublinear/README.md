@@ -873,7 +873,11 @@ ties broken at random its 167 moduli up to 997 reach 32,971), and it
 certified that point: `coversBelow_32971` (`Cover32971.lean`, commit 68d90e6
 on `ccr-36ca7b46-8twf14`) is a kernel-checked proof, by divisibility alone,
 that the odd primes up to 997 strike every odd prime below 32,971, where the
-theorem's count at x = 997 gives 9,290. A mean-field model of the
+theorem's count at x = 997 gives 9,290. Tempering does better than greedy
+on those 167 moduli, as it does at 463: it finds classes that strike every
+odd prime below 40,111 (`complete_cover_40111_167primes.txt`, checked
+independently; 0.84·x·ln² x and 4.3 times the theorem's count), and nothing
+complete at 41,000 in runs of the same length. A mean-field model of the
 same procedure, in which the remaining primes fall into the classes of each
 r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
