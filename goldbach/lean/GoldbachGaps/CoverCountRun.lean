@@ -2,6 +2,7 @@ import GoldbachGaps.CoverCount
 import GoldbachGaps.CoverDepthRun
 import GoldbachGaps.CoverDepthGreedy
 import GoldbachGaps.Cover40459
+import GoldbachGaps.Cover41047
 
 /-!
 # The number of complete covers: what the certified covers say
@@ -16,7 +17,7 @@ moduli. In logarithms, with `θ` Chebyshev's function:
 
 for the pairs `(x', Q)` = `(97, 1471)`, `(199, 4909)`, `(293, 8311)`, `(463, 15907)`,
 `(479, 16381)`, `(487, 16747)`, `(491, 16981)`, `(997, 40111)`, `(997, 40459)`,
-`(2999, 135511)` and `(9999, 614101)` (`g0_pos_*`, `prod_le_g0_*`; in the last pair the moduli are the odd primes below
+`(997, 41047)`, `(2999, 135511)` and `(9999, 614101)` (`g0_pos_*`, `prod_le_g0_*`; in the last pair the moduli are the odd primes below
 `10000`, the largest of which is `9973`). These are the first proved lower bounds for `g0` beyond
 positivity. They are not the law the research session measures, `ln g0(x, Q) ≈ θ(x) - Q/ln² x`:
 with the least `x'` that covers, the law at `x = x'` reads `θ(x') = Q/ln² x'`, so for larger `x`
@@ -117,9 +118,9 @@ theorem g0_29_181 : 0 < g0 29 181 ∧ g0 29 182 = 0 :=
       have h : oddPrimesBelow 30 = [3, 5, 7, 11, 13, 17, 19, 23, 29] := by decide
       rw [← h]; exact mem_oddPrimesBelow (by norm_num)) 181).1 isDepth_9
 
-/-- **The 167 odd primes up to `997` cover every odd prime below `40459`**: the best cover known
-on these moduli (24 November 2026), sampled by another session from the `40111` one with the
-research session's program and certified in `GoldbachGaps/Cover40459.lean`. -/
+/-- **The 167 odd primes up to `997` cover every odd prime below `40459`**: sampled by another
+session from the `40111` cover with the research session's program and certified in
+`GoldbachGaps/Cover40459.lean`. -/
 theorem coversBelow_40459 : CoversBelow (oddPrimesBelow 998) 40459 :=
   coversBelow_of_complete_cover (R := 997) (by norm_num) Cover40459.complete_cover.2.1
     Cover40459.complete_cover.2.2.1
@@ -131,6 +132,21 @@ theorem g0_pos_997_40459 : 0 < g0 997 40459 :=
 theorem prod_le_g0_40459 {x : ℕ} (hx : 997 ≤ x) :
     ∏ r ∈ rowsBelow (x + 1) \ rowsBelow 998, r ≤ g0 x 40459 :=
   prod_le_g0 hx g0_pos_997_40459
+
+/-- **The 167 odd primes up to `997` cover every odd prime below `41047`**: found by another
+session's tempering after the `40459` cover, certified in `GoldbachGaps/Cover41047.lean`; the
+best cover known on these moduli at 20:00 UTC on 24 November 2026. -/
+theorem coversBelow_41047 : CoversBelow (oddPrimesBelow 998) 41047 :=
+  coversBelow_of_complete_cover (R := 997) (by norm_num) Cover41047.complete_cover.2.1
+    Cover41047.complete_cover.2.2.1
+
+theorem g0_pos_997_41047 : 0 < g0 997 41047 :=
+  g0_pos_of_coversBelow (by norm_num) coversBelow_41047
+
+/-- `ln g0(x, 41047) ≥ θ(x) - θ(997)` for every `x ≥ 997`. -/
+theorem prod_le_g0_41047 {x : ℕ} (hx : 997 ≤ x) :
+    ∏ r ∈ rowsBelow (x + 1) \ rowsBelow 998, r ≤ g0 x 41047 :=
+  prod_le_g0 hx g0_pos_997_41047
 
 theorem rowsBelow_8 : rowsBelow 8 = {3, 5, 7} := by decide
 
