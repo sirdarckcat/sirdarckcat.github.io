@@ -350,7 +350,9 @@ cover designed for 180,000), so a design hit does not call for new covers.
 What it calls for is an engine design level above the new record:
 `starts/q180000_m89r491.txt` holds the same 491 family-B covers counted to
 180,000 (1,340 to 1,344 rows; 2,770 covers), for `./gen_vectors.sh 180000 1344
-count name seed m89r491`. A descent at 180,000 from them reaches 1,337 rows,
+count name seed m89r491` (and `starts/q180000_m88f.txt` for the first 88
+primes, the family-B covers of that set counted to 180,000, 1,350 to 1,355
+rows; a walk at cap 1,356 gives 15,000 covers in 20 seconds). A descent at 180,000 from the 491 covers reaches 1,337 rows,
 but with a record of 172,000 or 175,000 in hand those covers score no better
 than the ones in the file (175,665 against 175,820; 177,164 against 177,171),
 because they pay for the rows above 175,000 with rows below.
