@@ -12,8 +12,10 @@
 //   EOPT   a prime of U struck by no qualifying class of any free modulus cuts the node (desert_fast4 cut only on a prime struck by no allowed
 //          class); the branching prime is the one struck by the fewest qualifying classes ("effective options").
 //   FORCE  a free modulus with a single qualifying class is put in it (one child, nothing forbidden): no other class of it can beat the incumbent.
-//   MBR    else, if some free modulus has fewer qualifying classes than the branching prime has effective options, the node branches on that
-//          modulus over its qualifying classes (the children differ in its class: disjoint, nothing forbidden).
+//   MBR    else, when some free modulus has a positive threshold, the node branches on the free modulus with the fewest qualifying classes,
+//          over those classes (the children differ in its class: disjoint, nothing forbidden); otherwise on the prime with the fewest effective
+//          options as before.  (MBRPOL 0: only when the modulus has fewer children than that prime, 1: also on ties, 2 (default): always.
+//          Proof nodes n = 23: 36.2M, 21.7M, 5.2M; CPU 26.3, 17.4, 5.2 s.)
 //   ARGM   a child (m, c) striking T = U & class(m, c) lowers by >= 1 the fullest class of every other free modulus whose single fullest class T
 //          meets, so its cap is at most cap - mx[m] - (those moduli); if that is below nu - |T| the child would be cut at once and is not created
 //          (one 32-byte compare per prime of T against the moduli's fullest classes).  It removes only such children: the dead, forced and
@@ -22,20 +24,21 @@
 //          they overlap; in any other class one is below its max).  Over a greedy matching M of such pairs the classes strike at most cap - |M|:
 //          the margin drops by |M| (below 0: the node is cut), and the qualifying threshold becomes mx - margin' for an unmatched modulus,
 //          mx - margin' - 1 for a matched one (its partner bounded by its max).  Proof nodes n = 22: 21.1M -> 7.1M.
+//   QSKIP  at prime branching, a child whose class does not qualify at the node is not created (the node's lemma holds in each later
+//          sibling's subtree, a subset of the node's).
 // Every vector below a node is still met at most once (prime branching forbids the tried classes in later siblings as before; forced and
 // modulus children are disjoint by the modulus's class), and none that beats the incumbent is lost: completeness, so D, the count mode and the
 // proof mode keep their meaning.  Count mode holds the incumbent just below D, so "beats" = reaches D and the same lemma applies.
-// Nodes of the proof runs (known = the next prime after D), desert_fast4 -> desert_fast5: n = 17: 13.6M -> 0.13M; n = 20: 597M -> 1.8M;
-// n = 21: 1.19G -> 3.5M; n = 22: 5.02G -> 21.1M.  Finding D(22) from scratch: 8.41G nodes, 964 s (desert_fast4) -> 49.7M nodes, 13 s (4 threads,
-// before ARGM).
+// Nodes of the proof runs (known = the next prime after D), desert_fast4 -> desert_fast5: n = 21: 1.19G -> 0.27M; n = 22: 5.02G -> 0.96M;
+// n = 24: 18.1M (12.6 s at 2 threads).  Finding D(22) from scratch: 8.41G nodes, 964 s (desert_fast4) -> 1.4M nodes, 0.9 s (2 threads).
 // Node cost: the child order reads the histograms (no popcounts) and is made only for prime branching, the fullest class reads only the
 // 32-byte vectors a modulus has, the residues of a prime are one 32-byte row (resT) for the child's histogram update, and the
 // zero/forced/qualifying masks are AVX2 compares.  Instructions, n = 20 proof (callgrind): 11.68G before ARGM and these two, 9.72G after.
 //   gcc -O3 -march=native -fopenmp -o desert_fast5 desert_fast5.c ; OMP_NUM_THREADS=4 ./desert_fast5 n [known_value] [split_depth] [count]
 // known_value: a value known to be attained; the run then proves it is the maximum or finds better.  If no vector reaches it the run says so
 // ("not attained"): with known_value = the next prime after D that is the optimality proof.  "count": the number of optimal vectors (known = D(n)).
-// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, MATCH, EOPT, FORCE, MBR, MRV, CORDER (2: by struck primes, as
-// desert_fast4).
+// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, MATCH, QSKIP, EOPT, FORCE, MBR (MBRPOL), MRV, CORDER (2: by
+// struck primes, as desert_fast4).
 // Needs AVX2.  Moduli must be below 128 (n <= 30); MAXN 32; NP 512 primes (D < 3,671).
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,6 +69,12 @@ static int count_mode, target, found;                      /* count_mode: best f
 #endif
 #ifndef MBR
 #define MBR 1
+#endif
+#ifndef MBRPOL
+#define MBRPOL 2        /* modulus branching: 0 when it has fewer children than the prime, 1 also on ties, 2 always (when a modulus qualifies) */
+#endif
+#ifndef QSKIP
+#define QSKIP 1
 #endif
 #ifndef MATCH
 #define MATCH 1
@@ -168,6 +177,8 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     const int bounded = i <= bi;
     int mx[MAXN], cap = 0, nu = 0;                                      /* mx[m]: modulus m's fullest allowed class over U; cap = their sum */
     int br = i;                                                         /* the prime this node branches on */
+    uint32_t qual[MAXN][4];                                             /* QSKIP: the qualifying classes of each free modulus (bounded nodes) */
+    int have_qual = 0;
     int forced_m = -1, forced_c = -1;                                   /* or a forced modulus and its class */
     int mbr_m = -1; uint32_t mbr_qb[4] = {0};                           /* or a modulus to branch on, over its qualifying classes */
     if (bounded) {
@@ -222,7 +233,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                 for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
 #else
                 const int thr = mx[m] - margin - mt[m];
-                if (thr <= 0) for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
+                if (thr <= 0) { for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w]; qual[m][0] = qual[m][1] = qual[m][2] = qual[m][3] = ~0u; }
                 else {              /* qualifying: allowed, h >= thr; disqualified: allowed, 0 < h < thr.  e = U's primes in qualifying classes */
                     uint32_t qb[4] = {0}, db[4] = {0}; int nq = 0, nd = 0;
                     const __m256i z = _mm256_setzero_si256(), tv = _mm256_set1_epi8((char)thr);
@@ -241,12 +252,14 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                         for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
                         for (int q = 0; q < nvec[m]; q++) for (uint32_t b = db[q]; b; b &= b - 1) { const uint64_t *mk = mask[m][32 * q + __builtin_ctz(b)]; for (int w = 0; w < wb; w++) e[w] &= ~mk[w]; }
                     }
+                    qual[m][0] = qb[0]; qual[m][1] = qb[1]; qual[m][2] = qb[2]; qual[m][3] = qb[3];
                     if (nq == 1 && fm < 0) { fm = m; for (int q = 0; q < nvec[m]; q++) if (qb[q]) { fc = 32 * q + __builtin_ctz(qb[q]); break; } }
                     if (nq < bnq) { bnq = nq; bm = m; for (int q = 0; q < 4; q++) bqb[q] = qb[q]; }
                 }
 #endif
                 for (int w = 0; w < wb; w++) { const uint64_t a = e[w], t0 = c0[w] & a, t1 = c1[w] & t0; c0[w] ^= a; c1[w] ^= t0; c2[w] |= t1; }
             }
+            have_qual = EOPT;
             uint64_t z = 0; for (int w = 0; w < wb; w++) z |= u[w] & ~(c0[w] | c1[w] | c2[w]);
             if (z) { s->zcuts++; return; }
 #if FORCE && EOPT
@@ -261,7 +274,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                     if (ua & ~c0[w] & c1[w]) lv = lv < 2 ? lv : 2;
                     else if (ua & c0[w] & c1[w]) lv = lv < 3 ? lv : 3;
                 }
-                if (bnq < lv) { mbr_m = bm; for (int q = 0; q < 4; q++) mbr_qb[q] = bqb[q]; }
+                if (MBRPOL >= 2 || bnq < lv + MBRPOL) { mbr_m = bm; for (int q = 0; q < 4; q++) mbr_qb[q] = bqb[q]; }
             }
 #endif
 #if MRV
@@ -322,6 +335,10 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
            nu minus the primes of U this class strikes, H->h[m][c].  A child that fails it would be cut at once: skip it, but forbid its class in
            the later siblings as if it had been searched (its subtree holds no vector beating the incumbent). */
         int cut = bounded && cap - mx[m] + H->h[m][c] < nu;
+#if QSKIP
+        /* the node's lemma holds in every later sibling's subtree too (a subset of this node's): a class that did not qualify here never will */
+        if (!cut && have_qual && !((qual[m][c >> 5] >> (c & 31)) & 1)) cut = 1;
+#endif
 #if ARGM
         if (bounded && !cut && left > 1) {
             const __m256i avv = _mm256_load_si256((const __m256i *)av);
