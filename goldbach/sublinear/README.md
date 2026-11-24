@@ -865,7 +865,15 @@ D(8) = 163 and D(15) = 613; at x = 463 tempering has 15,907. The greedy
 vectors for x = 463 and 1,000 were rechecked independently.) Every one of
 these is an unconditional statement about the even numbers in one residue
 class modulo the product of the primes up to x; what is missing is a proof
-that the greedy choice keeps working for all x. A mean-field model of the
+that the greedy choice keeps working for all x. The Lean session reproduced
+the table with its own code (within a few percent: being struck is not
+monotone in y and ties between classes matter, so each figure is one
+threshold among several and a lower bound for what the rule can do; with
+ties broken at random its 167 moduli up to 997 reach 32,971), and it
+certified that point: `coversBelow_32971` (`Cover32971.lean`, commit 68d90e6
+on `ccr-36ca7b46-8twf14`) is a kernel-checked proof, by divisibility alone,
+that the odd primes up to 997 strike every odd prime below 32,971, where the
+theorem's count at x = 997 gives 9,290. A mean-field model of the
 same procedure, in which the remaining primes fall into the classes of each
 r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
