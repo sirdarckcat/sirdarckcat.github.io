@@ -109,6 +109,7 @@ the two that gave 134,839 to 135,511.
 | 167 | 997 | 32,971 (greedy) | 9,290 | 3.5 |
 | 167 | 997 | 40,111 (research session's tempered vector, `tempered_997_vector.txt`, `coversBelow_40111`) | 9,290 | 4.3 |
 | 429 | 2,999 | 135,511 | 32,390 | 4.2 |
+| 1,228 | 9,973 | 614,101 (greedy, plain rule at `y` = 614,000; `greedy_9973_vector.txt`, `coversBelow_614101`; a 4,298-digit `N`, 75 kernel block checks, 17 minutes) | 123,900 | 5.0 |
 
     python3 -I greedy.py 23 53 100 200 463 1000 3000 10000 > greedy.txt
 

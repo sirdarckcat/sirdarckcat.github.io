@@ -5,6 +5,7 @@ import GoldbachGaps.Cover8311
 import GoldbachGaps.Cover32971
 import GoldbachGaps.Cover40111
 import GoldbachGaps.Cover135511
+import GoldbachGaps.Cover614101
 
 /-!
 # Lower bounds for the cover depth of 167 and of 429 moduli
@@ -21,6 +22,10 @@ For comparison: `e^γ/(2 C₂) · x ln x` is `9,300` at `x = 997`, and `0.7 · x
 
 A second vector, on the 429 odd primes up to `2999`, covers every odd prime below `135511`
 (`GoldbachGaps/Cover135511.lean`); there `e^γ/(2 C₂) · x ln x` is `32,400`, a quarter of it.
+
+A third greedy vector, on the 1228 odd primes up to `9973`, covers every odd prime below
+`614101` (`GoldbachGaps/Cover614101.lean`, `coversBelow_614101`); `e^γ/(2 C₂) · x ln x` is
+`123,900` there, a fifth of it.
 
 On the 167 moduli the research session's sampler does better than the greedy rule: its vector
 covers every odd prime below `40111` (`GoldbachGaps/Cover40111.lean`, `coversBelow_40111`).
@@ -94,5 +99,26 @@ theorem coversBelow_135511 : CoversBelow (oddPrimesBelow 3000) 135511 :=
 set_option maxRecDepth 1000000 in
 theorem length_oddPrimesBelow_3000 : (oddPrimesBelow 3000).length = 429 := by
   decide +kernel
+
+/-- The 1228 odd primes up to `9973`: the moduli of `Cover614101` without `2`. -/
+def mods9973 : List ℕ := Cover614101.coverMods.filter fun r => r != 2
+
+/-- **The 1228 odd primes up to `9973` cover every odd prime below `614101`.** -/
+theorem coversBelow_614101 : CoversBelow mods9973 614101 :=
+  coversBelow_of_coveredIn Cover614101.N_even (by decide +kernel) Cover614101.covered
+
+set_option maxRecDepth 1000000 in
+theorem length_mods9973 : mods9973.length = 1228 := by
+  decide +kernel
+
+set_option maxRecDepth 1000000 in
+/-- The moduli are exactly the odd primes below `10000`. -/
+theorem mem_mods9973 {r : ℕ} : r ∈ mods9973 ↔ r.Prime ∧ r ≠ 2 ∧ r < 10000 := by
+  have e : mods9973 =
+      (List.range 10000).filter fun j => (RecordGen.primeMask 10000).testBit j && j != 2 := by
+    decide +kernel
+  rw [e, List.mem_filter, List.mem_range, Bool.and_eq_true, RecordGen.testBit_primeMask,
+    decide_eq_true_eq, bne_iff_ne]
+  tauto
 
 end GoldbachGaps.CoverDepth
