@@ -18,6 +18,10 @@
 //          meets, so its cap is at most cap - mx[m] - (those moduli); if that is below nu - |T| the child would be cut at once and is not created
 //          (one 32-byte compare per prime of T against the moduli's fullest classes).  It removes only such children: the dead, forced and
 //          modulus-branching counts are unchanged.
+//   MATCH  two free moduli whose single fullest classes share a prime of U strike at most mx_a + mx_b - 1 primes of U together (in those classes
+//          they overlap; in any other class one is below its max).  Over a greedy matching M of such pairs the classes strike at most cap - |M|:
+//          the margin drops by |M| (below 0: the node is cut), and the qualifying threshold becomes mx - margin' for an unmatched modulus,
+//          mx - margin' - 1 for a matched one (its partner bounded by its max).  Proof nodes n = 22: 21.1M -> 7.1M.
 // Every vector below a node is still met at most once (prime branching forbids the tried classes in later siblings as before; forced and
 // modulus children are disjoint by the modulus's class), and none that beats the incumbent is lost: completeness, so D, the count mode and the
 // proof mode keep their meaning.  Count mode holds the incumbent just below D, so "beats" = reaches D and the same lemma applies.
@@ -30,7 +34,8 @@
 //   gcc -O3 -march=native -fopenmp -o desert_fast5 desert_fast5.c ; OMP_NUM_THREADS=4 ./desert_fast5 n [known_value] [split_depth] [count]
 // known_value: a value known to be attained; the run then proves it is the maximum or finds better.  If no vector reaches it the run says so
 // ("not attained"): with known_value = the next prime after D that is the optimality proof.  "count": the number of optimal vectors (known = D(n)).
-// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, EOPT, FORCE, MBR, MRV, CORDER (2: by struck primes, as desert_fast4).
+// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, MATCH, EOPT, FORCE, MBR, MRV, CORDER (2: by struck primes, as
+// desert_fast4).
 // Needs AVX2.  Moduli must be below 128 (n <= 30); MAXN 32; NP 512 primes (D < 3,671).
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,6 +66,9 @@ static int count_mode, target, found;                      /* count_mode: best f
 #endif
 #ifndef MBR
 #define MBR 1
+#endif
+#ifndef MATCH
+#define MATCH 1
 #endif
 #ifndef ARGM
 #define ARGM 1
@@ -180,8 +188,31 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                in class c strikes h[m][c] and each other one at most its fullest allowed class, so h[m][c] >= nu - (cap - mx[m]) = mx[m] - margin:
                in such a vector every free modulus is in one of its "qualifying" classes.  A prime of U struck by no qualifying class cuts the
                node; one free modulus with a single qualifying class is forced into it. */
-            const int margin = cap - nu;
+            int margin = cap - nu;
             int fm = -1, fc = -1, bm = -1, bnq = 99; uint32_t bqb[4] = {0};
+            unsigned char mt[MAXN] = {0};                                   /* MATCH: m is in a matched pair (its threshold is 1 lower) */
+#if MATCH
+            /* two free moduli whose single fullest classes share a prime of U strike together at most mx_a + mx_b - 1 primes of U (in their
+               fullest classes they overlap; in any other class one of them is below its max).  Over a set of disjoint such pairs (a greedy
+               matching) the union of all the classes is at most cap - |M|: margin -|M| (< 0 cuts); a matched modulus's qualifying threshold is
+               mx - margin' - 1 (its partner bounded by its max), an unmatched one's mx - margin'. */
+            {   int L[MAXN], nl = 0; unsigned char am[MAXN];
+                for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; const int a = argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); if (a != 0xFF) { L[nl] = m; am[nl] = (unsigned char)a; nl++; } }
+                int nmt = 0;
+                for (int i = 0; i < nl; i++) {
+                    if (mt[L[i]]) continue;
+                    const uint64_t *mi = mask[L[i]][am[i]];
+                    for (int j = i + 1; j < nl; j++) {
+                        if (mt[L[j]]) continue;
+                        const uint64_t *mj = mask[L[j]][am[j]];
+                        uint64_t o = 0; for (int w = 0; w < wb; w++) o |= u[w] & mi[w] & mj[w];
+                        if (o) { mt[L[i]] = mt[L[j]] = 1; nmt++; break; }
+                    }
+                }
+                margin -= nmt;
+                if (margin < 0) { s->zcuts++; return; }
+            }
+#endif
 #endif
             for (int k = 0; k < s->nfree; k++) {
                 const int m = s->freem[k];
@@ -190,7 +221,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
 #if !EOPT
                 for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
 #else
-                const int thr = mx[m] - margin;
+                const int thr = mx[m] - margin - mt[m];
                 if (thr <= 0) for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
                 else {              /* qualifying: allowed, h >= thr; disqualified: allowed, 0 < h < thr.  e = U's primes in qualifying classes */
                     uint32_t qb[4] = {0}, db[4] = {0}; int nq = 0, nd = 0;
