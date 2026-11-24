@@ -153,21 +153,28 @@ derives from these are heuristic and are not formalised.
 
 `g0_exact.c` goes through every class vector modulo the first `n` odd primes, records the first odd
 prime each one fails to cover, and prints `g0(x, Q)` for every `Q` at once. It is `∏ r` steps, so it
-stops at about ten moduli (3.2·10^9 vectors for `n = 9`, two seconds on four cores).
+stops at about ten moduli (3.2·10^9 vectors for `n = 9`, two seconds on four cores; 1.0·10^11 for
+`n = 10`, one minute).
 
     gcc -O3 -march=native -fopenmp -o g0_exact g0_exact.c -lm
     ./g0_exact 9 > g0_exact_n9.txt
+    ./g0_exact 10 > g0_exact_n10.txt
 
 What it shows:
 
 * It reproduces the cover depths `D(2), …, D(9) = 7, 19, 31, 43, 67, 103, 163, 181` that
-  `GoldbachGaps/CoverDepth.lean` and `CoverDepthRun.lean` prove in the kernel.
+  `GoldbachGaps/CoverDepth.lean` and `CoverDepthRun.lean` prove in the kernel, and gives
+  `D(10) = 223` by complete enumeration (the kernel has only the lower bound there; two search
+  programs had found the same value).
 * The number of class vectors that cover every odd prime below the depth is
-  `2, 1, 2, 2, 6, 6, 1, 2` for `n = 2, …, 9`. For `n = 3` the single vector is that of the term `98`
-  of A025018; this count is also proved in the kernel (`g0_7_19 : g0 7 19 = 1 ∧ g0 7 20 = 0` in
+  `2, 1, 2, 2, 6, 6, 1, 2, 1` for `n = 2, …, 10`. For `n = 3` the single vector is that of the term
+  `98` of A025018; this count is also proved in the kernel (`g0_7_19 : g0 7 19 = 1 ∧ g0 7 20 = 0` in
   `GoldbachGaps/CoverCountRun.lean`), as is `coverCount {3, 5} {3, 5} = 2`.
 * `g0_exact_n9.txt`: the whole curve for nine moduli. The loss `θ - ln g0`, measured in units of
-  `Q / ln² x` with `x = 29`, is `1.41, 1.26, 1.19, 1.33` at `Q = 53, 101, 151, 181`. The research
+  `Q / ln² x` with `x = 29`, is `1.41, 1.26, 1.19, 1.33` at `Q = 53, 101, 151, 181`; for ten moduli
+  (`g0_exact_n10.txt`, `x = 31`) it is `1.37, 1.23, 1.16, 1.24, 1.34` at `Q = 53, 101, 151, 199, 223`.
+  The research session used the nine-moduli table to check its sampler (42 values agree within
+  `0.09`). The research
   session finds `1.09` to `1.15` at `x = 73` and values near `1` from `x = 463` on; nine moduli are far
   too few for a law, and the figures are given only as exact data at a size where everything can be
   counted.
