@@ -56,8 +56,10 @@ it, both in "A floor under every cover" and the section after it:
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
-- For the campaign itself the day's gains are in `../fscan/cover/`: the
-  89-prime covers on which the fleet found 158,209, the first-88 covers
+- For the campaign itself the gains are in `../fscan/cover/`: the
+  89-prime covers on which the fleet found 158,209 on the 23rd and 160,357
+  on the 24th (7.53% of the ceiling; the second on a family-B cover of the
+  491 set, rechecked here from its N), the first-88 covers
   (1,255 rows at 170,000) its smaller cards now run, and, late on the 23rd,
   the finding that the final record is decided by the rows a cover leaves
   *above* its design level: the near-optimal covers come in two families that
@@ -730,8 +732,8 @@ and `complete_cover.py` checks it and prints N0 (193 digits). For every even
 N = N0 + tM, of which 21,378,978 are below 10^200, each N − q with q an odd
 prime below 15,907 is divisible by a prime ≤ 463: no prime below 15,907 is a
 Goldbach summand of N, with no primality or compositeness test involved. That
-is 0.7% of the ceiling, against 7.4% for the record found by search (158,209
-since 23 November 12:48 UTC, on the 89-prime covers of `../fscan/cover/`): as with
+is 0.7% of the ceiling, against 7.5% for the record found by search (160,357
+since 24 November 17:11 UTC, on the 89-prime covers of `../fscan/cover/`): as with
 prime gaps, what can be constructed is far behind what can be found. At
 15,950 and at 16,000 the best covers found on these 89 primes leave one row;
 where exactly complete covers stop is not known. Two more primes still fit

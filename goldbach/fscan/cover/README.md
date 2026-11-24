@@ -180,7 +180,12 @@ runs end there, a capped walk finds nothing lower, and three independent
 routes, the runs, the walk and the best first-88 covers extended by a class
 of 463, all land on the same 186 covers), 175,000 (1,291; campaign set 1,302), 180,000 (1,334; campaign
 set 1,352) and 213,070 (1,609). The fleet's record of 23 November, 158,209,
-came from this set at 170,000. With 8.5 fleet-days left and that record in
+came from this set at 170,000, and its record of 24 November 17:11 UTC,
+160,357, from a family-B cover of the 491 set at 1,250 rows (below): the
+member's first 1,193 rows were composite. Rechecked here from the N alone:
+N − p composite for all 14,711 primes below 160,357, N − 160,357 a strong
+probable prime to 52 bases, 1,250 rows left below 170,000 with 160,357 the
+row numbered 1,193. With 8.5 fleet-days left and that record in
 hand, `brainstorm/portfolio_budget.py 8.5 29e6 158209 0 m89` gives an expected
 final record of 172,700 at design 170,000, 173,000 at 175,000 and 171,200 at
 180,000: 170,000 to 175,000 are equivalent, and the design need not move
