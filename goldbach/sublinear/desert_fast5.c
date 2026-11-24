@@ -178,6 +178,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     int mx[MAXN], cap = 0, nu = 0;                                      /* mx[m]: modulus m's fullest allowed class over U; cap = their sum */
     int br = i;                                                         /* the prime this node branches on */
     uint32_t qual[MAXN][4];                                             /* QSKIP: the qualifying classes of each free modulus (bounded nodes) */
+    unsigned char av[MAXN] __attribute__((aligned(32))); int have_av = 0;   /* the single fullest class of each free modulus (0xFF: none or several) */
     int have_qual = 0;
     int forced_m = -1, forced_c = -1;                                   /* or a forced modulus and its class */
     int mbr_m = -1; uint32_t mbr_qb[4] = {0};                           /* or a modulus to branch on, over its qualifying classes */
@@ -193,7 +194,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
         {   /* options of the primes of U (unassigned moduli whose class for them is allowed), bit-sliced and saturating at 4:
                a prime with none can never be struck (cut); the branching prime is one with the fewest (the smallest among them) */
             uint64_t u[W]; ubits(st, bi, u); const int wb = (bi >> 6) + 1;   /* words holding U */
-            uint64_t c0[W] = {0}, c1[W] = {0}, c2[W] = {0};
+            uint64_t c0[W] = {0}, c1[W] = {0}, c2[W] = {0}, cov[W] = {0}, eS[MAXN][W];
 #if EOPT
             /* every vector below this node that beats the incumbent covers U, so its classes strike >= nu primes of U in all; a free modulus m
                in class c strikes h[m][c] and each other one at most its fullest allowed class, so h[m][c] >= nu - (cap - mx[m]) = mx[m] - margin:
@@ -208,7 +209,8 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                matching) the union of all the classes is at most cap - |M|: margin -|M| (< 0 cuts); a matched modulus's qualifying threshold is
                mx - margin' - 1 (its partner bounded by its max), an unmatched one's mx - margin'. */
             {   int L[MAXN], nl = 0; unsigned char am[MAXN];
-                for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; const int a = argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); if (a != 0xFF) { L[nl] = m; am[nl] = (unsigned char)a; nl++; } }
+                memset(av, 0xFF, sizeof av); have_av = 1;
+                for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; const int a = argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); av[m] = (unsigned char)a; if (a != 0xFF) { L[nl] = m; am[nl] = (unsigned char)a; nl++; } }
                 int nmt = 0;
                 for (int i = 0; i < nl; i++) {
                     if (mt[L[i]]) continue;
@@ -257,11 +259,16 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                     if (nq < bnq) { bnq = nq; bm = m; for (int q = 0; q < 4; q++) bqb[q] = qb[q]; }
                 }
 #endif
-                for (int w = 0; w < wb; w++) { const uint64_t a = e[w], t0 = c0[w] & a, t1 = c1[w] & t0; c0[w] ^= a; c1[w] ^= t0; c2[w] |= t1; }
+                for (int w = 0; w < wb; w++) { cov[w] |= e[w]; eS[k][w] = e[w]; }
             }
             have_qual = EOPT;
-            uint64_t z = 0; for (int w = 0; w < wb; w++) z |= u[w] & ~(c0[w] | c1[w] | c2[w]);
+            uint64_t z = 0; for (int w = 0; w < wb; w++) z |= u[w] & ~cov[w];
             if (z) { s->zcuts++; return; }
+#if EOPT
+            if (!(fm >= 0) && !(MBR && MBRPOL >= 2 && bm >= 0))                /* the counts: for the branching prime (MRV) and lv */
+#endif
+                for (int k = 0; k < s->nfree; k++)
+                    for (int w = 0; w < wb; w++) { const uint64_t a = eS[k][w], t0 = c0[w] & a, t1 = c1[w] & t0; c0[w] ^= a; c1[w] ^= t0; c2[w] |= t1; }
 #if FORCE && EOPT
             if (fm >= 0) { forced_m = fm; forced_c = fc; }
 #endif
@@ -316,11 +323,9 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     /* ARGM: av[m] = the single class holding m's fullest allowed count (0xFF: none or several).  A child (m, c) striking T = U & class (m, c)
        lowers by >= 1 the fullest class of every other free modulus whose single fullest class T meets (its other classes are below it), so the
        child's cap is at most cap - mx[m] - (those moduli): when that is below nu - |T| the child would be cut at once. */
-    unsigned char av[MAXN] __attribute__((aligned(32)));
     uint64_t uB[W];
     if (bounded) {
-        memset(av, 0xFF, sizeof av);
-        for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; av[m] = (unsigned char)argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); }
+        if (!have_av) { memset(av, 0xFF, sizeof av); for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; av[m] = (unsigned char)argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); } }
         ubits(st, bi, uB);
     }
 #endif
