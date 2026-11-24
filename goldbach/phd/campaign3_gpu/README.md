@@ -710,8 +710,10 @@ Version 3 (22 Nov):
     - A replacement starts with its predecessor's lines marked as already copied, so lines restored from a snapshot
       are not reported again as new.
   - Proactive replacements at ~23 h, each onto its share of the shifted family-B vectors in a fresh c170g:
-    gold-l4b → gold-l4e (23:38-23:45Z) and gold-l4c → gold-l4f (23:41-23:47Z). Each new GPU passed the per-member check
-    (129 = 129 near-misses at production f) and the m88f known case (40 = 40) before deploying.
+    gold-l4b → gold-l4e (23:38-23:45Z), gold-l4c → gold-l4f (23:41-23:47Z) and gold-xt4 → gold-xt4b (a T4,
+    00:44-00:48Z on the 24th, 1,572 vectors). Each new GPU passed the per-member check (129 = 129 near-misses at
+    production f on the L4s; identical on the T4) and the m88f known case (40 = 40) before deploying.
+    - Since 00:48Z all four L4/T4 cards run their top32-shifted family-B shares.
     - gold-l4f's first bring-up stopped after 34 s because gold-l4c's snapshot had no `opl4gate2.sh` (the L4 gate had
       run on gold-l4b only). The script was uploaded from the repo and the bring-up re-run. Now the handover scripts
       upload it themselves.
