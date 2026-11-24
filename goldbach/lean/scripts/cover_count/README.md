@@ -174,3 +174,29 @@ What it shows:
 
 These tables are exact, but the program is not a proof; the kernel-checked statements are the ones
 named above.
+
+## 6. The limit constant Lam(1), recomputed independently (floating point, not an enclosure)
+
+The research session's heuristic limit of the law (`goldbach/sublinear/cover_limit.py`) ends in a
+constant `Lam(1)`: the solution of a price equation whose coefficient `v(α)` comes from a delay
+equation for a function `m(ρ)`. Its value there, `1.19639`, is from RK4 in double precision on a table.
+`Lam_check.py` computes the same number from the same equations by a different route (`Lam_check.txt`):
+
+* `m` by the method of steps, each unit interval at 33 Chebyshev points with Gauss–Legendre
+  integrals; it matches the closed form on `[1, 2]` to `4·10^-15` and reaches its asymptote
+  `2 e^γ (ρ - 1)` to `10^-14` by `ρ = 15`;
+* the price equation in the variables `s = ln p`, `L = ln α`, in which both ends are regular
+  (`dL/ds = B(v p)`, `B(x) = x/(e^x - 1)`), from `p = 40` down to `p = 10^-7`, with three step sizes;
+* two checks with known answers: `v = 1` gives `1` to `4·10^-13`, and `v = α` gives the constant
+  `K` of section 3 to `10^-12`.
+
+Result, the three step sizes agreeing to `2·10^-12`:
+
+    Lam(1) = 1.19639276351
+    2 C₂ e^-γ Lam(1) = 0.8868957952          (the constant of Q/ln² x in the limit law)
+    e^γ / (2 C₂ Lam(1)) = 1.1275281780       (the limit of D(n)/(r ln² r); 1.3489665528 for independent rows)
+
+So the research session's five digits are right, and six more are now known. This confirms the
+arithmetic, not the equations: they are heuristic, and nothing here is a proof or a rigorous enclosure.
+
+    python3 -I Lam_check.py > Lam_check.txt
