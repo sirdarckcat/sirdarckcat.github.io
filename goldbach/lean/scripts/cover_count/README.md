@@ -7,7 +7,9 @@ many complete covers there are: a law, and where they end") measures
 
 where `g0(x, Q)` is the number of class vectors modulo the odd primes up to `x` that cover every odd
 prime below `Q`. It asked three optional things of the Lean side. This directory and
-`GoldbachGaps/CoverCount.lean`, `GoldbachGaps/CoverCountRun.lean` are the answers.
+`GoldbachGaps/CoverCount.lean`, `GoldbachGaps/CoverCountRun.lean`,
+`GoldbachGaps/CoverCountAsymptotic.lean` are the answers; section 4 (`GoldbachGaps/CoverPairs.lean`)
+is the exact step of the derivation it sent afterwards.
 
 ## 1. The identity behind the count (proved in Lean)
 
@@ -57,10 +59,16 @@ What this is and is not:
 * It has the law's form only in the sense that the best `x'` for a given `Q` is the inverse of the
   depth, and at `x = x'` the law itself says `θ(x') = c Q / ln² x'`. For `x` much larger than `x'`
   the law's loss `Q / ln² x` is smaller than this bound by the factor `ln² x / ln² x'`.
-* In the range of the research session's theorem (a cover of the odd primes below `Q` exists on the
-  odd primes up to `x'` when `Q ≤ 1.349 x' ln x'`), it reads: the loss is at most `θ(x')` with
-  `x' ln x' = Q / 1.349`, about `Q / (1.349 ln Q)`. That is a consequence of that theorem and
-  `prod_le_g0`; the theorem itself is not formalised here.
+* In the range of the covering bound it is a theorem with no data in it
+  (`GoldbachGaps/CoverCountAsymptotic.lean`, `eventually_prod_le_g0`): for every `c < e^γ/(2 C₂) =
+  1.349…`, all large `y` and every `x ≥ y`,
+
+      ln g0(x, c y ln y) ≥ θ(x) - θ(y),
+
+  so the loss is at most `θ(y)`, about `Q / (c ln Q)` for `Q = c y ln y`. It rests on the depth form
+  of the covering bound, which `GoldbachGaps/CoverBound.lean` now states
+  (`eventually_exists_classes_of_mul_lt_one`: classes modulo the odd primes up to `y` that cover
+  every odd prime below `c y ln y`). The explicit `c = 1.2` is `eventually_prod_le_g0_six_fifths`.
 * A bound of the law's shape for all `x` (loss at most a constant times `Q / ln² x`) would put the
   depth at `x ln² x` or beyond, which nothing here proves.
 
@@ -89,3 +97,25 @@ This is a computation with proved error bounds, not a kernel-checked theorem. A 
 `1.5164 < K < 1.5165` is possible along the same lines and has not been written.
 
     python3 -I K_enclosure.py > K_enclosure.txt
+
+## 4. The exact step of the derivation: two rows in one class (proved in Lean)
+
+The research session's derivation of the law (its message of 24 November, 18:00 UTC) starts from two
+odd primes `q`, `q + d` in one class of a modulus `s`, and says that the weight of the pair, times the
+Hardy–Littlewood density of prime pairs, has mean exactly `6 s/(s - 1)` over the differences
+`d = 6 s j`, "because for every prime `t ≥ 5` the local factors cancel identically".
+`GoldbachGaps/CoverPairs.lean` proves this:
+
+| theorem | statement |
+|---|---|
+| `card_free_nonzero_classes` | two rows in nonzero classes modulo `t` leave `t - 1 - ν_t(d)` nonzero classes free, `ν_t(d)` = 1 if `t ∣ d`, else 2 |
+| `rho_of_dvd`, `rho_of_not_dvd` | the pair weight `(1 - ν/(t-1)) / (1 - 1/(t-1))²` is `(t-1)/(t-2)` if `t ∣ d`, `1 - 1/(t-2)²` if not (at `t = 3`: `2` and `0`) |
+| `sigma_of_dvd`, `sigma_of_not_dvd` | the Hardy–Littlewood factor `(1 - ν/t) / (1 - 1/t)²` is `t/(t-1)` if `t ∣ d`, `1 - 1/(t-1)²` if not |
+| `local_cancellation_below`, `local_cancellation_above` | the two rational identities, as the research session wrote them |
+| `sum_rho_mul_sigma`, `sum_sigma` | over a period, `rho · sigma` (a modulus below `s`) and `sigma` (a prime above `s`) have mean exactly 1 |
+| `sum_range_prod` | the Chinese remainder theorem for sums |
+| `sum_pair_weight` | for a prime `s ≥ 5`, any finite set `B` of primes `≥ 5` other than `s` and any `A ⊆ B`: the sum over `j < ∏ B` of `rho 3 · ∏_A rho · sigma 2 · sigma 3 · sigma s · ∏_B sigma` at `d = 6 s j` is `6 s/(s - 1) · ∏ B` |
+
+The mean is the same for every truncation of the two products, so no statement about convergence is
+involved. The next step of the derivation, the second-order term of the average of singular series,
+rests on the Hardy–Littlewood conjecture and is not formalised.

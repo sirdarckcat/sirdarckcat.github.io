@@ -96,6 +96,48 @@ def GoldbachGaps.IsSummand : ℕ → ℕ → Prop :=
 fun N p ↦ Nat.Prime p ∧ Nat.Prime (N - p)
 ```
 
+## The depth form, and the number of complete covers (24 November 2026)
+
+The proof builds a cover before it builds `N`. `CoverBound.lean` now states that cover: for every
+`c` with `0 < c < 1.349…` and all large `y` there are classes modulo the odd primes up to `y` such
+that every odd prime below `⌊c y ln y⌋` lies in one of them
+(`eventually_exists_classes_of_mul_lt_one`; under `MertensUpper κ`,
+`eventually_exists_classes_of_mertensUpper_nat`). In the words of `CoverDepth.lean`: the cover depth
+of the odd primes up to `y` is at least `c y ln y`. `eventually_layers_of_mertensUpper_nat` is the
+common part of the two proofs (the two layers and their count), and `Cap.exists_classes_of_layers`
+the combinatorial step.
+
+`CoverCountAsymptotic.lean` (namespace `GoldbachGaps.CoverCount`) reads this as a statement about
+the number `g0 x Q` of class vectors modulo the odd primes up to `x` that cover every odd prime
+below `Q` (`CoverCount.lean`): it is positive at `Q = ⌊c y ln y⌋`, `x = y`, and for every `x ≥ y` it
+is at least the product of the odd primes in `(y, x]`.
+
+```lean
+@eventually_exists_classes_of_mul_lt_one : ∀ {c : ℝ},
+  0 < c →
+    c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1 →
+      ∀ᶠ (y : ℕ) in Filter.atTop,
+        ∃ a,
+          ∀ (q : ℕ),
+            Nat.Prime q → q ≠ 2 → q < ⌊c * ↑y * Real.log ↑y⌋₊ → ∃ r, (Nat.Prime r ∧ r ≠ 2 ∧ r ≤ y) ∧ q ≡ a r [MOD r]
+@eventually_g0_pos : ∀ {c : ℝ},
+  0 < c →
+    c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1 →
+      ∀ᶠ (y : ℕ) in Filter.atTop, 0 < g0 y ⌊c * ↑y * Real.log ↑y⌋₊
+@eventually_prod_le_g0 : ∀ {c : ℝ},
+  0 < c →
+    c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1 →
+      ∀ᶠ (y : ℕ) in Filter.atTop, ∀ x ≥ y, ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊c * ↑y * Real.log ↑y⌋₊
+eventually_prod_le_g0_six_fifths : ∀ᶠ (y : ℕ) in Filter.atTop,
+  ∀ x ≥ y, ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊1.2 * ↑y * Real.log ↑y⌋₊
+def GoldbachGaps.CoverCount.g0 : ℕ → ℕ → ℕ :=
+fun x Q => coverCount (rowsBelow (x + 1)) (rowsBelow Q)
+def GoldbachGaps.CoverCount.rowsBelow : ℕ → Finset ℕ :=
+fun y => {q ∈ Finset.range y | Nat.Prime q ∧ q ≠ 2}
+def GoldbachGaps.CoverCount.coverCount : Finset ℕ → Finset ℕ → ℕ :=
+fun mods rows => {a | ∀ q ∈ rows, Covers a q}.card
+```
+
 ## Mertens' third theorem (`Mertens.lean`, namespace `GoldbachGaps.Mertens`)
 
 The steps, with `A(t) = ∑_{n ≤ t} Λ(n)/n` and `B(t) = ∑_{n ≤ t} Λ(n)/(n ln n)`:

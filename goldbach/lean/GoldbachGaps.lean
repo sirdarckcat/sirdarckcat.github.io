@@ -44,6 +44,8 @@ import GoldbachGaps.Cover614101
 import GoldbachGaps.CoverDepthGreedy
 import GoldbachGaps.CoverCount
 import GoldbachGaps.CoverCountRun
+import GoldbachGaps.CoverCountAsymptotic
+import GoldbachGaps.CoverPairs
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -266,6 +268,25 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                The measured law `ln g0 = θ(x) - Q/ln² x` is not proved.
                `scripts/cover_count`: the constant `K` of the research session's heuristic,
                bracketed by exact rational arithmetic.
+* `CoverCountAsymptotic` – the count in the range of the covering bound. `CoverBound` now also
+               states its cover (`eventually_exists_classes_of_mul_lt_one`: for every
+               `c < e^γ/(2 C₂) = 1.349…` and all large `y`, classes modulo the odd primes up to
+               `y` cover every odd prime below `c y ln y`; the depth of the odd primes up to
+               `y` is at least `c y ln y`). Hence `g0(y, ⌊c y ln y⌋) > 0` for all large `y`
+               (`eventually_g0_pos`) and, for every `x ≥ y`,
+               `ln g0(x, c y ln y) ≥ θ(x) - θ(y)` (`eventually_prod_le_g0`; with the explicit
+               `c = 1.2`, `eventually_prod_le_g0_six_fifths`).
+* `CoverPairs` – two rows in one class of a modulus `s`: the exact step of the research
+               session's derivation of the law. The pair weight `rho t d` of a smaller modulus
+               (classes drawn among the `t - 1` nonzero ones; `card_free_nonzero_classes`) and
+               the Hardy–Littlewood factor `sigma t d`, the two local cancellations as that
+               session wrote them (`local_cancellation_below`, `local_cancellation_above`),
+               their meaning (`sum_rho_mul_sigma`, `sum_sigma`: mean `1` over a period), the
+               Chinese remainder theorem for sums (`sum_range_prod`), and
+               `sum_pair_weight`: summed over the differences `d = 6 s j` in one period, the
+               pair weight times the Hardy–Littlewood factors has mean exactly `6 s/(s - 1)`,
+               for every truncation of the two products. What the derivation does after this
+               step rests on the Hardy–Littlewood conjecture and is not formalised.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
