@@ -31,7 +31,7 @@ it, both in "A floor under every cover" and the section after it:
   c = 1.00 is where two slow corrections leave it at the sizes measured.
   It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,000 on 89
-  moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 37,000,
+  moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 35,000,
   the upper end by an exhaustive search of the uarch session.
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
@@ -973,17 +973,22 @@ theorem's count at x = 997 gives 9,290. Tempering does better than greedy
 on those 167 moduli, as it does at 463: it finds classes that strike every
 odd prime below 40,111 (`complete_cover_40111_167primes.txt`, checked
 independently; 0.84·x·ln² x and 4.3 times the theorem's count), and nothing
-complete at 41,000 in runs of the same length. The best reach known for
+complete at 41,000 in runs of the same length; sampling the complete covers
+at 40,111 from that vector has since reached 40,459
+(`complete_cover_40459_167primes.txt`, found by the Opus session on 24
+November with the sampler of the later sections, checked here: all 4,239 odd
+primes below 40,459 struck, every class nonzero, 49 of the 167 classes shared
+with the earlier vector). The best reach known for
 each set of moduli, exact for the first three (1,471 was found by tempering and is D(24)) and by tempering for the others
 (`complete_covers_97_199_293.txt`, `complete_cover_15907.txt`,
-`complete_cover_40111_167primes.txt`):
+`complete_cover_40459_167primes.txt`):
 
 | primes up to x | 23 | 53 | 97 | 199 | 293 | 463 | 997 |
 |---|---|---|---|---|---|---|---|
 | moduli | 8 | 15 | 24 | 45 | 61 | 89 | 167 |
-| every odd prime struck below | 163 | 613 | 1,471 | 4,909 | 8,311 | 15,907 | 40,111 |
-| / (x ln x) | 2.26 | 2.91 | 3.31 | 4.66 | 4.99 | 5.60 | 5.83 |
-| / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.84 |
+| every odd prime struck below | 163 | 613 | 1,471 | 4,909 | 8,311 | 15,907 | 40,459 |
+| / (x ln x) | 2.26 | 2.91 | 3.31 | 4.66 | 4.99 | 5.60 | 5.88 |
+| / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.85 |
 
 (The last entry comes from shorter runs relative to its size and is probably
 not the end. As a calibration of the method: tempering runs of 200,000 sweeps
@@ -1027,6 +1032,19 @@ counts and the number of conflicts between pairs of different primes. Both
 reduce to upper-bound sieves for primes r′ with v + j·r′ prime (Brun,
 Selberg), which lose only constant factors. That would prove (1 + δ)·1.349
 for some δ > 0. It is not written out and not formalised.
+
+The same averages go further than pairs. At y = C·x·ln x there are about C
+primes below y in an average class of r′, whatever the primes do (there are
+that many more primes than classes), and a set of j of them survives the
+random small classes with probability of order 1/ln^j x when its residues
+leave a class free modulo each small r; so the expected number of classes of
+r′ holding j survivors is of order x·C^j/ln^j x, unbounded for every fixed j
+and C. That is the count behind "every constant": D(n)/(r_n·ln r_n) → ∞,
+which the law above makes precise as ln r_n. What is missing for a proof is
+not this count but the step that is hard in the work of Ford, Green,
+Konyagin, Maynard and Tao on long gaps between primes: each modulus strikes
+one class only, and the classes chosen must between them reach almost every
+survivor.
 
 The Opus session measured every quantity of this outline (`goldbach/
 balls_in_boxes/` on branch `ccr-c6e00296-3g7fp9`, commit 621315a; x from
@@ -1127,12 +1145,14 @@ capacity cut: fix the classes of the smallest moduli in turn, and stop
 wherever the primes still unstruck outnumber the sum of the fullest classes
 of all the free moduli. It proves that no vector strikes every odd prime
 below Y for Y = 170,000 (6,240 nodes), 80,000, 60,000, 50,000, 45,000,
-40,000 and 37,000 (6.9·10^8 nodes, twenty minutes). So
+40,000, 37,000 and 35,000 (2.6·10^7, 1.1·10^8 and 4.6·10^8 nodes for the
+last three with the final build, an hour for the last). So
 
-    15,907 ≤ D(89) < 37,000,
+    15,907 ≤ D(89) < 35,000,
 
 both ends certified: for every even N whatever, some odd prime q below
-37,000 has N − q free of prime factors up to 463. The program is validated
+35,000 has N − q free of prime factors up to 463. (The count of nodes grows
+fourfold for every 2,000 taken off Y there, and the walk was stopped.) The program is validated
 on the first n odd primes for n = 2 to 27 (it finds a cover at D(n) and
 proves there is none at the next prime) and against brute force on 6 and 7
 moduli. The true end is near 16,000 (below); the bound is where the capacity
@@ -1262,7 +1282,7 @@ session, `scripts/cover_count/g0_exact.c` at 4edfa27) for comparison:
 | 397 | 77 | 370.0 | 7,298 to 11,312 | 1.02 to 1.06 | 12,460 | 12,163 |
 | 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 (measured end: about 16,000) | 15,907 |
 | 599 | 108 | 562.3 | 12,640 to 19,592 | 1.01 to 1.06 | 21,852 | 21,067 |
-| 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 40,111 |
+| 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 40,459 |
 | 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.988 to 1.035 | 191,000 | 135,511 (greedy) |
 | 9,973 | 1,228 | 9,895.3 | 100,000 and 300,000 | 1.006 and 1.012 | 827,000 | 614,101 (greedy) |
 
@@ -1326,10 +1346,32 @@ beyond. The curve steepens over the last eighth (an average slope of
 before the end of the line, and the cover found by tempering on 23 November
 is the end or within 1% of it; the best covers found at 15,950 and 16,000
 leave one row. At 167 moduli the line holds to 38,000 (1.010 and 1.006 at
-36,000 and 38,000, two seeds within 2.2); at 39,000 and at 40,111, the
-tempered record, runs from random vectors still count e^120 and e^77
-covers, which are underestimates, so the end there is several thousand
-beyond the record.
+36,000 and 38,000, two seeds within 2.2). Beyond that the Opus session ran
+both kinds of start (`x997_report.md` on its branch; 400,000 sweeps, two
+seeds each):
+
+| Q | 39,000 | 40,111 |
+|---|---|---|
+| ln g0, runs from the 40,111 cover | 130.5, 129.8 | 98.57, 98.60 |
+| ln g0, runs from random vectors | 119.1, 121.3 | 79.9, 74.3 |
+| by the recursion, closed formula (on record before the runs) | 124.1 | 101.0 |
+| by the recursion, whole pair sum | 132.4 | 110.2 |
+
+The runs from the cover are steady over the four quarters and agree between
+seeds to 0.7 and 0.03; the measured loss is within 1.5% of both versions of
+the recursion at both targets. The runs from random vectors count 10 and 20
+nats fewer, and that session found why: they settle in a different family
+of classes for the moduli up to 41 (7:5, 13:7, 19:18, 23:8, 31:10, 41:7
+against the cover's 7:3, 13:11, 19:3, 23:21, 31:7, 41:38), while the runs
+from the cover keep the cover's classes on the first twelve moduli and move
+freely on the rest. Near the end the complete covers are split into such
+families by the classes of the smallest moduli, and a run sees the family
+it starts in. The reach of the samples at 40,111 gives the count beyond:
+e^95.9 at 40,177, e^95 at 40,189, e^91 to e^95 at 40,237 and e^88 at 40,387
+(the last from 51 samples), about 10 nats in the first 276, 1.8 times the
+slope of the line; one of the samples is the new best cover, complete to
+40,459. Extrapolating the last interval, complete covers on the 167 moduli
+end at or below about 43,600, so that 40,459 is some 93 to 96% of the way.
 
 The Opus session measured the same stretch at six more sizes, 30 to 108
 moduli (`floor_report.md` on its branch). The curve bends down before the
@@ -1470,7 +1512,7 @@ length.) And beyond what any search has reached:
 | end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 | 2.21·10^8 |
 | / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 | 1.16 |
 | / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 | 1.19 |
-| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 | | |
+| best cover known (sampling at 997, greedy beyond) | 40,459 | 135,511 | 614,101 | | 9.65·10^6 | | |
 
 So the recursion gives the luck-free depth within 4% wherever it can be
 checked from 20 to 89 moduli, the three exact values of D included, and at
