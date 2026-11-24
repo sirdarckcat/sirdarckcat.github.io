@@ -1658,7 +1658,12 @@ at the small moduli to 20 and more near the end, and the recursion has it
 within 16% at every modulus up to s = 263, with nothing fitted (the file has
 all of them); from 293 on the covers strike more than it says (by 31% at
 293, 14% at 337, 3% at 373, 23% at 409, 56% at 443), as a cover comes to take
-very nearly the fullest class. So the prices are not a device for getting the
+very nearly the fullest class. The same on 1,000 complete covers at
+Q = 30,000 on the 167 moduli up to 997: the factor runs from 1.0 at the
+smallest moduli to 185 at s = 971, and measured over predicted stays between
+0.79 and 1.18 at every modulus listed, the covers striking 5 to 17% less
+than the recursion says for the moduli from 40 to 260 and 10 to 18% more
+over the last hundred. So the prices are not a device for getting the
 count right: they are what the covers do. One thing the recursion does not
 do, and it was tried: along the covers the alive rows are a thinned set and
 their dispersion over the classes is higher than for random vectors (0.65
