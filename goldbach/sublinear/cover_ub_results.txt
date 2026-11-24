@@ -108,3 +108,10 @@ floor and findD runs): the walk stops here (research: no more than a one-hour ru
 Cross-check of the counts at n = 27, 28 with desert_fast5's count mode (the fixed build, 2 threads at nice 10): 10 and 1, as cover_ub:
    n=27 r=107 COUNT D=1801 optimal vectors=10 above D=0 nodes=698600428 dead=315995907 skipped=76192466 forced=111720372 modulus-branchings=176038673 (over 32 classes: 0) rebuilds=17550 seconds=453.8
    n=28 r=109 COUNT D=1933 optimal vectors=1 above D=0 nodes=2927575954 dead=1278366951 skipped=246172892 forced=601850142 modulus-branchings=703111343 (over 32 classes: 6) rebuilds=19656 seconds=1844.3
+
+D(34) = 2953 (findD.py 34 2749, 4 threads shared with the floor and count runs, 2,713 s; equal to the tempering value research quoted):
+   n=34: a cover of every odd prime below 2749 (1236983 nodes, 0.9 s); its least unstruck prime 2767
+   n=34: a cover of every odd prime below 2777 (29918360 nodes, 20.5 s); its least unstruck prime 2797
+   n=34: a cover of every odd prime below 2801 (903641541 nodes, 611.9 s); its least unstruck prime 2953
+   n=34: NO COVER below 2957 (2783123988 nodes, 2079.8 s)
+   FINDD n=34 D=2953 (attained by the vector; no vector strikes every odd prime below 2957) seconds=2713.0 vector: 3:2 5:2 7:2 11:8 13:3 17:8 19:13 23:20 29:20 31:23 37:32 41:26 43:31 47:40 53:21 59:2 61:10 67:19 71:69 73:30 79:15 83:37 89:50 97:37 101:69 103:73 107:58 109:90 113:109 127:97 131:107 137:135 139:72 149:88
