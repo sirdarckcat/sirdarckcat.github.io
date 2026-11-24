@@ -14,6 +14,7 @@ import GoldbachGaps.Record199_g133981
 import GoldbachGaps.Record200_g146191
 import GoldbachGaps.Record200_g157837
 import GoldbachGaps.Record200_g158209
+import GoldbachGaps.Record200_g160357
 import GoldbachGaps.Cover15907
 import GoldbachGaps.Cover16381
 import GoldbachGaps.Cover16747
@@ -25,6 +26,22 @@ import GoldbachGaps.NeedleClusters
 import GoldbachGaps.RankPatterns
 import GoldbachGaps.RankData
 import GoldbachGaps.RankTable
+import GoldbachGaps.BitSieve
+import GoldbachGaps.RankSieve
+import GoldbachGaps.RecordGen
+import GoldbachGaps.RecordGenRun
+import GoldbachGaps.RecordInfinite
+import GoldbachGaps.RecordWalk
+import GoldbachGaps.CoverDepth
+import GoldbachGaps.CoverDepthRun
+import GoldbachGaps.Cover1471
+import GoldbachGaps.Cover4909
+import GoldbachGaps.Cover8311
+import GoldbachGaps.Cover32971
+import GoldbachGaps.Cover40111
+import GoldbachGaps.Cover135511
+import GoldbachGaps.Cover614101
+import GoldbachGaps.CoverDepthGreedy
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
@@ -50,6 +67,7 @@ import GoldbachGaps.Cap.BlackBox
 import GoldbachGaps.Cap.Population
 import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Cap.Thinning
+import GoldbachGaps.Cap.Hardness
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -121,10 +139,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
 * `Record199_g125269`, `Record199_g133981` – generated certificates for the two records of
                2026-11-22 below `10^199` (`goldbach/records/budget_1e200_199digit_g*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g = 125269` and `g = 133981`.
-* `Record200_g146191`, `Record200_g157837`, `Record200_g158209` – generated certificates for
-               three records below `10^200` (`goldbach/records/budget_1e200_200digit_g146191`,
-               `…_g157837` and `…_g158209` on the same branch): 200-digit `N` with
-               `g(N) = 146191`, `g(N) = 157837` and, the standing record, `g(N) = 158209`.
+* `Record200_g146191`, `Record200_g157837`, `Record200_g158209`, `Record200_g160357` –
+               generated certificates for four records below `10^200`
+               (`goldbach/records/budget_1e200_200digit_g146191`, `…_g157837` and `…_g158209` on
+               the same branch, `…_g160357` on branch `ccr-8ffe9d7a-4ni11u`): 200-digit `N` with
+               `g(N) = 146191`, `g(N) = 157837`, `g(N) = 158209` and, the standing record,
+               `g(N) = 160357`.
 * `Records`  – the bounded record games as closed theorems.
 * `Needles`, `NeedlePairs`, `NeedleClusters` – what two needles (numbers with no Goldbach
                summand below `Q`) have in common. Rows are numbers: `N + h` inherits from a
@@ -136,17 +156,98 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the exhaustive enumeration (`scripts/mini_check/needle_pairs.txt`). Needles are
                not independent, and nothing here says they are random.
 * `RankPatterns`, `RankData`, `RankTable` – the experiment of `scripts/rank_records`: the ten
-               largest least Goldbach summands among the even numbers up to `10^11`, and the
+               largest least Goldbach summands among the even numbers up to `10^12`, and the
                numbers that arrive at each rank. Proved: the relations that hold exactly
                (`3 ∣ N + g(N)` when `3 ∤ N`; `g(N + h) ≤ g(N) + h` when `g(N) + h` is prime,
                with equality as soon as the rows that are not inherited are composite; the
                least summand is at least the distance to the previous prime); the prime race
                behind the residue bias of the arrivals, in the kernel for every level up to
                4096 (class 2 against class 1 modulo 3) and 3528 (non-residues against residues
-               modulo 5); the least summands of the 39 record holders up to `10^11`
+               modulo 5); the least summands of the 42 record holders up to `10^12`
                (`RankData.recordTable_spec`) and of the clustered arrivals (`shift_pairs`,
                `records_42_apart`). That the table is complete, and that record holders avoid
-               multiples of 3 and prefer non-residue classes, are measurements.
+               multiples of 3 and prefer non-residue classes, are measurements beyond `2^25`;
+               below `2^25` the first two are theorems (next entry).
+* `BitSieve`, `RankSieve` – the rank experiment as theorems below `2^25 = 33554432`.
+               `BitSieve`: a prime sieve on bitmasks that the kernel evaluates (the primes of an
+               interval are the binary digits of one natural number; a digit left by the passes
+               for all primes below `D` is a prime when the interval ends below `D²`; "some
+               `N - q`, `q ≤ G`, is prime" is a union of shifts; a statement about every `N` of
+               an interval divisible by `m` is one equality of big numbers). `RankSieve`
+               (generated, 33 sieves of a million numbers; builds in about 90 s with 7 GB):
+               every even `N` in `[6, 2^25)` is a sum of two primes with the smaller at most
+               `997` (`exists_summand_le`); the record holders below `2^25` are exactly the 26
+               numbers of the table (`isRecordHolder_iff`); a multiple of `3` has least summand
+               at most `379`, of `5` at most `619`, of `7` `661`, of `11` `683`, of `13` `709`,
+               of `15` `239`, of `21` `269`, of `35` `439`, of `105` `157`, each attained
+               (`exists_summand_le_of_dvd_*`); and no multiple of `3` between `1362` and `2^25`
+               enters the ten largest least summands (`notAmongTen_of_dvd_6`).
+* `RecordGen`, `RecordGenRun` – a generator for OEIS A025018 / A025019 and the proof that it
+               is correct. `IsRecord N g`: `N ≥ 4` even, `g` its least Goldbach summand, every
+               smaller even number has a smaller one. `records X` builds the terms below `X`
+               by a sieve of translates of the primes (strikers `q = 2, 3, 5, …`; the front is
+               the smallest even number no striker has struck; a striker that hits the front
+               makes it a term with value `q`), on bitmasks. `mem_records`: for every `X`,
+               `(N, g) ∈ records X ↔ N < X ∧ IsRecord N g`; `records_sorted`: in increasing
+               order; `isRecord_iff_front`: a term is a front that its striker hits;
+               `testBit_primeMask`: the prime sieve inside is exact. `RecordGenRun`: the kernel
+               runs the generator to `2^20` (21 terms), and what four simpler rules produce
+               where they break (`8`, `14`, the value `11` for `98`, `124`) is proved not to
+               be in the sequence. `scripts/record_gen`: those rules, each right for one term
+               more than the last, and a runner (30 terms below `2^27` in 3 minutes).
+* `RecordInfinite` – how far the generator goes. The front exists for every striker
+               (`exists_isFront`, unconditional); the sequence is infinite, and `records X`
+               grows beyond every length, if and only if Goldbach's conjecture holds
+               (`goldbach_iff_records_unbounded`, `goldbach_iff_generator_never_stops`); if
+               it fails, the front stops at the smallest counterexample
+               (`isFront_of_counterexample`).
+* `RecordWalk` – the same sequence as an N generator. `walk X` goes through the even numbers
+               `N = 4, 6, 8, …` below `X`, keeps one number `G` (the largest least summand so
+               far) and announces `N` when its least summand exceeds `G`. `mem_walk`: for
+               every `X`, `N ∈ walk X ↔ N < X ∧ ∃ g, IsRecord N g`; `walk_sorted`;
+               `walk_eq_map_records`: `walk X` is the list of numbers of `records X`, so
+               walker and sieve are one generator; `walk_two_pow_20`: the 21 numbers
+               announced below `2^20`. What the question "does `N` beat `G`?" looks at:
+               the primes within `G` below `N` (`not_isSummand_iff_neighbours`), or `N`
+               alone, through its residues modulo the primes up to `√N`, which must cover
+               every prime `q ≤ G` (`beats_iff_wheels`). `scripts/record_gen/ngen.c`: the
+               walker made fast (64 values of `N` per step; 10^11 in about a minute).
+* `CoverDepth`, `CoverDepthRun` – the cover depth of a list of moduli (the research session's
+               `D(n)` for the first `n` odd primes): the first odd prime that no residue
+               vector strikes together with all smaller ones. A depth-first search decides
+               it and is proved correct (`search_iff`); run in the kernel it gives the exact
+               values `3, 5, 7, 19, 31, 43, 67, 103, 163, 181` for `0, …, 9` moduli
+               (`isDepth_0` … `isDepth_9`; nine moduli in 72 kernel checks) and lower bounds
+               `223, 271, 331, 419, 499, 613, 709, 739, 859` for `10, …, 18`
+               (`coversBelow_10` … `coversBelow_18`). The depth increases with
+               every new modulus (`IsDepth.lt_cons`). The least summand of an even `N` is
+               at most the depth of the odd primes up to `√N` (`least_summand_le_depth`);
+               if that depth is at most `N - 3`, `N` is a sum of two primes
+               (`exists_isSummand_le_depth`), which gives Goldbach below `961` with no
+               primality test of any `N - q` (`exists_isSummand_of_lt_841`,
+               `exists_isSummand_of_lt_961`); arbitrarily
+               large even numbers have least summand at least the depth
+               (`exists_isLeastSummand_ge_depth`). The terms `6, 12, 30, 98` of A025018
+               attain the depth of their small primes and `220` does not
+               (`isRecord_and_isDepth`, `isRecord_220_and_isDepth`). The complete covers of
+               the 200-digit search are lower bounds for 89 to 93 moduli
+               (`coversBelow_15907` … `coversBelow_16981`). `scripts/cover_depth`: the
+               search in C, the table to `n = 15`.
+* `Cover32971`, `Cover40111`, `Cover135511`, `CoverDepthGreedy` – three generated
+               certificates and their statements: the 167 odd primes up to `997` cover every
+               odd prime below `32971` (`coversBelow_32971`, a greedy vector) and below `40111`
+               (`coversBelow_40111`, the research session's tempered vector), and the 429 odd
+               primes up to `2999` every odd prime below `135511` (`coversBelow_135511`,
+               greedy); the greedy vectors are from `scripts/cover_depth/greedy.py`.
+               `Cover614101`: a greedy vector on the 1228 odd primes up to `9973` covering
+               every odd prime below `614101` (`coversBelow_614101`, with `mem_mods9973`: the
+               moduli are exactly the odd primes below `10000`); the proved bound gives
+               `123,900` there.
+               `Cover1471`, `Cover4909`, `Cover8311`: three more tempered vectors of the
+               research session, on the odd primes up to `97`, `199`, `293`
+               (`coversBelow_1471`, `coversBelow_4909`, `coversBelow_8311`). The proved bound `1.349 x ln x` gives `9,290`
+               and `32,390` there; the greedy reach follows `0.6` to `0.7` times `x ln² x` in
+               everything computed.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
@@ -211,10 +312,21 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                one row per modulus, so the sum over class vectors of `y^(rows left)` is at
                most `∏ m · (1 - (1 - y) θ)^k`, `θ = ∏ (1 - 1/m)`, the value for rows killed
                independently; hence the class vectors leaving at most `K` of `k` rows are at
-               most the binomial Chernoff bound. The research session's continuation of its
+               most the binomial Chernoff bound, and those leaving no row at most
+               `∏ m · (1 - θ)^k`: inside the residue model the cost model's independence of
+               the rows left is an inequality above `Q`. The research session's continuation of its
                prize table to depth `10^8` by independent rows is therefore a bound in a known
                direction above `Q`; `scripts/thinning_check/` tests the same law below `Q` on
-               that session's tables and derives its `1/ln² z` regularity from it).
+               that session's tables and derives its `1/ln² z` regularity from it),
+               `Hardness` (for arbitrary rows the cover question contains satisfiability:
+               from a formula in conjunctive normal form with `n` variables and `m` clauses,
+               `n` prime moduli and `m (n + 1)` rows of polynomial size such that the formula
+               is satisfiable iff some residue vector covers every row, iff some `N` is
+               congruent to every row modulo one of the moduli, iff the depth-first search of
+               `CoverDepth` says so: `sat_iff_coversList`, `sat_iff_exists_number`,
+               `sat_iff_search`. So a method that is fast for arbitrary rows would decide
+               satisfiability; with `BlackBox`, a method that beats the present search has to
+               use that the rows are the primes, and for that case nothing is proved).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

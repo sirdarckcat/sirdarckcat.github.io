@@ -20,7 +20,7 @@ def primes_below(n):
     return [i for i in range(n) if s[i]]
 
 
-SMALL = primes_below(400000)
+SMALL = primes_below(1100000)       # enough for N below 1.2 * 10^12
 
 
 def least_factor(m):

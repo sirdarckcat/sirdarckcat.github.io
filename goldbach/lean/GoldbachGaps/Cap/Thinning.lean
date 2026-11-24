@@ -25,7 +25,15 @@ them, so the exact generating function for one modulus is `y^k (1 + k u)` with
   `∏ mᵢ · (1 - (1 - y) θ)^k / y^K` for every `0 < y ≤ 1` (Markov), and
   `thinCount_le_chernoff` is the best `y`: the binomial Chernoff bound
   `(θ (k - K) / (K (1 - θ)))^K · ((1 - θ) k / (k - K))^k`, valid for `0 < K ≤ θ k`.
-* `thinCount_le_of_lt`, `thinSum_le_of_lt`: the case of rows below `Q` and moduli `≥ Q`.
+* `thinCount_zero_le`: the case `K = 0`, `y = 0`: every row is killed for at most
+  `∏ mᵢ · (1 - θ)^k` class vectors. Inside the residue model this is the cost model's
+  hypothesis of independent rows ("a member with `k` rows left succeeds with probability
+  `(1 - p)^k`") as an inequality: the primes above `Q` make all `k` rows composite at most
+  that often. The gap is of relative size about `(k p)² ∑ 1/m² / 2`, with `p = θ` the chance
+  that a row is left by all the moduli: below `10⁻⁵` for `k ≤ 2000`, `p = 0.07` and moduli
+  above `10^8` (an estimate, not proved here).
+* `thinCount_le_of_lt`, `thinSum_le_of_lt`, `thinCount_zero_le_of_lt`: the case of rows below
+  `Q` and moduli `≥ Q`.
 
 Use. The research session's table "what a perfect search would be worth"
 (`goldbach/sublinear/README.md`, Result 3, branch `ccr-d4a17dd0-7uu03r`) continues each depth
@@ -265,6 +273,21 @@ theorem thinCount_le_chernoff (K : ℕ) (ms : List ℕ) (S : Finset ℕ) (hpos :
   rw [← hθ, e1, e2, div_inv_eq_mul] at h
   exact h
 
+/-- **No row left: the independent value is an upper bound.** If the rows of `S` are pairwise
+incongruent modulo every modulus of the list, the number of class vectors for which every row
+is killed by some modulus is at most `∏ m · (1 - θ)^|S|`.
+
+This is the cost model's hypothesis of independent rows (a member with `k` rows left succeeds
+with probability `(1 - p)^k`), as an inequality inside the residue model: when the residues of
+`N` modulo different primes are independent and uniform, the primes above `Q` cannot make all
+`k` rows composite more often than `k` independent rows would be. -/
+theorem thinCount_zero_le (ms : List ℕ) (S : Finset ℕ) (hpos : ∀ m ∈ ms, 0 < m)
+    (hinj : ∀ m ∈ ms, Set.InjOn (fun q => q % m) S) :
+    (thinCount 0 ms S : ℝ) ≤ (ms.prod : ℕ) * (1 - survival ms) ^ #S := by
+  have h1 := thinCount_mul_pow_le (y := 0) le_rfl zero_le_one 0 ms S
+  have h2 := thinSum_le (y := 0) le_rfl zero_le_one ms S hpos hinj
+  simpa using h1.trans h2
+
 /-- Rows below `Q` are pairwise incongruent modulo any `m ≥ Q`. -/
 theorem injOn_mod_of_lt {S : Finset ℕ} {Q m : ℕ} (hS : ∀ q ∈ S, q < Q) (hm : Q ≤ m) :
     Set.InjOn (fun q => q % m) S := by
@@ -290,6 +313,15 @@ theorem thinCount_le_of_lt {y : ℝ} (hy0 : 0 < y) (hy1 : y ≤ 1) (K : ℕ) {Q 
     (ms : List ℕ) (S : Finset ℕ) (hms : ∀ m ∈ ms, Q ≤ m) (hS : ∀ q ∈ S, q < Q) :
     (thinCount K ms S : ℝ) ≤ (ms.prod : ℕ) * ((1 - (1 - y) * survival ms) ^ #S / y ^ K) :=
   thinCount_le hy0 hy1 K ms S (fun m h => lt_of_lt_of_le hQ (hms m h))
+    fun m h => injOn_mod_of_lt hS (hms m h)
+
+/-- **Above `Q`, all rows composite is at most as likely as for independent rows.** For rows
+below `Q` and moduli `≥ Q ≥ 1`, the number of class vectors for which every row has a divisor
+among the moduli is at most `∏ m · (1 - θ)^|S|`. -/
+theorem thinCount_zero_le_of_lt {Q : ℕ} (hQ : 0 < Q) (ms : List ℕ) (S : Finset ℕ)
+    (hms : ∀ m ∈ ms, Q ≤ m) (hS : ∀ q ∈ S, q < Q) :
+    (thinCount 0 ms S : ℝ) ≤ (ms.prod : ℕ) * (1 - survival ms) ^ #S :=
+  thinCount_zero_le ms S (fun m h => lt_of_lt_of_le hQ (hms m h))
     fun m h => injOn_mod_of_lt hS (hms m h)
 
 end GoldbachGaps.Cap

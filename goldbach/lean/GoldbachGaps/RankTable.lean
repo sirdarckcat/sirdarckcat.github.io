@@ -2,13 +2,15 @@ import GoldbachGaps.RankPatterns
 import GoldbachGaps.RankData
 
 /-!
-# The record holders up to `10^11` and the pairs that share a prime
+# The record holders up to `10^12` and the pairs that share a prime
 
-`RankData.recordTable` lists the 39 even numbers up to `10^11` whose least Goldbach summand
+`RankData.recordTable` lists the 42 even numbers up to `10^12` whose least Goldbach summand
 exceeds that of every smaller even number, with the summand; `RankData.recordTable_spec` proves
 each value (`N - q` composite for every prime `q < g` by an exhibited divisor, `g` and `N - g`
-prime). That no smaller number does better is the scan `scripts/rank_records/lgs_scan.c`, a
-computation and not a theorem here; the list agrees with OEIS A025018 and A025019.
+prime). That no smaller number does better is proved for the record holders below `2^25` in
+`GoldbachGaps/RankSieve.lean` (`isRecordHolder_iff`); beyond, it is the scan
+`scripts/rank_records/lgs_scan.c`, a computation and not a theorem; the list agrees with terms 2 to 43 of OEIS A025018 and
+A025019 (b-files).
 
 Instances of the shift law of `RankPatterns` among the numbers that arrive in the ten largest:
 
@@ -43,7 +45,7 @@ theorem cluster_194 :
   ⟨leastSummand_194344, leastSummand_194386, leastSummand_194428, leastSummand_194452,
     leastSummand_194470⟩
 
-/-- On the 39 record holders the exact residue relation is visible: none is divisible by `3`
+/-- On the 42 record holders the exact residue relation is visible: none is divisible by `3`
 beyond `30`, and then `3` divides `N + g(N)`. This is `IsSummand.three_dvd_add`, checked here
 on the table. -/
 theorem recordTable_three_dvd :

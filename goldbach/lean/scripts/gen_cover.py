@@ -55,12 +55,14 @@ def main():
     assert all(r >= 2 for r in mods)
     assert all(r + Q < N for r in mods) and Q + 2 < N, "N is too small for the moduli"
     rows = primes_below(Q)
-    bad = [q for q in rows if not any((N - q) % r == 0 for r in mods)]
+    residues = {r: N % r for r in mods}
+    bad = [q for q in rows if not any(q % r == residues[r] for r in mods)]
     assert not bad, "the cover is not complete: %d primes left, the first is %d" % (len(bad), bad[0])
     small_primes = primes_below(int(Q ** 0.5) + 2)
     # every composite q < Q must have a proper divisor among the trial divisors
+    row_set = set(rows)
     for q in range(2, Q):
-        if q not in set(rows):
+        if q not in row_set:
             assert any(d < q and q % d == 0 for d in small_primes)
     big = max(mods)
     digits = len(str(N))
@@ -96,7 +98,11 @@ def main():
     L.append(f"/-- The {len(mods)} covering moduli (`2` covers the row `q = 2`). -/")
     L.append("def coverMods : List ℕ :=\n" + lean_list(mods))
     L.append("")
-    L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide")
+    if len(mods) > 100:
+        L.append("set_option maxRecDepth 1000000 in")
+        L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide +kernel")
+    else:
+        L.append(f"theorem coverMods_le : ∀ r ∈ coverMods, r ≤ {big} := by decide")
     L.append("")
     L.append("/-- Trial divisors, enough to discard every composite `q < Q`. -/")
     L.append("def smallPrimes : List ℕ :=\n" + lean_list(small_primes))
@@ -167,7 +173,8 @@ def main():
     L.append("    have h2 := hl.2 r hr")
     L.append("    have : N ≤ N + t * M := Nat.le_add_right _ _")
     L.append("    exact ⟨h2.1, by omega⟩")
-    L.append("  have h2M : 2 ∣ M := List.dvd_prod (by decide)")
+    L.append("  have h2M : 2 ∣ M := List.dvd_prod (List.mem_of_mem_head? rfl)" if len(mods) > 100 else
+             "  have h2M : 2 ∣ M := List.dvd_prod (by decide)")
     L.append("  refine ⟨N_even.add (Even.mul_left (even_iff_two_dvd.mpr h2M) t), fun q hq hqp => ?_,")
     L.append("    fun q hq => hcov.noSummandIn_of_lt hmods q (Nat.zero_le q) hq⟩")
     L.append("  obtain ⟨r, hr, hrq⟩ := hcov q (Nat.zero_le q) hq hqp")

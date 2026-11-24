@@ -4,7 +4,7 @@ import GoldbachGaps.Needles
 # Patterns in the largest least Goldbach summands, and what of them is provable
 
 The experiment (`scripts/rank_records`): compute the least Goldbach summand `g(N)` of every even
-`N` up to `10^11`, keep the ten largest values seen so far, and list the `N` that arrive at each
+`N` up to `10^12`, keep the ten largest values seen so far, and list the `N` that arrive at each
 rank. The arrivals at every rank show the same patterns. This file proves the ones that are
 exact, and for one that is statistical it proves the finite fact that explains its direction.
 
