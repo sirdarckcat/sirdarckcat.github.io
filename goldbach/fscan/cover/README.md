@@ -369,7 +369,11 @@ points of the best design for every threshold up to 185,000. A design aimed
 at a far threshold raises the chance of that threshold by a factor of two to
 four and no more (190,000: 3.2% against 1.7%; 200,000: 0.41% against 0.17%;
 10%: 0.03% against 0.007%), and pays 3,000 to 6,000 in expected record for
-it. Starting files for 190,000 and 200,000 exist (`starts/q190000_m89.txt`,
+it. (The units in fact run 8.9 days from 24 November 04:05 UTC; with that
+and the fleet's day-one rate the expected column reads 176,800, 176,500,
+175,900, 174,200, 171,500 and 171,100 for the designs from family B to
+213,070, the chances rise by about a tenth, and the ranking is the same.)
+Starting files for 190,000 and 200,000 exist (`starts/q190000_m89.txt`,
 1,420 rows; `starts/q200000_m89.txt`, 1,502 rows; one tempering run each).
 
 `descend.sh Q start.txt out.txt` looks for a better cover by repeated capped
