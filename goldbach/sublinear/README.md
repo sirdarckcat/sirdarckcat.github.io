@@ -599,8 +599,19 @@ convolution) and could not; the formal parts of its answer are the Lean files
 named in rung 4 of the ladder. Two of its remarks belong here. For
 arbitrary lists the question "does any N below a bound meet every list" is
 NP-complete already with two classes per modulus (Manders–Adleman 1978;
-Garey–Johnson AN1), so nothing that treats the lists as arbitrary can be both
-exact and fast. And for our lists the problem is the search for intervals
+Garey–Johnson AN1), and for arbitrary *rows* the cover question itself
+contains SAT, which the Lean session proved in the cover's own terms
+(`Cap/Hardness.lean`, commit 84040ae: from a formula with n variables and m
+clauses it builds n prime moduli and m(n+1) rows of polynomial size such that
+the formula is satisfiable exactly when some N is congruent to every row
+modulo one of the moduli). So nothing that treats the rows or the lists as
+arbitrary data can be both exact and fast, and with the black-box bound
+(`Cap/BlackBox.lean`) nothing that only asks members how good they are can
+beat enumeration. Neither says anything about the one structured family that
+matters, rows = the primes below Q: a lower bound against every algorithm on
+that family is out of reach of any known proof technique. What can be done is
+to price each property the prime rows have that arbitrary rows lack, and that
+is what this section does. And for our lists the problem is the search for intervals
 (N − Q, N] poor in rough numbers at fixed offsets, the same problem as record
 prime gaps, where the state of the art is also covering congruences followed
 by a sieve over the members.
@@ -624,6 +635,23 @@ small modulo many primes at once *can* be found by lattice reduction
 forcing N mod s below Q costs ln(s/Q) nats and raises the chance of a kill by
 that prime only from k/s to k/Q = 0.8%: a hundred to a thousand times less
 per nat than the last prime of the cover.
+
+A second structure exists as well, and it is the only place where prime rows
+are cheaper than arbitrary ones: the rows are the same for every N, so
+neighbours share their arithmetic. If the primes of a stretch of length L near
+10^200 are known (0.03·L probable-prime tests after a sieve to 10^8), then
+every even N of the stretch is decided by table look-ups alone: N fails
+exactly when N − π is a small prime for some prime π of the stretch, about 83
+marks per N. That is some 6,000 elementary operations per N against about
+23,000 for a member of a cover in the fleet's pipeline. But the N of a stretch
+are consecutive, their residues modulo the cover primes are whatever they are,
+and a number without a cover succeeds at 170,000 with probability about
+e^(−46.6) against 0.17·e^(−30.0) of captured chance for a sieved member of a
+cover: cheaper by a factor 4 per number and worse by a factor of about a
+million per operation. A cover on the primes up to 13 would let seven members
+share a window and gains a nat or two of the sixteen. The two structures
+exclude each other: a cover spaces its members 10^193 apart, and sharing needs
+them within 2·10^5.
 
 In the language of the literature: collecting the prize means solving *noisy
 Chinese remaindering with dense lists* on average — rate 460/1,940 and lists of
