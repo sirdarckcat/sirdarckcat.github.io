@@ -33,9 +33,9 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213 for
-  n = 1 to 21 (`desert.c`; two programs to n = 15, the uarch session's faster
-  search beyond, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
+  181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
+  1,381, 1,471 for n = 1 to 24 (`desert.c`; two programs to n = 15, the uarch
+  session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem.
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -748,38 +748,59 @@ above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
 fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values:
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 |
+| optimal vectors | | 2 | 1 | 2 | 2 | 6 | 6 | 1 | 2 | 1 | 17 | 9 |
+
+| n | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 | 83 | 89 | 97 |
+| D(n) | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 | 1,279 | 1,381 | 1,471 |
+| D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 |
+| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | |
+
+("Optimal vectors": how many of the ∏ r class vectors reach D(n).)
 
 The values to n = 7 are also the result of a brute force over all vectors;
 the first fifteen come out the same from the Lean session's separate program
 (D(15) = 613 took 1.6·10^10 nodes here, `desert_fast.c`, the same search on
-bit sets and in parallel, and 1.8·10^10 there). D(16) to D(21) are from the
-uarch session's version of the search (`desert_fast3.c`, `desert_fast4.c` and
-`desert_fast3_results.txt` on branch `ccr-b8c25887-i6tn9f`, commits a81cc6f
-to 7672e19), which keeps the search and the cut
+bit sets and in parallel, and 1.8·10^10 there). D(16) to D(24) are from the
+uarch session's versions of the search (`desert_fast3.c`, `desert_fast4.c`,
+`desert_fast5.c` and their result files on branch `ccr-b8c25887-i6tn9f`,
+commits a81cc6f to 6bda6ad). The first of them keeps the search and the cut
 and changes the order: the moduli that can strike the branching prime are
 tried most-struck-primes-first, and the branching prime is the unstruck prime
 with the fewest moduli still able to strike it. That takes D(15) from
 1.6·10^10 nodes to 1.1·10^7 and D(18) to 2.9·10^8 nodes in half a minute;
 it reproduces D(1) to D(15), gives the same D(16) to D(20) for two orders of
 the children (D(20) in 4.9·10^9 nodes), and its vectors were rechecked here
-(every odd prime below 709, 739, 859, 907, 1,051 and 1,213 struck). It comes
-with checks that share little or no code with it: this session's
-`desert_fast.c` with nothing but the order of the children changed gives the
-same D(16) and D(17); a brute force over all vectors agrees for n ≤ 9,
-including the number of optimal vectors (2, 1, 2, 2, 6, 6, 1, 2 for n = 2 to
-9); and a SAT solver (CaDiCaL) finds "strike every odd prime below the next
-prime after D(n)" unsatisfiable and "below D(n)" satisfiable for n = 8, 10,
-12 and 13. All of it
-agrees, and the values to n = 8 are theorems checked by the Lean kernel, which runs a search
-proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commit 9dce329 on
-`ccr-36ca7b46-8twf14`; beyond 8 the lower bounds are theorems, one vector
-each, as are the four large covers). Formalising it, the Lean session proved
-three things that make D more than a lower bound:
+(every odd prime below each of the values from 709 to 1,471 struck, the
+value itself not). The latest version adds one lemma to the cut: if the
+capacity of the free moduli exceeds the primes still unstruck by a margin,
+then in any vector below the node that still succeeds every free modulus
+sits in a class within that margin of its fullest one; classes that do not
+qualify are never tried, a prime that no qualifying class strikes ends the
+node, and a modulus with one qualifying class is forced. That cuts the tree
+by another factor of 100 to 200 (the proof that nothing reaches beyond
+1,279 at n = 22 takes 2.1·10^7 nodes instead of 5.0·10^9), gives D(23) in 82
+seconds and D(24) in five minutes, and makes the count of optimal vectors
+cheap. The search comes with checks that share little or no code with it:
+this session's `desert_fast.c` with nothing but the order of the children
+changed gives the same D(16) to D(20); a brute force over all vectors agrees
+for n ≤ 9, including the number of optimal vectors; a SAT solver (CaDiCaL)
+finds "strike every odd prime below the next prime after D(n)" unsatisfiable
+and "below D(n)" satisfiable for n = 8, 10, 12 and 13, and its count of
+optimal vectors agrees for n ≤ 12; each new cut can be switched off and the
+answers stay the same; and D(24) = 1,471 is the value tempering had found
+before any exhaustive search reached it. All of it
+agrees, and the values to n = 9 are theorems checked by the Lean kernel, which runs a search
+proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commits 9dce329 and
+747767d on `ccr-36ca7b46-8twf14`; beyond 9 the lower bounds are theorems to
+n = 18, one vector each, as are the large covers). Formalising it, the Lean
+session proved three things that make D more than a lower bound:
 
 - g(N) ≤ D(n) for every even N, with n the number of odd primes up to √N: the
   residues of N itself strike every odd prime below its least summand. So D
@@ -787,7 +808,7 @@ three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 1,213 against 6,887 at n = 21.
+  499 against 2,809 at n = 14, 1,471 against 10,199 at n = 24. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -897,7 +918,7 @@ on those 167 moduli, as it does at 463: it finds classes that strike every
 odd prime below 40,111 (`complete_cover_40111_167primes.txt`, checked
 independently; 0.84·x·ln² x and 4.3 times the theorem's count), and nothing
 complete at 41,000 in runs of the same length. The best reach known for
-each set of moduli, exact for the first two and by tempering for the others
+each set of moduli, exact for the first three (1,471 was found by tempering and is D(24)) and by tempering for the others
 (`complete_covers_97_199_293.txt`, `complete_cover_15907.txt`,
 `complete_cover_40111_167primes.txt`):
 
