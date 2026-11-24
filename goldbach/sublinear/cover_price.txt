@@ -21,3 +21,7 @@ x | moduli | end of complete covers by the recursion | / (x ln^2 x) | by the fir
 9973 | 1228 | 905,951 | 1.071 | 1,555,613 | 1.840
 30000 | 3244 | 3,514,985 | 1.102 | 5,777,212 | 1.812
 100000 | 9591 | 15,112,989 | 1.140 | 23,841,613 | 1.799
+
+# cover_price.py floor
+x = 463, Q = 170000, 15496 rows: the entropy of the recursion reaches zero at beta = 1.40 with 1218 rows left; largest floor -ln Z/beta: 1221
+x = 463, Q = 213070, 19050 rows: the entropy of the recursion reaches zero at beta = 1.30 with 1566 rows left; largest floor -ln Z/beta: 1584

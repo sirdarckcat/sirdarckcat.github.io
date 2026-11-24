@@ -1388,11 +1388,14 @@ moduli only through D. On the campaign's 89 moduli (D = 16,300; random
 nonzero classes leave 1,853 rows at 170,000 and 2,278 at 213,070) it gives
 1,172 and 1,527 rows; the floors measured above are 1,214 to 1,248 and 1,554
 to 1,609, and the best covers found have 1,248 and 1,609 (ratios 0.673 and
-0.706 against the predicted 0.633 and 0.670). So the calculation is 5 to 6%
-on the optimistic side, as its Poisson-like tail for the fullest classes
-would make it, and it explains the size of what tempering finds: the covers
-of the campaign are not good by accident of search, they are where the count
-of covers runs out.
+0.706 against the predicted 0.633 and 0.670). So this smooth version is 5 to
+6% on the optimistic side. Run instead with the derived dispersion and the
+actual moduli (`cover_price.py floor 463 170000`: the recursion with a
+finite price at the end, and the temperature at which its entropy reaches
+zero), it gives 1,221 rows at 170,000 and 1,584 at 213,070: within 2% of the
+1,248 and 1,609 of the best covers found, from the Hardy–Littlewood count of
+prime pairs and nothing else. The covers of the campaign are not good by
+accident of search; they are where the count of covers runs out.
 
 The same formula covers the table of Result 3, which was made the day
 before with a different sampler and for a different purpose. A number below

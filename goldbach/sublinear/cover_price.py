@@ -3,6 +3,7 @@
 
     python3 cover_price.py            the constant of the law at the sizes measured, and where complete covers end
     python3 cover_price.py ends big   the same with the ends up to x = 100,000 (ten minutes)
+    python3 cover_price.py floor x Q  for Q beyond the end: the fewest rows a cover can leave (where the entropy runs out)
 
 Count the class vectors that strike every odd prime below Q modulus by modulus, smallest first.  If V(s, A) is the
 logarithm of the number of ways the moduli from s on can finish when A rows are alive, then
@@ -60,12 +61,49 @@ def start_price(mods, phis, Q, poisson=False):
         else: hi = mid
     return lo, piQ, vs
 
+def start_price_for_end(mods, phis, Q, end_price):
+    """the price before the first modulus when a row left at the end costs end_price (a finite temperature)"""
+    piQ = odd_primes_below(Q); vs = [dispersion(s, phi, Q, piQ) for s, phi in zip(mods, phis)]
+    def run(p):
+        for s, v in zip(mods, vs):
+            top = math.log(s - 1) / v
+            if p > top - math.expm1(v * top) / (v * (s - 1)): return float("inf")
+            lo, hi = p, top
+            for _ in range(60):
+                mid = 0.5 * (lo + hi)
+                if mid - math.expm1(v * mid) / (v * (s - 1)) < p: lo = mid
+                else: hi = mid
+            p = 0.5 * (lo + hi)
+        return p
+    lo, hi = 0.0, 5.0
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        if run(mid) < end_price: lo = mid
+        else: hi = mid
+    return lo, piQ
+
+def floor(x, Q):
+    """ln Z(beta) = sum ln(s-1) - p_start(beta) pi(Q) for Q beyond the end of complete covers: where its entropy reaches zero"""
+    mods, phis = setup(x); th = sum(math.log(s - 1) for s in mods)
+    betas = [0.05 * i for i in range(1, 81)]; lnZ = []
+    for b in betas:
+        p, piQ = start_price_for_end(mods, phis, Q, b); lnZ.append(th - p * piQ)
+    crisis = None
+    for i in range(1, len(betas) - 1):
+        k = -(lnZ[i + 1] - lnZ[i - 1]) / (betas[i + 1] - betas[i - 1])
+        if crisis is None and lnZ[i] + betas[i] * k <= 0: crisis = (betas[i], k)
+    return piQ, crisis, max(-z / b for z, b in zip(lnZ, betas))
+
 def setup(x):
     mods = [p for p in P if p <= x]; phis = []; phi = 1.0
     for s in mods: phis.append(phi); phi *= 1 - 1 / (s - 1)
     return mods, phis
 
 if __name__ == "__main__":
+    if len(sys.argv) > 3 and sys.argv[1] == "floor":
+        x, Q = int(sys.argv[2]), int(sys.argv[3]); piQ, crisis, best = floor(x, Q)
+        print(f"x = {x}, Q = {Q}, {piQ:.0f} rows: the entropy of the recursion reaches zero at beta = {crisis[0]:.2f} with {crisis[1]:.0f} rows left; largest floor -ln Z/beta: {best:.0f}")
+        sys.exit(0)
     measured = [(463, 10000, 171.78), (463, 14000, 61.69), (997, 15000, 640.1), (997, 25000, 435.6), (997, 38000, 153.6),
                 (2999, 50000, 2160.1), (2999, 100000, 1342.5), (9973, 100000, 8709.1), (9973, 300000, 6313.2)]
     print("x | Q | loss measured (theta - ln g0) | loss by the recursion | by the first moment (rows independent) | constant c' = loss ln^2 x/(pi(Q) ln Q): measured, recursion, first moment")
