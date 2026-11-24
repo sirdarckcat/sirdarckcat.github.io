@@ -22,7 +22,8 @@ with the least `x'` that covers, the law at `x = x'` reads `θ(x') = Q/ln² x'`,
 the law's loss `Q/ln² x` is smaller than the bound `θ(x')` by the factor `ln² x / ln² x'`.
 
 The exact depths say where the count ends: `g0_29_181`, with nine moduli `g0(29, 181) > 0` and
-`g0(29, 182) = 0`.
+`g0(29, 182) = 0`. For three moduli the count itself is checked: `g0_7_19`, exactly one class
+vector modulo `3, 5, 7` covers every odd prime below `19`.
 -/
 
 namespace GoldbachGaps.CoverCount
@@ -114,5 +115,21 @@ theorem g0_29_181 : 0 < g0 29 181 ∧ g0 29 182 = 0 :=
     (fun r => by
       have h : oddPrimesBelow 30 = [3, 5, 7, 11, 13, 17, 19, 23, 29] := by decide
       rw [← h]; exact mem_oddPrimesBelow (by norm_num)) 181).1 isDepth_9
+
+theorem rowsBelow_8 : rowsBelow 8 = {3, 5, 7} := by decide
+
+theorem rowsBelow_19 : rowsBelow 19 = {3, 5, 7, 11, 13, 17} := by decide
+
+theorem rowsBelow_20 : rowsBelow 20 = {3, 5, 7, 11, 13, 17, 19} := by decide
+
+set_option maxRecDepth 100000 in
+/-- **The count itself, for three moduli.** Of the `105` class vectors modulo `3, 5, 7` exactly
+one covers every odd prime below `19` (the classes `2, 3, 0` of the term `98` of A025018), and
+none covers `19` as well. `scripts/cover_count/g0_exact.c` computes such counts for up to ten
+moduli by going through every class vector. -/
+theorem g0_7_19 : g0 7 19 = 1 ∧ g0 7 20 = 0 := by
+  unfold g0
+  rw [rowsBelow_8, rowsBelow_19, rowsBelow_20]
+  decide +kernel
 
 end GoldbachGaps.CoverCount
