@@ -7,6 +7,8 @@ from concurrent.futures import ThreadPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 LOG = os.path.join(HERE, "t2_runs.jsonl")
 SEEDS = (1, 2, 3, 4)
+# ptcover_fast2 = ptcover_fast plus the line "first sweep with best k <= j" (same run, same output otherwise); runs logged with it carry first_le
+BIN = os.path.join(HERE, "ptcover_fast2") if os.path.exists(os.path.join(HERE, "ptcover_fast2")) else os.path.join(HERE, "ptcover_fast")
 
 def sweeps_for(x):
     return 80000 if x <= 400 else 120000 if x <= 800 else 160000
@@ -23,11 +25,13 @@ def one(x, Q, seed, sweeps, start=""):
     if key in DONE: return DONE[key]
     mod = os.path.join(HERE, start or f"mod_{x}.txt")
     t0 = time.time()
-    out = subprocess.run([os.path.join(HERE, "ptcover_fast"), str(Q), mod, str(sweeps), str(seed), os.path.join(HERE, "betas56.txt")],
+    out = subprocess.run([BIN, str(Q), mod, str(sweeps), str(seed), os.path.join(HERE, "betas56.txt")],
                          capture_output=True, text=True, env=dict(os.environ, OMP_NUM_THREADS="1")).stdout
     k = int(re.search(r"# best k found: (\d+)", out).group(1))
     best = re.search(r"^BEST (.*)$", out, re.M).group(1).strip()
     r = dict(x=x, Q=Q, seed=seed, sweeps=sweeps, start=start, k=k, best=best, seconds=round(time.time() - t0))
+    fl = re.search(r"^# first sweep with best k <= j \(j:sweep\):(.*)$", out, re.M)
+    if fl: r["first_le"] = {int(a): int(b) for a, b in (t.split(":") for t in fl.group(1).split())}
     with open(LOG, "a") as f: f.write(json.dumps(r) + "\n")
     DONE[key] = r
     print(f"  x={x} Q={Q} seed={seed} sweeps={sweeps}{' start=' + start if start else ''}: best k {k}  ({r['seconds']} s)", flush=True)
