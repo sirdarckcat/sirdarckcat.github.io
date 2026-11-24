@@ -33,6 +33,9 @@ import GoldbachGaps.RecordInfinite
 import GoldbachGaps.RecordWalk
 import GoldbachGaps.CoverDepth
 import GoldbachGaps.CoverDepthRun
+import GoldbachGaps.Cover1471
+import GoldbachGaps.Cover4909
+import GoldbachGaps.Cover8311
 import GoldbachGaps.Cover32971
 import GoldbachGaps.Cover40111
 import GoldbachGaps.Cover135511
@@ -229,7 +232,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                odd prime below `32971` (`coversBelow_32971`, a greedy vector) and below `40111`
                (`coversBelow_40111`, the research session's tempered vector), and the 429 odd
                primes up to `2999` every odd prime below `135511` (`coversBelow_135511`,
-               greedy); the greedy vectors are from `scripts/cover_depth/greedy.py`. The proved bound `1.349 x ln x` gives `9,290`
+               greedy); the greedy vectors are from `scripts/cover_depth/greedy.py`.
+               `Cover1471`, `Cover4909`, `Cover8311`: three more tempered vectors of the
+               research session, on the odd primes up to `97`, `199`, `293`
+               (`coversBelow_1471`, `coversBelow_4909`, `coversBelow_8311`). The proved bound `1.349 x ln x` gives `9,290`
                and `32,390` there; the greedy reach follows `0.6` to `0.7` times `x ln² x` in
                everything computed.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three

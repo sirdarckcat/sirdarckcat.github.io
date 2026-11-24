@@ -102,6 +102,9 @@ the two that gave 134,839 to 135,511.
 
 | moduli | largest prime | certified: every odd prime below | `1.349 · x ln x` | ratio |
 |---|---|---|---|---|
+| 24 | 97 | 1,471 (research session's tempered vector, `coversBelow_1471`) | 599 | 2.5 |
+| 45 | 199 | 4,909 (the same, `coversBelow_4909`) | 1,421 | 3.5 |
+| 61 | 293 | 8,311 (the same, `coversBelow_8311`; the three vectors are in `tempered_97_199_293_vectors.txt`) | 2,245 | 3.7 |
 | 89 to 93 | 463 to 491 | 15,907 to 16,981 (research session's covers) | 3,830 to 4,100 | 4.1 |
 | 167 | 997 | 32,971 (greedy) | 9,290 | 3.5 |
 | 167 | 997 | 40,111 (research session's tempered vector, `tempered_997_vector.txt`, `coversBelow_40111`) | 9,290 | 4.3 |
