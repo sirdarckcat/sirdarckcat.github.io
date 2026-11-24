@@ -421,14 +421,20 @@ better family a finite list: 92,160 frames on the six smallest moduli.
   contractor session). 11:8 13:5 17:4 ends at 1,309.94 weighted rows (1,254
   rows below 170,000, against family B's 1,245: fewer rows above 170,000, more
   below), 11:7 13:8 17:5 at 1,313.20 (1,259 below 170,000); family B stands at
-  1,308.67. By `rank_covers.py` at the record of 24 November (8.2 days, 52
+  1,308.67, and the same run inside family B's frame, from random classes on
+  the other 83 moduli, ends at exactly 1,308.67 with 1,245 rows below 170,000
+  in 17 minutes on one core. By `rank_covers.py` at the record of 24 November (8.2 days, 52
   million members a second, 160,357 in hand) the best cover of the first is
   worth 176,055 against 176,341 for family B's. The share of a family at
   β = 2 does not tell its bottom: the family with the largest share is 4.5
   weighted rows worse than family B.
 - The unrestricted run from random vectors of `../../sublinear/README.md`
   (a million sweeps) ended at 1,309.36 in a family that is none of these
-  three.
+  three. Twenty more frames given 20,000 sweeps each (the twelve that leave
+  the fewest rows alive, and eight suggested by the shares at warmer
+  temperatures or adjacent to family B) end between 1,317.5 and 1,331.7,
+  where family B's frame gives 1,310.4 to 1,313.6: frames at family B's
+  level are rare.
 - The scan: the contractor session is scoring the frames ranked 1 to 1,200
   (from 20:40 UTC on 24 November); every frame scoring 1,233.5 or less gets
   20,000 sweeps inside it, every one that then reaches 1,312.5 or less gets
