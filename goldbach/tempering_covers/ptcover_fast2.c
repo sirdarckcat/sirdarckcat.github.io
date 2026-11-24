@@ -1,6 +1,7 @@
 /* ptcover_fast2.c -- ptcover_fast.c plus one output line: the first sweep at which the best k over all replicas reached each
  * value ("# first sweep with best k <= j").  It only reads best_k, so the run, the tables and BEST are those of ptcover_fast.
  *   gcc -O3 -march=native -fopenmp -o ptcover_fast2 ptcover_fast2.c -lm
+ * MAXM raised from 256 to 512 (x = 1999 has 302 moduli and crashed ptcover_fast);  MAXM only sizes arrays; output checked identical at x = 127 and 251.
  * ptcover_fast.c -- goldbach/fscan/cover/ptcover.c (branch ccr-d4a17dd0-7uu03r) made 1.8-2.1x faster with identical output.
  *
  * Same command line, same random numbers, same moves, so the same tables, the same BEST and the same PT_DUMP file for a given seed
@@ -42,7 +43,7 @@
 #include <immintrin.h>
 #endif
 
-#define MAXM 256
+#define MAXM 512            /* moduli per cover (x = 1999 has 302; 256 overflowed) */
 static int Q, nrows, nmod;
 static int *rowq;
 static int mod_[MAXM], init_res[MAXM];
