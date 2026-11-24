@@ -23,7 +23,7 @@ confirmed by the research session's own program, with another best vector at `n 
 | 6 | 17 | 67 | 1.39 | 361 | 1,957 |  | exact, kernel | 3:2 5:3 7:5 11:7 13:5 17:3 |
 | 7 | 19 | 103 | 1.84 | 529 | 13,700 |  | exact, kernel | 3:2 5:2 7:3 11:2 13:6 17:9 19:4 |
 | 8 | 23 | 163 | 2.26 | 841 | 109,601 | 6,183 | exact, kernel | 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13 |
-| 9 | 29 | 181 | 1.85 | 961 | 986,410 | 40,403 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13 29:18 |
+| 9 | 29 | 181 | 1.85 | 961 | 986,410 | 40,403 | exact, kernel (72 pieces) | 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13 29:18 |
 | 10 | 31 | 223 | 2.09 | 1369 | 9,864,101 | 259,040 | exact by two programs; ≥ in the kernel | 3:2 5:2 7:5 11:9 13:8 17:7 19:3 23:20 29:23 31:13 |
 | 11 | 37 | 271 | 2.03 | 1681 | 108,505,112 | 2,272,366 | exact by two programs; ≥ in the kernel | 3:2 5:3 7:6 11:9 13:1 17:7 19:18 23:15 29:9 31:19 37:16 |
 | 12 | 41 | 331 | 2.17 | 1849 | 1,302,061,345 | 18,513,174 | exact by two programs; ≥ in the kernel | 3:2 5:3 7:3 11:6 13:8 17:7 19:10 23:1 29:10 31:19 37:0 41:38 |
@@ -40,11 +40,12 @@ The values for `n = 16, 17, 18` are from a faster search of the uarch session (`
 
 ## What is proved (`GoldbachGaps/CoverDepth.lean`, `GoldbachGaps/CoverDepthRun.lean`)
 
-* The search is proved correct (`search_iff`) and run by the kernel: **`D(0), …, D(8)` =
-  3, 5, 7, 19, 31, 43, 67, 103, 163 are theorems** (`isDepth_0` … `isDepth_8`). The upper bound is
-  the exhaustive part. The kernel keeps every intermediate term (about 45 kB per node), so eight
-  moduli are cut into eight checks and nine would need 72 of them (about five minutes); beyond
-  `n = 8` only the lower bound is proved, from one vector each (`coversBelow_9` … `coversBelow_18`).
+* The search is proved correct (`search_iff`) and run by the kernel: **`D(0), …, D(9)` =
+  3, 5, 7, 19, 31, 43, 67, 103, 163, 181 are theorems** (`isDepth_0` … `isDepth_9`). The upper
+  bound is the exhaustive part. The kernel keeps every intermediate term (about 45 kB per node),
+  so eight moduli are cut into eight checks and nine into 72 (five minutes); ten would need 720
+  (about an hour) and was not done; beyond
+  `n = 9` only the lower bound is proved, from one vector each (`coversBelow_10` … `coversBelow_18`).
 * `IsDepth.lt_cons`: a new modulus always increases the depth (it can strike the first unstruck
   prime); `IsDepth.prime`: the depth is an odd prime; `IsDepth.unique`.
 * `least_summand_le_depth`: **the least Goldbach summand of an even `N` is at most the depth of
@@ -52,8 +53,8 @@ The values for `n = 16, 17, 18` are from a faster search of the uarch session (`
   summand.
 * `exists_isSummand_le_depth`, `exists_isSummand_of_lt_841`: **Goldbach by covering.** If that
   depth is at most `N − 3`, `N` is a sum of two primes, one of them at most the depth. With
-  `D(0..8)`: every even number from 6 to 840 is a sum of two primes, one at most 163, and no
-  `N − q` is tested for primality. In the table, compare `D(n)` with the next prime squared:
+  `D(0..9)`: every even number from 6 to 960 is a sum of two primes, one at most 181
+  (`exists_isSummand_of_lt_961`), and no `N − q` is tested for primality. In the table, compare `D(n)` with the next prime squared:
   "`D(n) < (next prime)² − 2` for all `n`" would be Goldbach's conjecture, with much room.
 * `exists_isLeastSummand_ge_depth`: conversely (Dirichlet), arbitrarily large even numbers have
   least summand at least the depth.

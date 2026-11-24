@@ -213,14 +213,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `D(n)` for the first `n` odd primes): the first odd prime that no residue
                vector strikes together with all smaller ones. A depth-first search decides
                it and is proved correct (`search_iff`); run in the kernel it gives the exact
-               values `3, 5, 7, 19, 31, 43, 67, 103, 163` for `0, …, 8` moduli
-               (`isDepth_0` … `isDepth_8`) and lower bounds `181, 223, 271, 331, 419, 499,
-               613, 709, 739, 859` for `9, …, 18` (`coversBelow_9` … `coversBelow_18`). The depth increases with
+               values `3, 5, 7, 19, 31, 43, 67, 103, 163, 181` for `0, …, 9` moduli
+               (`isDepth_0` … `isDepth_9`; nine moduli in 72 kernel checks) and lower bounds
+               `223, 271, 331, 419, 499, 613, 709, 739, 859` for `10, …, 18`
+               (`coversBelow_10` … `coversBelow_18`). The depth increases with
                every new modulus (`IsDepth.lt_cons`). The least summand of an even `N` is
                at most the depth of the odd primes up to `√N` (`least_summand_le_depth`);
                if that depth is at most `N - 3`, `N` is a sum of two primes
-               (`exists_isSummand_le_depth`), which gives Goldbach below `841` with no
-               primality test of any `N - q` (`exists_isSummand_of_lt_841`); arbitrarily
+               (`exists_isSummand_le_depth`), which gives Goldbach below `961` with no
+               primality test of any `N - q` (`exists_isSummand_of_lt_841`,
+               `exists_isSummand_of_lt_961`); arbitrarily
                large even numbers have least summand at least the depth
                (`exists_isLeastSummand_ge_depth`). The terms `6, 12, 30, 98` of A025018
                attain the depth of their small primes and `220` does not

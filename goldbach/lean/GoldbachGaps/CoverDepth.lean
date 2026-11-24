@@ -16,8 +16,8 @@ the research session (`goldbach/sublinear`, branch `ccr-d4a17dd0-7uu03r`).
   prime?") decides whether a list of primes can be struck, and is proved correct.
 * `isDepth_0` … `isDepth_7`: **the exact values** `D = 3, 5, 7, 19, 31, 43, 67, 103` for the
   first `0, 1, …, 7` odd primes, by running the search in the kernel (the upper bound is the
-  exhaustive part). `GoldbachGaps/CoverDepthRun.lean` adds `163` for eight moduli and lower
-  bounds beyond.
+  exhaustive part). `GoldbachGaps/CoverDepthRun.lean` adds `163` for eight moduli, `181` for
+  nine, and lower bounds beyond.
 * `IsDepth.unique`, `IsDepth.prime`, `IsDepth.lt_cons`: the depth is unique, it is an odd prime,
   and **a new modulus always increases it** (it can strike the first unstruck prime).
 
@@ -215,8 +215,9 @@ theorem isDepth_of_cover {mods : List ℕ} {D : ℕ} (hD : D + 1 ≤ 5929) (hnd 
 /-! ### Splitting a long search into several kernel checks
 
 The kernel keeps every intermediate term of a reduction, about 45 kB per node of this search,
-so the search for eight moduli (`109,601` nodes) is cut at the first strike and each of the
-eight pieces is checked on its own (`GoldbachGaps/CoverDepthRun.lean`). -/
+so the search for eight moduli (`109,601` nodes) is cut after the first step and each of the
+eight pieces is checked on its own, and the search for nine moduli after the second step, in
+72 pieces (`GoldbachGaps/CoverDepthRun.lean`). -/
 
 /-- One branch of the search: the modulus `r` strikes the first prime `q`. -/
 def branch (f : ℕ) (mods : List ℕ) (q : ℕ) (qs : List ℕ) (r : ℕ) : Bool :=
@@ -231,6 +232,30 @@ theorem search_cons_eq_false {f : ℕ} {mods : List ℕ} {q : ℕ} {qs : List �
   unfold branch at h1
   rw [h1] at hs
   exact absurd hs (by simp)
+
+/-- Two steps of the search: `r₁` takes the first row and `r₂` the next row still left. -/
+def branch2 (f : ℕ) (mods : List ℕ) (q : ℕ) (qs : List ℕ) (r₁ r₂ : ℕ) : Bool :=
+  match qs.filter (fun p => p % r₁ != q % r₁) with
+  | [] => true
+  | q₂ :: qs₂ => branch f (mods.erase r₁) q₂ qs₂ r₂
+
+theorem branch_eq_false {f : ℕ} {mods : List ℕ} {q : ℕ} {qs : List ℕ} {r₁ : ℕ} (r₀ : ℕ)
+    (h0 : r₀ ∈ mods.erase r₁)
+    (h : ∀ r₂ ∈ mods.erase r₁, branch2 f mods q qs r₁ r₂ = false) :
+    branch (f + 1) mods q qs r₁ = false := by
+  unfold branch
+  have h1 := h r₀ h0
+  unfold branch2 at h1
+  cases hq : qs.filter (fun p => p % r₁ != q % r₁) with
+  | nil =>
+    rw [hq] at h1
+    exact absurd h1 (by simp)
+  | cons q₂ qs₂ =>
+    refine search_cons_eq_false fun r₂ hr₂ => ?_
+    have h2 := h r₂ hr₂
+    unfold branch2 at h2
+    rw [hq] at h2
+    exact h2
 
 /-! ### The exact values for the first seven odd primes -/
 
