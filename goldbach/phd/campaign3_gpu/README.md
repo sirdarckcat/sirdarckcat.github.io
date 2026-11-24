@@ -521,6 +521,292 @@ Version 3 (22 Nov):
     - Batch: gold-l4b ×0.983, gold-gpu ×0.986, gold-l4c ×0.987, gold-xt4 ×0.983.
   - The keep fraction, re-swept on the new engine (`v89/vsweep2_rtxpro6000.txt`), is flat between 0.985 and 0.9875 (×1.018,
     within the ×1.012 of a repeat at 0.985). f = 0.985 stays.
+- `--target 524288`, the most tests in one Fermat launch, half the default.
+  - In tune2.sh it gave ×0.986, within the noise.
+  - In a production A/B on gold-g4, 12:51:30-13:10:00Z, it ran 0.8473 s a batch against 0.8585 s on gold-g4b and gold-g4c
+    (`fround/ab_target_production.txt`): ×0.987. Expected near-misses a second rose ×1.011.
+  - Rolled out to gold-g4b and gold-g4c at 13:11Z, after each card's own check (`fround/dtgt2.sh`): 24 identical windows
+    and the known case with it.
+- The record of 12:48:45 UTC, g(N) = 158,209 (`../records/budget_1e200_200digit_g158209/`), came from gold-g4c in this
+  configuration.
+  - It was a near-miss of the 89-moduli vector `q170000_m89_p2c00019_v545` at k = 10,814,286.
+  - Since then every card reports near-misses from 158,209 up (`NEAR_MISS=158209`, `v89/set_nm.py`). The L4s and the
+    T4 restarted for it at 12:57Z, the RTX cards with the `--target` roll-out.
+- uarch's opt-in sieve variants (3209f0d; files in `sievepack/`), deployed on the three RTX cards at 13:17:39-13:17:51Z.
+  - The tree is `/content/ua_v5`: `ua_v3` with 3209f0d's whole `sieve200/cuda`, whose default build is SASS-identical.
+  - The variants:
+    - `DEEP_BIN_PACK=1`: 5 marks of 19 bits in 3 words, 40% fewer bin bytes;
+    - `DEEP_GEN_HOIST=1`: the generate kernel's visit loops with the row, q and table pointer hoisted;
+    - `DEEP_TILE_UNROLL=4`: 4 small primes set up at once in the tile kernel;
+    - `DEEP_TILE_PREFETCH=256`.
+  - splitab (`sievepack/splitab_rtxpro6000.txt`), ms a 2^24 window of sieve: 83.7 for production; 78.1 with PACK; 81.2 with
+    HOIST; 76.9 with UNROLL=4; 70.3 with all three; 69.3 adding the prefetch.
+  - Each card's own check (`packab.sh`, `packab_rtxpro6000.txt`) ran production, the new tree without options, and the two
+    combinations, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs on every card.
+    - The known case with all four options gave the same 23 (k, q) as the CPU brute force.
+    - Batch: gold-g4 ×0.970 (it took the variant without prefetch), gold-g4b ×0.969, gold-g4c ×0.959.
+  - The batch gains less than the sieve does: with the sieve 17% faster, the Fermat side (pool wall ~0.65 s) becomes the
+    floor.
+  - In production, 13:18:30-13:34Z: 0.814-0.817 s a batch (`sievepack/production_1318_1334.txt`). Design hits a second
+    rose ×1.04-1.05.
+- uarch's flat flush and grid order (8558276; `DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1`), deployed on the three RTX cards at
+  13:48:32-13:51:31Z on top of the four options above.
+  - The tree is `/content/ua_v6`: `ua_v3` with 8558276's whole `sieve200/cuda`.
+  - Per the instruction accounting, the generate kernel was issue-bound on its warp-a-bin flush, which was half its
+    instructions. FLUSH2 makes the flush one flat loop, a thread a word.
+  - ORDER runs the 4 row slices of a prime chunk together, so they read the prime table from L2.
+  - splitab6 (`sievepack/splitab6_rtxpro6000.txt`): all six options 63.5 ms a window, against 67.7 for production's four.
+    Generate fell from 45.9 to 40.3 ms.
+  - Each card's own check (`flushab.sh`, `flushab_rtxpro6000.txt`) ran production, ua_v6 with production's options,
+    +FLUSH2, and +FLUSH2+ORDER, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs on every card.
+    - The known case with all six options gave the 23 (k, q).
+    - Batch: gold-g4c ×0.967, gold-g4 ×0.957, gold-g4b ×0.963, all with both options.
+  - In this regime the sieve thread is busy about 100% of a batch, and beside the Fermat kernels it runs about 3× slower
+    than alone.
+  - In production, 13:52:30-14:08Z: 0.7815 s a batch on all three cards (`sievepack/production_1352_1408.txt`). Design hits a
+    second rose ×1.035.
+- uarch's generate unroll with clamped table loads (0d42e4d; `DEEP_GEN_UNROLL=4`), deployed on the three RTX cards at
+  14:14:28-14:14:39Z on top of the six options above.
+  - The tree is `/content/ua_v7`.
+  - After the flat flush the generate kernel was waiting on its 16-byte prime-table loads. The unrolled loops keep 4 loads in
+    flight a warp, at 23-24 instructions a visit like unroll 1.
+  - genab (`sievepack/genab_rtxpro6000.txt`), generate ms a window: 40.30 at unroll 1, 32.43 at 2, 28.74 at 4, 30.10 at 8.
+    Smaller CTAs and rcta 16 are slower. Tile unroll 8 / 16 add nothing over 4.
+  - Each card's own check (`unrab.sh`, `unrab_rtxpro6000.txt`) ran production, ua_v7 with production's options, unroll 4,
+    and unroll 2, alternating on the 24 windows.
+    - Slice lines were identical in all seven runs.
+    - The known case with unroll 4 gave the 23 (k, q).
+    - Batch with unroll 4: gold-g4 ×0.969, gold-g4b ×0.962, gold-g4c ×0.966.
+  - In production, 14:15:30-14:31Z: 0.755 s a batch on all three cards (`sievepack/production_1415_1431.txt`).
+- The last small items (15:00-15:35Z) are at the noise floor of a batch.
+  - `sievepack/bundle8_rtxpro6000.txt`, ms a window: the tile kernel's clamped loads made no change. Prefetch 384 / 512, the
+    split points and tile 18 were all slower. The pipelined tile kernel at AT=64 saved 1.5 ms.
+  - `sievepack/bundle9_rtxpro6000.txt`: LEAN (GEN_SCAN2 + RESV_LATE + MINRED) saved 1.2 ms a window, 2.8 with the pipelined
+    tile.
+  - The LEAN gate (`sievepack/leanab_gold-g4c.txt`, `leanab2_g4_g4b.txt`):
+    - gold-g4c took LEAN at ×0.9875 (15:02:52Z);
+    - gold-g4 took LEAN + the pipelined tile at ×0.9895 (15:06:25Z);
+    - gold-g4b failed the 1% gate at ×0.9928 and is unchanged.
+    - On every card, slice lines were identical and the known case ran with the deployed set (`kc_prod.sh`).
+    - The three cards now differ in options whose differences are within the noise.
+  - The fused rounds' control stream (uarch 27db8d0, `fround/ctlab_rtxpro6000.txt`) cut the gap a half-pool beside the
+    sieve from 0.295 to 0.198 s. But the batch did not move (×0.998), so it is not deployed.
+- The keep fraction, re-swept with the 13:17Z engine (`v89/vsweep3_rtxpro6000.txt`, near-misses from 158,209): ×0.903 /
+  ×0.926 / ×0.942 / ×0.975 / ×1.006 at f = 0.975 / 0.9775 / 0.98 / 0.9825 / 0.9875 against 0.985, and a repeat at 0.985
+  gave ×0.985. f = 0.985 stays.
+- research's m88f covers on the L4s and the T4 (23 Nov; files in `m88f/`). These are covers on the first 88 odd primes
+  (b3d6688), Q = 170,000, with 1,257-1,259 residual rows against 1,262-1,263 for the 88-moduli covers before. The lead
+  decided at 15:58Z, subject to four checks.
+  - 2,040 vectors (`ledger_q170000_m88f.txt`), 510 per card. Every N is in [10^199, 10^200) on the campaign's k range
+    [2^30, 2^32).
+  - The checks:
+    1. The prime tables come from each spec's own cover and M.
+    2. The GPU normal path equals search_c.py on a 2^20 slice at f = 0.97 and 0.9 (`checks_l4_cpu.txt`).
+    3. The known case, deep path at f = 0, k ∈ [2^32 − 2^19, 2^32), near-misses from 45,061: the GPU's 40 (k, q) equal
+       `cpu_brute_k0.py`'s (`knowncase_cpu_brute_m88f.txt`).
+    4. The first 20 vectors gave members a second ×1.0114 on gold-l4b.
+  - The cards switched at batch ends, 16:50:45-16:51:24Z (`deploy_m88f.py`, campaign dir `/content/c170f`; `/content/c170`
+    is kept for a revert).
+  - Measured over the first ~15 minutes (`deploy_l4_t4.txt`): members a second ×1.003-1.008, expected design hits a second
+    ×1.058-1.064, alive rows a member 423.8 → 422.5.
+- Top-of-range windows in vector mode (23 Nov; the lead decided at 16:36Z, subject to four checks; files in `vtop/`).
+  - `--vector-place top` (`search_gpu5_vtop.patch`, 22 changed lines): a vector's 2^24 window is [kend − 2^24, kend),
+    with kend = min(kmax, ⌈(10^200 − N0)/M⌉). That is N from 2.15·10^199 to just below 10^200, instead of 10^199 to
+    8.85·10^199 from k_lo.
+  - A larger N has a slightly lower prime density, so a member's rows are less likely to hold a prime. Expected
+    near-misses from 158,209 rise ×1.0113 a vector and expected hits ×1.0122 (the 24 test vectors), at the same batch
+    time (×1.003, inside the noise).
+  - The loader asserts that every window lies in [10^199, 10^200). It skips a vector whose name is in the done set
+    under either placement, since the two windows of one vector overlap by ~85%.
+  - The checks, on gold-g4b (`vtop_rtxpro6000.txt`):
+    1. The loader, run from the code itself on all 228 chunk files (112,931 vectors). At the default placement it
+       matches production on every chunk. At the top, it takes each of the 12,579 vectors not yet done exactly once,
+       and a simulated restart takes nothing again.
+    2. The GPU normal path equals search_c.py on the top 2^19 of a production vector, at f = 0.97 and 0.9.
+    3. The bottom known case gives the same 23 (k, q), and the slice lines at the default placement are identical to
+       production's.
+    4. A top-window name is name@4601761 or name@4601762; a bottom one is name@2137898.
+    - Extra: the known case at the top (k ∈ [20,854,690, 21,378,978), f = 0, near-misses from 46,171) gives the same 25
+      (k, q) on the GPU and in `cpu_brute_k0.py` (`knowncase_top_cpu_brute.txt`).
+  - Deployed on gold-g4, gold-g4b and gold-g4c at 17:29:09-17:29:18Z (`deploy_vtop.py`, `deploy_rtxpro6000.txt`).
+    `search_gpu5.py` here is the deployed driver. The L4s and the T4 still run the earlier one, which is the same in
+    campaign mode.
+  - At 17:42Z the three generators got research's 426 starting covers (58e95e3: 186 at 1,248 rows, 240 at 1,249). Their
+    walks from the 210 starting covers were making only 1,251-row vectors, at +1.2 over the row guard's base.
+- uarch's one-pass generate kernel (f1b904a, `DEEP_GEN_ONEPASS=1`; tree `/content/ua_v10` = `ua_v3` + f1b904a's
+  `sieve200/cuda`), deployed on the three RTX cards at 18:09:59-18:11:05Z under the standing rule.
+  - The large-prime generate kernel used to visit every (prime, row) pair twice: once to count each bin's marks, once to
+    place them. Now the counting atomic's rank places the mark in the bin's 40 shared-memory slots, with an overflow list
+    and a fallback to the old path. The marks and bits are the same. With the flag unset, the kernel source is
+    byte-identical.
+  - bench_split on gold-g4b (`sievepack/opab_rtxpro6000.txt`), ms a 2^24 window: generate 28.75 → 22.15, the whole sieve
+    51.2 → 44.4. Unroll 8, 30 slots and 25 slots were slower.
+  - The driver gate on each card (`sievepack/opgate.sh`, `opgate_rtxpro6000.txt`): base / ONEPASS / ONEPASS + launch
+    bounds 512,3, alternating on the 24 test vectors.
+    - Batch ×0.9728 on gold-g4, ×0.9566 on gold-g4b, ×0.9725 on gold-g4c.
+    - Slice lines were identical everywhere, and the known case gave 23/23 with the chosen settings.
+  - Production (`vtop/production_rtxpro6000.txt`), on gold-g4 and gold-g4c:
+    - top placement against bottom: expected near-misses a batch ×1.0185, design hits a second ×1.015-1.017;
+    - one-pass on top of that: batch ×0.972, design hits a second ×1.033.
+- A trade-off in the newer covers. Research's new starting files lower the total rows but put more rows below the
+  near-miss threshold (158,209).
+  - On the RTX, chunks from 58e95e3 average 1,250.5-1,250.9 rows (from 1,251.0), but 1,171.8-1,176.8 of them lie below
+    158,209 (from ~1,169.3). Expected near-misses a batch fell ~10% from 18:20Z, when they reached the queue, while design
+    hits a batch rose ~0.8%.
+  - On the L4s and the T4, top2 has 1,257.65 rows (from 1,258.65), but 2.8 more below 158,209: about +2.4% design hits and
+    -6.5% near-misses.
+  - Both are kept for now, and the choice is with the lead.
+- The lead's L4 keep-fraction A/B (`l4f/ab_l4_f985.txt`): gold-l4c at f = 0.985 against gold-gpu and gold-l4b at 0.97,
+  17:30-18:30Z. Expected design hits a second came out ×0.9865 against the controls, below the +5% bar, so it went back
+  to 0.97 at 18:34Z.
+  - The L4 runs sieve then Fermat in series, under its power cap. Its fixed part is 3.27 s of a 9.33 s batch, so halving
+    the tests only removes the Fermat half.
+- At 18:34-18:35Z the four L4/T4 cards switched to 6,000 m88f vectors from research's 3bcdbf6 starting file at cap 1,258
+  (1,800 a card on the L4s, 600 on the T4; `m88f/deploy_l4_t4.txt`).
+- The RTX sieve options and the one-pass kernel on the L4s (`l4op/`), under the standing rule. Until now the L4s and the
+  T4 ran the old tree uaB with only `DEEP_STAGED` and the driver's defaults (rg 16, 256-thread CTAs, rcta 2).
+  - bench_split on gold-l4b (`opl4b_l4.txt`), ms a 2^25 window:
+    - production 1,455.1; with the RTX option stack 1,171.5; with the stack at the RTX's rg 32 / 512 / 512 / rcta 8,
+      982.4;
+    - with one-pass: 832.5 (20 slots, rcta 8), 785.4 (40 slots, rcta 4), and 783.1 at 75 slots, rcta 2, rg 32,
+      512 / 512.
+    - uarch sized the slots: about 3/4 of the stage's marks over rcta × 64 tiles bins a CTA.
+  - The gate (`gate_deploy_l4.txt`):
+    - Batch 9.520 → 8.094 s (×0.850), with slice lines identical.
+    - On a production window at f = 0.97, the near-misses from 45,061 were 129 = 129 member by member.
+    - The known case gave 40/40 with the new options and parameters. The 2^19 window runs with one-pass off, because
+      on one tile uarch's host-side check (fc12768) refuses it.
+    - A 2^25 window at f = 0 needs 28 GB of survivor rows, more than an L4 has.
+  - Deployed at 18:55:40-18:56:28Z on gold-l4b, gold-gpu and gold-l4c, together with the lead's item 8: `KLO =
+    3,758,096,384`.
+    - So each vector is scanned only on the top 16 levels of 2^25, and the card then moves on to fresh vectors.
+    - Hits a slice at the top level run ~9% above the bottom level, so this is about +3% against the full
+      [2^30, 2^32).
+    - Each campaign's `search.log` (one name@k0 line a slice) is the record of the levels done;
+      `l4op/levels_done.py` tallies it.
+  - On the T4, bench_split gives 2,553 → 1,739 ms with the same row; the stack alone is slower there (2,715).
+    - Its gate (`gate_deploy_t4.txt`): batch ×0.907 with slice lines identical; the same 129 per-member near-misses as
+      the L4 on that window; the known case 40/40.
+    - Deployed at 19:11:41Z with the top 16 levels.
+  - Measured on the L4s (`l4rate.py`, 18:57-19:08Z against 18:35-18:54Z): batch ×0.854 / ×0.852, expected design hits
+    a second ×1.166 / ×1.171 on gold-gpu / gold-l4c. gold-l4b's earlier window includes the test stops.
+- Colab ends every runtime 24 h after creation. gold-gpu was created at 2026-11-22T19:12:40Z and ended at 19:13:03Z on
+  the 23rd, taking its logs with it.
+  - Before every later end, each card's state was snapshotted (`runlogs/snap.py`), and its compact records went to
+    `runlogs/2026-11-23/`: done sets, generator ledgers, found files, expected sums.
+  - The user approved replacements (~20:10Z). The kit is in `bringup/`. Colab refuses a fourth concurrent G4, so each
+    RTX replacement waits for its predecessor's slot.
+  - gold-g4 → gold-g4d (20:19Z), gold-g4b → gold-g4e (20:33Z) and gold-g4c → gold-g4f (21:02Z): each on research's
+    491-family vectors (below), with a fresh campaign directory `/content/c170r` and generator partitions 0, 1 and 2.
+    - Each new GPU first passed the production known case at the top window (25 = 25, `kc_top_check.py`).
+  - gold-gpu → gold-l4d (20:20Z), on gold-gpu's untouched top3 share in `/content/c170g`.
+    - It first passed the per-member check and the m88f known case 40/40 on the new GPU.
+  - Following the lead (19:27Z), found lines are copied off every card every 2 minutes (`runlogs/found_sync.sh`).
+    That job hit the 2 h limit on background jobs at 22:30Z. Since 22:35Z the fleet watcher does it on each poll,
+    ~3 min apart (`bringup/fjob_watch20.sh`; `peek_v3.py` also returns every found line, and the list ends with a
+    marker).
+    - A replacement starts with its predecessor's lines marked as already copied, so lines restored from a snapshot
+      are not reported again as new.
+  - Proactive replacements at ~23 h, each onto its share of the shifted family-B vectors in a fresh c170g:
+    gold-l4b → gold-l4e (23:38-23:45Z), gold-l4c → gold-l4f (23:41-23:47Z) and gold-xt4 → gold-xt4b (a T4,
+    00:44-00:48Z on the 24th, 1,572 vectors). Each new GPU passed the per-member check (129 = 129 near-misses at
+    production f on the L4s; identical on the T4) and the m88f known case (40 = 40) before deploying.
+    - Since 00:48Z all four L4/T4 cards run their top32-shifted family-B shares.
+    - gold-l4f's first bring-up stopped after 34 s because gold-l4c's snapshot had no `opl4gate2.sh` (the L4 gate had
+      run on gold-l4b only). The script was uploaded from the repo and the bring-up re-run. Now the handover scripts
+      upload it themselves.
+    - Lesson: an edit to `handover_pro.sh` while a handover was running it broke that job with a syntax error (bash
+      reads a script as it runs). Only the local follow-up died; the card's bring-up finished on its own. Scripts in use
+      are not edited in place.
+- After a design hit (the lead, 23 Nov 21:19Z): keep the covers and raise the near-miss threshold to the new record.
+  Moving Q needs the lead first. For that move, research has stand-by family-B start files at Q = 180,000, with the covers
+  counted to 180,000:
+  - `starts/q180000_m89r491.txt` (2,770 covers at 1,340-1,344 rows): `./gen_vectors.sh 180000 1344 <count> <name> <seed>
+    m89r491`.
+  - `starts/q180000_m88f.txt` (a9ee33a; 291 covers at 1,350-1,355 rows): `GEN_KMAX=top32 ./gen_vectors.sh 180000 1356
+    <count> <name> <seed> m88f`.
+  - Research: with a record of 172,000-178,000 these covers come within 100 of the best known, so only the row lists
+    change, not the family.
+- The record of 2026-11-24 17:11:16 UTC, g(N) = 160,357 (`../records/budget_1e200_200digit_g160357/`), came from gold-g4d.
+  - It was a near-miss of the 491 family-B vector `q170000_m89r491_p0c00524_v232` at k = 19,221,795, in the top window.
+    The watcher copied the line off the card at once.
+  - `rec160357/quick_check.py` checked it here first (gmpy2, from the vector's spec). `certify_c3.sh` (`CLAIM_Q=158209`)
+    then certified it at 17:13Z.
+  - Since 17:14-17:20Z every card reports near-misses from 160,357 up (`NEAR_MISS=160357`, `rec160357/raise_nm.py`).
+    Each card restarted in place at a batch end; the generators and row guards were not touched.
+  - The RTX cards had logged 1.60 expected near-misses at or above 158,209 since the previous record.
+    From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
+- research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
+  the lead behind a six-point gate (`v491/`, gold-g4c):
+  1. The deep sieve matches the CPU feeder at the top windows, and the Fermat flags match gmpy2.
+  2. The GPU normal path equals search_c.py at f = 0.97 and 0.9.
+  3. The known case gives the same 46 (k, q) on the GPU and in `cpu_brute_k0.py`.
+  4. The full 2^24 window at f = 0 gives 1,066 = 1,066 near-misses member by member, before and after one-pass.
+  5. Against what production consumed (24 vectors of the newest 463 chunk), design hits a second ×1.061 and near-misses
+     ×0.9995. The lead's bars were +3% and −3%.
+  6. On gold-g4d the generator makes 1,000 vectors at 1,248 rows every ~40 s.
+- Family-B covers (research a9e4a27; the lead changed the criterion at 20:00Z). What decides the final record is how far
+  above 170,000 a design hit stops. So the uncovered primes in 170,000-180,000 count, not the rows below 158,209.
+  - Check 6 (`famB/check6_results.txt`), uncovered primes in [170k, 175k) / [175k, 180k): 57.2 / 60.5 in the first
+    m89 chunks (family A), 49.1 / 52.1 in the 58e95e3 chunks (A + B), and 46.1 / 50.4 in the 491 chunks.
+  - The 491 family-B-only file (3,924 covers, a subset of 4,000) has run since 20:26Z. The m88f file is B ∩ present
+    (258 covers).
+  - The 491 pool at ≤ 1,248 rows ran out within the hour: each partition's walk found only covers already in its ledger.
+    The generators raised their cap to 1,249 (gold-g4d 20:25Z, gold-g4e 20:40Z, gold-g4f 21:08Z).
+    - The row guard's base is 1,248.000 and it trips only above +2. With CAPMAX = 1,250 the trailing average cannot get
+      there, so the cap rise cannot trip it.
+    - Research estimates ~290,000 covers at ≤ 1,249 and ~3.7 million at ≤ 1,250. At ~1.5 M vectors a day, cap 1,250
+      lasts ~2.5 days. Then either CAPMAX or the guard must change, which is the lead's call.
+    - The lead decided at 21:19Z and 21:35Z, and both rules are now in place:
+      - The guard's base is the mean measured at the first cap (1,248.000), plus one row for each of the generator's cap
+        steps (its `cap raised to N` lines). The +2 trip is relative to that, so a planned cap step can never lower f.
+        It went live on gold-g4d, g4e and g4f at 21:38-21:46Z: base 1,249.000 at cap 1,249, trailing +0.000.
+      - At the first `no chunk at cap 1250`, the cap goes on to 1,251, then 1,252. The live generators keep CAPMAX 1,250,
+        since their pool outlasts these runtimes. Every replacement starts its generator at the old card's last cap with
+        CAPMAX 1,252.
+      - Watcher 19 reports cap steps (for the regular reports), a stall at CAPMAX, fewer than 2,000 vectors ahead, and a
+        dead generator (`peek_rg.py`'s supply fields).
+    - The tail before a cap step: at 1,248 on gold-g4d, a walk's new covers fell from 1,000 to 1 over 28 walks in
+      ~3 min. The 12,000-vector buffer (~35 min) covered that easily.
+      - The 1,250 pool is ~130× larger, so its tail could keep an RTX waiting for 1-2 h. The lead decided (21:46Z) to
+        step the cap when a walk gives fewer than 100 new vectors, and at once when fewer than 3,500 (~10 min) are
+        ahead after a walk that did not fill its chunk: "a GPU must never idle waiting for vectors".
+      - The leftovers at the old cap still come out of later walks, best first (`vecgen491.sh`, YMIN / BUFMIN).
+      - A mock run of the generator checked both rules (`bringup/README.md`).
+      - The live generators were restarted on these rules at an idle moment between walks (`restart_gen.py`), so no
+        ledger line or chunk was cut. Their cap carried over (1,249), with CAPMAX 1,252.
+- research's top32 shift for the L4/T4 vectors (4de3423; the lead approved it at 20:34Z behind a three-point gate; `s32/`).
+  - Each vector gets N0 += k_shift·M, with k_shift = 5,603,499,370 or 5,603,499,371, so that k = 2^32 − 1 is its last
+    member below 10^200.
+  - The top 16 levels then hold N from 9.458e199 up to just below 10^200. Unshifted, a vector would cross 10^200 only at
+    k ≈ 9.9e9, and its N at 2^32 is about 4.3e199.
+  - The batch is the shifted twin of the unshifted family-B batch: the same 12,000 covers, in the same order.
+  - The gate:
+    1. `s32_assert.py`, independent of research's `check_specs.py`, matched all 12,000 shifted specs to their unshifted
+       covers: the same M and residual rows, the residues mod the 88 cover primes, N(2^32 − 1) < 10^200 and
+       N(KLO) ≥ 10^199. `check_specs.py` also passed (12,000 OK, all N0 distinct).
+    2. The known case (top4s_v0, the top 2^19 at f = 0, T = 48,397) gave 40 (k, q) on the GPU (gold-l4c) and the same 40
+       in `cpu_brute_k0.py` (`kc/compare_result.txt`).
+    3. On gold-l4c, the same 8 covers, top two levels, shifted against unshifted: expected design hits a batch ×1.0590.
+       The bar was ×1.03 and research predicted ×1.056. Batch time was ×1.006 (`s32gate_l4.txt`).
+  - Ledger: lines 26,041-38,040 hold the unshifted batch's keys and lines 38,041-50,040 the shifted ones
+    (`m88f/ledger_index.txt`). The names mark the shifted vectors (`q170000_m88f_top4s_v*`) and each spec carries its
+    `k_shift`.
+  - gold-l4d has run its share (3,476 vectors) since 21:26Z, switched at a batch end by `switch_top4s.py`. The done set
+    carries over, and the top3 vectors it had done stay done.
+  - gold-l4b and gold-l4c get 3,476 each and gold-xt4 1,572, at tonight's ~23 h replacements. Each share is about 62 h
+    of top-16 levels.
+- Resuming the new campaign dirs (fixed 21:30Z, before any snapshot needed it). `snap.py` had kept only the old dirs.
+  - The next round of replacements would have lost the RTX cards' c170r done sets and 491 ledgers, and gold-l4d's c170g.
+  - The fixes:
+    - `snap.py` keeps c170r, c170g, cover491 with its ledgers, the row guard's row counts (rowidx491) and vec491/made.txt.
+    - `resume491.sh`, run by the RTX bring-up, starts a replacement with nothing ahead (made.txt = vectors consumed) and
+      numbers its chunks after the old card's last one. Without it, the new chunk names would repeat names already in
+      the done set and be skipped. The row guard skips names whose chunks are gone.
+    - `bringup_l4.sh` resumes c170g as well as c170f.
+    - `handover_pro.sh` gained KIND `l4`, which resumes an L4/T4 campaign dir.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

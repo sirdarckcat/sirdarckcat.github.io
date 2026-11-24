@@ -1,0 +1,1 @@
+S32-KC PASSED: GPU 40 = CPU 40 (k, q) pairs, identical

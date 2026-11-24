@@ -1,0 +1,7 @@
+gold-g4d [rc] /content/c170r | cap 1248-1249 20:30-02:39: 30421 batches, 5.482 slices/s, design hits/s 9.8325e-07, near/s 5.3571e-06 | cap 1250 03:30-04:00: 2543 batches, 5.481 slices/s, design hits/s 9.5942e-07, near/s 5.2529e-06
+gold-g4e [rc] /content/c170r | cap 1248-1249 20:32-02:39: 30167 batches, 5.480 slices/s, design hits/s 9.8390e-07, near/s 5.3611e-06 | cap 1250 03:30-04:01: 2550 batches, 5.478 slices/s, design hits/s 9.6277e-07, near/s 5.2659e-06
+gold-g4f [rc] /content/c170r | cap 1248-1249 21:01-02:39: 27863 batches, 5.485 slices/s, design hits/s 9.8479e-07, near/s 5.3675e-06 | cap 1250 03:30-04:01: 2561 batches, 5.481 slices/s, design hits/s 9.8216e-07, near/s 5.3266e-06
+gold-l4d [rc] /content/c170g | all 20:20-04:01: 3470 batches, 0.251 slices/s, design hits/s 1.1940e-07, near/s 0.0000e+00
+gold-l4e [rc] /content/c170g | all 23:44-04:01: 1930 batches, 0.250 slices/s, design hits/s 1.1984e-07, near/s 0.0000e+00
+gold-l4f [rc] /content/c170g | all 23:47-04:01: 1897 batches, 0.248 slices/s, design hits/s 1.1907e-07, near/s 0.0000e+00
+gold-xt4b [rc] /content/c170g | all 00:47-04:02: 1312 batches, 0.112 slices/s, design hits/s 5.3939e-08, near/s 0.0000e+00

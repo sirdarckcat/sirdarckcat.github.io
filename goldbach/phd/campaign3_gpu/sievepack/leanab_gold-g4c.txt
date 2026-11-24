@@ -1,0 +1,17 @@
+# LEAN gate on gold-g4c (leanab.sh, then deploy_lean.py), 2026-11-23 15:01-15:02Z: the 24 test windows base / v9 / + LEAN + TILE_PIPE AT=64 (PF off) / + LEAN, alternating; the known case
+# with LEAN + TILE_PIPE. LEAN alone x0.9875 was chosen and deployed at 15:02:52Z (kc_prod.sh re-runs the known case with the deployed settings).
+
+/content/leanab/result.txt base  : gaps [0.78, 0.758, 0.757, 0.741, 0.625] | mean of batches 2-5 0.759 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.733, 0.791, 0.746, 0.761, 0.628] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.786, 0.733, 0.764, 0.738, 0.631] | mean of batches 2-5 0.755 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.742, 0.748, 0.758, 0.742, 0.642] | mean of batches 2-5 0.747 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.792, 0.747, 0.763, 0.746, 0.637] | mean of batches 2-5 0.762 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.758, 0.774, 0.745, 0.748, 0.629] | mean of batches 2-5 0.756 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.736, 0.779, 0.761, 0.741, 0.635] | mean of batches 2-5 0.754 s | slice lines vs base: IDENTICAL (24) | []
+phu (LEAN + TILE_PIPE AT=64) 0.756 s (x0.9940) | phup (LEAN) 0.751 s (x0.9875) | base 0.760 s | v9 with production's options 0.758 s
+known case with phu's settings (production + LEAN + TILE_PIPE AT=64): 23 near-misses, identical to the CPU brute force's 23: True
+LEAN-CHOICE phup x0.9875
+LEAN-GATE PASSED
+LEANAB-DONE
+/content/leand.log [dl] 15:02:52Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'DEEP_GEN_UNROLL=4', 'SIEVE200=/content/ua_v9/goldbach/sieve200', 'DEEP_GEN_SCAN2=1', 'DEEP_GEN_RESV_LATE=1', 'DEEP_GEN_MINRED=1']
+LEAND-DONE

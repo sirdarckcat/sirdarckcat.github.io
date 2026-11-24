@@ -1,0 +1,34 @@
+# The RTX sieve options + uarch's one-pass kernel on the L4s, the gate on gold-l4b (standing rule), 2026-11-23.
+# Part 1 (opl4gate.sh, 18:46-18:50Z): base = production (uaB, DEEP_STAGED only, driver defaults) against new = ua_v10 + DEEP_BIN_PACK HOIST FLUSH2 ORDER GEN_UNROLL=4 TILE_UNROLL=4
+# TILE_PREFETCH=256 + DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=75 (rcta 2) + --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512, alternating on 4 of the card's vectors x 2 windows.
+# Its per-member step (a 2^25 window at f = 0) ran out of the L4's memory (28 GB of survivor rows) and was replaced by part 2.
+2026-11-23T18:46:13Z stopping the campaign in /content/c170f | base tree /content/uaB/goldbach/sieve200 | new: DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=75 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512
+2026-11-23T18:46:14Z stopped
+2026-11-23T18:49:57Z campaign restarted in /content/c170f (unchanged)
+base  : gaps [9.485, 9.54, 9.539] | mean 9.521 s | slice lines vs base: IDENTICAL (8) | []
+new   : gaps [8.058, 8.108, 8.111] | mean 8.092 s | slice lines vs base: IDENTICAL (8) | []
+base_b: gaps [9.454, 9.552, 9.553] | mean 9.519 s | slice lines vs base: IDENTICAL (8) | []
+new_b : gaps [8.113, 8.112, 8.06] | mean 8.095 s | slice lines vs base: IDENTICAL (8) | []
+new 8.094 s a batch against base 9.520 s: x0.8501
+one 2^25 window at f = 0, near-misses >= 45,061: base 0, new 0, per-member identical True | slices base {} new {} | ['Traceback (most recent call last):', 'cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 28,336,158,208 bytes (allocated so far: 7,649,224,704 bytes).'] ['Traceback (most recent call last):', 'cupy.cuda.memory.OutOfMemoryError: Out of memory allocating 28,336,158,208 bytes (allocated so far: 7,929,072,128 bytes).']
+known case inside it (k >= 2^32 - 2^19): 0 near-misses, identical to the CPU brute force's 40: False
+L4-GATE FAILED x0.8501
+# (Part 1's FAILED is only its out-of-memory f = 0 step; its own criteria held: slice lines IDENTICAL in every run, batch x0.8501. Part 2 replaces that step.)
+OPL4G-DONE
+
+# Part 2 (opl4gate2.sh, 18:52-18:53Z):
+2026-11-23T18:52:08Z stopping the campaign in /content/c170f | base tree /content/uaB/goldbach/sieve200
+2026-11-23T18:52:09Z stopped
+2026-11-23T18:53:23Z campaign restarted in /content/c170f (unchanged)
+one 2^25 window at production f, near-misses >= 45,061 among the tested: base 129, new 129, per-member identical True | slices identical True {'q170000_m88f_t1_v0@4261412864': 'tests=14121781 prp=1007616 p^=0.0714 alive/k=422.2 E^=30.13 hit%=25.2 found=0'} | [] []
+  of them inside [2^32 - 2^19, 2^32): 0, each equal to the CPU brute force's entry: True ([])
+known case (2^19, f = 0) with new's options and parameters, one-pass off: 40 near-misses, identical to the CPU brute force's 40: True | []
+L4-GATE2 PASSED
+OPL4G2-DONE
+
+# The fast path's CPU-anchored known case at production window size is the RTX one (sievepack/nmcheck_rtxpro6000.txt: the same kernel source; 1,016 near-misses identical, 25 = CPU).
+
+# Deployed (deploy_l4op.py, at a batch end) together with the lead's item 8 (KLO = 3,758,096,384: the top 16 levels of 2^25 of every vector):
+#   gold-l4b: [dl4] 18:55:40Z | options 1 | vectors 1800 | ['SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1', 'KLO=3758096384'] | procs 1 | deep_env 0000000 --p-est 0.0715 --deep-max-rows 1300 --fused-rounds 1 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512 | stats ['2026-11-23T18:55:25Z batch q170000_m88f_top2_v
+#   gold-gpu: [dl4] 18:55:52Z | options 1 | vectors 1800 | ['SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1', 'KLO=3758096384'] | procs 1 | deep_env 0000000 --p-est 0.0715 --deep-max-rows 1300 --fused-rounds 1 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512 | stats ['2026-11-23T18:55:38Z batch q170000_m88f_top2_v
+#   gold-l4c: [dl4] 18:56:28Z | options 1 | vectors 1800 | ['SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1', 'KLO=3758096384'] | procs 1 | deep_env 0000000 --p-est 0.0715 --deep-max-rows 1300 --fused-rounds 1 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512 | stats ['2026-11-23T18:56:13Z batch q170000_m88f_top2_v

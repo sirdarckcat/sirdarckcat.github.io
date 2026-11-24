@@ -1,0 +1,49 @@
+# The m88f switch (the lead's decision of 23 Nov 15:58Z, after the four conditions: 1 prime tables from the spec's cover and M; 2 GPU normal path = search_c.py at f = 0.97 / 0.9;
+# 3 the known case, GPU's 40 (k, q) = cpu_brute_k0.py's (knowncase_cpu_brute_m88f.txt); 4 first 20 vectors at 1,257 rows, members a second x1.0114 on gold-l4b).
+# deploy_m88f.py on each card (its share of the 2,040 vectors, 510 each, as /content/c170f/my_specs.json; /content/c170 kept for a one-restart revert), at a batch end:
+#   gold-gpu  (L4) 16:50:45Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-l4b  (L4) 16:50:59Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-l4c  (L4) 16:51:19Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+#   gold-xt4  (T4) 16:51:24Z | from /content/c170 to /content/c170f | 510 vectors | procs 1
+# Every vector's N in [10^199, 10^200) on the campaign's k range [2^30, 2^32) (all 2,040 specs checked from N0 and M; spec kmax >= 9.9e9).
+# Measured (m88f_rate.py: gpu3_stats.log, c170 16:20-16:50Z against c170f from 16:52:30Z; residual rows from my_specs.json, alive/k from the last slice lines):
+#   === gold-gpu
+#   [mr] e9b5dd8fa41d | old c170 16:20-16:50: {'batches': 191, 'span': 1784, 'wall_per_batch': 9.3403, 'slices': 382, 'members_s': 7184861.5605, 'hits_s': 0.0, 'tests_s': 3026061.9232}
+#   [mr] new c170f 16:52:30-now: {'batches': 87, 'span': 807, 'wall_per_batch': 9.2759, 'slices': 174, 'members_s': 7234784.5948, 'hits_s': 0.0, 'tests_s': 3043933.9665}
+#   [mr] rows: old 496 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.6
+#   [mr] members/s x1.0069 | expected hits/s x1.0583 | hits/s old 9.2306e-08 new 9.7690e-08
+#   === gold-l4b
+#   [mr] bbd604eeb732 | old c170 16:20-16:50: {'batches': 187, 'span': 1788, 'wall_per_batch': 9.5615, 'slices': 374, 'members_s': 7018656.3579, 'hits_s': 0.0, 'tests_s': 2955764.3261}
+#   [mr] new c170f 16:52:30-now: {'batches': 86, 'span': 816, 'wall_per_batch': 9.4884, 'slices': 172, 'members_s': 7072747.9216, 'hits_s': 0.0, 'tests_s': 2975532.5502}
+#   [mr] rows: old 496 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.6
+#   [mr] members/s x1.0077 | expected hits/s x1.0608 | hits/s old 8.9903e-08 new 9.5367e-08
+#   === gold-l4c
+#   === gold-xt4
+#   [mr] b7653fe2ecfa | old c170 16:20-16:50: {'batches': 189, 'span': 1784, 'wall_per_batch': 9.4392, 'slices': 189, 'members_s': 3554813.704, 'hits_s': 0.0, 'tests_s': 1496972.912}
+#   [mr] new c170f 16:52:30-now: {'batches': 98, 'span': 922, 'wall_per_batch': 9.4082, 'slices': 98, 'members_s': 3566523.141, 'hits_s': 0.0, 'tests_s': 1500480.1551}
+#   [mr] rows: old 243 vectors, residual mean 1263.0 (1262-1263), alive/k 423.8 | new 510 vectors, residual mean 1258.6 (1257-1259), alive/k 422.5
+#   [mr] members/s x1.0033 | expected hits/s x1.0633 | hits/s old 4.5484e-08 new 4.8365e-08
+#   gold-l4c (16:52:30-17:02Z): members/s x1.0075 | expected hits/s x1.0641 | hits/s old 9.1296e-08 new 9.7151e-08 | rows: residual mean 1263.0 -> 1258.6, alive/k 423.8 -> 422.5
+# Supply (the lead's 16:41Z check before the L4 keep-fraction A/B): one generator walk (gen_vectors.sh 170000 1259 6000 cap1 7 m88f, ~1 min of covergen on 2 walkers,
+# 7.5 min in all with check_specs) found 20,000 covers at <= 1,259 rows (1,612 at 1,258, 18,388 at 1,259) and made 6,000 new checked specs at 1,258-1,259 rows
+# (mean 1,258.8; 759 covers skipped as already handed out). The ledger is now 8,040 vectors. Top-up shares are on the cards as /content/m88f_topup1.json, not yet used:
+# 1,800 vectors each for gold-gpu, gold-l4b and gold-l4c (q170000_m88f_cap1_v0..v5399), 600 for gold-xt4 (v5400..v5999).
+# Consumption at f = 0.97: 96 slices of 2^25 a vector, ~194 vectors a day an L4, ~95 the T4 (~677 a day in all). 8,040 vectors last ~9-12 days even with
+# the L4s at f = 0.985, against ~9 days of compute units, so supply does not bind.
+# A better batch (research's 3bcdbf6 starting covers, 911 at 1,255-1,258 rows; cap 1,258 as research advised): gen_vectors.sh 170000 1258 6000 top2 13 m88f, 463 s: 20,000 covers written
+# (34 at 1,256, 1,875 at 1,257, 18,091 at 1,258), 6,000 specs at 1,255-1,258 rows (2 / 100 / 1,877 / 4,021; mean 1,257.65), 1,223 skipped as already handed out. Ledger 14,040.
+# Split round-robin (3 L4s : 1 T4 = 1,800 : 600, each card's mean 1,257.65) as /content/m88f_top2.json on each card; /content/m88f_topup1.json (cap 1,259, mean 1,258.8) is superseded
+# and stays unused. starts_q170000_m88f_3bcdbf6.txt is the starting file used.
+# 18:34:30-18:35:12Z (swap_top2.py at a batch end on each card): /content/c170f/my_specs.json = the card's top2 share (old list kept as my_specs_pre_top2.json; the done set carries
+# over, the new vectors start at the top level); gold-l4c's SKIPF back to 0.97 at the same restart (the A/B, l4f/ab_l4_f985.txt).
+#   gold-l4c 18:34:30Z | 1800 vectors | SKIPF=0.97 ; gold-gpu 18:35:06Z | 1800 ; gold-l4b 18:35:06Z | 1800 ; gold-xt4 18:35:12Z | 600
+# The trade-off (rows below the near-miss threshold 158,209; all four batches, from their spec files):
+#   main (the 2,000 in use before):  rows 1,258.651 | below 158,209 1,179.936 | above 78.715
+#   cap1 (topup1, unused):           rows 1,258.804 | below 1,179.583 | above 79.221
+#   top2 (in use since 18:34Z):      rows 1,257.653 | below 1,182.746 | above 74.906
+# At ~0.024 expected PRPs a row: design hits about x1.024, near-misses >= 158,209 about x0.935. Put to the lead (18:41Z); kept for now.
+# Supply for the lead's item 8 (top 16 levels a vector, ~4,600 vectors a day on the four cards with the L4s' new engine): gen_vectors.sh 170000 1258 12000 top3 17 m88f
+# (18:48-19:04Z, 948 s): the walk wrote 38,000 covers at <= 1,258 (34 at 1,256, 2,123 at 1,257, 35,843 at 1,258), 5,318 of them already handed out (14%, against 6% for top2);
+# 12,000 specs at 1,257-1,258 rows (mean 1,258.0). Ledger 26,040. Weighted round-robin as /content/m88f_top3.json: 3,476 a card on the L4s, 1,572 on the T4 (each mean 1,257.98),
+# appended at each card's next restart (deploy_l4op.py). In hand: top2 (6,000) + top3 (12,000), ~3.9 days at top-16; research puts the <= 1,258 level set at tens of thousands.
+# If it thins, the plan is to widen KLO (24-32 levels keep most of the gain: ~+2.6% at 32 levels against ~+2.9% at 16) rather than raise the cap.

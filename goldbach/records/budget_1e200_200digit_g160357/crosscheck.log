@@ -1,0 +1,2 @@
+[0;31m  ***   Warning: new stack size = 256000000 (244.141 Mbytes).[0m
+primes p < g checked: 14711; isprime(g) = 1; isprime(N - g) = 1; N even: 1; digits: 200

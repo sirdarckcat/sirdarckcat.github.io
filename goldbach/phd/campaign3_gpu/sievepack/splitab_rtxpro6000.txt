@@ -1,0 +1,15 @@
+# uarch splitab.sh (3209f0d) on gold-g4c (RTX PRO 6000), splitab_run.sh, 2026-11-23 13:12:54-13:13:48Z (campaign paused): bench_split under each opt-in sieve variant at the
+# production geometry (rg 32, rcta 8, 512 generate / 512 tile threads), ms a 2^24 vector window, in /content/ua_v5 (ua_v3 + 3209f0d's sieve200/cuda).
+
+2026-11-23T13:12:54Z paused pid 2213736
+base (rcta 8, 512)                 gen   49.67 (A  15.58 B  34.09)  tile   32.60 (small  14.31 apply  19.59)  bench_batch sieve   83.7
+DEEP_BIN_PACK=1                    gen   48.53 (A  15.68 B  32.85)  tile   28.91 (small  16.33 apply  15.89)  bench_batch sieve   78.1
+DEEP_GEN_HOIST=1                   gen   47.27 (A  14.30 B  32.97)  tile   32.74 (small  14.44 apply  19.74)  bench_batch sieve   81.2
+PACK + HOIST                       gen   45.80 (A  14.34 B  31.46)  tile   28.90 (small  16.32 apply  15.88)  bench_batch sieve   75.3
+DEEP_TILE_UNROLL=2                 gen   49.70 (A  15.59 B  34.12)  tile   29.54 (small  11.24 apply  16.39)  bench_batch sieve   80.5
+DEEP_TILE_UNROLL=4                 gen   49.73 (A  15.58 B  34.15)  tile   25.98 (small   7.68 apply  14.17)  bench_batch sieve   76.9
+DEEP_TILE_PREFETCH=256             gen   49.68 (A  15.58 B  34.11)  tile   31.98 (small  13.69 apply  18.93)  bench_batch sieve   83.9
+PACK + HOIST + UNROLL=4            gen   45.80 (A  14.35 B  31.45)  tile   22.87 (small  10.28 apply  11.03)  bench_batch sieve   70.3
+PACK + HOIST + UNROLL=4 + PF       gen   45.80 (A  14.31 B  31.49)  tile   20.85 (small   8.16 apply   9.02)  bench_batch sieve   69.3
+2026-11-23T13:13:48Z resumed pid 2213736
+SPLITAB-DONE

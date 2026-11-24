@@ -1,0 +1,6 @@
+# --target 524288 production A/B (ab_tgt.py on each RTX card's gpu3_stats.log, 12:51:30-13:10:00Z): gold-g4 with it (dtgt.sh: its known case first, deployed 12:50:44Z)
+# against gold-g4b and gold-g4c without it. x0.987 a batch (near-misses a second x1.011): rolled out to gold-g4b and gold-g4c after their own checks (dtgt2.sh).
+
+gold-g4 [ab] batches 1311 | span 1110 s | batch 0.8473 s | near/batch 4.8847e-06 | near/s 5.7648e-06 | hits/s 8.1098e-07 | tests/batch 14116706 | slices/batch 4.000 | first 12:51:30 last 13:10:00
+gold-g4b [ab] batches 1294 | span 1110 s | batch 0.8585 s | near/batch 4.8836e-06 | near/s 5.6888e-06 | hits/s 8.0154e-07 | tests/batch 14117355 | slices/batch 4.000 | first 12:51:30 last 13:10:00
+gold-g4c [ab] batches 1294 | span 1110 s | batch 0.8585 s | near/batch 4.9043e-06 | near/s 5.7128e-06 | hits/s 8.0171e-07 | tests/batch 14117458 | slices/batch 4.000 | first 12:51:30 last 13:10:00

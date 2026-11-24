@@ -1,0 +1,14 @@
+# uarch's control stream for the fused rounds (27db8d0) on gold-g4b, ctlab.sh, 2026-11-23 15:32:44-15:34:21Z (campaign paused). The gap a half-pool beside the sieve (--profile-pool)
+# fell 0.295 -> 0.198 s with the control stream above the sieve (and did not move with the sieve lowered alone), but the batch did not: 0.758 / 0.756 s against 0.759 / 0.758 s
+# (x0.998). Not deployed.
+
+pA  : batch 0.803 s | profile gap a half-pool: mean 0.295 s over 12 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+pB  : batch 0.825 s | profile gap a half-pool: mean 0.198 s over 12 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+pC  : batch 0.808 s | profile gap a half-pool: mean 0.299 s over 12 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+A   : batch 0.759 s | profile gap a half-pool: mean nan s over 0 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+B   : batch 0.758 s | profile gap a half-pool: mean nan s over 0 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+A_b : batch 0.758 s | profile gap a half-pool: mean nan s over 0 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+B_b : batch 0.756 s | profile gap a half-pool: mean nan s over 0 | slice lines vs pA: IDENTICAL (24) | ['rc=2'] []
+CTLAB-DONE
+
+# gold-g4's known case with its deployed set (kc_prod.sh, 15:3xZ): LEAN + TILE_PIPE AT=64, PF off: the 23 (k, q): PASSED

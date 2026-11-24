@@ -1,0 +1,34 @@
+# LEAN roll-out (leanab2.sh, then deploy_lean2.py), 2026-11-23 15:04-15:06Z: LEAN first (phu), LEAN + TILE_PIPE AT=64 (phup); the known case with LEAN. gold-g4: phup x0.9895,
+# deployed 15:06:25Z; gold-g4b: best x0.9928, gate failed, unchanged. (gold-g4c took LEAN alone at 15:02:52Z: leanab_gold-g4c.txt; kc_prod.sh passed on its deployed set.)
+
+=== gold-g4
+/content/leanab/result.txt base  : gaps [0.766, 0.758, 0.747, 0.752, 0.635] | mean of batches 2-5 0.756 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.802, 0.746, 0.752, 0.763, 0.633] | mean of batches 2-5 0.765 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.799, 0.744, 0.743, 0.748, 0.631] | mean of batches 2-5 0.759 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.78, 0.751, 0.749, 0.751, 0.624] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.819, 0.741, 0.758, 0.761, 0.622] | mean of batches 2-5 0.770 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.763, 0.736, 0.77, 0.76, 0.635] | mean of batches 2-5 0.757 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.751, 0.748, 0.764, 0.745, 0.614] | mean of batches 2-5 0.752 s | slice lines vs base: IDENTICAL (24) | []
+phu (LEAN) 0.758 s (x0.9936) | phup (LEAN + TILE_PIPE AT=64) 0.755 s (x0.9895) | base 0.763 s | v9 with production's options 0.765 s
+known case with phu's settings (production + LEAN): 23 near-misses, identical to the CPU brute force's 23: True
+LEAN-CHOICE phup x0.9895
+LEAN-GATE PASSED
+LEANAB-DONE
+/content/leand2.log [dl] 15:06:25Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'DEEP_GEN_UNROLL=4', 'SIEVE200=/content/ua_v9/goldbach/sieve200', 'DEEP_GEN_SCAN2=1', 'DEEP_GEN_RESV_LATE=1', 'DEEP_GEN_MINRED=1', 'DEEP_TILE_PIPE=1', 'DEEP_TILE_PIPE_AT=64', 'DEEP_TILE_PREFETCH=0']
+LEAND-DONE
+
+=== gold-g4b
+/content/leanab/result.txt base  : gaps [0.771, 0.776, 0.754, 0.753, 0.615] | mean of batches 2-5 0.763 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.772, 0.744, 0.748, 0.759, 0.618] | mean of batches 2-5 0.756 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.757, 0.741, 0.751, 0.758, 0.621] | mean of batches 2-5 0.752 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.724, 0.788, 0.77, 0.758, 0.633] | mean of batches 2-5 0.760 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.766, 0.76, 0.752, 0.751, 0.624] | mean of batches 2-5 0.757 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.785, 0.735, 0.754, 0.758, 0.619] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.762, 0.762, 0.74, 0.736, 0.634] | mean of batches 2-5 0.750 s | slice lines vs base: IDENTICAL (24) | []
+phu (LEAN) 0.755 s (x0.9928) | phup (LEAN + TILE_PIPE AT=64) 0.755 s (x0.9931) | base 0.760 s | v9 with production's options 0.756 s
+known case with phu's settings (production + LEAN): 23 near-misses, identical to the CPU brute force's 23: True
+LEAN-CHOICE phu x0.9928
+LEAN-GATE FAILED
+LEANAB-DONE
+/content/leand2.log [dl] gate NOT passed: nothing changed
+LEAND-DONE

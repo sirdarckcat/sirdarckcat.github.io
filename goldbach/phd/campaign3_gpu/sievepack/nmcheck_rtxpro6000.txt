@@ -1,0 +1,28 @@
+# Per-member check of the one-pass kernel's FAST path at production's window (nmcheck.sh, 2026-11-23 18:44-18:47Z, campaigns paused): the known case's 2^19 window has one tile
+# (8 bins, ~768 marks a bin), so there every CTA takes the fallback; a 2^24 window has 32 tiles x rcta 8 = 256 bins (~24 marks a bin, 40 slots). The known-case vector's top 2^24
+# window (production placement), f = 0 (every member tested), near-misses >= 46,171: the settings before one-pass (next_campaign_env_pre_onepass) against the current ones.
+
+=== gold-g4b
+2026-11-23T18:44:14Z paused pid 3102552
+2026-11-23T18:46:49Z resumed pid 3102552
+old env: ['DEEP_GEN_HOIST=1', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'SIEVE200=/content/ua_v7/goldbach/sieve200', 'DEEP_GEN_UNROLL=4']
+new env: ['DEEP_GEN_HOIST=1', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'DEEP_GEN_UNROLL=4', 'SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1', 'DEEP_GEN_LB=512,3']
+old slice: {'q170000_m89_t1_v0@4601762': ('4601762', '21378978', 'tests=235174855 prp=16777216 p^=0.0713 alive/k=420.1 E^=29.97 hit%=100.0 found=0')}
+new slice: {'q170000_m89_t1_v0@4601762': ('4601762', '21378978', 'tests=235174855 prp=16777216 p^=0.0713 alive/k=420.1 E^=29.97 hit%=100.0 found=0')}
+near-misses >= 46,171: old 1016, new 1016, identical True; only old [], only new []
+errors: []
+NMCHECK PASSED
+
+=== gold-g4c
+2026-11-23T18:44:17Z paused pid 3037183
+2026-11-23T18:46:51Z resumed pid 3037183
+old env: ['DEEP_GEN_HOIST=1', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'DEEP_GEN_UNROLL=4', 'SIEVE200=/content/ua_v9/goldbach/sieve200', 'DEEP_GEN_SCAN2=1', 'DEEP_GEN_RESV_LATE=1', 'DEEP_GEN_MINRED=1']
+new env: ['DEEP_GEN_HOIST=1', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1', 'DEEP_GEN_UNROLL=4', 'DEEP_GEN_SCAN2=1', 'DEEP_GEN_RESV_LATE=1', 'DEEP_GEN_MINRED=1', 'SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1']
+old slice: {'q170000_m89_t1_v0@4601762': ('4601762', '21378978', 'tests=235174855 prp=16777216 p^=0.0713 alive/k=420.1 E^=29.97 hit%=100.0 found=0')}
+new slice: {'q170000_m89_t1_v0@4601762': ('4601762', '21378978', 'tests=235174855 prp=16777216 p^=0.0713 alive/k=420.1 E^=29.97 hit%=100.0 found=0')}
+near-misses >= 46,171: old 1016, new 1016, identical True; only old [], only new []
+errors: []
+NMCHECK PASSED
+
+# Inside that window, k in [20854690, 21378978) is the top known case (vtop/knowncase_top_cpu_brute.txt): on both cards, old and new settings alike, its 25 near-misses equal
+# the CPU brute force's 25 (nmc_kc.py). So the fast path has a per-member, CPU-anchored known case at production window size.

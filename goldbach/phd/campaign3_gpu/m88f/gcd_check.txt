@@ -1,0 +1,14 @@
+# m88f vectors (research b3d6688, gen_vectors.sh 170000 1259 ... m88f): 40 (t1, seed 1) + 2,000 (main, seed 2) = 2,040, check_specs.py OK on both files (all N0 distinct),
+# rows 1257: 76, 1258: 626, 1259: 1338 (the first 20: all 1,257). Split into four disjoint shares of 510 (share_<card>.json, interleaved). This session's own cross-check, 10 vectors:
+
+gold-gpu q170000_m88f_main_v772: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-gpu q170000_m88f_main_v1952: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-gpu q170000_m88f_main_v348: residual by gcd 1258 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4b q170000_m88f_main_v641: residual by gcd 1258 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4b q170000_m88f_main_v1809: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4b q170000_m88f_main_v337: residual by gcd 1258 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4c q170000_m88f_main_v1242: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4c q170000_m88f_t1_v30: residual by gcd 1257 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-l4c q170000_m88f_main_v1038: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+gold-xt4 q170000_m88f_main_v1535: residual by gcd 1259 rows, identical True | N 200 digits over [2^30, 2^32): True | moduli = first 88 odd primes: True | M = 2*prod and N0 in all classes: True
+GCD-CHECK PASSED

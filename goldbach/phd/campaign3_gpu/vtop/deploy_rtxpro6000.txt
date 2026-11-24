@@ -1,0 +1,13 @@
+# --vector-place top deployed on the three RTX PRO 6000 cards (deploy_vtop.py, at a batch end = a vector boundary), after every check in vtop_rtxpro6000.txt and
+# knowncase_top_cpu_brute.txt (the top known case: 25 near-misses, GPU = CPU). /content/c3g/search_gpu5.py is now f4a85df2f2d5 (the old 13e19e57aa0f kept as
+# search_gpu5_pre_vtop.py) and /content/deep_env_v89 ends in "--vector-place top" (old one kept as deep_env_v89_pre_vtop), so restart_v.sh and the row guard keep it.
+#   gold-g4  [dv] 17:29:09Z | procs 1 | driver f4a85df2f2d5 | guard running | last slices [q170000_m89_p0c00206_v746@4601761] [..._v747@4601762] [..._v748@4601761] [..._v749@4601761]
+#   gold-g4b [dv] 17:29:14Z | procs 1 | driver f4a85df2f2d5 | guard running | last slices [q170000_m89_p1c00223_v469@4601762] [..._v470@4601761] [..._v471@4601761] [..._v472@4601761]
+#   gold-g4c [dv] 17:29:18Z | procs 1 | driver f4a85df2f2d5 | guard running | last slices [q170000_m89_p2c00183_v793@4601761] [..._v794@4601761] [..._v795@4601761] [..._v796@4601762]
+# The vectors in flight in the pipeline at the restart (planned, not logged) are taken again at the top; nothing logged at the bottom is taken again (base-name exclusion).
+# The L4s and the T4 are unchanged: campaign mode on k in [2^30, 2^32), not this loader.
+#
+# The same minute, the 89-moduli generators (vecgen.sh) on the three cards were making only 1,251-row vectors (their walks from the 210 starting covers had used up
+# what they could reach at <= 1,250), and the row guard read +1.12..+1.19 over its base (1,249.8; it trips at +2). At 17:42Z research's starts/q170000_m89.txt of
+# 58e95e3 (426 covers: 186 at 1,248 rows, 240 at 1,249; a superset of the 210) replaced it on each card (old one kept as q170000_m89_pre58e95e3.txt); vecgen.sh
+# reads the file on every walk, so no restart. About 12,000 vectors already made (AHEAD) are consumed first, ~40 minutes a card.

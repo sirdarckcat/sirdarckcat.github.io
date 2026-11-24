@@ -1,0 +1,18 @@
+# DEEP_REST2=1 (uarch 4a29b53) on gold-g4b, bundle10.sh, 2026-11-23 15:52:22-15:52:56Z (campaign paused), ms a 2^24 window on production's stack: finalize 2.10 -> 0.01 ms, but the
+# new rows kernel is slower (6.3-6.4 -> 7.8 ms); net ~-0.7 ms a window. Not gated.
+
+2026-11-23T15:52:22Z paused pid 2459295
+ua_v7 PF=256 (production stack)          gen   28.76 (A  10.78 B  17.97)  tile   20.85 (small   8.22 apply   9.01)  sieve   50.7  rc 0
+    whole window (bench_batch's phases, ms): sieve 50.7  count 1.86  select 0.19  finalize 2.10  rows 6.31  wall 61.5
+ua_v10 PF=256                            gen   28.76 (A  10.79 B  17.98)  tile   20.90 (small   8.25 apply   9.09)  sieve   51.1  rc 0
+    whole window (bench_batch's phases, ms): sieve 51.1  count 1.89  select 0.19  finalize 2.10  rows 6.41  wall 62.0
+ua_v10 PF=256 + REST2                    gen   28.76 (A  10.79 B  17.97)  tile   20.89 (small   8.23 apply   9.09)  sieve   50.7  rc 0
+    whole window (bench_batch's phases, ms): sieve 50.7  count 1.87  select 0.19  finalize 0.01  rows 7.83  wall 61.0
+ua_v10 PF=256 (again)                    gen   28.77 (A  10.78 B  17.98)  tile   20.87 (small   8.22 apply   9.08)  sieve   50.7  rc 0
+    whole window (bench_batch's phases, ms): sieve 50.7  count 1.85  select 0.19  finalize 2.11  rows 6.43  wall 61.6
+ua_v10 PF=256 + REST2 (again)            gen   28.77 (A  10.78 B  17.98)  tile   20.89 (small   8.21 apply   9.08)  sieve   51.7  rc 0
+    whole window (bench_batch's phases, ms): sieve 51.7  count 1.87  select 0.19  finalize 0.01  rows 7.84  wall 61.9
+ua_v10 + LEAN + REST2                    gen   27.52 (A  19.97 B   7.54)  tile   20.88 (small   8.23 apply   9.09)  sieve   50.7  rc 0
+    whole window (bench_batch's phases, ms): sieve 50.7  count 1.87  select 0.19  finalize 0.01  rows 7.79  wall 60.9
+2026-11-23T15:52:56Z resumed pid 2459295
+BUNDLE10-DONE

@@ -1,0 +1,10 @@
+# uarch's two read-only diagnostics (23 Nov 16:38Z), under production.
+# gold-g4c, RTX PRO 6000 Blackwell Server Edition, driver 580.82.07 (diag_gpu.py, 17:11Z, 60 one-second samples):
+#   ECC mode: current Enabled, pending Enabled.
+#   SM clock 2,422 MHz on every sample (max clock 2,430); memory clock 12,481 MHz; power median 508 W, max 514, limit 600 W; 68 C; utilisation 100%.
+#   Throttle mask 0x0 on every sample: no SW power cap, HW slowdown or SW thermal slowdown. The sieve's traffic does not cost the Fermat kernel clock here.
+#   Turning ECC off (nvidia-smi -e 0 and a GPU reset) is a hardware change, so it is for the lead: uarch's estimate is ~2.5 ms a window, ~1.3% of a batch.
+# gold-l4c, NVIDIA L4 (diag_mem_clocks.py, 17:47Z, one sample, m88f campaign mode at f = 0.985): SM 1,680 MHz of 2,040; 72.21 W at a 72.00 W limit; throttle 0x4
+#   (SW power cap); 19,020 of 23,034 MiB used (19,012 by the campaign); ECC Enabled.
+# gold-xt4, Tesla T4 (17:47Z, one sample): SM 1,110 MHz of 1,590; 65.77 W of 70.00 W; throttle 0x4 (SW power cap); 9,441 of 15,360 MiB; ECC Enabled.
+# So the L4s and the T4 are power-bound: energy a member, not time, is what the sieve and the tests compete for there.
