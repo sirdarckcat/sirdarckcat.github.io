@@ -1,7 +1,21 @@
+cover_ub.c (uarch, 24 Nov 2026): rigorous bounds for complete covers, one class per modulus on the first M odd primes, rows = the odd
+primes below Y.  Branches on the free modulus with the fewest qualifying classes (the small moduli at the top), over those classes; node
+bound f = |U| - (sum of the free moduli's fullest classes among U) never decreases along a path; proof mode prunes f >= 1 (and a row no
+qualifying class strikes), floor mode records the least f at depth j.  Every vector lies below exactly one node of each depth.
+
+Validation:
+ * cover_ub_validate.sh ./cover_ub 2 27: for n = 2..27, Y = D(n) finds a cover (the vector rechecked: every odd prime below D(n) struck)
+   and Y = the next prime after D(n) says NO COVER: VALIDATE OK.  (n = 27 at the next prime: 27,721,428 nodes, 7.9 s on 2 threads.)
+ * floor mode against brute force over all vectors, 6 moduli (Y = 80, 120, 200, 300) and 7 moduli (Y = 150, 250, 400): at full depth the
+   floor equals the least number of rows any vector leaves, and the floors at depths 1..M never decrease and never exceed it.
+ * findD.py (climb from a value known to be attained): D(27) = 1801 (10.5 s), D(28) = 1933 (46 s; desert_fast5 with the overflow fix, run
+   separately: D(28) = 1933, 3,027,581,327 nodes, 1,107 s).
+
+D(89) upper bounds (proof mode, M = 89 moduli 3..463, 4 threads): no vector strikes every odd prime below Y, so D(89) < Y:
+   M=89 Y=170000 NO COVER: nodes=6240 (cut by f: 5640, dead: 5; 476 prefixes at depth 4) seconds=0.2
    M=89 Y=120000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 120000, so D(89) < 120000; nodes=9231 (cut by f: 8394, dead: 6; 713 prefixes at depth 4) seconds=0.3
    M=89 Y=80000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 80000, so D(89) < 80000; nodes=93820 (cut by f: 87027, dead: 72; 890 prefixes at depth 4) seconds=0.4
    M=89 Y=60000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 60000, so D(89) < 60000; nodes=438508 (cut by f: 378130, dead: 8509; 1051 prefixes at depth 4) seconds=1.5
    M=89 Y=50000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 50000, so D(89) < 50000; nodes=2201281 (cut by f: 2008509, dead: 27961; 1132 prefixes at depth 4) seconds=4.7
    M=89 Y=45000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 45000, so D(89) < 45000; nodes=17745606 (cut by f: 16270886, dead: 102761; 1140 prefixes at depth 4) seconds=33.0
    M=89 Y=40000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 40000, so D(89) < 40000; nodes=92610951 (cut by f: 82046192, dead: 1728629; 1150 prefixes at depth 4) seconds=160.9
-   M=89 Y=170000 NO COVER: (first run, before the log file) nodes=6240 (cut by f: 5640, dead: 5; 476 prefixes at depth 4) seconds=0.2
