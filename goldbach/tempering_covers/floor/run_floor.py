@@ -133,7 +133,10 @@ if __name__ == "__main__":
                     u = Qd[:3]; m3 = sum(u) / 3; v3 = [mean[q] for q in u]; mv = sum(v3) / 3
                     s3 = sum((a - m3) * (b - mv) for a, b in zip(u, v3)) / sum((a - m3) ** 2 for a in u); i3 = mv - s3 * m3
                     dev = mean[Qd[3]] - (i3 + s3 * Qd[3])
-                    allpts[x].update(dev93_from_3pt_line=dev)
+                    c060 = (th - mean[Qd[0]]) / Qd[0] * L2; end3 = -i3 / s3
+                    allpts[x].update(dev93_from_3pt_line=dev, c_0_to_60=c060, end_line3=end3)
+                    rep.append(f"- average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: {c060:.3f} in units of 1/ln²x; the straight line through the 60, 75 and 85% "
+                               f"points ends at {end3:,.0f} = {end3 / reach:.3f} × the tempered reach")
                     rep.append(f"- the 93% point against the line through the first three: {dev:+.2f} (seed difference there {sd.get(Qd[3], float('nan')):.2f})"
                                + (": below by more than the seed difference" if dev < -sd.get(Qd[3], 0) else ""))
                     st = start_name(x, Qd[3])
@@ -153,6 +156,19 @@ if __name__ == "__main__":
                         rep.append(f"- independent check from the tail of the {Qd[2]:,} run: ln g0({y:,}) = {v:.2f} ({c} samples) against {lin:.2f} between the 85% "
                                    f"and 93% points and {l3:.2f} on the line through the first three")
             rep.append("")
+        hdr = ["### Summary", "", "c = slope in units of 1/ln²x. Ends are where a line reaches ln g0 = 0, as multiples of the tempered reach.", "",
+               "| x | tempered reach | θ(x) | c, 0 to 60% | c, 60–75% | c, 75–85% | c, 85–93% | least-squares intercept − θ(x) | least-squares c | end: least squares | end: line through 60–85% | end: last interval | end: θ(x)·ln²x (c = 1) | 93% point below the 60–85% line (seed difference) | 93% from the tempered cover / random starts |",
+               "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+        for x in xs:
+            d = allpts.get(x)
+            if not d or "ls_c" not in d or "end_line3" not in d: continue
+            r = d["reach"]; Q4 = str(d["targets"][-1]); sd4 = d["seed_diff"].get(Q4, float("nan"))
+            rs = [d["ln_g0"].get(f"{Q4}:{s}") for s in SEEDS]; st = d.get("start93")
+            stx = (f"{st:.2f} / " + ", ".join(f"{v:.2f}" for v in rs if v is not None)) if st is not None else "–"
+            hdr.append(f"| {x:,} | {r:,} | {d['theta']:.1f} | {d['c_0_to_60']:.3f} | " + " | ".join(f"{c:.3f}" for c in d["slopes_c"]) +
+                       f" | {d['ls_intercept'] - d['theta']:+.1f} | {d['ls_c']:.3f} | {d['ls_end'] / r:.3f} | {d['end_line3'] / r:.3f} | {d['straight_end'] / r:.3f} | {d['c1_end'] / r:.3f} | "
+                       f"{-d['dev93_from_3pt_line']:.2f} ({sd4:.2f}) | {stx} |")
+        rep = hdr + [""] + rep
         open(os.path.join(HERE, "floor_report.md"), "w").write("\n".join(rep) + "\n")
         json.dump(allpts, open(os.path.join(HERE, "floor_points.json"), "w"), indent=1)
         print("\n".join(rep))
