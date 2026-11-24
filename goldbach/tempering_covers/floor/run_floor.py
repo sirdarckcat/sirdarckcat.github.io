@@ -4,7 +4,7 @@
 # end Q + ln g0(Q) / |slope| from the last interval.  Runs are single-threaded (OMP_NUM_THREADS=1: the result does not depend
 # on the thread count, and one thread does not spin on a shared machine), several at a time; a run whose output exists is skipped.
 #   python3 run_floor.py run [procs] [x ...]      the runs
-#   python3 run_floor.py start [procs] [x ...]    the 93% target once more, started from the best tempered cover
+#   python3 run_floor.py start [procs] [x ...] [--target i]   a target once more (default the 93% one), started from the best tempered cover
 #   python3 run_floor.py report [x ...]           ln g0 per target and seed, slopes, ends (floor_report.md, floor_points.json)
 import json, math, os, subprocess, sys, re
 from concurrent.futures import ThreadPoolExecutor
@@ -79,8 +79,10 @@ if __name__ == "__main__":
         with ThreadPoolExecutor(procs) as ex: list(ex.map(one, jobs))
     elif mode == "start":
         procs = int(sys.argv[2]) if len(sys.argv) > 2 else 1
-        xs = [int(a) for a in sys.argv[3:]] or list(XS)
-        with ThreadPoolExecutor(procs) as ex: list(ex.map(one_start, [(x, targets(R[x][0])[-1], 2 * R[x][0]) for x in xs]))
+        args = sys.argv[3:]; ti = -1
+        if "--target" in args: i = args.index("--target"); ti = int(args[i + 1]); args = args[:i] + args[i + 2:]   # index into FRACS (default: the last, 93%)
+        xs = [int(a) for a in args] or list(XS)
+        with ThreadPoolExecutor(procs) as ex: list(ex.map(one_start, [(x, targets(R[x][0])[ti], 2 * R[x][0]) for x in xs]))
     elif mode == "report":
         xs = [int(a) for a in sys.argv[2:]] or list(XS)
         rep, allpts = [], {}
@@ -146,6 +148,13 @@ if __name__ == "__main__":
                             allpts[x].update(start93=v[0])
                             rep.append(f"- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = {v[0]:.2f}, against "
                                        + " and ".join(f"{at[(Qd[3], s)]:.2f}" for s in SEEDS if (Qd[3], s) in at) + " from random starts")
+                    st85 = start_name(x, Qd[2])
+                    if os.path.exists(st85):
+                        _, sp = reach_points([st85]); v = [w for y, w, c, p in sp if y == Qd[2] and c == 0]
+                        if v:
+                            allpts[x].update(start85=v[0])
+                            rep.append(f"- the 85% target started from the best tempered cover: ln g0 = {v[0]:.2f}, against "
+                                       + " and ".join(f"{at[(Qd[2], s)]:.2f}" for s in SEEDS if (Qd[2], s) in at) + " from random starts")
                     # independent check of the last interval: the reach tail of the 85% runs (uniform samples of the complete covers at
                     # that target) at the largest y it still resolves (>= 20 samples), against the two lines
                     tl = [(y, v, c, p) for y, v, c, p in pts if c > 0 and re.search(rf"_Q{Qd[2]}_s\d\.txt$", p) and Qd[2] < y <= Qd[3]]

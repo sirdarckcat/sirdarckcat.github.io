@@ -7,9 +7,9 @@ c = slope in units of 1/ln²x. Ends are where a line reaches ln g0 = 0, as multi
 | 127 | 2,311 | 111.2 | 1.115 | 1.154 | 1.190 | 1.224 | +4.0 | 1.181 | 0.991 | 0.995 | 0.987 | 1.129 | 0.53 (0.07) | 6.77 / 6.95, 6.88 |
 | 149 | 2,953 | 131.0 | 1.120 | 0.948 | 1.095 | 1.636 | +2.5 | 1.133 | 0.998 | 1.040 | 0.964 | 1.110 | 6.39 (0.25) | 6.74 / 6.74, 6.49 |
 | 251 | 6,451 | 231.4 | 1.045 | 1.033 | 1.077 | 1.268 | +7.1 | 1.094 | 1.032 | 1.047 | 1.012 | 1.095 | 3.92 (0.15) | 22.28 / 21.94, 22.09 |
-| 349 | 10,159 | 322.6 | 1.027 | 1.071 | 0.982 | 1.515 | +19.2 | 1.126 | 1.024 | 1.053 | 0.991 | 1.089 | 10.68 (0.29) | – |
-| 397 | 12,163 | 370.0 | 1.018 | 1.151 | 1.020 | 1.269 | +22.3 | 1.128 | 1.024 | 1.032 | 1.011 | 1.089 | 3.48 (0.80) | – |
-| 599 | 21,067 | 562.3 | 1.022 | 0.985 | 1.138 | 1.362 | +32.2 | 1.113 | 1.037 | 1.062 | 1.009 | 1.092 | 15.05 (0.64) | – |
+| 349 | 10,159 | 322.6 | 1.027 | 1.071 | 0.982 | 1.515 | +19.2 | 1.126 | 1.024 | 1.053 | 0.991 | 1.089 | 10.68 (0.29) | 27.30 / 27.43, 27.14 |
+| 397 | 12,163 | 370.0 | 1.018 | 1.151 | 1.020 | 1.269 | +22.3 | 1.128 | 1.024 | 1.032 | 1.011 | 1.089 | 3.48 (0.80) | 36.27 / 34.37, 35.17 |
+| 599 | 21,067 | 562.3 | 1.022 | 0.985 | 1.138 | 1.362 | +32.2 | 1.113 | 1.037 | 1.062 | 1.009 | 1.092 | 15.05 (0.64) | 61.40 / 55.28, 55.92 |
 
 ### x = 127: tempered reach 2,311 (vector found at Q = 2,300)
 
@@ -92,6 +92,7 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(349) = 322.63 (odd primes), ln²x = 34
 - residuals of the mean from that line: -1.65 at 6,095, +0.78 at 7,619, +5.05 at 8,635, -4.18 at 9,448; seed-to-seed differences: 0.32, 0.32, 0.34, 0.29
 - average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: 1.027 in units of 1/ln²x; the straight line through the 60, 75 and 85% points ends at 10,701 = 1.053 × the tempered reach
 - the 93% point against the line through the first three: -10.68 (seed difference there 0.29): below by more than the seed difference
+- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 27.30, against 27.43 and 27.14 from random starts
 - independent check from the tail of the 8,635 run: ln g0(8,821) = 52.03 (32 samples) against 55.00 between the 85% and 93% points and 56.96 on the line through the first three
 
 ### x = 397: tempered reach 12,163 (vector found at Q = 12,131)
@@ -112,6 +113,7 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(397) = 370.04 (odd primes), ln²x = 35
 - residuals of the mean from that line: +0.02 at 7,298, -1.15 at 9,122, +2.49 at 10,339, -1.36 at 11,312; seed-to-seed differences: 0.06, 0.26, 0.22, 0.80
 - average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: 1.018 in units of 1/ln²x; the straight line through the 60, 75 and 85% points ends at 12,554 = 1.032 × the tempered reach
 - the 93% point against the line through the first three: -3.48 (seed difference there 0.80): below by more than the seed difference
+- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 36.27, against 34.37 and 35.17 from random starts
 - independent check from the tail of the 10,339 run: ln g0(10,513) = 58.81 (68 samples) against 63.09 between the 85% and 93% points and 62.85 on the line through the first three
 
 ### x = 599: tempered reach 21,067 (vector found at Q = 21,036)
@@ -132,5 +134,6 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(599) = 562.29 (odd primes), ln²x = 40
 - residuals of the mean from that line: -4.16 at 12,640, +5.68 at 15,800, +4.37 at 17,907, -5.89 at 19,592; seed-to-seed differences: 0.01, 0.20, 0.26, 0.64
 - average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: 1.022 in units of 1/ln²x; the straight line through the 60, 75 and 85% points ends at 22,366 = 1.062 × the tempered reach
 - the 93% point against the line through the first three: -15.05 (seed difference there 0.64): below by more than the seed difference
+- the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 61.40, against 55.28 and 55.92 from random starts
 - independent check from the tail of the 17,907 run: ln g0(18,211) = 102.88 (401 samples) against 101.58 between the 85% and 93% points and 105.82 on the line through the first three
 
