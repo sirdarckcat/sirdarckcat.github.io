@@ -900,7 +900,9 @@ each set of moduli, exact for the first two and by tempering for the others
 | / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.84 |
 
 (The last entry comes from shorter runs relative to its size and is probably
-not the end.) Against x·ln x the reach keeps growing; against x·ln² x it is
+not the end. As a calibration of the method: tempering runs of 200,000 sweeps
+reach the exact D(17), D(18), D(19) and D(20) in every one of three seeds,
+where runs of 40,000 sweeps had stopped one prime short at n = 17 and 18.) Against x·ln x the reach keeps growing; against x·ln² x it is
 between 0.7 and 0.9 throughout. Four of these sizes are theorems checked by
 the Lean kernel from the classes alone (`scripts/cover_depth/README.md` on
 the Lean branch, commits 68d90e6 to 8940e8c): 15,907 to 16,981 on 89 to 93
