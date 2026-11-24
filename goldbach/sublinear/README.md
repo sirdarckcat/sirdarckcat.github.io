@@ -641,9 +641,10 @@ are cheaper than arbitrary ones: the rows are the same for every N, so
 neighbours share their arithmetic. If the primes of a stretch of length L near
 10^200 are known (0.03·L probable-prime tests after a sieve to 10^8), then
 every even N of the stretch is decided by table look-ups alone: N fails
-exactly when N − π is a small prime for some prime π of the stretch, about 83
-marks per N. That is some 6,000 elementary operations per N against about
-23,000 for a member of a cover in the fleet's pipeline. But the N of a stretch
+exactly when N − π is a prime below the target for some prime π of the
+stretch, about 68 marks per N at a target of 170,000. That is some 6,000
+elementary operations per N, most of them the probable-prime tests, against
+something like 20,000 for a member of a cover in the fleet's pipeline. But the N of a stretch
 are consecutive, their residues modulo the cover primes are whatever they are,
 and a number without a cover succeeds at 170,000 with probability about
 e^(−46.6) against 0.17·e^(−30.0) of captured chance for a sieved member of a
