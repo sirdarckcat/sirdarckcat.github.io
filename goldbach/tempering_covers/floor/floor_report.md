@@ -114,6 +114,7 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(397) = 370.04 (odd primes), ln²x = 35
 - average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: 1.018 in units of 1/ln²x; the straight line through the 60, 75 and 85% points ends at 12,554 = 1.032 × the tempered reach
 - the 93% point against the line through the first three: -3.48 (seed difference there 0.80): below by more than the seed difference
 - the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 36.27, against 34.37 and 35.17 from random starts
+- the 85% target started from the best tempered cover: ln g0 = 69.42, against 69.37 and 69.15 from random starts
 - independent check from the tail of the 10,339 run: ln g0(10,513) = 58.81 (68 samples) against 63.09 between the 85% and 93% points and 62.85 on the line through the first three
 
 ### x = 599: tempered reach 21,067 (vector found at Q = 21,036)
@@ -135,5 +136,6 @@ The line ln g0 = θ(x) − c·Q/ln²x: θ(599) = 562.29 (odd primes), ln²x = 40
 - average slope from Q = 0 (ln g0 = θ(x)) to the 60% target: 1.022 in units of 1/ln²x; the straight line through the 60, 75 and 85% points ends at 22,366 = 1.062 × the tempered reach
 - the 93% point against the line through the first three: -15.05 (seed difference there 0.64): below by more than the seed difference
 - the 93% target started from the best tempered cover (cover_floor's two-sided test): ln g0 = 61.40, against 55.28 and 55.92 from random starts
+- the 85% target started from the best tempered cover: ln g0 = 111.45, against 111.83 and 111.57 from random starts
 - independent check from the tail of the 17,907 run: ln g0(18,211) = 102.88 (401 samples) against 101.58 between the 85% and 93% points and 105.82 on the line through the first three
 
