@@ -1,0 +1,26 @@
+# D(n) computed with sublinear/desert_fast3.c (uarch session, 24 Nov 2026), 4-core container, OMP_NUM_THREADS=2 (a desert_fast2.c run used the other cores).
+# Each line: the program's output.  desert_check.py: every vector's least unstruck odd prime equals its D, and D(1..15) equal the published values.
+n=1 r=3 D=5 nodes=1 (below the 1 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:0
+n=2 r=5 D=7 nodes=2 (below the 2 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:2 5:3
+n=3 r=7 D=19 nodes=6 (below the 6 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:2 5:3 7:0
+n=4 r=11 D=31 nodes=28 (below the 24 split prefixes) rebuilds=13 zero-option cuts=10 seconds=0.0 vector: 3:2 5:3 7:5 11:7
+n=5 r=13 D=43 nodes=84 (below the 60 split prefixes) rebuilds=54 zero-option cuts=13 seconds=0.0 vector: 3:2 5:2 7:3 11:8 13:0
+n=6 r=17 D=67 nodes=198 (below the 120 split prefixes) rebuilds=120 zero-option cuts=13 seconds=0.0 vector: 3:2 5:3 7:5 11:7 13:5 17:3
+n=7 r=19 D=103 nodes=694 (below the 210 split prefixes) rebuilds=236 zero-option cuts=44 seconds=0.0 vector: 3:2 5:2 7:3 11:2 13:9 17:2 19:5
+n=8 r=23 D=163 nodes=2311 (below the 336 split prefixes) rebuilds=382 zero-option cuts=177 seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13
+n=9 r=29 D=181 nodes=11117 (below the 504 split prefixes) rebuilds=558 zero-option cuts=778 seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:10 19:3 23:13 29:14
+n=10 r=31 D=223 nodes=48751 (below the 720 split prefixes) rebuilds=881 zero-option cuts=2852 seconds=0.0 vector: 3:2 5:2 7:5 11:9 13:8 17:7 19:3 23:20 29:23 31:13
+n=11 r=37 D=271 nodes=111895 (below the 990 split prefixes) rebuilds=1128 zero-option cuts=2590 seconds=0.0 vector: 3:2 5:2 7:3 11:2 13:12 17:10 19:14 23:1 29:19 31:12 37:3
+n=12 r=41 D=331 nodes=319685 (below the 1320 split prefixes) rebuilds=1636 zero-option cuts=715 seconds=0.0 vector: 3:2 5:2 7:5 11:9 13:8 17:3 19:3 23:20 29:22 31:13 37:1 41:6
+n=13 r=43 D=419 nodes=1147002 (below the 1716 split prefixes) rebuilds=2172 zero-option cuts=1802 seconds=0.2 vector: 3:1 5:3 7:1 11:4 13:11 17:13 19:17 23:18 29:21 31:21 37:5 41:19 43:21
+n=14 r=47 D=499 nodes=2800838 (below the 2184 split prefixes) rebuilds=2795 zero-option cuts=394 seconds=0.3 vector: 3:2 5:2 7:5 11:2 13:4 17:3 19:14 23:7 29:2 31:8 37:3 41:29 43:30 47:40
+n=15 r=53 D=613 nodes=10578578 (below the 2730 split prefixes) rebuilds=3602 zero-option cuts=1193 seconds=1.0 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:18 29:19 31:3 37:26 41:31 43:34 47:11 53:8
+n=16 r=59 D=709 nodes=24946930 (below the 3360 split prefixes) rebuilds=4361 zero-option cuts=168 seconds=2.8 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:19 31:3 37:2 41:31 43:34 47:3 53:6 59:34
+n=17 r=61 D=739 nodes=98603869 (below the 4080 split prefixes) rebuilds=5356 zero-option cuts=737 seconds=9.8 vector: 3:2 5:3 7:6 11:1 13:5 17:7 19:18 23:19 29:19 31:23 37:24 41:36 43:36 47:33 53:17 59:41 61:12
+n=18 r=67 D=859 nodes=287293273 (below the 4896 split prefixes) rebuilds=6006 zero-option cuts=1201 seconds=29.3 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:8 31:23 37:5 41:40 43:21 47:3 53:48 59:31 61:11 67:19
+# cross-checks (same D, other trees): CORDER 1 (smallest modulus first) for n = 16..18, MRV off for n = 16, 17:
+n=16 r=59 D=709 nodes=25039080 (below the 3360 split prefixes) rebuilds=4425 zero-option cuts=325 seconds=2.0 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:19 31:3 37:2 41:31 43:34 47:3 53:52 59:35
+n=17 r=61 D=739 nodes=99075684 (below the 4080 split prefixes) rebuilds=5390 zero-option cuts=925 seconds=9.6 vector: 3:2 5:3 7:6 11:1 13:5 17:7 19:18 23:19 29:19 31:23 37:24 41:36 43:36 47:33 53:17 59:41 61:12
+n=18 r=67 D=859 nodes=289334617 (below the 4896 split prefixes) rebuilds=5992 zero-option cuts=1825 seconds=29.2 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:8 31:23 37:5 41:40 43:21 47:3 53:48 59:31 61:11 67:19
+n=16 r=59 D=709 nodes=25113487 (below the 3360 split prefixes) rebuilds=4368 zero-option cuts=5511 seconds=2.6 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:15 29:19 31:3 37:2 41:31 43:34 47:3 53:6 59:34
+n=17 r=61 D=739 nodes=101544409 (below the 4080 split prefixes) rebuilds=5326 zero-option cuts=63591 seconds=10.9 vector: 3:2 5:3 7:6 11:1 13:5 17:7 19:18 23:19 29:19 31:23 37:24 41:36 43:36 47:33 53:17 59:41 61:12
