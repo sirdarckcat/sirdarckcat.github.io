@@ -79,3 +79,8 @@ at 4 threads are roughly doubled by the contention; "CPU" = single-thread user t
    classes in its subtree: -0.05% nodes, +50% time), tie-breaks of the branching modulus (+-2%), prime-forced moves first (-0.3%), a Hall-type cap
    over the primes with <= 3 options (-1.5% nodes, slower), fixed-width bitset loops (more instructions).  Kept: one argmax pass per node and a
    union for the dead test (counts only when branching on a prime): identical nodes, -5.4% instructions (n = 22 proof 5.64G -> 5.34G).
+
+11. Independent check of the new cuts (desert_fast4, the search before them): D(23) = 1381 from scratch, at nice 15 beside the other runs:
+   n=23 r=89 D=1381 nodes=34392821710 (below the 10626 split prefixes) rebuilds=14646 zero-option cuts=196 seconds=4558.7 vector: 3:2 5:2 7:6 11:2 13:5 17:16 19:10 23:15 29:2 31:30 37:19 41:3 43:12 47:5 53:2 59:33 61:12 67:28 71:70 73:43 79:24 83:80 89:85
+   The fix of 24 Nov 16:40Z (ord[MAXN], see desert_fast5.c): the n = 25 and 26 proof runs, rerun with the fixed program, met no modulus branching
+   over 32 classes and gave the same node counts (107,856,871 and 284,074,432); D(27) rerun with the fixed program: D = 1801 (it met one such node).
