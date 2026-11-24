@@ -60,7 +60,7 @@ it, both in "A floor under every cover" and the section after it:
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
-  1,381, 1,471, 1,567, 1,669, 1,801, 1,933 for n = 1 to 28 (`desert.c`; two programs to n = 15, the uarch
+  1,381, 1,471, 1,567, 1,669, 1,801, 1,933, 2,137, 2,311, 2,521, 2,647, 2,749 for n = 1 to 33 (`desert.c`; two programs to n = 15, the uarch
   session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
   like r·ln² r, by the law above.
   The Lean session proved that it also bounds the least summand from above
@@ -789,7 +789,14 @@ modulus strikes the smallest unstruck prime" gives the exact values:
 | r_n | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 | 83 | 89 | 97 | 101 | 103 | 107 | 109 |
 | D(n) | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 | 1,279 | 1,381 | 1,471 | 1,567 | 1,669 | 1,801 | 1,933 |
 | D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 | 3.78 |
-| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | | | | |
+| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 12 | 10 | 1 |
+
+| n | 29 | 30 | 31 | 32 | 33 |
+|---|---|---|---|---|---|
+| r_n | 113 | 127 | 131 | 137 | 139 |
+| D(n) | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 |
+| D(n) / (r_n ln r_n) | 4.00 | 3.76 | 3.95 | 3.93 | 4.01 |
+| D(n) / (r_n ln² r_n) | 0.85 | 0.78 | 0.81 | 0.80 | 0.81 |
 
 ("Optimal vectors": how many of the ∏ r class vectors reach D(n). A search of
 the OEIS for the first twelve values on 24 November 2026 returned no
@@ -823,7 +830,20 @@ strike one prime fewer together) brought D(25) to D(27) within minutes. (An
 array overflow in the version used for n = 25 to 27 was found and fixed by
 that session on 24 November, commit 6caad7d; the three values were confirmed
 by the fixed program, with identical node counts for the proof runs at 25
-and 26, and the counts of optimal vectors for n ≥ 25 are being recomputed.) The search comes with checks that share little or no code with it:
+and 26.) D(29) to D(33) are from a different program of the same session,
+`cover_ub.c` driven by `findD.py` (commits 8ce578b and later): it climbs
+from the previous value through better and better covers and ends with the
+proof that no vector strikes every odd prime below the next prime (5.2·10^7
+nodes at n = 29, 1.2·10^9 at n = 33, fifteen minutes); the five vectors were
+rechecked here. Its count mode gives the same number of optimal vectors as
+the first program at every n from 2 to 26; the counts 10 and 1 at n = 27 and
+28 are from it alone so far. Two of these values were known in advance by
+other means: D(29) = 2,137 was predicted here before the search ran, as
+D(22) to D(24) had been, from a scan of targets with the sampler of the
+next sections (complete covers sampled at every target up to the prime
+before 2,137; at 2,137 the best vector leaves one row and the measured
+floor is positive), and D(30) = 2,311 is the wall at which the Opus
+session's tempering had stopped. The search comes with checks that share little or no code with it:
 this session's `desert_fast.c` with nothing but the order of the children
 changed gives the same D(16) to D(20); a brute force over all vectors agrees
 for n ≤ 9, including the number of optimal vectors; a SAT solver (CaDiCaL)
@@ -844,7 +864,7 @@ session proved three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 1,933 against 12,767 at n = 28. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
+  499 against 2,809 at n = 14, 2,749 against 22,199 at n = 33. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -1127,7 +1147,12 @@ leaves at least 401 of the 15,496 odd primes below 170,000 unstruck (j = 6,
 is running. These are theorems about every cover, where the 1,247 or 1,248
 of the next section is a measurement; the factor two between them is again
 the overlap of the classes of the large moduli, which the capacity cut does
-not see.
+not see. That session measured how fast the cut weakens with size: on 30
+moduli, where D = 2,311, the proof that nothing reaches Y takes 115 nodes at
+Y = 3·D, 4.2·10^5 at 1.2·D, 5.6·10^6 at 1.1·D and 5.6·10^7 at the next prime
+after D; on 89 moduli 10^8 nodes buy Y = 2.3·D (the 37,000 above). At a fixed
+ratio Y/D the cut loses four to five orders of magnitude between the two
+sizes.
 
 **A floor under every cover** (`cover_floor.c`, `cover_floor.py`,
 `cover_floor_q170000.txt`; measurements, not proofs). The searches say what
@@ -1450,7 +1475,17 @@ length.) And beyond what any search has reached:
 So the recursion gives the luck-free depth within 4% wherever it can be
 checked from 20 to 89 moduli, the three exact values of D included, and at
 the campaign's 89 moduli it gives 15,973 or 16,069 where the measurement
-says about 16,000 and tempering found 15,907.
+says about 16,000 and tempering found 15,907. The uarch session's exact
+values for 29 to 33 moduli arrived after these tables were made:
+
+| moduli | 29 | 30 | 31 | 32 | 33 |
+|---|---|---|---|---|---|
+| D(n), exact | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 |
+| end by the recursion, whole pair sum | 2,125 | 2,251 | 2,383 | 2,557 | 2,707 |
+| end by the recursion, closed formula | 2,270 | 2,390 | 2,552 | 2,700 | 2,834 |
+
+The pair sum is 0.5 to 5.5% below the exact value at the five sizes, the
+closed formula 1 to 6% above.
 
 *The whole pair sum instead of the closed formula* (`cover_price_hl.py`,
 `cover_price_hl.txt`). The closed formula for the dispersion stands for a sum
@@ -1547,7 +1582,13 @@ the second of these twice, 150,000 sweeps each from random vectors (commit
 the predicted figure and 47 from the short run. The two long runs at 9,973
 moduli started on 24 November at 18:25 UTC and are not in; with the whole
 pair sum the figure for them is 3,394 (computed and written here at 19:07
-UTC the same day), with the closed formula 3,414.
+UTC the same day), with the closed formula 3,414. The first of the two
+(150,000 sweeps, commit 99815c7 there, read here after the figure was
+written) gives 3,465.9: it moved 116 nats from the short run toward the
+predicted figure and stopped 52 to 72 short of it, and it is not in
+equilibrium either, its mean row counts at the middle temperatures still
+falling by about 1% from the first quarter of the run to the last. So this
+point is open: a run four times longer has been asked for.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
