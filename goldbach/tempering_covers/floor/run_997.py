@@ -56,8 +56,8 @@ if __name__ == "__main__":
                     cold = [l for l in q.splitlines() if re.match(r"\s+\d+\.\d+\s", l)][-3:]          # the three coldest temperatures: quarters of the run
                     b = [l for l in open(p) if l.startswith("BESTREACH")]
                     if b:
-                        t = b[0].split(); pairs = [tuple(map(int, w.split(":"))) for w in t[5:]]
-                        chk = first_unstruck(pairs); best.append((chk, int(t[1]), p, " ".join(t[5:]), sum(1 for _, a in pairs if a == 0)))
+                        t = b[0].split(); pairs = [tuple(map(int, w.split(":"))) for w in t[6:]]
+                        chk = first_unstruck(pairs); best.append((chk, int(t[1]), p, " ".join(t[6:]), sum(1 for _, a in pairs if a == 0)))
                     rows.append((Q, "start" if start else "random", s, float(m.group(2)) if m else float("nan"), int(m.group(3)) if m else 0, int(m.group(4)) if m else 0, cold))
         out = ["| Q | start | seed | ln g0(Q) | complete-cover samples | largest reach sampled |", "|---|---|---|---|---|---|"]
         for Q, st, s, v, n, rr, _ in rows: out.append(f"| {Q:,} | {st} | {s} | {v:.2f} | {n:,} | {rr:,} |")
