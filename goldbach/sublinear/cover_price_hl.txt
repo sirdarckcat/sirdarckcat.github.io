@@ -1,0 +1,139 @@
+# cover_price_hl.py: the price recursion with the dispersion from the whole Hardy-Littlewood pair sum. 24 November 2026.
+
+## variance/mean of the alive rows per class: measured on random vectors (cover_dispersion.txt) | pair sum | closed formula of cover_price.py
+x = 463, Q = 10000
+modulus s | measured | pair sum | closed formula
+3 | 0.010 | -0.274 | -5.985
+19 | 0.321 | 0.262 | 0.159
+43 | 0.471 | 0.470 | 0.469
+71 | 0.586 | 0.599 | 0.595
+101 | 0.671 | 0.668 | 0.668
+131 | 0.718 | 0.694 | 0.716
+163 | 0.748 | 0.729 | 0.751
+193 | 0.750 | 0.748 | 0.777
+229 | 0.777 | 0.779 | 0.801
+263 | 0.817 | 0.797 | 0.820
+293 | 0.794 | 0.793 | 0.834
+337 | 0.801 | 0.801 | 0.850
+373 | 0.821 | 0.838 | 0.862
+409 | 0.834 | 0.833 | 0.873
+443 | 0.849 | 0.836 | 0.882
+463 | 0.851 | 0.838 | 0.887
+
+x = 997, Q = 25000
+modulus s | measured | pair sum | closed formula
+3 | 0.059 | -0.241 | -6.193
+41 | 0.416 | 0.403 | 0.380
+89 | 0.584 | 0.576 | 0.581
+149 | 0.661 | 0.662 | 0.673
+199 | 0.720 | 0.708 | 0.721
+269 | 0.742 | 0.754 | 0.760
+337 | 0.750 | 0.782 | 0.788
+401 | 0.809 | 0.796 | 0.809
+463 | 0.807 | 0.807 | 0.825
+547 | 0.843 | 0.819 | 0.842
+613 | 0.838 | 0.828 | 0.854
+677 | 0.827 | 0.842 | 0.864
+757 | 0.839 | 0.828 | 0.874
+829 | 0.854 | 0.846 | 0.882
+911 | 0.859 | 0.849 | 0.891
+991 | 0.871 | 0.872 | 0.898
+997 | 0.866 | 0.872 | 0.898
+
+x = 463, Q = 170000
+modulus s | measured | pair sum | closed formula
+3 | 0.054 | -0.194 | -6.509
+19 | 0.235 | 0.195 | -0.020
+43 | 0.340 | 0.346 | 0.300
+71 | 0.422 | 0.438 | 0.430
+101 | 0.508 | 0.497 | 0.504
+131 | 0.548 | 0.545 | 0.554
+163 | 0.574 | 0.578 | 0.590
+193 | 0.605 | 0.605 | 0.618
+229 | 0.637 | 0.630 | 0.642
+263 | 0.646 | 0.647 | 0.661
+293 | 0.632 | 0.663 | 0.676
+337 | 0.693 | 0.680 | 0.692
+373 | 0.667 | 0.692 | 0.704
+409 | 0.695 | 0.703 | 0.715
+443 | 0.709 | 0.712 | 0.724
+463 | 0.698 | 0.720 | 0.730
+
+## loss theta - ln g0 at the nine points of cover_price.txt (the last one is a short run that was not in equilibrium)
+x = 463, 89 moduli, theta = 442.9
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+10000 | 281.7 | 278.8 | 171.78 | 271.2 | 0.963 | 0.973
+14000 | 388.1 | 387.7 | 61.69 | 381.3 | 0.982 | 0.983
+x = 997, 167 moduli, theta = 955.6
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+15000 | 331.8 | 328.0 | 640.10 | 315.5 | 0.951 | 0.962
+25000 | 538.7 | 539.7 | 435.60 | 520.0 | 0.965 | 0.963
+38000 | 803.0 | 812.0 | 153.60 | 802.0 | 0.999 | 0.988
+x = 2999, 429 moduli, theta = 2931.7
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+50000 | 790.3 | 790.7 | 2160.10 | 771.6 | 0.976 | 0.976
+100000 | 1530.2 | 1544.5 | 1390.03 | 1541.6 | 1.007 | 0.998
+x = 9973, 1228 moduli, theta = 9895.3
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+100000 | 1193.7 | 1191.1 | 8709.10 | 1186.2 | 0.994 | 0.996
+300000 | 3393.5 | 3413.5 | 6313.20 | 3582.1 | 1.056 | 1.049
+
+## loss at the Opus session's 24 points (as in cover_price.txt)
+x = 127, 30 moduli, theta = 111.2
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+1387 | 69.7 | 63.1 | 45.30 | 65.9 | 0.946 | 1.045
+1733 | 86.8 | 79.9 | 28.28 | 82.9 | 0.956 | 1.038
+1964 | 97.2 | 89.8 | 16.56 | 94.7 | 0.974 | 1.054
+2149 | 107.5 | 99.9 | 6.92 | 104.3 | 0.970 | 1.044
+x = 149, 34 moduli, theta = 131.0
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+1772 | 83.5 | 76.6 | 51.69 | 79.3 | 0.949 | 1.035
+2215 | 102.4 | 95.4 | 34.93 | 96.0 | 0.938 | 1.006
+2510 | 115.3 | 108.6 | 22.04 | 108.9 | 0.944 | 1.003
+2746 | 126.4 | 120.1 | 6.62 | 124.3 | 0.984 | 1.035
+x = 251, 53 moduli, theta = 231.4
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+3871 | 142.0 | 135.8 | 98.91 | 132.5 | 0.933 | 0.976
+4838 | 174.6 | 169.4 | 66.20 | 165.2 | 0.946 | 0.975
+5483 | 197.3 | 191.6 | 43.45 | 188.0 | 0.953 | 0.981
+5999 | 213.9 | 209.6 | 22.02 | 209.4 | 0.979 | 0.999
+x = 349, 69 moduli, theta = 322.6
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+6095 | 194.1 | 189.6 | 139.96 | 182.7 | 0.941 | 0.964
+7619 | 241.5 | 236.6 | 92.33 | 230.3 | 0.953 | 0.973
+8635 | 270.3 | 266.3 | 63.22 | 259.4 | 0.960 | 0.974
+9448 | 297.0 | 293.5 | 27.29 | 295.3 | 0.995 | 1.006
+x = 397, 77 moduli, theta = 370.0
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+7298 | 220.8 | 216.1 | 162.55 | 207.5 | 0.940 | 0.960
+9122 | 272.7 | 269.0 | 103.94 | 266.1 | 0.976 | 0.989
+10339 | 309.6 | 307.0 | 69.26 | 300.8 | 0.972 | 0.980
+11312 | 335.5 | 333.2 | 34.77 | 335.3 | 0.999 | 1.006
+x = 599, 108 moduli, theta = 562.3
+Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
+12640 | 328.5 | 324.8 | 246.47 | 315.8 | 0.962 | 0.972
+15800 | 406.1 | 405.8 | 170.33 | 392.0 | 0.965 | 0.966
+17907 | 455.8 | 456.2 | 111.70 | 450.6 | 0.989 | 0.988
+19592 | 496.3 | 498.5 | 55.60 | 506.7 | 1.021 | 1.016
+
+
+## where complete covers end (cover_price_hl.py ends ...)
+x | moduli | end of complete covers, pair sum | / (x ln^2 x) | end, closed formula | / (x ln^2 x)
+73 | 20 | 1,014 | 0.755 | 1,124 | 0.836
+107 | 27 | 1,837 | 0.786 | 1,998 | 0.855
+109 | 28 | 1,993 | 0.831 | 2,114 | 0.881
+127 | 30 | 2,251 | 0.755 | 2,390 | 0.802
+149 | 34 | 2,851 | 0.764 | 3,002 | 0.805
+199 | 45 | 4,832 | 0.867 | 4,970 | 0.891
+251 | 53 | 6,481 | 0.846 | 6,608 | 0.862
+293 | 61 | 8,318 | 0.880 | 8,462 | 0.895
+349 | 69 | 10,327 | 0.863 | 10,392 | 0.869
+397 | 77 | 12,553 | 0.883 | 12,578 | 0.885
+463 | 89 | 16,069 | 0.921 | 15,974 | 0.916
+599 | 108 | 22,308 | 0.911 | 22,110 | 0.902
+997 | 167 | 45,607 | 0.959 | 44,918 | 0.945
+2999 | 429 | 197,124 | 1.025 | 194,240 | 1.010
+9973 | 1228 | 912,464 | 1.079 | 905,952 | 1.071
+30000 | 3244 | 3,513,649 | 1.102 | 3,514,986 | 1.102
+100000 | 9591 | 14,971,980 | 1.130 | 15,112,989 | 1.140
+300000 | 25996 | 54,561,042 | 1.143 | 55,512,148 | 1.163

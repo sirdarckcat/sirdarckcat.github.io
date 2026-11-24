@@ -25,7 +25,11 @@ it, both in "A floor under every cover" and the section after it:
   after the derivation was written down, and a prediction made for a long
   run at 429 moduli, 1,545 against the 1,589 of the short run, came in at
   1,541 and 1,542); the same calculation predicts within 2% how few rows the
-  best cover leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
+  best cover leaves at the campaign's targets. In the limit the same
+  derivation gives c = 0.887, that is D(n) ~ 1.1275·r·ln² r (1.349 if the
+  rows were independent), approached from above after a maximum near 1.20;
+  c = 1.00 is where two slow corrections leave it at the sizes measured.
+  It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,000 on 89
   moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 37,000,
   the upper end by an exhaustive search of the uarch session.
@@ -1424,38 +1428,111 @@ same recursion:
 | x | 73 | 107 | 109 | 127 | 149 | 199 | 251 | 293 | 349 | 397 | 463 | 599 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | moduli | 20 | 27 | 28 | 30 | 34 | 45 | 53 | 61 | 69 | 77 | 89 | 108 |
-| end by the recursion | 1,123 | 1,997 | 2,113 | 2,389 | 3,001 | 4,969 | 6,607 | 8,467 | 10,391 | 12,577 | 15,973 | 22,109 |
+| end by the recursion, closed formula | 1,123 | 1,997 | 2,113 | 2,389 | 3,001 | 4,969 | 6,607 | 8,467 | 10,391 | 12,577 | 15,973 | 22,109 |
+| end by the recursion, whole pair sum (below) | 1,014 | 1,837 | 1,993 | 2,251 | 2,851 | 4,832 | 6,481 | 8,318 | 10,327 | 12,553 | 16,069 | 22,308 |
 | best cover known | 1,051 | 1,801 | 1,933 | 2,311 | 2,953 | 4,909 | 6,451 | 8,311 | 10,159 | 12,163 | 15,907 | 21,067 |
-| recursion / known | 1.07 | 1.11 | 1.09 | 1.03 | 1.02 | 1.01 | 1.02 | 1.02 | 1.02 | 1.03 | 1.00 | 1.05 |
+| closed formula / known | 1.07 | 1.11 | 1.09 | 1.03 | 1.02 | 1.01 | 1.02 | 1.02 | 1.02 | 1.03 | 1.00 | 1.05 |
+| pair sum / known | 0.96 | 1.02 | 1.03 | 0.97 | 0.97 | 0.98 | 1.00 | 1.00 | 1.02 | 1.03 | 1.01 | 1.06 |
 
 (The first three are exact values of D; 2,311, 2,953 and 6,451 are walls,
 where the Opus session's tempering stopped one row short at the next target
 in runs four times longer; from 349 on the best cover is limited by run
 length.) And beyond what any search has reached:
 
-| x | 997 | 2,999 | 9,973 | 30,000 | 100,000 |
-|---|---|---|---|---|---|
-| moduli | 167 | 429 | 1,228 | 3,244 | 9,591 |
-| end by the recursion | 44,917 | 194,203 | 905,951 | 3.51·10^6 | 1.51·10^7 |
-| / (x·ln² x) | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 |
-| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 |
+| x | 997 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 |
+|---|---|---|---|---|---|---|
+| moduli | 167 | 429 | 1,228 | 3,244 | 9,591 | 25,996 |
+| end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 |
+| / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 |
+| / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 |
+| best cover known (tempering at 997, greedy beyond) | 40,111 | 135,511 | 614,101 | | 9.65·10^6 | |
 
-So the recursion gives the luck-free depth within 5% wherever it can be
-checked from 30 to 108 moduli (and 7 to 11% too high below that, where D(n)
-moves in steps of 5 to 10% from one n to the next), and at the campaign's 89 moduli it
-gives 15,973 where the measurement says about 16,000 and tempering found
-15,907. The constant of the law is therefore not a number but a slowly
-moving quantity: by the recursion the loss falls slowly against
-π(Q)·ln Q/ln² x as x grows (0.93 at 89 moduli, 0.86 to 0.88 at 1,228), and
-D(n)/(r·ln² r) rises from 0.84 at 20 moduli to about 1.1 at 10,000. Where
-that ends is not settled here. In the closed formula the correction to
-Poisson classes is of order 1/ln x, which would take the law to the
-first-moment count and D(n)/(r·ln² r) to e^γ/(2·C₂) = 1.349, the constant of
-the theorem; but the closed formula stands for the full Hardy–Littlewood sum
-only as far as it has been compared with it (Q up to 300,000, where the two
-give 0.86 and 0.88), and for the moduli in the middle the full sum may keep
-a correction of order one. So the limit of D(n)/(r·ln² r), if there is one,
-lies between the 1.1 seen at the largest sizes and 1.349.
+So the recursion gives the luck-free depth within 4% wherever it can be
+checked from 20 to 89 moduli, the three exact values of D included, and at
+the campaign's 89 moduli it gives 15,973 or 16,069 where the measurement
+says about 16,000 and tempering found 15,907.
+
+*The whole pair sum instead of the closed formula* (`cover_price_hl.py`,
+`cover_price_hl.txt`). The closed formula for the dispersion stands for a sum
+over prime pairs, and that sum can be done whole. The weight of the pair
+(q, q + 6·s·j) is, exactly,
+
+    W(j) = a·c·∏ over the primes t dividing j of (1 + u_t),    u_t = 2/(t − 3) for the moduli t < s,  1/(t − 2) for the primes t > s,
+
+where a = 6·s/(s − 1) is its mean (the Lean session's `sum_pair_weight`) and
+c = ∏(1 + u_t/t)^(−1). Put R(m) = a·m − Σ over j ≤ m of W(j); it is positive
+and grows slowly (like ln² m for m below s and like ln m/(2·φ(s)) beyond).
+Then
+
+    variance/mean = 1 − (φ(s)/li(Q))·[2·Σ over m of R(m)·(L2(6sm) − L2(6s(m + 1))) + a·L2(0)],
+
+L2(d) being the Hardy–Littlewood integral for the difference d. Every term
+has one sign, so nothing cancels and the sum can be taken at any size.
+Against the Monte Carlo of the table above it is within 0.03 for every
+modulus from 41 up at the three sizes tried, and closer than the closed
+formula at both ends of the range (s = 337 at Q = 10,000: measured 0.80, pair
+sum 0.80, closed formula 0.85; s = 43 at Q = 170,000: 0.34, 0.35, 0.30). In
+the recursion it gives the ends of the two tables above: the smallest sizes
+come out right, where the closed formula was 7 to 11% high. For the losses
+below the end it is the other way round: measured over pair sum is 0.93 to
+1.02 at the Opus session's 24 points (0.96 to 1.05 with the closed formula)
+and 0.95 to 1.01 at the eight points in equilibrium of the first table (0.96
+to 1.00). From 167 moduli on the two versions agree within 1.5%. So the
+recursion is good to about 5% whichever way the dispersion is taken, and the
+better dispersion does not make it better: what is left is in the recursion
+itself (one price per row, and class counts of scaled-Poisson shape).
+
+*Where the constant ends up* (`cover_limit.py`, `cover_limit.txt`; a
+heuristic like the rest, nothing fitted). The pair sum has a limit shape. To
+leading order R(m) = (a·c/2)·M(m), where M(m) = Σ over squarefree d ≤ m of
+u(d), u(d) the product of the u_t over the primes of d: a sum of dimension 2
+over the primes below s and of dimension 1 above. Write
+M(s^ρ) = g₂·ln² s·m(ρ). Then
+
+    m(ρ) = ρ² for ρ ≤ 1,    ρ·m′(ρ) = 2·m(ρ) − m(ρ − 1) for ρ > 1,    m(ρ) = 2·e^γ·(ρ − 1) for large ρ
+
+(the last both from solving the equation, to six digits, and from Mertens'
+theorem applied to M directly, which is a check on the equation). The
+constants combine exactly, c·g₂ = 1/(24·C₂), and with α = ln s/ln Q the
+dispersion tends to
+
+    v(α) = 1 − (e^(−γ)/2)·α·m((1 − α)/α):
+
+1 at the last moduli, 1 − e^(−γ)/4 = 0.86 at α = 1/2, and 2α for α below 0.2.
+So the moduli in the middle keep a correction of order one for ever: the
+classes never become Poisson, and the first-moment count is off by a
+constant factor in the limit as well. (This v/α is the b of the first
+heuristic above: 1.2 to 1.4 at the sizes measured, 2 in the limit for the
+small moduli.) At finite size the dispersion lies
+below this limit by c(α)/ln Q, where c(α) falls from about 4 at α = 0.1
+through 1.8 at α = 1/2 to 0.3 at α = 0.85, the same within 0.1 at
+Q = 10^6, 10^7 and 10^8.
+
+The price recursion becomes dp/d(ln α) = (e^(v(α)·p) − 1)/v(α), with p
+infinite at the last modulus, where α = λ = ln x/ln Q, and p = Λ(λ)·α for
+small α. The law then reads
+
+    ln g0(x, Q) = θ(x) − 2·C₂·e^(−γ)·Λ(ln x/ln Q)·Q/ln² Q.
+
+Independent rows would give Λ = 1/λ, the first-moment count. With the limit
+profile Λ(1) = 1.19639 (the same program returns 1.0001 for independent rows
+and K = 1.516452 for v = α, as it must). Since ln x/ln D tends to 1, the
+limit of the law is
+
+    ln g0 = θ(x) − 0.887·Q/ln² x,    D(n)/(r_n·ln² r_n) → e^γ/(2·C₂·Λ(1)) = 1.1275,
+
+against 1.349 for independent rows. The approach is slow and not monotonic,
+because two corrections of opposite sign die out at different rates: the
+dispersion is below its limit by c(α)/ln Q, which lowers D, and ln x/ln D is
+below 1 by about 2·ln ln x/ln x, which raises it. With both in the continuum
+equation D/(x·ln² x) is 1.09 at x = 10^4, 1.14 at 10^5 and 1.16 at 10^6 (the
+recursion over the actual primes gives 1.08 and 1.13, and 1.14 at 300,000),
+reaches a maximum of 1.20 between 10^12 and 10^15, and comes down through
+1.19 at 10^20 and 1.17 at 10^50 to 1.14 at 10^200. So the c = 1.00 of the
+law at the sizes measured is where the two corrections happen to leave it
+between 100 and 1,000 moduli; by the recursion the constant at the end is
+0.92 at 1,228 moduli, 0.88 at 10^5, 0.83 at the maximum of D/(x·ln² x), and
+0.887 in the limit.
 
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
@@ -1468,7 +1545,9 @@ of 1,589 at 2,999 moduli and Q = 100,000. The Lean session's machine then ran
 the second of these twice, 150,000 sweeps each from random vectors (commit
 972bb6e there): 1,541.3 and 1,542.0. The long runs landed 3 to 4 nats from
 the predicted figure and 47 from the short run. The two long runs at 9,973
-moduli started on 24 November at 18:25 UTC and are not in.
+moduli started on 24 November at 18:25 UTC and are not in; with the whole
+pair sum the figure for them is 3,394 (computed and written here at 19:07
+UTC the same day), with the closed formula 3,414.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1572,13 +1651,19 @@ and prove Goldbach's conjecture for large N, by the implication above.
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
-strike every odd prime below Q is exp(θ(x) − c·π(Q)·ln Q/ln² x), where c is
-given by the price recursion above: 0.91 ± 0.02 for x from 463 to 9,973 (the
-same as 1.00·Q/ln² x there), and between that and 2·C₂·e^(−γ) = 0.741 for
-larger x. Consequently D(n) = κ_n·r_n·ln² r_n with κ_n between 0.84 and 1.14
-for 20 to 10,000 moduli and at most e^γ/(2·C₂) = 1.349 in the limit, and the
-least Goldbach summand that divisibility by the primes up to ln N alone can
-force is of the exact order ln N·(ln ln N)².
+strike every odd prime below Q is
+
+    exp(θ(x) − 2·C₂·e^(−γ)·Λ(ln x/ln Q)·Q/ln² Q·(1 + o(1))),
+
+with Λ given by the price equation and the limit profile above. At the sizes
+measured (x from 463 to 9,973) the recursion over the actual primes puts the
+loss at 1.00·Q/ln² x within 5%; in the limit Λ(1) = 1.19639 and the loss is
+0.887·Q/ln² x. Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91
+for the values known (20 to 89 moduli), rises by the recursion to 1.14 at
+26,000 moduli and to a maximum of about 1.20, and tends to
+e^γ/(2·C₂·Λ(1)) = 1.1275 (independent rows would give 1.349); and the least
+Goldbach summand that divisibility by the primes up to ln N alone can force
+is (1.1275 + o(1))·ln N·(ln ln N)².
 
 ## Ladder
 
