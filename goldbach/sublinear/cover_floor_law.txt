@@ -53,3 +53,5 @@ x = 2999: theta = 2931.7, 1/ln^2 x = 0.015601, theta ln^2 x = 187910
     least squares: slope 1.018 / ln^2 x, value at Q = 0 2936.9 (theta 2931.7), end of the line 184944
 x = 9973: theta = 9895.3, 1/ln^2 x = 0.011795, theta ln^2 x = 838929
     Q =  100000: ln g0 =   8709.1 (1 run, spread 0.0, share of complete samples >= 0.98); line   8715.8; (theta - ln g0) ln^2 x / Q = 1.006
+    Q =  300000: ln g0 =   6313.2 (1 run, spread 0.0, share of complete samples >= 0.93); line   6356.8; (theta - ln g0) ln^2 x / Q = 1.012; slope from the previous target 1.016
+    least squares: slope 1.016 / ln^2 x, value at Q = 0 9907.1 (theta 9895.3), end of the line 826994

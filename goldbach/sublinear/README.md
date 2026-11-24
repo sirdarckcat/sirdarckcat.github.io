@@ -19,7 +19,8 @@ it, both in "A floor under every cover" and the section after it:
 - A law. The number of class vectors on the odd primes up to x that strike
   every odd prime below Q is exp(θ(x) − c·Q/ln² x) with c = 1.00 ± 0.03,
   measured from 45 to 1,228 moduli and explained, up to the value of c, by a
-  short calculation. It gives D(n) = r·ln² r/c: the luck-free depth is known
+  short calculation, which also predicts within 6% how few rows the best
+  cover leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,300 on 89
   moduli, where 15,907 has been found.
 
@@ -1187,7 +1188,7 @@ and the share of the samples there that leave no row), at eight sizes:
 | 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 | 15,907 |
 | 997 | 167 | 955.6 | 15,000 to 33,000 | 0.992 to 1.008 | 45,700 | 40,111 |
 | 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.989 to 1.035 | 185,000 | 135,511 (greedy) |
-| 9,973 | 1,228 | 9,895.3 | 100,000 | 1.006 | | 614,101 (greedy) |
+| 9,973 | 1,228 | 9,895.3 | 100,000 and 300,000 | 1.006 and 1.012 | 827,000 | 614,101 (greedy) |
 
 So the logarithm of the number of complete covers is a straight line in the
 target, from the full count at Q = 0 down to the end:
