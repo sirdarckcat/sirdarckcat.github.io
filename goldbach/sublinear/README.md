@@ -60,7 +60,7 @@ it, both in "A floor under every cover" and the section after it:
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
-  1,381, 1,471, 1,567, 1,669, 1,801, 1,933, 2,137, 2,311, 2,521, 2,647, 2,749 for n = 1 to 33 (`desert.c`; two programs to n = 15, the uarch
+  1,381, 1,471, 1,567, 1,669, 1,801, 1,933, 2,137, 2,311, 2,521, 2,647, 2,749, 2,953 for n = 1 to 34 (`desert.c`; two programs to n = 15, the uarch
   session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
   like r·ln² r, by the law above.
   The Lean session proved that it also bounds the least summand from above
@@ -791,12 +791,12 @@ modulus strikes the smallest unstruck prime" gives the exact values:
 | D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 | 3.78 |
 | optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 12 | 10 | 1 |
 
-| n | 29 | 30 | 31 | 32 | 33 |
-|---|---|---|---|---|---|
-| r_n | 113 | 127 | 131 | 137 | 139 |
-| D(n) | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 |
-| D(n) / (r_n ln r_n) | 4.00 | 3.76 | 3.95 | 3.93 | 4.01 |
-| D(n) / (r_n ln² r_n) | 0.85 | 0.78 | 0.81 | 0.80 | 0.81 |
+| n | 29 | 30 | 31 | 32 | 33 | 34 |
+|---|---|---|---|---|---|---|
+| r_n | 113 | 127 | 131 | 137 | 139 | 149 |
+| D(n) | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 | 2,953 |
+| D(n) / (r_n ln r_n) | 4.00 | 3.76 | 3.95 | 3.93 | 4.01 | 3.96 |
+| D(n) / (r_n ln² r_n) | 0.85 | 0.78 | 0.81 | 0.80 | 0.81 | 0.79 |
 
 ("Optimal vectors": how many of the ∏ r class vectors reach D(n). A search of
 the OEIS for the first twelve values on 24 November 2026 returned no
@@ -830,20 +830,19 @@ strike one prime fewer together) brought D(25) to D(27) within minutes. (An
 array overflow in the version used for n = 25 to 27 was found and fixed by
 that session on 24 November, commit 6caad7d; the three values were confirmed
 by the fixed program, with identical node counts for the proof runs at 25
-and 26.) D(29) to D(33) are from a different program of the same session,
+and 26.) D(29) to D(34) are from a different program of the same session,
 `cover_ub.c` driven by `findD.py` (commits 8ce578b and later): it climbs
 from the previous value through better and better covers and ends with the
 proof that no vector strikes every odd prime below the next prime (5.2·10^7
-nodes at n = 29, 1.2·10^9 at n = 33, fifteen minutes); the five vectors were
-rechecked here. Its count mode gives the same number of optimal vectors as
-the first program at every n from 2 to 26; the counts 10 and 1 at n = 27 and
-28 are from it alone so far. Two of these values were known in advance by
+nodes at n = 29, 2.8·10^9 at n = 34, thirty-five minutes); the six vectors
+were rechecked here. Its count mode gives the same number of optimal vectors
+as the first program at every n from 2 to 28. Three of these values were known in advance by
 other means: D(29) = 2,137 was predicted here before the search ran, as
 D(22) to D(24) had been, from a scan of targets with the sampler of the
 next sections (complete covers sampled at every target up to the prime
 before 2,137; at 2,137 the best vector leaves one row and the measured
-floor is positive), and D(30) = 2,311 is the wall at which the Opus
-session's tempering had stopped. The search comes with checks that share little or no code with it:
+floor is positive), and D(30) = 2,311 and D(34) = 2,953 are the walls at
+which the Opus session's tempering had stopped. The search comes with checks that share little or no code with it:
 this session's `desert_fast.c` with nothing but the order of the children
 changed gives the same D(16) to D(20); a brute force over all vectors agrees
 for n ≤ 9, including the number of optimal vectors; a SAT solver (CaDiCaL)
@@ -864,7 +863,7 @@ session proved three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 2,749 against 22,199 at n = 33. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
+  499 against 2,809 at n = 14, 2,953 against 22,799 at n = 34. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -978,17 +977,22 @@ at 40,111 from that vector has since reached 40,459
 (`complete_cover_40459_167primes.txt`, found by the Opus session on 24
 November with the sampler of the later sections, checked here: all 4,239 odd
 primes below 40,459 struck, every class nonzero, 49 of the 167 classes shared
-with the earlier vector). The best reach known for
+with the earlier vector; certified in the Lean kernel, `Cover40459.lean`,
+commit 3ccf2f0 there), and the same session's tempering at 41,000, started
+from the 40,111 cover with four times the earlier budget, reached 41,047
+(`complete_cover_41047_167primes.txt`, checked here: all 4,294 odd primes
+below it struck, every class nonzero, and only 7 classes shared with the
+40,111 cover: it is in another family). The best reach known for
 each set of moduli, exact for the first three (1,471 was found by tempering and is D(24)) and by tempering for the others
 (`complete_covers_97_199_293.txt`, `complete_cover_15907.txt`,
-`complete_cover_40459_167primes.txt`):
+`complete_cover_41047_167primes.txt`):
 
 | primes up to x | 23 | 53 | 97 | 199 | 293 | 463 | 997 |
 |---|---|---|---|---|---|---|---|
 | moduli | 8 | 15 | 24 | 45 | 61 | 89 | 167 |
-| every odd prime struck below | 163 | 613 | 1,471 | 4,909 | 8,311 | 15,907 | 40,459 |
-| / (x ln x) | 2.26 | 2.91 | 3.31 | 4.66 | 4.99 | 5.60 | 5.88 |
-| / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.85 |
+| every odd prime struck below | 163 | 613 | 1,471 | 4,909 | 8,311 | 15,907 | 41,047 |
+| / (x ln x) | 2.26 | 2.91 | 3.31 | 4.66 | 4.99 | 5.60 | 5.96 |
+| / (x ln² x) | 0.72 | 0.73 | 0.73 | 0.88 | 0.88 | 0.91 | 0.86 |
 
 (The last entry comes from shorter runs relative to its size and is probably
 not the end. As a calibration of the method: tempering runs of 200,000 sweeps
@@ -1282,7 +1286,7 @@ session, `scripts/cover_count/g0_exact.c` at 4edfa27) for comparison:
 | 397 | 77 | 370.0 | 7,298 to 11,312 | 1.02 to 1.06 | 12,460 | 12,163 |
 | 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 (measured end: about 16,000) | 15,907 |
 | 599 | 108 | 562.3 | 12,640 to 19,592 | 1.01 to 1.06 | 21,852 | 21,067 |
-| 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 40,459 |
+| 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 41,047 |
 | 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.988 to 1.035 | 191,000 | 135,511 (greedy) |
 | 9,973 | 1,228 | 9,895.3 | 100,000 and 300,000 | 1.006 and 1.012 | 827,000 | 614,101 (greedy) |
 
@@ -1360,18 +1364,25 @@ seeds each):
 The runs from the cover are steady over the four quarters and agree between
 seeds to 0.7 and 0.03; the measured loss is within 1.5% of both versions of
 the recursion at both targets. The runs from random vectors count 10 and 20
-nats fewer, and that session found why: they settle in a different family
-of classes for the moduli up to 41 (7:5, 13:7, 19:18, 23:8, 31:10, 41:7
-against the cover's 7:3, 13:11, 19:3, 23:21, 31:7, 41:38), while the runs
-from the cover keep the cover's classes on the first twelve moduli and move
-freely on the rest. Near the end the complete covers are split into such
-families by the classes of the smallest moduli, and a run sees the family
-it starts in. The reach of the samples at 40,111 gives the count beyond:
-e^95.9 at 40,177, e^95 at 40,189, e^91 to e^95 at 40,237 and e^88 at 40,387
-(the last from 51 samples), about 10 nats in the first 276, 1.8 times the
-slope of the line; one of the samples is the new best cover, complete to
-40,459. Extrapolating the last interval, complete covers on the 167 moduli
-end at or below about 43,600, so that 40,459 is some 93 to 96% of the way.
+nats fewer, and that session found what is behind it. They settle in a
+different family of classes for the moduli up to 41 (7:5, 13:7, 19:18, 23:8,
+31:10, 41:7 against the cover's 7:3, 13:11, 19:3, 23:21, 31:7, 41:38), while
+the runs from the cover keep the cover's classes on the first twelve moduli
+and move freely on the rest; and a run started from the best vector of the
+other family counts e^95.0 and e^94.2 there, steady and staying in that
+family. So at 40,111 the two families hold e^98.6 and e^94.6 complete
+covers, 4 nats apart, and the runs from random vectors had simply not
+arrived: near the end the complete covers are split into families by the
+classes of the smallest moduli, a run counts the family it is in, and it
+moves between families only at temperatures where it is far from complete.
+The reach of the samples at 40,111 in the first family gives the count
+beyond: e^95.9 at 40,177, e^95 at 40,189, e^91 to e^95 at 40,237 and e^88 at
+40,387 (the last from 51 samples), about 10 nats in the first 276, 1.8 times
+the slope of the line; one of the samples is complete to 40,459. The family
+with more covers at 40,111 is not the one that reaches furthest: the cover
+complete to 41,047 is in a third one, close to the second on the moduli up
+to 41. Extrapolating the last interval, complete covers on the 167 moduli
+end at or below about 43,600, so that 41,047 is some 94 to 97% of the way.
 
 The Opus session measured the same stretch at six more sizes, 30 to 108
 moduli (`floor_report.md` on its branch). The curve bends down before the
@@ -1512,7 +1523,7 @@ length.) And beyond what any search has reached:
 | end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 | 2.21·10^8 |
 | / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 | 1.16 |
 | / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 | 1.19 |
-| best cover known (sampling at 997, greedy beyond) | 40,459 | 135,511 | 614,101 | | 9.65·10^6 | | |
+| best cover known (tempering at 997, greedy beyond) | 41,047 | 135,511 | 614,101 | | 9.65·10^6 | | |
 
 So the recursion gives the luck-free depth within 4% wherever it can be
 checked from 20 to 89 moduli, the three exact values of D included, and at
@@ -1520,14 +1531,15 @@ the campaign's 89 moduli it gives 15,973 or 16,069 where the measurement
 says about 16,000 and tempering found 15,907. The uarch session's exact
 values for 29 to 33 moduli arrived after these tables were made:
 
-| moduli | 29 | 30 | 31 | 32 | 33 |
-|---|---|---|---|---|---|
-| D(n), exact | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 |
-| end by the recursion, whole pair sum | 2,125 | 2,251 | 2,383 | 2,557 | 2,707 |
-| end by the recursion, closed formula | 2,270 | 2,390 | 2,552 | 2,700 | 2,834 |
+| moduli | 29 | 30 | 31 | 32 | 33 | 34 |
+|---|---|---|---|---|---|---|
+| D(n), exact | 2,137 | 2,311 | 2,521 | 2,647 | 2,749 | 2,953 |
+| end by the recursion, whole pair sum | 2,125 | 2,251 | 2,383 | 2,557 | 2,707 | 2,851 |
+| end by the recursion, closed formula | 2,270 | 2,390 | 2,552 | 2,700 | 2,834 | 3,002 |
 
-The pair sum is 0.5 to 5.5% below the exact value at the five sizes, the
-closed formula 1 to 6% above.
+The pair sum is 0.5 to 5.5% below the exact value at the six sizes, the
+closed formula 1 to 6% above. For 35 moduli the two give 3,024 and 3,192, so
+D(35) should lie near 3,110 (written before that search has run).
 
 *The whole pair sum instead of the closed formula* (`cover_price_hl.py`,
 `cover_price_hl.txt`). The closed formula for the dispersion stands for a sum
@@ -1630,7 +1642,9 @@ written) gives 3,465.9: it moved 116 nats from the short run toward the
 predicted figure and stopped 52 to 72 short of it, and it is not in
 equilibrium either, its mean row counts at the middle temperatures still
 falling by about 1% from the first quarter of the run to the last. So this
-point is open: a run four times longer has been asked for.
+point is open. The second seed gives 3,464.6, so 150,000 sweeps give 3,465
+reproducibly and it is the length of the run that holds it there; a run of
+500,000 sweeps is being made.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1698,7 +1712,7 @@ to x′ cover the odd primes below Q, stated for the ten certified covers
 says 334). And the constant K is 1.5164516079595025850511213122…, enclosed
 to 28 digits by exact rational arithmetic (`scripts/cover_count/` there).
 
-Three more pieces are formal since (commit e992eb3 there, standard axioms).
+Several more pieces are formal since (commits e992eb3 to 3ccf2f0 there, standard axioms).
 The covering theorem is stated in depth form
 (`eventually_exists_classes_of_mul_lt_one` in `CoverBound.lean`): for every
 c < e^γ/(2·C₂) = 1.349 and all large y, some classes modulo the odd primes up
@@ -1722,7 +1736,21 @@ proof does not use that the moduli lie below s). So at leading order the
 alive rows fall into the classes of s as independent rows would, with
 nothing assumed. What the derivation uses beyond that, the second-order term
 of the average of singular series, rests on the Hardy–Littlewood conjecture
-and is not formal. Last, the count itself is known exactly at nine moduli:
+and is not formal. The product form of the pair weight used for the whole
+pair sum is formal too (`CoverPairSums.lean`, f77b4bb), for every truncation
+of the products: W(j) = a·c·∏ over the t dividing j of (1 + u_t) with
+c = ∏(1 + u_t/t)^(−1) (`pairWeight_eq_prod`, `prod_w0_mul_sum`); the sum of
+W over j ≤ m as a·c·Σ u(d)·⌊m/d⌋ (`sum_Ioc_pairWeight`); the defect
+a·m − Σ W(j) = a·c·Σ u(d)·(m/d − ⌊m/d⌋), hence R(m) ≥ 0 for every m
+(`pairWeight_defect`, `sum_Ioc_pairWeight_le`); the two local ratios behind
+the limit profile, and ∏ over the primes t ≥ 5 of (t − 1)²/(t·(t − 2)) =
+3/(4·C₂) (`tendsto_prod_sq_div`). The constant of the limit was recomputed
+by that session with other numerics (Chebyshev points and Gauss–Legendre for
+m, whose closed form on [1, 2] is ρ²·(5/2 − ln ρ) − 2ρ + 1/2; the price
+equation in the variable ln p, regular at both ends): Λ(1) = 1.19639276351,
+so that the limits are 0.8868957952·Q/ln² x and 1.1275281780·r·ln² r; these
+are floating-point values agreeing to 2·10^(−12) across step sizes, a check
+of the arithmetic and not of the equations. Last, the count itself is known exactly at nine moduli:
 every one of the 3,234,846,615 class vectors enumerated
 (`scripts/cover_count/g0_exact.c`, commit 4edfa27), which reproduces D(2) to
 D(9) and the numbers of vectors at the depth, with g0(7, 19) = 1 and
