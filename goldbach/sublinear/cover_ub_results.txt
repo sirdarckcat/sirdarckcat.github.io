@@ -54,3 +54,14 @@ D(29) = 2137 (findD.py 29 1933, 2 threads, 91.5 s; research's sampling scan had 
    n=29: a cover of every odd prime below 2099 (6219720 nodes, 6.6 s); its least unstruck prime 2137
    n=29: NO COVER below 2141 (51620752 nodes, 52.5 s)
    FINDD n=29 D=2137 (attained by the vector; no vector strikes every odd prime below 2141) seconds=91.5 vector: 3:2 5:3 7:3 11:2 13:7 17:15 19:3 23:22 29:8 31:5 37:16 41:22 43:42 47:45 53:15 59:42 61:59 67:30 71:24 73:7 79:24 83:22 89:19 97:66 101:83 103:61 107:2 109:73 113:105
+
+D(30) = 2311 (findD.py 30 2137, 2 threads, 89.5 s; equal to the tempering value research quoted):
+   n=30: a cover of every odd prime below 2137 (8841001 nodes, 8.2 s); its least unstruck prime 2137
+   n=30: a cover of every odd prime below 2141 (15107891 nodes, 10.5 s); its least unstruck prime 2161
+   n=30: a cover of every odd prime below 2179 (222114 nodes, 0.2 s); its least unstruck prime 2179
+   n=30: a cover of every odd prime below 2203 (4420159 nodes, 2.8 s); its least unstruck prime 2221
+   n=30: a cover of every odd prime below 2237 (7964127 nodes, 5.5 s); its least unstruck prime 2251
+   n=30: a cover of every odd prime below 2267 (7726130 nodes, 5.4 s); its least unstruck prime 2281
+   n=30: a cover of every odd prime below 2287 (14660156 nodes, 10.9 s); its least unstruck prime 2311
+   n=30: NO COVER below 2333 (55774293 nodes, 46.0 s)
+   FINDD n=30 D=2311 (attained by the vector; no vector strikes every odd prime below 2333) seconds=89.5 vector: 3:2 5:3 7:5 11:10 13:11 17:6 19:3 23:21 29:12 31:7 37:31 41:14 43:27 47:24 53:19 59:55 61:56 67:59 71:9 73:65 79:78 83:82 89:10 97:30 101:80 103:22 107:97 109:40 113:26 127:106
