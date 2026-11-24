@@ -23,6 +23,11 @@
 // Frame: with COVER_FLOOR_FRAME="3:2 5:3 7:5" the listed moduli keep the listed classes for the whole run in every
 // replica (a family of covers), and ln(states) counts the other moduli only, so that Z, the floor and the count of
 // complete covers are those of the family.
+// Families: with COVER_FLOOR_FAMILIES=m every sample is also counted under its frame, the classes of the first m moduli
+// of the list (m such that their product is at most 2,000,000).  In equilibrium the share of a frame among the samples
+// at beta is Z_frame(beta)/Z(beta), so one run shows which families carry the weight at every temperature.  Printed at
+// the end, one line per temperature: FAM beta, then id:count:lowest for the 300 most visited frames (id = the classes
+// as digits in the mixed radix of the moduli, first modulus most significant; lowest = fewest rows seen in the frame).
 // Reach: with COVER_FLOOR_REACH=Y (plain rows only) every sampled cover that leaves no row below Q is followed up to
 // Y: its reach is the least odd prime in none of its classes.  A cover with k = 0 has the same weight at every
 // temperature, so these samples are uniform over the complete covers at Q, and the fraction with reach >= y is the
@@ -142,6 +147,11 @@ int main(int argc, char **argv) {
         int E = 0; for (int r = 0; r < nrows; r++) if (R[i].cnt[r] == 0) E += wt[r]; R[i].E = E; at[i] = i;
     }
     if (start) fprintf(stderr, "start cover: k = %.2f\n", (double)R[0].E / unit);
+    int nfam = getenv("COVER_FLOOR_FAMILIES") ? atoi(getenv("COVER_FLOOR_FAMILIES")) : 0; long famsize = 1;
+    if (nfam > nmod) nfam = nmod;
+    for (int m = 0; m < nfam; m++) { famsize *= mod[m]; if (famsize > 2000000) { fprintf(stderr, "COVER_FLOOR_FAMILIES: too many frames\n"); return 1; } }
+    long *famc = nfam ? calloc((size_t)nb * famsize, sizeof(long)) : NULL; int *famE = nfam ? malloc((size_t)nb * famsize * sizeof(int)) : NULL;
+    if (nfam) for (size_t j = 0; j < (size_t)nb * famsize; j++) famE[j] = 2147483647;
     long *hist = calloc((size_t)nb * nbins, sizeof(long));
     float *hoff = weighted ? calloc((size_t)nb * nbins, sizeof(float)) : NULL;      // sum of (energy - start of the bin): the bin is printed at its mean energy
     long *acc = calloc(nb, sizeof(long)), *tried = calloc(nb, sizeof(long)), *sw_ok = calloc(nb, sizeof(long)), *sw_try = calloc(nb, sizeof(long));
@@ -177,6 +187,7 @@ int main(int argc, char **argv) {
             if (quarter >= 0) {
                 hist[(size_t)i * nbins + r->E / binw]++; if (hoff) hoff[(size_t)i * nbins + r->E / binw] += (float)(r->E % binw); acc[i] += la; tried[i] += nmod; qsum[(size_t)i * NQ + quarter] += r->E; qn[(size_t)i * NQ + quarter]++;
                 esum[i] += r->E; esum2[i] += (double)r->E * r->E; en[i]++;
+                if (nfam) { long id = 0; for (int m = 0; m < nfam; m++) id = id * mod[m] + r->a[m]; size_t p = (size_t)i * famsize + id; famc[p]++; if (r->E < famE[p]) famE[p] = r->E; }
                 if (rhist && r->E == 0) {
                     int j = 0;
                     for (; j < nx; j++) { int q = xrow[j], hit = 0; for (int m = 0; m < nmod && !hit; m++) hit = q % mod[m] == r->a[m]; if (!hit) break; }
@@ -210,6 +221,17 @@ int main(int argc, char **argv) {
     if (rhist) {
         fprintf(f, "REACH");
         for (int j = 0; j <= nx; j++) if (rhist[j]) fprintf(f, " %d:%ld", j < nx ? xrow[j] : Y, rhist[j]);
+        fprintf(f, "\n");
+    }
+    if (nfam) for (int i = 0; i < nb; i++) {
+        long *c = famc + (size_t)i * famsize; int *e = famE + (size_t)i * famsize; long nvis = 0;
+        for (long j = 0; j < famsize; j++) nvis += c[j] > 0;
+        fprintf(f, "FAM %.6f frames_visited %ld :", beta[i], nvis);
+        for (int k = 0; k < 300; k++) {                       // the 300 most visited, by repeated selection
+            long best = -1; for (long j = 0; j < famsize; j++) if (c[j] > 0 && (best < 0 || c[j] > c[best])) best = j;
+            if (best < 0) break;
+            fprintf(f, " %ld:%ld:%.2f", best, c[best], (double)e[best] / unit); c[best] = -c[best];
+        }
         fprintf(f, "\n");
     }
     fclose(f);
