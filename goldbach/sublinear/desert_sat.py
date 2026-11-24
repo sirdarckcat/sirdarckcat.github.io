@@ -8,7 +8,8 @@ cardinality encoding "at most one").  For an odd prime q, the clause OR_m x[m][q
 
   * "every odd prime below p' is struck", p' the next prime after D, must be UNSAT: no residue vector reaches p', so D(n) < p';
   * "every odd prime below D is struck" must be SAT, and the model is a vector whose least unstruck odd prime is checked here to be >= D.
-Together: D(n) = D.  With --drat FILE the UNSAT run also writes a DRAT proof (solvers that support it), which a proof checker can verify.
+Together: D(n) = D.  With --drat FILE the UNSAT run also writes a DRAT proof (solvers that support it), and with --cnf FILE the UNSAT formula in
+DIMACS: a DRAT checker (e.g. drat-trim FILE.cnf FILE.drat, or a verified one) can check the pair.
 """
 import sys, time
 from pysat.formula import CNF
@@ -44,8 +45,10 @@ def build(n, X):
     return cnf, var, mods
 
 
-def solve(n, X, solver="cadical195", drat=None):
+def solve(n, X, solver="cadical195", drat=None, cnf_path=None):
     cnf, var, mods = build(n, X)
+    if cnf_path:
+        cnf.to_file(cnf_path)                                                # DIMACS: the formula a DRAT checker reads beside the proof
     t0 = time.time()
     with Solver(name=solver, bootstrap_with=cnf.clauses, with_proof=bool(drat)) as s:
         sat = s.solve()
@@ -79,7 +82,8 @@ def main():
     ok1 = sat1 and q1 >= D
     print(f"n={n}: strike every odd prime below {D}: {'SAT' if sat1 else 'UNSAT'} in {dt1:.1f} s ({ncl1} clauses)"
           + (f", the model's least unstruck prime {q1}" if sat1 else "") + (" ok" if ok1 else " WRONG"), flush=True)
-    sat2, vec2, mods, dt2, ncl2 = solve(n, nxt, solver, drat)
+    cnfp = sys.argv[sys.argv.index("--cnf") + 1] if "--cnf" in sys.argv else None
+    sat2, vec2, mods, dt2, ncl2 = solve(n, nxt, solver, drat, cnfp)
     ok2 = not sat2
     print(f"n={n}: strike every odd prime below {nxt}: {'SAT' if sat2 else 'UNSAT'} in {dt2:.1f} s ({ncl2} clauses)" + (" ok" if ok2 else " WRONG: D is not the maximum"), flush=True)
     print(f"SAT-CHECK n={n} D={D}: {'CONFIRMED' if ok1 and ok2 else 'FAILED'} ({solver})")
