@@ -34,6 +34,7 @@ import GoldbachGaps.RecordWalk
 import GoldbachGaps.CoverDepth
 import GoldbachGaps.CoverDepthRun
 import GoldbachGaps.Cover32971
+import GoldbachGaps.Cover135511
 import GoldbachGaps.CoverDepthGreedy
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
@@ -222,11 +223,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                the 200-digit search are lower bounds for 89 to 93 moduli
                (`coversBelow_15907` … `coversBelow_16981`). `scripts/cover_depth`: the
                search in C, the table to `n = 15`.
-* `Cover32971`, `CoverDepthGreedy` – a generated certificate and its statement: the 167 odd
-               primes up to `997` cover every odd prime below `32971` (`coversBelow_32971`),
-               from a vector found by the greedy rule of `scripts/cover_depth/greedy.py`.
-               The proved bound `1.349 x ln x` gives `9,290` there; the greedy reach follows
-               `0.6` to `0.7` times `x ln² x` in everything computed.
+* `Cover32971`, `Cover135511`, `CoverDepthGreedy` – two generated certificates and their
+               statements: the 167 odd primes up to `997` cover every odd prime below `32971`
+               (`coversBelow_32971`) and the 429 odd primes up to `2999` every odd prime below
+               `135511` (`coversBelow_135511`), from vectors found by the greedy rule of
+               `scripts/cover_depth/greedy.py`. The proved bound `1.349 x ln x` gives `9,290`
+               and `32,390` there; the greedy reach follows `0.6` to `0.7` times `x ln² x` in
+               everything computed.
 * `Record23_g11701`, `Record23_g10729`, `Record23_g10771` – generated certificates for three
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
