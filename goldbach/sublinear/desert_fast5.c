@@ -14,17 +14,23 @@
 //   FORCE  a free modulus with a single qualifying class is put in it (one child, nothing forbidden): no other class of it can beat the incumbent.
 //   MBR    else, if some free modulus has fewer qualifying classes than the branching prime has effective options, the node branches on that
 //          modulus over its qualifying classes (the children differ in its class: disjoint, nothing forbidden).
+//   ARGM   a child (m, c) striking T = U & class(m, c) lowers by >= 1 the fullest class of every other free modulus whose single fullest class T
+//          meets, so its cap is at most cap - mx[m] - (those moduli); if that is below nu - |T| the child would be cut at once and is not created
+//          (one 32-byte compare per prime of T against the moduli's fullest classes).  It removes only such children: the dead, forced and
+//          modulus-branching counts are unchanged.
 // Every vector below a node is still met at most once (prime branching forbids the tried classes in later siblings as before; forced and
 // modulus children are disjoint by the modulus's class), and none that beats the incumbent is lost: completeness, so D, the count mode and the
 // proof mode keep their meaning.  Count mode holds the incumbent just below D, so "beats" = reaches D and the same lemma applies.
-// Nodes of the proof runs (known = the next prime after D), desert_fast4 -> desert_fast5: n = 17: 13.6M -> 0.20M; n = 20: 597M -> 3.1M;
-// n = 21: 1.19G -> 6.1M; n = 22: 36.9M.  Finding D(22) from scratch: 8.41G nodes, 964 s (desert_fast4) -> 49.7M nodes, 13 s (4 threads).
-// Node cost: the child order reads the histograms (no popcounts), the fullest class reads only the 32-byte vectors a modulus has, the
-// residues of a prime are one 32-byte row (resT) for the child's histogram update, and the zero/forced/qualifying masks are AVX2 compares.
+// Nodes of the proof runs (known = the next prime after D), desert_fast4 -> desert_fast5: n = 17: 13.6M -> 0.13M; n = 20: 597M -> 1.8M;
+// n = 21: 1.19G -> 3.5M; n = 22: 5.02G -> 21.1M.  Finding D(22) from scratch: 8.41G nodes, 964 s (desert_fast4) -> 49.7M nodes, 13 s (4 threads,
+// before ARGM).
+// Node cost: the child order reads the histograms (no popcounts) and is made only for prime branching, the fullest class reads only the
+// 32-byte vectors a modulus has, the residues of a prime are one 32-byte row (resT) for the child's histogram update, and the
+// zero/forced/qualifying masks are AVX2 compares.  Instructions, n = 20 proof (callgrind): 11.68G before ARGM and these two, 9.72G after.
 //   gcc -O3 -march=native -fopenmp -o desert_fast5 desert_fast5.c ; OMP_NUM_THREADS=4 ./desert_fast5 n [known_value] [split_depth] [count]
 // known_value: a value known to be attained; the run then proves it is the maximum or finds better.  If no vector reaches it the run says so
 // ("not attained"): with known_value = the next prime after D that is the optimality proof.  "count": the number of optimal vectors (known = D(n)).
-// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, EOPT, FORCE, MBR, MRV, CORDER (2: by struck primes, desert_fast4).
+// Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, EOPT, FORCE, MBR, MRV, CORDER (2: by struck primes, as desert_fast4).
 // Needs AVX2.  Moduli must be below 128 (n <= 30); MAXN 32; NP 512 primes (D < 3,671).
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,6 +61,9 @@ static int count_mode, target, found;                      /* count_mode: best f
 #endif
 #ifndef MBR
 #define MBR 1
+#endif
+#ifndef ARGM
+#define ARGM 1
 #endif
 #ifndef LOOK
 #define LOOK 1
@@ -105,6 +114,18 @@ static inline int maxallowed(const unsigned char *h, const unsigned char *f, int
     x = _mm_max_epu8(x, _mm_srli_epi16(x, 8));                                  /* the low byte of each 16-bit lane: the max of its two bytes */
     x = _mm_minpos_epu16(_mm_andnot_si128(x, _mm_set1_epi16(0xFF)));             /* 255 - max, minimized */
     return 255 - (_mm_cvtsi128_si32(x) & 0xFFFF);
+}
+/* the class of a modulus's row holding its fullest allowed count mxv, if exactly one does (0xFF otherwise, and when mxv = 0) */
+static inline int argmax1(const unsigned char *h, const unsigned char *f, int nv, int mxv) {
+    if (mxv == 0) return 0xFF;
+    const __m256i z = _mm256_setzero_si256(), mv = _mm256_set1_epi8((char)mxv);
+    int cnt = 0, pos = -1;
+    for (int q = 0; q < nv; q++) {
+        const __m256i hh = _mm256_load_si256((const __m256i *)(h + 32 * q)), ff = _mm256_loadu_si256((const __m256i *)(f + 32 * q));
+        const uint32_t b = (uint32_t)_mm256_movemask_epi8(_mm256_cmpeq_epi8(_mm256_and_si256(hh, _mm256_cmpeq_epi8(ff, z)), mv));
+        if (b) { cnt += __builtin_popcount(b); if (pos < 0) pos = 32 * q + __builtin_ctz(b); }
+    }
+    return cnt == 1 ? pos : 0xFF;
 }
 static inline void copyrow(unsigned char *d, const unsigned char *s, int nv) {    /* explicit: a loop here becomes a memcpy call */
     _mm256_store_si256((__m256i *)d, _mm256_load_si256((const __m256i *)s));
@@ -165,10 +186,13 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
             for (int k = 0; k < s->nfree; k++) {
                 const int m = s->freem[k];
                 const uint64_t *f = s->F[m];
-                uint64_t e[W]; for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
-#if EOPT
+                uint64_t e[W];                                                 /* the primes of U this modulus can still strike (EOPT: in a qualifying class) */
+#if !EOPT
+                for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
+#else
                 const int thr = mx[m] - margin;
-                if (thr > 0) {      /* qualifying: allowed, h >= thr; disqualified: allowed, 0 < h < thr.  e = U's primes in qualifying classes */
+                if (thr <= 0) for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
+                else {              /* qualifying: allowed, h >= thr; disqualified: allowed, 0 < h < thr.  e = U's primes in qualifying classes */
                     uint32_t qb[4] = {0}, db[4] = {0}; int nq = 0, nd = 0;
                     const __m256i z = _mm256_setzero_si256(), tv = _mm256_set1_epi8((char)thr);
                     for (int q = 0; q < nvec[m]; q++) {
@@ -182,8 +206,10 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
                         uint64_t o[W] = {0};
                         for (int q = 0; q < nvec[m]; q++) for (uint32_t b = qb[q]; b; b &= b - 1) { const uint64_t *mk = mask[m][32 * q + __builtin_ctz(b)]; for (int w = 0; w < wb; w++) o[w] |= mk[w]; }
                         for (int w = 0; w < wb; w++) e[w] = u[w] & o[w];
-                    } else
+                    } else {
+                        for (int w = 0; w < wb; w++) e[w] = u[w] & ~f[w];
                         for (int q = 0; q < nvec[m]; q++) for (uint32_t b = db[q]; b; b &= b - 1) { const uint64_t *mk = mask[m][32 * q + __builtin_ctz(b)]; for (int w = 0; w < wb; w++) e[w] &= ~mk[w]; }
+                    }
                     if (nq == 1 && fm < 0) { fm = m; for (int q = 0; q < nvec[m]; q++) if (qb[q]) { fc = 32 * q + __builtin_ctz(qb[q]); break; } }
                     if (nq < bnq) { bnq = nq; bm = m; for (int q = 0; q < 4; q++) bqb[q] = qb[q]; }
                 }
@@ -221,6 +247,16 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     hist_t C;
     int tried[MAXN], nt = 0;
     int ord[MAXN], no = 0;
+    int mcls[MAXR], nmc = 0;
+    if (forced_m >= 0) { s->forced++; no = 1; ord[0] = forced_m; }
+    else if (mbr_m >= 0) {
+        s->mbr++;
+        for (int q = 0; q < 4; q++) for (uint32_t b = mbr_qb[q]; b; b &= b - 1) {
+            const int c = 32 * q + __builtin_ctz(b), v = H->h[mbr_m][c];
+            int j = nmc++; while (j > 0 && H->h[mbr_m][mcls[j - 1]] < v) { mcls[j] = mcls[j - 1]; j--; } mcls[j] = c;
+        }
+        no = nmc; for (int j = 0; j < nmc; j++) ord[j] = mbr_m;
+    } else {                                                            /* prime branching: the moduli striking br, in the child order */
 #if CORDER == 1
     for (int m = 0; m < nmod; m++) ord[no++] = m;
 #elif CORDER == 2
@@ -231,16 +267,19 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
 #else
     for (int m = nmod - 1; m >= 0; m--) ord[no++] = m;
 #endif
-    int mcls[MAXR], nmc = 0;
-    if (forced_m >= 0) { s->forced++; no = 1; ord[0] = forced_m; }
-    else if (mbr_m >= 0) {
-        s->mbr++;
-        for (int q = 0; q < 4; q++) for (uint32_t b = mbr_qb[q]; b; b &= b - 1) {
-            const int c = 32 * q + __builtin_ctz(b), v = H->h[mbr_m][c];
-            int j = nmc++; while (j > 0 && H->h[mbr_m][mcls[j - 1]] < v) { mcls[j] = mcls[j - 1]; j--; } mcls[j] = c;
-        }
-        no = nmc; for (int j = 0; j < nmc; j++) ord[j] = mbr_m;
     }
+#if ARGM && LOOK
+    /* ARGM: av[m] = the single class holding m's fullest allowed count (0xFF: none or several).  A child (m, c) striking T = U & class (m, c)
+       lowers by >= 1 the fullest class of every other free modulus whose single fullest class T meets (its other classes are below it), so the
+       child's cap is at most cap - mx[m] - (those moduli): when that is below nu - |T| the child would be cut at once. */
+    unsigned char av[MAXN] __attribute__((aligned(32)));
+    uint64_t uB[W];
+    if (bounded) {
+        memset(av, 0xFF, sizeof av);
+        for (int k = 0; k < s->nfree; k++) { const int m = s->freem[k]; av[m] = (unsigned char)argmax1(H->h[m], s->forb[m], nvec[m], mx[m]); }
+        ubits(st, bi, uB);
+    }
+#endif
     for (int oi = 0; oi < no; oi++) {
         const int m = ord[oi];
         if (s->used[m]) continue;
@@ -251,10 +290,28 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
            parent's rows (the child's rows are these minus the primes m's class strikes, and its forbidden classes include these), and it needs
            nu minus the primes of U this class strikes, H->h[m][c].  A child that fails it would be cut at once: skip it, but forbid its class in
            the later siblings as if it had been searched (its subtree holds no vector beating the incumbent). */
-        if (bounded && cap - mx[m] + H->h[m][c] < nu) {
+        int cut = bounded && cap - mx[m] + H->h[m][c] < nu;
+#if ARGM
+        if (bounded && !cut && left > 1) {
+            const __m256i avv = _mm256_load_si256((const __m256i *)av);
+            __m256i hit = _mm256_setzero_si256();
+            for (int w = 0; w <= (bi >> 6); w++) {
+                uint64_t x = uB[w] & mask[m][c][w];
+                while (x) { const int p = w * 64 + __builtin_ctzll(x); x &= x - 1;
+                            hit = _mm256_or_si256(hit, _mm256_cmpeq_epi8(_mm256_loadu_si256((const __m256i *)resT[p]), avv)); }
+            }
+            const int r1 = __builtin_popcount((uint32_t)_mm256_movemask_epi8(hit) & ~(1u << m));
+            cut = cap - mx[m] - r1 < nu - H->h[m][c];
+        }
+#endif
+        if (cut) {
             s->skips++;
+            if (forced_m >= 0 || mbr_m >= 0) continue;                  /* a forced or modulus child: nothing to forbid */
             forb_inc(s, m, c); tried[nt++] = m;
             const int nm = maxallowed(H->h[m], s->forb[m], nvec[m]); cap += nm - mx[m]; mx[m] = nm;
+#if ARGM
+            av[m] = (unsigned char)argmax1(H->h[m], s->forb[m], nvec[m], nm);
+#endif
             continue;
         }
 #endif
@@ -284,7 +341,11 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
         if (mbr_m >= 0) continue;                                       /* modulus branching: the children differ in m's class, nothing to forbid */
         forb_inc(s, m, c); tried[nt++] = m;
 #if LOOK
-        if (bounded) { const int nm = maxallowed(H->h[m], s->forb[m], nvec[m]); cap += nm - mx[m]; mx[m] = nm; }
+        if (bounded) { const int nm = maxallowed(H->h[m], s->forb[m], nvec[m]); cap += nm - mx[m]; mx[m] = nm;
+#if ARGM
+                       av[m] = (unsigned char)argmax1(H->h[m], s->forb[m], nvec[m], nm);
+#endif
+        }
 #endif
     }
     for (int j = 0; j < nt; j++) forb_dec(s, tried[j], res[tried[j]][br]);

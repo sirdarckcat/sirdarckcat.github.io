@@ -28,3 +28,19 @@ at 4 threads are roughly doubled by the contention; "CPU" = single-thread user t
    n=22 r=83 COUNT D=1279 optimal vectors=2 above D=0 nodes=40705411 (below the 9240 split prefixes) dead=7061765 skipped=8157778 forced=5176570 modulus-branchings=5546458 rebuilds=9240 seconds=10.1 vector: 3:2 5:2 7:6 11:2 13:12 17:13 19:5 23:22 29:22 31:7 37:19 41:3 43:2 47:31 53:2 59:33 61:12 67:39 71:57 73:61 79:66 83:80
    desert_fast4 (the old search, an independent check of the new cuts): D(22) = 1279, 8,409,768,046 nodes, 964 s; proof below 1283 NOT ATTAINED,
    5,019,500,873 nodes, 469 s.  desert_fast_order.c (research's desert_fast.c + the child order): D(20) = 1051, 1,899,123,476 nodes, 1697 s (2 threads).
+
+5. ARGM (the argmax child bound) and two cheaper node steps, same verification (desert_verify.sh 19 20 20 OK, and with each option off).
+   Proof runs, nodes (dead, forced and modulus-branching counts equal to section 3's runs: ARGM only removes children cut at once):
+   n=17 r=61 NOT ATTAINED below 743, so D(17) < 743; nodes=132563 dead=26111 skipped=88148 forced=34613 modulus-branchings=32982 rebuilds=4080 seconds=0.1
+   n=18 r=67 NOT ATTAINED below 863, so D(18) < 863; nodes=228965 dead=40262 skipped=159168 forced=66481 modulus-branchings=56913 rebuilds=4896 seconds=0.2
+   n=19 r=71 NOT ATTAINED below 911, so D(19) < 911; nodes=1421845 dead=371127 skipped=1176213 forced=400564 modulus-branchings=314553 rebuilds=5814 seconds=0.7
+   n=20 r=73 NOT ATTAINED below 1061, so D(20) < 1061; nodes=1825850 dead=395932 skipped=1777633 forced=451706 modulus-branchings=490814 rebuilds=6840 seconds=0.8
+   n=21 r=79 NOT ATTAINED below 1217, so D(21) < 1217; nodes=3471516 dead=768832 skipped=3737551 forced=676241 modulus-branchings=981756 rebuilds=7980 seconds=1.7
+   n=22 r=83 NOT ATTAINED below 1283, so D(22) < 1283; nodes=21117271 dead=6912542 skipped=24504359 forced=4539526 modulus-branchings=4668377 rebuilds=9240 seconds=10.5
+
+6. n = 23, 24 (desert_fast5 before ARGM; 4 threads, sharing the machine with desert_fast4's D(23) run).  D(23) was started from D(22) = 1279 and
+   D(24) from research's tempering value 1,471 (a lower bound, D being nondecreasing in n); a run from a known value is a complete search.
+   n=23 r=89 D=1381 nodes=316993179 (below the 10626 split prefixes) dead=62962308 skipped=69719524 forced=43282643 modulus-branchings=37701457 rebuilds=11451 (started from a known value) seconds=82.5 vector: 3:2 5:2 7:6 11:2 13:5 17:16 19:10 23:15 29:2 31:30 37:19 41:3 43:12 47:5 53:2 59:33 61:12 67:28 71:70 73:43 79:24 83:80 89:85
+   n=23 r=89 NOT ATTAINED: no vector strikes every odd prime below 1399, so D(23) < 1399; nodes=223161692 (below the 10626 split prefixes) dead=43264732 skipped=51866566 forced=27515404 modulus-branchings=27567733 rebuilds=10626 seconds=65.2
+   n=23 r=89 COUNT D=1381 optimal vectors=1 above D=0 nodes=285190711 (below the 10626 split prefixes) dead=56527075 skipped=68056663 forced=35367999 modulus-branchings=35360992 rebuilds=10626 seconds=77.4 vector: 3:2 5:2 7:6 11:2 13:5 17:16 19:10 23:15 29:2 31:30 37:19 41:3 43:12 47:5 53:2 59:33 61:12 67:28 71:70 73:43 79:24 83:80 89:85
+   n=24 r=97 D=1471 nodes=1030579529 (below the 12144 split prefixes) dead=172346249 skipped=183954607 forced=146259151 modulus-branchings=140351863 rebuilds=12483 (started from a known value) seconds=291.5 vector: 3:2 5:3 7:3 11:2 13:8 17:12 19:7 23:15 29:22 31:13 37:12 41:7 43:10 47:17 53:13 59:19 61:59 67:37 71:27 73:56 79:48 83:47 89:17 97:67
