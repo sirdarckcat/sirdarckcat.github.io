@@ -1,0 +1,66 @@
+# Balls in boxes: measuring the mechanism behind "why 1.349 is not the truth" (task T1)
+
+Task from the research session (`goldbach/sublinear/README.md` on `ccr-d4a17dd0-7uu03r`, sections "The same question
+exactly, for few primes" and "Why 1.349 is not the truth"). Targets T are the odd primes up to y = C·x·ln x. The small
+primes A (odd primes up to w) each get one nonzero class, drawn uniformly and independently. The survivors S are the
+targets in none of these classes. The large primes B (primes in (w, x]) can then strike survivors: r′ strikes q when q is
+in its class. Report A measures how S sits in the classes of the large primes, which is what the proof outline needs.
+Report B lets each large prime take the class with the most remaining survivors. Settings: x ∈ {3,000; 10,000; 30,000;
+100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10^6 point is a reduced run, reported at the
+end.
+
+## Findings
+
+1. **The survivors are not independent balls modulo the large primes; they are thinned targets.** Pairs of survivors
+   in a common class (E) are 0.38 to 0.87 of the count for |S| independent uniform balls, and classes holding three or
+   more survivors are 2% to 81% of the Poisson count (four or more: 0% to 62%). The shortfall is largest at small C and
+   shrinks slowly with C and x. The reason is capacity. A class of a large prime r′ near x is a progression with about
+   C·ln x terms below y, and it holds only about C targets. Each target survives with probability about 0.07 to 0.10,
+   so a class can never hold more survivors than it has targets. Independent balls ignore that cap, so the picture
+   "fullest classes hold about ln x / ln ln x survivors" overstates what the large primes can collect at C near 1.35.
+2. **The pair formula of the outline is zero as written; with r = 3 treated exactly it is good.** N·∏_{3≤r≤w}(1 − 2/(r − 1))
+   is 0 because of r = 3. A nonzero class mod 3 strikes every prime in one of the two classes, so all survivors share a
+   class mod 3. A pair can survive only if it is congruent mod 3, and then it survives with probability 1/2. The corrected
+   expression is ½ · N₃ · ∏_{5≤r≤w}(1 − 2/(r − 1)), where N₃ counts the target pairs in a common class of r′ that are also
+   congruent mod 3. The measured E is 1.00 to 1.15 times this, so it is a lower bound in practice; it ignores the gain
+   from congruences mod 5, 7, … N₃/N is 0.35 to 0.48, not ½, because pairs at small multiples of r′ are congruent mod 3
+   less often than random pairs. So the convexity step should be applied to the classes of 3r′. The exact expectation,
+   computed from 48 sampled target pairs per large prime, matches the 20-draw mean within 4%, which checks the code.
+3. **(iii) The second moments are fine.** mean(E²)/mean(E)² per large prime is 1.26 at x = 3,000, C = 1, and falls to
+   1.0002 at large C and x.
+4. **(iv) Conflicts are O(1).** mean X / (mean E₁ · mean E₂) · |S| is 3.87 to 4.04 in every setting. That is 4, the value
+   for independent degrees.
+5. **(v) Deletion gives a constant near 1.5, not 2.** The largest fraction of good large primes (exactly one marked
+   pair, meeting no marked pair of another prime) is 0.09 to 0.11 at C = 1.35 (θ ≈ 0.2 to 0.35), 0.12 to 0.14 at C = 2,
+   and up to 0.28 at C = 8. It shows no trend in x. With a proportion φ ≈ 0.10 to 0.12 of the large primes striking two
+   survivors, the outline's constant is 1.349·(1 + φ) ≈ 1.48 to 1.51.
+6. **Random small classes plus greedy large primes reach a multiple of x ln x that grows with x.**
+   - C* (the largest C with nothing left in at least half the draws), w = x^0.9: 1.39, 1.93, 2.47, 3.14 at x = 3·10³,
+     10⁴, 3·10⁴, 10⁵.
+   - With w = x/2: 1.12, 1.40, 1.56, 1.78.
+   - C*/ln x is still rising (0.17 to 0.27 with w = x^0.9). The order of the large primes matters little: increasing
+     is best by 3% to 7% over decreasing, and random lies between.
+   - This stays below the all-greedy reach (5.52 to 8.38) and below ln x / ln ln x (3.85 to 4.71). Choosing the small
+     primes' classes greedily instead of at random is worth a factor 2.7 to 4 at these sizes.
+   - At C* the large primes strike mostly 2 to 4 survivors each: at x = 10⁵, w = x^0.9, C = 3, 28% strike two, 34%
+     three, 23% four and 6% five or more.
+   - The larger w = x^0.9 does better than w = x/2. It gives more large primes and fewer random small ones, and B is a
+     growing share of the primes up to x (0.50 at x = 3,000, 0.65 at 10⁵, 0.72 at 10⁶).
+
+## Tables
+
+TABLES
+
+## Files and checks
+
+| file | what it does |
+|---|---|
+| `t1lib.c` | kernels: occupancy of the classes of each large prime, conflicts, exact expectation by pair sampling, deletion, greedy (OpenMP, exact 32-bit modular reduction by multiplication) |
+| `t1.py` | driver: `python3 t1.py x [draws] [threads]` writes `t1_x<x>.json`; environment `T1_CGRID`, `T1_CBIS_MAX`, `T1_BIS_STEPS`, `T1_SKIP_EXACT`, `T1_ORDERS` reduce the work for x = 10^6 |
+| `test_t1.py` | checks every kernel against plain Python: occupancy, conflicts by brute force over pairs, greedy (same tie rule as `greedy_cover.py`), survivors by direct division, the exact expectation against 3,000 Monte Carlo draws (0.5%), and the deletion's Poisson rates |
+| `make_tables.py` | the tables above, from the JSON files |
+| `t1_x*.json`, `t1_x*.log` | full results, including per-θ deletion curves and per-draw thresholds |
+
+Build: `gcc -O3 -march=native -fopenmp -shared -fPIC -o t1lib.so t1lib.c -lm`. Run times on 4 cores: 1 s (x = 3,000), 7 s,
+46 s, and 9.5 minutes (x = 10⁵). The per-draw bisection assumes that "nothing left" is monotone in C. On the C grid it is,
+in every run.
