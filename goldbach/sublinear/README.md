@@ -21,7 +21,7 @@ it, both in "A floor under every cover" and the section after it:
   measured from 45 to 1,228 moduli and explained, up to the value of c, by a
   short calculation, which also predicts within 6% how few rows the best
   cover leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
-  to a few percent at every size, and at 200 digits it ends near 16,300 on 89
+  to a few percent at every size, and at 200 digits it ends near 16,000 on 89
   moduli, where 15,907 has been found.
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
@@ -1185,8 +1185,8 @@ and the share of the samples there that leave no row), at eight sizes:
 | 127 | 30 | 111.2 | 500 to 2,000 | 1.09 to 1.22 | 2,297 | 2,311 (tempering; a wall) |
 | 199 | 45 | 187.9 | 1,000 to 4,000 | 1.02 to 1.09 | 5,099 | 4,909 |
 | 293 | 61 | 276.3 | 1,500 to 7,000 | 1.02 to 1.13 | 8,687 | 8,311 |
-| 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 | 15,907 |
-| 997 | 167 | 955.6 | 15,000 to 33,000 | 0.992 to 1.008 | 45,700 | 40,111 |
+| 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 (measured end: about 16,000) | 15,907 |
+| 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 40,111 |
 | 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.989 to 1.035 | 185,000 | 135,511 (greedy) |
 | 9,973 | 1,228 | 9,895.3 | 100,000 and 300,000 | 1.006 and 1.012 | 827,000 | 614,101 (greedy) |
 
@@ -1198,30 +1198,51 @@ target, from the full count at Q = 0 down to the end:
 In other words a class vector drawn at random strikes every odd prime below Q
 with probability e^(−Q/ln² x). At x = 463 ten targets from 500 to 14,000 lie
 within 5 nats of one line (two seeds agreeing to 0.1 from 6,000 on; slope
-1.013/ln² x, value at Q = 0 within 3.5 of θ); at x = 997 five targets
-from 15,000 to 33,000 lie within 4.5 of the line with c = 1 exactly; at the
+1.013/ln² x, value at Q = 0 within 3.5 of θ); at x = 997 seven targets
+from 15,000 to 38,000 lie within 7.5 of the line with c = 1 exactly; at the
 smaller sizes the points step around it, as D(n) itself does, and the
 fitted c is 1.02 to 1.13 (`cover_floor_law.txt` has every point; raw runs
 made here are in `cover_floor_runs/count/`). Three things follow.
 
 - D(n) = θ(r_n)·ln² r_n/c, that is r·ln² r with a constant near 1, not only
   up to a slowly varying factor: 1,082 against the exact 1,051 at n = 20,
-  and 16,300, 45,700 and 185,000 for 89, 167 and 429 moduli.
-- Tempering's 15,907 on the campaign's 89 moduli is within 3% of the end,
-  and the uarch session's exhaustive neighbourhood search from that cover
-  (free up to 32 moduli, keep the rest, search exactly) finds nothing beyond
-  it. At 167 moduli tempering is about 12% short, at 429 and 1,228 moduli
-  the greedy choice reaches 0.73 of the end.
+  and 16,300, 45,400 and 185,000 for 89, 167 and 429 moduli (the true end
+  lies a few percent before the end of the line, see below).
+- Tempering's 15,907 on the campaign's 89 moduli is at the end or within 1%
+  of it (below), and the uarch session's exhaustive neighbourhood search
+  from that cover (free up to 32 moduli, keep the rest, search exactly)
+  finds nothing beyond it. At 167 moduli tempering is about 10% short, at
+  429 and 1,228 moduli the greedy choice reaches 0.73 of the end of the
+  line.
 - The first-moment count of the earlier section is wrong by a known factor:
   it expects π(Q)·∏(1 − 1/(r − 1)) = 0.741·Q/(ln Q·ln x) for the loss, the
   law says Q/ln² x, larger by 1.349·ln Q/ln x (the constant e^γ/(2·C₂) of
   the theorem again). That is why the count put the end at 32,300 for 89
   moduli.
 
-Above about 85% of the range the measurement is not clean (the runs sample a
-handful of covers; at 463 the points at 14,500 and 15,000 fall 10 to 25 below
-the line, and it is not settled whether the line bends there or the sampling
-fails; runs from the known complete cover are being made).
+The last eighth of the range. Above about 85% of the way runs from random
+vectors no longer sample the complete covers in proportion (they find a
+handful and stay with them), so at 89 moduli the Lean session's machine also
+ran a million sweeps from the known complete cover, which is complete at
+every target up to 15,907 (commit de9d330 there):
+
+| Q | 14,000 | 14,500 | 15,000 | 15,300 | 15,600 | 15,907 |
+|---|---|---|---|---|---|---|
+| ln g0, runs from random vectors | 61.7 | 38.7 | 19.8 | 0.9 | 1.6 | none sampled |
+| ln g0, run from the complete cover | 62.9 | 42.2 | 29.2 | 20.5 | 16.6 | 3.5 |
+| the line with c = 1 | 71.3 | 58.0 | 44.8 | 36.8 | 28.8 | 20.7 |
+
+The two agree at 14,000 and the run from the cover is the one to read
+beyond. The curve steepens over the last eighth (an average slope of
+1.17/ln² x from 14,000 on) and reaches about thirty complete covers at
+15,907. So complete covers on the campaign's 89 moduli end near 16,000, 4%
+before the end of the line, and the cover found by tempering on 23 November
+is the end or within 1% of it; the best covers found at 15,950 and 16,000
+leave one row. At 167 moduli the line holds to 38,000 (1.010 and 1.006 at
+36,000 and 38,000, two seeds within 2.2); at 39,000 and at 40,111, the
+tempered record, runs from random vectors still count e^120 and e^77
+covers, which are underestimates, so the end there is several thousand
+beyond the record.
 
 *Why a straight line with slope 1/ln² x* (a heuristic that reproduces the
 form and, within about 15%, the constant; not a proof). Count the complete

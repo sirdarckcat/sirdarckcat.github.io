@@ -1,7 +1,7 @@
 # The number of complete covers against the line theta(x) - Q/ln^2 x. 24 November 2026. cover_floor.c with COVER_FLOOR_REACH;
 # x = 463 from 6,000 on and x = 997: 400,000 sweeps, two seeds, on the Lean session's machine (its branch, goldbach/lean/scripts/cover_floor_runs/);
 # the others here: 100,000 to 300,000 sweeps at x <= 463, 6,000 to 20,000 at x = 2,999 and 12,000 at x = 9,973 (cover_floor_betas_deep2.txt there).
-# Clean points only for x = 463 (targets up to 14,000). Table: python3 cover_floor_law.py x files -- x files ...
+# Clean points only: x = 463 up to 14,000 and x = 997 up to 38,000 (runs from random vectors); then, below, the last stretch at x = 463 from the known complete cover and at x = 997 from random vectors. Table: python3 cover_floor_law.py x files -- x files ...
 
 x = 73: theta = 65.2, 1/ln^2 x = 0.054324, theta ln^2 x = 1200
     Q =     700: ln g0 =     23.5 (1 run, spread 0.0, share of complete samples >= 1.00); line     27.2; (theta - ln g0) ln^2 x / Q = 1.095
@@ -45,7 +45,9 @@ x = 997: theta = 955.6, 1/ln^2 x = 0.020975, theta ln^2 x = 45557
     Q =   25000: ln g0 =    435.6 (2 runs, spread 0.6, share of complete samples >= 0.99); line    431.2; (theta - ln g0) ln^2 x / Q = 0.992; slope from the previous target 0.926
     Q =   30000: ln g0 =    326.2 (2 runs, spread 0.7, share of complete samples >= 0.99); line    326.3; (theta - ln g0) ln^2 x / Q = 1.000; slope from the previous target 1.043
     Q =   33000: ln g0 =    264.7 (2 runs, spread 0.9, share of complete samples >= 0.98); line    263.4; (theta - ln g0) ln^2 x / Q = 0.998; slope from the previous target 0.978
-    least squares: slope 0.992 / ln^2 x, value at Q = 0 951.8 (theta 955.6), end of the line 45738
+    Q =   36000: ln g0 =    192.9 (2 runs, spread 1.0, share of complete samples >= 0.97); line    200.4; (theta - ln g0) ln^2 x / Q = 1.010; slope from the previous target 1.141
+    Q =   38000: ln g0 =    153.6 (2 runs, spread 2.2, share of complete samples >= 0.96); line    158.5; (theta - ln g0) ln^2 x / Q = 1.006; slope from the previous target 0.936
+    least squares: slope 1.009 / ln^2 x, value at Q = 0 959.0 (theta 955.6), end of the line 45334
 x = 2999: theta = 2931.7, 1/ln^2 x = 0.015601, theta ln^2 x = 187910
     Q =   20000: ln g0 =   2608.6 (1 run, spread 0.0, share of complete samples >= 0.99); line   2619.6; (theta - ln g0) ln^2 x / Q = 1.035
     Q =   50000: ln g0 =   2160.1 (1 run, spread 0.0, share of complete samples >= 0.99); line   2151.6; (theta - ln g0) ln^2 x / Q = 0.989; slope from the previous target 0.958
@@ -55,3 +57,17 @@ x = 9973: theta = 9895.3, 1/ln^2 x = 0.011795, theta ln^2 x = 838929
     Q =  100000: ln g0 =   8709.1 (1 run, spread 0.0, share of complete samples >= 0.98); line   8715.8; (theta - ln g0) ln^2 x / Q = 1.006
     Q =  300000: ln g0 =   6313.2 (1 run, spread 0.0, share of complete samples >= 0.93); line   6356.8; (theta - ln g0) ln^2 x / Q = 1.012; slope from the previous target 1.016
     least squares: slope 1.016 / ln^2 x, value at Q = 0 9907.1 (theta 9895.3), end of the line 826994
+
+## the last stretch
+x = 463: theta = 442.9, 1/ln^2 x = 0.026545, theta ln^2 x = 16687
+    Q =   14000: ln g0 =     62.8 (1 run, spread 0.0, share of complete samples >= 0.99); line     71.3; (theta - ln g0) ln^2 x / Q = 1.023
+    Q =   14500: ln g0 =     42.2 (1 run, spread 0.0, share of complete samples >= 0.98); line     58.0; (theta - ln g0) ln^2 x / Q = 1.041; slope from the previous target 1.559
+    Q =   15000: ln g0 =     29.2 (1 run, spread 0.0, share of complete samples >= 0.97); line     44.8; (theta - ln g0) ln^2 x / Q = 1.039; slope from the previous target 0.976
+    Q =   15300: ln g0 =     20.5 (1 run, spread 0.0, share of complete samples >= 0.96); line     36.8; (theta - ln g0) ln^2 x / Q = 1.040; slope from the previous target 1.093
+    Q =   15600: ln g0 =     16.6 (1 run, spread 0.0, share of complete samples >= 0.96); line     28.8; (theta - ln g0) ln^2 x / Q = 1.030; slope from the previous target 0.492
+    Q =   15907: ln g0 =      3.5 (1 run, spread 0.0, share of complete samples >= 0.95); line     20.7; (theta - ln g0) ln^2 x / Q = 1.041; slope from the previous target 1.605
+    least squares: slope 1.106 / ln^2 x, value at Q = 0 471.0 (theta 442.9), end of the line 16043
+x = 997: theta = 955.6, 1/ln^2 x = 0.020975, theta ln^2 x = 45557
+    Q =   39000: ln g0 =    120.2 (2 runs, spread 2.2, share of complete samples >= 0.76); line    137.5; (theta - ln g0) ln^2 x / Q = 1.021
+    Q =   40111: ln g0 =     77.1 (2 runs, spread 5.6, share of complete samples >= 0.27); line    114.2; (theta - ln g0) ln^2 x / Q = 1.044; slope from the previous target 1.849
+    least squares: slope 1.849 / ln^2 x, value at Q = 0 1632.5 (theta 955.6), end of the line 42099
