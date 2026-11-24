@@ -1,39 +1,48 @@
-# Table of the largest Q reached per x, from t2_runs.jsonl, with the reach of the best vector rechecked by reach.py.
-import json, math, os, sys
+# Table of T2 from t2_runs.jsonl and the search's brackets in t2.log; the reach of each best vector is rechecked by reach.py.
+#   python3 t2_table.py > t2_table.md     (also writes t2_vectors.txt)
+# Columns: the bracket of the search at its planned budget (sweeps_for(x) in t2.py), the seeds that reached k = 0 at the top of the
+# bracket and the sweep at which each first did, the best k of each seed at the bottom of the miss and the sweep at which it was first
+# reached, then the 4x longer runs at that same missed Q (t2_probe.py) where they were made, and the reach of the best vector of any run.
+import json, math, os, re, sys
 from reach import first_unstruck
+import t2
 runs = [json.loads(l) for l in open("t2_runs.jsonl")]
-xs = sorted({r["x"] for r in runs})
-# first sweep at which a run reached each best k: logged directly by runs made with ptcover_fast2, or from t2_firsthit.py's reruns
 FH = {}
 for r in runs:
-    if "first_le" in r: FH[(r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", ""))] = (r["k"], {int(a): b for a, b in r["first_le"].items()}, True)
+    if "first_le" in r: FH[(r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", ""))] = {int(a): b for a, b in r["first_le"].items()}
 if os.path.exists("t2_firsthit.jsonl"):
     for l in open("t2_firsthit.jsonl"):
-        r = json.loads(l); FH[(r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", ""))] = (r["k"], {int(a): b for a, b in r["first_le"].items()}, r["identical"])
+        r = json.loads(l)
+        if r["identical"]: FH[(r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", ""))] = {int(a): b for a, b in r["first_le"].items()}
 def fh(r):
-    v = FH.get((r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", "")))
-    return None if v is None else v[1].get(r["k"])
-print("| primes up to x | moduli | largest Q reached | first odd prime in no class | / (x ln x) | / (x ln² x) | Q missed by all seeds (long runs) | sweeps per run | seeds at k = 0 (sweep of the first k = 0) | best k of each seed at the miss (sweep it was first reached) | runs |")
+    v = FH.get((r["x"], r["Q"], r["seed"], r["sweeps"], r.get("start", ""))); return None if v is None else v.get(r["k"])
+def fmt(r): s = fh(r); return f"{r['k']} ({s:,})" if s is not None else f"{r['k']} (–)"
+br = {}
+for line in open("t2.log"):
+    m = re.match(r"x=(\d+): largest Q reached (\d+), smallest Q missed by all seeds (\d+)", line)
+    if m: br[int(m.group(1))] = (int(m.group(2)), int(m.group(3)))
+print("| x | moduli | sweeps per run | bracket at that budget: largest Q reached / smallest Q missed by all seeds | seeds at k = 0 at the top (sweep of the first k = 0) | "
+      "best k of each seed at the miss (sweep it was first reached) | 4× longer runs at the miss: best k (sweep) | best vector of any run: first odd prime in no class | / (x ln x) | / (x ln² x) | runs |")
 print("|---|---|---|---|---|---|---|---|---|---|---|")
 vec = {}
-for x in xs:
-    R = [r for r in runs if r["x"] == x]
+for x in sorted({r["x"] for r in runs}):
+    R = [r for r in runs if r["x"] == x]; S = t2.sweeps_for(x); L = math.log(x)
     ok = [r for r in R if r["k"] == 0]
     if not ok: continue
-    best = max(ok, key=lambda r: r["Q"])
-    pairs = [tuple(map(int, t.split(":"))) for t in best["best"].split()]
-    reach = first_unstruck(pairs)
-    miss = [r["Q"] for r in R if r["k"] > 0 and r["Q"] > best["Q"] and r["sweeps"] >= 80000]
-    missQ = min((q for q in set(miss) if all(rr["k"] > 0 for rr in R if rr["Q"] == q and rr["sweeps"] >= 80000)), default=None)
-    L = math.log(x)
-    hits = sorted((r for r in ok if r["Q"] == best["Q"] and r["sweeps"] >= 80000), key=lambda r: r["seed"])
-    hit_s = ", ".join(f"{r['seed']} ({fh(r):,})" if fh(r) is not None else f"{r['seed']} (–)" for r in hits)
-    mr = sorted((r for r in R if missQ is not None and r["Q"] == missQ and r["sweeps"] >= 80000), key=lambda r: r["seed"])
-    miss_s = ", ".join(f"{r['k']} ({fh(r):,})" if fh(r) is not None else f"{r['k']} (–)" for r in mr)
-    sw = sorted({r["sweeps"] for r in hits + mr})
-    print(f"| {x:,} | {len(pairs)} | {best['Q']:,} | {reach:,} | {reach/(x*L):.2f} | {reach/(x*L*L):.3f} | {'' if missQ is None else f'{missQ:,}'} | "
-          f"{'/'.join(f'{v:,}' for v in sw)} | {hit_s} | {miss_s} | {len(R)} |")
-    vec[x] = (reach, best)
+    best = max(ok, key=lambda r: r["Q"]); pairs = [tuple(map(int, t.split(":"))) for t in best["best"].split()]
+    reach = first_unstruck(pairs); vec[x] = (reach, best)
+    if x in br:
+        lo, hi = br[x]
+        top = sorted((r for r in R if r["Q"] == lo and r["k"] == 0 and r["sweeps"] == S), key=lambda r: r["seed"])
+        top_s = ", ".join(f"{r['seed']} ({fh(r):,})" if fh(r) is not None else f"{r['seed']} (–)" for r in top) or "coarse scan only"
+        miss = sorted((r for r in R if r["Q"] == hi and r["sweeps"] == S), key=lambda r: r["seed"])
+        prob = sorted((r for r in R if r["Q"] == hi and r["sweeps"] == 4 * S), key=lambda r: r["seed"])
+        prob_s = ", ".join(fmt(r) for r in prob) if prob else "–"
+        brs = f"{lo:,} / {hi:,}"
+    else:
+        brs, top_s, prob_s = "search running", "", ""; miss = []
+    print(f"| {x:,} | {len(pairs)} | {S:,} | {brs} | {top_s} | {', '.join(fmt(r) for r in miss)} | {prob_s} | {reach:,} (Q = {best['Q']:,}, {best['sweeps']:,} sweeps) | "
+          f"{reach / (x * L):.2f} | {reach / (x * L * L):.3f} | {len(R)} |")
 with open("t2_vectors.txt", "w") as f:
     for x, (reach, best) in vec.items():
         f.write(f"# odd primes up to {x}: every odd prime below {reach:,} lies in the class of some modulus (first odd prime in no class: {reach}); "
