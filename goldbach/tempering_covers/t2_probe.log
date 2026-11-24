@@ -1,0 +1,6 @@
+  x=127 Q=2333 seed=1 sweeps=320000: best k 1  (218 s)
+  x=127 Q=2333 seed=2 sweeps=320000: best k 1  (221 s)
+  x=127 Q=2333 seed=3 sweeps=320000: best k 1  (216 s)
+  x=127 Q=2333 seed=4 sweeps=320000: best k 1  (219 s)
+  x=149 Q=2957 seed=1 sweeps=320000: best k 1  (249 s)
+  x=149 Q=2957 seed=2 sweeps=320000: best k 1  (249 s)

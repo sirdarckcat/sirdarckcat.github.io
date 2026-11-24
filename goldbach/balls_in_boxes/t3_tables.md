@@ -19,6 +19,7 @@ C* = the largest C (y = C·x·ln x) for which nothing is left: median of 10 draw
 | 1,000,000 | 0.0 | 1 | 0 | 9.973 | one run | 1.000 | 0.722 |
 | 1,000,000 | 0.6 | 3,981 | 548 | 9.465 | 9.46 – 9.47 | 0.949 | 0.685 |
 | 1,000,000 | 0.8 | 63,096 | 6,325 | 7.391 | 7.39 – 7.39 | 0.741 | 0.535 |
+| 1,000,000 | 0.9 | 251,189 | 22,131 | 4.477 | 4.48 – 4.48 | 0.449 | 0.324 |
 
 At x = 10^6 (`t3.py e`): 2 draws (θ > 0) or one run (θ = 0), 8 bisection steps inside a bracket around the predicted value (θ = 0: [9.9, 11]; 0.6: [8, 10.5]; 0.8: [5, 9]; 0.9: [3, 6]), so the resolution is 0.004 to 0.016.
 
@@ -42,7 +43,7 @@ s(θ) = share of the all-greedy excess Σ(m − λ) made by the primes up to x^�
 | 0.8 | 1,000,000 | 0.291 | 0.709 | 0.741 |
 | 0.9 | 10,000 | 0.694 | 0.306 | 0.293 |
 | 0.9 | 100,000 | 0.631 | 0.369 | 0.375 |
-| 0.9 | 1,000,000 | 0.559 | 0.441 | running |
+| 0.9 | 1,000,000 | 0.559 | 0.441 | 0.449 |
 
 ### T3b: the all-greedy run, summary
 

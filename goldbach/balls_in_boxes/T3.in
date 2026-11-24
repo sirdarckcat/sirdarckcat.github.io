@@ -47,7 +47,7 @@ means an excess of order ln x per prime.
      - The handful in T1 is the cap at y = C·x·ln x with C fixed, where a class holds about C targets.
 4. **T3a: the reach lost is the excess share of the random range.**
    - Write s(θ) for the share of the all-greedy excess that comes from the primes up to x^θ. Then 1 − s(θ) matches
-     C*(θ)/C*(0) within 0.05 in all 10 cases. The measured value is the higher one in 9 of them, so the greedy part
+     C*(θ)/C*(0) within 0.05 in all 13 cases. The measured value is the higher one in 12 of them, so the greedy part
      recovers slightly more than the rule says. See the table "T3a against T3b".
    - C*(θ)/C*(0) for θ = 0.2, 0.4, 0.6, 0.8, 0.9 is 0.99, 0.98, 0.88, 0.58, 0.29 at x = 10⁴ and 1.00, 0.99, 0.92, 0.67,
      0.38 at x = 10⁵.
@@ -55,8 +55,10 @@ means an excess of order ln x per prime.
    - So a proof that chooses classes only above x^θ keeps about 1 − s(θ) of the reach.
    - s(θ) falls with x at every θ (x = 10⁴, 10⁵, 10⁶): s(0.6) = 0.168, 0.115, 0.077; s(0.8) = 0.446, 0.368, 0.291;
      s(0.9) = 0.694, 0.631, 0.559.
-   - The rule predicts C*(θ)/C*(0) ≈ 0.92, 0.71 and 0.44 at x = 10⁶ for θ = 0.6, 0.8 and 0.9. The runs that test this
-     are going; θ = 0.9 comes from the T1 run at 10⁶.
+   - At x = 10⁶ the rule predicted C*(θ)/C*(0) ≈ 0.923, 0.709 and 0.441 for θ = 0.6, 0.8 and 0.9. We wrote these
+     down from the T3b run before running T3a there. The runs give 0.949, 0.741 and 0.449: again slightly above the
+     rule, by 0.026, 0.032 and 0.008. These used 2 draws each, which agree within 0.2%. The all-greedy C*(0) at 10⁶ is
+     9.973, which is 0.722·x·ln²x, so this ratio is flat near 0.72 from 10⁴ to 10⁶ (0.712, 0.729, 0.722).
    - The same effect shows in the targets left. When the primes above x^0.9 start, the greedy run has left 0.38, 0.43
      and 0.50 times what random classes would have left (x = 10⁴, 10⁵, 10⁶). Above x^0.8 the ratios are 0.65, 0.71 and
      0.77.
@@ -84,8 +86,9 @@ TABLES
 |---|---|
 | `t3.py` | `a [procs]`: T3a at x = 10⁴, 10⁵. `e [procs]`: the x = 10⁶ check, which uses fewer draws and a known bracket. `b [x]`: the T3b profile. `c`: T3c. `s`: the T3b summary across x. All use the kernels of `t1lib.c` through `t1.py`. |
 | `make_t3.py` | builds the tables above from the JSON files |
-| `t3a.json`, `t3a.txt`, `t3a_x1000000.*` | T3a: per-draw thresholds |
+| `t3a.json`, `t3a.txt`, `t3a_x1000000.json`, `t3a_x1000000.txt` | T3a: per-draw thresholds (x = 10⁴, 10⁵; and the x = 10⁶ check) |
 | `t3b_x*.json`, `t3b_x*.txt` | T3b: binned profiles, bands in u = ln r/ln x, excess shares below x^θ |
 | `t3c.json`, `t3c.txt` | T3c: binned profiles, and the tempered and greedy strikes and the fullest class for each modulus |
 
-Run times: T3a takes 5 minutes on 2 cores. T3b takes 1 s at x = 10⁵ and 80 s at 10⁶. T3c takes 1 s.
+Run times: T3a takes 5 minutes on 2 cores (the x = 10⁶ check took 60 minutes on 2 shared cores). T3b takes 1 s at x = 10⁵ and
+80 s at 10⁶. T3c takes 1 s.
