@@ -5,7 +5,7 @@
 #        the size m of the class it takes and m_max = E[fullest of r-1 independent Poisson(lambda) cells], in 40 logarithmic bins.
 #   T3c  the same profile for the tempered 167-modulus cover (complete_cover_40111_167primes.txt), moduli in increasing order,
 #        against the greedy vector on the same moduli.
-#   python3 t3.py a [procs] | e [procs] | b [x] | c | s   (e: x = 10^6 extension of a)   (s: summary of the t3b_x*.json runs across x)
+#   python3 t3.py a [procs] | e [procs] [thetas] | b [x] | c | s   (e: x = 10^6 extension of a, thetas comma-separated)   (s: summary of the t3b_x*.json runs across x)
 import sys, math, json, re, time
 from multiprocessing import Pool
 import numpy as np
@@ -50,15 +50,19 @@ def part_a(procs):
             v = np.array(out[str(x)][str(th)]); w = x ** th if th > 0 else 1
             print(f"  theta = {th}: w = {w:,.0f}; C* = {np.median(v):.3f} (draws {v.min():.2f} .. {v.max():.2f}); C*/ln x = reach/(x ln^2 x) = {np.median(v)/math.log(x):.3f}")
 
-def part_e(procs):
-    """x = 10^6, fewer draws and a known bracket: theta = 0 (one run), 0.6 and 0.8 (2 draws each); theta = 0.9 is in t1_x1000000.json"""
+BRACKET_1E6 = {0.0: (9.9, 11.0), 0.6: (8.0, 10.5), 0.8: (5.0, 9.0), 0.9: (3.0, 6.0)}   # around the values the rule predicts
+
+def part_e(procs, thetas=(0.0, 0.6, 0.8)):
+    """x = 10^6, fewer draws and a known bracket: theta = 0 (one run), the others 2 draws each, 8 bisection steps; merged into t3a_x1000000.json"""
     x = 1000000
-    jobs = [(x, 0.0, 0, 11.0, 8, 9.9)] + [(x, 0.6, d, 10.5, 8, 8.0) for d in range(2)] + [(x, 0.8, d, 9.0, 8, 5.0) for d in range(2)]
+    jobs = [(x, th, d, BRACKET_1E6[th][1], 8, BRACKET_1E6[th][0]) for th in thetas for d in range(1 if th == 0 else 2)]
     with Pool(procs) as pool:
         res = pool.map(threshold_job, jobs)
-    out = {}
+    try: out = json.load(open("t3a_x1000000.json"))
+    except FileNotFoundError: out = {}
+    for th in thetas: out[str(th)] = []
     for j, (c, capped) in zip(jobs, res):
-        out.setdefault(str(j[1]), []).append(dict(C=c, capped=capped, bracket=[j[5], j[3]], steps=j[4]))
+        out[str(j[1])].append(dict(C=c, capped=capped, bracket=[j[5], j[3]], steps=j[4]))
         print(f"x = {x:,} theta = {j[1]} draw {j[2]}: C* = {c:.3f}{' (top of bracket)' if capped else ''}{' (below the bracket)' if c < 0 else ''}", flush=True)
     json.dump(out, open("t3a_x1000000.json", "w"))
 
@@ -198,5 +202,5 @@ def part_c():
 if __name__ == "__main__":
     part = sys.argv[1]; procs = int(sys.argv[2]) if len(sys.argv) > 2 and part in "ae" else 2
     t0 = time.time()
-    {"a": lambda: part_a(procs), "e": lambda: part_e(procs), "b": lambda: part_b(int(sys.argv[2]) if len(sys.argv) > 2 else 100000), "c": part_c, "s": part_s}[part]()
+    {"a": lambda: part_a(procs), "e": lambda: part_e(procs, tuple(float(t) for t in sys.argv[3].split(",")) if len(sys.argv) > 3 else (0.0, 0.6, 0.8)), "b": lambda: part_b(int(sys.argv[2]) if len(sys.argv) > 2 else 100000), "c": part_c, "s": part_s}[part]()
     print(f"[{time.time() - t0:.0f} s]")

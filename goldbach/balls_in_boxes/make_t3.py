@@ -16,13 +16,25 @@ for x in sorted(A, key=int):
         rng = f"{v.min():.2f} – {v.max():.2f}" if len(v) > 1 else "one run"
         print(f"| {X:,} | {t} | {w:,.0f} | {nA:,} | {np.median(v):.3f} | {rng} | {np.median(v) / c0:.3f} | {np.median(v) / L:.3f} |")
 
+E6 = json.load(open("t3a_x1000000.json")) if glob.glob("t3a_x1000000.json") else {}
+if E6.get("0.0"):
+    X = 1000000; L = math.log(X); c0 = E6["0.0"][0]["C"]
+    for th in sorted(E6, key=float):
+        v = np.array([r["C"] for r in E6[th]]); t = float(th); w = X ** t if t > 0 else 1
+        P = np.arange(3, int(w) + 1, 2); sieve = np.ones(int(w) + 1, bool); sieve[:2] = False
+        for p in range(2, int(w ** 0.5) + 1):
+            if sieve[p]: sieve[p * p::p] = False
+        nA = int(sieve[3:].sum()) if t > 0 else 0
+        rng = f"{v.min():.2f} – {v.max():.2f}" if len(v) > 1 else "one run"
+        print(f"| {X:,} | {t} | {w:,.0f} | {nA:,} | {np.median(v):.3f} | {rng} | {np.median(v) / c0:.3f} | {np.median(v) / L:.3f} |")
+    print("\nAt x = 10^6 (`t3.py e`): 2 draws (θ > 0) or one run (θ = 0), 8 bisection steps inside a bracket around the predicted value "
+          "(θ = 0: [9.9, 11]; 0.6: [8, 10.5]; 0.8: [5, 9]; 0.9: [3, 6]), so the resolution is 0.004 to 0.016.")
 B = sorted((json.load(open(f)) for f in glob.glob("t3b_x*.json")), key=lambda d: d["x"])
 print("\n### T3a against T3b: reach kept and the excess share of the random range\n")
 print("s(θ) = share of the all-greedy excess Σ(m − λ) made by the primes up to x^θ (T3b run at the same x). "
-      "At x = 10^6 the measured column is filled in when the runs finish (θ = 0.9 from t1_x1000000.json).\n")
+      "At x = 10^6 the measured values come from `t3.py e` (2 draws per θ).\n")
 print("| θ | x | s(θ) | 1 − s(θ) | C*(θ) / C*(0) measured |")
 print("|---|---|---|---|---|")
-E6 = json.load(open("t3a_x1000000.json")) if glob.glob("t3a_x1000000.json") else {}
 T16 = json.load(open("t1_x1000000.json")) if glob.glob("t1_x1000000.json") else None
 for th in ("0.2", "0.4", "0.6", "0.8", "0.9"):
     for d in B:

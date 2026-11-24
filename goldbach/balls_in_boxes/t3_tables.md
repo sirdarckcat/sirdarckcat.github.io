@@ -16,10 +16,15 @@ C* = the largest C (y = C·x·ln x) for which nothing is left: median of 10 draw
 | 100,000 | 0.6 | 1,000 | 167 | 7.736 | 7.72 – 7.78 | 0.922 | 0.672 |
 | 100,000 | 0.8 | 10,000 | 1,228 | 5.623 | 5.59 – 5.67 | 0.670 | 0.488 |
 | 100,000 | 0.9 | 31,623 | 3,400 | 3.148 | 3.12 – 3.20 | 0.375 | 0.273 |
+| 1,000,000 | 0.0 | 1 | 0 | 9.973 | one run | 1.000 | 0.722 |
+| 1,000,000 | 0.6 | 3,981 | 548 | 9.465 | 9.46 – 9.47 | 0.949 | 0.685 |
+| 1,000,000 | 0.8 | 63,096 | 6,325 | 7.391 | 7.39 – 7.39 | 0.741 | 0.535 |
+
+At x = 10^6 (`t3.py e`): 2 draws (θ > 0) or one run (θ = 0), 8 bisection steps inside a bracket around the predicted value (θ = 0: [9.9, 11]; 0.6: [8, 10.5]; 0.8: [5, 9]; 0.9: [3, 6]), so the resolution is 0.004 to 0.016.
 
 ### T3a against T3b: reach kept and the excess share of the random range
 
-s(θ) = share of the all-greedy excess Σ(m − λ) made by the primes up to x^θ (T3b run at the same x). At x = 10^6 the measured column is filled in when the runs finish (θ = 0.9 from t1_x1000000.json).
+s(θ) = share of the all-greedy excess Σ(m − λ) made by the primes up to x^θ (T3b run at the same x). At x = 10^6 the measured values come from `t3.py e` (2 draws per θ).
 
 | θ | x | s(θ) | 1 − s(θ) | C*(θ) / C*(0) measured |
 |---|---|---|---|---|
@@ -31,10 +36,10 @@ s(θ) = share of the all-greedy excess Σ(m − λ) made by the primes up to x^�
 | 0.4 | 1,000,000 | 0.018 | 0.982 | not run |
 | 0.6 | 10,000 | 0.168 | 0.832 | 0.878 |
 | 0.6 | 100,000 | 0.115 | 0.885 | 0.922 |
-| 0.6 | 1,000,000 | 0.077 | 0.923 | running |
+| 0.6 | 1,000,000 | 0.077 | 0.923 | 0.949 |
 | 0.8 | 10,000 | 0.446 | 0.554 | 0.579 |
 | 0.8 | 100,000 | 0.368 | 0.632 | 0.670 |
-| 0.8 | 1,000,000 | 0.291 | 0.709 | running |
+| 0.8 | 1,000,000 | 0.291 | 0.709 | 0.741 |
 | 0.9 | 10,000 | 0.694 | 0.306 | 0.293 |
 | 0.9 | 100,000 | 0.631 | 0.369 | 0.375 |
 | 0.9 | 1,000,000 | 0.559 | 0.441 | running |

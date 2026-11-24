@@ -119,3 +119,16 @@ x=349: largest Q reached 10085, smallest Q missed by all seeds 10116
   x=397 Q=12020 seed=1 sweeps=80000: best k 0  (253 s)
   x=397 Q=12020 seed=4 sweeps=80000: best k 0  (253 s)
 old driver stopped after 116 logged runs at 15:27:17
+  x=397 Q=12094 seed=4 sweeps=80000: best k 1  (334 s)
+  x=397 Q=12094 seed=3 sweeps=80000: best k 1  (335 s)
+  x=397 Q=12094 seed=1 sweeps=80000: best k 1  (335 s)
+  x=397 Q=12094 seed=2 sweeps=80000: best k 0  (337 s)
+  x=397 Q=12131 seed=3 sweeps=80000: best k 1  (327 s)
+  x=397 Q=12131 seed=1 sweeps=80000: best k 1  (328 s)
+  x=397 Q=12131 seed=4 sweeps=80000: best k 1  (328 s)
+  x=397 Q=12131 seed=2 sweeps=80000: best k 1  (329 s)
+x=397: largest Q reached 12094, smallest Q missed by all seeds 12131
+  x=599 Q=19182 seed=1 sweeps=20000: best k 0  (132 s)
+  x=599 Q=20461 seed=1 sweeps=20000: best k 3  (133 s)
+  x=599 Q=21740 seed=1 sweeps=20000: best k 9  (135 s)
+  x=599 Q=23019 seed=1 sweeps=20000: best k 12  (136 s)

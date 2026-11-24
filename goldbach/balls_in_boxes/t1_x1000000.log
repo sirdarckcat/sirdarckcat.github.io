@@ -2,3 +2,4 @@ x=1000000 w=x/2 C=1.35: |S| 67157 (pred 67230); E 6.624e+07 exact 0 balls 1.159e
 x=1000000 w=x/2 C=2.0: |S| 97234 (pred 97151); E 1.609e+08 exact 0 balls 2.43e+08; 2nd 1.001; confl 4.008; good max 0.1457 at 0.35  [576s]
 x=1000000 w=x/2 C=4.0: |S| 186440 (pred 186228); E 7.058e+08 exact 0 balls 8.933e+08; 2nd 1.000; confl 3.998; good max 0.2025 at 0.5  [1132s]
 x=1000000 w=x/2 order=increasing: C* = 2.170 (per-draw 2.17..2.19); nothing-left fraction on the grid [1.0, 1.0, 0.0]  [2568s]
+x=1000000 w=x/2 order=decreasing: C* = 2.096 (per-draw 2.10..2.10); nothing-left fraction on the grid [1.0, 1.0, 0.0]  [4612s]
