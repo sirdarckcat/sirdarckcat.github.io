@@ -760,7 +760,7 @@ modulus strikes the smallest unstruck prime" gives the exact values:
 | r_n | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 | 83 | 89 | 97 | 101 | 103 | 107 |
 | D(n) | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 | 1,279 | 1,381 | 1,471 | 1,567 | 1,669 | 1,801 |
 | D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 |
-| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | 2 | 12 | |
+| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | | | |
 
 ("Optimal vectors": how many of the ∏ r class vectors reach D(n). A search of
 the OEIS for the first twelve values on 24 November 2026 returned no
@@ -772,7 +772,7 @@ the first fifteen come out the same from the Lean session's separate program
 bit sets and in parallel, and 1.8·10^10 there). D(16) to D(27) are from the
 uarch session's versions of the search (`desert_fast3.c`, `desert_fast4.c`,
 `desert_fast5.c` and their result files on branch `ccr-b8c25887-i6tn9f`,
-commits a81cc6f to 2cde0e9). The first of them keeps the search and the cut
+commits a81cc6f to 62effa6). The first of them keeps the search and the cut
 and changes the order: the moduli that can strike the branching prime are
 tried most-struck-primes-first, and the branching prime is the unstruck prime
 with the fewest moduli still able to strike it. That takes D(15) from
@@ -790,7 +790,11 @@ by another factor of 100 to 200 (the proof that nothing reaches beyond
 1,279 at n = 22 takes 2.1·10^7 nodes instead of 5.0·10^9), gives D(23) in 82
 seconds and D(24) in five minutes, and makes the count of optimal vectors
 cheap; a further cut (two free moduli whose fullest classes share a prime
-strike one prime fewer together) brought D(25) and D(26) within minutes. The search comes with checks that share little or no code with it:
+strike one prime fewer together) brought D(25) to D(27) within minutes. (An
+array overflow in the version used for n = 25 to 27 was found and fixed by
+that session on 24 November, commit 6caad7d; the three values were confirmed
+by the fixed program, with identical node counts for the proof runs at 25
+and 26, and the counts of optimal vectors for n ≥ 25 are being recomputed.) The search comes with checks that share little or no code with it:
 this session's `desert_fast.c` with nothing but the order of the children
 changed gives the same D(16) to D(20); a brute force over all vectors agrees
 for n ≤ 9, including the number of optimal vectors; a SAT solver (CaDiCaL)
