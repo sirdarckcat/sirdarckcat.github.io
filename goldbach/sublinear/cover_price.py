@@ -4,6 +4,7 @@
     python3 cover_price.py            the constant of the law at the sizes measured, and where complete covers end
     python3 cover_price.py ends big   the same with the ends up to x = 100,000 (ten minutes)
     python3 cover_price.py floor x Q  for Q beyond the end: the fewest rows a cover can leave (where the entropy runs out)
+    python3 cover_price.py loss x Q[:lng0] ...   the loss theta(x) - ln g0(x, Q) by the recursion at any targets, against measured ln g0 if given
 
 Count the class vectors that strike every odd prime below Q modulus by modulus, smallest first.  If V(s, A) is the
 logarithm of the number of ways the moduli from s on can finish when A rows are alive, then
@@ -104,8 +105,19 @@ if __name__ == "__main__":
         x, Q = int(sys.argv[2]), int(sys.argv[3]); piQ, crisis, best = floor(x, Q)
         print(f"x = {x}, Q = {Q}, {piQ:.0f} rows: the entropy of the recursion reaches zero at beta = {crisis[0]:.2f} with {crisis[1]:.0f} rows left; largest floor -ln Z/beta: {best:.0f}")
         sys.exit(0)
+    if len(sys.argv) > 3 and sys.argv[1] == "loss":
+        x = int(sys.argv[2]); mods, phis = setup(x); th_all = sum(math.log(s) for s in mods)
+        junk = th_all - sum(math.log(s - 1) for s in mods); first = -math.log(1 - phis[-1] * (1 - 1 / (mods[-1] - 1)))
+        print(f"x = {x}, {len(mods)} moduli, theta = {th_all:.1f}\nQ | loss by the recursion | by the first moment | ln g0 measured | loss measured | measured / recursion | measured / first moment")
+        for a in sys.argv[3:]:
+            Q = int(a.split(":")[0]); p, piQ, _ = start_price(mods, phis, Q); rec = p * piQ + junk; fm = first * piQ + junk
+            if ":" in a:
+                g = float(a.split(":")[1]); print(f"{Q} | {rec:.1f} | {fm:.1f} | {g:.2f} | {th_all - g:.1f} | {(th_all - g) / rec:.3f} | {(th_all - g) / fm:.2f}")
+            else: print(f"{Q} | {rec:.1f} | {fm:.1f}")
+        sys.exit(0)
+    # ln g0 measured; (2999, 100000) is the mean of two 150,000-sweep runs (the 20,000-sweep run first used gave 1342.5, not in equilibrium)
     measured = [(463, 10000, 171.78), (463, 14000, 61.69), (997, 15000, 640.1), (997, 25000, 435.6), (997, 38000, 153.6),
-                (2999, 50000, 2160.1), (2999, 100000, 1342.5), (9973, 100000, 8709.1), (9973, 300000, 6313.2)]
+                (2999, 50000, 2160.1), (2999, 100000, 1390.0), (9973, 100000, 8709.1), (9973, 300000, 6313.2)]
     print("x | Q | loss measured (theta - ln g0) | loss by the recursion | by the first moment (rows independent) | constant c' = loss ln^2 x/(pi(Q) ln Q): measured, recursion, first moment")
     for x, Q, S in measured:
         mods, phis = setup(x); th_all = sum(math.log(s) for s in mods)

@@ -19,10 +19,13 @@ it, both in "A floor under every cover" and the section after it:
 - A law. The number of class vectors on the odd primes up to x that strike
   every odd prime below Q is exp(θ(x) − c·Q/ln² x) with c = 1.00 ± 0.03,
   measured from 45 to 1,228 moduli and derived, constant included and
-  nothing fitted, from the Hardy–Littlewood count of prime pairs (within 1 to
-  5% at nine points, where the first-moment count is off by a factor 1.5 to
-  1.9); the same calculation predicts within 6% how few rows the best cover
-  leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
+  nothing fitted, from the Hardy–Littlewood count of prime pairs (within 6%
+  at 33 points from 30 to 1,228 moduli, where the first-moment count is off
+  by a factor 1.5 to 1.9; 24 of the points were measured by the Opus session
+  after the derivation was written down, and a prediction made for a long
+  run at 429 moduli, 1,545 against the 1,589 of the short run, came in at
+  1,541 and 1,542); the same calculation predicts within 2% how few rows the
+  best cover leaves at the campaign's targets. It gives D(n) = r·ln² r/c: the luck-free depth is known
   to a few percent at every size, and at 200 digits it ends near 16,000 on 89
   moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 37,000,
   the upper end by an exhaustive search of the uarch session.
@@ -1112,6 +1115,16 @@ moduli. The true end is near 16,000 (below); the bound is where the capacity
 cut, which ignores that the classes of large moduli overlap, runs out of
 strength.
 
+The same program gives certified floors at the campaign's target (commit
+b081d24 there): fix the classes of the first j moduli in every way and bound
+the rest by their fullest classes. Every class vector on the 89 moduli
+leaves at least 401 of the 15,496 odd primes below 170,000 unstruck (j = 6,
+3 seconds) and at least 644 (j = 8, 4.5 million nodes, three minutes); j = 10
+is running. These are theorems about every cover, where the 1,247 or 1,248
+of the next section is a measurement; the factor two between them is again
+the overlap of the classes of the large moduli, which the capacity cut does
+not see.
+
 **A floor under every cover** (`cover_floor.c`, `cover_floor.py`,
 `cover_floor_q170000.txt`; measurements, not proofs). The searches say what
 can be found; this says what exists. Fix the moduli and a target Q, let k(a)
@@ -1197,23 +1210,42 @@ comes within 80 rows of the first of these figures. Better covers are not a
 way to 10%: on this side the search has what there is.
 
 **How many complete covers there are: a law, and where they end** (the same
-tools; runs here and on the Lean session's machine, whose raw output is in
-`goldbach/lean/scripts/cover_floor_runs/` on its branch at 86f11bd and
-5075080). Let g0(Q) be the number of class vectors on the odd primes up to x
+tools; runs here, on the Lean session's machine, whose raw output is in
+`goldbach/lean/scripts/cover_floor_runs/` on its branch at 86f11bd, 5075080
+and 972bb6e, and by the Opus session, `goldbach/tempering_covers/floor/` on
+`ccr-c6e00296-3g7fp9` at 1028072). Let g0(Q) be the number of class vectors on the odd primes up to x
 that strike every odd prime below Q, so that D is the largest Q with
 g0(Q) > 0 and g0(0) = ∏ r = e^θ(x). Measured as above (ln Z at the cold end
-and the share of the samples there that leave no row), at eight sizes:
+and the share of the samples there that leave no row), at thirteen sizes,
+with the exact count at nine moduli (every vector enumerated by the Lean
+session, `scripts/cover_count/g0_exact.c` at 4edfa27) for comparison:
 
 | x | moduli | θ(x) | targets Q | (θ − ln g0)·ln² x / Q | end of the fitted line | best cover known |
 |---|---|---|---|---|---|---|
+| 29 | 9 | 21.9 | every Q from 59 to 181 (exact) | 1.17 to 1.45 | | 181 (exact) |
 | 73 | 20 | 65.2 | 700 to 1,020 | 1.09 to 1.15 | 1,082 | 1,051 (exact) |
-| 127 | 30 | 111.2 | 500 to 2,000 | 1.09 to 1.22 | 2,297 | 2,311 (tempering; a wall) |
+| 127 | 30 | 111.2 | 500 to 2,149 | 1.09 to 1.22 | 2,297 | 2,311 (tempering; a wall) |
+| 149 | 34 | 131.0 | 1,772 to 2,746 | 1.09 to 1.13 | 2,947 | 2,953 (a wall) |
 | 199 | 45 | 187.9 | 1,000 to 4,000 | 1.02 to 1.09 | 5,099 | 4,909 |
+| 251 | 53 | 231.4 | 3,871 to 5,999 | 1.04 to 1.07 | 6,656 | 6,451 (a wall) |
 | 293 | 61 | 276.3 | 1,500 to 7,000 | 1.02 to 1.13 | 8,687 | 8,311 |
+| 349 | 69 | 322.6 | 6,095 to 9,448 | 1.03 to 1.07 | 10,406 | 10,159 |
+| 397 | 77 | 370.0 | 7,298 to 11,312 | 1.02 to 1.06 | 12,460 | 12,163 |
 | 463 | 89 | 442.9 | 4,000 to 14,000 | 1.006 to 1.05 | 16,300 (measured end: about 16,000) | 15,907 |
+| 599 | 108 | 562.3 | 12,640 to 19,592 | 1.01 to 1.06 | 21,852 | 21,067 |
 | 997 | 167 | 955.6 | 15,000 to 38,000 | 0.992 to 1.010 | 45,400 | 40,111 |
-| 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.989 to 1.035 | 185,000 | 135,511 (greedy) |
+| 2,999 | 429 | 2,931.7 | 20,000 to 100,000 | 0.988 to 1.035 | 191,000 | 135,511 (greedy) |
 | 9,973 | 1,228 | 9,895.3 | 100,000 and 300,000 | 1.006 and 1.012 | 827,000 | 614,101 (greedy) |
+
+(The rows at 149, 251, 349, 397 and 599 and the targets above 2,000 at 127
+are the Opus session's: four targets each, at 60, 75, 85 and 93% of the reach
+of its tempering, 400,000 sweeps, two seeds; four of its runs re-read here
+with `cover_floor.py` give its numbers. At 2,999 the target 100,000 is the
+mean of two runs of 150,000 sweeps on the Lean session's machine, 1,390.4 and
+1,389.7. The sampler itself is checked against the exact count: on the nine
+moduli it gives ln g0 within 0.03 of the enumeration at Q = 59, 113, 149, 167
+and 181, and within 0.09 along the reach of its complete covers, 42 values
+compared.)
 
 So the logarithm of the number of complete covers is a straight line in the
 target, from the full count at Q = 0 down to the end:
@@ -1226,12 +1258,13 @@ within 5 nats of one line (two seeds agreeing to 0.1 from 6,000 on; slope
 1.013/ln² x, value at Q = 0 within 3.5 of θ); at x = 997 seven targets
 from 15,000 to 38,000 lie within 7.5 of the line with c = 1 exactly; at the
 smaller sizes the points step around it, as D(n) itself does, and the
-fitted c is 1.02 to 1.13 (`cover_floor_law.txt` has every point; raw runs
+fitted c is 1.02 to 1.13, rising to 1.17 to 1.45 in the exact count at nine
+moduli (`cover_floor_law.txt` has every point; raw runs
 made here are in `cover_floor_runs/count/`). Three things follow.
 
 - D(n) = θ(r_n)·ln² r_n/c, that is r·ln² r with a constant near 1 at these
   sizes: 1,082 against the exact 1,051 at n = 20,
-  and 16,300, 45,400 and 185,000 for 89, 167 and 429 moduli (the true end
+  and 16,300, 45,400 and 191,000 for 89, 167 and 429 moduli (the true end
   lies a few percent before the end of the line, see below).
 - Tempering's 15,907 on the campaign's 89 moduli is at the end or within 1%
   of it (below), and the uarch session's exhaustive neighbourhood search
@@ -1268,6 +1301,21 @@ leave one row. At 167 moduli the line holds to 38,000 (1.010 and 1.006 at
 tempered record, runs from random vectors still count e^120 and e^77
 covers, which are underestimates, so the end there is several thousand
 beyond the record.
+
+The Opus session measured the same stretch at six more sizes, 30 to 108
+moduli (`floor_report.md` on its branch). The curve bends down before the
+end at every one of them: in units of 1/ln² x the slope is 1.02 to 1.12 from
+Q = 0 to the target at 60% of the reach, and 1.22 to 1.64 over the last
+interval, from 85 to 93%. Runs started from the best tempered cover agree
+with the runs from random vectors at the 85% targets where it was tried (397
+moduli: 69.4 against 69.4 and 69.2; 599 moduli: 111.5 against 111.8 and
+111.6) and at the 93% targets up to 349 moduli; at the 93% targets of 397 and
+599 moduli the run from the cover counts more (36.3 against 34.4 and 35.2;
+61.4 against 55.3 and 55.9), as it does at 89 moduli. The straight line
+through the three targets below the bend ends between 0.5% short of the
+tempered reach and 6% beyond it, the line through the last interval within
+4% of it. So from 30 to 108 moduli, as at 89, tempering reaches the end of
+the complete covers or comes within a few percent of it.
 
 *Why a straight line with slope 1/ln² x* (a heuristic that reproduces the
 form and, within about 15%, the constant; not a proof). Count the complete
@@ -1350,12 +1398,28 @@ gives the same answer within 1%):
 | x | 463 | 463 | 997 | 997 | 997 | 2,999 | 2,999 | 9,973 | 9,973 |
 |---|---|---|---|---|---|---|---|---|---|
 | Q | 10,000 | 14,000 | 15,000 | 25,000 | 38,000 | 50,000 | 100,000 | 100,000 | 300,000 |
-| θ − ln g0 measured | 271 | 381 | 316 | 520 | 802 | 772 | 1,589 | 1,186 | 3,582 |
+| θ − ln g0 measured | 271 | 381 | 316 | 520 | 802 | 772 | 1,542 | 1,186 | 3,582 |
 | by the recursion | 279 | 388 | 328 | 540 | 812 | 791 | 1,545 | 1,191 | 3,414 |
 | by the first moment | 158 | 212 | 200 | 314 | 456 | 499 | 932 | 806 | 2,181 |
 
-Within 1 to 5% at every point, where the first-moment count is off by a
-factor 1.5 to 1.9. The end of complete covers by the same recursion:
+Within 5% at every point, where the first-moment count is off by a factor
+1.5 to 1.9 (the entry at 2,999 moduli and Q = 100,000 is from the long runs
+described below; the last column is a short run that was not in
+equilibrium). The Opus session's 24 points, measured after this was written
+down and with no part in it (`cover_price.py loss`, listed in
+`cover_price.txt`):
+
+| x | 127 | 149 | 251 | 349 | 397 | 599 |
+|---|---|---|---|---|---|---|
+| moduli | 30 | 34 | 53 | 69 | 77 | 108 |
+| measured loss / recursion at 60, 75, 85, 93% of the reach | 1.05, 1.04, 1.05, 1.04 | 1.04, 1.01, 1.00, 1.04 | 0.98, 0.98, 0.98, 1.00 | 0.96, 0.97, 0.97, 1.01 | 0.96, 0.99, 0.98, 1.01 | 0.97, 0.97, 0.99, 1.02 |
+| measured loss / first moment | 1.76 to 1.93 | 1.77 to 1.93 | 1.71 to 1.86 | 1.69 to 1.86 | 1.68 to 1.85 | 1.69 to 1.85 |
+
+Within 4% from 53 moduli on and within 5.4% at 30 and 34, at every target.
+The recursion is a smooth calculation and does not know about the bend
+before the end, which shows as the last ratio of each column being the
+largest, by 2 to 3%, from 53 moduli on. The end of complete covers by the
+same recursion:
 
 | x | 73 | 107 | 109 | 127 | 149 | 199 | 251 | 293 | 349 | 397 | 463 | 599 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1393,15 +1457,18 @@ give 0.86 and 0.88), and for the moduli in the middle the full sum may keep
 a correction of order one. So the limit of D(n)/(r·ln² r), if there is one,
 lies between the 1.1 seen at the largest sizes and 1.349.
 
-A caution on the two largest sizes in the tables. The runs at 2,999 and
-9,973 moduli are short (20,000 and 12,000 sweeps), and the one at
-Q = 300,000 was not in equilibrium: its mean row counts at the middle
-temperatures were still falling by 1 to 2% between the first and the last
-quarter, which makes the measured loss too large. The recursion says by how
-much: a long run should give 3,330 to 3,414 there, not 3,582 (and about
-1,545 instead of 1,589 at 2,999 moduli and Q = 100,000). That is a
-prediction, made before the long runs (which the Lean session's machine is
-making) are in.
+A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
+were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
+equilibrium: its mean row counts at the middle temperatures were still
+falling by 1 to 2% between the first and the last quarter, which makes the
+measured loss too large. The recursion said by how much, and the figures
+were written here before any long run existed: a long run should give 3,330
+to 3,414 at 9,973 moduli and Q = 300,000, not 3,582, and about 1,545 instead
+of 1,589 at 2,999 moduli and Q = 100,000. The Lean session's machine then ran
+the second of these twice, 150,000 sweeps each from random vectors (commit
+972bb6e there): 1,541.3 and 1,542.0. The long runs landed 3 to 4 nats from
+the predicted figure and 47 from the short run. The two long runs at 9,973
+moduli started on 24 November at 18:25 UTC and are not in.
 
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
@@ -1468,6 +1535,37 @@ to x′ cover the odd primes below Q, stated for the ten certified covers
 (for x ≥ 997 the loss at Q = 15,907 is at most θ(463) = 442.9, where the law
 says 334). And the constant K is 1.5164516079595025850511213122…, enclosed
 to 28 digits by exact rational arithmetic (`scripts/cover_count/` there).
+
+Three more pieces are formal since (commit e992eb3 there, standard axioms).
+The covering theorem is stated in depth form
+(`eventually_exists_classes_of_mul_lt_one` in `CoverBound.lean`): for every
+c < e^γ/(2·C₂) = 1.349 and all large y, some classes modulo the odd primes up
+to y strike every odd prime below c·y·ln y. So the count is positive there
+(`eventually_g0_pos`), and with the monotone bound it is bounded from below
+on every larger set of moduli (`eventually_prod_le_g0`, and with c = 1.2
+explicit): for all large y and every x ≥ y,
+
+    ln g0(x, c·y·ln y) ≥ θ(x) − θ(y),
+
+that is, in the range Q ≤ 1.349·y·ln y the loss is at most θ(y), about
+Q/(c·ln Q). The law says Q/ln² x, which is smaller; the theorem is the only
+bound on the loss that holds for all large sizes. And the first step of the
+derivation is exact (`CoverPairs.lean`): for two rows q, q + d in one class
+of a modulus s, the weight of the pair against independence over the smaller
+moduli, times the Hardy–Littlewood density of the pair, summed over a full
+period of the differences d = 6·s·j, has mean exactly 6·s/(s − 1), for every
+truncation of the two products (`sum_pair_weight`, from the two local
+identities `local_cancellation_below` and `local_cancellation_above`; the
+proof does not use that the moduli lie below s). So at leading order the
+alive rows fall into the classes of s as independent rows would, with
+nothing assumed. What the derivation uses beyond that, the second-order term
+of the average of singular series, rests on the Hardy–Littlewood conjecture
+and is not formal. Last, the count itself is known exactly at nine moduli:
+every one of the 3,234,846,615 class vectors enumerated
+(`scripts/cover_count/g0_exact.c`, commit 4edfa27), which reproduces D(2) to
+D(9) and the numbers of vectors at the depth, with g0(7, 19) = 1 and
+g0(7, 20) = 0 in the kernel.
+
 The law itself and its derivation are a measurement and a heuristic; an
 upper bound for g0 of this shape would bound D(n) by a multiple of r·ln² r
 and prove Goldbach's conjecture for large N, by the implication above.

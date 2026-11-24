@@ -71,3 +71,20 @@ x = 997: theta = 955.6, 1/ln^2 x = 0.020975, theta ln^2 x = 45557
     Q =   39000: ln g0 =    120.2 (2 runs, spread 2.2, share of complete samples >= 0.76); line    137.5; (theta - ln g0) ln^2 x / Q = 1.021
     Q =   40111: ln g0 =     77.1 (2 runs, spread 5.6, share of complete samples >= 0.27); line    114.2; (theta - ln g0) ln^2 x / Q = 1.044; slope from the previous target 1.849
     least squares: slope 1.849 / ln^2 x, value at Q = 0 1632.5 (theta 955.6), end of the line 42099
+
+## x = 2,999 with the long runs at Q = 100,000 (two runs of 150,000 sweeps from random vectors on the Lean session's machine, its branch at 972bb6e:
+## goldbach/lean/scripts/cover_floor_runs/x2999_Q100000_s1.txt and _s2.txt; they replace the 20,000-sweep run above, which was not in equilibrium)
+x = 2999: theta = 2931.7, 1/ln^2 x = 0.015601, theta ln^2 x = 187910
+    Q =   20000: ln g0 =   2608.6 (1 run, spread 0.0, share of complete samples >= 0.99); line   2619.6; (theta - ln g0) ln^2 x / Q = 1.035
+    Q =   50000: ln g0 =   2160.1 (1 run, spread 0.0, share of complete samples >= 0.99); line   2151.6; (theta - ln g0) ln^2 x / Q = 0.989; slope from the previous target 0.958
+    Q =  100000: ln g0 =   1390.0 (2 runs, spread 0.7, share of complete samples >= 0.97); line   1371.5; (theta - ln g0) ln^2 x / Q = 0.988; slope from the previous target 0.987
+    least squares: slope 0.977 / ln^2 x, value at Q = 0 2917.0 (theta 2931.7), end of the line 191292
+
+## the sampler against the exact count at nine moduli (odd primes up to 29; exact ln g0 from the Lean session's enumeration of all 3,234,846,615 vectors,
+## scripts/cover_count/g0_exact_n9.txt at 4edfa27; runs here: cover_floor odd<=29, 400,000 sweeps, COVER_FLOOR_REACH=200)
+## Q | ln g0 sampled at the run's own target | exact
+   59 | 15.21 | 15.213108
+   113 | 8.36 | 8.356555
+   149 | 6.08 | 6.077642
+   167 | 2.11 | 2.079442
+   181 | 0.70 | 0.693147
