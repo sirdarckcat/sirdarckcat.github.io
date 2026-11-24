@@ -52,7 +52,7 @@ it, both in "A floor under every cover" and the section after it:
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
-  1,381, 1,471, 1,567, 1,669, 1,801 for n = 1 to 27 (`desert.c`; two programs to n = 15, the uarch
+  1,381, 1,471, 1,567, 1,669, 1,801, 1,933 for n = 1 to 28 (`desert.c`; two programs to n = 15, the uarch
   session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
   like r·ln² r, by the law above.
   The Lean session proved that it also bounds the least summand from above
@@ -776,12 +776,12 @@ modulus strikes the smallest unstruck prime" gives the exact values:
 | D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 |
 | optimal vectors | | 2 | 1 | 2 | 2 | 6 | 6 | 1 | 2 | 1 | 17 | 9 |
 
-| n | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 | 83 | 89 | 97 | 101 | 103 | 107 |
-| D(n) | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 | 1,279 | 1,381 | 1,471 | 1,567 | 1,669 | 1,801 |
-| D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 |
-| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | | | |
+| n | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 | 83 | 89 | 97 | 101 | 103 | 107 | 109 |
+| D(n) | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 | 1,279 | 1,381 | 1,471 | 1,567 | 1,669 | 1,801 | 1,933 |
+| D(n) / (r_n ln r_n) | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 | 3.49 | 3.46 | 3.31 | 3.36 | 3.50 | 3.60 | 3.78 |
+| optimal vectors | 2 | 1 | 3 | 2 | 2 | 4 | 2 | 1 | 2 | 2 | 1 | 1 | | | | |
 
 ("Optimal vectors": how many of the ∏ r class vectors reach D(n). A search of
 the OEIS for the first twelve values on 24 November 2026 returned no
@@ -790,17 +790,17 @@ sequence.)
 The values to n = 7 are also the result of a brute force over all vectors;
 the first fifteen come out the same from the Lean session's separate program
 (D(15) = 613 took 1.6·10^10 nodes here, `desert_fast.c`, the same search on
-bit sets and in parallel, and 1.8·10^10 there). D(16) to D(27) are from the
+bit sets and in parallel, and 1.8·10^10 there). D(16) to D(28) are from the
 uarch session's versions of the search (`desert_fast3.c`, `desert_fast4.c`,
 `desert_fast5.c` and their result files on branch `ccr-b8c25887-i6tn9f`,
-commits a81cc6f to 62effa6). The first of them keeps the search and the cut
+commits a81cc6f to 3539913). The first of them keeps the search and the cut
 and changes the order: the moduli that can strike the branching prime are
 tried most-struck-primes-first, and the branching prime is the unstruck prime
 with the fewest moduli still able to strike it. That takes D(15) from
 1.6·10^10 nodes to 1.1·10^7 and D(18) to 2.9·10^8 nodes in half a minute;
 it reproduces D(1) to D(15), gives the same D(16) to D(20) for two orders of
 the children (D(20) in 4.9·10^9 nodes), and its vectors were rechecked here
-(every odd prime below each of the values from 709 to 1,801 struck, the
+(every odd prime below each of the values from 709 to 1,933 struck, the
 value itself not). The latest version adds one lemma to the cut: if the
 capacity of the free moduli exceeds the primes still unstruck by a margin,
 then in any vector below the node that still succeeds every free modulus
@@ -836,7 +836,7 @@ session proved three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 1,801 against 11,879 at n = 27. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
+  499 against 2,809 at n = 14, 1,933 against 12,767 at n = 28. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -1090,6 +1090,26 @@ implication above says that D(n) < (next prime)² − 2 for all n is enough for
 Goldbach's conjecture. So the proven window is r·ln r ≪ D(n) ≪ r^(4 + ε),
 and the computed values (0.7 to 0.9 times r·ln² r for every n from 8 to 167
 moduli) sit near its lower end.
+
+At the campaign's own size there is now a certified bound from above as
+well. The uarch session's `cover_ub.c` (branch `ccr-b8c25887-i6tn9f`, commit
+3539913; written for this question and sharing no code with the searches
+for D) exhausts the tree of class vectors on the 89 moduli 3 to 463 with the
+capacity cut: fix the classes of the smallest moduli in turn, and stop
+wherever the primes still unstruck outnumber the sum of the fullest classes
+of all the free moduli. It proves that no vector strikes every odd prime
+below Y for Y = 170,000 (6,240 nodes), 80,000, 60,000, 50,000, 45,000,
+40,000 and 37,000 (6.9·10^8 nodes, twenty minutes). So
+
+    15,907 ≤ D(89) < 37,000,
+
+both ends certified: for every even N whatever, some odd prime q below
+37,000 has N − q free of prime factors up to 463. The program is validated
+on the first n odd primes for n = 2 to 27 (it finds a cover at D(n) and
+proves there is none at the next prime) and against brute force on 6 and 7
+moduli. The true end is near 16,000 (below); the bound is where the capacity
+cut, which ignores that the classes of large moduli overlap, runs out of
+strength.
 
 **A floor under every cover** (`cover_floor.c`, `cover_floor.py`,
 `cover_floor_q170000.txt`; measurements, not proofs). The searches say what
