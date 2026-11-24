@@ -250,7 +250,12 @@ C* (Report B), by the order of the large primes:
 - The trends of the smaller x continue. With w = x^0.9, C* = 1.39, 1.93, 2.47, 3.14 and now 4.47, so C*/ln x = 0.32. With
   w = x/2, C* = 1.12, 1.40, 1.56, 1.78 and now 2.17. Increasing order beats decreasing by 3.5% and 6.9%.
 - The fraction of good large primes at C = 1.35 is 0.09 to 0.11, as before, and the conflicts stay at 4.
-- E / balls grows slowly with x at fixed C: 0.57 at x = 10⁶ (w = x/2, C = 1.35), against 0.38 to 0.87 over the smaller runs.
+- E / balls behaves differently at each C.
+  - At C = 1.35 it keeps its slow rise. With w = x/2 it is 0.50, 0.53, 0.55, 0.57 at x = 3·10³ to 10⁵ and 0.57 at 10⁶.
+    With w = x^0.9 it is 0.52 to 0.63, now 0.65.
+  - At C = 2 it is flat: 0.665 → 0.662 and 0.726 → 0.727.
+  - At C = 4 it is lower than at 10⁵: 0.832 → 0.790 and 0.872 → 0.831. That is not noise, since E summed over 78,000 large
+    primes varies little between draws (E² ratio 1.000). I have no explanation for the drop.
 - The θ = 0.9 hybrid of T3 measured C* = 4.477 at x = 10⁶ independently, with 2 other draws and a bracketed bisection. That
   agrees with 4.471 here.
 
