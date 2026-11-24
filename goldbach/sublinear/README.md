@@ -1023,7 +1023,9 @@ is of the order of x·ln² x, which is of the order of ln x per prime.
   0.58 and 0.29 of the all-greedy one for θ = 0.2, 0.4, 0.6, 0.8 and 0.9 at
   x = 10^4, and 1.00, 0.99, 0.92, 0.67 and 0.38 at 10^5, within 0.05 of one
   minus the share of the excess made by the primes up to x^θ; that share
-  falls with x at every θ. So a proof may leave the classes of the primes up
+  falls with x at every θ. (The rule was then tested as a prediction at
+  x = 10^6: it gives 0.92, 0.71 and 0.44 for θ = 0.6, 0.8 and 0.9, and the
+  runs gave 0.95, 0.74 and 0.45; commit 8c2a7a8.) So a proof may leave the classes of the primes up
   to x^0.6 to chance, where the averages are computable, at the cost of a
   tenth of the reach, and has to control the fullest classes of the primes
   between x^0.6 and x.
