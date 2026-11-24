@@ -1,4 +1,4 @@
-"""check desert_fast / desert_fast2 output lines: the vector's least unstruck odd prime equals the printed D, and D equals the published value (n <= 15)
+"""check desert_fast / desert_fast2 output lines: the vector's least unstruck odd prime equals the printed D, and D equals the published value (n <= 15)"""
 import sys, re
 KNOWN = {1: 5, 2: 7, 3: 19, 4: 31, 5: 43, 6: 67, 7: 103, 8: 163, 9: 181, 10: 223, 11: 271, 12: 331, 13: 419, 14: 499, 15: 613}
 def primes(lim):
