@@ -441,11 +441,33 @@ better family a finite list: 92,160 frames on the six smallest moduli.
   temperatures or adjacent to family B) end between 1,317.5 and 1,331.7,
   where family B's frame gives 1,310.4 to 1,313.6: frames at family B's
   level are rare.
-- The scan: the contractor session is scoring the frames ranked 1 to 1,200
-  (from 20:40 UTC on 24 November); every frame scoring 1,233.5 or less gets
-  20,000 sweeps inside it, every one that then reaches 1,312.5 or less gets
-  300,000, and anything that ends below 1,308.67 is a candidate. Result to
-  follow here.
+- The scan (the contractor session, 24 November 20:40 to 22:12 UTC, four
+  cores). Step 1, the score of every frame ranked 1 to 1,200 by rows alive:
+  family B has the lowest (1,230.50), 11:8 13:5 17:4 the second (1,230.88),
+  and ten frames are within 3 of family B. Step 2, 20,000 sweeps inside each
+  of the ten with three seeds: only family B's frame comes below 1,312.5
+  (1,311.0), and the values are 5 to 8 above a frame's bottom, so this step
+  filters nothing safely. Step 3, 300,000 sweeps inside each. With the
+  frames searched here, the bottoms of thirteen families, in weighted rows
+  (rows below 170,000 in brackets), all with 3:2 5:3 7:5:
+
+  | 11: 13: 17: | 6 5 4 (B) | 8 5 4 | 8 4 4 | 7 8 5 | 10 2 11 | 4 6 4 | 7 5 4 | 8 9 4 | 7 5 5 | 8 5 6 | 7 2 4 | 10 5 4 | 10 1 11 |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | bottom | 1,308.67 (1,245) | 1,309.94 (1,254) | 1,310.48 (1,262) | 1,313.20 (1,259) | 1,313.45 (1,258) | 1,314.33 (1,262) | 1,314.84 (1,262) | 1,315.28 (1,261) | 1,315.45 (1,270) | 1,315.83 (1,261) | 1,316.38 (1,258) | 1,317.42 (1,266) | 1,318.19 (1,268) |
+
+  Nothing beats family B. The frame behind the 1,309.36 of the unrestricted
+  run was not identified; it is not one of the thirteen. The score is a
+  coarse guide and no more: 11:8 13:4 17:4, third in the table, is not among
+  the thirty best scores. The contractor session's random-start search of the
+  same afternoon agrees: of 25 runs evaluated, six ended in family B and the
+  other nineteen at 1,310.14 weighted rows or more.
+
+So family B stands, now with reasons instead of luck: it has the best bottom
+of every family that the scan, the unrestricted runs and 31 random starts
+point to, by 1.3 weighted rows over the next one, and the other families
+cannot add to the supply either (a family whose bottom is 1.3 rows higher
+has about a hundredth of family B's covers at any given level). What is not
+excluded is a family that none of these routes reaches.
 
 **What each design level buys** (`brainstorm/design_menu.py`,
 `design_menu.txt`). The same model gives, for the best cover known at each
