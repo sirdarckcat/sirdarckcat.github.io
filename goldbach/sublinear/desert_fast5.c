@@ -39,6 +39,9 @@
 // ("not attained"): with known_value = the next prime after D that is the optimality proof.  "count": the number of optimal vectors (known = D(n)).
 // Options (all on by default; -DX=0 turns one off for an A/B check): LOOK, ARGM, MATCH, QSKIP, EOPT, FORCE, MBR (MBRPOL), MRV, CORDER (2: by
 // struck primes, as desert_fast4).
+// Fix (24 Nov, 16:40Z): the modulus-branching children were listed in ord[MAXN] (32 entries); a modulus with more than 32 qualifying classes
+// overflowed it into the frame's other arrays.  ord is now MAXR long, and the run prints how many modulus branchings had more than 32
+// classes ("over 32 classes"): a run of the old program is the same search as the fixed one exactly when that count is 0.
 // Needs AVX2.  Moduli must be below 128 (n <= 30); MAXN 32; NP 512 primes (D < 3,671).
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,7 +91,7 @@ static int count_mode, target, found;                      /* count_mode: best f
 #ifndef CORDER
 #define CORDER 2
 #endif
-typedef struct { int cls[MAXN]; unsigned char used[MAXN]; unsigned char forb[MAXN][HR]; long nodes, rebuilds, zcuts, nopt, nabove, skips, forced, mbr; int nfree, freem[MAXN];
+typedef struct { int cls[MAXN]; unsigned char used[MAXN]; unsigned char forb[MAXN][HR]; long nodes, rebuilds, zcuts, nopt, nabove, skips, forced, mbr, wide; int nfree, freem[MAXN];
                  uint64_t F[MAXN][W]; } st_t;   /* freem: the unassigned moduli, descending; F[m]: the primes in the forbidden classes of m */
 static inline void forb_inc(st_t *s, int m, int c) { if (s->forb[m][c]++ == 0) for (int w = 0; w < W; w++) s->F[m][w] |= mask[m][c][w]; }
 static inline void forb_dec(st_t *s, int m, int c) { if (--s->forb[m][c] == 0) for (int w = 0; w < W; w++) s->F[m][w] &= ~mask[m][c][w]; }
@@ -297,7 +300,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
     }
     hist_t C;
     int tried[MAXN], nt = 0;
-    int ord[MAXN], no = 0;
+    int ord[MAXR], no = 0;                                             /* MAXR: a modulus branching has up to r children (not MAXN) */
     int mcls[MAXR], nmc = 0;
     if (forced_m >= 0) { s->forced++; no = 1; ord[0] = forced_m; }
     else if (mbr_m >= 0) {
@@ -306,6 +309,7 @@ static void dfs(st_t *s, const uint64_t *st, int left, hist_t *H) {
             const int c = 32 * q + __builtin_ctz(b), v = H->h[mbr_m][c];
             int j = nmc++; while (j > 0 && H->h[mbr_m][mcls[j - 1]] < v) { mcls[j] = mcls[j - 1]; j--; } mcls[j] = c;
         }
+        if (nmc > MAXN) s->wide++;                                      /* (desert_fast5 before this fix overflowed ord[MAXN] here) */
         no = nmc; for (int j = 0; j < nmc; j++) ord[j] = mbr_m;
     } else {                                                            /* prime branching: the moduli striking br, in the child order */
 #if CORDER == 1
@@ -474,18 +478,18 @@ int main(int argc, char **argv) {
     if (split < 1) split = 1;
     if (split > n) split = n;
     { st_t *s = calloc(1, sizeof(st_t)); uint64_t st[W] = {0}; prefix_t cur = {0}; enum_prefixes(s, st, n, split, &cur); free(s); }
-    long total = 0, rebuilds = 0, zcuts = 0, nopt = 0, nabove = 0, skips = 0, forced = 0, mbr = 0; double t0 = omp_get_wtime();
-    #pragma omp parallel for schedule(dynamic, 1) reduction(+:total, rebuilds, zcuts, nopt, nabove, skips, forced, mbr)
+    long total = 0, rebuilds = 0, zcuts = 0, nopt = 0, nabove = 0, skips = 0, forced = 0, mbr = 0, wide = 0; double t0 = omp_get_wtime();
+    #pragma omp parallel for schedule(dynamic, 1) reduction(+:total, rebuilds, zcuts, nopt, nabove, skips, forced, mbr, wide)
     for (int t = 0; t < npre; t++) {
         st_t *s = calloc(1, sizeof(st_t)); uint64_t st[W];
         replay(s, &pre[t], st);
         s->nfree = 0; for (int m = nmod - 1; m >= 0; m--) if (!s->used[m]) s->freem[s->nfree++] = m;
         hist_t *H = aligned_alloc(64, sizeof(hist_t)); H->bi = -2;
         dfs(s, st, n - pre[t].len, H);
-        total += s->nodes; rebuilds += s->rebuilds; zcuts += s->zcuts; nopt += s->nopt; nabove += s->nabove; skips += s->skips; forced += s->forced; mbr += s->mbr; free(H); free(s);
+        total += s->nodes; rebuilds += s->rebuilds; zcuts += s->zcuts; nopt += s->nopt; nabove += s->nabove; skips += s->skips; forced += s->forced; mbr += s->mbr; wide += s->wide; free(H); free(s);
     }
     char stats[200];
-    snprintf(stats, sizeof stats, "dead=%ld skipped=%ld forced=%ld modulus-branchings=%ld rebuilds=%ld", zcuts, skips, forced, mbr, rebuilds);
+    snprintf(stats, sizeof stats, "dead=%ld skipped=%ld forced=%ld modulus-branchings=%ld (over %d classes: %ld) rebuilds=%ld", zcuts, skips, forced, mbr, MAXN, wide, rebuilds);
     const double secs = omp_get_wtime() - t0;
     if (count_mode) {
         printf("n=%d r=%d COUNT D=%d optimal vectors=%ld above D=%ld nodes=%ld (below the %d split prefixes) %s seconds=%.1f%s vector:", n, mod_[n - 1], target, nopt, nabove, total, npre,
