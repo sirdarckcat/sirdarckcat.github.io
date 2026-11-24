@@ -1,0 +1,33 @@
+# cover_floor on the weighted rows of the campaign (family_search/weights_8.9days.txt of ../fscan/cover), the 89 moduli 3..461 and 491, 111 temperatures, 1,000,000 sweeps
+# from random vectors and from the best cover of family B (1,308.67 weighted rows). 24 November 2026. Raw runs: cover_floor_runs/w491_random_start.txt.gz, w491_familyB_start.txt.gz
+beta | <k> random start: whole run, last quarter | <k> best-cover start: whole, last quarter | gap (last quarters) | S cold | floor from the best-cover start | floor from the random start | fwd/bwd mismatch cold, hot
+0.20 | 1810.4 1810.4 | 1810.3 1810.3 | +0.0 | 430.5 | -342.1 | -342.0 | 0.03 0.01
+0.40 | 1709.3 1709.0 | 1709.4 1709.3 | -0.4 | 400.4 | 708.4 | 708.4 | 0.03 0.02
+0.59 | 1622.2 1622.2 | 1622.3 1622.1 | +0.2 | 357.4 | 1016.6 | 1016.5 | 0.04 0.02
+0.83 | 1523.1 1523.5 | 1523.1 1522.9 | +0.6 | 287.3 | 1177.0 | 1176.9 | 0.05 0.04
+0.95 | 1482.2 1481.7 | 1481.8 1481.2 | +0.5 | 250.6 | 1218.0 | 1218.0 | 0.05 0.04
+1.07 | 1447.2 1445.9 | 1446.1 1445.7 | +0.2 | 214.6 | 1245.5 | 1245.6 | 0.06 0.05
+1.19 | 1416.8 1414.8 | 1414.7 1415.3 | -0.6 | 179.1 | 1264.1 | 1264.4 | 0.06 0.05
+1.31 | 1393.0 1391.5 | 1387.4 1388.5 | +3.0 | 145.1 | 1276.6 | 1277.2 | 0.06 0.05
+1.45 | 1373.1 1372.1 | 1362.6 1362.6 | +9.5 | 111.1 | 1286.1 | 1287.3 | 0.07 0.06
+1.65 | 1354.3 1353.7 | 1343.1 1343.1 | +10.5 | 81.0 | 1294.0 | 1296.5 | 0.08 0.06
+2.05 | 1333.5 1332.4 | 1325.7 1325.9 | +6.5 | 49.3 | 1301.6 | 1305.5 | 0.08 0.07
+2.45 | 1324.3 1323.5 | 1318.2 1318.3 | +5.1 | 32.6 | 1304.9 | 1309.2 | 0.09 0.09
+3.50 | 1317.1 1316.4 | 1311.9 1311.9 | +4.5 | 14.9 | 1307.7 | 1312.4 | 0.09 0.11
+5.00 | 1312.0 1311.3 | 1309.6 1309.5 | +1.7 | 5.3 | 1308.6 | 1313.0 | 0.09 0.25
+
+# covers at the bottom, from the run started in family B (weighted rows in quarter-row bins)
+# cold_w491.txt: lowest weighted energy seen 1308.67
+bin (quarter rows) | mean energy in the bin | ln(number of covers in the bin) | samples | from beta
+1308.50 | 1308.67 | -0.52 | 234171 | 5.00   cumulative ln count -0.52
+1309.00 | 1309.19 | 0.13 | 34158 | 5.00   cumulative ln count 0.55
+1309.25 | 1309.41 | 2.08 | 77417 | 5.00   cumulative ln count 2.28
+1309.50 | 1309.64 | 3.35 | 90254 | 5.00   cumulative ln count 3.65
+1309.75 | 1309.86 | 4.00 | 58732 | 4.80   cumulative ln count 4.53
+1310.00 | 1310.13 | 5.00 | 45952 | 4.50   cumulative ln count 5.49
+1310.25 | 1310.37 | 6.38 | 63750 | 4.30   cumulative ln count 6.73
+1310.50 | 1310.61 | 7.34 | 58863 | 4.10   cumulative ln count 7.77
+1310.75 | 1310.86 | 8.20 | 50329 | 4.00   cumulative ln count 8.70
+1311.00 | 1311.12 | 9.11 | 45694 | 3.90   cumulative ln count 9.62
+1311.25 | 1311.37 | 10.13 | 49880 | 3.70   cumulative ln count 10.60
+1311.50 | 1311.61 | 10.98 | 46916 | 3.60   cumulative ln count 11.50

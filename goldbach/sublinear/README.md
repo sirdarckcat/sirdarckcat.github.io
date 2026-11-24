@@ -1262,6 +1262,25 @@ chance and 1,295 for an even chance (the planning model of
 comes within 80 rows of the first of these figures. Better covers are not a
 way to 10%: on this side the search has what there is.
 
+The same on the measure the fleet ranks covers by, rows weighted by what
+they cost the expected record, on its 89 moduli (3 to 461 and 491), a million
+sweeps from each start (`cover_floor_w491.txt`): the two floors agree up to
+β = 1.19 (1,264.1 and 1,264.4 weighted rows) and within 0.6 at β = 1.31
+(1,276.6 and 1,277.2); the run from the best cover of the fleet's family
+ends at 1,308.6, the cover itself having 1,308.67, with e^3.6 times as many
+covers for each weighted row above it; the run from random vectors comes
+down to 1,309.36 on its own.
+
+What the one-sided part of these floors covers has to be said with care,
+after the families of the next section. A run started from a cover stays,
+at the cold temperatures, in that cover's family (the classes of the dozen
+smallest moduli: here 11.8 to 12 of 12 kept from β = 2 on), so the count at
+the bottom and "1,247 or 1,248" are statements about the family of the best
+cover and about every family the warm temperatures feed into it. The run
+from random vectors ends in another family, 0.7 weighted rows above. Other
+families are searched one by one in `../fscan/cover/README.md` ("Families at
+the campaign's target").
+
 **How many complete covers there are: a law, and where they end** (the same
 tools; runs here, on the Lean session's machine, whose raw output is in
 `goldbach/lean/scripts/cover_floor_runs/` on its branch at 86f11bd, 5075080
