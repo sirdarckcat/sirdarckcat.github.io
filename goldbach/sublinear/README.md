@@ -854,7 +854,8 @@ before any exhaustive search reached it. All of it
 agrees, and the values to n = 9 are theorems checked by the Lean kernel, which runs a search
 proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commits 9dce329 and
 747767d on `ccr-36ca7b46-8twf14`; beyond 9 the lower bounds are theorems to
-n = 18, one vector each, as are the large covers). Formalising it, the Lean
+n = 34, one vector each (`CoverDepthMore.lean`, commit de59a39), as are the
+large covers; the upper bounds beyond 9 rest on the exhaustive searches). Formalising it, the Lean
 session proved three things that make D more than a lower bound:
 
 - g(N) ≤ D(n) for every even N, with n the number of odd primes up to √N: the
@@ -982,7 +983,8 @@ commit 3ccf2f0 there), and the same session's tempering at 41,000, started
 from the 40,111 cover with four times the earlier budget, reached 41,047
 (`complete_cover_41047_167primes.txt`, checked here: all 4,294 odd primes
 below it struck, every class nonzero, and only 7 classes shared with the
-40,111 cover: it is in another family). The best reach known for
+40,111 cover: it is in another family; certified in the kernel as well,
+`Cover41047.lean`, commit 9470f08). The best reach known for
 each set of moduli, exact for the first three (1,471 was found by tempering and is D(24)) and by tempering for the others
 (`complete_covers_97_199_293.txt`, `complete_cover_15907.txt`,
 `complete_cover_41047_167primes.txt`):
