@@ -1136,6 +1136,18 @@ runs of a million sweeps, one from random covers and one from that cover:
   the count is of order one, so the best cover on these moduli has 1,247 or
   1,248 rows.
 
+At the 10% target, Q = 213,070 (19,050 rows; the best cover known leaves
+1,609), the same pair of runs with 300,000 sweeps
+(`cover_floor_q213070.txt`): the two floors agree within 0.5 up to
+β = 1.07, where the floor is 1,554, and within 1 up to β = 1.65, where it is
+1,596; the run from the best cover ends at 1,608, with e^2.8 covers at 1,609.
+For the fleet as it is, a cover would need about 1,470 rows at this target
+for a 1% chance of the 10% record in the days that remain, 1,375 for a 10%
+chance and 1,295 for an even chance (the planning model of
+`../fscan/cover/brainstorm/`: 0.0243 nats per row). No cover on these moduli
+comes within 80 rows of the first of these figures. Better covers are not a
+way to 10%: on this side the search has what there is.
+
 ## Ladder
 
 | rung | what | who | state |
