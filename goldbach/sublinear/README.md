@@ -33,9 +33,9 @@ reason is now understood and quantified.
   ≤ 491, certified by divisibility alone.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
-  181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051 for n = 1 to
-  20 (`desert.c`; two programs to n = 15, the uarch session's faster search
-  beyond, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
+  181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213 for
+  n = 1 to 21 (`desert.c`; two programs to n = 15, the uarch session's faster
+  search beyond, and the Lean kernel to n = 8). It grows faster than the r·ln r of the theorem.
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -748,26 +748,33 @@ above are lower bounds, D(89) ≥ 15,907 and D(93) ≥ 16,981 (they also had to
 fit below 10^200, which D does not ask). A depth-first search on "which
 modulus strikes the smallest unstruck prime" gives the exact values:
 
-| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 |
-| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 |
-| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 |
+| n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| r_n | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | 31 | 37 | 41 | 43 | 47 | 53 | 59 | 61 | 67 | 71 | 73 | 79 |
+| D(n) | 5 | 7 | 19 | 31 | 43 | 67 | 103 | 163 | 181 | 223 | 271 | 331 | 419 | 499 | 613 | 709 | 739 | 859 | 907 | 1,051 | 1,213 |
+| D(n) / (r_n ln r_n) | 1.52 | 0.87 | 1.39 | 1.18 | 1.29 | 1.39 | 1.84 | 2.26 | 1.85 | 2.09 | 2.03 | 2.17 | 2.59 | 2.76 | 2.91 | 2.95 | 2.95 | 3.05 | 3.00 | 3.36 | 3.51 |
 
 The values to n = 7 are also the result of a brute force over all vectors;
 the first fifteen come out the same from the Lean session's separate program
 (D(15) = 613 took 1.6·10^10 nodes here, `desert_fast.c`, the same search on
-bit sets and in parallel, and 1.8·10^10 there). D(16) to D(20) are from the
-uarch session's version of the search (`desert_fast3.c` and
+bit sets and in parallel, and 1.8·10^10 there). D(16) to D(21) are from the
+uarch session's version of the search (`desert_fast3.c`, `desert_fast4.c` and
 `desert_fast3_results.txt` on branch `ccr-b8c25887-i6tn9f`, commits a81cc6f
-and 38c3869), which keeps the search and the cut
+to 7672e19), which keeps the search and the cut
 and changes the order: the moduli that can strike the branching prime are
 tried most-struck-primes-first, and the branching prime is the unstruck prime
 with the fewest moduli still able to strike it. That takes D(15) from
 1.6·10^10 nodes to 1.1·10^7 and D(18) to 2.9·10^8 nodes in half a minute;
 it reproduces D(1) to D(15), gives the same D(16) to D(20) for two orders of
 the children (D(20) in 4.9·10^9 nodes), and its vectors were rechecked here
-(every odd prime below 709, 739, 859, 907 and 1,051 struck). All of it
+(every odd prime below 709, 739, 859, 907, 1,051 and 1,213 struck). It comes
+with checks that share little or no code with it: this session's
+`desert_fast.c` with nothing but the order of the children changed gives the
+same D(16) and D(17); a brute force over all vectors agrees for n ≤ 9,
+including the number of optimal vectors (2, 1, 2, 2, 6, 6, 1, 2 for n = 2 to
+9); and a SAT solver (CaDiCaL) finds "strike every odd prime below the next
+prime after D(n)" unsatisfiable and "below D(n)" satisfiable for n = 8, 10,
+12 and 13. All of it
 agrees, and the values to n = 8 are theorems checked by the Lean kernel, which runs a search
 proved correct (`CoverDepth.lean`, `CoverDepthRun.lean`, commit 9dce329 on
 `ccr-36ca7b46-8twf14`; beyond 8 the lower bounds are theorems, one vector
@@ -780,7 +787,7 @@ three things that make D more than a lower bound:
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
   most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
   conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 1,051 against 6,239 at n = 20.
+  499 against 2,809 at n = 14, 1,213 against 6,887 at n = 21.
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -850,10 +857,12 @@ primes with probability of order 1/ln x, so among the survivors, about
 C·x/(1.349·ln x) of them, of the order of x/ln² x pairs share a class of r′.
 If a proportion φ of the large primes could each be given two survivors,
 disjointly, the constant would be 1.349·(1 + φ). A class of r′ holds only
-about C primes in all, so the largest primes can never strike more than a
-handful each; the much longer reach of the covers actually found comes from
-the primes in the middle range, whose classes hold many primes and whose
-fullest class is well above the average.
+about C primes in all, so at a fixed C the largest primes can never strike
+more than a handful each. The covers actually found reach much further, to y
+of the order of x·ln² x, and there a class of a prime near x holds of the
+order of ln x primes (six at x = 10^5): the reach comes from the primes
+above about x^0.6 each taking a class far fuller than the average one, as
+measured below.
 
 The simplest algorithm already does it, and its reach can be measured far
 beyond the sizes where the exact value or tempering are available
@@ -907,8 +916,11 @@ between 0.7 and 0.9 throughout. Four of these sizes are theorems checked by
 the Lean kernel from the classes alone (`scripts/cover_depth/README.md` on
 the Lean branch, commits 68d90e6 to 8940e8c): 15,907 to 16,981 on 89 to 93
 moduli, 32,971 (greedy) and 40,111 (the vector above) on the 167 moduli up to
-997, and 135,511 on the 429 moduli up to 2,999 (a greedy vector with ties
-broken at random; the theorem's count there is 32,390). A mean-field model of the
+997, 135,511 on the 429 moduli up to 2,999 (a greedy vector with ties broken
+at random; the theorem's count there is 32,390) and 614,101 on the 1,228
+moduli up to 9,973 (greedy; the count gives 123,900; the certificate is a
+4,298-digit N checked by divisibility in 17 minutes); the tempered vectors at
+24, 45 and 61 moduli are certified as well. A mean-field model of the
 same procedure, in which the remaining primes fall into the classes of each
 r like independent balls and the prime takes the fullest class
 (`greedy_meanfield.py`), reaches 0.90·x·ln² x at x = 463 and 10^4, 0.86 at
@@ -960,6 +972,47 @@ random classes up to w = x^0.9, everything is struck up to C = 1.39, 1.93,
 with w = x/2), the large primes striking two to four survivors each; the
 all-greedy rule reaches 5.5 to 8.4 at the same x, so choosing the small
 primes' classes well is worth another factor of 3 to 4.
+
+Where the all-greedy reach comes from was measured the same way (`T3.md`
+there, commit 323c674; x = 10^4, 10^5 and 10^6, targets the odd primes below
+0.72·x·ln² x). For each prime r take the excess m − λ of the class it takes
+(m targets) over the average class of what is left (λ). Classes taken without
+looking would strike Σλ along the same path and leave about 0.74/ln x of the
+targets, so the excess has to add up to that: of the order of x in all when y
+is of the order of x·ln² x, which is of the order of ln x per prime.
+
+- The measured excess is 0.454, 0.458 and 0.458 times ln x per prime at the
+  three x.
+- The small primes make the strikes and the large ones make the difference.
+  At x = 10^5 the primes up to 113 make 85% of the strikes with classes 0 to
+  5% fuller than average, as random classes would be, and 3.5% of the excess.
+  The primes above x^0.8 make 5 to 6% of the strikes and 55, 63 and 71% of
+  the excess at the three x; those above x^0.9 make 31, 37 and 44%, each
+  taking 2.3, 3.0 and 3.9 targets more than an average class.
+- At this y the limit of about C primes per class does not bind: a class of
+  a prime near x holds 0.72·ln² x/ln y primes, six at x = 10^5 and eight at
+  10^6, and the class taken is 0.92 to 0.97 of the fullest of independent
+  Poisson cells. In the middle range (average class from 1,000 down to 1) the
+  excess is 0.58 to 0.89 of what independent cells would give, because the
+  primes left are spread over the classes more evenly than independent balls
+  (close to what the Montgomery–Hooley variance for primes in progressions
+  gives).
+- Random classes for the primes up to x^θ and the fullest class above cost
+  what that range contributes to the excess: the reach is 0.99, 0.98, 0.88,
+  0.58 and 0.29 of the all-greedy one for θ = 0.2, 0.4, 0.6, 0.8 and 0.9 at
+  x = 10^4, and 1.00, 0.99, 0.92, 0.67 and 0.38 at 10^5, within 0.05 of one
+  minus the share of the excess made by the primes up to x^θ; that share
+  falls with x at every θ. So a proof may leave the classes of the primes up
+  to x^0.6 to chance, where the averages are computable, at the cost of a
+  tenth of the reach, and has to control the fullest classes of the primes
+  between x^0.6 and x.
+- Greedy is not the limit either. On the 167 moduli up to 997 the tempered
+  vector (40,111) behaves like greedy up to r = 233, takes the fullest class
+  at 80% of the moduli and gives up 1% of the strikes on the way; in exchange
+  its 56 largest moduli strike 2.41 targets each, 1.38 times the fullest of
+  independent cells, where greedy's strike 2.02 (0.96 times) and 33 targets
+  are left. A joint choice arranges what is left so that the last moduli
+  collect more than chance allows.
 
 For "every constant" the primes of a growing middle range must each strike
 several survivors, nearly all of them, which is a near-perfect matching in a

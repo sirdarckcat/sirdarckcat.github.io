@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
     int n = argc > 1 ? atoi(argv[1]) : 10; int known = argc > 2 ? atoi(argv[2]) : 0;
     static char comp[20000]; int np = 0;
     for (int i = 2; i < 20000 && np < NP; i++) if (!comp[i]) { if (i > 2) primes[np++] = i; for (int j = i * i; j < 20000; j += i) comp[j] = 1; }
-    if (n > MAXN || primes[n - 1] >= MAXR) { fprintf(stderr, "n too large\n"); return 1; }
+    if (n < 2 || n > MAXN || primes[n - 1] >= MAXR) { fprintf(stderr, "n must be between 2 and %d (for n = 1 use desert.c: D(1) = 5)\n", MAXN); return 1; }
     nmod = n;
     for (int m = 0; m < n; m++) { mod_[m] = primes[m]; for (int i = 0; i < NP; i++) { res[m][i] = primes[i] % mod_[m]; mask[m][res[m][i]][i >> 6] |= 1ull << (i & 63); } }
     best = 0; bestidx = -1;
