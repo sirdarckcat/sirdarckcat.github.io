@@ -20,4 +20,6 @@ Total: 179 found against 183.1 expected (0.98).
 
 Check of the driver: Q = 12,000 on the 100-digit cover (143 rows, E_tested 5.4): 487 found, 510.6 expected (t_12k.json).
 
-The rungs above E 15.7 continue as closeness-frontier rungs (frontier.py: many covers, d-digit windows), which test the same model.
+The rungs above E 15.7 continue as closeness-frontier rungs (frontier.py: many covers, d-digit windows), which test the same model:
+../frontier/RESULTS.md.  With the 101-digit rung (E_tested 15.50: 7 found, 7.99 expected) the total is 186 found against
+191.1 expected (0.97).

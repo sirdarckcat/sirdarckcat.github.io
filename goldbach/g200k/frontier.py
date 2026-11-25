@@ -10,7 +10,7 @@ c = c_num / c_den (e.g. 11 10 for 1.1).  Each cover's progression N0 + k M is sc
 in-window members, fm13 / fmw until the first probable prime.  Recorded per rung: the histogram of tested survivor counts,
 tests and PRPs (p^), the hits (verified: N - q composite for every prime q < Q; then g and closeness from N alone), and the
 expected hits sum n(a) (1 - p^)^a."""
-import json, math, os, sys, time
+import ctypes, json, math, os, sys, time
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 GB = os.path.dirname(HERE)
@@ -84,28 +84,44 @@ def window(task):
         else:
             G["fm"] = fmw.Members(s["N0"], s["M"], s["U"], s["khi"] + 1)
         G["ci"] = ci
-    sv, fm = G["sv"], G["fm"]
-    cnt, bits = sv.block(k0)
-    hist = np.zeros(len(s["U"]) + 1, dtype=np.int64)
+    sv, fm, lib = G["sv"], G["fm"], G["sv"].lib
+    nU = len(s["U"])
+    if G.get("bits") is None or G["bits"].shape != (nU, sv.words):
+        G["bits"] = np.empty((nU, sv.words), dtype=np.uint64)       # one buffer for every window: no page faults a window
+    cnt, bits = sv.block(k0, bits=G["bits"])
+    hist = np.zeros(nU + 1, dtype=np.int64)
     tests = prps = members = 0
     cands = []
-    kk = k0 + np.arange(sv.K)
-    valid = (kk >= s["klo"]) & (kk <= s["khi"])
+    order, rank = np.empty(BL, dtype=np.uint32), np.empty(BL, dtype=np.uint32)
+    hs, selb = np.empty(nU + 2, dtype=np.uint32), np.empty(BL // 64, dtype=np.uint64)
+    ha, hk, at = ctypes.c_double(), ctypes.c_double(), ctypes.c_int64()
     for b in range(0, sv.K, BL):
-        v = np.nonzero(valid[b:b + BL])[0]
-        if not len(v):
+        lo, hi = max(s["klo"] - (k0 + b), 0), min(s["khi"] - (k0 + b), BL - 1)   # the members of the window: offsets lo..hi
+        if hi < lo:
             continue
-        members += len(v)
-        c = cnt[b:b + BL].astype(np.int64)[v]
-        keep = int(math.ceil(len(v) * (1 - skip)))
-        order = v[np.argsort(c, kind="stable")[:keep]]
-        np.add.at(hist, cnt[b:b + BL].astype(np.int64)[order], 1)
-        js = np.ascontiguousarray(order + b, dtype=np.uint32)
-        rows, offs = sv.survivors(bits, js)
-        fp = fm.first_pass(js.astype(np.uint64) + k0, rows, offs)
+        nv = hi - lo + 1
+        members += nv
+        cb = cnt[b:b + BL]
+        keep = int(math.ceil(nv * (1 - skip)))
+        if nv == BL:                                                 # s200_select: the order of np.argsort(cb, kind="stable")[:keep]
+            n = lib.s200_select(cb.ctypes.data, BL, keep, nU, 0.1, order.ctypes.data, ctypes.byref(ha), ctypes.byref(hk),
+                                ctypes.byref(at), hs.ctypes.data)
+            sel = order[:n]
+        else:
+            sel = np.ascontiguousarray(lo + np.argsort(cb[lo:hi + 1], kind="stable")[:keep], dtype=np.uint32)
+        n = len(sel)
+        hist += np.bincount(cb[sel], minlength=nU + 1)
+        offs, cursor = np.empty(n + 1, dtype=np.int64), np.empty(n, dtype=np.int64)
+        cap = int(cb[sel].astype(np.int64).sum())
+        rows = np.empty(max(cap, 1), dtype=np.uint16)
+        tot = lib.s200_csr(sv.ctx, bits.ctypes.data, ctypes.c_uint64(b // 64), BL, sel.ctypes.data, n, cb.ctypes.data,
+                           rank.ctypes.data, selb.ctypes.data, cursor.ctypes.data, offs.ctypes.data, rows.ctypes.data, cap)
+        assert tot == cap                                            # rows by member, ascending (as s200_extract): row by row reads
+        kv = sel.astype(np.uint64) + np.uint64(k0 + b)
+        fp = fm.first_pass(kv, rows[:cap], offs)
         tests += int(np.where(fp >= 0, fp + 1, np.diff(offs)).sum())
         prps += int((fp >= 0).sum())
-        cands += [int(js[t]) + k0 for t in np.nonzero(fp < 0)[0]]
+        cands += [int(kv[t]) for t in np.nonzero(fp < 0)[0]]
     return ci, hist, tests, prps, members, cands
 
 
