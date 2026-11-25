@@ -188,3 +188,38 @@ primes beyond the line and 39% at eight, and the optimum often has no repeat at 
   rings, direction (M mod s_1, M mod s_2, …), and the best of them is what the tables above list. The exact statements
   are the two bounds OPT ≥ D (a cover on the same primes with no bound on N) and OPT ≤ scan, and the grid shows both
   strict from the first prime on.
+
+## 4. The same anatomy on a real cover at 200 digits (`sieve_profile.c`, `profile_analysis.py`)
+
+The first cover of `q200000_m89.txt` (1,502 rows; its members are 200-digit numbers), 240,000 members N0 + kM sieved
+by every prime up to 10^8 (`../selection_check/members.py` writes the residues), recording for each member the rows
+newly struck in nine ranges of primes. Rows left at 10^8: 505.62 on average, variance 325.27 (the formula of
+`../selection_check` gives 324.5). The tier is the best 1.1% (rows left ≤ 464; 4.50 nats) or the best 0.1%
+(≤ 450; 6.87 nats).
+
+The rows a range strikes depend on how many were left before it, so the quantity that separates is the innovation:
+the gain of the range minus the share of the rows left that the range strikes on average. The nine innovations are
+uncorrelated (largest correlation 0.005), and their informations (mean² / (2 variance)) add up to
+(mean excess)² / (2 Var S) exactly, 3.42 nats for the larger tier:
+
+| primes | number of primes | share of the rows left that the range strikes | mean innovation in the tier, in standard deviations | information, nats | per prime | cumulative share |
+|---|---|---|---|---|---|---|
+| 463 to 10^3 | 78 | 0.106 | +0.59 | 0.17 | 2·10^−3 | 0.05 |
+| 10^3 to 3·10^3 | 262 | 0.136 | +0.74 | 0.28 | 1·10^−3 | 0.13 |
+| 3·10^3 to 10^4 | 799 | 0.130 | +0.79 | 0.31 | 4·10^−4 | 0.22 |
+| 10^4 to 3·10^4 | 2,016 | 0.106 | +0.83 | 0.35 | 2·10^−4 | 0.32 |
+| 3·10^4 to 10^5 | 6,347 | 0.105 | +0.79 | 0.31 | 5·10^−5 | 0.41 |
+| 10^5 to 2·10^5 | 8,392 | 0.057 | +0.65 | 0.21 | 3·10^−5 | 0.48 |
+| 2·10^5 to 10^6 | 60,514 | 0.116 | +0.96 | 0.46 | 8·10^−6 | 0.61 |
+| 10^6 to 10^7 | 586,081 | 0.143 | +1.18 | 0.70 | 1·10^−6 | 0.81 |
+| 10^7 to 10^8 | 5,096,876 | 0.125 | +1.13 | 0.64 | 1·10^−7 | 1.00 |
+
+Half of what distinguishes the best members is carried by the primes above 200,000, each of which can strike one row
+at most, and two fifths by the primes above a million; the later a range, the more it counts, because a row struck
+early would often have been struck later anyway. The smaller tier gives the same shares (0.06, 0.15, 0.21, 0.32, 0.41,
+0.48, 0.61, 0.81, 1). No prime carries more than a few thousandths of a nat.
+
+Strikes and repeats, as in section 2: over all members 1,635 strikes on the 1,502 rows, 996 distinct rows struck, 639
+repeats, exactly what strikes on random rows give. The best 1.1% have 1,711 strikes, 1,044 distinct and 667 repeats
+where chance would give 689 for that many strikes: an advantage of 47.1 rows = 24.9 from more strikes + 22.3 from
+fewer repeats. The best 0.1%: 59.9 = 30.4 + 29.5. Half and half, as in the miniature.
