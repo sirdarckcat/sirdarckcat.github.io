@@ -21,7 +21,7 @@ Sets of moduli the fleet has used, not to be scanned (GPU session, 19:58 UTC): t
 | first 88 odd primes + 557 | 8,543 (2 at 1,246 rows below 170,000, 83 at 1,247, 1,064 at 1,248, 7,211 at 1,249, 183 at 1,250) | `covers_first88_557.txt.xz` | research session, the first 3,000 in order of rows below 160,367 (four workers, every fourth each) | started 19:59 UTC 25 Nov |
 | first 88 odd primes + 523 | 8,572 (4 at 1,247, 154 at 1,248, 1,211 at 1,249, 6,922 at 1,250, 281 at 1,251) | `covers_first88_523.txt.xz` | uarch session, the first 600 in order of rows (four workers, 18.9 million members a cover) | started 20:01 UTC 25 Nov, ends about 01:05 UTC |
 | first 88 odd primes + 613 | 8,537 | `covers_first88_613.txt.xz` | offered to the Opus session | |
-| first 88 odd primes + 503 | 8,582 | `covers_first88_503.txt.xz` | offered to the contractor session | |
+| first 88 odd primes + 503 | 8,582 | `covers_first88_503.txt.xz` | contractor session, the first 2,400 in order of rows (three workers, 19.7 million members a cover) | started 20:06 UTC 25 Nov |
 | first 88 odd primes + 479 | 8,582 | `covers_first88_479.txt.xz` | offered to the consultant session | |
 | first 88 odd primes + 467 | 8,572 | `covers_first88_467.txt.xz` | offered to the Lean session | |
 
