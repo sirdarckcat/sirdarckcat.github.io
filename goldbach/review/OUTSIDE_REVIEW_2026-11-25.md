@@ -14,8 +14,9 @@ followed by a skeptic. Figures marked (mine) I computed myself.
 
 1. **It is not a local minimum.** The team is at the optimum of its method, and the method has a ceiling. Nothing found
    in four independent audits moves the 200-digit record by more than a few tenths of a nat without new mathematics.
-2. **The 10% target at 200 digits is 7.8 nats away** (a factor 2,340 in work on the 7,000 units left). Every exit that
-   exists inside known mathematics is priced in section 6; the largest is compute, at one nat per factor e.
+2. **The 10% target at 200 digits is about 8 nats away** (7.8 to 8.1: a factor 2,400 to 3,400 in work on the 7,000
+   units left, for a 63% chance). Every exit that exists inside known mathematics is priced in section 6; the largest
+   is compute, at one nat per factor e.
 3. **"10% to 50%" is reachable today, at other sizes.** With the units that remain the method reaches 10% up to about
    165 digits, 25% up to about 71 and 50% up to about 36. The scoreboard has those lines at 63, 46 and 25 digits. The
    stretch from 63 to 150 digits is empty and cheap.
@@ -92,16 +93,20 @@ The spy read only the lead's transcript. Verified against code and logs:
 | rank | recommendation | verdict | what is left (nats) |
 |---|---|---|---|
 | 1 | deepen the selection score | already done: the deep score has been production since 23 Nov 01:30; the ×1.97 it predicts is the gain banked that night | 0 to 0.08 |
-| 2 | remove the +3.17 units/h premium | the discrepancy is real and was the fleet's own caveat; the "runtime shape" guess is contradicted by the scripts; a Colab-side repricing fits as well | 0 to 0.12 |
+| 2 | remove the +3.17 units/h premium | the discrepancy is real (28.3 against 25.1 units an hour) and was the fleet's own caveat, but there is nothing to remove: every runtime was created with the cheapest shape, and the premium arrived the evening Colab cut the caps. A Colab-side price change is the likeliest reading | 0 to 0.03 |
 | 3 | Montgomery squaring bundle | already done: three of four parts are in the deployed kernel, the fourth is an older kernel measured 1.2 to 1.9 times slower | 0.01 to 0.03 |
 | 4 | method-ceiling statement, restated objective | the analysis exists (README lines 1346–1356) with more precision than the spy's; what is missing is the sentence in the user-facing documents and the question to the user | 0 (a decision) |
 | 5 | more modulus swaps | the one-slot version is deployed (491); this review ran the multi-slot version and it is flat; all six of the spy's sets are too short for the deployed loader | 0 to 0.015 |
 | 6 | persistent work-queue kernel | built and A/B-tested three times on 23 Nov, 5 to 19% slower on the large cards | 0 to 0.007 |
-| 7, 8 | cover supply; pair-correlation ranking | see section 9 (check finishing as this was written) | small |
+| 7 | surrogate-guided cover supply | the supply "running out" is a counting fact the team had measured (about 30,000 covers at the first usable level, 12 times more per row), and the generator already enumerates each level best-first | 0 to 0.002 |
+| 8 | rank vectors by the pair-correlation term | priced on 22 Nov by the two-session brainstorm at 0.0002 nats between covers of equal rows | 0 |
 | 9 | calibrate on small sizes | already done at least eight ways on five branches, to about 1% | 0 |
 
-Total: at most about 0.2 to 0.3 nats, against the spy's own "×1.3 to ×2.4". The spy's bottom line survives and is the
-part worth keeping: nothing on its list approaches 10%, and the scope question belongs to the user. Its figure "11% at
+Total: at most about 0.15 nats, against the spy's own "×1.3 to ×2.4" (0.3 to 0.9). One neighbouring lever turned up
+in the check of rank 7: ordering the vector supply by research's weighted rows was 0.4 to 0.9 weighted rows better at
+equal supply in a test at 5,000 to 35,000 covers, where the cover README says it gives nothing; at most 0.02 nats, and
+unconfirmed at the 3.7 million covers the fleet draws from. The spy's bottom line survives and is the part worth
+keeping: nothing on its list approaches 10%, and the scope question belongs to the user. Its figure "11% at
 150 digits and 17% at 100 with the remaining units" checks (11.1% and 17.3% in the price list of section 6).
 
 ## 5. Why there is no way out inside the method
@@ -118,15 +123,17 @@ compute buys one nat. Nothing else in the project buys luck at all.
 | door | what the audit found | worth at most |
 |---|---|---|
 | better covers | measured floor 1,554 against 1,609 at 213,070 (two methods agree); certified floor 777 | 1.3 nats measured |
-| engineering (sieve depth, keep fraction, kernel) | the deployed point is within 1% of the optimum of its own cost model | 0.3 |
-| a cheaper compositeness test (H2 false) | even a free, perfect test leaves the sieve as the floor | 2.5 |
-| locating good N beyond the Chinese-remainder line (P′) | every pair-merging method pays its constraint out of the same 460.5 nats; and what it outputs are isolated N, which lose the amortised sieve and the selection, 4 to 7 nats per candidate. So (P′) as posed (depth 1,000, prize 3.5 nats) would not pay even if solved; the depth that pays is nearer 20,000 | 0 net today |
+| engineering (sieve depth, keep fraction, kernel) | the deployed point is within 1% of the optimum of its own cost model (two independent models). Unpriced: 88 moduli with long vectors and a deeper sieve, between −0.1 and +0.2 | 0.3 |
+| a cheaper compositeness test (H2 false) | a test K times cheaper is worth 0.4 nats at K = 2, 1.2 at K = 10, 2.4 at K = 100. The deployed point costs 57 ns per full-weight member and 10% needs 0.026 ns, under half of one modular squaring | 2.4 at K = 100 |
+| locating good N beyond the Chinese-remainder line (P′) | every pair-merging method pays its constraint out of the same 460.5 nats; and what it outputs are isolated N, which lose the amortised sieve and the selection, an estimated 4 to 7 nats per candidate (not measured). So (P′) as posed (depth 1,000, prize 3.5 nats) would not pay even if solved; the depth that pays is nearer 20,000 | 0 net today |
 | algebraic families (S-units, Lucas, common integer, sparse N, shared stretches) | all negative; a common integer leaves 2,129 rows at best, 1,954 after re-optimising 20 primes | negative |
+| covers on 90 or more primes | 0.135 nats a prime once the higher chance per row is charged; the lost sieve costs more (the team had already closed this) | 0 net |
 | compute | one nat per factor e | 2.3 per ×10 |
 
-10% needs 7.8. The first four doors together do not reach it even if every one opened, and two of them are open
-problems. The record prime-gap community, with the same cover-sieve-luck method and twenty years, sits near 8% of its
-own ceiling at 200 digits (research's note of 22 Nov; I did not verify the figure).
+10% needs about 8. Covers and engineering together hold at most 1.6. The test door closes the gap alone only with a
+detector some 60,000 times cheaper than an exponentiation. The location door is negative at the depth the team posed
+and has no known method at any depth. The record prime-gap community, with the same cover-sieve-luck method and twenty
+years, sits near 8% of its own ceiling at 200 digits (research's note of 22 Nov; I did not verify the figure).
 
 One refinement the audit adds to the research README: its prize table counts each ideal candidate as a full-weight
 member with the deep sieve behind it. Candidates selected on primes beyond the line cannot share those residues across a
@@ -146,9 +153,12 @@ the team's 175,000–176,000; 11.1% and 17.3% against "11%" and "17%"; CPU-hours
 | ×10 (about $7,000 at list price) | 187,400 | 8.8% |
 | ×100 | 198,900 | 9.3% |
 | ×1,000 | 210,700 | 9.9% |
-| ×2,340 (about $1.7 million) | 213,070 | 10% |
+| ×2,400 to ×3,400 (about $1.7 to 2.4 million) | 213,070 | 10%, a 63% chance |
 
-25% costs ×10^32 and 50% costs ×10^78. Even a perfect search over everything the fleet's sieve sees ends near 16%.
+25% costs about ×10^32 and 50% about ×10^78 (orders of magnitude: the hit model is validated only up to the 170,000
+level, 9 found against 10.3 expected). Even a perfect search over everything the fleet's sieve sees ends near 16%.
+Rented cards are cheaper than Colab's list price by a factor 1.3 at the median and 2 to 4 on interruptible capacity;
+the user declined outside hardware on 23 Nov, and it would close at most one of the eight nats per factor e of money.
 
 **B. Keep the closeness, move the size.** With 7,000 units, one expected success:
 
@@ -179,8 +189,8 @@ units, 244 on one fleet-day, 300 on four cores for a day; 213,070 needs 244 on t
 as A and B read along another axis.
 
 **D. New mathematics for 200 digits.** Three named problems, none with a known approach: a decoder for noisy Chinese
-remaindering with dense lists that outputs progressions, to depth 20,000 or beyond; a compositeness test cheaper than
-one exponentiation (capped at 2.5 nats); a certificate of compositeness that is neither a small factor nor luck (the
+remaindering with dense lists that outputs progressions, to depth 20,000 or beyond; a compositeness test far cheaper
+than one exponentiation (1.2 nats at ten times cheaper, 2.4 at a hundred); a certificate of compositeness that is neither a small factor nor luck (the
 integer counterpart of the function-field parity theorem). The miniature (X = 10⁹, Q = 1,000, ideal order wins by 229)
 is the test bench for the first.
 
@@ -195,9 +205,10 @@ A, B and C are decisions for the user. D is a bet with no odds. E is finished wo
 
 - **Design-level hits arrive late in the fixed-gap runs.** From the survivor counts: 400 digits, 2 found against 6.8
   expected (first after about 6.5); 350 digits, 0 against 1.75; 347 digits, 1 at 0.37; 2,196 digits, 1 where 3.2 were
-  expected. Four hits against about 12 expected is a 0.7% event (mine, rough). Lower targets on the same covers match
-  (329 of 355, 6 of 6.0, 10 of 9.0), and the 200-digit tally matches (9 against 10.3). Each case was booked as luck.
-  Pooling the exposure of the 319- and 300-digit runs would settle it.
+  expected. Four hits against about 12 expected is a 0.7% event (mine, rough; nobody has audited the expected
+  counts). Lower targets on the same covers match (329 of 355, 6 of 6.0, 10 of 9.0), and the 200-digit tally matches
+  (9 against 10.3). Each case was booked as luck. Pooling the exposure of the 319- and 300-digit runs would settle it.
+  If it is real it is about one nat, and section 6 C is about five digits optimistic.
 - **Context.** Research, Lean, uarch, the consultant and the Opus session were at 75 to 83% of their windows this
   morning; one showed "disconnected" and one "safety-stopped" while receiving work. There is no single page with the
   goal, the decisions taken and the units ledger; I rebuilt the goal from two of the lead's compaction summaries.
