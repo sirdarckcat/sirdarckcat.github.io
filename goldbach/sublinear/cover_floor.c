@@ -34,6 +34,10 @@
 // number of complete covers at y divided by the number at Q.  Printed as a REACH line: reach:count pairs
 // (reach Y means "not below Y").
 //
+// Classes: with COVER_FLOOR_CLASSES=1 the classes of every sampled cover with no row left are counted per modulus (these
+// samples are uniform over the complete covers at Q).  Printed at the end: "CLASSES n", then for every modulus
+// "CLS modulus classes_seen share_of_the_commonest entropy_in_nats": which moduli are frozen among complete covers.
+//
 // Weighted rows: with the environment variable COVER_FLOOR_WEIGHTS=file ("q weight" lines, 64 = a full row, as
 // written by ../fscan/cover/brainstorm/soft_weights.py) the rows are the primes of that file, whatever Q, and the
 // energy is the weighted number of rows left, the campaign's measure of a cover.  Energies are then printed in rows
@@ -152,6 +156,8 @@ int main(int argc, char **argv) {
     for (int m = 0; m < nfam; m++) { famsize *= mod[m]; if (famsize > 2000000) { fprintf(stderr, "COVER_FLOOR_FAMILIES: too many frames\n"); return 1; } }
     long *famc = nfam ? calloc((size_t)nb * famsize, sizeof(long)) : NULL; int *famE = nfam ? malloc((size_t)nb * famsize * sizeof(int)) : NULL;
     if (nfam) for (size_t j = 0; j < (size_t)nb * famsize; j++) famE[j] = 2147483647;
+    long *chist = NULL, cn = 0; int *coff = NULL;
+    if (getenv("COVER_FLOOR_CLASSES")) { coff = malloc((nmod + 1) * sizeof(int)); coff[0] = 0; for (int m = 0; m < nmod; m++) coff[m + 1] = coff[m] + mod[m]; chist = calloc(coff[nmod], sizeof(long)); }
     long *hist = calloc((size_t)nb * nbins, sizeof(long));
     float *hoff = weighted ? calloc((size_t)nb * nbins, sizeof(float)) : NULL;      // sum of (energy - start of the bin): the bin is printed at its mean energy
     long *acc = calloc(nb, sizeof(long)), *tried = calloc(nb, sizeof(long)), *sw_ok = calloc(nb, sizeof(long)), *sw_try = calloc(nb, sizeof(long));
@@ -194,6 +200,14 @@ int main(int argc, char **argv) {
                     #pragma omp atomic
                     rhist[j]++;
                 }
+                if (chist && r->E == 0) {
+                    for (int m = 0; m < nmod; m++) {
+                        #pragma omp atomic
+                        chist[coff[m] + r->a[m]]++;
+                    }
+                    #pragma omp atomic
+                    cn++;
+                }
                 if (start) { int c = 0; for (int m = 0; m < ncore; m++) c += r->a[m] == start[m]; csum[(size_t)i * NQ + quarter] += c; }
             }
             if (r->E < minE[i]) minE[i] = r->E;
@@ -233,6 +247,14 @@ int main(int argc, char **argv) {
             fprintf(f, " %ld:%ld:%.2f", best, c[best], (double)e[best] / unit); c[best] = -c[best];
         }
         fprintf(f, "\n");
+    }
+    if (chist) {
+        fprintf(f, "CLASSES %ld\n", cn);
+        for (int m = 0; m < nmod; m++) {
+            long mx = 0; int d = 0; double H = 0;
+            for (int a = 0; a < mod[m]; a++) { long c = chist[coff[m] + a]; if (c) { d++; if (c > mx) mx = c; double q = (double)c / cn; H -= q * log(q); } }
+            fprintf(f, "CLS %d %d %.4f %.4f\n", mod[m], d, cn ? (double)mx / cn : 0.0, H);
+        }
     }
     fclose(f);
     return 0;

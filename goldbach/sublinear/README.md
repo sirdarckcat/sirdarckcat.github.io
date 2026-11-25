@@ -1874,6 +1874,38 @@ twelve moduli is 0.2 nats with the constraint and −16 without. And the
 runs at 1,228 moduli that would not come to equilibrium at 300,000 are
 runs in which the moduli up to 383 have to find one setting.
 
+A direct test of the freezing (`cover_floor.c` with COVER_FLOOR_CLASSES=1,
+which counts the classes of every sampled cover that leaves no row;
+`cover_floor_runs/classes/`). At 167 moduli and 40,111 the constrained
+recursion says the moduli up to 181 are frozen (41 moduli, with 165 nats of
+classes to choose from) and the entropy of the count, about 100 nats, sits
+in the moduli above. One run of 400,000 sweeps from the 41,659 cover gave
+1.5 million samples of complete covers; the entropy of the class of each
+modulus among them, summed over blocks of moduli (an upper bound for the
+entropy the block carries), beside the entropy of the same levels in the
+recursion:
+
+| moduli | 3 to 41 | 43 to 97 | 101 to 181 | 191 to 293 | 307 to 499 | 503 to 743 | 751 to 997 |
+|---|---|---|---|---|---|---|---|
+| how many | 12 | 12 | 17 | 20 | 33 | 37 | 36 |
+| classes to choose from, nats | 31 | 50 | 84 | 110 | 197 | 238 | 244 |
+| share of the commonest class, mean | 0.99 | 0.97 | 0.94 | 0.85 | 0.76 | 0.69 | 0.50 |
+| entropy among the sampled covers, nats | 0.6 | 1.7 | 4.3 | 11.0 | 28.7 | 43.9 | 76.7 |
+| the recursion with the constraint | 0.2 | −0.2 | 0.0 | 7.9 | 40.5 | 58.2 | −6.3 |
+| the recursion as it was | −16.5 | −19.9 | −5.6 | 14.7 | 51.0 | 70.2 | 10.4 |
+
+The 41 moduli up to 181 carry 6.6 nats between them where they have 165 to
+give: frozen, as predicted, and the thaw begins where the constraint stops
+binding (0.1 to 0.4 nats a modulus up to 181, 0.55 on average from 191 to
+293, where the constrained recursion has 0.4). Above that the two differ in
+where the entropy sits, the samples having more of it in the last moduli
+(a modulus that finds nothing left to strike is free, which the recursion's
+last level, forced to strike everything, cannot show); the totals are 100
+nats in the recursion, 98.6 by the count, and at most 167 by this sum of
+single-modulus entropies, which counts shared freedom several times. This
+is one run in one family (the other family counted at this target has
+other classes on the small moduli, and by its count 2% of the covers).
+
 What it changes at the sizes counted:
 
 - Near the end the loss rises and the excess of the measured loss shrinks:
@@ -1908,7 +1940,7 @@ What it changes at the sizes counted:
   same script.) With the constraint the ratio stops rising near 1.0 at about
   a thousand moduli and turns down, to 0.96 at 26,000 moduli, where the
   unconstrained one has 1.14; for comparison the asymptotic form
-  1.349/(ln ln x − 1) of the next paragraph is 1.11, 1.01, 0.94 and 0.88 at
+  1.349/(ln ln x − 1) of the next paragraph is 1.11, 1.01, 0.93 and 0.88 at
   x = 9,973, 30,000, 100,000 and 300,000. So the c = 1.00 of the law is not two corrections
   crossing; it is where the constrained count stays, within 1%, from 400 to
   3,000 moduli.
