@@ -27,3 +27,11 @@ assert not (set(_ns["RD"]) & set(R_NODES)), "new box id collides with an existin
 assert not (set(_ns["RD_EDGES"]) & set(R_EDGES)), "new link collides with an existing research link"
 R_NODES.update(_ns["RD"])
 R_EDGES.update(_ns["RD_EDGES"])
+
+# Added after the first build of the 25 Nov update: the consultant's draft box (cur_res_e.py).
+_ns = {}
+exec(open(os.path.join(_V, "cur_res_e.py")).read(), _ns)
+assert not (set(_ns["RE"]) & set(R_NODES)), "draft box id collides"
+assert not (set(_ns["RE_EDGES"]) & set(R_EDGES)), "draft link collides"
+R_NODES.update(_ns["RE"])
+R_EDGES.update(_ns["RE_EDGES"])

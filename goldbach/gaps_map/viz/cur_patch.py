@@ -10,7 +10,7 @@ PATCH = {
 "r_earlier": dict(
   repl={"gist": [("The ladder before today's record,", "The ladder before the standing record,")],
         "detail": [("a primality chain of 18 to 32 steps", "a primality chain of 17 to 31 steps")],
-        "note": [("seven records between 2026-11-22 and 2026-11-23", "eight records between 2026-11-22 and 2026-11-24, counting the two that have their own boxes")]}),
+        "note": [("seven records between 2026-11-22 and 2026-11-23", "six record-setting finds between 2026-11-22 and 2026-11-24, counting the two that have their own boxes")]}),
 "r_rank": dict(
   repl={"title": [("up to 10^11", "up to 10^12")],
         "gist": [("The 39 even numbers up to 10^11", "The 42 even numbers up to 10^12"),
@@ -48,7 +48,7 @@ PATCH = {
 "e_selective": dict(
   detail_add="Since 23 Nov the 3% rule holds only on the L4s and the T4: the RTX cards keep the emptiest 1.5% (keep fraction 0.985, design hits a second ×1.10 over 0.97), and the L4 test at 0.985 failed (×0.9865). The sieve depth was re-optimised jointly with the keep fraction for today's engine: 10^8 stays (the best alternative is +1.2% at keep fraction 0.99; deeper sieves lose)."),
 "e_gpu": dict(
-  detail_add="Since 23 Nov: 24.6M tests a second with the 29-bit kernel (+5.7%) and 23.4M for the best 28-bit step; a window's sieve phase fell from 83.7 to 44.4 ms and an RTX batch from 0.945 to about 0.73 s (see ‘The GPU sieve chain’); a new IFMA CPU test for 300 to 400 digits is 8 to 12 times gmpy2."),
+  detail_add="Since 23 Nov: 24.6M tests a second with the 29-bit kernel (+5.7% on the 23 Nov baseline) and 23.4M for the best 28-bit step; a window's sieve phase fell from 83.7 to 44.4 ms and an RTX batch from 0.945 to about 0.73 s (see ‘The GPU sieve chain’); a new IFMA CPU test for 300 to 400 digits is 8 to 12 times gmpy2."),
 "e_cover_opt": dict(
   repl={"detail": [("There is no closed formula for the optimum and no proof of a floor: every claim of optimality is empirical.", "Until 24 Nov there was no closed formula for the optimum and no proof of a floor; now there is a derived predictor (1,221 rows at 170,000, 1,584 at 213,070, within 2% of the best found), measured floors (1,214; 1,554 to 1,596), a certified floor of 777 rows (exhaustive) and a linear-programme floor of 1,170 for fixed small classes. The 89-prime optimum 1,248 is confirmed three ways (186 covers at 1,248); with 491 as the 89th prime the best is 1,245."),
                    ("Greedy gives 867 rows at Q = 122,000", "Greedy plus annealing gives 867 rows at Q = 122,000 (plain greedy 912)")]},
@@ -59,14 +59,15 @@ PATCH = {
   repl={"gist": [("Door 1 looks near-exhausted", "Door 1 is measured to be nearly exhausted (a floor under every cover, within 0.8 nat of the best)")]},
   detail_add="The measurement is empirical; the only theorem, the exhaustive floor of 777 rows against the best cover's 1,248, is far from closing the door."),
 "m_staircase": dict(
-  repl={"gist": [("or about 4 nats of rounding mathematics plus a 10× fleet.", "or a 10× fleet plus rounding mathematics, now measured at no more than 0.8 to 1.3 nats.")],
+  repl={"note": [("seven records in two days.", "six record-setting finds in three days (22 to 24 Nov).")],
+        "gist": [("or about 4 nats of rounding mathematics plus a 10× fleet.", "or a 10× fleet plus rounding mathematics, now measured at no more than 0.8 to 1.3 nats.")],
         "detail": [("(146,191, 157,837, 158,209)", "(146,191, 157,837, 158,209, 160,357)")]}),
 "e_c15907": dict(
   repl={"detail": [("so where complete covers stop is unknown.", "so complete covers on the 89 primes end near 16,000 (by a measured count of covers), and 15,907 ≤ D(89) < 35,000 is proved by exhaustive search.")],
         "note": [("against 7.4% found by search", "against 7.5% found by search")]},
   detail_add="A 94th prime (499) does not pay; a local search around the cover finds nothing; complete covers continue on larger sets to 41,659 (167 moduli, Lean-checked), 70,111 (238) and 98,731 (302)."),
 "m_thm1": dict(
-  detail_add="Since 24 Nov: a sketch for beating the constant exists (pairs of survivors struck by one large prime and a deletion argument, giving (1 + δ)·1.349 with δ about 0.1 measured; a Rödl nibble for any constant), certified covers reach 4 to 5 times the proved constant (up to 614,101 on 1,228 moduli), and the research session conjectures D(n) ≈ 1.1275 · r ln² r."),
+  detail_add="Since 24 Nov: a sketch for beating the constant exists (pairs of survivors struck by one large prime and a deletion argument, giving (1 + δ)·1.349 with δ about 0.1 measured; a Rödl nibble for any constant), certified covers reach 3.5 to 5 times the proved constant (up to 614,101 on 1,228 moduli), and the research session conjectures D(n) ≈ 1.1275 · r ln² r."),
 "m_thm2": dict(
   detail_add="A computed non-asymptotic bound at record size now exists too: D(89) < 35,000 by exhaustive search (4.6·10^8 nodes), and D(n) is known exactly to n = 35. Lean shows that depth below the next prime squared minus two for every n would imply Goldbach."),
 "m_lower": dict(
@@ -77,7 +78,7 @@ PATCH = {
 "m_h1": dict(
   detail_add="A direct test at Q = 60,000 (1,184 against 1,186 successes) agrees with (1 − p)^rows, and a closed formula with one fitted constant for the dependence between the rows of one N reproduces the prize counts to within 0.1 nats."),
 "s_prize": dict(
-  detail_add="The 1/ln² z regularity of the table is explained: Lean's thinning law makes the deep table the shallow one at another temperature, and rows fall like (ln z)^−a with a = 2.0 to 2.1 (measured β 1.22 to 1.32); the whole table follows from one shallow table within 0.4 nats from depth 5,000. The prize is the same function as the floor under covers."),
+  detail_add="The 1/ln² z regularity of the table is explained: if the primes between two depths kill rows independently the deep table is the shallow one at another temperature (Lean's thinning law proves independence a safe direction above Q, and the table's depths lie below Q), and rows fall like (ln z)^−a with a = 2.0 to 2.1 (measured β 1.22 to 1.32); the whole table follows from one shallow table within 0.4 nats from depth 5,000. The prize is the same function as the floor under covers."),
 "s_score": dict(
   detail_add="Row sharing by convolution is now priced: with the primes of a stretch known a number needs about 68 marks, four times cheaper per number but a million times worse per operation, and it excludes covers (see ‘Neighbouring N share the prime map’)."),
 "s_ladder": dict(
@@ -85,9 +86,9 @@ PATCH = {
         "detail": [("as of 2026-11-23.", "as of 2026-11-25.")]}),
 "s_verdict": dict(
   repl={"note": [("As of 23 November:", "As of 25 November:")]},
-  detail_add="Update of 25 Nov: still none known, none ruled out. The covers in use are the best there are (better covers are not a way to 10%); the numbers wanted exist (about 10^175 even N below 10^200 have g ≥ 213,070) but 10^200 only pins residues up to 463; a perfect search at the fleet's sieve depth stops near 16% of the ceiling. New: the SAT reduction for arbitrary rows, row sharing priced and found incompatible with covers, and no lower bound against algorithms on prime rows from any known technique."),
+  detail_add="Update of 25 Nov: still none known, none ruled out. By measurement the covers in use are the best there are (better covers are not a way to 10%); the numbers wanted exist (about 10^175 even N below 10^200 have g ≥ 213,070) but 10^200 only pins residues up to 463; a perfect search at the fleet's sieve depth stops near 16% of the ceiling. New: the SAT reduction for arbitrary rows, row sharing priced and found incompatible with covers, and no lower bound against algorithms on prime rows from any known technique."),
 "v_brainstorm": dict(
-  detail_add="One later conclusion of the brainstorm README was retracted on 24 Nov: ‘sharp designs within 100–200 of the weighted objective, vectors stay’ was wrong; the same weights showed near-optimal covers differing by 9 to 11 weighted rows (family B, about +1,000 expected record, about 0.2 nat), still consistent with ‘nothing worth a nat’."),
+  detail_add="One later conclusion of the brainstorm README has since been retracted: ‘sharp designs within 100–200 of the weighted objective, vectors stay’ was wrong; the same weights showed near-optimal covers differing by 9 to 11 weighted rows (family B, about +1,000 expected record, about 0.2 nat), still consistent with ‘nothing worth a nat’."),
 "m_errata": dict(
   detail_add="Added since: the soft-threshold conclusion of the brainstorm README (retracted); the D(n) counts for n = 25 to 27 (withdrawn after an array overflow, rerun with the same answers); the law's limit constant (1.349, then open, then 1.1275 within two hours, and since qualified by the referee check); marks per N at 170,000 (83, then 68); 4,500 corrected to 4,700 digits for a forced gap of 10^6; the planning horizon (8.5 and 8.2 days corrected to 8.9; 29M to 52M members a second); the entropy-zero plateau estimate (about 10 rows early at 170,000). On this map: the primality chains are 26 steps for 158,209 and 21 for 160,357 (the first version of the map said 27), and the earlier ladder's range is 17 to 31 steps."),
 "e_threshold": dict(
