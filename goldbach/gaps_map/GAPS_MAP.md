@@ -1,7 +1,7 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-190 results (95 read from the Lean source, 95 from documents, three of the latter being Lean statements of 25 Nov taken from the library's statement file) and 426 links; this note says what the structure shows.
+192 results (95 read from the Lean source, 97 from documents, three of the latter being Lean statements of 25 Nov taken from the library's statement file) and 436 links; this note says what the structure shows.
 Snapshot of 2026-11-25, about 09:00 UTC: Lean library read at `a1c77dc` (branch `ccr-36ca7b46-8twf14`), research at `48c73de`
 (`ccr-d4a17dd0-7uu03r`), the exact-search session at `018b7ed` (`ccr-b8c25887-i6tn9f`), the campaign at `ebb6e1e`
 (`ccr-8ffe9d7a-4ni11u`), the archipelago study at `d960f7f` (`ccr-c6e00296-3g7fp9`), the lead's merge at `43ab0b3`
@@ -256,3 +256,14 @@ modelled on an OpenAI preprint on prime gaps. So (a) and (b) are probably not ne
 unchecked observation of mine: the block combined with that lemma should give ln N·(ln ln N)³·ln₄N/(ln₃N)². Gaps of the search: the classical papers
 (Westzynthius, Erdős, Rankin) and pre-2000 Goldbach literature were not read.
 
+The scoring of mechanisms outside the closure grammar (`MECHANISMS.md`; 14:55 UTC), requested by the research session for the lead: seven
+mechanisms on three exact miniatures, each tested out of sample. The map has two boxes for it (the table; the neighbour search) and a sentence added
+to the boxes of the miniature, the brainstorm and the archipelagos. In nats against cover first: anything computed from the residues mod 3 to 23 is worth
+at most 0.1 (a Bayes-optimal statistic, confirmed out of sample); the size of N 0.1 to 0.3 (about 0.1 at 200 digits); an early-abort funnel 0 to 0.4
+(0.4 to 0.95 at 100 successes once verification is priced in modexps); neighbours of found successes 0.02; the neighbourhood of perfect squares −1 to −1.7
+(29 nats of density per forced row); a coherent block used as an order, and N/2 prime, about nothing. One mechanism, neighbours of near-successes with clean
+shifts, reaches +1.45 nats at 127 successes (+0.9 to +1.56 and +0.7 to +1.36 on the two other miniatures) in the scoring rule's own unit. It is below a nat at
+30 successes or fewer, goes to between −0.8 and +0.2 when verification is priced, and the research session's identity bounds it at +0.035 nats at the
+campaign's cover (the neighbours hold 3.6% of the member's own success mass there, against 5 to 14 times on the miniature). The lesson for the structure:
+the miniature's free verification rewards any mechanism that uses the exact primality of nearby integers; the comparison that matters has to be made in
+modexps, against sieve-then-verify.

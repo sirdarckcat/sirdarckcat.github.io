@@ -100,4 +100,11 @@ PATCH = {
   repl={"detail": [("The record 158,209 reaches about ten times further", "The record 160,357 reaches about ten times further")]}),
 "r_cover_more": dict(
   repl={"note": [("The record 158,209 is still about ten times higher because it adds luck.", "The record 160,357 is still about nine times higher than the best of these (16,981) because it adds luck.")]}),
+# ---------------- the mechanism scoring (25 Nov, 14:55 UTC)
+"s_miniature": dict(
+  detail_add="Seven mechanisms outside the closure grammar were scored on this miniature and on two variants (N below 2·10⁹; Q = 900), each out of sample: see the box ‘Seven mechanisms outside the closure grammar, scored on the exact miniature’."),
+"v_brainstorm": dict(
+  detail_add="A later scoring on the exact miniature (MECHANISMS.md) puts numbers on seven candidates: none gains a nat at real cost, and the one that does in the scoring rule's own unit is bounded at +0.035 nats at the campaign's cover."),
+"t_archip": dict(
+  detail_add="What the neighbours can give at the campaign's cover is bounded: the success mass of all neighbours is 3.6% of the member's own there, a ceiling of +0.035 nats (box ‘Neighbours of near-successes’)."),
 }

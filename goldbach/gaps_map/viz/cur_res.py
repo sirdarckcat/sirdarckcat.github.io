@@ -35,3 +35,11 @@ assert not (set(_ns["RE"]) & set(R_NODES)), "draft box id collides"
 assert not (set(_ns["RE_EDGES"]) & set(R_EDGES)), "draft link collides"
 R_NODES.update(_ns["RE"])
 R_EDGES.update(_ns["RE_EDGES"])
+
+# Added at 14:55 UTC on 25 Nov: the scoring of mechanisms outside the closure grammar (cur_res_f.py).
+_ns = {}
+exec(open(os.path.join(_V, "cur_res_f.py")).read(), _ns)
+assert not (set(_ns["RF"]) & set(R_NODES)), "mechanism box id collides"
+assert not (set(_ns["RF_EDGES"]) & set(R_EDGES)), "mechanism link collides"
+R_NODES.update(_ns["RF"])
+R_EDGES.update(_ns["RF_EDGES"])
