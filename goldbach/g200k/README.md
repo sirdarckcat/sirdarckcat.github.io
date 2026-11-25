@@ -29,6 +29,7 @@ Digits of a hit = log10 M + log10 k, and with the cut the first found hit comes 
 | 400 | 206,593 | `../records/g200k_400digit_g206593/N.txt` (k = 70,144,479) | same | same | same scan | | | |
 | 347 | 216,289 | `../records/g200k_347digit_g216289/N.txt` (k = 302,750,559) | 141 moduli to 821, 1,115 rows (`cover348_141_k1115.txt`) | 10^7, emptiest 0.5%, K = 2^21 | 318.8M | 44.3M | 1 | 1.04 (4 cores, 16 min) |
 | (350) | none | | 142 moduli to 823, 1,113 rows (`cover350_k1113.txt`) | 10^7, emptiest 2%, K = 2^19 | 487.6M (its whole 350-digit range) | 273.7M | 0 | 7.5 |
+| 319 | 207,307 | `../records/g200k_319digit_g207307/N.txt` (k = 1,430,868,604) | 131 moduli to 743, 1,183 rows (`cover319_131_k1183.txt`) | 10^7, emptiest 0.8%, K = 2^21 | 1.443G | 295.5M | 1 | 6.4 (4 cores, 96 min) |
 
 The 350-digit phase: the 142-moduli cover's range below 10^350 ends at k = 4.82e8 (M has 341.3 digits) and held no hit
 (1.75 expected from its survivor counts, P(0) = 17%); the 141-moduli cover (M 338.4 digits, every member below 10^350 up to
