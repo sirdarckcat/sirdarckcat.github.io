@@ -114,6 +114,8 @@ both rows for exactly ∏_r (r − 1 − ν_r) of the vectors of nonzero classes
 q mod r and q′ mod r: r − 2 when r divides q − q′, r − 3 otherwise. So the averages over all covers of the rows, of the
 pairs of rows and of T are sums over the primes below Q with no cover in them: 2,150.67 rows, and
 E T / (E n(n − 1) × Σ 1/((s − 1)(s − 2))) = **0.8562**. The best cover of the file has 0.8556 and the greedy one 0.8560.
+The number of rows has standard deviation 24.2 over all covers (from E n(n − 1) − (E n)² + E n), so the best cover,
+with 1,502, lies 27 standard deviations below the mean, and its pair ratio is still the average one to 0.07%.
 
 **What is a theorem** (`GoldbachGaps/Cap/PairVariance.lean`, standard axioms):
 `variance_leftCount`, the formula for Var S as an identity over a full period of the sieving moduli;
