@@ -1992,8 +1992,9 @@ alone), and the ceiling of the game, the size at which a number with
 g ≥ Q first exists at all, is about L = √(2·C₂·π(Q)): the frontier a search
 can reach is at L = 2·C₂·π(Q)·ρ/(the logarithm of the trials it can afford),
 so it falls behind the ceiling like √π(Q) as the gap grows. With the
-recursion over the actual primes (rows about 2% below the best covers found
-where that could be checked):
+recursion over the actual primes (its rows are 2% below the best covers at
+the campaign's points and 4 to 7% below at the sizes of this game; see
+below):
 
 | gap Q = 200,000, digits | 100 | 150 | 200 | 220 | 230 | 240 | 260 | 300 | 350 | 400 | 500 | 600 | 800 | 1,000 | 1,300 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -2026,37 +2027,63 @@ ceiling, where the present design is 8.0% of its own); closeness is bought
 more cheaply at smaller sizes, as the project's earlier thresholds show,
 because at a fixed share of the ceiling E grows in proportion to the digits.
 What the dual game does offer at once is records of its own that need no
-GPU. On a processor the cost is the Fermat tests, not the members
-(`cover_dual_cpu.py`, `cover_dual_cpu.txt`; base-2 tests with gmpy2 on one
-core here take 0.11 ms at 200 digits, 0.30 at 300, 0.66 at 400, 30 at 1,500
-and 51 at 2,000, as the Opus session also measured). After a sieve to B a
-member keeps S of its rows, about Poisson with mean μ = E/p′,
-p′ = p·ln B/ln x, and it is a hit with chance (1 − p′)^S; a member that is
-not a hit costs about 1/p′ tests. Sieving is cheap next to testing, so one
-sieves many more members than one tests and tests only those with S below a
-cut: the hits sit at μ − E, the cut that minimises the cost per hit lies 2.5
-to 4 standard deviations below μ, and it keeps a few per cent of the hits or
-less while it saves most of the tests. With a sieve to 10^9 and 3 ns per
-sieve mark (an assumption; the sessions will measure it), CPU-hours per hit:
+GPU, and a test of the recursion far from where it was built. Both are
+under way since 25 November (uarch: 400, 350, 320 digits; this session: 300
+digits; Opus: the gap of 1,000,000), and the first thing they showed is that
+the table above is too hopeful by a factor of two to four in members:
 
-| gap 200,000, digits | 260 | 300 | 350 | 400 | 500 |
-|---|---|---|---|---|---|
-| every member tested | 49,000 | 650 | 18 | 1.3 | 0.04 |
-| only the emptiest tested | 3,200 | 55 | 2.0 | 0.18 | 0.009 |
+- Rows. The recursion's floor is low by 4 to 7% at these ratios of Q to D
+  (the test at small targets above). Converged tempering finds 1,218 rows at
+  300 digits where the table has 1,168 (the run's own entropy reaches zero
+  at 1,218 to 1,222, so that is the bottom, not the search), and the uarch
+  session's runs have 1,113 at 350 digits (100,000 sweeps) and 1,010 at 400
+  (200,000 sweeps) against 1,050 and 943. At 2,000 and 2,190 digits for the
+  gap of 1,000,000 the Opus session is at 2,829 and 2,595 rows against 2,315
+  and 2,039, not converged: at 629 moduli a sampler that proposes classes at
+  random hardly moves the large moduli, and that session wrote a move that
+  draws the class of a modulus from all its classes at once.
+- Tests. On a processor the cost is the Fermat tests, not the members
+  (`cover_dual_cpu.py`, `cover_dual_cpu.txt`). With gmpy2 on one core here a
+  base-2 test takes 0.11 ms at 200 digits, 0.30 at 300, 0.66 at 400, 30 at
+  1,500 and 51 at 2,000. The uarch session generalised its vector kernel to
+  any length the same morning (`fermatw` on its branch: 32 microseconds at
+  300 digits here, a factor 10.6).
+- The cut. After a sieve to B a member keeps S of its rows; S is binomial
+  with chance w = ln x/ln B per row (sd 0.69·√mean at B = 10^7, measured by
+  the Opus session; I first took it Poisson, which overstates the gain), a
+  survivor is prime with chance p′ = p/w, and a member that is not a hit
+  costs about 1/p′ tests. Sieving is cheap next to testing, so one sieves
+  many more members than one tests and tests only the emptiest; the best cut
+  lies 2 to 3.5 standard deviations below the mean and gains a factor 2 to
+  4 over testing every member.
 
-| gap 1,000,000, digits | 1,200 | 1,500 | 2,000 | 2,480 | 3,000 |
-|---|---|---|---|---|---|
-| every member tested | 71,000 | 420 | 3.4 | 0.38 | 0.09 |
-| only the emptiest tested | 12,000 | 100 | 1.3 | 0.19 | 0.05 |
+CPU-hours per hit with the best cut (sieve to 10^7 for the first gap, 10^9
+for the second; sieve speed as measured here with the uarch session's
+sieve200):
 
-So four cores for a day reach about 300 digits for a gap of 200,000 and
-about 1,500 digits for 1,000,000; near those sizes every 10 digits less cost
-a factor of 2 to 3 for the first gap and every 100 digits less a factor of
-2.4 to 5 for the second. Two sessions (uarch, Opus) started on these on 25
-November (for the gap of 200,000 with covers from a third, the contractor,
-and this session scanning 300 digits beside them); their row counts against
-the table above are a test of the recursion far from where it was built.
-Results to follow here.
+| gap 200,000, digits | 400 | 350 | 300 | 260 |
+|---|---|---|---|---|
+| rows: the recursion's floor, found | 943, 1,010 | 1,050, 1,113 | 1,168, 1,218 | 1,285, |
+| members per hit with the cover found, powers of ten | 5.9 | 7.3 | 9.1 | (10.8 at the floor) |
+| CPU-hours, gmpy2 | 1.1 | 15 | 420 | (12,000 at the floor) |
+| CPU-hours, the vector kernel | 0.24 | 2.7 | 78 | |
+
+| gap 1,000,000, digits | 2,480 | 2,190 | 2,000 | 1,500 |
+|---|---|---|---|---|
+| rows: the recursion's floor, found so far | 1,683, 2,524 | 2,039, 2,595 | 2,315, 2,829 | 3,130, |
+| CPU-hours with the cover found, gmpy2 | 2.2 | 3.3 | 9.5 | (180 at the floor) |
+
+At 300 digits the calibration of the scan agrees with the calculation in
+every figure it prints (4.2 million members of one cover: 498.6 survivors a
+member against 495, a prime among the tested survivors once in 23.9 tests
+against 1/0.0418, e^(−20.86) per member against e^(−20.90), 10.4% of the hit
+mass at a cut that tests 2.4% of the members against 10.7%); the same
+calculation holds end to end in the uarch session's checks at 400 digits
+with smaller targets on the same cover (329 hits against 355 expected at
+Q = 30,000, 6 against 6.0 at 100,000, 10 against 9.0 at 130,000). So four
+cores reach 300 digits in about a day for the gap of 200,000 (16 hours
+expected here, started 09:36 UTC on 302 covers of 1,218 and 1,219 rows), and
+each 50 digits less cost a factor of about 30. Results to follow here.
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
