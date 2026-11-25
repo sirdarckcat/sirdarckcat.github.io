@@ -931,7 +931,17 @@ design triples the chance of 200,000 and gives up 6,500 of expectation and
 the 85% chance of passing 170,000. The engineering crumbs move the whole
 table by their nats (+0.65: 176,800 expected and 29.6% at 180,000 on the
 170,000 design; 0.80% at 200,000 on the 200,000 design), about 4,800 of g
-per nat. The expected record peaks at the present level: a cover built for
+per nat. The right tail of this table rests on one law, that a member
+which reaches a level then survives a geometric number of the alive rows
+beyond it, 1/p of them on average (the consultant session's point: were
+the true mean 1.26 times that, 200,000 on the present design would have
+0.59%, not 0.13%). Measured on 666 hits of the uarch session's calibration
+runs at 100 and 150 digits (`frontier_overshoot.py`, `.txt`): 14,940 rows
+survived against 15,329 expected, 0.975 ± 0.040, mid-PIT 0.491 ± 0.011;
+with the consultant's samples (303 exact hits of a miniature 0.98 ± 0.07,
+46 published record holders 1.26 ± 0.18, the fleet's 11 events
+1.33 ± 0.31) the pooled ratio is 0.99 ± 0.03. The law holds.
+The expected record peaks at the present level: a cover built for
 165,000 on the same moduli (1,212 rows there, 1,253 below 170,000) gives
 174,600, as the 175,000 cover does on the other side. Among the 3,924
 covers of the fleet's family file the rows above 170,000 differ too little
@@ -1093,6 +1103,14 @@ recomputed here unless said).
   selectivity, at most 0.10 nat, where one more scanned member buys a
   full nat; and the output is scattered members.
 
+- *The cost side, revised by its author the same evening* (uarch session,
+  `RESULTS.md` at 99d4c1a): the two-stage count below is withdrawn before
+  being built (its filter needs one lookup per large-prime mark, about
+  three times what it saves on the card; the selection numbers stand);
+  carried rounds are written and proved against production on the CPU, and
+  are expected to shorten a batch by 2 to 6% at a keep of 1.5% and to
+  remove 5.7% wasted tests at 0.75%, so the two items that remain are
+  complements, about 0.1 to 0.2 nat together.
 - *The cost side from first principles* (uarch session,
   `goldbach/g200k/costside/RESULTS.md` on its branch; measured on the real
   1,502-row cover, G4 costs from the GPU session). The only positive nats
