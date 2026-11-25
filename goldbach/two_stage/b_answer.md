@@ -56,3 +56,33 @@ window W = 2²⁴ and keeps the emptiest 1.5% (f = 0.985). `design_b.py` does th
 - The only gain over 0.2 nat is the bigger window above (+0.3 to 0.4 nat net), and it depends on Δ and on whether the sieve can
   hold 2³⁰ members per vector. **[O]**
 - The numbers needed to settle it are ρ and φ from the fleet: ns per mark, ns per start position, ns per Fermat test, all per card.
+
+## Addendum: the fleet's constants (GPU session, 16:05Z, relayed by the research session)
+
+Here ρ = sieve cost per member / (tests per kept member × ns per test). It is 0.0054 on the G4, 0.0079 on the L4 and 0.0093 on the T4.
+δ = 1.213 comes from the L4's own capture shares (25.2% at 3%, 16.8% at 1.5%). **[M]**
+
+- **G4: best keep 0.85%, +0.04 nat over 1.5% and +0.19 over 3%.**
+  - If its sieve (51 ms) runs beside the Fermat stage and the other 35 ms of a window are fixed, the wall time is
+    max(51, 148·keep/1.5%) + 35 ms. The best keep is then 0.6%, +0.11 nat (keep 0.75% gives +0.10).
+  - With the 1,502-row cover's δ = 1.311: best keep 0.77%, +0.06 nat.
+- **L4 and T4:** at 1.19% and 1.36% the gain over 1.5% is under 0.01 nat. Over their 3% it is +0.11 and +0.08.
+- **The window-for-modulus trade is closed on the G4.**
+  - A bigger window can save only the fixed 24 ms a window, 1.43 ns of 11.59 ns a member (+0.13 nat). Its price is 9 rows:
+    9·0.0243 − 0.08 = +0.14 nat. So it gains nothing.
+  - Sieving to 10⁹ costs 147 marks at 0.13 ns, plus (prime, row) visits. It loses 1.2 nat at W = 2²⁴ and 0.8 nat at W = 2³⁰,
+    even though it captures 19.8% instead of 16.9%.
+- **Why the L4 A/B disagreed with the model (+8% predicted, −1.35% measured).**
+  - The A/B implies an effective ρ = 0.0163. The L4's sieve and other costs give 0.0090. So about 22 ns a member, 0.75 s of the
+    4.01 s window, does not shrink with the keep.
+  - Equivalently, at 1.5% the Fermat stage took about 1.79 s, not half of 3.09 s. Its fixed part is about 0.49 s a window.
+  - With that fixed part counted, the model gives the best keep at 2.2%, with 1.5% and 3% within 0.02 nat of each other. That is
+    what the A/B found.
+  - The likely cause **[O]**: the tail of the test stage. A kept member dies at a geometric number of tests, so a window needs
+    about ln(n_kept)/λ rounds whatever n_kept is. The last rounds run with the GPU underfilled, and each round pays its launch
+    and synchronization.
+  - Two fixes. Fit the wall time per window at three or more keeps, as wall = a + b·keep, and optimize H(keep)/wall(keep).
+    Or carry each window's unfinished members into the next window's test batches, which removes most of a; the linear model's
+    optimum then holds.
+  - The G4's production Fermat rate (19.9M a second, against 24.6M in the benchmark) suggests a similar loss there. An A/B at
+    keep 0.75% on the G4 would settle whether its +0.04 to +0.11 nat is real.
