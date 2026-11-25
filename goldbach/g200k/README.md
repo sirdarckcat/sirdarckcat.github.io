@@ -14,6 +14,12 @@ are all composite is a hit (checked: every N - q, q < Q prime, BPSW-composite; g
 | `make_record.py found.jsonl spec.json outdir` | a hit's record: N.txt, record.json, ../verify_record.py evidence, ../fscan/check.py from N alone, MANIFEST |
 | `cover_ils.c` | iterated local search for covers (best-class moves against the uncovered rows, random kicks); does not beat the tempering covers (below) |
 | `cover400_k1010.txt`, `cover350_k1113.txt` | tempering covers (`../ptcover/ptcover_fast`, 200,000 and 100,000 sweeps): 159 moduli to 941 / 1,010 rows; 142 moduli to 823 / 1,113 rows |
+| `costcalc.py cover ...` | expected cost of a hit for a cover: digits of the first found hit, raw members per hit, the best cut, CPU-hours (model: survivors binomial, p_B = e^gamma ln B / ln N, test times of fmw by limb count) |
+| `../ptcover/ptcover_hb.c` | ptcover_fast with heat-bath moves for the moduli above 61 in the cold replicas (new class drawn from all r - 1 with weight e^(-beta dk), one pass over the uncovered rows) |
+
+Digits of a hit = log10 M + log10 k, and with the cut the first found hit comes near k = 1 / (E[(1-p)^a] h), about 10^(m + 1.2)
+(h = the hit mass kept), so a cover must be chosen for the digits of its hit, not of M: 134 moduli (M 318.1 digits) give hits near
+327 digits, which also needs fmw L = 22 (1,086 bits) instead of L = 21 (up to 1,080 bits, 325 digits), a much slower kernel here.
 
 ## Results
 
