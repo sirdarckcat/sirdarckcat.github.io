@@ -182,8 +182,10 @@ moduli, 407 rows) on three cores of the reviewer's container:
 
 The scan found it after 1.7 times the model's expected number of members; the quantities that do not depend on luck
 (rows alive after the sieve, the rate of probable primes, the hit mass kept by the cut, the cost per member) agree with
-the model within 1 to 5%. A 110-digit scan was still running when this was written (0.8 expected hits so far, none
-found); 120 and 130 digits were priced, not run, at about 10 to 15 and 100 to 170 CPU-hours a hit (`demo/SUMMARY.md`).
+the model within 1 to 5%. A 110-digit scan (53 moduli, 494 rows, 2.46 billion members, 2 CPU-hours) ended at the
+time limit with no hit where the model expected 1.21, a 30% event; both scans together are 1 found against 2.9
+expected. 120 and 130 digits were priced, not run, at about 10 to 15 and 100 to 170 CPU-hours a hit
+(`demo/SUMMARY.md`).
 
 N = 8223574663857043817842483455238569126110624927813137471170822278151226773853347935411335888798540538. Checked
 from N alone twice (the agent's script and mine, `demo/verify_g.py`): N − q fails a base-2 Fermat test for every odd

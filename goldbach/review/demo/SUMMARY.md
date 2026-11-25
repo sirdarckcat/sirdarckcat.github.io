@@ -14,10 +14,19 @@ N (100 digits, g = 47,881, k = 431,044,114):
 
 | log | members sieved | Fermat tests | CPU s | model E[found hits] (sum of (1-p_B)^survivors over tested members, p_B = 0.0973) | model E[raw hits] |
 |---|---|---|---|---|---|
-| scan110_s11.log | 547,356,672 | 168,776,196 | 1,600 | 0.2691 | 1.267 |
+| scan110_s11.log | 801,112,064 | 247,154,159 | 2,375 | 0.3939 | 1.854 |
 | scan110_s12_part1.log | 41,943,040 | 12,914,586 | 123 | 0.02063 | 0.0971 |
-| scan110_s12b.log | 1,077,903,360 | 332,624,740 | 3,164 | 0.53 | 2.495 |
-| total | 1,667,203,072 | 514,315,522 | 4,887 | 0.8197 | 3.859 |
+| scan110_s12b.log | 1,618,968,576 | 499,557,198 | 4,799 | 0.796 | 3.747 |
+| total | 2,462,023,680 | 759,625,943 | 7,297 | 1.211 | 5.698 |
+
+## 110 digits: NO hit (scan stopped by the 60-minute limit)
+
+Q = 57,405 (10% of ceiling(10^110) = 574,043).  Covers: 53 moduli to 251, 494 rows (seeds s11, s12, s13; 20,000 sweeps each), M = 10^100.81,
+k < 1.556e9 below 10^110 per cover.  Model before the scan: p = 0.03934, R*p = 19.44, raw members per hit 4.1e8 at 10^110; with the 3% cut
+(21.2% of the hit mass) 2.0e9 members sieved and about 6,000 CPU-s per found hit.  Scanned from k = 6e8 (s11 to 1.40e9, s12 to its end, s13 to 1.35e9):
+2.46e9 members, 7.6e8 Fermat tests, 7,297 CPU-s, 37 minutes wall on 4 processes: the model expects 1.21 found hits there, 0 were found
+(P(0) = 30% under the model).  Not a discrepancy by itself; with the 100-digit wait (1.72 expected at the first hit) the two scans together
+had 2.9 expected found hits and produced 1 (P(at most 1) = 21%).
 
 ## What ran
 
