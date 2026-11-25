@@ -112,8 +112,9 @@ cells have 22 rows left and 15 members):
 | 37 (199) | 6 | 10 | 14.6 | 26 | 5,708 |
 
 The gap between the scan of the best cells and the optimum is 0, 1, 0, 2 rows for the first four primes, 2 to 4 from
-the fifth to the nineteenth and 4 to 6 after; the optimum's own cell is 0 to 6 rows worse than the best (once 11),
-which puts it between the 3rd and the 80,000th cell of 36.5 million in cover-first order.
+the fifth to the nineteenth and 4 to 6 after; the optimum's own cell is 0 to 6 rows worse than the best, which puts
+it between the 3rd and the 83,000th cell of 36.5 million in cover-first order (once, at the twentieth prime, where
+the optimum is a single number, 11 rows worse: the 5 millionth cell).
 
 **The smallest instance** in which pinning cannot reach the optimum (`smallest.py`, `smallest_instance.txt`; searched
 with candidates above the rows, X at least 5Q, every pinnable set allowed, a set being pinnable when twice its
