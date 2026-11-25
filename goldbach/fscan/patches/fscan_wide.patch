@@ -1,0 +1,178 @@
+--- a/goldbach/fscan/fscan.c
++++ b/goldbach/fscan/fscan.c
+@@ -69,7 +69,7 @@
+ typedef __m512i vd_t;
+ #define vd_loadu(p) _mm512_loadu_si512(p)
+ #define vd_store(p, v) _mm512_storeu_si512(p, v)
+-#define vd_row(x, h) _mm512_slli_epi32(_mm512_cvtepu16_epi32((h) ? _mm512_extracti64x4_epi64(x, 1) : _mm512_castsi512_si256(x)), 5)   /* 32 * class of the 16 lanes of half h */
++#define vd_row(x, h) _mm512_slli_epi32(_mm512_cvtepu16_epi32((h) ? _mm512_extracti64x4_epi64(x, 1) : _mm512_castsi512_si256(x)), ROWSH)   /* 8 MW * class of the 16 lanes of half h */
+ #define vd_add(a, b) _mm512_add_epi32(a, b)
+ #else
+ #define VB 32
+@@ -94,7 +94,7 @@
+ typedef __m256i vd_t;
+ #define vd_loadu(p) _mm256_loadu_si256((const __m256i *)(p))
+ #define vd_store(p, v) _mm256_storeu_si256((__m256i *)(p), v)
+-#define vd_row(x, h) _mm256_slli_epi32(_mm256_cvtepu16_epi32((h) ? _mm256_extracti128_si256(x, 1) : _mm256_castsi256_si128(x)), 5)
++#define vd_row(x, h) _mm256_slli_epi32(_mm256_cvtepu16_epi32((h) ? _mm256_extracti128_si256(x, 1) : _mm256_castsi256_si128(x)), ROWSH)
+ #define vd_add(a, b) _mm256_add_epi32(a, b)
+ #endif
+ #define NB 8                          /* score vectors per chunk, all kept in registers (a multiple of 4) */
+@@ -130,10 +130,22 @@
+ typedef uint8_t u8;
+ typedef uint32_t u32;
+ 
+-#define NW 24                         /* words of the alive bitset over the rows (odd primes < Q) */
++#ifndef NW
++#define NW 32                         /* words of the alive bitset over the odd primes < Q: 2,048 of them, Q up to 17,863 */
++#endif
+ #define NR 13
+ #define MAXS 256                      /* score primes */
+-#define MAXROWS 256
++#ifndef MAXROWS
++#define MAXROWS 256                   /* rows left by the cover primes; -DMAXROWS=512 for the classes above 256 (AVX-512) */
++#endif
++#define MW (MAXROWS / 64)             /* words of a row mask */
++#if MW != 4 && MW != 8
++#error "MAXROWS must be 256 or 512"
++#endif
++#if MW == 8 && !defined(__AVX512F__)
++#error "MAXROWS 512 needs AVX-512"
++#endif
++#define ROWSH (MW == 8 ? 6 : 5)       /* log2 of the bytes of a row mask */
+ static const int RS[NR] = {3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43};
+ 
+ static int Q, L, Rlo, Rhi, rref, theta0, Ta, nq, ns, sample_bits = 12, do_dump, do_hist;
+@@ -161,19 +173,19 @@
+     double exp_tested, exp_corr, mass_all, mass_cap;
+ } stats_t;
+ 
+-typedef struct { u128 N; u64 m[4]; u64 k; } member_t;
++typedef struct { u128 N; u64 m[MW]; u64 k; } member_t;
+ 
+ typedef struct {
+     u8 *cbuf;                         /* score tables: per prime s + CK bytes, periodic */
+-    u64 *mbuf;                        /* row masks: per prime s entries of 4 words */
++    u64 *mbuf;                        /* row masks: per prime s entries of MW words */
+     int rows[MAXROWS], nrows;
+-    u64 rowmask[4];                   /* bits 0..nrows-1 */
++    u64 rowmask[MW];                  /* bits 0..nrows-1 */
+     int rowq[MAXROWS];                /* the prime of each row */
+     u64 n0;
+     member_t *queue; int qn, qcap;
+     member_t slot[FM_LANES]; int act[FM_LANES];
+     stats_t st;
+-    u64 hs[256], ha[257];
++    u64 hs[256], ha[MAXROWS + 1];
+ } tls_t;
+ 
+ static u128 parse_big(const char *s) {
+@@ -241,7 +253,8 @@
+             T->st.tests++;
+             if ((res >> i) & 1) { T->st.prps++; T->act[i] = 0; continue; }
+             m->m[row[i] >> 6] &= ~(1ull << (row[i] & 63));
+-            if (!(m->m[0] | m->m[1] | m->m[2] | m->m[3])) { success(T, m); T->act[i] = 0; }
++            u64 any = 0; for (int w = 0; w < MW; w++) any |= m->m[w];
++            if (!any) { success(T, m); T->act[i] = 0; }
+         }
+     }
+ }
+@@ -263,6 +276,22 @@
+     }
+     /* the rows that some prime kills, OR-ed (the load folds into the vpor), four accumulators */
+     const u8 *mb = (const u8 *)T->mbuf;
++#if MW == 8
++    __m512i k0 = _mm512_setzero_si512(), k1 = k0, k2 = k0, k3 = k0;
++    int p = 0;
++    for (; p + 4 <= ns; p += 4) {
++        k0 = _mm512_or_si512(k0, _mm512_load_si512((const void *)(mb + off[p])));
++        k1 = _mm512_or_si512(k1, _mm512_load_si512((const void *)(mb + off[p + 1])));
++        k2 = _mm512_or_si512(k2, _mm512_load_si512((const void *)(mb + off[p + 2])));
++        k3 = _mm512_or_si512(k3, _mm512_load_si512((const void *)(mb + off[p + 3])));
++    }
++    for (; p < ns; p++) k0 = _mm512_or_si512(k0, _mm512_load_si512((const void *)(mb + off[p])));
++    k0 = _mm512_or_si512(_mm512_or_si512(k0, k1), _mm512_or_si512(k2, k3));
++    _mm512_storeu_si512((void *)mask, _mm512_andnot_si512(k0, _mm512_loadu_si512((const void *)T->rowmask)));
++    int a = 0;
++    for (int w = 0; w < MW; w++) a += __builtin_popcountll(mask[w]);
++    return a;
++#else
+     __m256i k0 = _mm256_setzero_si256(), k1 = k0, k2 = k0, k3 = k0;
+     int p = 0;
+     for (; p + 4 <= ns; p += 4) {
+@@ -275,6 +304,7 @@
+     k0 = _mm256_or_si256(_mm256_or_si256(k0, k1), _mm256_or_si256(k2, k3));
+     _mm256_storeu_si256((__m256i *)mask, _mm256_andnot_si256(k0, _mm256_loadu_si256((const __m256i *)T->rowmask)));
+     return __builtin_popcountll(mask[0]) + __builtin_popcountll(mask[1]) + __builtin_popcountll(mask[2]) + __builtin_popcountll(mask[3]);
++#endif
+ }
+ u16 SPv[MAXS + 32] __attribute__((aligned(64))), RECv[MAXS + 32] __attribute__((aligned(64)));
+ 
+@@ -300,11 +330,11 @@
+         for (int j = 0; j < R; j++) {
+             int kap = (int)qm[T->rows[j]] - (int)a; if (kap < 0) kap += s;
+             ct[kap]++;
+-            mk[4 * kap + (j >> 6)] |= 1ull << (j & 63);
++            mk[MW * kap + (j >> 6)] |= 1ull << (j & 63);
+         }
+         for (int i = s; i < s + EXT; i++) ct[i] = ct[i - s];
+     }
+-    for (int w = 0; w < 4; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
++    for (int w = 0; w < MW; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
+     for (int j = 0; j < R; j++) T->rowq[j] = qs[T->rows[j]];
+     int th = theta0 + R - rref; if (th < 0) th = 0; if (th > 255) th = 255;
+     u128 lo = Xmin > n0 ? (Xmin - n0) / Mmod + 1 : 0;      /* first k with N > Xmin */
+@@ -362,7 +392,7 @@
+             int d = todo_d[i] & 0x3fff, issel = (todo_d[i] >> 14) & 1, issam = todo_d[i] >> 15;
+             u64 k = kc + d;
+             if (k < kmin || k > kmax) continue;
+-            u64 mask[4];
++            u64 mask[MW] __attribute__((aligned(64)));
+             int a = exact_stage(T, phi, d, mask);
+             if (issel) st->sel++;
+             if (!issam && (!issel || a > Ta)) continue;
+@@ -370,10 +400,10 @@
+             if (issam) { st->samples++; st->mass_all += w; if (issel && a <= Ta) st->mass_cap += w; if (do_hist) T->ha[a]++; }
+             if (!issel || a > Ta) continue;
+             st->kept++; st->exp_tested += w; st->exp_corr += w * exp(c2 * odds2 * a * (a - 1) / 2);
+-            if (a == 0) { member_t m0 = {(u128)n0 + (u128)k * Mmod, {0, 0, 0, 0}, k}; success(T, &m0); continue; }
++            if (a == 0) { member_t m0 = {(u128)n0 + (u128)k * Mmod, {0}, k}; success(T, &m0); continue; }
+             if (T->qn == T->qcap) { T->qcap *= 2; T->queue = realloc(T->queue, T->qcap * sizeof(member_t)); }
+             member_t *m = &T->queue[T->qn++];
+-            m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
++            m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 8 * MW);
+         }
+         if (T->qn >= 4 * FM_LANES) fermat_drain(T, FM_LANES);
+ #if SCORE_MODE != 0
+@@ -470,7 +500,7 @@
+         else if (!strncmp(argv[i], "one=", 4)) { one_n0 = strtoull(argv[i] + 4, NULL, 10); have_one = 1; }
+         else { fprintf(stderr, "unknown argument %s\n", argv[i]); return 2; }
+     }
+-    if (Rhi > MAXROWS || Q > 64 * NW * 8) { fprintf(stderr, "Rhi or Q too large\n"); return 2; }
++    if (Rhi > MAXROWS) { fprintf(stderr, "Rhi too large (MAXROWS %d)\n", MAXROWS); return 2; }   /* Q: the row count check below */
+     /* rows */
+     char *sv = calloc(Q > L + 1 ? Q : L + 1, 1);
+     int lim = Q > L + 1 ? Q : L + 1;
+@@ -490,7 +520,7 @@
+         prodL *= 1.0 - 1.0 / p;
+         if (p <= RS[NR - 1]) continue;
+         if (ns >= MAXS) { fprintf(stderr, "too many score primes\n"); return 2; }
+-        SP[ns] = p; coff[ns] = ctot; ctot += p + EXT; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
++        SP[ns] = p; coff[ns] = ctot; ctot += p + EXT; moff[ns] = mtot; mtot += MW * p; ckm[ns] = CK % p;
+         minv[ns] = invmod(Mmod % p, p);
+         qM[ns] = malloc(nq * sizeof(u16));
+         for (int x = 0; x < nq; x++) qM[ns][x] = (u16)((u64)(qs[x] % p) * minv[ns] % p);
+@@ -597,10 +627,10 @@
+            tag, total.vectors, total.members, total.sel, total.kept, total.tests, total.prps, total.found, total.exp_corr, total.exp_tested,
+            total.mass_all * scale, total.mass_cap * scale, total.samples, dt, threads, total.members / (dt > 0 ? dt : 1));
+     if (do_hist) {
+-        u64 hs[256] = {0}, ha[257] = {0};
+-        for (int t = 0; t < threads; t++) { for (int i = 0; i < 256; i++) hs[i] += TT[t]->hs[i]; for (int i = 0; i < 257; i++) ha[i] += TT[t]->ha[i]; }
++        u64 hs[256] = {0}, ha[MAXROWS + 1] = {0};
++        for (int t = 0; t < threads; t++) { for (int i = 0; i < 256; i++) hs[i] += TT[t]->hs[i]; for (int i = 0; i <= MAXROWS; i++) ha[i] += TT[t]->ha[i]; }
+         printf("HS"); for (int i = 0; i < 256; i++) if (hs[i]) printf(" %d:%lu", i, hs[i]); printf("\n");
+-        printf("HA"); for (int i = 0; i < 257; i++) if (ha[i]) printf(" %d:%lu", i, ha[i]); printf("\n");
++        printf("HA"); for (int i = 0; i <= MAXROWS; i++) if (ha[i]) printf(" %d:%lu", i, ha[i]); printf("\n");
+     }
+     return 0;
+ }
