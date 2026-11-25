@@ -111,7 +111,7 @@ N5 = {
   title="The covering bound in depth form: covers exist up to 1.349 · y ln y",
   gist="For every c below e^γ/(2C₂) = 1.349 and all large y there are classes modulo the odd primes up to y such that every odd prime below c·y·ln y lies in one of them. In depth language: the cover depth of the odd primes up to y is at least c·y·ln y.",
   detail="This is the cover from which the asymptotic bound on g(N) is built (the layered cover of Cap/Layers.lean and Mertens' third theorem), stated so that it can be read as a lower bound for D(n) and for the count of covers. It needs no hypothesis. Combined with the count, it says the number of complete covers is positive, indeed exponentially large, in that range.",
-  note="The proved lower bound D(n) ≳ 1.349·p_n ln p_n, against which the certified covers of the previous boxes sit 3.5 to 5 times higher. Superseded in order on 25 Nov at paper level: see the box ‘A structured prefix beats random classes’.",
+  note="The proved lower bound D(n) ≳ 1.349·p_n ln p_n, against which the certified covers of the previous boxes sit 3.5 to 5 times higher. Superseded on 25 Nov: formally in the order ln X·(ln ln X)²/(150000 (ln ln ln X)²) by the box ‘The order of the covering bound in the kernel’.",
   chips=["CoverBound.lean", "Cap/Layers.lean"]),
 # ------------------------------------------------------------------ a limit on search methods
 "c_hardness": dict(group="lim", status="lean", impact="steer", since="new",

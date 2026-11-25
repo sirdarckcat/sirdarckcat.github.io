@@ -1,7 +1,7 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-187 results (95 from the Lean library, 92 from research documents) and 417 links; this note says what the structure shows.
+190 results (95 read from the Lean source, 95 from documents, three of the latter being Lean statements of 25 Nov taken from the library's statement file) and 426 links; this note says what the structure shows.
 Snapshot of 2026-11-25, about 09:00 UTC: Lean library read at `a1c77dc` (branch `ccr-36ca7b46-8twf14`), research at `48c73de`
 (`ccr-d4a17dd0-7uu03r`), the exact-search session at `018b7ed` (`ccr-b8c25887-i6tn9f`), the campaign at `ebb6e1e`
 (`ccr-8ffe9d7a-4ni11u`), the archipelago study at `d960f7f` (`ccr-c6e00296-3g7fp9`), the lead's merge at `43ab0b3`
@@ -28,13 +28,13 @@ sides meet at about sixty points (section 3).
 | Records and certificates | 18 | Lean | g = 160,357 (200 digits, 24 Nov), g = 158,209, the earlier ladder, the pure covers (15,907 on 89 primes; up to 16,981 on 93), a family of 21,378,978 covered numbers, the record holders up to 10^12, a generator for A025018 proved correct, Goldbach and the 26 record holders below 2^25 by a kernel-run sieve; the certificate machinery: failed Fermat test ⇒ composite, block check, least-summand certificate, one elliptic-curve primality step and the group law it runs |
 | Covering principle | 8 | Lean | primorial core, covering certificate, every cover is realised, prime moduli suffice, kills are residues, a cover gives a number below a cap |
 | Cover depth and counting | 31 | Lean, docs, data | **new**: D(n) defined, exact in the kernel for up to nine moduli, certified covers up to 614,101 on 1,228 moduli, the count of covers and its exact pair-weight step (Lean); exact D(n) to 35, D(89) < 35,000, the measured law ln g0 = θ − Q/ln² x, its derivation, the limit 1.1275 conjectured on 24 Nov and withdrawn on 25 Nov (its referee check, the entropy of the small moduli that undoes it, the structured prefix that shows the replacement is not derived either, a check of mine whose verdict I withdrew), why 1.349 is not the truth (research, uarch, Lean scripts, archipelago) |
-| Asymptotic bounds | 14 | Lean | every odd prime is a least summand; effective form under Linnik; counting bound; covering bounds 0.73, 1.2 and 1.349 times ln X·ln ln X, with Mertens' third theorem proved from Mathlib |
+| Asymptotic bounds | 16 | Lean | every odd prime is a least summand; effective form under Linnik; counting bound; covering bounds 0.73, 1.2 and 1.349 times ln X·ln ln X, with Mertens' third theorem proved from Mathlib |
 | Counting laws | 7 | Lean | budget law, first-moment pigeonhole, no free lunch, layered covers, value-set ceiling |
 | Search limits | 16 | Lean | hit mass, selection and tilt identities, the thinning law, lattice and Johnson radius, black-box bound, population bound, merge cost, list gain (0.207 rows per nat above Q), needles, 21 settled ideas, finding a cover for arbitrary rows is as hard as SAT |
 | Function-field model | 8 | Lean | Stickelberger–Swan, parity theorem, deserts N = λ·V^p, discriminant as a resultant |
 | Search-code proofs | 11 | Lean | CPU vector kernels and GPU kernels compute exactly the base-2 Fermat test |
 | Research: models and results | 54 | docs, data | cost model E, ceiling 2.13M, prices, closure theorem, three doors (door 1 now measured: a floor under every cover), rows above the design level, the design menu, rounding gap, decoding barrier, WP12 theorems, the sublinear programme and the function-field toy, a model of g(N) with no primes; eight tests of the model on exhaustive data near 10^12 to 10^18 (tagged 'exhaustive test') |
-| Research: searches and records | 20 | docs, logs | the three games and the fixed-gap game, the fleet campaign and its state, how 160,357 was found, the 491 covers, the GPU sieve chain, IFMA Fermat tests, height records, megagap, engines, cover optimisers, verification legs |
+| Research: searches and records | 21 | docs, logs | the three games and the fixed-gap game, the fleet campaign and its state, how 160,357 was found, the 491 covers, the GPU sieve chain, IFMA Fermat tests, height records, megagap, engines, cover optimisers, verification legs |
 
 ## 3. Where the two sides meet
 
@@ -190,7 +190,7 @@ Rebuild: `python3 gdata.py 1e18 2e7 e18` (and 1e12, 1e15), then `theory.py`, `ar
 
 ## 10. Update of 2026-11-25
 
-Built from the heads listed at the top. 51 boxes are new (19 Lean theorems, 32 research or computation, two of them my own: a draft proof and a check of the limit), 33 existing boxes
+Built from the heads listed at the top. 54 boxes are new (19 Lean theorems read from the source, 35 from documents: research and computation, two of them my own (a draft proof and a check of the limit), and three of the last hours (two kernel theorems and the fixed-gap records)), 33 existing boxes
 were changed, and the page gained a lens, **New**, that colours boxes new (red), changed (ochre) or unchanged; the 'what
 changed' list at the top of the reading panel links to the main items. The groups 'Records' and 'Checkers' were merged and a
 group 'Cover depth and counting' was added.
@@ -239,4 +239,12 @@ computed nothing changes: a cover built from the block reaches 0.39 to 0.48·x l
 referee read, one for the recursion with the entropy put in and one for my check (status: heuristic, verdict withdrawn). The lesson for the structure: a
 count of typical covers (the entropy law) and the existence threshold D(n) are different things once structured families exist, and I tested the wrong
 structured family before the Lean session found the right one.
+
+Later the same day (12:30 UTC, from the research session's relay): the Lean session proved the block in the kernel (commits 1f1b090 and 38b0909 on
+`ccr-36ca7b46-8twf14`). For every real A and all large X there is an even N ≤ X with no Goldbach summand below A·ln X·ln ln X (the research session's
+conjecture, now a theorem), and with the exponent of the pigeonhole layer growing, a least summand at least ln X·(ln ln X)²/(150000·(ln ln ln X)²) (depth
+y·ln² y/(9000·(ln ln y)²)). Only the factor ln₃ of the paper-level bound of `COHERENT_BLOCK.md` is not in the kernel (the smooth numbers are counted with
+e^(−u) in place of u^(−u)). The 1.349·r·ln r theorem is superseded formally. Also from the research session's relay: three fixed-gap records are certified in
+the kernel (400 digits with no summand below 200,293 and 206,593; 347 digits below 216,289) and a 2,196-digit N for a gap of 1,000,000 (g ≥ 1,001,491,
+rechecked from N alone, certificate in progress) replaces the 2,480-digit height-game record. The map has boxes for the two theorems and the records.
 
