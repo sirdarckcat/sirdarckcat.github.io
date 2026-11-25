@@ -10,7 +10,9 @@ c() { timeout "$1" colab "${@:2}" < /dev/null 2>&1 | grep -v -i keyring; }
 mkdir -p "$SP/snap/$OLD"
 pullfound() { local r; r=$(c 150 exec -s "$OLD" -f $SP/found/peek_found.py --timeout 120)
   echo "$r" | grep "^\[fd\]" | cut -c5- | while IFS= read -r line; do grep -qxF "$line" $SP/found/$OLD.jsonl 2>/dev/null || { echo "$line" >> $SP/found/$OLD.jsonl; echo "NEW FOUND LINE on $OLD: ${line:0:300}"; }; done; }
-snapshot() { local r; r=$(c 200 exec -s "$OLD" -f $SP/snap/snap.py --timeout 180 | grep "^\[snap\]"); echo "$(date -u +%T) $OLD: $r"
+snapshot() { local r i; for i in 1 2 3; do r=$(c 200 exec -s "$OLD" -f $SP/snap/snap.py --timeout 180 | grep "^\[snap\]"); [ -n "$r" ] && break; sleep 20; done; echo "$(date -u +%T) $OLD: ${r:-snap.py gave no line (3 tries)}"
+  # 25 Nov: a failed snap.py left an old /content/snap.tgz on the card, which was downloaded as if fresh. Download only after snap.py has run.
+  [ -n "$r" ] || { echo "$(date -u +%T) $OLD: SNAPSHOT-FAILED, previous one kept"; pullfound; return; }
   rm -f "$SP/snap/$OLD/dl.tmp"; c 300 download -s "$OLD" /content/snap.tgz "$SP/snap/$OLD/dl.tmp" | tail -n 1 | cut -c1-30
   if tar -tzf "$SP/snap/$OLD/dl.tmp" > /dev/null 2>&1; then mv "$SP/snap/$OLD/dl.tmp" "$SP/snap/$OLD/final_snap.tgz"; echo "$(date -u +%T) $OLD: snapshot kept ($(ls -la "$SP/snap/$OLD/final_snap.tgz" | awk '{print $5}') bytes)"; else echo "$(date -u +%T) $OLD: snapshot download incomplete, previous one kept"; fi
   pullfound; }
