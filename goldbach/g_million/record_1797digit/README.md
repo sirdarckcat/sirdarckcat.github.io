@@ -19,6 +19,17 @@ this descent stop here (at 1,800 digits), unless the user or the lead asks for m
   - N − 1,021,897 is a BPSW probable prime, and passes 25 more Miller–Rabin rounds. Its primality is not proved.
   - For each of the 1,619 primes p with 1,000,003 ≤ p < 1,021,897, N − p is proved composite.
   - `certificate_to_g.txt` covers all 80,116 odd primes below g: 76,827 by a modulus, 2,049 by a factor, 1,240 by Fermat.
+- **In the Lean kernel.** The Lean session certified g(N) ≥ 1,021,897 at the lead's go-ahead: commit `90c3778` on branch
+  `ccr-36ca7b46-8twf14`.
+  - The module is `GoldbachGaps/Gap1M_1797digit_g1021897` (32 parts).
+  - The theorems are in `GoldbachGaps/FixedGap.lean`:
+    - `exists_1797_digit_no_summand_below_1021897`: an even N with 10^1796 ≤ N < 10^1797 and N − q composite for every prime
+      q < 1,021,897;
+    - `exists_lt_ten_pow_1797_no_summand_below_1000000`.
+  - Both use only the standard axioms.
+  - Its own check from N.txt and cover.txt alone agrees with every one of the 80,116 lines of `certificate_to_g.txt`.
+  - As for the other records, the theorem is the negative side only (at least 1,021,897). It gives no proof that N − 1,021,897 is
+    prime.
 
 ## How it was found
 

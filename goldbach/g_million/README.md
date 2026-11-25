@@ -133,3 +133,10 @@ The cost grows by a factor of about 3 for each 100 digits fewer. At 491 moduli, 
 - The hit was the 21,920th member (k = 30,561,546, S = 1,160). **N has 1,797 digits, and g(N) = 1,021,897 if N − 1,021,897 is
   prime.** Every N − q for an odd prime q below that is proved composite.
 - About 14 CPU-hours in all. Everything is in `record_1797digit/`.
+- The Lean session certified g(N) ≥ 1,021,897 in the kernel: `exists_1797_digit_no_summand_below_1021897`, branch
+  `ccr-36ca7b46-8twf14`, commit `90c3778`.
+- The 1,700-digit step (`chain_d1700.sh`, 547 moduli, cover `hb3947.txt` with 3,256 rows) is paused, at the research session's
+  request, for the 200-digit CPU scan.
+  - Sieve and selection are done: survivors mean 1,304.5 and sd 27.8; the 300,000 candidates have S ≤ 1,228.
+  - 1,184 candidates were tested, with no hit.
+  - Rerunning the script resumes it.
