@@ -26,6 +26,8 @@ bound `prod_le_g0` turns it into a lower bound for every larger set of moduli:
 * `eventually_g0_pos_every_constant`, `eventually_prod_le_g0_every_constant`: the first two for
   **every** constant `A` in place of `c < 1.349…`, from the cover with a fixed layer on a common
   integer (`GoldbachGaps/CoverEveryConstant.lean`).
+* `eventually_g0_pos_log`: `g0(y, Q) > 0` for `Q = ⌊y ln² y / (9000 (ln ln y)²)⌋`, the order that
+  cover reaches.
 
 These are lower bounds for the count in the range `Q ≤ A y ln y`. The law the research session
 measures, loss `≈ Q / ln² x`, is smaller than these bounds and is not proved.
@@ -164,5 +166,16 @@ theorem eventually_prod_le_g0_every_constant (A : ℝ) :
       ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊A * y * Real.log y⌋₊ := by
   filter_upwards [eventually_g0_pos_every_constant A] with y hy x hx
   exact prod_le_g0 hx hy
+
+/-- **The count is positive up to the order of the bound**: `g0(y, Q) > 0` for all large `y` with
+`Q = ⌊y ln² y / (9000 (ln ln y)²)⌋`. -/
+theorem eventually_g0_pos_log :
+    ∀ᶠ y : ℕ in atTop,
+      0 < g0 y ⌊(y : ℝ) * Real.log y ^ 2 / (9000 * Real.log (Real.log y) ^ 2)⌋₊ := by
+  filter_upwards [eventually_exists_classes_log] with y ⟨a, ha⟩
+  refine (coverCount_pos_iff _ _ fun r hr => (mem_rowsBelow.1 hr).1.pos).2 ⟨a, fun q hq => ?_⟩
+  obtain ⟨hq1, hq2, hq3⟩ := mem_rowsBelow.1 hq
+  obtain ⟨r, ⟨hr1, hr2, hr3⟩, hqr⟩ := ha q hq1 hq2 hq3
+  exact ⟨r, mem_rowsBelow.2 ⟨hr1, hr2, by omega⟩, hqr⟩
 
 end GoldbachGaps.CoverCount

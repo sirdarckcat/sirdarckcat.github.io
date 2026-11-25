@@ -140,6 +140,15 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                numbers) or `B · p'` with `p' > y/4` prime (the prime number theorem and a
                harmonic sum, `sum_primeCounting_le`). `Cap.CommonInteger` holds the finite
                counts. The device is that of Erdős and Rankin for gaps between primes.
+               **The order.** With the exponent growing, `K = ⌊ln y / (14 (ln ln y)²)⌋`, the
+               same layers cover every odd prime below `y ln² y / (9000 (ln ln y)²)`
+               (`eventually_exists_classes_log`), and for all large `X` there is an even
+               `N ≤ X` with no Goldbach summand below
+               `ln X (ln ln X)² / (150000 (ln ln ln X)²)` (`eventually_exists_even_le_log`):
+               Rankin's order with one more logarithm, short of it by `ln ln ln ln X`. The
+               smooth numbers are then counted by Rankin's bound with `σ = 1 - 1/ln N` and
+               Mertens' `∑_{p ≤ w} 1/p ≤ ln ln w + K₀` (`card_smooth_le_of_log_le`);
+               `layers_common_integer_core` is the count at one `y` behind both theorems.
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
@@ -333,7 +342,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`eventually_prod_le_g0_self`): `ln g0(y, c y ln y) ≥ θ(y) - θ((c κ + ε) y)`
                with `κ = 2 C₂ e^{-γ}`, so the count is exponentially large in `y` there.
                For every constant `A` in place of `c`: `eventually_g0_pos_every_constant`,
-               `eventually_prod_le_g0_every_constant`.
+               `eventually_prod_le_g0_every_constant`; and up to the order
+               `y ln² y / (9000 (ln ln y)²)`: `eventually_g0_pos_log`.
 * `CoverPairs` – two rows in one class of a modulus `s`: the exact step of the research
                session's derivation of the law. The pair weight `rho t d` of a smaller modulus
                (classes drawn among the `t - 1` nonzero ones; exact counts

@@ -244,6 +244,56 @@ eventually_card_smooth_le : ∀ (K : ℕ),
               N ≤ X ∧ Even N ∧ ∀ (q : ℕ), ↑q < c * Real.log ↑X * Real.log (Real.log ↑X) → ¬IsSummand N q
 ```
 
-What is not proved: the order beyond every constant. The same cover with `z` a small power of `y`
-should give `c · y ln² y · ln₃ y / (ln₂ y)²` rows (the order of Rankin's theorem with one more
-logarithm); that needs the count of smooth numbers uniformly in `K`, and is not written.
+## The order of the bound (25 November 2026)
+
+The same file goes on to let the exponent grow with `y`: `K = logK y = ⌊ln y / (14 (ln ln y)²)⌋`,
+so that the pigeonhole layer reaches `z = ⌊ln y⌋^K - 1`, a power of `y` with exponent about
+`1 / (14 ln ln y)`. The count at one `y` is `layers_common_integer_core`, in which neither `A` nor
+`K` has to be the same for different `y`. The smooth numbers are counted by Rankin's bound with
+`σ = 1 - 1/ln N` (where `N^{1-σ} = e`) and Mertens' bound `∑_{p ≤ w} 1/p ≤ ln ln w + K₀`
+(`exists_sum_primesLE_inv_le`, from `Mertens.exists_bound_B_sub_log_log`):
+`card_smooth_le_of_log_le`. Result: the cover depth of the odd primes up to `y` is at least
+`y ln² y / (9000 (ln ln y)²)`, and the largest least Goldbach summand below `X` is at least
+`ln X (ln ln X)² / (150000 (ln ln ln X)²)`, for all large `y` and `X`.
+
+```lean
+eventually_exists_even_le_log : ∀ᶠ (X : ℕ) in Filter.atTop,
+  ∃ N,
+    Real.log ↑X * Real.log (Real.log ↑X) ^ 2 / (150000 * Real.log (Real.log (Real.log ↑X)) ^ 2) < ↑N ∧
+      N ≤ X ∧
+        Even N ∧
+          ∀ (q : ℕ),
+            ↑q < Real.log ↑X * Real.log (Real.log ↑X) ^ 2 / (150000 * Real.log (Real.log (Real.log ↑X)) ^ 2) →
+              ¬IsSummand N q
+eventually_exists_classes_log : ∀ᶠ (y : ℕ) in Filter.atTop,
+  ∃ a,
+    ∀ (q : ℕ),
+      Nat.Prime q →
+        q ≠ 2 →
+          q < ⌊↑y * Real.log ↑y ^ 2 / (9000 * Real.log (Real.log ↑y) ^ 2)⌋₊ →
+            ∃ r, (Nat.Prime r ∧ r ≠ 2 ∧ r ≤ y) ∧ q ≡ a r [MOD r]
+CoverCount.eventually_g0_pos_log : ∀ᶠ (y : ℕ) in Filter.atTop,
+  0 < CoverCount.g0 y ⌊↑y * Real.log ↑y ^ 2 / (9000 * Real.log (Real.log ↑y) ^ 2)⌋₊
+@card_smooth_le_of_log_le : ∀ {K₀ : ℝ},
+  0 ≤ K₀ →
+    (∀ (w : ℕ), 2 ≤ w → ∑ p ∈ w.primesLE, (↑p)⁻¹ ≤ Real.log (Real.log ↑w) + K₀) →
+      ∀ {N Q y : ℕ},
+        1 ≤ y →
+          y ≤ 2 * Q →
+            8 ≤ N →
+              Real.log ↑N * (14 * Real.log (Real.log ↑y)) ≤ Real.log ↑y →
+                11 * K₀ + 1 ≤ Real.log (Real.log ↑y) →
+                  ↑{n ∈ Finset.Ico 1 (2 * Q) | n ∈ N.smoothNumbers}.card ≤ ↑Q / Real.log ↑y ^ 2
+exists_sum_primesLE_inv_le : ∃ K₀, 0 ≤ K₀ ∧ ∀ (w : ℕ), 2 ≤ w → ∑ p ∈ w.primesLE, (↑p)⁻¹ ≤ Real.log (Real.log ↑w) + K₀
+eventually_logA_bounds : ∀ᶠ (y : ℕ) in Filter.atTop,
+  Real.log ↑y / (9000 * Real.log (Real.log ↑y) ^ 2) ≤ logA y ∧ logA y ≤ Real.log ↑y / 4200
+def GoldbachGaps.logK : ℕ → ℕ :=
+fun y => ⌊Real.log ↑y / (14 * Real.log (Real.log ↑y) ^ 2)⌋₊
+def GoldbachGaps.logA : ℕ → ℝ :=
+fun y => ↑(logK y - 1) / 300
+```
+
+What is not proved: the last factor. With `ln z = ln y · ln₃ y / (3 ln₂ y)` and the sharp count of
+smooth numbers (`u^{-u}` in place of `e^{-u}`) the same cover gives
+`c · y ln² y · ln₃ y / (ln₂ y)²` rows, Rankin's order exactly with one more logarithm; the constants
+`9000` and `150000` are what the crude steps leave and mean nothing.

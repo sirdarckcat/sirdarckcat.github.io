@@ -18,7 +18,9 @@ The fixed layer of `GoldbachGaps/Cap/Layers.lean` with the classes of one intege
   `∑_{A ≤ X/w} π(X/A)`.
 * `card_smooth_le`, `prod_primesBelow_le_exp`, `card_smooth_le_exp`: Rankin's bound for smooth
   numbers. For `1/2 ≤ σ ≤ 1` the number of `N`-smooth integers in `[1, X)` is at most
-  `X^σ · ∏_{p < N} (1 - p^{-σ})⁻¹ ≤ X^σ · exp (4 N^{1-σ} (1 + ln N))`.
+  `X^σ · ∏_{p < N} (1 - p^{-σ})⁻¹ ≤ X^σ · exp (4 N^{1-σ} (1 + ln N))`; with a bound `S` for
+  `∑_{p < N} 1/p` in place of the harmonic sum, `X^σ · exp (4 N^{1-σ} S)`
+  (`card_smooth_le_exp_of_sum`).
 -/
 
 namespace GoldbachGaps.Cap
@@ -211,11 +213,11 @@ theorem rpow_neg_le_three_quarters {p : ℕ} (hp : p.Prime) {σ : ℝ} (hσ : 1 
     norm_num
   linarith
 
-/-- The Euler factor product of Rankin's bound: for `1/2 ≤ σ ≤ 1`,
-`∏_{p < N} (1 - p^{-σ})⁻¹ ≤ exp (4 N^{1-σ} (1 + ln N))`. -/
-theorem prod_primesBelow_le_exp (N : ℕ) {σ : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 : σ ≤ 1) :
-    ∏ p ∈ N.primesBelow, (1 - (p : ℝ) ^ (-σ))⁻¹ ≤
-      Real.exp (4 * ((N : ℝ) ^ (1 - σ) * (1 + Real.log N))) := by
+/-- The Euler factor product of Rankin's bound: for `1/2 ≤ σ ≤ 1`, if `∑_{p < N} 1/p ≤ S` then
+`∏_{p < N} (1 - p^{-σ})⁻¹ ≤ exp (4 N^{1-σ} S)`. -/
+theorem prod_primesBelow_le_exp_of_sum (N : ℕ) {σ S : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 : σ ≤ 1)
+    (hS : ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ ≤ S) :
+    ∏ p ∈ N.primesBelow, (1 - (p : ℝ) ^ (-σ))⁻¹ ≤ Real.exp (4 * ((N : ℝ) ^ (1 - σ) * S)) := by
   classical
   have hfac : ∀ p ∈ N.primesBelow, (1 - (p : ℝ) ^ (-σ))⁻¹ ≤ Real.exp (4 * (p : ℝ) ^ (-σ)) := by
     intro p hp
@@ -238,32 +240,38 @@ theorem prod_primesBelow_le_exp (N : ℕ) {σ : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 
     rw [h1]
     refine mul_le_mul_of_nonneg_right ?_ (inv_nonneg.mpr hp0.le)
     exact Real.rpow_le_rpow hp0.le (by exact_mod_cast hpN.le) (by linarith)
-  -- the sum of `1/p` is at most the harmonic number
-  have hharm : ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ ≤ 1 + Real.log N := by
-    have hsubset : N.primesBelow ⊆ Icc 1 N := by
-      intro p hp
-      have hpp := Nat.prime_of_mem_primesBelow hp
-      have hpN : p < N := Nat.lt_of_mem_primesBelow hp
-      exact Finset.mem_Icc.mpr ⟨hpp.one_le, hpN.le⟩
-    calc ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ ≤ ∑ p ∈ Icc 1 N, ((p : ℝ))⁻¹ :=
-          Finset.sum_le_sum_of_subset_of_nonneg hsubset fun p _ _ => by positivity
-      _ = (harmonic N : ℝ) := by
-          rw [harmonic_eq_sum_Icc]
-          push_cast
-          rfl
-      _ ≤ 1 + Real.log N := harmonic_le_one_add_log N
   calc ∏ p ∈ N.primesBelow, (1 - (p : ℝ) ^ (-σ))⁻¹
       ≤ ∏ p ∈ N.primesBelow, Real.exp (4 * (p : ℝ) ^ (-σ)) := Finset.prod_le_prod₀ hpos hfac
     _ = Real.exp (∑ p ∈ N.primesBelow, 4 * (p : ℝ) ^ (-σ)) := (Real.exp_sum _ _).symm
-    _ ≤ Real.exp (4 * ((N : ℝ) ^ (1 - σ) * (1 + Real.log N))) := by
+    _ ≤ Real.exp (4 * ((N : ℝ) ^ (1 - σ) * S)) := by
         apply Real.exp_le_exp.mpr
         rw [← Finset.mul_sum]
         refine mul_le_mul_of_nonneg_left ?_ (by norm_num)
         calc ∑ p ∈ N.primesBelow, (p : ℝ) ^ (-σ)
             ≤ ∑ p ∈ N.primesBelow, (N : ℝ) ^ (1 - σ) * ((p : ℝ))⁻¹ := Finset.sum_le_sum hterm
           _ = (N : ℝ) ^ (1 - σ) * ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ := by rw [Finset.mul_sum]
-          _ ≤ (N : ℝ) ^ (1 - σ) * (1 + Real.log N) :=
-              mul_le_mul_of_nonneg_left hharm (Real.rpow_nonneg (Nat.cast_nonneg N) _)
+          _ ≤ (N : ℝ) ^ (1 - σ) * S :=
+              mul_le_mul_of_nonneg_left hS (Real.rpow_nonneg (Nat.cast_nonneg N) _)
+
+/-- The same with the harmonic sum for `∑ 1/p`: for `1/2 ≤ σ ≤ 1`,
+`∏_{p < N} (1 - p^{-σ})⁻¹ ≤ exp (4 N^{1-σ} (1 + ln N))`. -/
+theorem prod_primesBelow_le_exp (N : ℕ) {σ : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 : σ ≤ 1) :
+    ∏ p ∈ N.primesBelow, (1 - (p : ℝ) ^ (-σ))⁻¹ ≤
+      Real.exp (4 * ((N : ℝ) ^ (1 - σ) * (1 + Real.log N))) := by
+  classical
+  refine prod_primesBelow_le_exp_of_sum N hσ hσ1 ?_
+  have hsubset : N.primesBelow ⊆ Icc 1 N := by
+    intro p hp
+    have hpp := Nat.prime_of_mem_primesBelow hp
+    have hpN : p < N := Nat.lt_of_mem_primesBelow hp
+    exact Finset.mem_Icc.mpr ⟨hpp.one_le, hpN.le⟩
+  calc ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ ≤ ∑ p ∈ Icc 1 N, ((p : ℝ))⁻¹ :=
+        Finset.sum_le_sum_of_subset_of_nonneg hsubset fun p _ _ => by positivity
+    _ = (harmonic N : ℝ) := by
+        rw [harmonic_eq_sum_Icc]
+        push_cast
+        rfl
+    _ ≤ 1 + Real.log N := harmonic_le_one_add_log N
 
 /-- **Rankin's bound, in closed form.** For `1/2 ≤ σ ≤ 1` the number of `N`-smooth integers in
 `[1, X)` is at most `X^σ · exp (4 N^{1-σ} (1 + ln N))`. -/
@@ -272,6 +280,16 @@ theorem card_smooth_le_exp (N X : ℕ) {σ : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 : �
       (X : ℝ) ^ σ * Real.exp (4 * ((N : ℝ) ^ (1 - σ) * (1 + Real.log N))) :=
   (card_smooth_le N X (by linarith)).trans
     (mul_le_mul_of_nonneg_left (prod_primesBelow_le_exp N hσ hσ1)
+      (Real.rpow_nonneg (Nat.cast_nonneg X) _))
+
+/-- **Rankin's bound with a bound for `∑ 1/p`.** For `1/2 ≤ σ ≤ 1`, if `∑_{p < N} 1/p ≤ S` then the
+number of `N`-smooth integers in `[1, X)` is at most `X^σ · exp (4 N^{1-σ} S)`. -/
+theorem card_smooth_le_exp_of_sum (N X : ℕ) {σ S : ℝ} (hσ : 1 / 2 ≤ σ) (hσ1 : σ ≤ 1)
+    (hS : ∑ p ∈ N.primesBelow, ((p : ℝ))⁻¹ ≤ S) :
+    (#{n ∈ Ico 1 X | n ∈ Nat.smoothNumbers N} : ℝ) ≤
+      (X : ℝ) ^ σ * Real.exp (4 * ((N : ℝ) ^ (1 - σ) * S)) :=
+  (card_smooth_le N X (by linarith)).trans
+    (mul_le_mul_of_nonneg_left (prod_primesBelow_le_exp_of_sum N hσ hσ1 hS)
       (Real.rpow_nonneg (Nat.cast_nonneg X) _))
 
 end GoldbachGaps.Cap

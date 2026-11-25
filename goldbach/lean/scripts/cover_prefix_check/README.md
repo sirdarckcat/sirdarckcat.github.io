@@ -318,6 +318,11 @@ average to a constant.
   integers below `2Q` that have no prime factor in it (`Cap.exists_common_integer`), and that is a
   count of integers: Rankin's bound for the smooth ones, the prime number theorem and a harmonic sum
   for the others. The pigeonhole layer is the odd primes up to `⌊ln y⌋^K - 1`, `K = ⌈300 A⌉ + 1`.
+  With `K` growing like `ln y/(14 (ln ln y)²)` the same proof gives the order, also in the kernel:
+  classes modulo the odd primes up to `y` cover every odd prime below `y ln² y/(9000 (ln ln y)²)`
+  (`eventually_exists_classes_log`), and for all large `X` there is an even `N ≤ X` with no Goldbach
+  summand below `ln X (ln ln X)²/(150000 (ln ln ln X)²)` (`eventually_exists_even_le_log`). That is
+  the order of the outline above without its factor `ln₃`.
 * At the sizes that can be computed nothing changes. The block beats random classes by 2% at `x = 10^4`
   and by a factor two only near `x = 10^25`, and the tilted classes of the constrained count do better
   than either there (they reach `1.0 x ln² x` at `x = 9,973`, where random classes below the top and the
