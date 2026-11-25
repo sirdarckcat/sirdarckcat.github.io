@@ -64,9 +64,12 @@ it; they are in "A floor under every cover" and the sections after it:
   10^25, but it gives
   a theorem on paper, D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)², which beats every
   bound of the order r·ln r (the consultant session wrote the proof out),
-  and a theorem in the Lean kernel the same day: for every A and all large
-  X some even N ≤ X has no Goldbach summand below A·ln X·ln ln X. It leaves
-  the order of D(n) open. At 200 digits nothing moves: complete covers on the 89 moduli
+  and two theorems in the Lean kernel the same day: for every A and all
+  large X some even N ≤ X has no Goldbach summand below A·ln X·ln ln X, and
+  then the order itself short of one factor, ln X·(ln ln X)²/(150000·(ln ln
+  ln X)²), that is D(n) ≥ r·ln² r/(9000·(ln ln r)²). So D(n) is known to
+  lie within (ln ln r)² of r·ln² r from below; from above nothing useful is
+  proved, and its order is open. At 200 digits nothing moves: complete covers on the 89 moduli
   end at 15,907 to 15,919 by the recursion in both forms, where 15,907 has
   been found; rigorously 15,907 ≤ D(89) < 35,000, the upper end by an
   exhaustive search of the uarch session. Exact values of D(n) are known to
@@ -79,8 +82,10 @@ it; they are in "A floor under every cover" and the sections after it:
   GPU. First results the same day: two 400-digit numbers with no Goldbach
   summand below 200,293 and 206,593, found by the uarch session in under
   two CPU-hours and certified in the Lean kernel, then a 347-digit number
-  with g = 216,289; about 319 and 300 digits are running, and 2,196 digits
-  for a gap of 1,000,000 (2,480 held). Section "The other direction".
+  with g = 216,289 (certified too), and for a gap of 1,000,000 a
+  2,196-digit number with g = 1,001,491 (Opus session; 2,480 digits were
+  held); about 319 and 300 digits are running. Section "The other
+  direction".
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -105,9 +110,10 @@ it; they are in "A floor under every cover" and the sections after it:
   c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
   N < 10^200 with every N − q, q prime below 16,981, divisible by a prime
   ≤ 491, certified by divisibility alone. Since 25 November the first holds
-  for every constant c, also proved in Lean, and has a successor on paper of
-  a higher order, c·ln X·(ln ln X)²·ln₄ X/(ln₃ X)² (the block of Erdős and
-  Rankin; "A provable lower bound").
+  for every constant c and, beyond that, with ln X·(ln ln X)²/(150000·(ln
+  ln ln X)²) in place of c·ln X·ln ln X, both proved in Lean (the block of
+  Erdős and Rankin; "A provable lower bound"); on paper one more factor
+  ln₄ X.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
@@ -835,8 +841,25 @@ pigeonhole layer is the odd primes up to (ln y)^K with K = ⌈300·A⌉ + 1; the
 mop-up layer is the primes in (y/4, y]. So the 1.349 of the first theorem
 is no longer a barrier of any kind, and the one earlier bound we found in
 the literature, (1/2 + o(1))·ln X·ln ln X, is passed by an arbitrary factor,
-formally. The order c·ln X·(ln₂ X)²·ln₄ X/(ln₃ X)² itself is on paper only
-(it needs the smooth-number count uniformly in K). At the sizes of this
+formally.
+
+**And the order, short of its last factor, an hour later** (commit 38b0909
+there, the same three layers with the exponent K growing like
+ln y/(14·(ln ln y)²), so that z is a power of y with exponent about
+1/(14·ln ln y); smooth numbers by Rankin's trick with σ = 1 − 1/ln N and
+Mertens' bound for the sum of 1/p):
+
+    eventually_exists_even_le_log: for all large X there is an even N ≤ X with no Goldbach summand below
+        ln X·(ln ln X)² / (150000·(ln ln ln X)²).
+    eventually_exists_classes_log: for all large y there are classes modulo the odd primes up to y such that every
+        odd prime below ⌊y·ln² y / (9000·(ln ln y)²)⌋ lies in one of them.
+
+So D(n) ≥ r·ln² r/(9000·(ln ln r)²) for all large n is a theorem checked by
+the kernel: the luck-free depth is within a factor (ln ln r)² of r·ln² r
+from below, where this morning the library had 1.349·r·ln r. The constants
+are what crude steps leave. The last factor, ln₃ y, which would give the
+c·y·ln² y·ln₃ y/(ln₂ y)² of the consultant's note, needs u^(−u) in place of
+e^(−u) in the smooth-number count and is on paper only. At the sizes of this
 project the block is worse than what tempering finds (it overtakes random
 classes only near y = 10^25), so these are theorems about large X and
 change nothing at 200 digits.
@@ -2496,6 +2519,7 @@ Results (every N recomputed here from N alone before it is listed):
 | 200,000 | 400 | 200,293 | uarch, 25 Nov 09:31 UTC | 159 moduli (3 to 941), 1,010 rows | 72.4 million, 58.0 million, 1.78 (both hits) | `records/g200k_400digit_g200293` on `ccr-b8c25887-i6tn9f` |
 | 200,000 | 400 | 206,593 | the same run | the same | | `records/g200k_400digit_g206593` there |
 | 200,000 | 347 | 216,289 | uarch, 25 Nov 11:41 UTC | 141 moduli (3 to 821), 1,115 rows | 806 million, 318 million, 8.5 for the whole 350-digit phase (the hit itself after 319 million members and 1.04 CPU-hours on its second progression; the first, 142 moduli, gave none in 488 million where 1.75 were expected) | `records/g200k_347digit_g216289` there |
+| 1,000,000 | 2,196 | 1,001,491 | Opus, 25 Nov 12:12 UTC | 683 moduli (3 to 5,113), 2,563 rows (heat-bath annealing; the recursion's floor is 2,039) | 20 million sieved to 10^9, the 3,615 emptiest tested (501,670 tests at 66 ms), 10.4 | `goldbach/g_million/record_2196digit` on `ccr-c6e00296-3g7fp9`, commit 71172d4 |
 
 Both are certified in the Lean kernel (`Gap200k_400digit_g200293.lean`,
 `Gap200k_400digit_g206593.lean` and `FixedGap.lean` on the Lean branch,
@@ -2509,6 +2533,17 @@ and is not certified. The 347-digit number is certified the same way
 (`Gap200k_347digit_g216289.lean`, commit 2c2cd89: 19,307 primes below
 216,289, 18,038 struck by one of the 141 moduli and 1,269 failing the
 base-2 Fermat test; five minutes of kernel time).
+
+The 2,196-digit number is the first of the second game and replaces the
+2,480 digits held for a gap of 1,000,000. Checked here from N alone: N − q
+has a prime factor below 10^6 for 77,224 of the odd primes q below
+1,003,491 and fails a strong test for the 1,529 others below 1,001,491; N −
+1,001,491 passes 25 rounds. So g(N) ≥ 1,001,491 without condition and
+g(N) = 1,001,491 if that probable prime is prime. Its survivor counts were
+binomial as computed (mean 1,058, sd 24.8, the hit at 970), the tests per
+prime 138.5 against 137.0 predicted, and the hit came as the 3,615th member
+tested where 3.2 had been expected by then. The kernel certificate is with
+the Lean session.
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
