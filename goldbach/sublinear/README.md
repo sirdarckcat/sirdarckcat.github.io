@@ -2487,7 +2487,7 @@ before going on, all in agreement, so it stands as luck until the next
 sizes say otherwise.)
 
 
-**Conjecture (counting law), as it stands on 25 November, evening.** For Q
+**Conjecture (counting law), as it stands on 25 November at noon.** For Q
 up to the end it predicts, the number of class vectors modulo the odd primes
 up to x that strike every odd prime below Q is exp(θ(x) − L(x, Q)), L the
 loss of the price recursion with the dispersions of the rows (the
@@ -2503,12 +2503,12 @@ from 89 to 25,996 moduli, largest near a thousand moduli (the known values
 of D(n) for 20 to 89 moduli have 0.77 to 0.91).
 
 About D(n) itself, which is a maximum over all class vectors, what is
-known on 25 November is less than was claimed here on the 24th and at
-midday on the 25th: D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)² for large n (the block
+known on 25 November at noon is less than was claimed here on the 24th and
+earlier that morning: D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)² for large n (the block
 on a common integer; on paper), D(n) equals the end above within 1% at 89
 moduli and is not known beyond, and no limit of D(n)/(r·ln² r) is derived:
-not 1.1275 (the unconstrained recursion's, withdrawn at midday), not
-1.349/ln ln r (mine of midday, withdrawn in the evening). Whether
+not 1.1275 (the unconstrained recursion's, withdrawn at 10:20 UTC), not
+1.349/ln ln r (mine of 10:20, withdrawn at 11:45). Whether
 structured covers reach beyond the counted ones, and how far, is open.
 
 ## Ladder
