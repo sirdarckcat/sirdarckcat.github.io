@@ -2,7 +2,7 @@
 # One JSON object per hour and near-miss threshold T (an hour in which T changed is split, each piece partial): card, hour_start (UTC), T, batches, windows (2^24-member windows
 # sieved), members_scanned, kept_tested (the kept members actually Fermat-tested: per batch, 125,952 a window at keep 0.75% or 251,904 at 1.5%, i.e. 512 selection blocks of
 # 2^15 members x ceil(2^15 (1 - f)), the keep in force told by the mean tests a window, < 2.65M at 0.75%, of each run of batch lines between restarts), tests_counted (the batch lines' "tests N counted"), keep_batches,
-# expected_near (sum of the batch lines' "expected near>=T"), expected_design (sum of "expected hits"), found (events written), events [{g, N, name, k, sub_record, t}] (each
+# expected_near (sum of the batch lines' "expected near>=T"), expected_design (sum of "expected hits"), found (events written), events [{g, N, name, k, sub_record, t, rows}] (rows: the vector's residual rows below T, in [T, g), the row of g, the residual count and the two largest cover moduli, from its spec on the card; each
 # matched to the batch line that wrote it by its vector name inside the batch's name range; unmatched counts the batch found counts no event could be matched to), down_s (gaps
 # over 30 s between batch lines: downtime), gaps ([time, s] of every gap over 5 s: restarts and pauses, which are below 30 s and so not in down_s), partial (the piece does not
 # cover the whole hour: first line more than 60 s after the hour starts, last more than 60 s before it ends, or down_s > 0).
@@ -15,6 +15,20 @@ iso = lambda t: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t))
 def key(name):                                       # q170000_m89r491_p0c01147_v866@3382593 -> ("q170000_m89r491_p0c01147", 866)
     m = re.match(r"^(.*)_v(\d+)@\d+$", name or "")
     return (m.group(1), int(m.group(2))) if m else None
+def rows_of(name, g, T):
+    # the event's vector's residual rows (the uncovered primes q < Q of its spec, i.e. its alive rows) from /content/vec491/vec_<chunk>.json: below T, in [T, g), the row of g
+    # (= rows below g), and the vector's residual count; None when the spec file is gone
+    try:
+        base = name.split("@")[0]; ch = int(re.search(r"c(\d+)_v\d+$", base).group(1))
+        for sp in json.load(open("/content/vec491/vec_%06d.json" % ch)):
+            if sp.get("name") == base:
+                res = sp["residual"]; res = json.loads(res) if isinstance(res, str) else res; res = [int(q) for q in res]
+                import bisect
+                bT, bg = bisect.bisect_left(res, T), bisect.bisect_left(res, g)
+                return dict(below_T=bT, T_to_g=bg - bT, row_of_g=bg, residual=len(res), cover_moduli=sorted(int(c[0]) for c in sp["cover"])[-2:])
+    except Exception:
+        return None
+    return None
 t0 = ts(START)
 rows = []
 for l in open(C + "/gpu3_stats.log"):
@@ -65,7 +79,8 @@ for i, r in enumerate(rows):
     for j, e in enumerate(ev):
         if need and j not in used and r["a"] and r["b"] and key(e.get("name")) and r["a"] <= key(e.get("name")) <= r["b"]:
             used.add(j); need -= 1
-            o["events"].append(dict(g=int(e["g"]), N=e["N"], name=e.get("name"), k=int(e["k"]), sub_record=bool(e.get("sub_record")), t=iso(r["t"])))
+            o["events"].append(dict(g=int(e["g"]), N=e["N"], name=e.get("name"), k=int(e["k"]), sub_record=bool(e.get("sub_record")), t=iso(r["t"]),
+                                    rows=rows_of(e.get("name"), int(e["g"]), r["T"])))
     o["unmatched"] += need
 for hk in sorted(out):
     o = out[hk]; h = hk[0]
