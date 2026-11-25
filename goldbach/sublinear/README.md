@@ -82,10 +82,10 @@ it; they are in "A floor under every cover" and the sections after it:
   GPU. First results the same day: two 400-digit numbers with no Goldbach
   summand below 200,293 and 206,593, found by the uarch session in under
   two CPU-hours and certified in the Lean kernel, then a 347-digit number
-  with g = 216,289 (certified too), and for a gap of 1,000,000 a
-  2,196-digit number with g = 1,001,491 (Opus session; 2,480 digits were
-  held); about 319 and 300 digits are running. Section "The other
-  direction".
+  with g = 216,289 (certified too) and a 319-digit number with g = 207,307,
+  and for a gap of 1,000,000 a 2,196-digit number with g = 1,001,491 (Opus
+  session, certified; 2,480 digits were held); 300 digits is running on
+  eleven cores of three sessions. Section "The other direction".
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -113,7 +113,9 @@ it; they are in "A floor under every cover" and the sections after it:
   for every constant c and, beyond that, with ln X·(ln ln X)²/(150000·(ln
   ln ln X)²) in place of c·ln X·ln ln X, both proved in Lean (the block of
   Erdős and Rankin; "A provable lower bound"); on paper one more factor
-  ln₄ X.
+  ln₄ X. As statements these are probably not new (an unrefereed preprint
+  of November 2026 implies more, by a deeper method); the elementary proof
+  and its kernel check are.
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
@@ -861,17 +863,40 @@ are what crude steps leave. The last factor, ln₃ y, which would give the
 c·y·ln² y·ln₃ y/(ln₂ y)² of the consultant's note, needs u^(−u) in place of
 e^(−u) in the smooth-number count and is on paper only.
 
-Is it new? A first search on 25 November (web search for lower bounds, omega
-results and covering arguments for the least prime of a Goldbach partition,
-the function of OEIS A002373) found one lower bound only, the
-(1/2 + o(1))·ln X·ln ln X of the 2026 preprint cited at the head of this
-section (arXiv:2605.21529, whose authors also say they found none), the
-conjectured upper order ln² n·ln ln n of Granville, van de Lune and te
-Riele, and the Erdős–Rankin literature for gaps between primes and for the
-Jacobsthal function, with nothing that carries it over to Goldbach
-summands. That is a quick search, not a proper one; the consultant session
-has been asked for the proper one, and until it is done the bound should
-be called new to us. At the sizes of this
+Is it new? The consultant session made the search (`goldbach/gaps_map/LITERATURE_SEARCH.md`
+on `ccr-cdb2641a-5zg8un`, commit 1c86499: every query and source listed,
+negative results included, and what was read by whom marked). Its findings:
+
+- Before 2026 no lower bound of this kind for the least Goldbach summand
+  was found, only conjectures and computations (Granville, van de Lune and
+  te Riele's p(n) ≪ ln² n·ln ln n; the largest g(N) for N ≤ 4·10^18 is
+  9,781, Oliveira e Silva, Herzog and Pardi). The classical papers on gaps
+  (Westzynthius, Erdős 1935, Rankin 1938, Pomerance) and the Goldbach
+  literature before 2000 were not read, so that part of the search is
+  incomplete.
+- W. Shi, arXiv:2605.21529 (2026, unrefereed), the preprint cited at the
+  head of this section: (1/2 + o(1))·ln X·ln ln X by counting, with the
+  remark that an improvement needs a covering of the kind used for large
+  gaps. Weaker than the theorems above.
+- A. Radomskii, arXiv:2610.14127 (v3 of 1 November 2026, unrefereed),
+  Theorem 1.1: for every set B and all large X there is a block of
+  ⌊c·ln X·ln ln X/(B(X) + 1)⌋ consecutive integers in [X/2, X] none of which
+  is a prime plus an element of B. It is not stated there for Goldbach
+  summands, but with B the primes up to y and a block of two it gives an
+  even M ≤ X with g(M) > y for y of order ln X·(ln ln X)²: the theorem for
+  every constant, and more than the order proved here (no factor
+  (ln₃ X)²). It rests on a lemma for large shifts adapted from an
+  unrefereed 2026 preprint on long gaps between primes, whose proof nobody
+  here has checked.
+
+So the statements proved here are probably not new as statements, if that
+lemma holds: they would follow from a preprint three weeks older. What is
+ours is the proof: elementary (Chebyshev, Mertens, the prime number
+theorem, Rankin's count of smooth numbers, an average over one integer),
+independent of those preprints, and checked by the Lean kernel. The
+consultant also notes, unchecked, that the block of this project put in
+front of Radomskii's lemma would give one factor ln₂ X·ln₄ X/(ln₃ X)² more
+than his theorem implies; that is a suggestion, not a result. At the sizes of this
 project the block is worse than what tempering finds (it overtakes random
 classes only near y = 10^25), so these are theorems about large X and
 change nothing at 200 digits.
@@ -2542,6 +2567,7 @@ Results (every N recomputed here from N alone before it is listed):
 |---|---|---|---|---|---|---|
 | 200,000 | 400 | 200,293 | uarch, 25 Nov 09:31 UTC | 159 moduli (3 to 941), 1,010 rows | 72.4 million, 58.0 million, 1.78 (both hits) | `records/g200k_400digit_g200293` on `ccr-b8c25887-i6tn9f` |
 | 200,000 | 400 | 206,593 | the same run | the same | | `records/g200k_400digit_g206593` there |
+| 200,000 | 319 | 207,307 | uarch, 25 Nov 13:22 UTC | 131 moduli (3 to 743), 1,183 rows | 1.44 billion, 296 million, 6.4 (a fifth of the 24 CPU-hours expected per hit) | `records/g200k_319digit_g207307` there, commit 3b9dcc4 |
 | 200,000 | 347 | 216,289 | uarch, 25 Nov 11:41 UTC | 141 moduli (3 to 821), 1,115 rows | 806 million, 318 million, 8.5 for the whole 350-digit phase (the hit itself after 319 million members and 1.04 CPU-hours on its second progression; the first, 142 moduli, gave none in 488 million where 1.75 were expected) | `records/g200k_347digit_g216289` there |
 | 1,000,000 | 2,196 | 1,001,491 | Opus, 25 Nov 12:12 UTC | 683 moduli (3 to 5,113), 2,563 rows (heat-bath annealing; the recursion's floor is 2,039) | 20 million sieved to 10^9, the 3,615 emptiest tested (501,670 tests at 66 ms), 10.4 | `goldbach/g_million/record_2196digit` on `ccr-c6e00296-3g7fp9`, commit 71172d4 |
 
@@ -2566,8 +2592,17 @@ has a prime factor below 10^6 for 77,224 of the odd primes q below
 g(N) = 1,001,491 if that probable prime is prime. Its survivor counts were
 binomial as computed (mean 1,058, sd 24.8, the hit at 970), the tests per
 prime 138.5 against 137.0 predicted, and the hit came as the 3,615th member
-tested where 3.2 had been expected by then. The kernel certificate is with
-the Lean session.
+tested where 3.2 had been expected by then. It is certified in the Lean
+kernel (commit 9d4555f, `exists_2196_digit_no_summand_below_1001491`: of the
+78,612 odd primes below 1,001,491, 76,035 struck by one of the 683 moduli,
+1,600 by a factor of N − q below 10^9 that the Opus session supplied and the
+kernel verified by division, 977 by the base-2 Fermat test; 16 minutes).
+So "there is an even number below 10^2196 with no Goldbach summand below
+1,000,000" is a theorem.
+
+The 319-digit number (g = 207,307) was rechecked here in the same way as
+the others (319 digits, in the classes of its 131 moduli, 1,183 rows left,
+every smaller prime ruled out, N − g passing 65 rounds).
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
