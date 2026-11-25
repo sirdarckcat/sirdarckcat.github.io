@@ -12,14 +12,19 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "run", "fermatw"))
 import fmw
 
-def init(n0, d, U, kmax):
-    global MEM, N0, D, IDX
+def init(n0, d, U, kmax, survf):
+    global MEM, N0, D, IDX, SURV
     MEM = fmw.Members(int(n0), int(d), np.array(U, dtype=np.uint32), kmax)
     N0, D = mpz(n0), mpz(d); IDX = {q: i for i, q in enumerate(U)}
+    SURV = open(survf, "rb")                                      # each worker reads its members' lines by offset
+
+def survivors(off):
+    SURV.seek(off); t = SURV.readline().split(); return [int(v) for v in t[2:]]
 
 def run_chunk(chunk):
     ks, rows, offs, orders = [], [], [0], []
-    for k, surv in chunk:
+    for k, off in chunk:
+        surv = survivors(off)
         order = list(surv); random.Random(k).shuffle(order)
         ks.append(k); orders.append(order); rows += [IDX[q] for q in order]; offs.append(len(rows))
     t0 = time.time(); pos = MEM.first_pass(ks, rows, offs); dt = time.time() - t0
@@ -50,18 +55,24 @@ if __name__ == "__main__":
         for l in open(log):
             try: done.add(json.loads(l)["k"])
             except Exception: pass
+    # (k, S, offset of the line) only: the survivor lists are read by the workers, so memory stays small however many members
+    # (the 1,700-digit run's 300,000 members, 2.5 GB of survivors, did not fit as Python lists). Same order as before: by S, stable.
     jobs = []
-    for line in open(survf):
-        t = line.split(); k = int(t[0])
-        if k not in done: jobs.append((k, [int(v) for v in t[2:]]))
-    jobs.sort(key=lambda j: len(j[1]))
+    with open(survf, "rb") as fh:
+        off = 0
+        for line in fh:
+            t = line.split(maxsplit=2); k = int(t[0])
+            if k not in done: jobs.append((k, int(t[1]), off))
+            off += len(line)
+    jobs.sort(key=lambda j: j[1])
+    jobs = [(k, off) for k, _, off in jobs]
     chunks = [jobs[i:i + chunk] for i in range(0, len(jobs), chunk)]
     kmax = max([k for k, _ in jobs] + [0]) + 1                    # the kernel's limb count is set by the largest member tested
     L = fmw.limbs_for((int(setup["N0"]) + kmax * int(setup["D"])).bit_length())
     print(f"{len(jobs)} members to test ({len(done)} already done), {len(chunks)} chunks of {chunk}, fmw kernel L = {L}", flush=True)
     fmw.lib(L)                                                    # compile once, before the workers
     t0 = time.time(); n = 0; nt = 0; hit = None
-    with Pool(procs, initializer=init, initargs=(setup["N0"], setup["D"], U, kmax)) as pool, open(log, "a") as f:
+    with Pool(procs, initializer=init, initargs=(setup["N0"], setup["D"], U, kmax, survf)) as pool, open(log, "a") as f:
         for res in pool.imap(run_chunk, chunks):
             for r in res:
                 f.write(json.dumps(r) + "\n"); n += 1; nt += r["tests"]
