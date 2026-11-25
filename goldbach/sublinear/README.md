@@ -35,10 +35,13 @@ it; they are in "A floor under every cover" and the sections after it:
   e^(v·p) times an average class, as the price of the derivation says,
   within about 20% while that factor runs from 1 to 185. The same
   calculation predicts within 2% how few rows the best cover leaves at the
-  campaign's targets. In the limit it gives c = 0.887, that is
+  campaign's targets. In the limit the recursion gives c = 0.887, that is
   D(n) ~ 1.1275·r·ln² r (1.349 if the rows were independent), approached
   from above after a maximum near 1.20; c = 1.00 is where two slow
-  corrections leave it at the sizes measured. The luck-free depth is thus
+  corrections leave it at the sizes measured. (The Lean session refereed the
+  four steps of that limit on 25 November and found them right; what they
+  give is the limit of the recursion, whose own error, a few percent where
+  measured, is not shown to vanish.) The luck-free depth is thus
   known to a few percent at every size, and at 200 digits it ends near
   16,000 on 89 moduli, where 15,907 has been found; rigorously,
   15,907 ≤ D(89) < 35,000, the upper end by an exhaustive search of the
@@ -1748,6 +1751,43 @@ between 100 and 1,000 moduli; by the recursion the constant at the end is
 0.92 at 1,228 moduli, 0.88 at 10^5, 0.83 at the maximum of D/(x·ln² x), and
 0.887 in the limit.
 
+A referee's read (the Lean session, 25 November; `scripts/cover_limit_check/`
+on its branch, commit a1c77dc, with exact sums of u(d) up to 10^11). None of
+the four steps is wrong, and three of them now have their first correction
+in closed form:
+
+- R against M. On the mean over m, R(m) = (a·c/2)·M(2π·m) − a/2 (from
+  Σ f(j)·j^(−w) = ζ(w)·Σ u(d)·d^(−w)); the −a/2 cancels the term a·L2(0) of
+  the dispersion exactly. Checked to 0.05 on values of 40 to 140.
+- The equation for m. It follows from an exact identity for M(x)·ln x, and
+  the next term is a shift of the argument: M(s^ρ) =
+  g₂·ln² s·[m(ρ) + (2γ + ln 12)·m′(ρ)/ln s + …]. Below s, M(x) =
+  g₂·(ln² x + 7.27868·ln x + 5.5170) to 10^(−5), g₂ = 0.0874661499. The
+  leading term alone is far off at any size one can sum (a factor 2.16 at
+  ρ = 1 for s = 1,009, 1.56 for s = 1,000,003); with the first correction it
+  is within 0.7%.
+- The constants. 24·C₂·c·g₂ = 1 to ten digits, and the correction measured
+  above comes out of the same expansions:
+  c(α) = (e^(−γ)/2)·[(2γ + ln 4π − 1)·m′(ρ₀) + α·m(ρ₀)], ρ₀ = (1 − α)/α. That
+  is 2.35, 1.65, 1.08 at α = 0.4, 0.5, 0.6, against 2.38, 1.59, 1.08
+  extrapolated from the pair sums here; below α = 0.3 it is 10 to 20% under
+  them (the moduli there are below 100).
+- The price equation. With the same dispersion on both sides, the recursion
+  over the actual primes gives 0.957, 0.983, 0.991, 0.995, 0.996, 0.997 of
+  the continuum Λ at x = 10^3 to 10^8, and the largest price that can be
+  carried is flat in the end price, so it is the solution that blows up at
+  the last modulus.
+
+One thing is not justified, and it comes before the first step: all of this
+is the limit of the recursion. The recursion takes the dispersion of the
+alive rows from random class vectors, while the sum over classes that it
+models is taken along covers, where the dispersion differs (0.65 against
+0.49 at s = 43 in `cover_tilt.txt`); the tilt e^(v·p) of a modulus is of
+order one in the limit, so nothing makes that difference vanish as x grows.
+Where it has been measured the recursion is within about 5% of the loss, of
+either sign. So 1.1275 is the constant of the recursion's limit; whether
+D(n)/(r·ln² r) has the same limit depends on that closure, which is open.
+
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
 equilibrium: its mean row counts at the middle temperatures were still
@@ -1981,9 +2021,10 @@ So four cores for a day reach about 300 digits for a gap of 200,000 and
 about 1,500 digits for 1,000,000; near those sizes every 10 digits less cost
 a factor of 2 to 3 for the first gap and every 100 digits less a factor of
 2.4 to 5 for the second. Two sessions (uarch, Opus) started on these on 25
-November with covers from a third (contractor); their row counts against the
-table above are a test of the recursion far from where it was built. Results
-to follow here.
+November (for the gap of 200,000 with covers from a third, the contractor,
+and this session scanning 300 digits beside them); their row counts against
+the table above are a test of the recursion far from where it was built.
+Results to follow here.
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
@@ -1996,7 +2037,8 @@ measured (x from 463 to 9,973) the recursion over the actual primes puts the
 loss at 1.00·Q/ln² x within 5%; in the limit Λ(1) = 1.19639 and the loss is
 0.887·Q/ln² x. Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91
 for the values known (20 to 89 moduli), rises by the recursion to 1.16 at
-78,497 moduli and to a maximum of about 1.20, and tends to
+78,497 moduli and to a maximum of about 1.20, and, if the recursion's
+closure holds in the limit, tends to
 e^γ/(2·C₂·Λ(1)) = 1.1275 (independent rows would give 1.349); and the least
 Goldbach summand that divisibility by the primes up to ln N alone can force
 is (1.1275 + o(1))·ln N·(ln ln N)².
