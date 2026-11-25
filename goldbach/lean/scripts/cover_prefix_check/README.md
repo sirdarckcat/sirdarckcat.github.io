@@ -194,6 +194,25 @@ order (`orders_*.txt`; dispersions recomputed exactly for each order):
   5% beyond the evidence. If constraints are missing, they are of the kind the write-up expects: more of
   them, moving the truth further from 1.1275.
 
+**The entropy of a prefix against the samples** (`prefix_entropies_997.txt`; asked for by the research
+session after the read, which counted the settings of the first 41 and the first 61 moduli among
+1.1 million sampled complete covers on 167 moduli, started from the 41,659 cover). Entropy in nats of
+the first 41 moduli (up to 181) and of the first 61 (up to 293) in the constrained solution:
+
+| Q | dispersions from the primes | the write-up's dispersions | settings seen in the samples (their logarithm) |
+|---|---|---|---|
+| 40,111 | 0.0, 10.4 | 0.0, 7.9 | 6 (1.8), 16 (2.8) |
+| 38,000 | 1.4, 17.4 | 0.7, 14.2 | 21 (3.0), 3,065 (8.0) |
+| 25,000 | 32.1, 81.2 | 30.2, 77.9 | 40,481 (10.6), 456,858 (13.0) |
+
+The freezing of the first 41 moduli at 40,111 is there in the samples: a handful of settings, where
+the recursion as it was has −57 (−42 with the write-up's dispersions). For the first 61 moduli the
+samples show fewer settings than either constrained solution allows (2.8 against 10.4 or 7.9 at
+40,111; 8.0 against 17.4 or 14.2 at 38,000), with two cautions: a count of distinct settings among
+samples drawn from one starting cover is a lower bound for the entropy, and at 25,000 it is capped by
+the number of samples (`ln 1.1·10^6 = 13.9`). As far as it goes it points the same way as the losses:
+toward fewer covers than the constrained count.
+
 ## (c) The dual
 
 With multipliers `λ_j ≥ 0` on the prefix sums the Lagrangian weights the level `s` by
@@ -315,6 +334,8 @@ average to a constant.
   side by side, and which moduli carry the difference. It imports the research session's
   `cover_price.py` and `cover_price_hl.py` from a directory given on the command line; they are not
   copied here. `with_writeup_dispersions.txt`, `dispersions.txt`, `sensitivity.txt`: its output.
+* `prefix_entropies.py`: the entropy of the first `m` moduli in both solutions with both sets of
+  dispersions (needs the same directory). `prefix_entropies_997.txt`: at 167 moduli.
 * `block_check.py`: rows left by a block with a common integer against random classes, exact at one `Q`,
   the leading-order ratio by size, and what the count for the top moduli allows after each kind of
   prefix. `block_60000000.txt`, `block_852000.txt`, `block_limit.txt`, `block_capacity.txt`.
@@ -327,6 +348,7 @@ average to a constant.
       python3 against_writeup.py DIR table > with_writeup_dispersions.txt       (DIR: the research session's files)
       python3 against_writeup.py DIR dispersions > dispersions.txt
       python3 against_writeup.py DIR sensitivity > sensitivity.txt
+      python3 prefix_entropies.py DIR 997 41,61 40111 38000 25000 > prefix_entropies_997.txt
       python3 block_check.py 60000000 > block_60000000.txt
       python3 block_check.py 852000 2493 9973 > block_852000.txt
       python3 block_check.py limit > block_limit.txt
