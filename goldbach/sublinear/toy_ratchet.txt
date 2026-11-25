@@ -1,0 +1,26 @@
+X = 10^15, Q = 3000 (429 rows), depth 1000 (167 primes), budget 400000 scored candidates, seed 1
+A cover first: primes pinned up to | moduli | window | best cover's rows at its own depth | scored | best, 10th best, 100th best rows left at depth z
+  19 | 7 | 103096078 | 79 | 400000 | 19, 22, 24
+  23 | 8 | 4482438 | 72 | 400000 | 18, 20, 22
+  29 | 9 | 154566 | 67 | 400000 | 17, 19, 21
+  31 | 10 | 4986 | 61 | 400000 | 18, 18, 21
+  37 | 11 | 134 | 57 | 20368 | 18, 21, 24
+  41 | 12 | 3 | 53 | 585 | 21, 24, 29
+A alone, 400000 scored: best 18, 10th 18, 100th 21
+A with half the budget: best member has 18 rows left
+  then the ratchet, 256 candidates a step, 10240 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
+  then the ratchet, 2048 candidates a step, 81920 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
+  then the ratchet, 16384 candidates a step, 200000 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
+X = 10^15, Q = 3000 (429 rows), depth 1000 (167 primes), budget 400000 scored candidates, seed 2
+A cover first: primes pinned up to | moduli | window | best cover's rows at its own depth | scored | best, 10th best, 100th best rows left at depth z
+  19 | 7 | 103096078 | 79 | 400000 | 19, 22, 24
+  23 | 8 | 4482438 | 72 | 400000 | 18, 20, 22
+  29 | 9 | 154566 | 67 | 400000 | 18, 19, 21
+  31 | 10 | 4986 | 61 | 400000 | 17, 18, 21
+  37 | 11 | 134 | 57 | 21842 | 18, 21, 23
+  41 | 12 | 3 | 53 | 570 | 21, 25, 29
+A alone, 400000 scored: best 17, 10th 19, 100th 21
+A with half the budget: best member has 18 rows left
+  then the ratchet, 256 candidates a step, 10240 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
+  then the ratchet, 2048 candidates a step, 81920 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
+  then the ratchet, 16384 candidates a step, 200000 scored: best 18; improvements (scored so far, rows, primes pinned, largest pinned): []
