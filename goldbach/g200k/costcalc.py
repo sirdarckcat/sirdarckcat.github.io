@@ -11,7 +11,7 @@ def cover_rows(path, Q=200000):
         if sv[i]: sv[i*i::i] = bytearray(len(sv[i*i::i]))
     rows = [q for q in range(3, Q) if sv[q] and all(q % r != a for r, a in cov)]
     return cov, len(rows)
-def cost(path, B=1e7, t_test=None, c_s=5e-6, extra_digits=None):
+def cost(path, B=1e7, t_test=None, c_s=float(__import__("os").environ.get("C_S", "5e-6")), extra_digits=None):
     cov, R = cover_rows(path)
     pmax = max(r for r, _ in cov)
     lM = sum(math.log10(r) for r, _ in cov) + math.log10(2)
