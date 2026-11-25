@@ -1,0 +1,17 @@
+# the miniature's own lists; ln P = 169.34, ln B = 20.03
+lists (best classes of every prime 29..199) | lattice dimension | certified threshold, nats | N' returned by the decoder | of which above the threshold | largest amplitude among the returned | CPU s | work in units
+1 | 39 | 60.9 | 0 | 0 | - | 4.35 | 39,552,001
+2 | 31 | 88.3 | 0 | 0 | - | 1.24 | 11,304,076
+3 | 34 | 107.3 | 0 | 0 | - | 1.17 | 10,666,632
+# largest list size for which the radius is below ln P (every prime agreeing): l <= ln P / ln B = 8.45
+# weighted radius of Guruswami-Sahai-Sudan, sqrt(ln B sum w^2 / ln s), for the weights that matter:
+#   one-class lists, weight 1: radius 12.8; agreement if N sat in the best class of every prime: 37.0
+#   lists of 2, weight 1: radius 18.1; agreement if N sat in the best class of every prime: 37.0
+#   lists of 3, weight 1: radius 22.2; agreement if N sat in the best class of every prime: 37.0
+#   lists of a third, weight 1: radius 75.3; agreement if N sat in the best class of every prime: 37.0
+#   weight = rows struck by the class: radius 268.4; agreement if N sat in the best class of every prime: 142.0
+#   weight = rows struck minus the average of the prime: radius 107.1; agreement if N sat in the best class of every prime: 66.8
+
+real	0m6.897s
+user	0m6.810s
+sys	0m0.028s
