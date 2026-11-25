@@ -1,0 +1,3 @@
+gold-l4g c170: 9134 slices, 4567 batches, found lines 0, expected design hits (sum) 3.9507e-03, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T04:02:25 last 2026-11-23T16:50:43
+gold-l4g c170f: 1940 slices, 970 batches, found lines 0, expected design hits (sum) 8.8130e-04, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T16:51:07 last 2026-11-23T19:29:08
+gold-l4g c170g: 41626 slices, 20813 batches, found lines 0, expected design hits (sum) 1.9908e-02, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T20:20:12 last 2026-11-25T19:00:05
