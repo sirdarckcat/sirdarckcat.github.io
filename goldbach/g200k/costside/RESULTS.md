@@ -164,3 +164,18 @@ At keep 0.75% (item 2: 251,904 kept members a half-pool a batch, `CARRY_NEW=2519
 and carry-over is worth more: without it 34.9 rounds a pool, waste 5.72%, 17.9 launches under target / 2; with the default stop 15.0 rounds, waste
 0.00%, no small launch (smallest 132,984), slice lines deferred 1-9 batches (mean 5.0).  The two items are complements: carry-over removes 3.0% of
 the tests at 1.5% and 5.7% at 0.75%.
+
+### Refit on the measured launch constant (`carry_refit.py`; GPU session's time_launch on gold-g4j, 25 Nov 19:40Z)
+
+s29_asm: t_min = 1.499 ms (a launch of 8 to 10,000 tests), R = 24.87M tests/s, 1.27x at 10^5 tests (one partly filled wave).  A launch of T tests takes
+t(T) = max(t_min, T / R (1 + 0.27 min(1, (W / T)^2))) with W = 188 x 5 x 128 = 120,320 tests a wave: within 0.5% at all seven sizes.  With the two
+half-pools' rounds concurrent (a round = t(2 T)), a batch at keep 1.5%:
+
+| | rounds a half-pool | tests computed a half | Fermat kernels a batch | work at R | idle capacity in the launches |
+|---|---|---|---|---|---|
+| production | 44.8 | 7.279M | 616.8 ms | 585.4 ms | 31.4 ms (22.2 in rounds under 2 waves) |
+| carry-over (stop 131,073) | 22.0 | 7.056M | 574.2 ms | 567.5 ms | 6.7 ms |
+
+-42.6 ms a batch of Fermat kernel time: 17.9 ms of waste (certain) and 24.7 ms of half-empty tail launches (saved only where the sieve does not
+already fill them).  Batch (847 ms): -2.1% to -5.0%, hits/s +2.1% to +5.3%, central +3.5%.  At keep 0.75%: 328.9 -> 289.3 ms a batch (17.4 waste,
+22.3 tails), batch -3% to -7%.
