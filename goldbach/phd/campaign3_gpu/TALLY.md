@@ -66,6 +66,22 @@ Near-misses, where logged (the RTX cards in vector mode; one card's campaign-mod
 
 The L4s and the T4 also report the near-misses they find (none so far) but do not log their expectation.
 
+The 140,000 calibration (the lead, 25 Nov 18:52Z), on the two G4s since 19:55Z:
+- Each card runs at `--near-miss 140000 --record 160357`. A verified event with g ≤ 160,357 is a sub-record event:
+  - it is written to `near_events.jsonl` with `"sub_record": true`, and `found.jsonl` keeps the records and design hits;
+  - records (g > 160,357) and their certification path are unchanged.
+- The per-hour log is `runlogs/2026-11-25/calib_hourly.jsonl`, made by `runlogs/calib_peek.py` (v2) through
+  `runlogs/collect.sh`.
+  - It holds one object per card, hour and threshold: the expected events at the threshold, the found events and
+    restart gaps.
+- First event: g = 159,631 on gold-g4j at 23:07:10Z.
+  - Vector `q170000_m89r491_p0c01147_v866@3382593`, k = 6,806,439, row 1,189 of its 1,250 residual rows.
+  - N = 3.38·10^199, 200 digits.
+  - It was checked on the CPU again from N and g alone (`runlogs/check_event.py`,
+    `runlogs/2026-11-25/near_events_gold-g4j*`).
+  - It is not a record. Its N is below 158,209's (5.06·10^199) with a larger g, so it is on the (N, g) frontier.
+- To 23:10Z, at 140,000: 1.57 expected, 1 found (in the 4 full hours: 1.17 expected, 0 found).
+
 The smaller fleet since 24 Nov 19:59Z, when partition 2 lost its G4 (14.4 h to 10:24Z on 25 Nov):
 - 6 cards until gold-l4e's share lost its L4 at 22:39Z, 5 since 22:42Z. The T4 was down 11 min at 21:16Z.
 - Expected design hits 0.116 and near-misses ≥ 160,357 0.373; none found. By card:
