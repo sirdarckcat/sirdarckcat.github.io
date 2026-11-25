@@ -3,6 +3,7 @@ import GoldbachGaps.Gap200k_400digit_g206593
 import GoldbachGaps.Gap200k_347digit_g216289
 import GoldbachGaps.Gap200k_319digit_g207307
 import GoldbachGaps.Gap1M_2196digit_g1001491
+import GoldbachGaps.Gap1M_1997digit_g1008589
 
 /-!
 # The fixed-gap game: few digits for a given bound
@@ -25,13 +26,16 @@ of any theorem here.
 | 200,000 | 347 | 216,289 | uarch session, `goldbach/records/g200k_347digit_g216289` |
 | 200,000 | 319 | 207,307 | uarch session, `goldbach/records/g200k_319digit_g207307` |
 | 1,000,000 | 2,196 | 1,001,491 | Opus session, `goldbach/g_million/record_2196digit` |
+| 1,000,000 | 1,997 | 1,008,589 | Opus session, `goldbach/g_million/record_1997digit` |
 
 (The uarch session's are on branch `ccr-b8c25887-i6tn9f`, the first two at `8bbbc2d`, the third at
 `05a396b`, the fourth at `3b9dcc4`; each was recomputed from `N` alone by the research session and
 again here before the certificate was generated. The Opus session's is on branch `ccr-c6e00296-3g7fp9` at `71172d4`,
 checked here from `N` and the cover alone; its certificate is in the witness form, in 31 parts of
 four blocks, and uses the record's divisors of `N - q` for 1,600 rows that no modulus strikes; 977
-rows are left to the base-2 Fermat test.)
+rows are left to the base-2 Fermat test. Its 1,997-digit number is on the same branch at `23edb6f`
+(629 moduli, the odd primes up to 4,657), checked here the same way; 31 parts of four blocks, the
+record's divisors for 1,808 rows, 1,094 rows left to the base-2 Fermat test.)
 -/
 
 namespace GoldbachGaps
@@ -91,6 +95,20 @@ theorem exists_lt_ten_pow_2196_no_summand_below_1000000 :
     ∃ N < 10 ^ 2196, Even N ∧ ∀ q, q.Prime → q < 1000000 → ¬ (N - q).Prime :=
   ⟨Gap1M_2196digit_g1001491.N, Gap1M_2196digit_g1001491.N_lt, Gap1M_2196digit_g1001491.N_even,
     fun q hq hlt => Gap1M_2196digit_g1001491.not_prime_sub q hq (by unfold Gap1M_2196digit_g1001491.Q; omega)⟩
+
+/-- **A 1,997-digit even `N` with `N - q` composite for every prime `q < 1008589`**: its least
+Goldbach summand is at least `1008589`. -/
+theorem exists_1997_digit_no_summand_below_1008589 :
+    ∃ N, 10 ^ 1996 ≤ N ∧ N < 10 ^ 1997 ∧ Even N ∧ ∀ q, q.Prime → q < 1008589 → ¬ (N - q).Prime :=
+  ⟨Gap1M_1997digit_g1008589.N, Gap1M_1997digit_g1008589.le_N, Gap1M_1997digit_g1008589.N_lt,
+    Gap1M_1997digit_g1008589.N_even, Gap1M_1997digit_g1008589.not_prime_sub⟩
+
+/-- The bound of the game at one million, with fewer digits: some even `N` below `10^1997` has no
+Goldbach summand below `1000000`. -/
+theorem exists_lt_ten_pow_1997_no_summand_below_1000000 :
+    ∃ N < 10 ^ 1997, Even N ∧ ∀ q, q.Prime → q < 1000000 → ¬ (N - q).Prime :=
+  ⟨Gap1M_1997digit_g1008589.N, Gap1M_1997digit_g1008589.N_lt, Gap1M_1997digit_g1008589.N_even,
+    fun q hq hlt => Gap1M_1997digit_g1008589.not_prime_sub q hq (by unfold Gap1M_1997digit_g1008589.Q; omega)⟩
 
 /-- The bound of the game: some even `N` below `10^400` has no Goldbach summand below
 `200000`. -/
