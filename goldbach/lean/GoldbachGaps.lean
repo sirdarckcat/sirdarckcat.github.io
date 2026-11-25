@@ -63,6 +63,11 @@ import GoldbachGaps.CoverPairSums
 import GoldbachGaps.Record23_g11701
 import GoldbachGaps.Record23_g10729
 import GoldbachGaps.Record23_g10771
+import GoldbachGaps.Record27_g11467
+import GoldbachGaps.Record26_g10303
+import GoldbachGaps.Record26_g10159
+import GoldbachGaps.Record25_g10357
+import GoldbachGaps.Closeness
 import GoldbachGaps.Fscan.Fermat52
 import GoldbachGaps.Fscan.Fermat26
 import GoldbachGaps.Fscan.Schedule
@@ -384,6 +389,19 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                23-digit records of 2026-11-22 (`goldbach/records/threshold_23digit_*` on
                branch `ccr-2ce9e63a-hn0fuw`): `g(54284735534856910692542) = 11701`,
                `g(30625623272505310405982) = 10729`, `g(35505990484772441527442) = 10771`.
+* `Closeness`, `Record27_g11467`, `Record26_g10303`, `Record26_g10159`, `Record25_g10357` – the
+               closeness game of 2026-11-25: four numbers of the research session with the least
+               Goldbach summand certified exactly, both sides in the kernel:
+               `g(111308182437581302718351168) = 11467` (27 digits),
+               `g(10492156463590001369800256) = 10303`, `g(10621579671744600348710546) = 10159`
+               (26 digits), `g(5471513744131872011405456) = 10357` (25 digits). For each:
+               `isLeastSummand_27digit_11467` (…), the full statement `closeness_27digit_11467`
+               (even, exactly 27 digits, `N - g` prime, `N - p` not prime for any prime
+               `p < g`) and `exists_27_digit_isLeastSummand_11467`. `N - g` is proved prime by
+               a Lucas certificate through Mathlib's `primality` (`scripts/gen_record.py --lucas`).
+               Also `isLeastSummand_iff` (the least summand from its parts) and
+               `IsLeastSummand.unique`. The ceiling and the closeness share are a model and
+               are not in any statement.
 * `Fscan.*`  – correctness of the arithmetic kernels of the `goldbach/fscan` scanner (code
                at commit `a3ab69c` on branch `ccr-d4a17dd0-7uu03r`), one lane at a time:
                `Fermat52` / `Fermat26` are the Montgomery squaring steps `F52_STEP` and
