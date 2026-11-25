@@ -1,0 +1,42 @@
+== /content/tl/tl_s1r_asm.txt
+device NVIDIA RTX PRO 6000 Blackwell Server Edition, variant s1r_asm, 128 threads a CTA, 20000 distinct rows; best / median of 20 launches
+  T =        8: kernel     1.602 ms best,     1.603 median; launch + sync     1.610 ms median;    0.005M tests/s
+  T =     1000: kernel     1.603 ms best,     1.604 median; launch + sync     1.612 ms median;    0.624M tests/s
+  T =    10000: kernel     1.604 ms best,     1.605 median; launch + sync     1.612 ms median;    6.233M tests/s
+  T =   100000: kernel     5.416 ms best,     5.418 median; launch + sync     5.425 ms median;   18.463M tests/s
+  T =   524288: kernel    22.543 ms best,    22.564 median; launch + sync    22.572 ms median;   23.257M tests/s
+  T =  1048576: kernel    44.741 ms best,    44.769 median; launch + sync    44.778 ms median;   23.437M tests/s
+  T =  2097152: kernel    89.145 ms best,    89.147 median; launch + sync    89.157 ms median;   23.525M tests/s
+t_min (kernel time of the smallest launch) = 1.602 ms; R (rate of the largest) = 23.53M tests/s
+  T =        8: measured     1.602 ms, model max(T / R, t_min)     1.602 ms (1.00x)
+  T =     1000: measured     1.603 ms, model max(T / R, t_min)     1.602 ms (1.00x)
+  T =    10000: measured     1.604 ms, model max(T / R, t_min)     1.602 ms (1.00x)
+  T =   100000: measured     5.416 ms, model max(T / R, t_min)     4.251 ms (1.27x)
+  T =   524288: measured    22.543 ms, model max(T / R, t_min)    22.286 ms (1.01x)
+  T =  1048576: measured    44.741 ms, model max(T / R, t_min)    44.573 ms (1.00x)
+  T =  2097152: measured    89.145 ms, model max(T / R, t_min)    89.145 ms (1.00x)
+TIME-LAUNCH-DONE
+== /content/tl/tl_s29_asm.txt
+device NVIDIA RTX PRO 6000 Blackwell Server Edition, variant s29_asm, 128 threads a CTA, 20000 distinct rows; best / median of 20 launches
+  T =        8: kernel     1.499 ms best,     1.501 median; launch + sync     1.508 ms median;    0.005M tests/s
+  T =     1000: kernel     1.501 ms best,     1.503 median; launch + sync     1.510 ms median;    0.666M tests/s
+  T =    10000: kernel     1.501 ms best,     1.503 median; launch + sync     1.510 ms median;    6.663M tests/s
+  T =   100000: kernel     5.116 ms best,     5.119 median; launch + sync     5.126 ms median;   19.546M tests/s
+  T =   524288: kernel    21.339 ms best,    21.347 median; launch + sync    21.355 ms median;   24.569M tests/s
+  T =  1048576: kernel    42.326 ms best,    42.352 median; launch + sync    42.361 ms median;   24.774M tests/s
+  T =  2097152: kernel    84.318 ms best,    84.320 median; launch + sync    84.330 ms median;   24.872M tests/s
+t_min (kernel time of the smallest launch) = 1.499 ms; R (rate of the largest) = 24.87M tests/s
+  T =        8: measured     1.499 ms, model max(T / R, t_min)     1.499 ms (1.00x)
+  T =     1000: measured     1.501 ms, model max(T / R, t_min)     1.499 ms (1.00x)
+  T =    10000: measured     1.501 ms, model max(T / R, t_min)     1.499 ms (1.00x)
+  T =   100000: measured     5.116 ms, model max(T / R, t_min)     4.021 ms (1.27x)
+  T =   524288: measured    21.339 ms, model max(T / R, t_min)    21.079 ms (1.01x)
+  T =  1048576: measured    42.326 ms, model max(T / R, t_min)    42.159 ms (1.00x)
+  T =  2097152: measured    84.318 ms, model max(T / R, t_min)    84.318 ms (1.00x)
+TIME-LAUNCH-DONE
+== /content/tl/tl.log
+TL paused 1407 19:39:49
+TL s29_asm rc=0 19:39:57
+TL s1r_asm rc=0 19:40:03
+TL resumed 1407 19:40:03
+TL-DONE
