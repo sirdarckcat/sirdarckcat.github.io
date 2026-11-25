@@ -102,7 +102,8 @@ The spy read only the lead's transcript. Verified against code and logs:
 | 8 | rank vectors by the pair-correlation term | priced on 22 Nov by the two-session brainstorm at 0.0002 nats between covers of equal rows | 0 |
 | 9 | calibrate on small sizes | already done at least eight ways on five branches, to about 1% | 0 |
 
-Total: at most about 0.15 nats, against the spy's own "×1.3 to ×2.4" (0.3 to 0.9). One neighbouring lever turned up
+Total: at most about 0.17 nats, against the spy's own "×1.3 to ×2.4" (0.3 to 0.9). The largest single item still open
+is the team's own pending decision on the card mix (0.06 to 0.2 nats), which is not on the spy's list. One neighbouring lever turned up
 in the check of rank 7: ordering the vector supply by research's weighted rows was 0.4 to 0.9 weighted rows better at
 equal supply in a test at 5,000 to 35,000 covers, where the cover README says it gives nothing; at most 0.02 nats, and
 unconfirmed at the 3.7 million covers the fleet draws from. The spy's bottom line survives and is the part worth
@@ -178,6 +179,11 @@ moduli, 407 rows) on three cores of the reviewer's container:
 | digits | g(N) | closeness | g / (ln N)² | members sieved | time |
 |---|---|---|---|---|---|
 | 100 | 47,881 | 10.3% | 0.90 | 432 million | 12 minutes, 18 CPU-minutes |
+
+The scan found it after 1.7 times the model's expected number of members; the quantities that do not depend on luck
+(rows alive after the sieve, the rate of probable primes, the hit mass kept by the cut, the cost per member) agree with
+the model within 1 to 5%. A 110-digit scan was still running when this was written (0.8 expected hits so far, none
+found); 120 and 130 digits were priced, not run, at about 10 to 15 and 100 to 170 CPU-hours a hit (`demo/SUMMARY.md`).
 
 N = 8223574663857043817842483455238569126110624927813137471170822278151226773853347935411335888798540538. Checked
 from N alone twice (the agent's script and mine, `demo/verify_g.py`): N − q fails a base-2 Fermat test for every odd
