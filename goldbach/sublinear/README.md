@@ -1265,7 +1265,13 @@ recomputed here unless said).
   with one score computed. What the game leaves out is the link between
   the later classes of different cells (they are the points of one
   progression, not independent draws); every use of that link tried so
-  far has been negative.
+  far has been negative, and the link itself is now bounded in the kernel
+  (`Cap.card_good_sharing_le`, commit 1bd97f8): for later moduli of
+  product P and any classes on them, the N below X in good cells with
+  those classes number at most min(X/P + 1, cells · (X/(MP) + 1)), one per
+  cell once P exceeds the window and one in all once P exceeds X. The
+  progression N + tP is the design that pins those primes and whichever
+  cover primes still fit: the link is the freedom to choose what to pin.
 - *The accounting and a calibration* (consultant session, `BOTTOM_UP.md` at
   40146c6 on its branch). One entropy, ln 10^200 = 460.5 nats: the exponent
   at 200,000 is 78.3 for even N, 52.2 with random nonzero classes, 36.46
