@@ -179,3 +179,21 @@ half-pools' rounds concurrent (a round = t(2 T)), a batch at keep 1.5%:
 -42.6 ms a batch of Fermat kernel time: 17.9 ms of waste (certain) and 24.7 ms of half-empty tail launches (saved only where the sieve does not
 already fill them).  Batch (847 ms): -2.1% to -5.0%, hits/s +2.1% to +5.3%, central +3.5%.  At keep 0.75%: 328.9 -> 289.3 ms a batch (17.4 waste,
 22.3 tails), batch -3% to -7%.
+
+### The identity gate on a G4 (GPU session, gold-g4j, 25 Nov 19:49-19:51Z; 28 done vectors, production options, --near-miss 50000)
+
+Production engine (4f27d916ea93 + fround a4d0c79) against the carry engine (search_gpu5_carry on 9385f3b + the GPU session's --record split, fround
+88f67789996f, --carry-over 1): slice lines 28 = 28, none differing (timing fields stripped); the 820 found events the same as a set, none duplicated;
+tests counted 98,824,669 in both; the known case on the carry engine 23 = 23.  --profile-pool (means after the first batch; the carry run's include
+the drain that ends a run):
+
+| | production | carry-over | predicted |
+|---|---|---|---|
+| rounds a half-pool | 43.0 | 22.4 | 44.8 -> 22.0 |
+| tests computed, whole run | 101,947,058 | 99,269,388 (-2.63%) | -3.06% without the drain |
+| waste | 3.06% | 0.45% | 3.0% -> 0.0% (+ the drain) |
+| members a half-pool | 503,808 | 554,859 = (6 x ~631k + the drain's ~127k) / 7 | ~123k carried |
+| kernels / wall / gap, s a half-pool | 0.419 / 0.700 / 0.281 | 0.325 / 0.561 / 0.236 | gap "about half": wrong |
+
+The gap a round grew (6.5 -> 10.5 ms): the printed gap is wall minus the half's own kernels, so it includes the time a half's launch waits behind the
+other half's, now all large; it is not host time.  Throughput is for the production A/B (the gate's batches carried ~6 s of CPU verification).
