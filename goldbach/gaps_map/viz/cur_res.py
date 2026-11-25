@@ -19,3 +19,11 @@ for _id, _p in _ns["RT_PATCH"].items():
     _n = R_NODES[_id]
     if "detail" in _p: _n["detail"] = _n.get("detail", "") + _p["detail"]
     if "chips" in _p: _n["chips"] = list(_n.get("chips", [])) + _p["chips"]
+
+# Update of 2026-11-25: new research, fleet, archipelago and Lean-session-script boxes (cur_res_d.py).
+_ns = {}
+exec(open(os.path.join(_V, "cur_res_d.py")).read(), _ns)
+assert not (set(_ns["RD"]) & set(R_NODES)), "new box id collides with an existing research box"
+assert not (set(_ns["RD_EDGES"]) & set(R_EDGES)), "new link collides with an existing research link"
+R_NODES.update(_ns["RD"])
+R_EDGES.update(_ns["RD_EDGES"])

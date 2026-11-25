@@ -111,6 +111,9 @@ button:focus-visible, .node:focus-visible, input:focus-visible, summary:focus-vi
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
 .tag { font-size: .76rem; border: 1px solid var(--line); background: var(--surface2); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
 .tag.role { border-color: var(--c); color: var(--fg); background: color-mix(in srgb, var(--c) 14%, var(--surface)); }
+.tag.since { border-color: var(--c); color: var(--fg); background: color-mix(in srgb, var(--c) 22%, var(--surface)); font-weight: 600; }
+.news { margin: 6px 0 0; padding-left: 1.1rem; display: grid; gap: 7px; }
+.news button.link { font-weight: 600; }
 .gist { font-size: 1.02rem; margin: 12px 0 0; }
 .detail { color: var(--muted); margin: 8px 0 0; }
 .rel { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -400,6 +403,8 @@ details > summary { cursor: pointer; font-weight: 600; }
   /* ---------- panel + outline content ---------- */
   function tagsFor(n) {
     var g = G[n.group], h = '<div class="tags"><span class="tag role" style="--c:' + kv(g.slot) + '">' + esc(g.label) + "</span>";
+    var sv = n.f && n.f.since, sl = LENSES.filter(function (l) { return l.id === "since"; })[0], sd = sv && sl && (sl.values || []).filter(function (x) { return x.v === sv; })[0];
+    if (sd && sv !== "old") h += '<span class="tag since" style="--c:' + kv(sd.slot) + '">' + esc(sd.label) + "</span>";
     (n.chips || []).forEach(function (c) { h += '<span class="tag">' + esc(c) + "</span>"; });
     return h + "</div>";
   }
@@ -431,6 +436,7 @@ details > summary { cursor: pointer; font-weight: 600; }
   }
   function introHTML() {
     var h = "<h2>" + esc(M.introTitle) + '</h2><ul class="plain">' + M.intro.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+    if (M.news && M.news.length) h += "<h3>" + esc(M.newsTitle || "What is new") + '</h3><ul class="news">' + M.news.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
     h += '<h3>Start here</h3><div class="start">' + M.start.map(function (s) { return '<button type="button" data-go="' + s.id + '">' + esc(s.label) + "</button>"; }).join("") + "</div>";
     h += '<h3>Read with care</h3><ul class="plain">' + M.care.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
     return h + '<p class="stats">' + M.statsHTML + "</p>";
