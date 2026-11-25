@@ -44,8 +44,9 @@ it; they are in "A floor under every cover" and the sections after it:
   measured, is not shown to vanish.) **Corrected the same day:** that limit
   does not hold. The recursion lets the small moduli choose classes they do
   not have the entropy to choose; with that constraint put in, it agrees
-  with the counts near the end, settles the 1,228-moduli test (3,452
-  predicted, 3,438 to 3,465 measured), keeps D(n)/(r·ln² r) between 0.91 and
+  better with the counts near the end, gives 3,452 at the 1,228-moduli test
+  where the runs read 3,438 to 3,465 (not decisive: such runs read high),
+  keeps D(n)/(r·ln² r) between 0.91 and
   1.01 at every size computed (89 to 3,244 moduli), and in the limit gives
   D(n) of order r·ln² r/ln ln r, with e^γ/(2·C₂) = 1.349 as the bound's
   constant: the order of the best known constructions for gaps, a factor
@@ -1866,9 +1867,12 @@ What it changes at the sizes counted:
   further 15 nats from a lower cut of the dispersion at the moduli 3 to 17,
   which `cover_price_hl.py` sets at 0.02 where the true value is nearly 0).
   The runs read 3,465 at 150,000 sweeps and 3,438 at 500,000, still falling
-  slowly: they are where the constrained count is, and the series that
-  "approached 3,394 from above and stopped 44 short" was approaching the
-  wrong figure.
+  slowly, so the constrained figure lies inside the range of the runs and
+  the unconstrained one below all of them. That does not decide between
+  the two: runs of finite length read high, and in the middle of the range
+  the recursion itself reads 1 to 3% high at the larger sizes. What it does
+  is remove the puzzle of a series that approached 3,394 and stopped 44
+  short: the figure it was held against was 15 to 58 too low.
 - Where complete covers end, D/(x·ln² x):
 
 | x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 |
