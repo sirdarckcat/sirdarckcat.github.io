@@ -38,11 +38,11 @@ G = {}
 def init():
     sv = Sieve200(N0, M, U, B, logK=logK, exclude=[r for r, _ in cov])
     bits = (N0 + (kstart + nmem) * M).bit_length()
-    if bits <= 672:
-        import fm13
+    import fmw
+    if fmw.limbs_for(bits) >= 13 and bits <= 672:                    # fm13 (13 limbs) only where fmw would need as many: below,
+        import fm13                                                   # fmw's L = limbs_for(bits) is ~(13 / L)^2 faster
         fm13.load(); fm = fm13.Members(N0, M, U)
     else:
-        import fmw
         fm = fmw.Members(N0, M, U, kstart + nmem)
     G.update(sv=sv, fm=fm)
 

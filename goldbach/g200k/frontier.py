@@ -2,7 +2,7 @@
 """Closeness frontier rungs (doubling as hit-rate calibration): every N with d digits and N <= c 10^(d-1) whose N - q are all
 composite for the primes q < Q = ceil(0.10 * closeness.ceiling(ln(c 10^(d-1)))) has closeness >= 10% at d digits.
 
-    python3 frontier.py covers.txt d c_num c_den ncovers skip B out.json [--procs P] [--frac F] [--logK 20]
+    python3 frontier.py covers.txt d c_num c_den ncovers skip B out.json [--procs P] [--frac F] [--logK 22]
 
 covers.txt: COVER / BEST lines for one set of moduli (ptcover's PT_DUMP); the first ncovers distinct ones, fewest rows first.
 c = c_num / c_den (e.g. 11 10 for 1.1).  Each cover's progression N0 + k M is scanned over its k window (10^(d-1), c 10^(d-1)]
@@ -21,7 +21,7 @@ from sympy import primerange
 import closeness
 
 args = sys.argv[1:]
-procs, frac, logK = 1, 1.0, 20
+procs, frac, logK = 1, 1.0, 22
 for flag in ("--procs", "--frac", "--logK"):
     if flag in args:
         i = args.index(flag); v = args[i + 1]; del args[i:i + 2]
@@ -67,7 +67,7 @@ def task_list():
     tasks = []
     for ci, s in enumerate(specs):
         K = 1 << logK
-        for k0 in range(s["klo"] - s["klo"] % K, s["khi"] + 1, K):
+        for k0 in range(s["klo"] - s["klo"] % BL, s["khi"] + 1, K):   # from the 32,768-block of klo: the blocks stay at multiples of BL
             tasks.append((ci, k0))
     return tasks
 
@@ -78,10 +78,11 @@ def window(task):
     if G.get("ci") != ci:
         G["sv"] = Sieve200(s["N0"], s["M"], s["U"], B, logK=logK, exclude=[r for r, _ in s["cover"]])
         bits = (s["N0"] + (s["khi"] + 1) * s["M"]).bit_length()
-        if bits <= 672:
-            import fm13; fm13.load(); G["fm"] = fm13.Members(s["N0"], s["M"], s["U"])
+        import fmw
+        if fmw.limbs_for(bits) >= 13 and bits <= 672:                # fm13 only where fmw would need 13 limbs as well: at 101
+            import fm13; fm13.load(); G["fm"] = fm13.Members(s["N0"], s["M"], s["U"])   # digits fmw's 7 limbs are 3.0x faster
         else:
-            import fmw; G["fm"] = fmw.Members(s["N0"], s["M"], s["U"], s["khi"] + 1)
+            G["fm"] = fmw.Members(s["N0"], s["M"], s["U"], s["khi"] + 1)
         G["ci"] = ci
     sv, fm = G["sv"], G["fm"]
     cnt, bits = sv.block(k0)
