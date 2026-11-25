@@ -1827,6 +1827,47 @@ middle of its sampled part. Three points and three parameters: that is an
 estimate of where the series is heading, next to the 3,394 on record, and
 not a test.)
 
+Twelve more counts, predicted first (25 November). The Opus session counted
+complete covers on 138, 238 and 302 moduli (x = 797, 1,499, 1,999) at 60,
+75, 85 and 93% of the reach of its tempered covers (30,931; 70,111; 98,731),
+two runs of 400,000 sweeps from random vectors at every target and one from
+its best cover at the two highest (`floor/floor_report.md` on its branch).
+The losses by the recursion were written into `cover_price_hl.txt` at 07:31
+UTC, before any of those runs had finished:
+
+| moduli | target | loss on record, pair sum | closed formula | measured | measured / pair sum |
+|---|---|---|---|---|---|
+| 138 | 18,559 | 434.0 | 433.3 | 423.0 | 0.975 |
+| 138 | 23,198 | 535.5 | 537.8 | 524.1 | 0.979 |
+| 138 | 26,291 | 601.6 | 606.2 | 599.3 | 0.996 |
+| 138 | 28,766 | 656.3 | 662.9 | 658.5 | 1.003 |
+| 238 | 42,067 | 791.9 | 796.1 | 773.8 | 0.977 |
+| 238 | 52,583 | 978.2 | 987.7 | 966.9 | 0.988 |
+| 238 | 59,594 | 1,104.9 | 1,118.7 | 1,123.5 | 1.017 |
+| 238 | 65,203 | 1,200.9 | 1,216.5 | 1,227.9 | 1.023 |
+| 302 | 59,239 | 1,024.8 | 1,032.7 | 1,013.9 | 0.989 |
+| 302 | 74,048 | 1,263.8 | 1,277.3 | 1,268.0 | 1.003 |
+| 302 | 83,921 | 1,425.3 | 1,443.1 | at most 1,464.3 | at most 1.027 |
+| 302 | 91,820 | 1,553.3 | 1,573.2 | at most 1,605.9 | at most 1.034 |
+
+(Measured: the mean of the two runs from random vectors at the two lower
+targets, where they agree within 1.4 and are steady; the run from the cover
+at the two higher ones, where the runs from random vectors read between 1.5
+nats less and 22 more and are still falling. At 302 moduli the runs from
+the cover are still falling too, by 7 to 10 nats over their second half, so
+those two are upper bounds.) All twelve are within 3.5% of the figure on
+record, and the ten that are in equilibrium within 2.6%. The error is not
+noise: the recursion's loss is 1 to 2.5%
+too large in the middle of the range and too small by up to 2 to 3% near
+the end, and at a fixed share of the reach the ratio rises slowly with the
+number of moduli (0.975, 0.977, 0.989 at 60%; 0.979, 0.988, 1.003 at 75%),
+as it does at 429 moduli (0.998 at half the reach) and 1,228 (between 0.999
+and 1.013 at a third). The closed formula is the closer of the two near the
+end and the further in the middle. So the recursion is a 2 to 3% theory of
+the count at every size tried, with an error that has a shape and moves
+slowly with size; nothing here says where that error goes in the limit,
+which is the referee's caveat above.
+
 *The same calculation above the end: how few rows a cover can leave.* With
 a finite price β for a row left at the end, instead of an infinite one, the
 price equation gives the whole partition function of the previous section,
@@ -2084,7 +2125,23 @@ Q = 30,000, 6 against 6.0 at 100,000, 10 against 9.0 at 130,000). So four
 cores reach 300 digits in about a day for the gap of 200,000 (16 hours
 expected here, started 09:36 UTC on 302 covers of 1,218 and 1,219 rows), and
 50 digits less cost a factor of 11 from 400 to 350 digits and of 29 from 350
-to 300. Results to follow here.
+to 300.
+
+Results (every N recomputed here from N alone before it is listed):
+
+| gap | digits | g(N) | found by | cover | members sieved, tests, CPU-hours | record files |
+|---|---|---|---|---|---|---|
+| 200,000 | 400 | 200,293 | uarch, 25 Nov 09:31 UTC | 159 moduli (3 to 941), 1,010 rows | 72.4 million, 58.0 million, 1.78 (both hits) | `records/g200k_400digit_g200293` on `ccr-b8c25887-i6tn9f` |
+| 200,000 | 400 | 206,593 | the same run | the same | | `records/g200k_400digit_g206593` there |
+
+(At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
+million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
+in the first 69 million. A count that low or lower has probability 3.5%;
+the uarch session checked the sieve against brute force, the kernel against
+gmpy2, and the whole chain at three smaller targets on the same cover
+before going on, all in agreement, so it stands as luck until the next
+sizes say otherwise.)
+
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
