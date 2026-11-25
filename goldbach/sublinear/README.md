@@ -57,7 +57,12 @@ it; they are in "A floor under every cover" and the sections after it:
   e^γ/(2·C₂) = 1.349 as the constant of the bound: what divisibility alone
   can force is of the order of the best known constructions for prime gaps,
   one factor ln ln below the first-moment count. (The asymptotic part is a
-  heuristic of one day and is with the consultant session for a check; the
+  heuristic of one day; the consultant session checked it the same morning
+  and it stands as a heuristic, with the asymptotic form of no use below
+  about 10^15. A direct test of the mechanism succeeded: among 1.5 million
+  sampled complete covers on 167 moduli the 41 moduli up to 181 are frozen,
+  carrying 6.6 nats of the 165 they could, exactly where the constrained
+  recursion puts the boundary. The
   one test left open on the 24th, 1,228 moduli, reads 3,438 to 3,465 in
   runs that are still falling, against 3,452 with the constraint and 3,409
   without, and decides nothing.) At 200 digits nothing moves: both versions
@@ -1835,7 +1840,8 @@ D(n)/(r·ln² r) has the same limit depends on that closure, which is open.
 
 *The entropy of the small moduli: the limit does not hold* (`cover_price_prefix.py`,
 `cover_price_prefix.txt`; found here on 25 November, after the referee's
-read; the asymptotic part is with the consultant session for a check). The
+read; the asymptotic part was checked by the consultant session the same
+day, see the end of this section). The
 caveat has a definite content. At a modulus s the recursion's solution has
 the chosen class hold e^(v·t) times the mean number of rows still alive, t
 the price after s. There are only s − 1 classes, so a class that full is
@@ -1984,6 +1990,31 @@ annealed count that the entropy of the small moduli does not allow. The
 o(1) is of relative size ln ln ln x/ln ln x, so at the sizes that can be
 computed none of this shows except as the turn in the table: there the
 constrained recursion is the statement, and it says 0.91 to 1.01.
+
+The consultant session checked the argument the same morning
+(`goldbach/gaps_map/LIMIT_CHECK.md` on `ccr-cdb2641a-5zg8un`, commit
+b90e85c, with tests on real primes; nobody else has read it). Its verdict:
+the conclusion stands as a heuristic, D(x)/(x·ln² x) tends to 0 like
+1.349/(ln ln x − 1), with two corrections to the route. First, "the small
+moduli can do no better than random" is true only in the limit: the
+entropy allows them a saving of relative size about 2/√(ln x), and on real
+primes greedy classes on the moduli up to x/ln x leave 0.72 to 0.74 of what
+random classes leave, flat from x = 300 to 10^5. Second, the count for the
+top moduli is better put as a capacity than as a probability: a complete
+cover needs the largest classes of the top moduli to add up to the rows
+left, the largest of x/u Poisson counts is ln x/(ln ln x − 1 − ln u), and
+the sum is x/(ln ln x − 1); this gives the same constant and the same −1,
+and on real primes at x = 20,000 the greedy choice collects 0.915 of what
+that Poisson model allows. It also found the asymptotic form useless below
+about 10^15 (it overshoots a model calibrated on real greedy covers by a
+factor 1.9 at x = 2,000 and 1.15 at 10^6), that plain greedy on real primes
+has D/(x·ln² x) on a plateau of 0.72 from 10^4 to 10^5, and no treatment of
+this function for prime rows in the literature (the nearest being the
+Jacobsthal function: Ford, Green, Konyagin, Maynard and Tao 2018; Iwaniec;
+the computations of Costello and Watts 2015). So: 1.1275 is a value the
+unconstrained recursion passes through, not a limit of D(n); what the
+ratio does between 10^6 and 10^15 no count can show; and at the campaign's
+sizes nothing changes.
 
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
