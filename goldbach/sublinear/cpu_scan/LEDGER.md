@@ -23,7 +23,7 @@ Sets of moduli the fleet has used, not to be scanned (GPU session, 19:58 UTC): t
 | first 88 odd primes + 613 | 8,537 | `covers_first88_613.txt.xz` | offered to the Opus session | |
 | first 88 odd primes + 503 | 8,582 | `covers_first88_503.txt.xz` | offered to the contractor session | |
 | first 88 odd primes + 479 | 8,582 | `covers_first88_479.txt.xz` | offered to the consultant session | |
-| first 88 odd primes + 467 | 8,582 | `covers_first88_467.txt.xz` | offered to the Lean session | |
+| first 88 odd primes + 467 | 8,572 | `covers_first88_467.txt.xz` | offered to the Lean session | |
 
 Both files: the first-88 family-B covers of `../../fscan/cover/starts/q170000_m88f.txt` extended by the two fullest
 classes of the 89th prime, then a capped walk from them (`../../fscan/cover/covergen 170000 <starts> <cap> 8000 <seed>`,
