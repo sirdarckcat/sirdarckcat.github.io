@@ -40,35 +40,34 @@ it; they are in "A floor under every cover" and the sections after it:
   14% low for targets nearer the end of complete covers, for a reason that
   is understood (a frozen level takes the largest of its counts, which the
   rate function puts a row too high).
-- The limit claimed on the 24th does not hold (found here on the 25th,
-  hours after the Lean session had refereed its four steps and found the
-  arithmetic right, with the caveat that it was the limit of the recursion
-  only). The recursion as first written tends to D(n) ~ 1.1275·r·ln² r. But
-  it lets the small moduli choose classes they do not have the entropy to
-  choose: in its own solution the entropy of a prefix of the moduli goes
-  negative, by 8 nats on the campaign's 89 moduli at the end of complete
-  covers and by 219 at 1,228 moduli. This is the families of the long runs.
-  With the constraint put in (the same recursion with weights, a convex
-  minimisation) the counts near the end fit better, the ends agree within
-  0.5% with those extended from the Opus session's counts at 138 and 238
-  moduli, and D(n)/(r·ln² r) stays between 0.91 and 1.01 at every size
-  computed (89 to 3,244 moduli), turning down after about a thousand. In the
-  limit the same entropy count gives D(n) of order r·ln² r/ln ln r, with
-  e^γ/(2·C₂) = 1.349 as the constant of the bound: what divisibility alone
-  can force is of the order of the best known constructions for prime gaps,
-  one factor ln ln below the first-moment count. (The asymptotic part is a
-  heuristic of one day; the consultant session checked it the same morning
-  and it stands as a heuristic, with the asymptotic form of no use below
-  about 10^15. A direct test of the mechanism succeeded: among 1.1 million
-  sampled complete covers on 167 moduli near the end, the 41 smallest
-  moduli occur in six settings (one nat of entropy out of the 165 they
-  could carry), against 40,000 settings far from the end, and the frozen
-  part ends where the constrained recursion puts it. The
-  one test left open on the 24th, 1,228 moduli, reads 3,438 to 3,465 in
-  runs that are still falling, against 3,452 with the constraint and 3,409
-  without, and decides nothing.) At 200 digits nothing moves: both versions
-  end the complete covers on 89 moduli at 15,907 to 15,919, where 15,907
-  has been found; rigorously 15,907 ≤ D(89) < 35,000, the upper end by an
+- No limit is known, and two that were claimed here are withdrawn. On the
+  24th: D(n) ~ 1.1275·r·ln² r, the limit of the recursion as first written
+  (the Lean session refereed its arithmetic and found it right, with the
+  caveat that it was the recursion's limit only). On the 25th I found what
+  the caveat hides: the recursion lets the small moduli choose classes
+  they do not have the entropy to choose (in its own solution the entropy
+  of a prefix of the moduli goes negative, by 8 nats on the campaign's 89
+  moduli at the end of complete covers and by 219 at 1,228 moduli). That
+  part stands and was confirmed directly: among 1.1 million sampled
+  complete covers on 167 moduli near the end, the 41 smallest moduli occur
+  in six settings, against 40,000 settings far from the end, and the frozen
+  part ends where the constrained recursion puts it. With the constraint in
+  (the same recursion with weights, a convex minimisation) complete covers
+  of the kind that searches find end at 0.91 to 1.01 times r·ln² r from 89
+  to 25,996 moduli, turning down after about a thousand. But I then
+  concluded that D(n) is of order r·ln² r/ln ln r in the limit, and that
+  was wrong: the Lean session's second read the same day showed that
+  frozen moduli need not behave like random classes. Classes taken from one
+  common integer on the middle moduli (the block of Erdős and Rankin) leave
+  fewer rows than any random-like choice, by a factor that grows without
+  bound. It makes no difference while the largest modulus is below about
+  10^25, but it gives
+  a theorem on paper, D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)², which beats every
+  bound of the order r·ln r (the consultant session wrote the proof out;
+  the Lean session is formalising a corollary), and it leaves the order of
+  D(n) open. At 200 digits nothing moves: complete covers on the 89 moduli
+  end at 15,907 to 15,919 by the recursion in both forms, where 15,907 has
+  been found; rigorously 15,907 ≤ D(89) < 35,000, the upper end by an
   exhaustive search of the uarch session. Exact values of D(n) are known to
   n = 35, and covers complete to 41,659, 70,111 and 98,731 on 167, 238 and
   302 moduli (Opus session), the first of them certified in the Lean
@@ -76,11 +75,11 @@ it; they are in "A floor under every cover" and the sections after it:
 - The other direction, proposed by the user on the 25th: fix the gap and
   ask how few digits N needs. The same calculation prices it (a closed form
   for the split between cover and luck), and it gives records that need no
-  GPU. First results the same morning: two 400-digit numbers with no
-  Goldbach summand below 200,293 and 206,593, found by the uarch session in
-  under two CPU-hours and certified in the Lean kernel; 350, about 319 and
-  300 digits are running, and 2,196 digits for a gap of 1,000,000 (2,480
-  held). Section "The other direction".
+  GPU. First results the same day: two 400-digit numbers with no Goldbach
+  summand below 200,293 and 206,593, found by the uarch session in under
+  two CPU-hours and certified in the Lean kernel, then a 347-digit number
+  with g = 216,289; about 319 and 300 digits are running, and 2,196 digits
+  for a gap of 1,000,000 (2,480 held). Section "The other direction".
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -110,8 +109,8 @@ it; they are in "A floor under every cover" and the sections after it:
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
   1,381, 1,471, 1,567, 1,669, 1,801, 1,933, 2,137, 2,311, 2,521, 2,647, 2,749, 2,953, 3,079 for n = 1 to 35 (`desert.c`; two programs to n = 15, the uarch
   session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
-  like r·ln² r at every size computed, by the law above (and like
-  r·ln² r/ln ln r in the limit, by its correction).
+  like r·ln² r at every size computed, by the law above (its order in the
+  limit is open; it is at least r·ln² r·ln₃ r/(ln₂ r)², on paper).
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -791,10 +790,31 @@ second moments had their predicted values); its two open points are named
 there (the exact form of the long-range theorem with a congruence
 condition, and an averaging lemma for the survival weights), so it is a
 proof on paper pending those, not a theorem here. Counting alone cannot
-beat 1.349 in any order of the moduli. And the entropy count in "The
-entropy of the small moduli" below says the second device gives the true
-order: what divisibility alone can force is ln X·(ln ln X)²/ln ln ln X up to
-a constant, heuristically.
+beat 1.349 in any order of the moduli.
+
+Both are overtaken, as to order, by a third device that was proposed here
+on 22 November, lost from this file, and brought back by the Lean session's
+referee read of 25 November: the block of Erdős and Rankin. Give all the
+primes t in (z, y/4] the class of one common integer N₁ in (Q, 2Q]; they
+then strike every prime q for which N₁ − q has a prime factor in that
+range, and what is left is a share of order ln ln y/ln y of the rows, on
+average over N₁ (which needs only Chebyshev, Brun–Titchmarsh and a count of
+smooth numbers, no sieve for prime pairs). The primes up to z take their
+fullest classes and the primes above y/4 one row each. With
+ln z = ln y·ln₃ y/(3·ln₂ y) this covers every odd prime below
+c·y·ln² y·ln₃ y/(ln₂ y)², so that
+
+    max over even N ≤ X of g(N) ≥ c·ln X·(ln₂ X)²·ln₄ X/(ln₃ X)²     for all large X
+
+(ln₂ = ln ln, and so on): more than A·ln X·ln ln X for every A. The proof
+is written out in `goldbach/gaps_map/COHERENT_BLOCK.md` (consultant
+session, commit 0761b84 on `ccr-cdb2641a-5zg8un`), read by its author and
+by me; the finite skeleton (a fixed layer, a pigeonhole layer and a mop-up
+layer) is `Cap/Layers.lean` in the Lean library, kernel-checked since 22
+November, and the Lean session began on 25 November to formalise the
+corollary for every A. At the sizes of this project the block is worse than
+what tempering finds (it overtakes random classes only near y = 10^25), so
+this is a theorem about large X and changes nothing at 200 digits.
 
 **At 200 digits, without luck.** Joint optimisation does much better than
 the asymptotic count suggests. Tempering on the 89 smallest odd primes
@@ -1658,7 +1678,8 @@ length.) And beyond what any search has reached:
 random starts, checked here: `complete_cover_70111_238primes.txt` and
 `complete_cover_98731_302primes.txt`, 0.875 and 0.855 of x·ln² x and 88 and
 85% of the recursion's end. Its whole series of tempered reach over x·ln² x
-at one budget, for x = 127, 149, 251, 349, 397, 599, 797, 997, 1,499, 1,999,
+(not at one budget: the runs from covers and from random vectors had different
+lengths, see Finding 1 of its README), for x = 127, 149, 251, 349, 397, 599, 797, 997, 1,499, 1,999,
 is 0.775, 0.792, 0.842, 0.849, 0.856, 0.860, 0.870, 0.876, 0.875, 0.855: the
 first two are exact values of D, and from about 600 on it is the budget and
 not the end that stops the search, most at the largest size.)
@@ -1841,8 +1862,8 @@ D(n)/(r·ln² r) has the same limit depends on that closure, which is open.
 
 *The entropy of the small moduli: the limit does not hold* (`cover_price_prefix.py`,
 `cover_price_prefix.txt`; found here on 25 November, after the referee's
-read; the asymptotic part was checked by the consultant session the same
-day, see the end of this section). The
+read; what I first concluded from it about the limit was wrong, and the end
+of this section says how). The
 caveat has a definite content. At a modulus s the recursion's solution has
 the chosen class hold e^(v·t) times the mean number of rows still alive, t
 the price after s. There are only s − 1 classes, so a class that full is
@@ -1949,22 +1970,20 @@ What it changes at the sizes counted:
   short: the figure it was held against was 15 to 58 too low.
 - Where complete covers end, D/(x·ln² x):
 
-| x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 | 3,244 | 9,591 | 25,996 |
-| the recursion as it was | 0.913 | 0.933 | 0.952 | 0.991 | 0.995 | 1.019 | 1.074 | 1.097 | 1.125 | 1.140 |
-| with the constraint | 0.912 | 0.929 | 0.944 | 0.975 | 0.975 | 0.988 | 1.008 | 0.995 | 0.982 | 0.960 |
-| evidence | 0.912 found, one row left 0.3% beyond | 0.923 to 0.926, counts extended | 0.876 found | 0.970 to 0.973, counts extended | 0.956 or more, counts extended | | | | | |
+| x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 | 1,000,000 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 | 3,244 | 9,591 | 25,996 | 78,497 |
+| the recursion as it was | 0.913 | 0.933 | 0.952 | 0.991 | 0.995 | 1.019 | 1.074 | 1.097 | 1.125 | 1.140 | 1.154 |
+| with the constraint | 0.912 | 0.929 | 0.944 | 0.975 | 0.975 | 0.988 | 1.008 | 0.995 | 0.982 | 0.960 | 0.936 |
+| evidence | 0.912 found, one row left 0.3% beyond | 0.923 to 0.926, counts extended | 0.876 found | 0.970 to 0.973, counts extended | 0.956 or more, counts extended | | | | | | |
 
   (Counts extended: the Opus session's straight line through its last two
   counts, the run from the cover at the last; found: the best complete
   cover, which at 167 moduli and beyond stops well before the count does.)
-  (The last two columns were computed by the contractor session with the
+  (The last three columns were computed by the contractor session with the
   same script.) With the constraint the ratio stops rising near 1.0 at about
-  a thousand moduli and turns down, to 0.96 at 26,000 moduli, where the
-  unconstrained one has 1.14; for comparison the asymptotic form
-  1.349/(ln ln x − 1) of the next paragraph is 1.11, 1.01, 0.93 and 0.88 at
-  x = 9,973, 30,000, 100,000 and 300,000. So the c = 1.00 of the law is not two corrections
+  a thousand moduli and turns down, to 0.94 at 78,497 moduli, where the
+  unconstrained one has 1.15. So the c = 1.00 of the law is not two corrections
   crossing; it is where the constrained count stays, within 1%, from 400 to
   3,000 moduli.
 
@@ -1982,56 +2001,96 @@ sensitivity is the one found for the floors: a frozen level takes the
 largest of a few counts, and the weighted recursion, like any
 large-deviation estimate, puts that too high (by 18% of a standard
 deviation for two classes, 60% for four, 20% for a hundred); a small cut
-at the first moduli makes up for it there. So the constrained recursion is
-a 1 to 2% statement about where complete covers end, not better, and an
-exact treatment of the frozen levels is the piece that is missing.
+at the first moduli makes up for it there. The Lean session's second read
+settles what the right input is and what it does: computed exactly from the
+primes (and checked against the enumeration of every class vector), the
+dispersion is 0.058, 0.057, 0.054 at the moduli 3, 5, 7 for Q = 300,000 and
+0.11 to 0.34 from 11 to 43, where the pair sum is low by 0.05 on average
+(above 43 the two agree, rms 0.003). With those dispersions its own
+implementation, which reproduces all 24 rows of `cover_price_prefix.txt` to
+the digit when given mine, has the constrained ends at 0.959, 0.957, 0.971,
+0.993, 0.987, 0.997, 1.013 times x·ln² x for x = 463 to 9,973, the loss at
+1,228 moduli and 300,000 at 3,426 (3,349 without the constraint), and
+measured over predicted at 0.984 to 1.003 in the middle of the range and
+1.02 to 1.04 near the end. So with exact inputs the middle of the range
+comes right and the constrained recursion puts the end of complete covers
+5% too far on the 89 moduli; the agreement within 1% in the table above
+owes something to the low dispersions at 3, 5 and 7. What is missing acts
+toward fewer covers near the end, and the exact treatment of the frozen
+levels is the candidate. That session also found that the recursion is not
+invariant under the order in which the moduli are taken (at 1,228 moduli
+and 300,000 the unconstrained loss is 3,349 in increasing order, 3,452 with
+3 to 17 first and the rest decreasing, 1,606 in decreasing order), so the
+prefixes in increasing order are the constraints one can state inside it,
+necessary there, and other families of subsets cannot be tested by
+reordering; and that the dual is correct (its tilts feasible and
+complementary, primal equal to dual within 3·10^(−4)).
 
-And in the limit. For any fixed a < 1 the recursion's solution spends
-entropy of order x on the moduli up to Q^a (their levels use
-π(Q)·b/(s·ln s) nats each, b of order one, which sums to a multiple of
-Q/ln² Q), and those moduli have Q^a nats. So in the limit every modulus but
-those within a bounded factor of x is frozen and can do no better than
-random classes; they leave 0.7413·π(Q)/ln x rows, in general position; the
-top moduli must strike all of them from classes that hold O(1) of them on
-average, a class with K of them costs K·ln(K/μ) ≈ K·ln ln x nats, and there
-are x nats in all. Hence
+And in the limit: nothing, yet. What follows is the record of an error
+made and caught on the same day. From the entropy count I concluded that
+all but the top moduli are frozen in the limit, that frozen moduli can do
+no better than random classes, that they therefore leave 0.7413·π(Q)/ln x
+rows for the top moduli to strike from classes holding O(1) of them, and
+hence that D(n) ≤ (1.349 + o(1))·r·ln² r/ln ln r, with D(n)/(r·ln² r)
+tending to 0. The consultant session checked it and first agreed
+(`goldbach/gaps_map/LIMIT_CHECK.md` on `ccr-cdb2641a-5zg8un`, with a better
+form of the count for the top moduli, as a capacity: the largest classes of
+the top moduli must add up to the rows left). The Lean session's second
+referee read (`scripts/cover_prefix_check/README.md` on its branch, commit
+9eb7e2a) then showed the step "frozen moduli can do no better than random
+classes" to be true of the model and false of the primes:
 
-    D(n) ≤ (e^γ/(2·C₂) + o(1))·r_n·ln² r_n / ln ln r_n,
+- Give every modulus t of a block (z, x/4] the class of one common integer,
+  a_t = N₁ mod t with N₁ in (Q, 2Q]. The block then strikes q exactly when
+  N₁ − q has a prime factor in (z, x/4], and leaves only the rows with
+  N₁ − q smooth or of the form m·p with p > x/4 prime and m ≤ 8Q/x: a share
+  of order ln ln x/ln x of the rows, where random classes on the same
+  moduli leave ln z/ln x. It is the device of Erdős and Rankin for gaps
+  between primes, and it has next to no entropy (one integer). Counted on
+  real primes: the block (406, 937,500] at Q = 6·10^7 leaves 32.3% of the
+  rows against 44.0% for random classes (Lean session, exact), and the
+  ratio of the two is 0.93, 0.86, 0.72 at x = 10^4, 10^5, 10^6 (consultant
+  session).
+- So neither 1.1275 nor 1.349/ln ln r is a limit of D(n)/(r·ln² r). The
+  capacity bound holds for covers whose small moduli act like random
+  classes, which are the covers the entropy count sees and the only ones
+  any search here has found; D(n) itself is a different matter. With the
+  block in front, the same count for the top moduli allows
+  Q/(x·ln² x) = 0.57, 0.51, 0.55, 0.65, 1.10 at ln x = 9.2, 20.7, 50, 100,
+  350 (Lean session; no claim that such covers exist), growing without
+  bound.
+- And it gives a theorem of a new order. With ln z = ln x·ln₃ x/(3·ln₂ x)
+  (ln₂ = ln ln, and so on), the block averaged over N₁, the fullest classes
+  on the primes up to z and one row for each prime in (x/4, x],
 
-and the greedy choice (each top modulus takes its fullest class, about
-ln x/ln ln x rows) reaches the same order. The luck-free depth is then of
-order ln N·(ln ln N)²/ln ln ln N, the order of the constructions of Ford,
-Green, Konyagin, Maynard and Tao for gaps, not ln N·(ln ln N)²; the ratio
-D(n)/(r·ln² r) tends to 0 like 1.349/ln ln r, and 1.1275 is the limit of an
-annealed count that the entropy of the small moduli does not allow. The
-o(1) is of relative size ln ln ln x/ln ln x, so at the sizes that can be
-computed none of this shows except as the turn in the table: there the
-constrained recursion is the statement, and it says 0.91 to 1.01.
+      D(n) ≥ c·r_n·ln² r_n·ln₃ r_n/(ln₂ r_n)²    for some c > 0 and all large n,
 
-The consultant session checked the argument the same morning
-(`goldbach/gaps_map/LIMIT_CHECK.md` on `ccr-cdb2641a-5zg8un`, commit
-b90e85c, with tests on real primes; nobody else has read it). Its verdict:
-the conclusion stands as a heuristic, D(x)/(x·ln² x) tends to 0 like
-1.349/(ln ln x − 1), with two corrections to the route. First, "the small
-moduli can do no better than random" is true only in the limit: the
-entropy allows them a saving of relative size about 2/√(ln x), and on real
-primes greedy classes on the moduli up to x/ln x leave 0.72 to 0.74 of what
-random classes leave, flat from x = 300 to 10^5. Second, the count for the
-top moduli is better put as a capacity than as a probability: a complete
-cover needs the largest classes of the top moduli to add up to the rows
-left, the largest of x/u Poisson counts is ln x/(ln ln x − 1 − ln u), and
-the sum is x/(ln ln x − 1); this gives the same constant and the same −1,
-and on real primes at x = 20,000 the greedy choice collects 0.915 of what
-that Poisson model allows. It also found the asymptotic form useless below
-about 10^15 (it overshoots a model calibrated on real greedy covers by a
-factor 1.9 at x = 2,000 and 1.15 at 10^6), that plain greedy on real primes
-has D/(x·ln² x) on a plateau of 0.72 from 10^4 to 10^5, and no treatment of
-this function for prime rows in the literature (the nearest being the
-Jacobsthal function: Ford, Green, Konyagin, Maynard and Tao 2018; Iwaniec;
-the computations of Costello and Watts 2015). So: 1.1275 is a value the
-unconstrained recursion passes through, not a limit of D(n); what the
-ratio does between 10^6 and 10^15 no count can show; and at the campaign's
-sizes nothing changes.
+  that is, infinitely many even N with no Goldbach summand below
+  c·ln N·(ln₂ N)²·ln₄ N/(ln₃ N)². The consultant session has written the
+  proof out line by line (`goldbach/gaps_map/COHERENT_BLOCK.md`, commit
+  0761b84: Chebyshev, Brun–Titchmarsh, Mertens, and Rankin's trick for
+  smooth numbers; the average over N₁ replaces any sieve for prime pairs);
+  it is a proof on paper that only its author and I have read, and I have
+  checked its orders of magnitude and its four steps, not every constant.
+  It supersedes, as to order, every bound of the form A·r·ln r, including
+  the 1.349 of the theorem in the Lean library and the 1.3523 of the
+  pair-cover note. The Lean session points out that the skeleton has been
+  in its library since 22 November (`Cap/Layers.lean`, written for the
+  Erdős–Rankin adaptation proposed here that day and then dropped from
+  this file), and it has begun to formalise the corollary "for every A and
+  all large y, classes modulo the odd primes up to y cover every odd prime
+  below A·y·ln y".
+
+Where that leaves the question: D(n) is at least c·r·ln² r·ln₃ r/(ln₂ r)²
+(on paper), the covers that searches find and counts count end at 0.91 to
+1.01 times r·ln² r for 89 to 25,996 moduli by the constrained recursion
+(0.936 at 78,497 moduli, where the unconstrained one has 1.154), and
+whether structured covers reach further than those in the limit, and how
+far, is open. At the sizes that can be computed nothing changes: the block
+leaves 2% fewer rows than random classes at x = 10^4 and half as many only
+near x = 10^25, and a cover built from it at x = 10^4 reaches 0.39 to 0.48
+of x·ln² x where plain greedy reaches 0.71 and the constrained recursion
+1.0.
 
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
@@ -2407,6 +2466,7 @@ Results (every N recomputed here from N alone before it is listed):
 |---|---|---|---|---|---|---|
 | 200,000 | 400 | 200,293 | uarch, 25 Nov 09:31 UTC | 159 moduli (3 to 941), 1,010 rows | 72.4 million, 58.0 million, 1.78 (both hits) | `records/g200k_400digit_g200293` on `ccr-b8c25887-i6tn9f` |
 | 200,000 | 400 | 206,593 | the same run | the same | | `records/g200k_400digit_g206593` there |
+| 200,000 | 347 | 216,289 | uarch, 25 Nov 11:41 UTC | 141 moduli (3 to 821), 1,115 rows | 806 million, 318 million, 8.5 for the whole 350-digit phase (the hit itself after 319 million members and 1.04 CPU-hours on its second progression; the first, 142 moduli, gave none in 488 million where 1.75 were expected) | `records/g200k_347digit_g216289` there |
 
 Both are certified in the Lean kernel (`Gap200k_400digit_g200293.lean`,
 `Gap200k_400digit_g206593.lean` and `FixedGap.lean` on the Lean branch,
@@ -2427,25 +2487,29 @@ before going on, all in agreement, so it stands as luck until the next
 sizes say otherwise.)
 
 
-**Conjecture (counting law), as it stands on 25 November.** For Q up to the
-end of complete covers, the number of class vectors modulo the odd primes up
-to x that strike every odd prime below Q is exp(θ(x) − L(x, Q)), L the loss
-of the price recursion with the Hardy–Littlewood dispersions and with the
-entropy of every prefix of the moduli kept non-negative
-(`cover_price_prefix.py`). At the sizes counted (89 to 1,228 moduli) L is
-within 6% of the measured loss at all 24 points: high by up to 5.6% in the
-lower half of the range at 89 to 167 moduli, by 1 to 3% from 238 moduli on,
-and within 1.6% near the end; and L = 1.00·Q/ln² x within 5% there.
-Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91 for the
-values known (20 to 89 moduli), 0.91 to 1.01 by the constrained recursion
-from 89 to 3,244 moduli with its largest value near a thousand moduli, and
-tends to zero like (e^γ/(2·C₂))/ln ln r_n; and the least Goldbach summand
-that divisibility by the primes up to ln N alone can force is of order
-ln N·(ln ln N)²/ln ln ln N, at most (e^γ/(2·C₂) + o(1)) times that. (The
-version of 24 November, without the constraint, had κ_n rising to 1.16 at
-78,497 moduli and tending to e^γ/(2·C₂·Λ(1)) = 1.1275. That is the limit of
-the unconstrained recursion, checked as arithmetic by the Lean session, and
-it is withdrawn as a statement about D(n).)
+**Conjecture (counting law), as it stands on 25 November, evening.** For Q
+up to the end it predicts, the number of class vectors modulo the odd primes
+up to x that strike every odd prime below Q is exp(θ(x) − L(x, Q)), L the
+loss of the price recursion with the dispersions of the rows (the
+Hardy–Littlewood pair sum, or computed from the primes at the smallest
+moduli) and with the entropy of every prefix of the moduli kept
+non-negative (`cover_price_prefix.py`). At the sizes counted (89 to 1,228
+moduli, 24 counts) L is within 6% of the measured loss with the pair-sum
+dispersions and within 4% with the exact ones (Lean session), and
+L = 1.00·Q/ln² x within 5%. This is a statement about the covers that such
+counts and searches see, those whose frozen moduli act like random classes.
+For those, complete covers end at κ·r·ln² r with κ between 0.91 and 1.01
+from 89 to 25,996 moduli, largest near a thousand moduli (the known values
+of D(n) for 20 to 89 moduli have 0.77 to 0.91).
+
+About D(n) itself, which is a maximum over all class vectors, what is
+known on 25 November is less than was claimed here on the 24th and at
+midday on the 25th: D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)² for large n (the block
+on a common integer; on paper), D(n) equals the end above within 1% at 89
+moduli and is not known beyond, and no limit of D(n)/(r·ln² r) is derived:
+not 1.1275 (the unconstrained recursion's, withdrawn at midday), not
+1.349/ln ln r (mine of midday, withdrawn in the evening). Whether
+structured covers reach beyond the counted ones, and how far, is open.
 
 ## Ladder
 
