@@ -49,19 +49,19 @@ GS = [170000, 180000, 190000, 200000, 213070]
 def table(package):
     rows_out = []; ref = None
     pre = {}
-    for D, f, extra_run in DESIGNS:
+    for idx, (D, f, extra_run) in enumerate(DESIGNS):
         U, C, c = load(f); nbest = int((U < D).sum()); scale = (nbest + extra_run) / nbest
         p = C / L; pp = p / c; lamp = -math.log1p(-pp)
         def n_below(G, U=U, scale=scale): return float((U < G).sum()) * scale     # defaults bind this design's cover
         def sd(n, c=c): return 0.9836 * math.sqrt(n * c * (1 - c))
         nD = n_below(D); E_D = window_E(nD, C); delta = lamp * sd(nD); cap = ND.cdf(z0 + delta)
-        pre[D] = dict(U=U, C=C, c=c, scale=scale, nD=nD, E=E_D, cap=cap, delta=delta, lamp=lamp, sd=sd, n_below=n_below, p=p)
-    n170 = pre[170000]["nD"]
-    for D, f, extra_run in DESIGNS:
-        pre[D]["cost"] = 0.26 * pre[D]["nD"] / n170 + 0.74
-    r = pre[170000]; M170 = 1.90 / (math.exp(-r["E"]) * r["cap"]); W = M170 * r["cost"] * math.exp(package)
-    for D, f, extra_run in DESIGNS:
-        r = pre[D]; M = W / r["cost"]
+        pre[idx] = dict(U=U, C=C, c=c, scale=scale, nD=nD, E=E_D, cap=cap, delta=delta, lamp=lamp, sd=sd, n_below=n_below, p=p)
+    n170 = pre[0]["nD"]                     # the first design is the reference: the 170,000 cover the fleet runs
+    for idx in pre:
+        pre[idx]["cost"] = 0.26 * pre[idx]["nD"] / n170 + 0.74
+    r = pre[0]; M170 = 1.90 / (math.exp(-r["E"]) * r["cap"]); W = M170 * r["cost"] * math.exp(package)
+    for idx, (D, f, extra_run) in enumerate(DESIGNS):
+        r = pre[idx]; M = W / r["cost"]
         def Lam(G):
             if G >= D:      # design hits, decided beyond D by the unsieved remaining rows (each composite with probability 1 - p)
                 extra = float(((r["U"] >= D) & (r["U"] < G)).sum()) * r["scale"]
