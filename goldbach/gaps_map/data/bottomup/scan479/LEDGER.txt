@@ -1,0 +1,25 @@
+Idle-core CPU scan at 200 digits, helper session (lead's ruling of 19:52Z 25 Nov, relayed by Research at 20:04Z).
+Four cores at nice 10; the uarch session's pipeline (goldbach/sieve200/search_c.py, fm13 AVX-512 IFMA Fermat, --skip-frac 0.985 --p-est 0.0626 --sieve-b 10000000 --kmax 1);
+the 479 family (the first 88 odd primes and 479), covers from g200k/cover_specs.py (commit 8f5e2dd), 2.06*10^7 members per cover.
+All times are the server clock (date -u).
+
+20:06  started with nohup: workers 0, 1, 2 at the record target 160,367 (covers with 1,187-1,200 residual rows below the target, slices 0, 1, 2 of the first 3,000 covers, interleaved by index);
+       worker 3 at 120,000 (f479lo: one cover finished, 0 found, replaced at 20:09 by the calibration at target 80,000, covers with 625-640 residual rows, run_cal.sh).
+20:15-20:20  the container was recycled while the session was idle (uptime 2-3 minutes at 20:23): the nohup workers died after 6 record-target covers each and 5 calibration covers.
+20:23  restarted as harness-tracked background tasks, 7,200,000 ms (the maximum), resuming from the logs (worker.sh): record target from cover 6 of 750 on each core, calibration from cover 5.
+22:22  all four stopped by the harness at the time limit; the container had been up the whole time (uptime 2:02), so harness-tracked tasks survive the session's idle periods and nohup processes do not.
+       Not restarted: the longest timeout had already been used.
+
+Final tally at 22:26Z (python3 -I ../scan_tally.py scan479, run from the parent directory):
+  f479_w         target 160367: 273 covers (6.4 core-hours), expected 0.0003, found 0
+  f479t80000_w   target  80000: 114 covers (2.1 core-hours), expected 46.7358, found 42, ln(found/expected) = -0.11 +- 0.15
+      overshoot of the 42 finds (R = 463): rows survived 1410 against 1705.4 expected, ratio 0.83 +- 0.16, mid-PIT mean 0.554 (se 0.045); g from 80077 to 104959
+  f479lo_w       target 120000: 1 cover, expected 0.0007, found 0
+
+Independent check of the 42 finds from N alone (verify_g.py, logs/verify_g.log): the least prime p with N - p prime is the reported g for all 42; all N < 10^200 (6 have 199 digits, 36 have 200);
+compositeness of N - p for every prime p < g certified by a small factor or a failed Fermat base-2 test (30,224 tests, 25 s), N - g by Miller-Rabin to 12 bases.
+
+Record target: 273 covers = 5.64*10^9 members, 1.36*10^9 Fermat tests, 22,883 core-seconds (83.8 s per cover, 246,000 members/s per core); expected successes 0.000275 (mean E^ 28.64 nats), found none.
+One expected success at 160,367 therefore costs 23,100 core-hours = 4.9*10^12 Fermat tests (e^29.2): four idle cores contribute 1 part in 5,800 of a success per hour.
+No find at the record target; nothing to report to the fleet. Files: logs f479_w0..2.log, f479t80000_w3.log; finds f479t80000_found_w3*.jsonl (42 lines: k, N, digits, g, name); scripts run_scan.sh, run_cal.sh, worker.sh.
+The cover specs (7.6 MB each) are not kept; they are regenerated from covers479.txt with the generator named above (a name in the logs is c<index in the list>_r<residual rows below the target>: c0356_r1194 = cover 356, 1,194 residual rows).
