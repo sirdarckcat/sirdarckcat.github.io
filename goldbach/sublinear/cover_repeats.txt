@@ -1,0 +1,9 @@
+cover: 1502 rows; members simulated: 12000; early primes 463 to 1000: 78; all primes to 30000: 3155
+early primes: strikes 167.9, distinct 158.9, repeats 8.93 (sd 3.03); chance for these strikes: 9.08
+to 30000: strikes 764.1, distinct 599.0, repeats 165.0; rows left mean 903.0 sd 18.15
+final rows left on early rows left: slope 0.6580 (survival through the later primes: 0.6723); residual sd 16.663
+adding the early repeat count: coefficient -0.0074 +- 0.0503 rows per repeat; residual sd 16.663; correlation of repeats with the residual -0.0013
+correlation of early repeats with early rows left: -0.175; with early strikes: +0.418
+emptiest 1.5% at 30000: early strikes 179.3 against 167.9; early repeats 9.59 against 8.93 (chance for their strikes 10.32); all: strikes 820.0 against 764.1, repeats 175.6 against 165.0
+two heaviest classes among the first 40 later primes: 9 rows mod 719, 9 rows mod 523, rows in both: 0; the mean class holds 2.1; expected overlap of two random classes 0.0040 rows
+if no row were struck twice by the early primes: 8.9 more rows struck at 1000, of which 3.3 would still be standing at 1e8; at 0.0747 nats each: 0.25 nats, for pins on 78 primes (513 nats of modulus)
