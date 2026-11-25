@@ -27,7 +27,29 @@ The record held before this work is g = 1,157,341 at 2,480 digits.
   - So g(N) ≥ 1,001,491 holds unconditionally.
   - `certificate_to_g.txt` gives one reason per row for every odd prime q < 1,001,491, in the same form as `certificate.txt`.
 
-## How it was found
+## Kernel certificate (the Lean session)
+
+The Lean session built and checked this certificate (branch `ccr-36ca7b46-8twf14`, commit `9d4555f`). The full build passes, and
+it uses only the axioms propext, Classical.choice and Quot.sound.
+
+It proves two theorems, in `goldbach/lean/GoldbachGaps/FixedGap.lean`:
+- `exists_2196_digit_no_summand_below_1001491`: there is an even N with 10^2195 ≤ N < 10^2196 such that N − q is not prime for
+  any prime q < 1,001,491.
+- `exists_lt_ten_pow_2196_no_summand_below_1000000`: the same with the bound 1,000,000.
+
+The certificate is `GoldbachGaps/Gap1M_2196digit_g1001491.lean`, with `_Base` and 31 parts, `_0` to `_30` (3.4 MB of Lean).
+- **How it works:** it is in witness form. Each q below the bound gets one witness, which the kernel checks by one division,
+  or by the base-2 Fermat test.
+- **What the kernel checked:** 78,613 primes below the bound, q = 2 included:
+  - 76,036 struck by a modulus or by 2;
+  - 1,600 by the factors in `certificate_to_g.txt`, each verified by division before use;
+  - 977 by the Fermat test.
+- **Cost:** 16 minutes of kernel time, two parts at a time.
+- **Not certified:** that N − 1,001,491 is prime.
+
+The Lean session also checked the record independently from `N.txt` and `cover.txt` alone and agrees row for row. So does the
+research session.
+
 
 1. **Cover** (`cover.txt`, 683 moduli, the odd primes up to 5,113): 2,563 of the 78,497 rows are in no class. It came from greedy
    plus 1-flip descent (2,852 rows), then heat-bath annealing (3,000 sweeps, β from 2 to 6: 2,595 rows), then 20,000 more sweeps

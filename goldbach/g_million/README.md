@@ -97,6 +97,8 @@ members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains
     regardless.
   - Cost: 501,670 Fermat tests, 9.1 CPU-hours; about 10.4 CPU-hours with the sieve and the cover.
   - Everything is in `record_2196digit/`: N, the cover, the check from N alone, and a certificate with one reason per row.
+  - The Lean session certified g(N) ≥ 1,001,491 in the kernel (`exists_2196_digit_no_summand_below_1001491`, branch
+    `ccr-36ca7b46-8twf14`, commit `9d4555f`). The research session and the Lean session both checked the record from N alone.
 - **About 1,997 digits** (629 moduli, odd primes up to 4,657; cover `hb4657_rs1.txt`, 2,825 rows; tag `d1996`):
   - D has 1,990 digits.
   - The plan: sieve 4·10⁷ members against the primes in (4,657, 10⁹], then test the 15,000 emptiest members
