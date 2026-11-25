@@ -902,7 +902,9 @@ nats for an order by rows left at depth 2,000, 5,000 and 20,000. A number
 that comes alone, outside a window, loses what the window sieve gives:
 with its rows known to depth z it costs 1/p_z tests (33, 30, 25.5) against
 the fleet's 1.5 per unit of hit mass, 2.8 to 3.1 nats; sieved on its own to
-10^6 and cut at 3%, about 4.8 tests, 1.2 nats. Net 2.8 to 4.7 nats at depth
+10^6 and cut at 3%, about 4.8 tests, 1.2 nats (1.6 with a less optimistic
+cost for sieving a single number; the consultant session rebuilt these
+figures from its own model). Net 2.8 to 4.7 nats at depth
 2,000, 5.8 to 7.6 at 5,000, 9.7 to 11.4 at 20,000. As a budget: an
 enumerator of the N with at most about 1,116 rows left at depth 2,000 breaks
 even with the fleet if it costs under 550 Fermat tests (10^9 operations)
@@ -924,7 +926,28 @@ per N it outputs. Nothing outputs them:
   smooth part is at most 20% of the d required (primes to 4,000: 1,870 nats
   against 9,382), the best member of a window 24%; the method would handle
   a window of two members. The degree is the number of rows, and nothing of
-  lower degree vanishes on them.
+  lower degree vanishes on them. The consultant session attacked this with
+  its own cover and program and could not break it
+  (`goldbach/gaps_map/LATTICE_CHECK.md` on its branch): 0.208 and 0.251;
+  with the true list sizes 0.25 and 0.30; with soft weights at most 0.36 for
+  the best member of a window (in closed form the square of the ratio is at
+  most ln(1 + n/x)/ln K = 0.086 for a typical member); subsets of rows,
+  products over several members and unpinned top moduli are all worse; and
+  where the method does work, its lattice (dimension 1,524, entries of
+  5,000 bits) costs a million times the sieve of the same window. The Opus
+  session put the whole class in one statement
+  (`goldbach/two_stage/d_answer.md` on its branch): soft-decision
+  Chinese-remainder list decoding (Guruswami, Sahai and Sudan), of which
+  the above is a case, with the optimal weights decodes only members that
+  kill at least 2.07 to 2.11 times the typical number of rows at the later
+  primes, which are e^−144 to e^−306 of a window, and no cover with fewer
+  moduli and no mixture of covers lowers that bar below ln(X/M). The
+  obstruction is computational, not informational: the aligned member's
+  pattern carries about 136 nats against 17 of window. So the statement is
+  that no decoder of the Coppersmith and Guruswami–Sahai–Sudan kind reaches
+  the aligned members; a route to the prize would have to use the overlaps
+  between primes non-separably, or parametrise N by something other than a
+  progression, and nobody here has a candidate for either.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
