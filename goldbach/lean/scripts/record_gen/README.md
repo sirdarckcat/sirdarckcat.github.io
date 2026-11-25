@@ -74,6 +74,7 @@ settled after a hundred strikers. On 3 cores of this machine:
 | 10^9 | 0.7 s | 34 |
 | 10^10 | 6 s | 36 |
 | 10^11 | 65 s | 40 |
+| 5·10^12 | 83 min | 46 |
 
 all equal to the OEIS b-file. That is about 4 ns of one core per even number at 10^9, and it
 grows slowly (more primes to mark, more strikers): every further factor of 10 costs a little more
@@ -97,7 +98,7 @@ Nothing about the generator is tied to 2^25. That number is where the *certified
 | new terms, forever | exactly if Goldbach's conjecture is true | `goldbach_iff_generator_never_stops`, `goldbach_iff_records_unbounded` (`GoldbachGaps/RecordInfinite.lean`) |
 | running the proved generator | 2^25 in 20 s, 2^27 in 3 min; 2^30 (about 10^9) was stopped unfinished after 2 hours | every sieving prime costs a pass over an X-digit number, so the time grows at least like X^1.6 |
 | statements checked by the kernel | 2^25 in 90 s; about 2 hours for 10^9; about 1.6 days for 10^10 | measured on single segments: 2.5 s per million numbers near 3·10^7, 8.5 s near 10^9, 21 s near 10^10, with 1 to 6 GB of memory |
-| the walker in C (`ngen.c`: the proved rule, the program itself not proved) | 10^11 in 65 s on 3 cores: 40 terms | it visits every even number; memory is the primes up to √N |
+| the walker in C (`ngen.c`: the proved rule, the program itself not proved) | 10^11 in 65 s on 3 cores: 40 terms; 5·10^12 in 83 min: 46 terms | it visits every even number; memory is the primes up to √N |
 | fast scan of all least summands, not proved (`scripts/rank_records/lgs_scan.c`) | 10^12 in 63 min: 43 terms | |
 | anyone's computation | 4·10^18: 69 terms (Oliveira e Silva, Herzog and Pardi, Math. Comp. 2014; OEIS b-file) | |
 

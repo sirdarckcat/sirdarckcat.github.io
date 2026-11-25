@@ -1,0 +1,14 @@
+K = exp(2 L),  L = lim_{y->0+} [ int_y^oo dt/(t + e^t - 1) + (1/2) ln y ]
+exact rational arithmetic; lower ends are rounded down and upper ends up (see the docstring for the proof)
+
+int_0^1 [1/(t + e^t - 1) - 1/(2t)] dt  in  [-0.129163789803175961192888687704, -0.129163789803175961192888687665]
+int_1^oo dt/(t + e^t - 1)              in  [0.337350358448592419079671119163, 0.337350358448592419079671119164]
+L                                      in  [0.208186568645416457886782431459, 0.208186568645416457886782431498]
+K                                      in  [1.516451607959502585051121312239, 1.516451607959502585051121312355]
+width of the enclosure of K: 1.155e-28
+
+floating point, the definition at y = 0.001:  bracket = 0.208311573853,  exp(2 bracket) = 1.516830784052   (the bracket differs from L by about y/8 = 1.3e-04)
+floating point, the definition at y = 1e-05:  bracket = 0.208187818646,  exp(2 bracket) = 1.516455399095   (the bracket differs from L by about y/8 = 1.3e-06)
+floating point, the definition at y = 1e-07:  bracket = 0.208186581145,  exp(2 bracket) = 1.516451645871   (the bracket differs from L by about y/8 = 1.2e-08)
+
+first Taylor coefficients of f(t) = 1/(t + e^t - 1) - 1/(2t):  -1/8, -1/96, 1/384, 17/23040, -1/92160, -251/7741440

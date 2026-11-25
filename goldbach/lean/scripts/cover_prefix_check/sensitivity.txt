@@ -1,0 +1,26 @@
+# which moduli carry the difference between the two sets of dispersions
+x | Q | dispersions | loss as it was | loss with the constraint
+463 | 15907 | Hardy-Littlewood pair sum, cut to [1e-4, 1] (the write-up's) | 442.9 | 443.7
+463 | 15907 | from the primes | 416.4 | 424.7
+463 | 15907 | from the primes, but 1e-4 at 3, 5, 7 | 433.5 | 434.2
+463 | 15907 | from the primes at 3, 5, 7, the pair sum above | 425.0 | 433.0
+463 | 15907 | from the primes up to 43, the pair sum above | 419.2 | 427.7
+463 | 15907 | the pair sum up to 43, from the primes above | 439.7 | 439.9
+997 | 40111 | Hardy-Littlewood pair sum, cut to [1e-4, 1] (the write-up's) | 851.4 | 855.3
+997 | 40111 | from the primes | 820.1 | 833.7
+997 | 40111 | from the primes, but 1e-4 at 3, 5, 7 | 840.7 | 846.0
+997 | 40111 | from the primes at 3, 5, 7, the pair sum above | 830.2 | 842.3
+997 | 40111 | from the primes up to 43, the pair sum above | 823.9 | 837.5
+997 | 40111 | the pair sum up to 43, from the primes above | 847.3 | 851.3
+1999 | 91820 | Hardy-Littlewood pair sum, cut to [1e-4, 1] (the write-up's) | 1562.9 | 1580.9
+1999 | 91820 | from the primes | 1517.9 | 1556.8
+1999 | 91820 | from the primes, but 1e-4 at 3, 5, 7 | 1550.3 | 1571.4
+1999 | 91820 | from the primes at 3, 5, 7, the pair sum above | 1530.0 | 1565.7
+1999 | 91820 | from the primes up to 43, the pair sum above | 1521.9 | 1560.5
+1999 | 91820 | the pair sum up to 43, from the primes above | 1558.7 | 1577.2
+9973 | 300000 | Hardy-Littlewood pair sum, cut to [1e-4, 1] (the write-up's) | 3409.1 | 3452.5
+9973 | 300000 | from the primes | 3348.8 | 3425.6
+9973 | 300000 | from the primes, but 1e-4 at 3, 5, 7 | 3393.1 | 3442.5
+9973 | 300000 | from the primes at 3, 5, 7, the pair sum above | 3364.4 | 3435.0
+9973 | 300000 | from the primes up to 43, the pair sum above | 3352.7 | 3428.7
+9973 | 300000 | the pair sum up to 43, from the primes above | 3405.1 | 3449.3

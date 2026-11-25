@@ -1,0 +1,39 @@
+# Lam_check.py: an independent computation of the limit constant of goldbach/sublinear/cover_limit.py
+
+1. m(rho):  rho | m(rho) | m(rho)/(rho - 1)     (2 e^gamma = 3.562144835980)
+   1.5 | 2.212703506757 | 4.425407013513
+   2 | 3.727411277760 | 3.727411277760
+   3 | 7.142298050141 | 3.571149025070
+   5 | 14.248664174458 | 3.562166043615
+   10 | 32.059303523828 | 3.562144835981
+   20 | 67.680751883627 | 3.562144835980
+   40 | 138.923648603235 | 3.562144835980
+   largest difference from the closed form on [1, 2]: 4.00e-15
+   m - 2 e^gamma (rho - 1) at rho = 10, 15, 20, 41: 4.00e-12, -1.42e-14, -2.84e-14, 0.00e+00
+
+2. the limit profile:  alpha | v(alpha)
+   0.95 | 0.9992612375
+   0.9 | 0.9968807806
+   0.8 | 0.9859635129
+   0.7 | 0.9639061761
+   0.6 | 0.9251387355
+   0.5 | 0.8596351291
+   0.4 | 0.7515313264
+   0.3 | 0.5930682804
+   0.2 | 0.3999206915
+   0.1 | 0.2000000000
+   0.05 | 0.1000000000
+   v(1/2) - (1 - e^-gamma/4) = 0.00e+00
+
+3. the price constant, three step sizes in s = ln p (RK4, error like h^4):
+   step      v = 1 (exact 1)        v = alpha (K = 1.51645160795950...)     the limit profile
+   1/256   0.99999999999997      1.51645160795902                         1.19639276350660
+   1/512   1.00000000000008      1.51645160796035                         1.19639276350708
+   1/1024  0.99999999999962      1.51645160795844                         1.19639276350549
+   errors at the smallest step: v = 1: -3.8e-13;  v = alpha: -1.1e-12
+   change of the third column between the last two steps: -1.6e-12
+
+Lam(1) = 1.19639276351
+the constant of Q/ln^2 x in the limit law, 2 C2 e^-gamma Lam(1) = 0.8868957952
+the limit of D(n)/(r ln^2 r),      e^gamma/(2 C2 Lam(1)) = 1.1275281780
+(for independent rows, e^gamma/(2 C2) = 1.3489665528)

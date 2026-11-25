@@ -187,21 +187,19 @@ theorem exists_even_le_of_cover {R : Finset ℕ} {a : ℕ → ℕ} {Q B : ℕ}
       have := hB r hr
       omega) (by omega) hqQ
 
-/-- **The finite form of the layered lower bounds.** Let `F`, `S`, `T` be pairwise disjoint
-sets of odd primes, all at most `B`, with classes `a₀` on `F`. Among the odd primes `q < Q`
-let `P₁` be those outside `S` that no class of `F` contains, and `Z` those in `S`. If
-`|P₁| · ∏_{r ∈ S} (r - 2) + |Z| · ∏_{r ∈ S} (r - 1) ≤ |T| · ∏_{r ∈ S} (r - 1)`, then there is
-an even `N` with `Q + B < N ≤ Q + B + 2 ∏_{r ∈ F ∪ S ∪ T} r` that has no Goldbach summand
-below `Q`. -/
-theorem exists_even_le_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q B : ℕ)
-    (hF : ∀ r ∈ F, r.Prime ∧ r ≠ 2) (hS : ∀ r ∈ S, r.Prime ∧ r ≠ 2)
-    (hT : ∀ r ∈ T, r.Prime ∧ r ≠ 2) (hB : ∀ r ∈ F ∪ S ∪ T, r ≤ B) (hB2 : 2 ≤ B)
+/-- **The classes behind `exists_even_le_of_layers`.** Let `F`, `S`, `T` be pairwise disjoint
+sets, `S` of odd primes, with classes `a₀` on `F`. Under the count of
+`exists_even_le_of_layers`, the classes on `F` extend to `F ∪ S ∪ T` so that every odd prime
+below `Q` lies in the class of some modulus. -/
+theorem exists_classes_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q : ℕ)
+    (hS : ∀ r ∈ S, r.Prime ∧ r ≠ 2)
     (hFS : Disjoint F S) (hFT : Disjoint F T) (hST : Disjoint S T)
     (hcount : #{q ∈ range Q | (q.Prime ∧ q ≠ 2) ∧ q ∉ S ∧ ∀ r ∈ F, ¬ q ≡ a₀ r [MOD r]} *
           ∏ r ∈ S, (r - 2) +
         #{q ∈ range Q | (q.Prime ∧ q ≠ 2) ∧ q ∈ S} * ∏ r ∈ S, (r - 1) ≤
         #T * ∏ r ∈ S, (r - 1)) :
-    ∃ N, Even N ∧ Q + B < N ∧ N ≤ Q + B + 2 * ∏ r ∈ F ∪ S ∪ T, r ∧ ∀ q < Q, ¬ IsSummand N q := by
+    ∃ a : ℕ → ℕ, (∀ r ∈ F, a r = a₀ r) ∧
+      ∀ q, q.Prime → q ≠ 2 → q < Q → ∃ r ∈ F ∪ S ∪ T, q ≡ a r [MOD r] := by
   classical
   set P := {q ∈ range Q | q.Prime ∧ q ≠ 2} with hPdef
   -- for a prime row, "divisible by a modulus of `S`" means "belongs to `S`"
@@ -232,8 +230,28 @@ theorem exists_even_le_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q B 
       exact ⟨hq.1, hq.2, (hdiv q (Finset.mem_filter.mpr hq)).mp h⟩
     · rintro ⟨hq, hq', h⟩
       exact ⟨⟨hq, hq'⟩, (hdiv q (Finset.mem_filter.mpr ⟨hq, hq'⟩)).mpr h⟩
-  obtain ⟨a, -, ha⟩ := exists_cover_of_layers F S T P a₀
+  obtain ⟨a, haF, ha⟩ := exists_cover_of_layers F S T P a₀
     (fun r hr => (hS r hr).1.two_le) hFS hFT hST (by rw [e1, e2]; exact hcount)
+  exact ⟨a, haF, fun q hq hq2 hqQ =>
+    ha q (Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hqQ, hq, hq2⟩)⟩
+
+/-- **The finite form of the layered lower bounds.** Let `F`, `S`, `T` be pairwise disjoint
+sets of odd primes, all at most `B`, with classes `a₀` on `F`. Among the odd primes `q < Q`
+let `P₁` be those outside `S` that no class of `F` contains, and `Z` those in `S`. If
+`|P₁| · ∏_{r ∈ S} (r - 2) + |Z| · ∏_{r ∈ S} (r - 1) ≤ |T| · ∏_{r ∈ S} (r - 1)`, then there is
+an even `N` with `Q + B < N ≤ Q + B + 2 ∏_{r ∈ F ∪ S ∪ T} r` that has no Goldbach summand
+below `Q`. -/
+theorem exists_even_le_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q B : ℕ)
+    (hF : ∀ r ∈ F, r.Prime ∧ r ≠ 2) (hS : ∀ r ∈ S, r.Prime ∧ r ≠ 2)
+    (hT : ∀ r ∈ T, r.Prime ∧ r ≠ 2) (hB : ∀ r ∈ F ∪ S ∪ T, r ≤ B) (hB2 : 2 ≤ B)
+    (hFS : Disjoint F S) (hFT : Disjoint F T) (hST : Disjoint S T)
+    (hcount : #{q ∈ range Q | (q.Prime ∧ q ≠ 2) ∧ q ∉ S ∧ ∀ r ∈ F, ¬ q ≡ a₀ r [MOD r]} *
+          ∏ r ∈ S, (r - 2) +
+        #{q ∈ range Q | (q.Prime ∧ q ≠ 2) ∧ q ∈ S} * ∏ r ∈ S, (r - 1) ≤
+        #T * ∏ r ∈ S, (r - 1)) :
+    ∃ N, Even N ∧ Q + B < N ∧ N ≤ Q + B + 2 * ∏ r ∈ F ∪ S ∪ T, r ∧ ∀ q < Q, ¬ IsSummand N q := by
+  classical
+  obtain ⟨a, -, ha⟩ := exists_classes_of_layers F S T a₀ Q hS hFS hFT hST hcount
   have hR : ∀ r ∈ F ∪ S ∪ T, r.Prime ∧ r ≠ 2 := by
     intro r hr
     rcases Finset.mem_union.mp hr with h | h
@@ -241,8 +259,7 @@ theorem exists_even_le_of_layers (F S T : Finset ℕ) (a₀ : ℕ → ℕ) (Q B 
       · exact hF r h
       · exact hS r h
     · exact hT r h
-  obtain ⟨N, h1, h2, h3, -, h5⟩ := exists_even_le_of_cover (a := a) hR hB hB2
-    (fun q hq hq2 hqQ => ha q (Finset.mem_filter.mpr ⟨Finset.mem_range.mpr hqQ, hq, hq2⟩))
+  obtain ⟨N, h1, h2, h3, -, h5⟩ := exists_even_le_of_cover (a := a) hR hB hB2 ha
   exact ⟨N, h1, h2, h3, h5⟩
 
 /-- **Structure of the rows surviving a fixed layer** (step (E4) of the Erdős–Rankin

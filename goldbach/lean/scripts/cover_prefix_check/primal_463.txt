@@ -1,0 +1,6 @@
+SLSQP from half the unconstrained tilts: value 18.2844 (ln g0), lowest prefix entropy -9.31e-09, rows alive at the end 8.88e-16, 55 iterations, Positive directional derivative for linesearch
+SLSQP from small tilts: value 18.2844 (ln g0), lowest prefix entropy -1.89e-09, rows alive at the end 2.29e-12, 90 iterations, Positive directional derivative for linesearch
+unconstrained maximum 26.5464; dual minimum 18.2844; primal by SLSQP 18.2844; difference +1.40e-09
+SLSQP from half the unconstrained tilts: value 37.6897 (ln g0), lowest prefix entropy -2.87e-09, rows alive at the end 8.46e-13, 62 iterations, Positive directional derivative for linesearch
+SLSQP from small tilts: value 37.6897 (ln g0), lowest prefix entropy -1.95e-09, rows alive at the end 8.88e-16, 84 iterations, Positive directional derivative for linesearch
+unconstrained maximum 47.8766; dual minimum 37.6897; primal by SLSQP 37.6897; difference +2.86e-09

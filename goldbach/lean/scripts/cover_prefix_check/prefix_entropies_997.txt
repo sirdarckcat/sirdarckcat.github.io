@@ -1,0 +1,8 @@
+# prefix_entropies.py: x = 997; entropy in nats of the first m moduli (prefix sum of the level entropies)
+Q | dispersions | ln g0 as it was, with the constraint | first 41 moduli: as it was, with the constraint | first 61 moduli: as it was, with the constraint | moduli with weight > 1, largest
+40111 | from the primes | 135.5, 121.9 | (up to 181) -56.8, -0.0 | (up to 293) -35.9, 10.4 | 41, 181
+40111 | the write-up's | 104.2, 100.3 | (up to 181) -42.1, 0.0 | (up to 293) -27.4, 7.9 | 41, 181
+38000 | from the primes | 175.7, 164.8 | (up to 181) -46.1, 1.4 | (up to 293) -21.4, 17.4 | 33, 139
+38000 | the write-up's | 146.9, 144.1 | (up to 181) -31.9, 0.7 | (up to 293) -13.1, 14.2 | 36, 157
+25000 | from the primes | 431.0, 427.5 | (up to 181) 21.2, 32.1 | (up to 293) 72.5, 81.2 | 14, 47
+25000 | the write-up's | 413.2, 413.2 | (up to 181) 29.9, 30.2 | (up to 293) 77.6, 77.9 | 14, 47

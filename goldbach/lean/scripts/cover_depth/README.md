@@ -38,6 +38,20 @@ Timings: `n = 12` plain 13 s; `n = 13` pruned 30 s; `n = 14` pruned 5 min; `n = 
 The values for `n = 16, 17, 18` are from a faster search of the uarch session (`desert_fast3.c`, branch
 `ccr-b8c25887-i6tn9f`), not from `depth.c`.
 
+For `n = 19, …, 35` that session's exhaustive searches (`desert_fast5.c`, `cover_ub.c`) give
+
+| n | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| D(n) | 907 | 1051 | 1213 | 1279 | 1381 | 1471 | 1567 | 1669 | 1801 | 1933 | 2137 | 2311 | 2521 | 2647 | 2749 | 2953 | 3079 |
+
+`exact_depth_vectors.txt` has one vector attaining each of these: from that session's result files
+for all but `n = 27` and `28`, which its files do not list and which were found here with its
+`cover_ub.c` (0.3 and 14 seconds), and `n = 35`, relayed by the research session. The reach of each
+vector was recomputed here. `GoldbachGaps/CoverDepthMore.lean`, generated from the file by
+`scripts/gen_coverdepth_more.py`, proves the seventeen lower bounds in the kernel (`coversBelow_19` …
+`coversBelow_35`). That no vector goes further is the uarch session's computation and is not checked
+here.
+
 ## What is proved (`GoldbachGaps/CoverDepth.lean`, `GoldbachGaps/CoverDepthRun.lean`)
 
 * The search is proved correct (`search_iff`) and run by the kernel: **`D(0), …, D(9)` =
@@ -114,6 +128,9 @@ the two that gave 134,839 to 135,511.
 | 89 to 93 | 463 to 491 | 15,907 to 16,981 (research session's covers) | 3,830 to 4,100 | 4.1 |
 | 167 | 997 | 32,971 (greedy) | 9,290 | 3.5 |
 | 167 | 997 | 40,111 (research session's tempered vector, `tempered_997_vector.txt`, `coversBelow_40111`) | 9,290 | 4.3 |
+| 167 | 997 | 40,459 (sampled from the 40,111 vector by another session with the research session's program; `sampled_997_40459_vector.txt`, `coversBelow_40459`) | 9,290 | 4.4 |
+| 167 | 997 | 41,047 (another session's tempering; `tempered_997_41047_vector.txt`, `coversBelow_41047`) | 9,290 | 4.4 |
+| 167 | 997 | 41,659 (the same session's last result; `tempered_997_41659_vector.txt`, `coversBelow_41659`) | 9,290 | 4.5 |
 | 429 | 2,999 | 135,511 | 32,390 | 4.2 |
 | 1,228 | 9,973 | 614,101 (greedy, plain rule at `y` = 614,000; `greedy_9973_vector.txt`, `coversBelow_614101`; a 4,298-digit `N`, 75 kernel block checks, 17 minutes) | 123,900 | 5.0 |
 

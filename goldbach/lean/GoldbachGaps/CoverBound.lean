@@ -17,6 +17,11 @@ assume that `N` has a Goldbach partition:
   `GoldbachGaps/Mertens.lean` (`mertensThird`).
 * `eventually_exists_even_le_no_summand_six_fifths`: the same with the explicit `c = 1.2` (from
   `γ > 1/2` and three factors of `C₂`).
+* `eventually_exists_classes_of_mul_lt_one`: **the depth form.** For every such `c > 0` and all
+  large `y` there are classes modulo the odd primes up to `y` such that every odd prime below
+  `⌊c y ln y⌋` lies in one of them. This is the cover from which the `N` above is built;
+  `GoldbachGaps/CoverCountAsymptotic.lean` reads it as a statement about the number of complete
+  covers.
 * `eventually_exists_even_le_no_summand`: with `c = 0.73`, by an elementary bound for the
   product that does not use Mertens' theorem.
 * `eventually_exists_even_le_of_mertensThird` and `…_explicit`: the two statements above with
@@ -272,15 +277,20 @@ theorem exists_slack {κ c : ℝ} (hκ : 0 < κ) (hc0 : 0 < c) (hc : c * κ < 1)
   nlinarith [mul_nonneg hc0.le hδ0.le, mul_nonneg (mul_nonneg hc0.le hκ.le) hδ0.le,
     mul_nonneg hc0.le (sub_nonneg.mpr hsq)]
 
-/-- **The cover, with its three counts.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w` for
-large `w` and `c κ < 1`, then for every large `y` there is an even `N` with
-`Q < N ≤ Q + y + primorial y` and no Goldbach summand below `Q = ⌊c y ln y⌋`. The pigeonhole layer is the odd primes up to
-`δ y`, the mop-up layer the primes in `(δ y, y]`. -/
-theorem eventually_exists_even_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
+/-- **The two layers, with their three counts.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
+for large `w` and `c κ < 1`, then for every large `y` the odd primes up to `y` split into a
+pigeonhole layer `S` (the odd primes up to `δ y`) and a mop-up layer `T` (the primes in
+`(δ y, y]`) that satisfy the count of `Cap.exists_classes_of_layers` for the rows below
+`Q = ⌊c y ln y⌋`. -/
+theorem eventually_layers_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
     (hM : MertensUpper κ) (hc0 : 0 < c) (hc : c * κ < 1) :
-    ∀ᶠ y : ℕ in atTop, ∃ N, Even N ∧ ⌊c * y * Real.log y⌋₊ < N ∧
-      N ≤ ⌊c * y * Real.log y⌋₊ + y + primorial y ∧
-      ∀ q < ⌊c * y * Real.log y⌋₊, ¬ IsSummand N q := by
+    ∀ᶠ y : ℕ in atTop, 2 ≤ y ∧ ∃ S T : Finset ℕ,
+      (∀ r ∈ S, r.Prime ∧ r ≠ 2) ∧ (∀ r ∈ T, r.Prime ∧ r ≠ 2) ∧
+      (∀ r ∈ (∅ : Finset ℕ) ∪ S ∪ T, r ≤ y) ∧ Disjoint S T ∧
+      #{q ∈ range ⌊c * y * Real.log y⌋₊ | (q.Prime ∧ q ≠ 2) ∧ q ∉ S ∧
+          ∀ r ∈ (∅ : Finset ℕ), ¬ q ≡ (fun _ : ℕ => 0) r [MOD r]} * ∏ r ∈ S, (r - 2) +
+        #{q ∈ range ⌊c * y * Real.log y⌋₊ | (q.Prime ∧ q ≠ 2) ∧ q ∈ S} * ∏ r ∈ S, (r - 1) ≤
+        #T * ∏ r ∈ S, (r - 1) := by
   classical
   obtain ⟨δ, hδ0, hδ1, hkey⟩ := exists_slack hκ hc0 hc
   have hcast : Tendsto (fun y : ℕ => (y : ℝ)) atTop atTop := tendsto_natCast_atTop_atTop
@@ -443,6 +453,21 @@ theorem eventually_exists_even_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
       rw [← e]
       exact h
     exact_mod_cast hfin
+  exact ⟨hy2, S, T, hS, hT, hB, hST, hcount⟩
+
+/-- **The cover, with its three counts.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w` for
+large `w` and `c κ < 1`, then for every large `y` there is an even `N` with
+`Q < N ≤ Q + y + primorial y` and no Goldbach summand below `Q = ⌊c y ln y⌋`. The pigeonhole layer is the odd primes up to
+`δ y`, the mop-up layer the primes in `(δ y, y]`. -/
+theorem eventually_exists_even_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
+    (hM : MertensUpper κ) (hc0 : 0 < c) (hc : c * κ < 1) :
+    ∀ᶠ y : ℕ in atTop, ∃ N, Even N ∧ ⌊c * y * Real.log y⌋₊ < N ∧
+      N ≤ ⌊c * y * Real.log y⌋₊ + y + primorial y ∧
+      ∀ q < ⌊c * y * Real.log y⌋₊, ¬ IsSummand N q := by
+  classical
+  filter_upwards [eventually_layers_of_mertensUpper_nat hκ hM hc0 hc] with y
+    ⟨hy2, S, T, hS, hT, hB, hST, hcount⟩
+  set Q := ⌊c * (y : ℝ) * Real.log y⌋₊ with hQdef
   obtain ⟨N, hNe, hNlo, hNhi, hNq⟩ := Cap.exists_even_le_of_layers ∅ S T (fun _ => 0) Q y
     (fun r hr => absurd hr (Finset.notMem_empty r)) hS hT hB hy2
     (Finset.disjoint_empty_left _) (Finset.disjoint_empty_left _) hST hcount
@@ -473,6 +498,29 @@ theorem eventually_exists_even_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
             (Finset.mem_filter.mp hr).2.one_le
       _ = primorial y := rfl
   omega
+
+/-- **The depth form of the covering bound.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
+for large `w` and `c κ < 1`, then for every large `y` there are classes `a r` modulo the odd
+primes `r ≤ y` such that every odd prime below `⌊c y ln y⌋` lies in one of them. (This is the
+cover from which `eventually_exists_even_of_mertensUpper_nat` builds its `N`.) -/
+theorem eventually_exists_classes_of_mertensUpper_nat {κ c : ℝ} (hκ : 0 < κ)
+    (hM : MertensUpper κ) (hc0 : 0 < c) (hc : c * κ < 1) :
+    ∀ᶠ y : ℕ in atTop, ∃ a : ℕ → ℕ, ∀ q : ℕ, q.Prime → q ≠ 2 → q < ⌊c * y * Real.log y⌋₊ →
+      ∃ r : ℕ, (r.Prime ∧ r ≠ 2 ∧ r ≤ y) ∧ q ≡ a r [MOD r] := by
+  classical
+  filter_upwards [eventually_layers_of_mertensUpper_nat hκ hM hc0 hc] with y
+    ⟨_, S, T, hS, hT, hB, hST, hcount⟩
+  obtain ⟨a, -, ha⟩ := Cap.exists_classes_of_layers ∅ S T (fun _ => 0) _ hS
+    (Finset.disjoint_empty_left _) (Finset.disjoint_empty_left _) hST hcount
+  refine ⟨a, fun q hq hq2 hqQ => ?_⟩
+  obtain ⟨r, hr, hqr⟩ := ha q hq hq2 hqQ
+  have hr' : r.Prime ∧ r ≠ 2 := by
+    rcases Finset.mem_union.mp hr with h | h
+    · rcases Finset.mem_union.mp h with h | h
+      · exact absurd h (Finset.notMem_empty r)
+      · exact hS r h
+    · exact hT r h
+  exact ⟨r, ⟨hr'.1, hr'.2, hB r hr⟩, hqr⟩
 
 /-- `primorial n ≤ e^{(1 + δ) n}` for large `n` (the prime number theorem in the form
 `ln primorial n ~ n`). -/
@@ -507,40 +555,22 @@ theorem add_le_mul_of_one_add_le {E G t s : ℝ} (hE : 1 ≤ E) (hG : 1 + t ≤ 
   have h2 : E * (1 + t) ≤ E * G := mul_le_mul_of_nonneg_left hG (by linarith)
   nlinarith
 
-/-- **A lower bound for `max g` by covering.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
-for every `ε > 0` and all large `w`, then for every `c < 1/κ` and all large `X` there is an
-even `N ≤ X`, larger than `c ln X ln ln X`, such that no prime `q < c ln X ln ln X` is a
-Goldbach summand of `N`: every `N - q` is composite. -/
-theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (hM : MertensUpper κ)
-    (hc : c * κ < 1) :
+/-- **From a cover of the odd primes up to `y` to a number below `X`.** Suppose that for every
+large `y` there is an even `N` in the window `(Q, Q + y + primorial y]`, `Q = ⌊c' y ln y⌋`, with no
+Goldbach summand below `Q`. Then for every `c < c'` and all large `X` there is an even `N ≤ X`,
+larger than `c ln X ln ln X`, with no Goldbach summand below `c ln X ln ln X`. (Take `y` a little
+below `ln X`: the window then ends below `X`.) -/
+theorem eventually_exists_even_le_of_stage {c c' : ℝ} (hc'0 : 0 < c') (hcc' : max c 0 < c')
+    (hstage : ∀ᶠ y : ℕ in atTop, ∃ N, Even N ∧ ⌊c' * y * Real.log y⌋₊ < N ∧
+      N ≤ ⌊c' * y * Real.log y⌋₊ + y + primorial y ∧
+      ∀ q < ⌊c' * y * Real.log y⌋₊, ¬ IsSummand N q) :
     ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
       ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
-  -- constants: `c₀ = max c 0 < c' < 1/κ`, then `c₀/c' < a₁ < a < θ < 1`
+  -- constants: `c₀ = max c 0 < c'`, then `c₀/c' < a₁ < a < θ < 1`
   set c₀ := max c 0 with hc₀def
   have hc₀0 : 0 ≤ c₀ := le_max_right _ _
   have hcc₀ : c ≤ c₀ := le_max_left _ _
-  have hc₀κ : c₀ * κ < 1 := by
-    rcases max_cases c 0 with ⟨h, -⟩ | ⟨h, -⟩
-    · rw [hc₀def, h]
-      exact hc
-    · rw [hc₀def, h]
-      simp
-  have hc₀lt : c₀ < 1 / κ := by
-    rw [lt_div_iff₀ hκ]
-    exact hc₀κ
-  set c' := (c₀ + 1 / κ) / 2 with hc'def
-  have hc'0 : 0 < c' := by
-    have : 0 < 1 / κ := by positivity
-    rw [hc'def]
-    linarith
-  have hc₀c' : c₀ < c' := by
-    rw [hc'def]
-    linarith
-  have hc'κ : c' * κ < 1 := by
-    have h : c' < 1 / κ := by
-      rw [hc'def]
-      linarith
-    rwa [lt_div_iff₀ hκ] at h
+  have hc₀c' : c₀ < c' := hcc'
   set ρ := c₀ / c' with hρdef
   have hρ0 : 0 ≤ ρ := div_nonneg hc₀0 hc'0.le
   have hρ1 : ρ < 1 := by
@@ -564,7 +594,7 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
     have : c' * ρ < c' * a₁ := mul_lt_mul_of_pos_left hρa₁ hc'0
     linarith
   set K := (c' * a₁ * (-Real.log a₁) + 1) / (c' * a₁ - c₀) with hKdef
-  clear_value K θ a₁ a ρ c' c₀
+  clear_value K θ a₁ a ρ c₀
   -- sequences
   have hcast : Tendsto (fun X : ℕ => (X : ℝ)) atTop atTop := tendsto_natCast_atTop_atTop
   have hL : Tendsto (fun X : ℕ => Real.log (X : ℝ)) atTop atTop :=
@@ -573,7 +603,6 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
     Real.tendsto_log_atTop.comp hL
   have hy : Tendsto (fun X : ℕ => ⌊a * Real.log (X : ℝ)⌋₊) atTop atTop :=
     tendsto_nat_floor_atTop.comp (hL.const_mul_atTop ha0)
-  have hstage := eventually_exists_even_of_mertensUpper_nat hκ hM hc'0 hc'κ
   have hprim := eventually_primorial_le (show 0 < θ / a - 1 by
     rw [sub_pos, lt_div_iff₀ ha0]
     linarith)
@@ -676,6 +705,43 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
     have h2 : q + 1 ≤ ⌊c' * (y : ℝ) * Real.log y⌋₊ := Nat.le_floor (by exact_mod_cast h1)
     omega
 
+/-- **A lower bound for `max g` by covering.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
+for every `ε > 0` and all large `w`, then for every `c < 1/κ` and all large `X` there is an
+even `N ≤ X`, larger than `c ln X ln ln X`, such that no prime `q < c ln X ln ln X` is a
+Goldbach summand of `N`: every `N - q` is composite. -/
+theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (hM : MertensUpper κ)
+    (hc : c * κ < 1) :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
+  -- `c₀ = max c 0 < c' < 1/κ`
+  set c₀ := max c 0 with hc₀def
+  have hc₀0 : 0 ≤ c₀ := le_max_right _ _
+  have hcc₀ : c ≤ c₀ := le_max_left _ _
+  have hc₀κ : c₀ * κ < 1 := by
+    rcases max_cases c 0 with ⟨h, -⟩ | ⟨h, -⟩
+    · rw [hc₀def, h]
+      exact hc
+    · rw [hc₀def, h]
+      simp
+  have hc₀lt : c₀ < 1 / κ := by
+    rw [lt_div_iff₀ hκ]
+    exact hc₀κ
+  set c' := (c₀ + 1 / κ) / 2 with hc'def
+  have hc'0 : 0 < c' := by
+    have : 0 < 1 / κ := by positivity
+    rw [hc'def]
+    linarith
+  have hc₀c' : c₀ < c' := by
+    rw [hc'def]
+    linarith
+  have hc'κ : c' * κ < 1 := by
+    have h : c' < 1 / κ := by
+      rw [hc'def]
+      linarith
+    rwa [lt_div_iff₀ hκ] at h
+  exact eventually_exists_even_le_of_stage hc'0 hc₀c'
+    (eventually_exists_even_of_mertensUpper_nat hκ hM hc'0 hc'κ)
+
 /-- **Unconditional.** For all large `X` there is an even `N ≤ X` (above the threshold) such
 that `N - q` is composite for every prime `q < 0.73 · ln X · ln ln X`. The constant is
 `1152/1575 = 0.7314…` rounded down; counting pairs of primes gives `1/2` and no more. -/
@@ -763,13 +829,11 @@ theorem mertensUpper_of_mertensThird (h : MertensThird) :
   rw [e]
   exact hw.le
 
-/-- **With Mertens' third theorem: the constant `e^γ / (2 C₂) = 1.349…`.** If
-`c · 2 C₂ e^{-γ} < 1`, then for all large `X` there is an even `N ≤ X` such that `N - q` is
-composite for every prime `q < c · ln X · ln ln X`. -/
-theorem eventually_exists_even_le_of_mertensThird (h : MertensThird) {c : ℝ}
+/-- A positive constant of Mertens type, slightly above `2 C₂ e^{-γ}` and still with
+`c κ' < 1`. -/
+theorem exists_mertensUpper_pos (h : MertensThird) {c : ℝ}
     (hc : c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1) :
-    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
-      ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
+    ∃ κ' : ℝ, 0 < κ' ∧ c * κ' < 1 ∧ MertensUpper κ' := by
   set κ := 2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant) with hκdef
   have hκ0 : 0 ≤ κ := by
     have := twinPrimeConstant_nonneg
@@ -801,6 +865,16 @@ theorem eventually_exists_even_le_of_mertensThird (h : MertensThird) {c : ℝ}
       have : (2 : ℝ) ≤ w := by exact_mod_cast hw2
       linarith)
     exact hw.trans (div_le_div_of_nonneg_right (by linarith) hlog.le)
+  exact ⟨κ', hκ'0, hcκ', hM'⟩
+
+/-- **With Mertens' third theorem: the constant `e^γ / (2 C₂) = 1.349…`.** If
+`c · 2 C₂ e^{-γ} < 1`, then for all large `X` there is an even `N ≤ X` such that `N - q` is
+composite for every prime `q < c · ln X · ln ln X`. -/
+theorem eventually_exists_even_le_of_mertensThird (h : MertensThird) {c : ℝ}
+    (hc : c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1) :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
+  obtain ⟨κ', hκ'0, hcκ', hM'⟩ := exists_mertensUpper_pos h hc
   exact eventually_exists_even_le_of_mertensUpper hκ'0 hM' hcκ'
 
 /-- `C₂ ≤ (3/4)(15/16)(35/36)`: the infimum is at most the partial product over `3, 5, 7`. -/
@@ -877,5 +951,16 @@ theorem eventually_exists_even_le_no_summand_six_fifths :
     ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, 1.2 * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
       ∀ q : ℕ, (q : ℝ) < 1.2 * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q :=
   eventually_exists_even_le_of_mertensThird_explicit mertensThird
+
+/-- **The depth form, with the sharp constant and no hypothesis.** For every `c > 0` with
+`c · 2 C₂ e^{-γ} < 1`, that is `c < e^γ / (2 C₂) = 1.349…`, and every large `y`, there are
+classes modulo the odd primes up to `y` such that every odd prime below `⌊c y ln y⌋` lies in one
+of them: the cover depth of the odd primes up to `y` is at least `c y ln y`. -/
+theorem eventually_exists_classes_of_mul_lt_one {c : ℝ} (hc0 : 0 < c)
+    (hc : c * (2 * twinPrimeConstant * Real.exp (-Real.eulerMascheroniConstant)) < 1) :
+    ∀ᶠ y : ℕ in atTop, ∃ a : ℕ → ℕ, ∀ q : ℕ, q.Prime → q ≠ 2 → q < ⌊c * y * Real.log y⌋₊ →
+      ∃ r : ℕ, (r.Prime ∧ r ≠ 2 ∧ r ≤ y) ∧ q ≡ a r [MOD r] := by
+  obtain ⟨κ', hκ'0, hcκ', hM'⟩ := exists_mertensUpper_pos mertensThird hc
+  exact eventually_exists_classes_of_mertensUpper_nat hκ'0 hM' hc0 hcκ'
 
 end GoldbachGaps
