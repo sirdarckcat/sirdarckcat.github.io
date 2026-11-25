@@ -43,7 +43,7 @@ x ≥ 997 are also in `complete_cover_<reach>_<moduli>primes.txt`. All were rech
    reached k = 1 at the smallest missed Q early (by sweep 490 to 17,605). It stayed there in runs four times longer (320,000
    sweeps, `t2_probe.py`). The wall at 127 is the exact optimum: the uarch session has since proved D(30) = 2,311. At
    x = 349 and 397 the longer runs cross the miss: 2 of 4 seeds at 10,116 and 4 of 4 at 12,131. From 397 on, the successful
-   seeds at the top need 57–97% of the budget. So the entries from 349 on are lower bounds set by the budget.
+   seeds at the top need 50–97% of the budget. So the entries from 349 on are lower bounds set by the budget.
 3. **The tempered reach is close to where complete covers end, as counted.** The count is the research session's
    `cover_floor`, run at 60, 75, 85 and 93% of the tempered reach for x = 127 to 599. The results are in `floor/` and
    summarised in `floor/floor_report.md`.
