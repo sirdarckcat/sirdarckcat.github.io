@@ -13,7 +13,7 @@ All times are the server clock (date -u).
 Final tally at 22:26Z (python3 -I ../scan_tally.py scan479, run from the parent directory):
   f479_w         target 160367: 273 covers (6.4 core-hours), expected 0.0003, found 0
   f479t80000_w   target  80000: 114 covers (2.1 core-hours), expected 46.7358, found 42, ln(found/expected) = -0.11 +- 0.15
-      overshoot of the 42 finds (R = 463): rows survived 1410 against 1705.4 expected, ratio 0.83 +- 0.16, mid-PIT mean 0.554 (se 0.045); g from 80077 to 104959
+      overshoot of the 42 finds (moduli of the 479 family): rows survived 1410 against 1705.5 expected, ratio 0.83 +- 0.16, mid-PIT mean 0.554 (se 0.045); g from 80077 to 104959
   f479lo_w       target 120000: 1 cover, expected 0.0007, found 0
 
 Independent check of the 42 finds from N alone (verify_g.py, logs/verify_g.log): the least prime p with N - p prime is the reported g for all 42; all N < 10^200 (6 have 199 digits, 36 have 200);

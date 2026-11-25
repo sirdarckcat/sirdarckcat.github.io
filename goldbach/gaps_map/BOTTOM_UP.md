@@ -170,6 +170,7 @@ With the truncation prime R larger (N * 10^3 in the rule) the last bin reads -0.
 - `iso_check.py` part (1) printed the Opus rho (sieve cost per member over the 13.9 tests of a kept member) as a cost per member in tests: the labels were wrong by the factor 13.9; the 1.48 to 1.50 at a 3% keep does not depend on it (1.5 reproduced). `q1_stake.py` redoes it with the right units and reproduces the Opus table.
 - My message of 18:05 UTC gave the window sieve as 0.005 to 0.08 tests per member; it is rho * 13.9 = 0.075 (G4), 0.11 (L4), 0.13 (T4).
 - `rec_ktest.py` (a Gaussian version of the record test) was removed: its z of 15 was an artefact of the Gaussian cumulants at these N.
+- The alive rows of an event were counted with the odd primes up to 463 as the cover's moduli in `fleet_ovs.py`, `scan_tally.py` and the first version of `nearmiss_rescale.py`. The GPU session's correction (23:18Z 25 Nov): the 491 family (vector names `q170000_m89r491_...`) has the first 88 odd primes (3 to 461) and 491, not 463 (its residual list below 170,000 has 1,250 rows; the 463 set gives 1,257), and the 479 family of the CPU scan has the first 88 odd primes and 479. The three scripts now take the moduli from the vector name (`m89r491`, `m89`) or the family, and `nearmiss_rescale.py` uses the card's own row counts when the event carries them (`rows`). Effect on every number reported: none at the precision shown (the fleet's 11 events 596 rows against 446.8, 1.33 +- 0.31 unchanged; the scan's 42 finds 1,410 against 1,705.5, 0.83 +- 0.16 unchanged; the first calibration event 131 alive rows past 140,000 becomes 130, the card's count); only the 9 older events of the fleet (vectors `r200b_q122k`, `r200_q122k_k850`, `r200_q140k`, `pt_q150k`) still use the odd primes up to 463, because their covers are not at hand, and a modulus set that differs by one prime moves a count by one row in 40 (R = 463 against 491: 1.33 against 1.34).
 
 ## 8. Follow-up to Research's message of 18:40 UTC: the fleet's own record sequence, the overshoot law, and families outside the grammar
 
@@ -218,7 +219,7 @@ Evidence on theta (`ovs.c`, `ovs_test.py`, `rec_ovs.py`):
 |---|---|---|---|
 | the exact miniature, N < 10^9, Q = 1,000, every hit by brute force (R = 23, 47, 97, 199) | 303 | 0.97, 0.98, 0.98, 1.01 +- 0.07 | 0.505 to 0.518 (se 0.017) |
 | the published record holders, exact (N >= 10^6; R = 23, 47, 97) | 46 | 1.24, 1.27, 1.27 +- 0.18 | 0.42 to 0.43 (se 0.043) |
-| the fleet's 11 events from their N alone (`fleet_ovs.py`: the 9 design hits of TALLY.md's overshoot table and its 2 near-misses, R = 463) | 11 | 1.33 +- 0.31 (596 rows against 447; TALLY's own count for the 9 hits alone is 579 against 367, 1.58 +- 0.34) | 0.40 (se 0.087) |
+| the fleet's 11 events from their N alone (`fleet_ovs.py`: the 9 design hits of TALLY.md's overshoot table and its 2 near-misses; the odd primes to 463 for the 9 older vectors, the vector's own moduli for the 2 newest) | 11 | 1.33 +- 0.31 (596 rows against 447; TALLY's own count for the 9 hits alone is 579 against 367, 1.58 +- 0.34) | 0.40 (se 0.087) |
 | the uarch session's calibration ladders at 100 and 150 digits, real pipeline hits (Research, `sublinear/frontier_overshoot.py`, commit 5a4da41 on `ccr-d4a17dd0-7uu03r`; rows above the target not sieved) | 666 | 0.975 +- 0.040 (14,940 rows against 15,329) | 0.491 (se 0.011) |
 | the 200-digit CPU scan of section 8.4 (the 479 family, Q = 80,000: the pipeline's 42 finds, each recomputed from its N; rows above the target not sieved) | 42 | 0.83 +- 0.16 (1,410 rows against 1,705) | 0.554 (se 0.045) |
 | pooled by inverse variance (Research's three-sample pooling 0.99 +- 0.03 with the 1,026 hits above, then the scan) | 1,068 | 0.98 +- 0.03 | |
@@ -260,7 +261,7 @@ The lead's ruling of 19:52Z put idle session cores on 200-digit covers the fleet
 | expected successes | 0.000275 | 46.74 |
 | found | 0 | 42 |
 | ln(found / expected) | | -0.11 +- 0.15 |
-| overshoot (rows survived beyond the target, from N alone, R = 463) | | 1,410 against 1,705 expected: 0.83 +- 0.16 (mid-PIT 0.554, se 0.045) |
+| overshoot (rows survived beyond the target, from N alone, the moduli of the 479 family: the first 88 odd primes and 479) | | 1,410 against 1,705 expected: 0.83 +- 0.16 (mid-PIT 0.554, se 0.045) |
 
 - **The pipeline's accounting is right at E^ = 15**: 42 found against 46.7 expected, -0.11 +- 0.15 nats, the same size as the fleet's -0.15 +- 0.30 at exponents 25 to 31 (section 8.1, the other pipeline). It says nothing on the slope: the fleet's exponents are 25 to 31, the calibration is at 15; 90 finds would give +-0.10 for 2.3 more core-hours.
 - **The overshoot law at 200 digits**: 0.83 +- 0.16, 1.1 sd below theta = 1; pooled with the 1,026 earlier hits it is 0.98 +- 0.03 (section 8.2), so theta = 1 stands.

@@ -7,7 +7,10 @@
 # Output per T: sum of expected_near, events with g >= T, ln(found/expected) +- 1/sqrt(found) with the exact Poisson tails, the dispersion over the objects, the exponent -ln(expected/members),
 #   the overshoot of every event beyond T (alive rows u = primes q in [T, g) with N - q coprime to the odd primes <= R, geometric with P(u >= m) = (1 - pi)^m, pi = 2 prod r/(r-1)/ln N),
 #   and the survival test at the thresholds above T: events with g >= T' against sum over events of (1 - pi)^(alive rows in [T, T')).
-import sys, json, math
+# The cover's moduli come from the vector's name (q170000_m89r491_...: the first 88 odd primes, 3 to 461, and 491; q170000_m89_...: the first 89 odd primes, 3 to 463; the GPU session's correction of 25 Nov
+# 23:18Z: the 491 family does NOT contain 463), and a name without that pattern falls back to the odd primes <= R. An event carrying rows {below_T, T_to_g, row_of_g, residual, cover_moduli}
+# (calib_peek.py, from the vector's own residual list on the card) uses rows.T_to_g as its overshoot count; the recomputation from N is printed beside it as a check.
+import sys, json, math, re
 import numpy as np
 argv = sys.argv[1:]
 R = 463
@@ -20,12 +23,17 @@ def primes_upto(n):
     for i in range(2, int(n ** .5) + 1):
         if s[i]: s[i * i::i] = False
     return np.flatnonzero(s)
-P = primes_upto(400000); rs = [int(p) for p in P if 2 < p <= R]; c = 2 * math.prod(r / (r - 1) for r in rs)
-def alive_rows(N, lo, hi):
+P = primes_upto(400000); odd = [int(p) for p in P if p > 2]; rs = [p for p in odd if p <= R]
+def moduli_for(name):
+    m = re.search(r'_m(\d+)(?:r(\d+))?', name or '')
+    if not m: return rs
+    n = int(m.group(1)); return odd[:n - 1] + [int(m.group(2))] if m.group(2) else odd[:n]
+def cprod(mods): return 2 * math.prod(r / (r - 1) for r in mods)
+def alive_rows(N, lo, hi, mods):
     q = P[(P >= lo) & (P < hi)]
     if len(q) == 0: return 0
     bad = np.zeros(len(q), bool)
-    for r in rs: bad |= (q % r == N % r)
+    for r in mods: bad |= (q % r == N % r)
     return int((~bad).sum())
 def pois_sf(k, mu):   # P(X >= k) for X ~ Poisson(mu)
     if k <= 0: return 1.0
@@ -62,17 +70,21 @@ def analyse(lenient, label):
         m = he > 0
         if m.sum() > 1: print('    dispersion over the objects: sum (f - e)^2 / e = %.1f on %d objects (expected %d +- %.1f)' % ((((hf - he) ** 2)[m] / he[m]).sum(), m.sum(), m.sum(), math.sqrt(2 * m.sum())))
         if n:
-            us = []; pis = []
+            us = []; pis = []; agree = 0; have = 0
             for e in ev:
-                N = int(e['N']); g = int(e['g']); us.append(alive_rows(N, T, g)); pis.append(c / math.log(N))
+                N = int(e['N']); g = int(e['g']); mods = moduli_for(e.get('name')); u = alive_rows(N, T, g, mods)
+                if isinstance(e.get('rows'), dict) and 'T_to_g' in e['rows']:
+                    have += 1; agree += (int(e['rows']['T_to_g']) == u); u = int(e['rows']['T_to_g'])
+                us.append(u); pis.append(cprod(mods) / math.log(N))
+            if have: print('    events carrying rows (from the vector\'s residual list): %d, of which %d agree with the recomputation from N and the name\'s moduli; the card\'s counts are used' % (have, agree))
             us = np.array(us); pis = np.array(pis); mean = (1 - pis) / pis; var = (1 - pis) / pis ** 2; v = (1 - pis) ** us * (1 - pis / 2)
-            print('    overshoot of the %d events beyond T (R = %d): alive rows survived %d against %.1f expected, ratio %.2f +- %.2f, mid-PIT mean %.3f (se %.3f); g from %d to %d' %
+            print('    overshoot of the %d events beyond T (moduli from the vector names, fallback odd primes <= %d): alive rows survived %d against %.1f expected, ratio %.2f +- %.2f, mid-PIT mean %.3f (se %.3f); g from %d to %d' %
                   (n, R, us.sum(), mean.sum(), us.sum() / mean.sum(), math.sqrt(var.sum()) / mean.sum(), v.mean(), 0.2887 / math.sqrt(n), min(int(e['g']) for e in ev), max(int(e['g']) for e in ev)))
             print('    per event (g, alive rows survived, P(u >= that) under the model): ' + '; '.join('%d, %d, %.3f' % (int(e['g']), u, (1 - pi) ** u) for e, u, pi in zip(ev, us, pis)))
             for Tp in (T + 5000, T + 10000, T + 15000, T + 20000, T + 30000):
                 if Tp <= max(int(e['g']) for e in ev) + 30000:
                     obs = sum(1 for e in ev if int(e['g']) >= Tp)
-                    ex = sum((1 - pi) ** alive_rows(int(e['N']), T, Tp) for e, pi in zip(ev, pis))
+                    ex = sum((1 - pi) ** alive_rows(int(e['N']), T, Tp, moduli_for(e.get('name'))) for e, pi in zip(ev, pis))
                     print('    events with g >= %d: %d against %.1f expected (theta = 1)%s' % (Tp, obs, ex, ('; ln ratio %+.2f +- %.2f' % (math.log(obs / ex), 1 / math.sqrt(obs))) if obs and ex else ''))
 analyse(False, 'strict: partial objects dropped')
 if lenient: analyse(True, 'lenient: partial objects kept when down_s = 0 and unmatched = 0')

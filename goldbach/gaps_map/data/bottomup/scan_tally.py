@@ -1,18 +1,19 @@
 # Tally of the idle-core CPU scan (uarch session's pipeline, sieve200/search_c.py; /home/user/scan479): found against expected per target, and the exact overshoot of every find from its N alone.
 #   python3 scan_tally.py /home/user/scan479 [R]
 # Log line: [cover] k=[0,K) Ns (k/s) tests=.. prp=.. p^=.. alive/k=.. E^=.. hit%=.. found=n ; expected successes of a cover = K * hit%/100 * exp(-E^) (the pipeline's own accounting).
-# Overshoot of a find at target Q with first prime row g: u = number of primes q in [Q, g) with N - q coprime to all odd primes <= R; geometric under the model, P(u >= m) = (1 - pi)^m, pi = 2 prod r/(r-1)/ln N.
+# Overshoot of a find at target Q with first prime row g: u = number of primes q in [Q, g) with N - q coprime to the cover's moduli; geometric under the model, P(u >= m) = (1 - pi)^m, pi = 2 prod r/(r-1)/ln N.
+# The 479 family's moduli are the first 88 odd primes (3 to 461) and 479 (default; an explicit R uses all odd primes <= R instead, which was the first version of this script: 3 to 463).
 import re, sys, json, math, glob, os
 import numpy as np
 d = sys.argv[1] if len(sys.argv) > 1 else '/home/user/scan479'
-R = int(sys.argv[2]) if len(sys.argv) > 2 else 463
+R = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 def primes_upto(n):
     s = np.ones(n + 1, bool); s[:2] = False
     for i in range(2, int(n ** .5) + 1):
         if s[i]: s[i * i::i] = False
     return np.flatnonzero(s)
 P = [int(p) for p in primes_upto(300000) if p > 2]
-rs = [p for p in P if p <= R]; c = 2 * math.prod(r / (r - 1) for r in rs)
+rs = [p for p in P if p <= R] if R else P[:88] + [479]; c = 2 * math.prod(r / (r - 1) for r in rs)
 pat = re.compile(r'^\[(\S+)\] k=\[(\d+),(\d+)\) (\d+)s .*alive/k=([\d.]+) E\^=([\d.]+) hit%=([\d.]+) found=(\d+)')
 for tag, Q in (('f479_w', 160367), ('f479t80000_w', 80000), ('f479t90000_w', 90000), ('f479t100000_w', 100000), ('f479lo_w', 120000)):
     logs = sorted(glob.glob(os.path.join(d, tag + '[0-9].log')))
@@ -35,5 +36,5 @@ for tag, Q in (('f479_w', 160367), ('f479t80000_w', 80000), ('f479t90000_w', 900
             N = int(e['N']); g = int(e['g']); qs = [q for q in P if Q <= q < g]
             u = sum(1 for q in qs if all((N - q) % r != 0 for r in rs)); us.append(u); pis.append(c / math.log(N))
         us = np.array(us); pis = np.array(pis); mean = ((1 - pis) / pis); var = (1 - pis) / pis ** 2; v = (1 - pis) ** us * (1 - pis / 2)
-        print('    overshoot of the %d finds (R = %d): rows survived %d against %.1f expected, ratio %.2f +- %.2f, mid-PIT mean %.3f (se %.3f); g from %d to %d' %
-              (len(us), R, us.sum(), mean.sum(), us.sum() / mean.sum(), math.sqrt(var.sum()) / mean.sum(), v.mean(), 0.2887 / math.sqrt(len(us)), min(int(e['g']) for e in ev), max(int(e['g']) for e in ev)))
+        print('    overshoot of the %d finds (moduli: %s): rows survived %d against %.1f expected, ratio %.2f +- %.2f, mid-PIT mean %.3f (se %.3f); g from %d to %d' %
+              (len(us), ('odd primes <= %d' % R) if R else 'first 88 odd primes and 479', us.sum(), mean.sum(), us.sum() / mean.sum(), math.sqrt(var.sum()) / mean.sum(), v.mean(), 0.2887 / math.sqrt(len(us)), min(int(e['g']) for e in ev), max(int(e['g']) for e in ev)))
