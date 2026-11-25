@@ -103,7 +103,8 @@ it; they are in "A floor under every cover" and the sections after it:
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
   1,381, 1,471, 1,567, 1,669, 1,801, 1,933, 2,137, 2,311, 2,521, 2,647, 2,749, 2,953, 3,079 for n = 1 to 35 (`desert.c`; two programs to n = 15, the uarch
   session's faster search beyond, and the Lean kernel to n = 9). It grows faster than the r·ln r of the theorem:
-  like r·ln² r, by the law above.
+  like r·ln² r at every size computed, by the law above (and like
+  r·ln² r/ln ln r in the limit, by its correction).
   The Lean session proved that it also bounds the least summand from above
   (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
   for every n" implies Goldbach's conjecture.
@@ -2227,9 +2228,11 @@ would buy one expected success at about 225 digits, and one day of the
 fleet as it was on 24 November one at about 240, if its kernels ran at those
 sizes (they are built for 200 digits; that is the lead's and the GPU
 session's matter). The ceiling for this gap is 68.5 digits by the project's
-ceiling model, and divisibility alone forces it from about 1,300 digits. For
+ceiling model, and divisibility alone forces it from about 1,340 digits
+(1,300 by the recursion without the entropy constraint). For
 a gap of 1,000,000: ceiling 142 digits, the same budget about 1,040 to 1,120
-digits, held today 2,480 digits, forced by divisibility from about 4,700.
+digits, held today 2,480 digits, forced by divisibility from about 4,900
+(4,700 without the constraint).
 On closeness to the ceiling of its own size none of this beats the present
 campaign at equal cost (200,000 at 225 digits is 7.3% of that size's
 ceiling, where the present design is 8.0% of its own); closeness is bought
