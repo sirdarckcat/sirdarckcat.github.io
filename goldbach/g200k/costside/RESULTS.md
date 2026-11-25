@@ -122,3 +122,33 @@ Expected hits a second against today (t_min 4 ms / t_min 0):
 
 The three together: x1.37-1.42 (0.31-0.35 nats).  The two-stage sieve alone at keep 1.5% is worth only 2-3% (the sieve is hidden behind the Fermat rounds); it pays
 once the keep is lowered and the batch turns sieve-bound.
+
+## Carry-over as built (`carry_sim.py`; `../../fermat661/cuda/search_gpu5_carry.patch`, `fround_carry.patch`)
+
+A half-pool of production (503,808 kept members a batch, target 2^18, dmax 8, p = 0.0714, 423 rows; fround's round rule simulated member by member, steady state
+over 14 pools):
+
+| stop (active members) | rounds a pool | tests computed | waste | launches < target / 2 | smallest launch | carried: members / rows | slice lines deferred (batches) |
+|---|---|---|---|---|---|---|---|
+| none (production) | 45.2 | 7.278M | 3.04% | 18.2 | 9 | 0 | 0 |
+| 32,768 (target / 8) | 26.0 | 7.172M | 1.61% | 0 | 139,515 | 25,431 / 9.7M | 1-4 (mean 3.2) |
+| 65,536 | 24.6 | 7.109M | 0.68% | 0 | 137,639 | 58,397 / 22.7M | 1-6 (3.9) |
+| 131,072 (simulated; the default target / 2 + 1 = 131,073 keeps D = 1 in every round) | 22.0 | 7.058M | 0.00% | 0 | 132,265 | 122,756 / 48.6M | 1-8 (4.7) |
+| 262,144 (target) | 15.0 | 7.051M | 0.00% | 0 | 265,948 | 246,936 / 98.9M | 1-9 (5.0) |
+
+(The production row is the GPU session's own model: 44 rounds, 7.28M tests, 17 rounds under half the target.)  A slice's line waits for its deepest member: the
+deepest of ~250,000 needs ~170 tests, ~22 a pool; a design hit needs all its rows (~19 pools).  A deferral bounded to one batch would need a per-member D for the
+carried members (a change of fr_plan) and gives back most of the waste; not built.
+
+The driver (`--carry-over 1`, campaign mode with fused rounds): each part of run_pool_split carries its undecided members (k, the rows they have left as rows of
+their own slice, the slice, the tests so far) into the same part of the next pool; the tester of a batch covers every open slice (CarryTester: the new slices
+checked and made by MultiTester itself, the older ones' tables cached).  A slice's line, with its SUCCESS / NEARMISS / discrepancy lines in run_batch's order, is
+printed when every member is decided; its counted tests and expected hits go into that batch's stats line (a restart, which redoes the unprinted slices, never
+counts them twice); found records are written when verified, each N once.  CPU proof (`../../sieve200/cuda/test_carry_campaign_fake.py`, whole campaigns on fake
+windows with the real driver code and fround's kernels compiled by g++): every slice line and its found lines identical to production's code, found.jsonl the same
+records, counted tests equal, with two parts, one part and a lower stop, the pipeline with slices of two windows and a mid-batch flush, and a kill after a batch's
+found records followed by a restart; over 48 batches waste 2.75% -> 0.06% and rounds 3,266 -> 2,069.
+
+What it can gain on a G4: the waste (3.0% of the Fermat tests, ~2% of a batch) for certain; the 18 small rounds a half-pool only where the sieve does not already
+fill them.  The GPU session's control-stream run (gap 0.10 s a half-pool shorter, batch unchanged) says the gaps between rounds are hidden already; the expected
+batch time is therefore 2-6% shorter, not the 6-12% of the pipeline model above.
