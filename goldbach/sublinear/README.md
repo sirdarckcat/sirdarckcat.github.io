@@ -41,7 +41,15 @@ it; they are in "A floor under every cover" and the sections after it:
   corrections leave it at the sizes measured. (The Lean session refereed the
   four steps of that limit on 25 November and found them right; what they
   give is the limit of the recursion, whose own error, a few percent where
-  measured, is not shown to vanish.) The luck-free depth is thus
+  measured, is not shown to vanish.) **Corrected the same day:** that limit
+  does not hold. The recursion lets the small moduli choose classes they do
+  not have the entropy to choose; with that constraint put in, it agrees
+  with the counts near the end, settles the 1,228-moduli test (3,452
+  predicted, 3,438 to 3,465 measured), keeps D(n)/(r·ln² r) between 0.91 and
+  1.01 at every size computed (89 to 3,244 moduli), and in the limit gives
+  D(n) of order r·ln² r/ln ln r, with e^γ/(2·C₂) = 1.349 as the bound's
+  constant: the order of the best known constructions for gaps, a factor
+  ln ln below the first-moment count. The luck-free depth is thus
   known to a few percent at every size, and at 200 digits it ends near
   16,000 on 89 moduli, where 15,907 has been found; rigorously,
   15,907 ≤ D(89) < 35,000, the upper end by an exhaustive search of the
@@ -746,7 +754,21 @@ Letting each large prime cover two rows (pairs q, q′ with r | q − q′, the
 Maier–Pomerance device) would double the constant but needs prime pairs with a
 prescribed difference on average; several rows per prime, as in the large-gap
 theorems of Ford, Green, Konyagin, Maynard and Tao, would give an extra factor
-ln ln X / ln ln ln X. Neither is attempted here.
+ln ln X / ln ln ln X. Neither was attempted when this was written. Since
+then (25 November) the consultant session has written out the first
+(`goldbach/gaps_map/PAIR_COVER.md` on `ccr-cdb2641a-5zg8un`, commit 09ff251):
+a matching of large primes to pairs of remaining rows, chosen by a deletion
+argument in expectation over random classes on the small primes, gives an
+explicit constant 1.3523 in place of 1.349 from Lavrik's long-range
+almost-all theorem for prime pairs and Selberg's upper bounds (1.479 if the
+second moments had their predicted values); its two open points are named
+there (the exact form of the long-range theorem with a congruence
+condition, and an averaging lemma for the survival weights), so it is a
+proof on paper pending those, not a theorem here. Counting alone cannot
+beat 1.349 in any order of the moduli. And the entropy count in "The
+entropy of the small moduli" below says the second device gives the true
+order: what divisibility alone can force is ln X·(ln ln X)²/ln ln ln X up to
+a constant, heuristically.
 
 **At 200 digits, without luck.** Joint optimisation does much better than
 the asymptotic count suggests. Tempering on the 89 smallest odd primes
@@ -1700,7 +1722,9 @@ stands is the consistent approximation at the level of pairs of rows, and
 the correction for thinning belongs to an order it does not have.
 
 *Where the constant ends up* (`cover_limit.py`, `cover_limit.txt`; a
-heuristic like the rest, nothing fitted). The pair sum has a limit shape. To
+heuristic like the rest, nothing fitted; this is the limit of the recursion
+as it was on 24 November, and "The entropy of the small moduli" below
+withdraws it as a statement about D(n)). The pair sum has a limit shape. To
 leading order R(m) = (a·c/2)·M(m), where M(m) = Σ over squarefree d ≤ m of
 u(d), u(d) the product of the u_t over the primes of d: a sum of dimension 2
 over the primes below s and of dimension 1 above. Write
@@ -1787,6 +1811,101 @@ order one in the limit, so nothing makes that difference vanish as x grows.
 Where it has been measured the recursion is within about 5% of the loss, of
 either sign. So 1.1275 is the constant of the recursion's limit; whether
 D(n)/(r·ln² r) has the same limit depends on that closure, which is open.
+
+*The entropy of the small moduli: the limit does not hold* (`cover_price_prefix.py`,
+`cover_price_prefix.txt`; found here on 25 November, after the referee's
+read; the asymptotic part is with the consultant session for a check). The
+caveat has a definite content. At a modulus s the recursion's solution has
+the chosen class hold e^(v·t) times the mean number of rows still alive, t
+the price after s. There are only s − 1 classes, so a class that full is
+there only if the smaller moduli have arranged it, and that takes entropy:
+with μ rows alive per class,
+
+    entropy of the level = ln(s − 1) − μ·(t·e^(v·t) − (e^(v·t) − 1)/v).
+
+The levels sum to ln g0. But the sum over the moduli up to s is the
+logarithm of the number of ways those moduli can be set as the count
+assumes, and it cannot be negative. In the recursion it is:
+
+| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 |
+|---|---|---|---|---|---|---|---|
+| target | 15,907 (the end) | 28,766 | 40,111 | 65,203 | 91,820 | 100,000 | 300,000 |
+| lowest entropy of a prefix, nats | −8 | −22 | −43 | −77 | −119 | −73 | −219 |
+| at the modulus | 113 | 113 | 157 | 199 | 271 | 181 | 337 |
+
+A modulus far below x has classes of many rows each and next to no entropy
+of its own, so the choice the recursion gives it does not exist. The
+deficit grows with the size, and at 1,228 moduli it is there at a third of
+the reach. With the constraints "every prefix has entropy ≥ 0" the count is
+a constrained maximum, and its dual is the same recursion with weights:
+
+    ln g0 = min over w_s ≥ 1, non-increasing in s, of  Σ w_s·ln(s − 1) − π(Q)·p_start(w),
+    p_s = p_{s⁺} − (w_s/(s − 1))·κ_s(p_{s⁺}/w_s)
+
+(w = 1 is the recursion as it was; a constant w is the freezing of a
+random-energy model; the derivative of the bound in the multiplier of a
+prefix is that prefix's entropy, so a convex minimisation finds it). The
+moduli with w > 1 are frozen: their classes are the same in nearly all
+complete covers. These are the families of the runs. At 167 moduli and
+40,111, where the runs keep the classes of the first twelve moduli and two
+families hold e^98.6 and e^94.6 complete covers, the entropy of the first
+twelve moduli is 0.2 nats with the constraint and −16 without. And the
+runs at 1,228 moduli that would not come to equilibrium at 300,000 are
+runs in which the moduli up to 383 have to find one setting.
+
+What it changes at the sizes counted:
+
+- Near the end the loss rises and the excess of the measured loss shrinks:
+  measured over predicted goes from 1.007 to 1.002 at 167 moduli and 40,111,
+  from 1.016 to 1.008 at 238 moduli and 65,203, from at most 1.028 to at
+  most 1.016 at 302 moduli and 91,820. In the middle of the range nothing
+  changes (0.97 to 0.99, as before).
+- The test that stayed open. At 1,228 moduli and 300,000 the constrained
+  loss is 3,452 (3,409 without the constraint; the 3,394 on record had a
+  further 15 nats from a lower cut of the dispersion at the moduli 3 to 17,
+  which `cover_price_hl.py` sets at 0.02 where the true value is nearly 0).
+  The runs read 3,465 at 150,000 sweeps and 3,438 at 500,000, still falling
+  slowly: they are where the constrained count is, and the series that
+  "approached 3,394 from above and stopped 44 short" was approaching the
+  wrong figure.
+- Where complete covers end, D/(x·ln² x):
+
+| x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 |
+|---|---|---|---|---|---|---|---|---|
+| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 | 3,244 |
+| the recursion as it was | 0.913 | 0.933 | 0.952 | 0.991 | 0.995 | 1.019 | 1.074 | 1.097 |
+| with the constraint | 0.912 | 0.929 | 0.944 | 0.975 | 0.975 | 0.988 | 1.008 | 0.995 |
+| evidence | 0.912 found, one row left 0.3% beyond | 0.923 to 0.926, counts extended | 0.876 found | 0.970 to 0.973, counts extended | 0.956 or more, counts extended | | | |
+
+  (Counts extended: the Opus session's straight line through its last two
+  counts, the run from the cover at the last; found: the best complete
+  cover, which at 167 moduli and beyond stops well before the count does.)
+  With the constraint the ratio stops rising near 1.0 at about a thousand
+  moduli and turns down. So the c = 1.00 of the law is not two corrections
+  crossing; it is where the constrained count stays, within 1%, from 400 to
+  3,000 moduli.
+
+And in the limit. For any fixed a < 1 the recursion's solution spends
+entropy of order x on the moduli up to Q^a (their levels use
+π(Q)·b/(s·ln s) nats each, b of order one, which sums to a multiple of
+Q/ln² Q), and those moduli have Q^a nats. So in the limit every modulus but
+those within a bounded factor of x is frozen and can do no better than
+random classes; they leave 0.7413·π(Q)/ln x rows, in general position; the
+top moduli must strike all of them from classes that hold O(1) of them on
+average, a class with K of them costs K·ln(K/μ) ≈ K·ln ln x nats, and there
+are x nats in all. Hence
+
+    D(n) ≤ (e^γ/(2·C₂) + o(1))·r_n·ln² r_n / ln ln r_n,
+
+and the greedy choice (each top modulus takes its fullest class, about
+ln x/ln ln x rows) reaches the same order. The luck-free depth is then of
+order ln N·(ln ln N)²/ln ln ln N, the order of the constructions of Ford,
+Green, Konyagin, Maynard and Tao for gaps, not ln N·(ln ln N)²; the ratio
+D(n)/(r·ln² r) tends to 0 like 1.349/ln ln r, and 1.1275 is the limit of an
+annealed count that the entropy of the small moduli does not allow. The
+o(1) is of relative size ln ln ln x/ln ln x, so at the sizes that can be
+computed none of this shows except as the turn in the table: there the
+constrained recursion is the statement, and it says 0.91 to 1.01.
 
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
@@ -2143,22 +2262,25 @@ before going on, all in agreement, so it stands as luck until the next
 sizes say otherwise.)
 
 
-**Conjecture (counting law).** For Q between x and a fixed fraction of
-θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
-strike every odd prime below Q is
-
-    exp(θ(x) − 2·C₂·e^(−γ)·Λ(ln x/ln Q)·Q/ln² Q·(1 + o(1))),
-
-with Λ given by the price equation and the limit profile above. At the sizes
-measured (x from 463 to 9,973) the recursion over the actual primes puts the
-loss at 1.00·Q/ln² x within 5%; in the limit Λ(1) = 1.19639 and the loss is
-0.887·Q/ln² x. Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91
-for the values known (20 to 89 moduli), rises by the recursion to 1.16 at
-78,497 moduli and to a maximum of about 1.20, and, if the recursion's
-closure holds in the limit, tends to
-e^γ/(2·C₂·Λ(1)) = 1.1275 (independent rows would give 1.349); and the least
-Goldbach summand that divisibility by the primes up to ln N alone can force
-is (1.1275 + o(1))·ln N·(ln ln N)².
+**Conjecture (counting law), as it stands on 25 November.** For Q up to the
+end of complete covers, the number of class vectors modulo the odd primes up
+to x that strike every odd prime below Q is exp(θ(x) − L(x, Q)), L the loss
+of the price recursion with the Hardy–Littlewood dispersions and with the
+entropy of every prefix of the moduli kept non-negative
+(`cover_price_prefix.py`). At the sizes counted (89 to 1,228 moduli) L is
+within 6% of the measured loss at all 26 points: high by up to 5.6% in the
+lower half of the range at 89 to 167 moduli, by 1 to 3% from 238 moduli on,
+and within 1.6% near the end; and L = 1.00·Q/ln² x within 5% there.
+Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91 for the
+values known (20 to 89 moduli), 0.91 to 1.01 by the constrained recursion
+from 89 to 3,244 moduli with its largest value near a thousand moduli, and
+tends to zero like (e^γ/(2·C₂))/ln ln r_n; and the least Goldbach summand
+that divisibility by the primes up to ln N alone can force is of order
+ln N·(ln ln N)²/ln ln ln N, at most (e^γ/(2·C₂) + o(1)) times that. (The
+version of 24 November, without the constraint, had κ_n rising to 1.16 at
+78,497 moduli and tending to e^γ/(2·C₂·Λ(1)) = 1.1275. That is the limit of
+the unconstrained recursion, checked as arithmetic by the Lean session, and
+it is withdrawn as a statement about D(n).)
 
 ## Ladder
 

@@ -1,0 +1,49 @@
+# cover_price_prefix.py: the price recursion with the entropy of every prefix of the moduli kept non-negative. 25 November 2026.
+# measured: the counts of cover_price_hl.txt and the Opus session's twelve (the run from the cover where there is one). Upper bounds for the loss, runs
+# not in equilibrium: the two highest targets at 302 moduli, and 300,000 at 1,228 moduli (the 500,000-sweep run, 3,437.7, still falling).
+
+x = 463, 89 moduli, theta = 442.9
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+10000 | 284.0 | 0.7, 3 | 284.0 | 0 | 1.000 | 271.2 | 0.955 | 0.955
+14000 | 391.3 | -0.7, 53 | 391.3 | 53 | 1.008 | 380.0 | 0.971 | 0.971
+15300 | 425.6 | -5.5, 83 | 425.7 | 83 | 1.048 | 422.4 | 0.993 | 0.992
+15907 | 442.9 | -7.9, 113 | 443.7 | 463 | 5.668 | 439.4 | 0.992 | 0.990
+
+x = 797, 138 moduli, theta = 758.4
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+18559 | 437.1 | 0.7, 3 | 437.1 | 0 | 1.000 | 423.0 | 0.968 | 0.968
+23198 | 539.4 | -4.6, 61 | 539.5 | 73 | 1.050 | 524.1 | 0.972 | 0.971
+26291 | 606.0 | -12.8, 89 | 606.6 | 101 | 1.107 | 599.3 | 0.989 | 0.988
+28766 | 661.2 | -21.7, 113 | 662.5 | 113 | 1.153 | 658.5 | 0.996 | 0.994
+
+x = 997, 167 moduli, theta = 955.6
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+15000 | 334.0 | 0.7, 3 | 334.0 | 0 | 1.000 | 315.5 | 0.944 | 0.944
+25000 | 542.4 | -0.4, 47 | 542.4 | 47 | 1.005 | 520.0 | 0.959 | 0.959
+38000 | 808.6 | -34.6, 139 | 811.4 | 157 | 1.221 | 802.0 | 0.992 | 0.988
+40111 | 851.4 | -42.7, 157 | 855.3 | 181 | 1.254 | 857.0 | 1.007 | 1.002
+
+x = 1499, 238 moduli, theta = 1461.4
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+42067 | 796.9 | -13.8, 83 | 797.6 | 89 | 1.123 | 773.8 | 0.971 | 0.970
+52583 | 984.5 | -37.4, 131 | 987.8 | 139 | 1.244 | 966.9 | 0.982 | 0.979
+59594 | 1112.1 | -58.7, 173 | 1118.6 | 211 | 1.326 | 1123.4 | 1.010 | 1.004
+65203 | 1208.7 | -77.1, 199 | 1218.3 | 263 | 1.385 | 1227.9 | 1.016 | 1.008
+
+x = 1999, 302 moduli, theta = 1939.1
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+59239 | 1031.0 | -29.7, 113 | 1033.4 | 113 | 1.213 | 1013.9 | 0.983 | 0.981
+74048 | 1271.6 | -63.0, 173 | 1278.9 | 199 | 1.347 | 1268.0 | 0.997 | 0.991
+83921 | 1434.1 | -92.3, 211 | 1446.7 | 283 | 1.436 | 1464.3 | 1.021 | 1.012
+91820 | 1562.9 | -119.2, 271 | 1580.9 | 337 | 1.506 | 1605.9 | 1.028 | 1.016
+
+x = 2999, 429 moduli, theta = 2931.7
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+50000 | 794.6 | -0.8, 47 | 794.6 | 47 | 1.010 | 771.6 | 0.971 | 0.971
+100000 | 1538.8 | -72.5, 181 | 1548.1 | 199 | 1.390 | 1541.7 | 1.002 | 0.996
+
+x = 9973, 1228 moduli, theta = 9895.3
+Q | loss, recursion as it was | lowest prefix entropy there, at modulus | loss with the constraint | moduli frozen up to | weight at 3 | loss measured | measured / as it was | measured / constrained
+100000 | 1199.0 | -4.5, 53 | 1199.1 | 53 | 1.055 | 1186.2 | 0.989 | 0.989
+300000 | 3409.1 | -218.8, 337 | 3452.5 | 383 | 1.771 | 3437.7 | 1.008 | 0.996
+
