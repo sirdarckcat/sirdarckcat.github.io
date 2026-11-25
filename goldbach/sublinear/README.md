@@ -13,8 +13,9 @@ it; they are in "A floor under every cover" and the sections after it:
   search to succeed (the partition function over all class vectors, run from
   a random start and from the best cover and compared) puts a floor of 1,214
   rows under every cover on the 89 moduli at Q = 170,000 where the two starts
-  agree, and 1,247 or 1,248 at the bottom; the best cover found has 1,248,
-  and a certified floor (exhaustive, uarch session) stands at 777. Covers
+  agree, and 1,247 or 1,248 at the bottom; the best cover found has 1,248.
+  That floor is measured; the certified one (exhaustive, uarch session)
+  stands at 777. Covers
   come in families fixed by the classes of the smallest moduli; thirteen
   families were searched to the bottom one by one and the fleet's is the
   best (`../fscan/cover/README.md`). At the 10% target no cover comes within

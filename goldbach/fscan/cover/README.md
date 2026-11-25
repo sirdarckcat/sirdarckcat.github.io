@@ -384,6 +384,13 @@ logged as CANDIDATE. About forty such runs here re-found family B one time in
 four and nothing better.
 
 **Families at the campaign's target** (24 November; `family_search/frame_rank.py`,
+
+(Two uses of one word in this file. "Family A" and "family B", from 23
+November, are the two groups into which near-optimal covers fall by the rows
+they leave *above* the design level. From 24 November "a family" also means
+all the covers that share the classes of the smallest moduli, a *frame*.
+The two meet: family B lies in the frame 3:2 5:3 7:5 11:6 13:5 17:4, and
+this section is about frames.)
 `frame_floor.py`, `frame_search.py`, `frames_rank6_top2000.txt`). A family is
 fixed by its frame, the classes of the smallest moduli: every cover the fleet
 uses has 3:2 5:3 7:5 11:6 13:5 17:4 19:10 23:4 29:21 31:13 37:20 41:1, and the
