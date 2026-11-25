@@ -1947,7 +1947,7 @@ sizes (they are built for 200 digits; that is the lead's and the GPU
 session's matter). The ceiling for this gap is 68.5 digits by the project's
 ceiling model, and divisibility alone forces it from about 1,300 digits. For
 a gap of 1,000,000: ceiling 142 digits, the same budget about 1,040 to 1,120
-digits, held today 2,480 digits, forced by divisibility from about 4,500.
+digits, held today 2,480 digits, forced by divisibility from about 4,700.
 On closeness to the ceiling of its own size none of this beats the present
 campaign at equal cost (200,000 at 225 digits is 7.3% of that size's
 ceiling, where the present design is 8.0% of its own); closeness is bought
