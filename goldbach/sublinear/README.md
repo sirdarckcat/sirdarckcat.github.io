@@ -985,6 +985,63 @@ constraint on many primes at once that can be constructed rather than
 searched for. Nothing known does it; that is a statement about what is
 known.
 
+**The bottom-up round, first returns** (25 November, evening; each session
+from a different starting point; the pieces are theirs and are not
+recomputed here unless said).
+
+- *Where the aligned numbers sit* (Lean session, on the miniature,
+  `goldbach/lean/scripts/alignment/` on its branch). Neither "the best
+  cover, a lucky window position" nor "a worse cover, a few lucky primes":
+  the 1,965 best numbers by rows left at depth 200 sit in covers of the
+  best percent (median cover-first quantile 1.2%; one of them in a best
+  cover), a quarter of their rarity is the cover and three quarters their
+  own position, and that position is the tail of a sum of 37 independent
+  small gains, one per later prime, about a fifth of a nat each: half of
+  it is reached only at the fifteenth later prime, and a member's three
+  luckiest primes give 4.7 of its 11.2 excess rows. The class of N modulo
+  a later prime, taken alone, carries 0.01 to 0.08 nats about membership
+  (1.4 nats for all 37 together, against 8.5 of luck): the lists are
+  relative to the member's own cover. By data processing a family read
+  from j later primes cannot enrich the population by more than the
+  information those primes carry, so a family that holds it has to read
+  essentially all of them. The prize is not located anywhere.
+- *Families that are not progressions* (Opus session,
+  `goldbach/bottom_up/README.md` on its branch). Members that share tested
+  integers (spacing below Q, so only the moduli dividing the spacing are
+  shared): −10.9 nats at best; one cover asked to serve N and N + d: −3.6
+  to −4.8; N + h highly composite, which is the common-integer cover: −16.
+  Repulsion between later primes: Poisson repeats are what limit the
+  window sieve (the survivor count has sd 18 where strikes without repeats
+  would give 40.6, and the cut would capture 80% of the hit mass instead
+  of 20%), but a family whose strikes repel pays 34 nats of constraint at
+  depth 2,000 for 0.9 nats. Luckily aligned polynomial families: the best
+  of e^20 quadratics gains 0.46 nats against a base loss of 5.5.
+- *Pin the luck* (this session, `toy_ratchet.py`, an exact small instance
+  with X = 10^15, Q = 3,000, depth 1,000): from the best member that cover
+  first finds, pin whichever primes that number is best aligned with, by
+  marginal value per nat and without regard to their size, score the
+  numbers that agree with it on them, move to the best, repeat. No step
+  improves on the starting member in 200,000 scored candidates at any
+  step size; cover first alone with the same total work ends at the same
+  18 rows (17 on a second seed). The pinned capacity is spent either way.
+- *Output-priced enumeration of members in good classes of several later
+  primes* (the lead's proposal; priced here): plain Chinese remaindering
+  is output-priced for the 2 primes that fit the window, meet in the
+  middle for 3 to 5 (0.07 to 0.19 nats, against 0.23 for two hard pins);
+  each further factor e of work per output member buys 2 nats of
+  selectivity, at most 0.10 nat, where one more scanned member buys a
+  full nat; and the output is scattered members.
+
+The object all of this points at, in the Opus session's words: three
+currencies exist (the window charges ln s per prime whatever the softness;
+scanning charges e^KL members per member kept, at 3 ns each; polynomial
+families charge 1/d of the range for value sets that are not aligned), and
+a fourth that charged about the KL without scanning would be an
+output-priced enumerator for random boxes {k < K : k mod sᵢ ∈ Aᵢ} with
+∏ sᵢ far above K. The same object in the language of forty years of
+factoring: values of the one polynomial F(N) = ∏ (N − q) with unusually
+many small prime factors, found faster than by sieving.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
