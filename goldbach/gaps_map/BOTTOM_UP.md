@@ -16,7 +16,7 @@ For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). 
 10. **Calibration on the 69 published records of the least Goldbach summand** (section 5, new): the success model reproduces them with an excess of +0.06 +- 0.34 nats (hit rate predicted too high by e^0.06) for N from 8*10^13 to 9*10^17, where the exponent is 36 to 41, the fleet's range; 0.6 to 0.9 nats optimistic below 5*10^13 (pi 0.25 to 0.3, shallow truncation).
 11. **Corrections to my earlier notes** (section 7): the lone-N sieve cost in cycles is 1.2 to 7 tests, not 0.25 to 0.65, so the lone-N loss is 1.9 to 3.4 nats, not 1.2 to 1.6; the window sieve costs 0.075 to 0.13 tests per member, not 0.005 to 0.012.
 12. **What would count as progress** (section 6): a list with the number each item needs.
-13. **Follow-up to Research's message of 18:40 UTC** (section 8): the fleet's own tally agrees with its model (-0.13 +- 0.30 nats, 11 found against 12.5 expected); the overshoot law beyond the design level, on which the chance of 200,000 depends (0.13% at theta = 1, 0.59% at 1.26, 1.9% at 1.58), is exact on the miniature (0.98 +- 0.07, 303 hits), 0.975 +- 0.040 on Research's 666 pipeline hits at 100 and 150 digits (0.99 +- 0.03 pooled) and not lengthened by the selection (block correlation -0.023); `--near-miss 140000` would measure it to +-0.2 in a day and a half; and no family outside the grammar exists in the literature, because the 18 nats of divergence still to supply cannot be bought by pins (0.63 nats) or sampled.
+13. **Follow-up to Research's message of 18:40 UTC** (section 8): the fleet's own tally agrees with its model (-0.15 +- 0.30 nats, 11 found against 12.8 expected); the overshoot law beyond the design level, on which the chance of 200,000 depends (0.13% at theta = 1, 0.59% at 1.26, 1.9% at 1.58), is exact on the miniature (0.98 +- 0.07, 303 hits), 0.975 +- 0.040 on Research's 666 pipeline hits at 100 and 150 digits (0.99 +- 0.03 pooled) and not lengthened by the selection (block correlation -0.023); `--near-miss 140000` would measure it to +-0.2 in a day and a half; and no family outside the grammar exists in the literature, because the 18 nats of divergence still to supply cannot be bought by pins (0.63 nats) or sampled.
 
 ## 1. Research's three points (17:51)
 
@@ -182,11 +182,11 @@ Source: `goldbach/phd/campaign3_gpu/TALLY.md` on `ccr-8ffe9d7a-4ni11u` (regenera
 | Q = 122,000, full mass | 21.0 | 0.110 | 0 |
 | Q = 140,000 | 24.15 | 1.274 | 1 |
 | Q = 150,000 | 26.2 | 1.282 | 1 |
-| Q = 170,000, design hits | 30.0 to 30.2 | 0.528 | 0 |
-| Q = 170,000, near-misses at the record of the time (where logged) | 28 to 29 | 2.205 | 2 |
-| all | | 12.52 | 11 |
+| Q = 170,000, design hits | 30.0 to 30.2 | 0.598 | 0 |
+| Q = 170,000, near-misses at the record of the time (where logged) | 28 to 29 | 2.431 | 2 |
+| all | | 12.81 | 11 |
 
-The excess ln(found/expected) is **-0.13 +- 0.30 nats** (Poisson); at exponents of 24 and above 5.29 expected against 4 found, **-0.28 +- 0.50**; at 20 to 21, 7.23 against 7, -0.03 +- 0.38. So the fleet's own record sequence agrees with its model within the error, which is too large for "a few tenths"; and the oldest rows use a formula with a fitted constant, so this tests the fleet's accounting, not the a priori model. (Against the 69 published records the a priori model has +0.06 +- 0.34 at the same exponents, section 5; the two checks are independent.)
+The excess ln(found/expected) is **-0.15 +- 0.30 nats** (Poisson); at exponents of 24 and above 5.59 expected against 4 found, **-0.33 +- 0.50**; at 20 to 21, 7.23 against 7, -0.03 +- 0.38. (Updated at 20:25 UTC with the final snapshots of gold-g4g, gold-g4h, gold-l4g, gold-l4i and gold-xt4c, 19:00 to 19:44Z: expected design hits +0.070, expected near-misses at 160,357 +0.226, nothing found; the 10:25 figures were 12.52 and -0.13. gold-l4j's snapshot is not counted, its directory repeats gold-l4g's lineage: at most +0.02.) So the fleet's own record sequence agrees with its model within the error, which is too large for "a few tenths"; and the oldest rows use a formula with a fitted constant, so this tests the fleet's accounting, not the a priori model. (Against the 69 published records the a priori model has +0.06 +- 0.34 at the same exponents, section 5; the two checks are independent.)
 
 What reaches +-0.2 nats at exponents 25 to 31 is the all-g log. Events per day with g >= T, from the Opus session's `campaign_table.py` on its 491-family 170,000 cover (1,250.5 rows run) at today's 0.19 design hits a day (`fleet_rates.py`; the same model gives 3.9 times the design-hit rate at >= 160,357 where the fleet's tally gives 3.2, so read the rates as +-25%):
 
