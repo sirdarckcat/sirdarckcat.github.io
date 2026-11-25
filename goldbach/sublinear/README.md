@@ -1894,18 +1894,22 @@ What it changes at the sizes counted:
   short: the figure it was held against was 15 to 58 too low.
 - Where complete covers end, D/(x·ln² x):
 
-| x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 |
-|---|---|---|---|---|---|---|---|---|
-| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 | 3,244 |
-| the recursion as it was | 0.913 | 0.933 | 0.952 | 0.991 | 0.995 | 1.019 | 1.074 | 1.097 |
-| with the constraint | 0.912 | 0.929 | 0.944 | 0.975 | 0.975 | 0.988 | 1.008 | 0.995 |
-| evidence | 0.912 found, one row left 0.3% beyond | 0.923 to 0.926, counts extended | 0.876 found | 0.970 to 0.973, counts extended | 0.956 or more, counts extended | | | |
+| x | 463 | 797 | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| moduli | 89 | 138 | 167 | 238 | 302 | 429 | 1,228 | 3,244 | 9,591 | 25,996 |
+| the recursion as it was | 0.913 | 0.933 | 0.952 | 0.991 | 0.995 | 1.019 | 1.074 | 1.097 | 1.125 | 1.140 |
+| with the constraint | 0.912 | 0.929 | 0.944 | 0.975 | 0.975 | 0.988 | 1.008 | 0.995 | 0.982 | 0.960 |
+| evidence | 0.912 found, one row left 0.3% beyond | 0.923 to 0.926, counts extended | 0.876 found | 0.970 to 0.973, counts extended | 0.956 or more, counts extended | | | | | |
 
   (Counts extended: the Opus session's straight line through its last two
   counts, the run from the cover at the last; found: the best complete
   cover, which at 167 moduli and beyond stops well before the count does.)
-  With the constraint the ratio stops rising near 1.0 at about a thousand
-  moduli and turns down. So the c = 1.00 of the law is not two corrections
+  (The last two columns were computed by the contractor session with the
+  same script.) With the constraint the ratio stops rising near 1.0 at about
+  a thousand moduli and turns down, to 0.96 at 26,000 moduli, where the
+  unconstrained one has 1.14; for comparison the asymptotic form
+  1.349/(ln ln x − 1) of the next paragraph is 1.11, 1.01, 0.94 and 0.88 at
+  x = 9,973, 30,000, 100,000 and 300,000. So the c = 1.00 of the law is not two corrections
   crossing; it is where the constrained count stays, within 1%, from 400 to
   3,000 moduli.
 
