@@ -2,7 +2,7 @@
 
 For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). Everything below was computed here unless marked "literature" or "not read". Scripts and logs: `goldbach/gaps_map/data/bottomup/` (README there). Rule used: nats at 200 digits (Q = 200,000, the 89 odd moduli 3 to 463, n = 1,502 rows on the campaign's cover, 1,524 on mine, kappa = -ln(1 - 0.02398) = 0.02428 nats per row), a number before every claim, negative results kept.
 
-## 0. The result in fourteen lines
+## 0. The result in fifteen lines
 
 1. **Nothing in this round lowers the 36.46 nats**, and I could not find a place where the 5.4 are hiding. What the round adds is an accounting that says why, and three measurements that close open items.
 2. **The one entropy is ln 10^200 = 460.5 nats.** The exponent goes 78.3 (the mean number of representations of an even N by a prime below Q and a prime) to 52.2 (N not divisible by any odd r up to 463, random classes: 1.7 nats of entropy) to 36.46 (classes optimised: 443 nats of pins, 15.8 nats of exponent, 0.036 per nat). 16.9 nats are left: the window of 2.2*10^7 members.
@@ -18,6 +18,7 @@ For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). 
 12. **What would count as progress** (section 6): a list with the number each item needs.
 13. **Follow-up to Research's message of 18:40 UTC** (section 8): the fleet's own tally agrees with its model (-0.15 +- 0.30 nats, 11 found against 12.8 expected); the overshoot law beyond the design level, on which the chance of 200,000 depends (0.13% at theta = 1, 0.59% at 1.26, 1.9% at 1.58), is exact on the miniature (0.98 +- 0.07, 303 hits), 0.975 +- 0.040 on Research's 666 pipeline hits at 100 and 150 digits (0.99 +- 0.03 pooled) and not lengthened by the selection (block correlation -0.023); `--near-miss 140000` would measure it to +-0.2 in a day and a half; and no family outside the grammar exists in the literature, because the 18 nats of divergence still to supply cannot be bought by pins (0.63 nats) or sampled.
 14. **The idle-core CPU scan at 200 digits** (section 8.4, new): 273 covers at the record target 160,367 (6.4 core-hours), 0.0003 successes expected, none found (one success costs 23,100 core-hours); a calibration at target 80,000 on 114 covers finds 42 against 46.7 expected (-0.11 +- 0.15 nats at an exponent of 15), every find recomputed from its N, and an overshoot of 0.83 +- 0.16 of the model's (pooled with the rest, 0.98 +- 0.03: theta = 1 stands).
+15. **The overshoot law does not decide the design level** (section 8.5, new): on the Opus model with the same work for every design, the 170,000 design has the highest expected record for every theta from 0.8 to 2 at today's work (margin 1,200 to 6,500), and a higher design level wins only with 1.9 to 20 times the work and a theta of 1 or less; so the 24-hour calibration of theta changes the forecast, not the decision.
 
 ## 1. Research's three points (17:51)
 
@@ -267,6 +268,21 @@ The lead's ruling of 19:52Z put idle session cores on 200-digit covers the fleet
 - **The record target is out of reach of four cores**: 83.8 s per cover (246,000 members/s per core, 4.96*10^6 Fermat tests per cover); one expected success at 160,367 costs 23,100 core-hours = 4.9*10^12 Fermat tests (e^29.2), i.e. 5,800 hours on four cores. 273 covers are 0.03% of one success and none was found. The idle cores are not a contribution to the record; the calibration is what this scan was worth.
 - **The sandbox**: `nohup` processes died when the container was recycled while the session was idle (about 20:20Z); the same workers as harness-tracked background commands, resumed from their logs, ran the full 2 hours (the maximum timeout, 7,200,000 ms) through the idle period with the container up throughout, and were stopped by the harness at the limit. They were not restarted.
 
+### 8.5 Does the calibration change the decision? The design level against the overshoot law
+
+The 24-hour calibration measures theta (section 8.2). If theta were far from 1, would another design level than 170,000 (the Opus session's 180,000, 190,000 and 200,000 designs on their own covers, at the same work) give a higher expected final record? `design_theta.py` re-runs the Opus model (`campaign_table.py`; theta = 1 reproduces its E[record] = 175,252 at today's budget) with the design hits' suppression exp(-extra * kappa) replaced by exp(-extra * kappa / theta), the same work for every design (1.90 design hits at 170,000 as the fleet runs, times e^package, package in nats), and the g of every tested member counted (`logs/design_theta.log` has every table):
+
+| design with the highest E[record] (margin over the next design) | theta 0.8 | 1.0 | 1.26 | 1.5 | 2.0 |
+|---|---|---|---|---|---|
+| work as today (package 0) | 170,000 (+1,176) | 170,000 (+2,098) | 170,000 (+3,264) | 170,000 (+4,318) | 170,000 (+6,478) |
+| package +0.65 nats (the largest package of the Opus table, which lists 0, 0.35 and 0.65) | 180,000 (+395) | 170,000 (+877) | 170,000 (+2,480) | 170,000 (+3,928) | 170,000 (+6,907) |
+| package +1.5 (4.5 times the work) | 180,000 (+1,306) | 180,000 (+178) | 170,000 (+1,818) | 170,000 (+3,631) | 170,000 (+7,418) |
+| package +3.0 (20 times) | 190,000 (+1,174) | 190,000 (+846) | 170,000 (+1,582) | 170,000 (+3,626) | 170,000 (+7,936) |
+
+- **At today's work the 170,000 design is the best for every theta from 0.8 to 2**, by 1,200 to 6,500 in the expected record. So the calibration changes the forecast (P(final >= 175,000) 37% to 59% and P(final >= 200,000) 0.02% to 1.5% for theta 0.8 to 1.5, section 8.2), **not the decision**.
+- The best design level moves up only with more work together with a thin overshoot: 180,000 wins at theta = 0.8 from a package of +0.65 (by 395) and at theta = 1 from +1.5 (by 178); 190,000 needs +3 nats; for theta >= 1.26 the 170,000 design stays best up to +3 nats.
+- **A lottery on 200,000 costs more than it gives**: at theta = 1 and today's work the 200,000 design raises P(final >= 200,000) from 0.133% to 0.42%, and lowers P(final >= 175,000) from 46% to 20% and E[record] from 175,252 to 168,739.
+
 ## 9. Files
 
-`goldbach/gaps_map/data/bottomup/` (README there): `gmp_cal.py` (GMP calibration), `q1_cost.py`, `q1_stake.py` (Q1), `dos_gf.py`, `dos_check.py` (cover supply), `cover_rem.py`, `cover_rem170.py` (rate of the cover), `a12_numbers.py` (dual and geometry), `a3_pairs.py` (additive structure), `rec_mc.py`, `rec_rescale.py`, `rec_rescale_R.py`, `records.txt` (calibration), `ovs.c`, `ovs_test.py`, `rec_ovs.py`, `hits_1e9_1000.txt`, `fleet_ovs.py`, `fleet_hits.jsonl` (overshoot law), `block_corr.py`, `block_cov_theory.py` (selection and overshoot), `fleet_rates.py`, `fleet_sens.py` (event rates and forecast sensitivity; they need the Opus session's `campaign_table.py` and `covers/`), `scan_tally.py`, `verify_g.py`, `scan479/` (the CPU scan: ledger, logs, the 42 finds, scripts), `logs/`.
+`goldbach/gaps_map/data/bottomup/` (README there): `gmp_cal.py` (GMP calibration), `q1_cost.py`, `q1_stake.py` (Q1), `dos_gf.py`, `dos_check.py` (cover supply), `cover_rem.py`, `cover_rem170.py` (rate of the cover), `a12_numbers.py` (dual and geometry), `a3_pairs.py` (additive structure), `rec_mc.py`, `rec_rescale.py`, `rec_rescale_R.py`, `records.txt` (calibration), `ovs.c`, `ovs_test.py`, `rec_ovs.py`, `hits_1e9_1000.txt`, `fleet_ovs.py`, `fleet_hits.jsonl` (overshoot law), `block_corr.py`, `block_cov_theory.py` (selection and overshoot), `fleet_rates.py`, `fleet_sens.py` (event rates and forecast sensitivity; they need the Opus session's `campaign_table.py` and `covers/`), `scan_tally.py`, `verify_g.py`, `scan479/` (the CPU scan: ledger, logs, the 42 finds, scripts), `nearmiss_rescale.py` (the 24-hour calibration of the fleet's near-miss log), `design_theta.py` (design level against the overshoot law; needs `campaign_table.py` and `covers/` of the Opus session), `logs/`.
