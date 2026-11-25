@@ -1,6 +1,7 @@
 import GoldbachGaps.Gap200k_400digit_g200293
 import GoldbachGaps.Gap200k_400digit_g206593
 import GoldbachGaps.Gap200k_347digit_g216289
+import GoldbachGaps.Gap200k_319digit_g207307
 import GoldbachGaps.Gap1M_2196digit_g1001491
 
 /-!
@@ -22,11 +23,12 @@ of any theorem here.
 | 200,000 | 400 | 200,293 | uarch session, `goldbach/records/g200k_400digit_g200293` |
 | 200,000 | 400 | 206,593 | uarch session, `goldbach/records/g200k_400digit_g206593` |
 | 200,000 | 347 | 216,289 | uarch session, `goldbach/records/g200k_347digit_g216289` |
+| 200,000 | 319 | 207,307 | uarch session, `goldbach/records/g200k_319digit_g207307` |
 | 1,000,000 | 2,196 | 1,001,491 | Opus session, `goldbach/g_million/record_2196digit` |
 
 (The uarch session's are on branch `ccr-b8c25887-i6tn9f`, the first two at `8bbbc2d`, the third at
-`05a396b`; each was recomputed from `N` alone by the research session and again here before the
-certificate was generated. The Opus session's is on branch `ccr-c6e00296-3g7fp9` at `71172d4`,
+`05a396b`, the fourth at `3b9dcc4`; each was recomputed from `N` alone by the research session and
+again here before the certificate was generated. The Opus session's is on branch `ccr-c6e00296-3g7fp9` at `71172d4`,
 checked here from `N` and the cover alone; its certificate is in the witness form, in 31 parts of
 four blocks, and uses the record's divisors of `N - q` for 1,600 rows that no modulus strikes; 977
 rows are left to the base-2 Fermat test.)
@@ -54,6 +56,20 @@ theorem exists_347_digit_no_summand_below_216289 :
     ∃ N, 10 ^ 346 ≤ N ∧ N < 10 ^ 347 ∧ Even N ∧ ∀ q, q.Prime → q < 216289 → ¬ (N - q).Prime :=
   ⟨Gap200k_347digit_g216289.N, Gap200k_347digit_g216289.le_N, Gap200k_347digit_g216289.N_lt,
     Gap200k_347digit_g216289.N_even, Gap200k_347digit_g216289.not_prime_sub⟩
+
+/-- **A 319-digit even `N` with `N - q` composite for every prime `q < 207307`**: its least
+Goldbach summand is at least `207307`. -/
+theorem exists_319_digit_no_summand_below_207307 :
+    ∃ N, 10 ^ 318 ≤ N ∧ N < 10 ^ 319 ∧ Even N ∧ ∀ q, q.Prime → q < 207307 → ¬ (N - q).Prime :=
+  ⟨Gap200k_319digit_g207307.N, Gap200k_319digit_g207307.le_N, Gap200k_319digit_g207307.N_lt,
+    Gap200k_319digit_g207307.N_even, Gap200k_319digit_g207307.not_prime_sub⟩
+
+/-- The bound of the game at 319 digits: some even `N` below `10^319` has no Goldbach summand below
+`200000`. -/
+theorem exists_lt_ten_pow_319_no_summand_below_200000 :
+    ∃ N < 10 ^ 319, Even N ∧ ∀ q, q.Prime → q < 200000 → ¬ (N - q).Prime :=
+  ⟨Gap200k_319digit_g207307.N, Gap200k_319digit_g207307.N_lt, Gap200k_319digit_g207307.N_even,
+    fun q hq hlt => Gap200k_319digit_g207307.not_prime_sub q hq (by unfold Gap200k_319digit_g207307.Q; omega)⟩
 
 /-- The bound of the game at 347 digits: some even `N` below `10^347` has no Goldbach summand below
 `200000`. -/

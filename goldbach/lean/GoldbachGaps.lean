@@ -25,6 +25,7 @@ import GoldbachGaps.Records
 import GoldbachGaps.Gap200k_400digit_g200293
 import GoldbachGaps.Gap200k_400digit_g206593
 import GoldbachGaps.Gap200k_347digit_g216289
+import GoldbachGaps.Gap200k_319digit_g207307
 import GoldbachGaps.Gap1M_2196digit_g1001491
 import GoldbachGaps.FixedGap
 import GoldbachGaps.Needles
@@ -195,7 +196,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                (`exists_400_digit_no_summand_below_200293`, `…_206593`,
                `exists_lt_ten_pow_400_no_summand_below_200000`), and a 347-digit one for
                every prime `q < 216289` (`exists_347_digit_no_summand_below_216289`,
-               `exists_lt_ten_pow_347_no_summand_below_200000`). For the bound one million:
+               `exists_lt_ten_pow_347_no_summand_below_200000`), and a 319-digit one for every
+               prime `q < 207307` (`Gap200k_319digit_g207307`,
+               `exists_319_digit_no_summand_below_207307`,
+               `exists_lt_ten_pow_319_no_summand_below_200000`). For the bound one million:
                `Gap1M_2196digit_g1001491` (with `…_Base` and 31 parts `…_0` to `…_30`), a
                2,196-digit even `N` from the Opus session with `N - q` composite for every
                prime `q < 1001491` (`exists_2196_digit_no_summand_below_1001491`,
