@@ -1,0 +1,10 @@
+x=2e+03 ln x=7.6 lnln=2.028 C/x=0.4325  C*lnln/x=0.877  C*(lnln-1)/x=0.445 t=0s
+x=5e+03 ln x=8.5 lnln=2.142 C/x=0.4351  C*lnln/x=0.932  C*(lnln-1)/x=0.497 t=0s
+x=2e+04 ln x=9.9 lnln=2.293 C/x=0.4365  C*lnln/x=1.001  C*(lnln-1)/x=0.564 t=0s
+x=1e+05 ln x=11.5 lnln=2.443 C/x=0.4349  C*lnln/x=1.063  C*(lnln-1)/x=0.628 t=0s
+x=1e+06 ln x=13.8 lnln=2.626 C/x=0.4288  C*lnln/x=1.126  C*(lnln-1)/x=0.697 t=0s
+x=1e+09 ln x=20.7 lnln=3.031 C/x=0.4042  C*lnln/x=1.225  C*(lnln-1)/x=0.821 t=0s
+x=1e+15 ln x=34.5 lnln=3.542 C/x=0.3639  C*lnln/x=1.289  C*(lnln-1)/x=0.925 t=1s
+x=1e+30 ln x=69.1 lnln=4.235 C/x=0.3096  C*lnln/x=1.311  C*(lnln-1)/x=1.002 t=1s
+x=1e+60 ln x=138.2 lnln=4.928 C/x=0.2634  C*lnln/x=1.298  C*(lnln-1)/x=1.035 t=2s
+x=1e+120 ln x=276.3 lnln=5.622 C/x=0.2219  C*lnln/x=1.247  C*(lnln-1)/x=1.025 t=4s
