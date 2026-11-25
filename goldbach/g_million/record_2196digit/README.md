@@ -50,6 +50,7 @@ The certificate is `GoldbachGaps/Gap1M_2196digit_g1001491.lean`, with `_Base` an
 The Lean session also checked the record independently from `N.txt` and `cover.txt` alone and agrees row for row. So does the
 research session.
 
+## How it was found
 
 1. **Cover** (`cover.txt`, 683 moduli, the odd primes up to 5,113): 2,563 of the 78,497 rows are in no class. It came from greedy
    plus 1-flip descent (2,852 rows), then heat-bath annealing (3,000 sweeps, β from 2 to 6: 2,595 rows), then 20,000 more sweeps
