@@ -10,6 +10,9 @@ check of the four steps, and for numbers on the first two. This directory is tha
 is a proof; the exact identities it starts from are the ones proved in
 `GoldbachGaps/CoverPairs.lean` and `GoldbachGaps/CoverPairSums.lean`.
 
+A second read, of what the research session put in the place of this limit (the entropy of every prefix
+of the moduli, and a bound with `1/ln ln r`), is in `../cover_prefix_check/`.
+
 ## The verdict
 
 * **Steps 1, 2 and 3 hold**, as statements about leading order. Each was rederived here and tested

@@ -1,0 +1,9 @@
+# prefix_check.py orders 2999 100000: 429 moduli, 9591 rows, theta = 2931.7
+order | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+increasing | 1512.3 | -1.8e-12 | -90.8 at 167 (position 38 of 429) | 1530.1 | 45, largest 199 | 3.063 | -5.1e-05, 5.1e-05, -1.2e-05 | v > 1 at 0, v < 1e-4 at 0
+decreasing | 752.5 | -4.1e-12 | 8.0 at 2999 (position 1 of 429) | 752.5 | 0, largest 0 | 1.000 | +8.0e+00, 0.0e+00, -4.1e-12 | v > 1 at 0, v < 1e-4 at 0
+3..17 first, then decreasing | 1555.4 | -1.8e-12 | -26.6 at 17 (position 6 of 429) | 1564.0 | 6, largest 17 | 3.068 | -2.4e-06, 2.4e-06, +1.3e-06 | v > 1 at 0, v < 1e-4 at 0
+upper half increasing, then lower half increasing | 1540.5 | -1.1e-12 | 7.1 at 1321 (position 1 of 429) | 1540.5 | 0, largest 0 | 1.000 | +7.1e+00, 0.0e+00, -1.1e-12 | v > 1 at 0, v < 1e-4 at 0
+lower half decreasing, then upper half increasing | 953.8 | -1.8e-12 | 7.2 at 1319 (position 1 of 429) | 953.8 | 0, largest 0 | 1.000 | +7.2e+00, 0.0e+00, -1.8e-12 | v > 1 at 0, v < 1e-4 at 0
+random 1 | 1342.6 | +2.0e-12 | 3.8 at 59 (position 1 of 429) | 1342.6 | 0, largest 0 | 1.000 | +3.8e+00, 0.0e+00, +2.0e-12 | v > 1 at 0, v < 1e-4 at 0
+random 2 | 1544.2 | -3.9e-12 | 4.9 at 167 (position 1 of 429) | 1544.2 | 0, largest 0 | 1.000 | +4.9e+00, 0.0e+00, -3.9e-12 | v > 1 at 0, v < 1e-4 at 0
