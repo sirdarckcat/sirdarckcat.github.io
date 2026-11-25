@@ -36,6 +36,11 @@ the GPU session's answer arrived (4 covers, 85.5 million members, 20.5 million t
 started on lines 1 to 112 of the same file at 19:49 UTC. The fleet had tested the emptiest 1.5% of one window of
 2^24 members of each such cover on the 23rd.
 
+Check of the build used here (20:06 UTC): the best cover of the 557 set scanned whole at a target of 70,001 (557
+rows, 60 s): 3 finds where about 1.8 were expected (24 members with no summand below the target, 7.4% of them in the
+tested 1.5%), each recomputed from N alone with gmpy2 (every N − q for the odd primes q in turn): g = 70,249 to
+81,727, equal to the pipeline's.
+
 ## Finds
 
 None.
