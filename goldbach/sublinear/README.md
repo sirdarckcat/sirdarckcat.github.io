@@ -1881,9 +1881,9 @@ What it changes at the sizes counted:
   most 1.016 at 302 moduli and 91,820. In the middle of the range nothing
   changes (0.97 to 0.99, as before).
 - The test that stayed open. At 1,228 moduli and 300,000 the constrained
-  loss is 3,452 (3,409 without the constraint; the 3,394 on record had a
-  further 15 nats from a lower cut of the dispersion at the moduli 3 to 17,
-  which `cover_price_hl.py` sets at 0.02 where the true value is nearly 0).
+  loss is 3,452 (3,409 without the constraint; the 3,394 on record is the
+  unconstrained figure with the dispersion at the moduli 3 to 17 cut at
+  0.02 instead of 10^(−4); see the note on that cut below).
   The runs read 3,465 at 150,000 sweeps and 3,438 at 500,000, still falling
   slowly, so the constrained figure lies inside the range of the runs and
   the unconstrained one below all of them. That does not decide between
@@ -1907,6 +1907,24 @@ What it changes at the sizes counted:
   moduli and turns down. So the c = 1.00 of the law is not two corrections
   crossing; it is where the constrained count stays, within 1%, from 400 to
   3,000 moduli.
+
+How exact this is. The figures above move by about 1% with one choice: the
+lower cut of the dispersion at the moduli 3 to 17, where the pair sum
+returns nothing usable (values at or below zero) while the class counts do
+differ a little (variance over mean 0.05 to 0.3 on random vectors). For a
+cut of 10^(−4), 0.02 and 0.06 the constrained end is 15,907, 16,063 and
+16,218 on the 89 moduli (known: 15,907 found, one row left at 15,950 and
+16,000) and 78,186, 78,541 and 78,997 on 238 moduli (counts extended:
+77,741 to 77,952); the loss at 1,228 moduli and 300,000 is 3,452, 3,445 and
+3,434 (and 3,409, 3,394, 3,362 without the constraint). The tables use
+10^(−4), which reproduces the one end that is known. The reason for the
+sensitivity is the one found for the floors: a frozen level takes the
+largest of a few counts, and the weighted recursion, like any
+large-deviation estimate, puts that too high (by 18% of a standard
+deviation for two classes, 60% for four, 20% for a hundred); a small cut
+at the first moduli makes up for it there. So the constrained recursion is
+a 1 to 2% statement about where complete covers end, not better, and an
+exact treatment of the frozen levels is the piece that is missing.
 
 And in the limit. For any fixed a < 1 the recursion's solution spends
 entropy of order x on the moduli up to Q^a (their levels use

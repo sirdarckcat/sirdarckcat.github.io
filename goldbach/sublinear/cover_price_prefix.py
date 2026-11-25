@@ -26,9 +26,14 @@ lam_j >= 0 the multiplier of the prefix ending at j, and the derivative of the b
 so a convex minimisation with bounds does it (L-BFGS-B, the gradient exact).  Moduli with w > 1 are frozen: their
 classes are the same in nearly all complete covers (the families seen in the runs).
 
-Dispersions v_s: the Hardy-Littlewood pair sum of cover_price_hl.py, cut to [1e-4, 1].  (cover_price_hl.py's own loss
-uses a lower cut of 0.02, which at the moduli 3 to 17, where the true value is nearly 0, adds 1 to 3 nats of gain that
-is not there; the figures here are without it.)
+Dispersions v_s: the Hardy-Littlewood pair sum of cover_price_hl.py, cut to [COVER_VMIN, 1], COVER_VMIN = 1e-4 unless
+set in the environment.  The cut matters at the moduli 3 to 17 only, where the pair sum returns values at or below zero
+while the class counts do differ a little (variance over mean 0.05 to 0.3 on random vectors).  cover_price_hl.py's own
+loss uses 0.02.  The results move with it by about 1%: where complete covers end on the 89 moduli is 15,907 / 16,063 /
+16,218 with the constraint for a cut of 1e-4 / 0.02 / 0.06 (known: 15,907 found, one row left at 15,950), and on 238
+moduli 78,186 / 78,541 / 78,997.  The reason is that a frozen level takes the largest of a few counts, which the
+weighted recursion (like any large-deviation estimate) puts too high, by 18% of a standard deviation for two classes and
+60% for four; a small cut makes up for it.  1e-4 is used because it reproduces the one end that is known.
 """
 import sys, os, math, ctypes, subprocess
 import numpy as np
@@ -43,6 +48,7 @@ _lib = ctypes.CDLL(_so); _lib.passes.restype = ctypes.c_double
 _dp = np.ctypeslib.ndpointer(dtype=np.float64, flags="C"); _ip = np.ctypeslib.ndpointer(dtype=np.int32, flags="C")
 _lib.passes.argtypes = [ctypes.c_int, _ip, _dp, ctypes.c_double, ctypes.c_double, _dp, _dp, _dp, ctypes.POINTER(ctypes.c_double)]
 BETA = 40.0            # the price of a row left at the end: large, so that complete covers are counted
+VMIN = float(os.environ.get("COVER_VMIN", "1e-4"))   # lower cut of the dispersion (it matters at the moduli 3 to 17 only)
 
 def passes(mods, vs, piQ, w, beta=BETA):
     n = len(mods); taus = np.empty(n); ents = np.empty(n); a = ctypes.c_double()
@@ -64,7 +70,7 @@ class Setup:
         self.ps = hl.PairSums(x, int(qmax)); self.mods = np.array(self.ps.mods, dtype=np.int32)
         self.theta = float(sum(math.log(s) for s in self.ps.mods))
     def at(self, Q):
-        vs, _ = self.ps.dispersions(Q); return np.clip(np.array(vs, dtype=np.float64), 1e-4, 1.0), float(cp.odd_primes_below(Q))
+        vs, _ = self.ps.dispersions(Q); return np.clip(np.array(vs, dtype=np.float64), VMIN, 1.0), float(cp.odd_primes_below(Q))
 
 def frozen_up_to(mods, w): return max([int(m) for m, ww in zip(mods, w) if ww > 1.001], default=0)
 
