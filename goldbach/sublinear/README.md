@@ -929,9 +929,18 @@ Near misses make the choice of level smooth: each 10,000 of design level
 costs 1,000 to 2,000 of expected record and buys right tail; the 200,000
 design triples the chance of 200,000 and gives up 6,500 of expectation and
 the 85% chance of passing 170,000. The engineering crumbs move the whole
-table by their nats (+0.65: 176,800 expected and 29.6% at 180,000 on the
-170,000 design; 0.80% at 200,000 on the 200,000 design), about 4,800 of g
-per nat. The right tail of this table rests on one law, that a member
+table by their nats, about 4,800 of g per nat. What is left of them after
+the evening (the two-stage count withdrawn by its author, carried rounds
+built and revised; the Opus session's own models of each item,
+`goldbach/bottom_up/costcheck/` at 18b9ad3 on its branch, which agree with
+the uarch session's selection numbers to 0.004 and with its wasted tests,
+3.06% at a keep of 1.5% and 5.72% at 0.75%): +0.05 nats if carried rounds
+save only the wasted tests, +0.21 if they also remove the tail of small
+launches, with the keep re-optimised (the optimum is near 1.0%, and flat:
+1.5% loses 100 to 300 of expected record). That is 175,500 to 176,200
+expected on the 170,000 design, 17.5 to 20.2% at 180,000 and 0.14 to 0.16%
+at 200,000; where the cards fall between the two is a timing of one batch
+with and without the change. The right tail of this table rests on one law, that a member
 which reaches a level then survives a geometric number of the alive rows
 beyond it, 1/p of them on average (the consultant session's point: were
 the true mean 1.26 times that, 200,000 on the present design would have
