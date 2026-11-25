@@ -692,6 +692,19 @@ Version 3 (22 Nov):
     - Deployed at 19:11:41Z with the top 16 levels.
   - Measured on the L4s (`l4rate.py`, 18:57-19:08Z against 18:35-18:54Z): batch ×0.854 / ×0.852, expected design hits
     a second ×1.166 / ×1.171 on gold-gpu / gold-l4c. gold-l4b's earlier window includes the test stops.
+- Runtime replacements, the rule now (the lead, 24 Nov 22:46Z): no card is stopped early.
+  - Each card runs to Colab's 24 h end and is snapshotted at ~23 h and ~23.75 h without stopping. It is replaced only
+    after Colab has ended it (`bringup/handover_end.sh`): a new session of the same type resumes the old card's campaign
+    directory from the last snapshot.
+  - A share whose card Colab refuses waits in its snapshot and is retried every 10 min (`bringup/g4_poll.sh`,
+    `bringup/l4_poll.sh`). When sessions are capped, G4 goes first, then L4, T4 last.
+  - Round 1 (23 Nov 20:19Z - 24 Nov 00:48Z): gold-gpu and the three RTX cards were replaced when Colab ended them. The two
+    L4s and the T4 were replaced at ~23 h at a batch end, the rule then. All seven came back.
+  - Round 2 (24 Nov 19:13-22:42Z, ~23 h stops): four shares resumed on new cards. Two lost their card, because Colab now
+    holds G4s and L4s at 2 each (412 Precondition Failed): partition 2 (gold-g4f, since 19:59Z) and gold-l4e's share
+    (since 22:39Z). That led to the rule above.
+  - The fleet since 24 Nov 22:42Z is five GPUs: gold-g4g and gold-g4h (RTX, partitions 0 and 1), gold-l4g and gold-l4i (L4)
+    and gold-xt4c (T4).
 - Colab ends every runtime 24 h after creation. gold-gpu was created at 2026-11-22T19:12:40Z and ended at 19:13:03Z on
   the 23rd, taking its logs with it.
   - Before every later end, each card's state was snapshotted (`runlogs/snap.py`), and its compact records went to
@@ -709,7 +722,8 @@ Version 3 (22 Nov):
     marker).
     - A replacement starts with its predecessor's lines marked as already copied, so lines restored from a snapshot
       are not reported again as new.
-  - Proactive replacements at ~23 h, each onto its share of the shifted family-B vectors in a fresh c170g:
+  - Proactive replacements at ~23 h (the rule until 24 Nov 22:46Z), each onto its share of the shifted family-B vectors
+    in a fresh c170g:
     gold-l4b → gold-l4e (23:38-23:45Z), gold-l4c → gold-l4f (23:41-23:47Z) and gold-xt4 → gold-xt4b (a T4,
     00:44-00:48Z on the 24th, 1,572 vectors). Each new GPU passed the per-member check (129 = 129 near-misses at
     production f on the L4s; identical on the T4) and the m88f known case (40 = 40) before deploying.
@@ -737,7 +751,8 @@ Version 3 (22 Nov):
   - Since 17:14-17:20Z every card reports near-misses from 160,357 up (`NEAR_MISS=160357`, `rec160357/raise_nm.py`).
     Each card restarted in place at a batch end; the generators and row guards were not touched.
   - The RTX cards had logged 1.60 expected near-misses at or above 158,209 since the previous record.
-- The second round of ~23 h replacements (24 Nov 19:13-19:59Z) was the first to resume the new campaign dirs.
+- The second round of ~23 h replacements (24 Nov 19:13-22:42Z), the last under that rule, was the first to resume the new
+  campaign dirs.
   - gold-g4d → gold-g4g and gold-g4e → gold-g4h each passed the production known case and resumed its c170r:
     451,396 / 452,096 done slices, its partition's ledger and the row-guard base. Chunk numbering continued at 576 / 572,
     and the generators restarted at cap 1,250 with CAPMAX 1,252.
@@ -756,16 +771,17 @@ Version 3 (22 Nov):
     after gold-l4f stopped, gold-l4i was granted at once and resumed (gate passed). gold-l4e's share waits in its
     snapshot, and `bringup/l4_poll.sh` retries every 10 min.
   - The account had 5 active assignments at 22:47Z, exactly ours, so the caps are Colab's own, not other sessions'.
-  - New rule (the lead, 22:46Z): no proactive stops. A card runs to Colab's 24 h end. It is snapshotted at ~23 h and
-    ~23.75 h without stopping, and replaced only after Colab has ended it (`bringup/handover_end.sh`). With shrinking caps,
-    stopping a card first can lose it. At most ~15 min of its last slices are redone or lost from the done records.
+  - New rule (the lead, 22:46Z), in force since: no proactive stops. A card runs to Colab's 24 h end. It is snapshotted
+    at ~23 h and ~23.75 h without stopping, and replaced only after Colab has ended it (`bringup/handover_end.sh`). With
+    shrinking caps, stopping a card first can lose it. At most ~15 min of its last slices are redone or lost from the
+    done records.
   - The 491 ledgers (~5 MB xz a card a day) are not committed to `runlogs/`. They live in the snapshots carried card to
     card and in the local final snapshots; the summaries give their size and hash.
 - L4/T4 levels: at ~3.9 h a level the top 16 would end around 26 Nov 10-15Z. KLO was widened to 32 levels at
   20:23-20:26Z (the lead's pre-approval of 24-32; `l4op/set_klo32.py`, and `deploy_l4op.py` to match).
   - The scan goes level by level from the top, so nothing changes before level 16. After it the cards go on to levels
     17-32 (N from 8.9e199 to 9.46e199 on the shifted vectors, ~0.5% fewer design hits a member) instead of running out.
-    From the next round, runtimes are replaced at ~23 h at a batch boundary (`bringup/handover_pro.sh`).
+    The campaign directories carry across replacements, so the levels done stay done.
 - research's 491-family vectors on the RTX cards (bbc8cd8: the first 88 odd primes and 491 instead of 463), approved by
   the lead behind a six-point gate (`v491/`, gold-g4c):
   1. The deep sieve matches the CPU feeder at the top windows, and the Fermat flags match gmpy2.
@@ -824,8 +840,8 @@ Version 3 (22 Nov):
     `k_shift`.
   - gold-l4d has run its share (3,476 vectors) since 21:26Z, switched at a batch end by `switch_top4s.py`. The done set
     carries over, and the top3 vectors it had done stay done.
-  - gold-l4b and gold-l4c get 3,476 each and gold-xt4 1,572, at tonight's ~23 h replacements. Each share is about 62 h
-    of top-16 levels.
+  - gold-l4b and gold-l4c got 3,476 each and gold-xt4 1,572, at their ~23 h replacements of 23-24 Nov (gold-l4e, gold-l4f,
+    gold-xt4b). Each share is about 62 h of top-16 levels.
 - Resuming the new campaign dirs (fixed 21:30Z, before any snapshot needed it). `snap.py` had kept only the old dirs.
   - The next round of replacements would have lost the RTX cards' c170r done sets and 491 ledgers, and gold-l4d's c170g.
   - The fixes:
@@ -834,7 +850,8 @@ Version 3 (22 Nov):
       numbers its chunks after the old card's last one. Without it, the new chunk names would repeat names already in
       the done set and be skipped. The row guard skips names whose chunks are gone.
     - `bringup_l4.sh` resumes c170g as well as c170f.
-    - `handover_pro.sh` gained KIND `l4`, which resumes an L4/T4 campaign dir.
+    - `handover_pro.sh` gained KIND `l4`, which resumes an L4/T4 campaign dir. `handover_end.sh`, used since 24 Nov
+      22:46Z, does the same resume after Colab's end.
 - uarch's bench_split (`uarch_measure/bench_split_rtxpro6000.txt`) splits a window's sieve kernel by kernel.
   - At production's rg 32 / rcta 8: generate 49.6 ms (pass A 15.6, pass B 34.1), tile kernel 33.0 ms (small primes 14.6,
     bin apply 19.9).

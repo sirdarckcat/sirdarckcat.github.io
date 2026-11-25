@@ -1,0 +1,29 @@
+# fm13 (uarch's fermat661/fm13.c, the build search_c.py loads on this IFMA CPU) at 665 bits; 2026-11-25T10:12:34Z, this session's container (Intel(R) Xeon(R) Processor @ 2.10GHz)
+# python3 -I test665b.py $SP/c3hi/goldbach/fermat661 $SP/c3hi/goldbach/phd/campaign3_hi150/specs_8ffe150.json
+# fm13.c sha256 9bbf27c23324bbe2, fm13_step.h sha256 fe56049cd9acb97b
+lib: $SP/c3hi/goldbach/fermat661/libfm13-ddf74607.so
+[1] fm13_test on 665-bit numbers n in [2^664, 10^200)
+  random odd                                                  20000 numbers, bits 665-665, passes    91, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  random odd, top 1% of the range (n > 0.99e200)               5000 numbers, bits 665-665, passes    31, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  10^200 - j, j odd < 2000                                     1000 numbers, bits 665-665, passes     3, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  2^664 + j, j odd < 2000                                      1000 numbers, bits 665-665, passes     4, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  primes, uniform                                              1500 numbers, bits 665-665, passes  1500, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  primes just below 10^200                                      300 numbers, bits 665-665, passes   300, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  base-2 pseudoprimes p (k(p-1)+1), 665 bits                     30 numbers, bits 665-665, passes    30, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  the record N - p, p < 2000 prime, and N - 160357              303 numbers, bits 665-665, passes     1, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+[2] fm13.Members.first_pass (search_c.py's call) on spec v154 against a plain gmpy2 loop
+  members trial 0: 300 members at k >= 4294967296, up to 60 rows, bits [665], 160 with a pass, wrong 0
+  members trial 1: 300 members at k >= 4910481408, up to 60 rows, bits [665], 155 with a pass, wrong 0
+  members trial 2: 200 members at k >= 5390000000, up to 400 rows, bits [665], 183 with a pass, wrong 0
+  members trial 3: 2000 members at k >= 4162978815, up to 8 rows, bits [665], 207 with a pass, wrong 0
+[3] where fm13 starts to fail: 400 random odd and 60 primes at each size
+  666 bits                                                      460 numbers, bits 666-666, passes    61, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  667 bits                                                      460 numbers, bits 667-667, passes    66, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  668 bits                                                      460 numbers, bits 668-668, passes    64, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  670 bits                                                      460 numbers, bits 670-670, passes    61, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  672 bits                                                      460 numbers, bits 672-672, passes    63, wrong residues 0, wrong verdicts 0 (false-composite 0, false-pass 0)
+  673 bits                                                      460 numbers, bits 673-673, passes    56, wrong residues 24, wrong verdicts 4 (false-composite 4, false-pass 0)
+  674 bits                                                      460 numbers, bits 674-674, passes     4, wrong residues 449, wrong verdicts 58 (false-composite 58, false-pass 0)
+  675 bits                                                      460 numbers, bits 675-675, passes     0, wrong residues 460, wrong verdicts 61 (false-composite 61, false-pass 0)
+  676 bits                                                      460 numbers, bits 676-676, passes     0, wrong residues 460, wrong verdicts 62 (false-composite 62, false-pass 0)
+TOTAL 665-bit + members: see [1] [2]; all sizes: {'n': 33273, 'bad_y': 1393, 'bad_v': 185}
