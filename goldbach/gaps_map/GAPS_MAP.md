@@ -266,4 +266,6 @@ shifts, reaches +1.45 nats at 127 successes (+0.9 to +1.56 and +0.7 to +1.36 on 
 30 successes or fewer, goes to between −0.8 and +0.2 when verification is priced, and the research session's identity bounds it at +0.035 nats at the
 campaign's cover (the neighbours hold 3.6% of the member's own success mass there, against 5 to 14 times on the miniature). The lesson for the structure:
 the miniature's free verification rewards any mechanism that uses the exact primality of nearby integers; the comparison that matters has to be made in
-modexps, against sieve-then-verify.
+modexps, against sieve-then-verify. A follow-up at the research session's request (15:20 UTC): choosing the seeds by a sieve proxy instead of full verification gives
++0.3 to +0.6 against verifying every member and −0.5 to −2 nats against the funnel baseline, so reuse between scored members is worth nothing on the miniature once
+verification is priced.

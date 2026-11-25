@@ -28,6 +28,8 @@ Companion data for `../../MECHANISMS.md`. Everything here is reproducible on a 4
 | M4a success-seeded neighbours | `nbr.py` | `neighbours_success_seeded_ABC.log` |
 | M4b near-success-seeded neighbours | `nbr4.c`, `nbr4_drive.py` (`nbr2.c`, `nbr3.c` and their drivers are earlier variants without deduplication) | `nbr4_A.log`, `nbr4_A_J_cmin_grid.log`, `nbr4_B.log`, `nbr4_C.log` |
 | M4b over Q | `qscale.py` | `qscale_Q700-1100.log` |
+| M4b with sieve-proxy seeds, priced, against the funnel | `nbr6.c`, `nbr7.c`, `nbr8.c`, `nbr6_drive.py`, `nbr7_drive.py`, `nbr8_drive.py` | `nbr6_proxy_seeds_A.log`, `nbr7_proxy_vs_funnel_A.log`, `nbr8_filtered_neighbours_vs_funnel_A.log` |
+| Research's identity on A | `nbrsum.c` | `nbrsum_A.log` |
 | M5 squares | `fam.py`, `fam_gen.py`, `evalN.c`, `sq_family.py` | `squares_family_A.log` |
 | M6 coherence | `evalN.c`, `coh_run.py`, `fam_blk.py`, `fam_blk2.py` | `coherence_index_ABC.log`, `block_family_{A,B,C}.log` |
 | M7 N/2 prime | `half_prime.py` | `half_prime_ABC.log` |
