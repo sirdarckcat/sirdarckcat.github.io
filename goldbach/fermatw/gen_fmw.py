@@ -27,12 +27,12 @@ w("#define FMW_STEP(A, N, NINV, KB) do { \\")
 for g in range(G):
     w("  { __m512i *a_ = (A) + %d * %d; const __m512i *n_ = (N) + %d * %d; const __m512i ninv_ = (NINV)[%d]; const __mmask8 kb_ = (KB)[%d]; \\" % (g, L, g, L, g, g))
     w("    const __m512i zero_ = _mm512_setzero_si512(); \\")
-    if VAR in ("win", "win2"):
+    if VAR in ("win", "win2", "win3"):
         w("    __m512i T_[%d]; \\" % (2 * L))
     for i in range(L):
         w("    const __m512i a%d = a_[%d]; \\" % (i, i))
     # phase 1: column k = 0 .. 2L-1: e_k = sum lo(a_i a_j), i<j, i+j=k  +  sum hi(a_i a_j), i<j, i+j=k-1 ; t_k = 2 e_k + diag
-    if VAR == "win2":
+    if VAR in ("win2", "win3"):
         # columns in blocks of CB, each column with two accumulators (lo terms, hi terms), terms emitted round-robin over
         # the 2 CB chains so that independent IFMAs are adjacent in program order (chains of ~L/2 instead of ~L)
         CB = 4
@@ -69,7 +69,7 @@ for g in range(G):
                 else:
                     w("    %s = _mm512_madd52hi_epu64(%s, a%d, a%d); \\" % (v, v, (k - 1) // 2, (k - 1) // 2))
                 w("    T_[%d] = %s; \\" % (k, v))
-    for k in (range(2 * L) if VAR != "win2" else []):
+    for k in (range(2 * L) if VAR not in ("win2", "win3") else []):
         terms = []
         for i in range(L):
             j = k - i
@@ -95,7 +95,7 @@ for g in range(G):
         if VAR == "win":
             w("    T_[%d] = %s; \\" % (k, v))
     # phase 2: reduction
-    if VAR in ("win", "win2"):
+    if VAR in ("win", "win2", "win3"):
         # window variables: t-index -> variable name; round i uses t_i .. t_{i+L}
         live = {}
         def var(c):
@@ -105,11 +105,24 @@ for g in range(G):
             w("    __m512i t%d = T_[%d]; \\" % (c, c))
         for i in range(L):
             w("    { const __m512i m_ = _mm512_madd52lo_epu64(zero_, %s, ninv_); \\" % var(i))
-            for j in range(L):
-                w("      %s = _mm512_madd52lo_epu64(%s, m_, n_[%d]); \\" % (var(i + j), var(i + j), j))
-            for j in range(L):
-                w("      %s = _mm512_madd52hi_epu64(%s, m_, n_[%d]); \\" % (var(i + j + 1), var(i + j + 1), j))
-            w("      %s = _mm512_add_epi64(%s, _mm512_srli_epi64(%s, 52)); } \\" % (var(i + 1), var(i + 1), var(i)))
+            if VAR == "win3":
+                # the next round's multiplier needs t_{i+1} = t_{i+1} + lo(m n_1) + hi(m n_0) + (t_i + lo(m n_0)) >> 52:
+                # emit those first, the two products into separate registers so they run in parallel, then the rest
+                w("      %s = _mm512_madd52lo_epu64(%s, m_, n_[0]); \\" % (var(i), var(i)))
+                w("      const __m512i x_ = _mm512_madd52hi_epu64(zero_, m_, n_[0]); \\")
+                w("      %s = _mm512_madd52lo_epu64(%s, m_, n_[1]); \\" % (var(i + 1), var(i + 1)))
+                w("      %s = _mm512_add_epi64(%s, _mm512_add_epi64(x_, _mm512_srli_epi64(%s, 52))); \\" % (var(i + 1), var(i + 1), var(i)))
+                for j in range(2, L):
+                    w("      %s = _mm512_madd52lo_epu64(%s, m_, n_[%d]); \\" % (var(i + j), var(i + j), j))
+                for j in range(1, L):
+                    w("      %s = _mm512_madd52hi_epu64(%s, m_, n_[%d]); \\" % (var(i + j + 1), var(i + j + 1), j))
+                w("    } \\")
+            else:
+                for j in range(L):
+                    w("      %s = _mm512_madd52lo_epu64(%s, m_, n_[%d]); \\" % (var(i + j), var(i + j), j))
+                for j in range(L):
+                    w("      %s = _mm512_madd52hi_epu64(%s, m_, n_[%d]); \\" % (var(i + j + 1), var(i + j + 1), j))
+                w("      %s = _mm512_add_epi64(%s, _mm512_srli_epi64(%s, 52)); } \\" % (var(i + 1), var(i + 1), var(i)))
             # retire t_i, its variable takes column i + L + 1
             nv = live.pop(i)
             if i + L + 1 < 2 * L:
