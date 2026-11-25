@@ -24,7 +24,7 @@ for tag, Q in (('f479_w', 160367), ('f479t80000_w', 80000), ('f479t90000_w', 900
             covers += 1; K = int(m.group(3)) - int(m.group(2)); secs += int(m.group(4)); exp += K * float(m.group(7)) / 100 * math.exp(-float(m.group(6))); found += int(m.group(8))
     if covers == 0: continue
     ev = []
-    for f in sorted(glob.glob(os.path.join(d, tag.replace('_w', '_found_w') + '[0-9].jsonl'))):
+    for f in sorted(glob.glob(os.path.join(d, tag.replace('_w', '_found_w') + '[0-9]*.jsonl'))):
         ev += [json.loads(l) for l in open(f) if l.strip()]
     line = '%-22s target %7d: %5d covers (%.1f core-hours), expected %.4f, found %d (jsonl %d)' % (tag, Q, covers, secs / 3600, exp, found, len(ev))
     if exp > 0 and found > 0: line += ', ln(found/expected) = %+.2f +- %.2f' % (math.log(found / exp), 1 / math.sqrt(found))
