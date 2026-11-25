@@ -91,8 +91,9 @@ it; they are in "A floor under every cover" and the sections after it:
   closeness frontier, the most digits at which a number with g at least
   10%, 25%, 50% of its own size's ceiling is held (100, 46 and 25 digits
   when it started). The cheap holder of d digits sits just above 10^(d−1).
-  First step: 26 digits at 50% (g = 10,303, 52.1%) for a third of a
-  core-hour. Section "The closeness frontier".
+  First steps, on the 50% line: 26 digits (g = 10,303, 52.1%) for a third
+  of a core-hour and 27 digits (g = 11,467, 52.75%) for one more. Section
+  "The closeness frontier".
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -2753,6 +2754,12 @@ exactly (`../fscan/enumv`), and the recursion's floor is not the count that
 matters: at the 26-digit target the best vectors leave 183 rows (5 of
 them), 184 (22), 185 (113), 186 (499), 187 (2,019), 188 (7,097), where the
 floor says 189.
+The scanner's thresholds have a flat optimum that moves with the
+size; tuned on a sample of one class, it yields 1.15·10^-4 expected hits per
+core-second at 27 digits and 4.7·10^-5 at 28, that is 2.4 and 5.9
+core-hours per expected hit, a factor of 2.5 per digit as in the table. Its
+arithmetic holds to 31 digits (numbers below 2^100; from 29 digits on the
+row bitset has to be widened).
 
 Results (every N recomputed here from N alone, with a script that shares
 nothing with the scanners: N − p composite for every odd prime p below g by
@@ -2761,6 +2768,7 @@ proof; then sent to the lead, who recomputes it again):
 
 | line | digits | N | g(N) | ceiling at N | closeness | found | cost |
 |---|---|---|---|---|---|---|---|
+| 50% | 27 | 111308182437581302718351168 | 11,467 | 21,736 | 52.75% | this session, 25 Nov 14:48 UTC, `fscan` on 10^26 < N ≤ 1.2·10^26 with target 10,901, the class with 206 rows | 1.1 core-hours (the classes 202 to 205, 6.3·10^11 members, and seven minutes of 206); 1 found against about 0.4 expected |
 | 50% | 26 | 10492156463590001369800256 | 10,303 | 19,775 | 52.10% | this session, 25 Nov 14:26 UTC, `fscan` on 10^25 < N ≤ 1.1·10^25 with target 9,907, the class with 187 rows | 0.35 core-hours for the classes 183 to 187 (2.0·10^11 members); 2 found against 0.65 expected by the scanner's count, the other being 10621579671744600348710546 with g = 10,159 (51.35%), found first, at 14:22 |
 
 **Conjecture (counting law), as it stands on 25 November at noon.** For Q
