@@ -36,6 +36,7 @@ The user's own words, from the lead's transcript (times UTC):
 |---|---|
 | before 22 Nov | "goal: maximize g(N) within N<1e200 (maximize closeness % within that class). That's the primary game now." |
 | before 22 Nov | "The research delegate should focus more on ideating a stronger theoretical approach ... Discover new math. Find unexpected paths to the solution." |
+| 22 Nov, to research | "... BRAINSTORM IDEAS WITH THE LEAN SESSION TO GET TO 10% AT LEAST AND THEN HILL CLIMB TO 20, 30, 40 AND 50%. I know you are stuck with your current way of thinking about the problem ..." |
 | 22 Nov 21:44 | "CPUs can go to 21 digits if necessary to obtain empirical data to reach 10%-50% on 200 digits. Goal is significantly higher progress on the 200 digits domain, no baby steps. GIANT steps." |
 | 23 Nov 09:40 | "No volunteer bs. We will discover new math. Let's see how far we can get with the current colab resources." (a reply to a message that priced scale at one to two million dollars) |
 | to research | "prove nothing better exists, or find it" (as research quotes it); a standing goal "reach 10%" |
@@ -45,8 +46,11 @@ The user's own words, from the lead's transcript (times UTC):
 Against that: the fleet's forecast is 7.5% → about 8.2% (a baby step by the user's definition); the research session's
 README says no method was found and "Nothing here proves that no algorithm exists"; since 24 Nov the theory effort went
 into the limit of D(n), where four successive claims were relayed to the user and withdrawn within 18 hours; and the
-lead ended nearly every relay with "nothing changes at 200 digits". The lead never heard "10%" from the user (it came
-through the research session), and it offered the long shot three times without an answer.
+lead ended nearly every relay with "nothing changes at 200 digits". The 10% is the user's own first milestone, said to
+the research session and set there as a standing goal; the lead knew it only second-hand, and it offered the long shot
+three times without an answer. Several "rules" the sessions work under are their own readings of short sentences:
+"never mention rental" (the user named volunteers), "small N is closed" (the user allowed 21-digit experiments),
+"units, not a date".
 
 ## 3. The consultant's map
 
@@ -136,6 +140,22 @@ detector some 60,000 times cheaper than an exponentiation. The location door is 
 and has no known method at any depth. The record prime-gap community, with the same cover-sieve-luck method and twenty
 years, sits near 8% of its own ceiling at 200 digits (research's note of 22 Nov; I did not verify the figure).
 
+**No loophole found is not the same as closed.** The merged catalogue of everything the team has ruled out
+(`checks/maps/RULED_OUT.md`, 100-odd entries, each with the strength of its ruling and its scope) shows which verdicts
+rest on argument or cost arithmetic and were never run:
+
+- the cover floor is measured, not proved (certified 777 rows against 1,248); 13 of 92,160 frames were taken to the
+  bottom; an exact method (integer programming on the last moduli) was called feasible and never done;
+- lattice decoding, meet in the middle, the k-tree and hashing were ruled out by arithmetic and first run as algorithms
+  on the miniature on 25 Nov at 13:40, after the questions of section 8;
+- structured covers at 89 moduli were first measured on 25 Nov at 13:33 (1,342 to 1,449 rows against 1,248: worse);
+- of the ways to share work between tests only one is disproved; two brainstorm ideas (Fermat along a progression, a
+  group test for primality) were left unruled;
+- two-stage selection was argued, not measured.
+
+My audits priced most of these and found nothing; the catalogue is the list to work down if the team wants each door
+shut by measurement. `checks/maps/PREMISES.md` is the matching ledger of what the plan assumes.
+
 One refinement the audit adds to the research README: its prize table counts each ideal candidate as a full-weight
 member with the deep sieve behind it. Candidates selected on primes beyond the line cannot share those residues across a
 progression, so the table should be read net of 4 to 7 nats.
@@ -213,13 +233,17 @@ A, B and C are decisions for the user. D is a bet with no odds. E is finished wo
 
 - **Design-level hits arrive late in the fixed-gap runs.** From the survivor counts: 400 digits, 2 found against 6.8
   expected (first after about 6.5); 350 digits, 0 against 1.75; 347 digits, 1 at 0.37; 2,196 digits, 1 where 3.2 were
-  expected. Four hits against about 12 expected is a 0.7% event (mine, rough; nobody has audited the expected
-  counts). Lower targets on the same covers match (329 of 355, 6 of 6.0, 10 of 9.0), and the 200-digit tally matches
+  expected; then 319 digits, 1 at about 0.2 (g = 207,307, found 13:22). Five hits against about 12 expected is about a
+  2% event by the research session's own count (my rough figure before the 319-digit hit was 0.7%). Since 12:54 the
+  uarch session has been running a calibration ladder at 100 and 150 digits to see whether the shortfall grows with
+  the exponent. Lower targets on the same covers match (329 of 355, 6 of 6.0, 10 of 9.0), and the 200-digit tally matches
   (9 against 10.3). Each case was booked as luck. Pooling the exposure of the 319- and 300-digit runs would settle it.
   If it is real it is about one nat, and section 6 C is about five digits optimistic.
 - **Context.** Research, Lean, uarch, the consultant and the Opus session were at 75 to 83% of their windows this
-  morning; one showed "disconnected" and one "safety-stopped" while receiving work. There is no single page with the
-  goal, the decisions taken and the units ledger; I rebuilt the goal from two of the lead's compaction summaries.
+  morning (research near 88% by the afternoon, after two compactions; it lost its own 22 Nov Erdős–Rankin proposal in a
+  README rewrite). The spy saw one session "disconnected" and one "safety-stopped" at 09:15; both were answering again
+  from 10:26. There is no single page with the goal, the decisions taken and the units ledger; the goal had to be
+  rebuilt from compaction summaries of two sessions.
 - **Budget convention.** 7,000 units at the fleet's logged rate are e^31.3 full-weight members; the README's e^30.75 is
   about 4,100 units. Its two forecasts (172,000 and 175,000–176,000) differ for that reason only.
 
@@ -238,6 +262,13 @@ proof or an independent recomputation, or else labelled unverified in its first 
 stop; it will ask research who is on (P′), H2 and the miniature; it will not reinterpret the user's ruling on outside
 hardware on its own; it will offer the user a one-page state file.
 
+What happened next, from the research session's transcript: at 12:54 the lead asked research for a calibration ladder
+at 100 and 150 digits (uarch), for the four families ruled out by arithmetic to be run as algorithms on the miniature
+(Lean, started 13:40), for at least five mechanisms outside the closure grammar to be scored on the miniature (the
+consultant), and for a one-page note on H2 (delivered 13:37). Research ran the block-cover test at 89 moduli that it had
+set aside at 11:50. Research's own words at that point: "Today no session I work with has spent time on problem P′ ...,
+on H2 ..., or on a mechanism outside the grammar".
+
 ## 9. Sources of this review
 
 Beside this file:
@@ -250,5 +281,8 @@ Beside this file:
 - `demo/`: the demonstration points of section 6 B, each with N, a record file and a check from N alone;
   `verify_g.py` is the reviewer's own check in plain Python.
 
-The 22 source maps (one per branch or transcript) and the scripts of the checks stayed in the reviewer's scratchpad.
+- `checks/maps/`: `RULED_OUT.md` and `PREMISES.md`, the two technical syntheses of the 22 source maps.
+
+The source maps themselves (one per branch or transcript), a dossier of the user's statements and the scripts of the
+checks stayed in the reviewer's scratchpad.
 The agents' notes are reproduced as written; where they cite scratchpad paths, those files are not in the repository.
