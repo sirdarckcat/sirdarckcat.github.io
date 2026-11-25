@@ -10,3 +10,4 @@ run/
 heatbath_pt
 surv_*.txt
 tested_*.jsonl
+hit_*.json
