@@ -86,3 +86,17 @@ Here ρ = sieve cost per member / (tests per kept member × ns per test). It is 
     optimum then holds.
   - The G4's production Fermat rate (19.9M a second, against 24.6M in the benchmark) suggests a similar loss there. An A/B at
     keep 0.75% on the G4 would settle whether its +0.04 to +0.11 nat is real.
+
+## Correction (16:51Z, from the research session and the Lean session)
+
+The survivors' sd at 200,000 is 0.9836 of the independent value, not 0.962. The Lean session computed it with exact products over
+the primes, giving c = 0.336642 at 10⁸ rather than ln 463/ln B = 0.3332. It also measured it on 165,000 members of the real
+vector: a variance of 326.98 ± 1.14, against 324.51 from the formula.
+
+The corrected values are:
+- sd = 18.01;
+- p′·sd = 1.283 and **δ = λ·sd = 1.331**;
+- the hit mass captured at a keep of 1.5% is **20.1%**;
+- the 1.5% keep is optimal at ρ = 0.0121, against 0.0118 above.
+
+None of the conclusions change. The fleet addendum takes δ = 1.213 from the L4's own capture shares (covers at 170,000).
