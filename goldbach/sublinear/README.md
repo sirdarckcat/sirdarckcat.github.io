@@ -2989,6 +2989,7 @@ further tuning; the rungs that were under way are listed as they finish.
 
 | line | digits | N | g(N) | ceiling at N | closeness | found | cost |
 |---|---|---|---|---|---|---|---|
+| 10% | 110 | 11771255832457003357982908844820241203805323892964697968658975982569153137990134742352608931363483486347865878 | 59,377 | 563,418 | 10.54% | uarch session, 25 Nov 17:04 UTC (at idle priority), 200 covers of 53 moduli and 483 rows, target 56,352 | 5 found against 5.01 expected |
 | 10% | 105 | 111086812381178333200189573604644201993650130859637567851411857685156514772092119302945604893853368574828 | 52,501 | 507,824 | 10.34% | uarch session, 25 Nov 16:24 UTC, 155 covers of 51 moduli and 437 to 438 rows, target 50,819 | 2.27 CPU-hours for the rung; 5 found against 5.78 expected |
 | 10% | 101 | 10188401875033888962498835206932939720063123082056657092949227286940139620543666709467036103292201198 | 51,907 | 465,431 | 11.15% | uarch session, 25 Nov 15:35 UTC, 37 covers of 49 moduli and 407 rows, target 46,578 | 1.35 CPU-hours; 7 found against 7.99 expected |
 | 25% | 48 | 106624760345015789778946730106958383522522275168 | 23,227 | 85,408 | 27.20% | Opus session, 25 Nov 16:15 UTC, 25 moduli, 275 rows, target 21,366 | 1.2 CPU-hours (31 covers where about 156 were expected to be needed) |
