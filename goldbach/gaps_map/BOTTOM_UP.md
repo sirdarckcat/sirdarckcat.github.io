@@ -2,7 +2,7 @@
 
 For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). Everything below was computed here unless marked "literature" or "not read". Scripts and logs: `goldbach/gaps_map/data/bottomup/` (README there). Rule used: nats at 200 digits (Q = 200,000, the 89 odd moduli 3 to 463, n = 1,502 rows on the campaign's cover, 1,524 on mine, kappa = -ln(1 - 0.02398) = 0.02428 nats per row), a number before every claim, negative results kept.
 
-## 0. The result in twelve lines
+## 0. The result in thirteen lines
 
 1. **Nothing in this round lowers the 36.46 nats**, and I could not find a place where the 5.4 are hiding. What the round adds is an accounting that says why, and three measurements that close open items.
 2. **The one entropy is ln 10^200 = 460.5 nats.** The exponent goes 78.3 (the mean number of representations of an even N by a prime below Q and a prime) to 52.2 (N not divisible by any odd r up to 463, random classes: 1.7 nats of entropy) to 36.46 (classes optimised: 443 nats of pins, 15.8 nats of exponent, 0.036 per nat). 16.9 nats are left: the window of 2.2*10^7 members.
@@ -16,6 +16,7 @@ For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). 
 10. **Calibration on the 69 published records of the least Goldbach summand** (section 5, new): the success model reproduces them with an excess of +0.06 +- 0.34 nats (hit rate predicted too high by e^0.06) for N from 8*10^13 to 9*10^17, where the exponent is 36 to 41, the fleet's range; 0.6 to 0.9 nats optimistic below 5*10^13 (pi 0.25 to 0.3, shallow truncation).
 11. **Corrections to my earlier notes** (section 7): the lone-N sieve cost in cycles is 1.2 to 7 tests, not 0.25 to 0.65, so the lone-N loss is 1.9 to 3.4 nats, not 1.2 to 1.6; the window sieve costs 0.075 to 0.13 tests per member, not 0.005 to 0.012.
 12. **What would count as progress** (section 6): a list with the number each item needs.
+13. **Follow-up to Research's message of 18:40 UTC** (section 8): the fleet's own tally agrees with its model (-0.13 +- 0.30 nats, 11 found against 12.5 expected); the overshoot law beyond the design level, on which the chance of 200,000 depends (0.13% at theta = 1, 0.59% at 1.26, 1.9% at 1.58), is exact on the miniature (0.98 +- 0.07, 303 hits) and is not lengthened by the selection (block correlation -0.023); `--near-miss 140000` would measure it to +-0.2 in a day and a half; and no family outside the grammar exists in the literature, because the 18 nats of divergence still to supply cannot be bought by pins (0.63 nats) or sampled.
 
 ## 1. Research's three points (17:51)
 
@@ -168,6 +169,81 @@ With the truncation prime R larger (N * 10^3 in the rule) the last bin reads -0.
 - My message of 18:05 UTC gave the window sieve as 0.005 to 0.08 tests per member; it is rho * 13.9 = 0.075 (G4), 0.11 (L4), 0.13 (T4).
 - `rec_ktest.py` (a Gaussian version of the record test) was removed: its z of 15 was an artefact of the Gaussian cumulants at these N.
 
-## 8. Files
+## 8. Follow-up to Research's message of 18:40 UTC: the fleet's own record sequence, the overshoot law, and families outside the grammar
 
-`goldbach/gaps_map/data/bottomup/` (README there): `gmp_cal.py` (GMP calibration), `q1_cost.py`, `q1_stake.py` (Q1), `dos_gf.py`, `dos_check.py` (cover supply), `cover_rem.py`, `cover_rem170.py` (rate of the cover), `a12_numbers.py` (dual and geometry), `a3_pairs.py` (additive structure), `rec_mc.py`, `rec_rescale.py`, `rec_rescale_R.py`, `records.txt` (calibration), `logs/`.
+### 8.1 The fleet's expected against found, from its own tally
+
+Source: `goldbach/phd/campaign3_gpu/TALLY.md` on `ccr-8ffe9d7a-4ni11u` (regenerated 10:25 UTC from the cards' logs). "Expected" is the sum of (1 - p^)^c over the tested members, p^ the batch's measured prime rate, or for the slices before 22 Nov 20:50 UTC members * hit% * exp(-1.0275 E^ + 0.33).
+
+| campaign | exponent E^ | expected | found |
+|---|---|---|---|
+| Q = 122,000, 867-872 rows | 20.9 | 2.089 | 3 |
+| Q = 122,000, 850 rows (Lean cover) | 20.4 | 5.028 | 4 |
+| Q = 122,000, full mass | 21.0 | 0.110 | 0 |
+| Q = 140,000 | 24.15 | 1.274 | 1 |
+| Q = 150,000 | 26.2 | 1.282 | 1 |
+| Q = 170,000, design hits | 30.0 to 30.2 | 0.528 | 0 |
+| Q = 170,000, near-misses at the record of the time (where logged) | 28 to 29 | 2.205 | 2 |
+| all | | 12.52 | 11 |
+
+The excess ln(found/expected) is **-0.13 +- 0.30 nats** (Poisson); at exponents of 24 and above 5.29 expected against 4 found, **-0.28 +- 0.50**; at 20 to 21, 7.23 against 7, -0.03 +- 0.38. So the fleet's own record sequence agrees with its model within the error, which is too large for "a few tenths"; and the oldest rows use a formula with a fitted constant, so this tests the fleet's accounting, not the a priori model. (Against the 69 published records the a priori model has +0.06 +- 0.34 at the same exponents, section 5; the two checks are independent.)
+
+What reaches +-0.2 nats at exponents 25 to 31 is the all-g log. Events per day with g >= T, from the Opus session's `campaign_table.py` on its 491-family 170,000 cover (1,250.5 rows run) at today's 0.19 design hits a day (`fleet_rates.py`; the same model gives 3.9 times the design-hit rate at >= 160,357 where the fleet's tally gives 3.2, so read the rates as +-25%):
+
+| T | 135,000 | 140,000 | 145,000 | 150,000 | 155,000 | 160,357 | 165,000 |
+|---|---|---|---|---|---|---|---|
+| exponent at T | 24.7 | 25.7 | 26.6 | 27.5 | 28.2 | 29.0 | 29.6 |
+| events a day | 40 | 16 | 7.1 | 3.0 | 1.6 | 0.74 | 0.41 |
+| days for 25 events (+-0.2 nats) | 0.6 | 1.5 | 3.5 | 8.4 | 16 | 34 | 62 |
+
+The flag exists (`--near-miss 140000`, tested in `check_nearmiss.sh`); it is the GPU session's and Research's to set.
+
+### 8.2 The overshoot law is the lever on the 200,000 forecast
+
+A hit at the design level D is decided beyond D by the cover's alive rows in [D, G), each composite with probability 1 - p, so the overshoot (alive rows before the first prime) is geometric with mean (1 - p)/p = 41. There are 299 alive rows between 170,000 and 200,000, so the model suppresses a hit at 200,000 by e^-7.27, and a per-row prime chance beyond D that is 1/theta of the model's moves the forecast by e^(7.27 (1 - 1/theta)). With the Opus session's table as the base (`fleet_sens.py`; theta = 1 reproduces its 46.2, 16.7, 5.65, 1.40, 0.45, 0.13%):
+
+| theta (mean overshoot / model) | P(final >= 175,000) | 180,000 | 185,000 | 190,000 | 195,000 | 200,000 |
+|---|---|---|---|---|---|---|
+| 0.80 | 37.4% | 9.7% | 2.4% | 0.41% | 0.10% | 0.02% |
+| 1.00 | 46.2% | 16.7% | 5.65% | 1.40% | 0.45% | 0.13% |
+| 1.26 | 54.2% | 25.7% | 11.3% | 3.8% | 1.55% | 0.59% |
+| 1.50 | 59.3% | 32.9% | 17.0% | 7.0% | 3.3% | 1.49% |
+| 1.58 | 60.7% | 35.1% | 18.9% | 8.2% | 4.05% | 1.90% |
+
+Evidence on theta (`ovs.c`, `ovs_test.py`, `rec_ovs.py`):
+
+| data | hits | observed / model overshoot | mid-PIT mean (0.5) |
+|---|---|---|---|
+| the exact miniature, N < 10^9, Q = 1,000, every hit by brute force (R = 23, 47, 97, 199) | 303 | 0.97, 0.98, 0.98, 1.01 +- 0.07 | 0.505 to 0.518 (se 0.017) |
+| the published record holders, exact (N >= 10^6; R = 23, 47, 97) | 46 | 1.24, 1.27, 1.27 +- 0.18 | 0.42 to 0.43 (se 0.043) |
+| the fleet's 9 hits (TALLY.md overshoot table, Q = 122,000 to 150,000) | 9 | 1.58 +- 0.34 (579 rows against 367) | 0.32 (se 0.096) |
+| pooled | 358 | 1.04 +- 0.06 | |
+
+**No evidence for a heavier tail**: the exact miniature fixes the law to 7% (at a row prime chance of 0.3 to 0.5), the records are 1.4 sd high and the fleet's own 9 hits 1.7 sd high. But the number that matters sits at 200 digits and rests on 9 hits with +-34%, and the forecast of the 200,000 chance moves by a factor 4.5 for theta = 1.26. By construction theta = 1: p = p' c with p' measured by the fleet's own tests (1 prime in 14, billions of tests) and c the exact sieve survival. The one mechanism that could lengthen the overshoot is a correlation between the survivors below the design level, where the members are selected, and those beyond it. Whole simulated window (`block_corr.py`: my cover split at 170,000, 1,310 and 214 alive rows, strikes by the 460 primes in (463, 4,000], the same residues for both blocks): The correlation of the two blocks' strike counts over the window is -0.0226 (the exact covariance gives -0.0226; -0.0176 with sieve primes to 10^5 and -0.0130 to 2*10^6, `block_cov_theory.py`), and the best 1%, 0.1% and 0.01% of block 1 (+2.7, +3.4, +4.0 sd) have 0.06, 0.07 and 0.08 sd FEWER strikes beyond the design level (0.5 to 0.6 of 62.5), i.e. 0.7 to 1% more survivors there. If anything the overshoot of the selected members is marginally shorter (theta about 0.995), so selection cannot explain a heavier tail; a covariance of this size is zero within the pair fluctuations of this row set (sd about 10 against -3.1).
+
+Two direct measurements settle it: (a) sieve the alive rows in [170,000, 200,000) of the kept members and of unselected members and compare the mean survivors (equal means theta = 1 exactly, fewer for the kept means theta > 1); (b) every logged member with g >= T is a geometric overshoot sample beyond T (mean 41 alive rows), so 25 events at T = 140,000 give theta +- 0.2.
+
+### 8.3 Families outside the grammar, with local densities biased at the medium primes
+
+Research's question: any construction of integers with prescribed local behaviour at many primes, whose members are not sub-progressions, with biased densities at the medium primes? **No example, and the reason is a counting argument, not a gap in my reading.**
+
+What the members are, construction by construction:
+
+| construction | its members | bias at the primes | price |
+|---|---|---|---|
+| Erdos 1935 / Rankin 1938 | one progression: a class for each prime up to y | one class per prime, chosen greedily | ln p per prime |
+| Maier's matrix method (Michigan Math. J. 1985) and its adaptations (Hildebrand-Maier; Friedlander-Granville progressions with more or fewer primes than usual) | rows are short intervals, columns are progressions modulo a primorial: sub-progressions with class 0 at every prime up to y | uniform: it changes the count R of rough positions in the window | ln p per prime; here R is irrelevant (section 3.1): 0 nats |
+| Ford-Green-Konyagin-Maynard-Tao (JAMS 2018) | the Chinese remainder of one class per prime, the classes of the large primes chosen by a random hypergraph covering (Rodl nibble, generalising Pippenger-Spencer) so as to cover the leftovers | biased at the LARGE primes | ln p per prime (about x nats for a gap built from primes up to x); the smallness hypothesis needs ln x >= 10^5 against 6.1 at x = 463 (ROWS_AND_GAPS) |
+| Maynard-Tao / GPY weights | not integers: weights on all n of a progression modulo W, tilting the divisibility by every prime up to the sieve level | toward ROUGHNESS of the shifts, the wrong sign for an all-composite event; for that event the rows left S are sufficient under independence (Opus, `b_answer.md`), so no weights beat S | a sample from the weights is rejection from the uniform: e^KL |
+| Sierpinski/Riesel covering sets (Selfridge: 78,557, covering set 3, 5, 7, 13, 19, 37, 73) | k in one progression modulo the product of the covering primes (18.1 nats) | kills every row k 2^n + 1, because divisibility by p is periodic in n with the tiny period ord_p(2) | 18.1 nats for infinitely many rows; the rows here are primes, equidistributed modulo p, so a pin kills only 1/(p-1) of them (443 nats for 15,500) |
+| Granville-Soundararajan, "An uncertainty principle for arithmetic sequences" (Annals 2007; the ICM 1994 survey "Unexpected irregularities in the distribution of prime numbers" is Granville's alone) | a theorem: no sequence is equidistributed in all progressions | | non-constructive |
+
+**The counting.** For a product measure the exchange is exact: biasing the classes of a set of primes with total divergence S from uniform shifts the strike count by sqrt(2 S V), V the variance of the weights (the Gaussian-tail law of section 2). The fleet's keep of 0.85% is z = 2.4, S = -ln f = 4.8 nats of selection; with a free sieve, closing the 5.4 nats (1.34 tests per unit of mass down to 0.0061) needs the top 1.3*10^-10 of the members, z = 6.3, S = 22.7, so **18 nats of divergence more, delivered at the price of a test**, not of a sieve at 0.075 test per member. Two ways to pay it:
+- **pins**: 18 nats at the best price beyond 463 (0.035 nats of exponent per nat of entropy, section 1.3) buy 0.63 nats, not 5.4, and the room is 16.9 nats, all of it the window;
+- **a soft bias at the 460 medium primes as a product measure**: this is the cheap way (18 nats for +6.0 sd of the strike count) but it needs N to carry the product of those primes, the sum of ln s over those 460 primes, 3,468 nats, against 16.9 nats of room: 205 times too little. Within 10^200 every such bias is a selection out of the 2.2*10^7 members of a window, i.e. a sampler for the Gibbs measure of the strike count on 2.2*10^7 integers cheaper than rejection (e^KL). The strike field has no structure to sample by (additive energy 1.0000, section 3.3), the only method known is rejection, and lattice decoders reach 0.36 of the agreement they need (LATTICE_CHECK.md).
+
+So the family sought would have to be a fast sampler of the window's Gibbs measure; every construction in the literature above either pins classes (a sub-progression, priced at ln p) or is an existence argument with weights that cannot be sampled. That none of them is constructive at 200 digits is the same statement as the open problem of section 4.
+
+## 9. Files
+
+`goldbach/gaps_map/data/bottomup/` (README there): `gmp_cal.py` (GMP calibration), `q1_cost.py`, `q1_stake.py` (Q1), `dos_gf.py`, `dos_check.py` (cover supply), `cover_rem.py`, `cover_rem170.py` (rate of the cover), `a12_numbers.py` (dual and geometry), `a3_pairs.py` (additive structure), `rec_mc.py`, `rec_rescale.py`, `rec_rescale_R.py`, `records.txt` (calibration), `ovs.c`, `ovs_test.py`, `rec_ovs.py`, `hits_1e9_1000.txt` (overshoot law), `block_corr.py`, `block_cov_theory.py` (selection and overshoot), `fleet_rates.py`, `fleet_sens.py` (event rates and forecast sensitivity; they need the Opus session's `campaign_table.py` and `covers/`), `logs/`.

@@ -1,0 +1,5 @@
+hits_1e9_1000.txt: 303 hits at Q = 1000; g from 1009 to 1789, median 1051
+  R =  23: mean pi 0.303 | overshoot rows: observed mean 2.24, model mean 2.30, ratio 0.97 +- 0.07 (z = -0.39) | mid-PIT mean 0.516 (0.5, se 0.017)
+  R =  47: mean pi 0.358 | overshoot rows: observed mean 1.76, model mean 1.80, ratio 0.98 +- 0.07 (z = -0.27) | mid-PIT mean 0.518 (0.5, se 0.017)
+  R =  97: mean pi 0.412 | overshoot rows: observed mean 1.40, model mean 1.43, ratio 0.98 +- 0.07 (z = -0.23) | mid-PIT mean 0.518 (0.5, se 0.017)
+  R = 199: mean pi 0.478 | overshoot rows: observed mean 1.11, model mean 1.10, ratio 1.01 +- 0.08 (z = +0.12) | mid-PIT mean 0.505 (0.5, se 0.017)

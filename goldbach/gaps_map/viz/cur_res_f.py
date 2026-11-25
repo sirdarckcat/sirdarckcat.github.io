@@ -31,7 +31,7 @@ RF_EDGES = {
 "f_neigh>t_archip": D("archipelagos, bounded", "The clusters of big gaps are neighbours sharing rows; the identity bounds what searching them can give at the campaign's cover.", "MECHANISMS.md section 3.5"),
 }
 
-# Added at 19:10 UTC on 25 Nov: the three notes of the helper session after the mechanisms (ROWS_AND_GAPS.md, LATTICE_CHECK.md, BOTTOM_UP.md).
+# Added at 18:30 UTC on 25 Nov: the three notes of the helper session after the mechanisms (ROWS_AND_GAPS.md, LATTICE_CHECK.md, BOTTOM_UP.md).
 RF["f_rows"] = dict(group="res", status="comp", impact="bound", since="new",
   title="Where the missing 5.4 nats are not: the arithmetic of the rows, the prime-gap toolbox, the covering theorems",
   gist="The lead asked where the 5.4 nats between the budget and g ≥ 200,000 could come from. Seven candidates in the arithmetic of the rows were given numbers: an algebraic form N = a² + c nets −6.6 nats, second-order Hardy–Littlewood −0.03, the size of N inside the decade at most 0.08, rows as extra moduli 0.24 nats for 6.3 nats of entropy, annealing the cover 1,576 → 1,524 rows (the campaign has 1,502), selection inside a class vector 1.9 to 3.4 nats collectable (6.6 at an infinite sieve budget), and a floor of 12.5 to 41.7 modular exponentiations to reach the first prime. The prime-gap record toolbox (Troisi's combined sieve) lowers no exponent, and the covering theorems of Ford–Green–Konyagin–Maynard–Tao and Freiberg are vacuous at x = 463.",

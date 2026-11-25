@@ -1,0 +1,3 @@
+primes in (463, 4000]: Cov(F1, F2) = -3.1106, Var F1 = 326.3, Var F2 = 58.0, correlation = -0.022606
+primes in (463, 100000]: Cov(F1, F2) = -5.3438, Var F1 = 730.7, Var F2 = 126.8, correlation = -0.017557
+primes in (463, 2000000]: Cov(F1, F2) = -5.5597, Var F1 = 1032.0, Var F2 = 176.2, correlation = -0.013038

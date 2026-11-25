@@ -270,7 +270,7 @@ modexps, against sieve-then-verify. A follow-up at the research session's reques
 +0.3 to +0.6 against verifying every member and −0.5 to −2 nats against the funnel baseline, so reuse between scored members is worth nothing on the miniature once
 verification is priced.
 
-The three later notes of the helper session (19:10 UTC) have a box each: `ROWS_AND_GAPS.md` (where the 5.4 nats are not: seven candidates in the arithmetic of the
+The three later notes of the helper session (18:28 to 18:33 UTC) have a box each: `ROWS_AND_GAPS.md` (where the 5.4 nats are not: seven candidates in the arithmetic of the
 rows, the prime-gap record toolbox, the covering theorems at x = 463), `LATTICE_CHECK.md` (the lattice claim attacked and standing: the best decoder reaches 0.36 of
 the agreement it needs; closed form ratio² ≤ ln(1 + n/x)/ln K = 0.086 for soft weights; a whole window of 2·10⁷ simulated) and `BOTTOM_UP.md` (the bottom-up round). The
 last note's structure is the new thing: the one entropy is ln 10²⁰⁰ = 460.5 nats, spent as 78.3 (the mean number of representations of an even N) → 52.2 (1.7 nats, N coprime to the small primes) → 36.46 (443 nats of

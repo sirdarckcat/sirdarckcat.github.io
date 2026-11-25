@@ -1,0 +1,6 @@
+rows: block 1 1310, block 2 214; primes 460 up to 4000
+simulated in 225 s; theory: covariance -3.111, corr -0.02261
+correlation of F1 and F2 over the window: -0.02258 (se 0.00022)
+top 1.00% of F1 (+2.66 sd): mean F2 62.065 against overall 62.530 (sd 7.618): shift -0.061 sd of F2 (corr * z1 predicts -0.060)
+top 0.10% of F1 (+3.43 sd): mean F2 61.981 against overall 62.530 (sd 7.618): shift -0.072 sd of F2 (corr * z1 predicts -0.077)
+top 0.01% of F1 (+4.00 sd): mean F2 61.923 against overall 62.530 (sd 7.618): shift -0.080 sd of F2 (corr * z1 predicts -0.090)
