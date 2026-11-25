@@ -47,7 +47,9 @@ def _outdir():
 
 
 def default_variant(L):
-    return VARIANT or ("win2" if L >= 21 else "win")
+    """win below 21 limbs, win2 for 21..47, loop (fmwl2_step.h, product scanning in register column blocks) from 48 on, where the
+    straight-line steps stop paying (bench_ab.py / the loop A/B in README)"""
+    return VARIANT or ("loop" if L >= 48 else "win2" if L >= 21 else "win")
 
 
 def build(L, variant=None, groups=None, force=False):
@@ -57,6 +59,14 @@ def build(L, variant=None, groups=None, force=False):
     d = _outdir()
     hdr = f"fmw_step_L{L}_{variant}_g{groups}.h"
     out = os.path.join(d, f"libfmw-L{L}-{variant}-g{groups}-{tag}.so")
+    if variant == "loop":                                  # no generated header: the loop step is one file for every L
+        loop_hdr = os.path.join(HERE, "fmwl2_step.h")
+        if force or not os.path.exists(out) or os.path.getmtime(out) < max(os.path.getmtime(SRC), os.path.getmtime(loop_hdr)):
+            tmp = f"{out}.{os.getpid()}.tmp"
+            subprocess.check_call(["gcc", "-O3", "-march=native", "-shared", "-fPIC", f"-DFMW_L={L}", '-DFMW_HDR="fmwl2_step.h"',
+                                   "-I", HERE, "-o", tmp, SRC])
+            os.replace(tmp, out)
+        return out
     newest = max(os.path.getmtime(SRC), os.path.getmtime(GEN))
     if force or not os.path.exists(out) or os.path.getmtime(out) < newest:
         tmpdir = os.path.join(d, f".build-{os.getpid()}")

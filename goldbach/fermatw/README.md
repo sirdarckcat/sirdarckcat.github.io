@@ -13,6 +13,9 @@ times 2^b per exponent bit, 8 lanes of different numbers), same member scheduler
 | `test_fmw.py [L ...]` | residues y = 2^(1-n) mod n and verdicts against Python `pow`: random odd numbers at the top size and mixed sizes in one batch, primes, base-2 pseudoprimes (4^p - 1)/3, semiprimes; the member scheduler against a plain loop |
 | `bench_fmw.py L [variant] [G]` | microseconds per test against gmpy2 |
 | `bench_ab.py L A B [reps]` | two variants alternately in one process (the machine is noisy): min and median |
+| `fmwl2_step.h` | the step for large L as loops (`loop` variant, default from 48 limbs): product scanning, 8 output columns in registers while i runs over the rows, one register operand (a_i or m_i) against 9 memory operands, lo and hi products in separate accumulators (16 chains, so the 4-cycle IFMA latency does not limit); the reduction's sequential part is a small triangle inside each 8-column block |
+| `fmwl_step.h` | an earlier loop step (row by row, 17 columns loaded and stored per block of 16): 3.5-3.8x gmpy2 at L = 128, kept for comparison |
+| `bench_vs_gmp.py bits` | fmw's default variant for that size against gmpy2, alternating in one process |
 
 `../sieve200/search_c.py` uses it automatically when the members of a progression have more than 672 bits (fm13 up to there:
 fm13 is exact for n < 2^672, see `../fermat661/test_fm13_range.py`; its documented 664 bits was a margin, not the limit);
@@ -31,3 +34,17 @@ At L = 26 the window of 27 columns plus the multiplier and constants fills the 3
 at L = 20 / 23 / 26: L = 20 runs at about 80% of it, L = 23 and 26 at 50-60%.  `win2` against `win` (`bench_ab.py`, alternating
 runs in one process, 16-30 each, three other cores busy; min / median us): L = 20 30.7 / 35.3 vs 30.1 / 33.3; L = 21 37.7 / 44.9
 vs 38.7 / 45.8; L = 23 45.8 / 62.2 vs 50.7 / 64.3; L = 26 75.9 / 95.6 vs 91.2 / 102.1.
+
+## Large L (2,000-2,200 digits)
+
+The straight-line steps stop paying above about 64 limbs: at L = 128 the step is 50,000 IFMAs of code (1.16 MB, 3 minutes to
+compile) with the columns spilled, 2.2x gmpy2.  The loop step (`fmwl2_step.h`) compiles in under a second for any L and passes
+`test_fmw.py` at L = 48, 64, 100, 128, 141.  Same-process medians against gmpy2 (four scan workers on the other cores):
+
+| bits | L | fmw loop | gmpy2 | ratio |
+|---|---|---|---|---|
+| 6,640 | 128 | 14.9 ms (min 13.4) | 61.3 ms (min 52.2) | 4.1 |
+| 7,300 | 141 | 20.7 ms (min 19.2) | 76.0 ms (min 72.9) | 3.7 |
+
+A/B at the crossover (min / median ms): L = 48 loop 0.73 / 0.75 against straight-line 0.74 / 0.78; L = 64 loop 1.81 / 1.88 against
+2.24 / 2.51.  The IFMA peak at L = 128 (2 a cycle, about 3 GHz, 8 lanes) is 6.8 ms a test, so the loop step runs at 45-50% of it.
