@@ -100,7 +100,10 @@ it; they are in "A floor under every cover" and the sections after it:
   the best cover there has 1,502 rows, 36.46 nats, and the units left buy
   0.4% of a hit if all are put on it (0.13% on the present design); the
   gap is 5.5 nats, a factor of 250. Every known lever is priced in "The
-  gap to 200,000": together a few tenths of a nat. The only entry of the
+  gap to 200,000": together a few tenths of a nat. The forecast with every
+  tested member's g counted (two programs agree): on the present design the
+  final record is at least 170,000 with 85%, 175,000 with 46%, 180,000 with
+  17%, 190,000 with 1.4%, and 175,200 in expectation. The only entry of the
   gap's size is the ideal-order prize, 3 to 11 nats net, which nothing
   collects; a new route to it would have to output a number with about
   1,116 rows left at depth 2,000 for under 10^9 operations.
@@ -899,6 +902,56 @@ for two weeks are left.
 So what exists adds up to a few tenths of a nat beyond the design choice,
 against 5.45.
 
+**The forecast, every tested member's g counted** (`cover_record.py`,
+`cover_record.txt`; the Opus session's `campaign_table` at bc7316f on its
+branch, written independently, agrees to the digits shown). The fleet tests
+a kept member's surviving rows in increasing q and records the row of the
+first probable prime, so the exact g of every tested member is read, and
+every one at or above the record held is re-checked and written (GPU
+session; that is how 158,209 and 160,357 came). A member that fails between
+the record and the design level therefore counts, and the object to
+forecast is the final record, not the number of design hits. For a cover
+used at level D, with n(x) rows below x: the expected number of tested
+members with g ≥ x is members · e^(−λ n(x)) · Φ(z₀ + τ n(x)/n(D)) for
+x ≤ D (kept by the cut, and nothing prime below x) and falls by e^(−λ) per
+unsieved row above D. With the record held at 160,357, 1.90 design hits
+expected at 170,000 as the fleet runs, and no engineering change:
+
+| design | P(final ≥ 165k) | 170k | 175k | 180k | 185k | 190k | 195k | 200k | expected final record |
+|---|---|---|---|---|---|---|---|---|---|
+| 170,000 (today) | 98.3% | 85.0% | 46.2% | 17.2% | 5.8% | 1.45% | 0.48% | 0.14% | 175,200 |
+| 175,000 | 96.1% | 75.9% | 47.8% | 17.1% | 6.0% | 1.76% | 0.54% | 0.18% | 174,600 |
+| 180,000 | 81.5% | 61.3% | 40.0% | 20.8% | 5.9% | 1.67% | 0.49% | 0.13% | 173,100 |
+| 190,000 | 65.6% | 40.7% | 27.0% | 12.0% | 6.5% | 2.95% | 0.82% | 0.30% | 170,100 |
+| 200,000 | 59.2% | 34.9% | 19.7% | 9.1% | 4.4% | 1.88% | 0.84% | 0.42% | 168,700 |
+
+Near misses make the choice of level smooth: each 10,000 of design level
+costs 1,000 to 2,000 of expected record and buys right tail; the 200,000
+design triples the chance of 200,000 and gives up 6,500 of expectation and
+the 85% chance of passing 170,000. The engineering crumbs move the whole
+table by their nats (+0.65: 176,800 expected and 29.6% at 180,000 on the
+170,000 design; 0.80% at 200,000 on the 200,000 design), about 4,800 of g
+per nat. Three things tried on top of it, none of which moves it:
+
+- the level at which the sieve and the cut act, for a given cover: the
+  170,000 cover with the cut on its rows below 162,500 to 180,000 gives
+  175,050 to 175,190 expected;
+- the level as a policy (a dynamic program over the record held and the
+  budget left, with the five covers above): 175,200 against 175,180 for
+  the fixed 170,000 design; it stays at 170,000 until the record passes
+  173,400, then follows the record up (175,000 from there, 180,000 from
+  174,800, 190,000 from 181,000);
+- a cover built for the target itself: to first order a row at q is worth
+  w(q) ∝ Σ over x > q of μ(x) e^(−μ(x)), which is 1 up to the record held,
+  0.80 at 169,500, 0.42 at 174,800, 0.14 at 180,100 and 0.01 at 190,000.
+  Under these weights the covers at hand score 1,289.6 (170,000), 1,287.0
+  (the 491 family), 1,292.4 (175,000), 1,300.3 (180,000) and 1,328.9
+  (200,000) weighted rows, and 60,000 sweeps of tempering with the weights
+  from the 170,000 cover find nothing below it. So the present cover is
+  within a few weighted rows of what the target wants: hundreds in the
+  expected record at most. (The Opus session is building covers with step
+  weights above 170,000 with its own annealer.)
+
 **The prize, with the fleet's constants.** Result 3 gives 5.9, 8.8 and 12.6
 nats for an order by rows left at depth 2,000, 5,000 and 20,000. A number
 that comes alone, outside a window, loses what the window sieve gives:
@@ -1101,8 +1154,48 @@ recomputed here unless said).
   member's survivors are tested in increasing q, the first probable prime
   is that member's g, so members that fail between the record and the
   design level count as well, and a design above 170,000 stops being all
-  or nothing. Its expected-record columns used a stale record and are
-  being rerun; whether the fleet reads g this way has been asked.
+  or nothing. The fleet does read g this way; the table that follows from
+  it is in "The gap to 200,000" above ("The forecast").
+- *Exact small instances* (Lean session, commits 3ae14e9, 3b33dcc and
+  a54ea1b on its branch: `scripts/alignment/` and
+  `GoldbachGaps/Cap/SoftLists.lean`). On 76 instances (targets 200 to 1,000,
+  the line after 11 to 23) the scan of the best cells misses the true
+  optimum in 10 with one prime beyond the line and in 46 with four, by a
+  quarter to half a row per further prime; in the miniature taken to full
+  depth it ends 4 rows short (10 against 6), and the optimum's cell is
+  between the 3rd and the 83,000th best of 36.5 million. The smallest
+  instance where no choice of pinned primes at all reaches the optimum is
+  in the kernel: the 36 odd primes below 160, moduli 3 to 13, even N below
+  840; the optimum is N = 578 alone, with 6 rows left, and it is exactly
+  one row short of the best in each of the seven maximal designs. What the
+  best members share: the classes of the smallest primes, less and less
+  (95% in the best class of 3, 73% at 5, twice the uniform share from 7
+  on), and beyond that nothing except this: nearly twice the strikes of a
+  member of the same cover (24 against 13) and half the repeated strikes
+  that chance gives for that many (3.6 against 7.1), the fewer repeats
+  being 36 to 50% of their advantage. In the kernel as well: a family that
+  holds the whole best tier enriches it by at most the exponential of the
+  information its coordinates carry about the tier, (KL + ln 2)/c in the
+  exponent for a share c; and lists of classes on primes beyond the window
+  hold at most as many numbers as the shortest list, however many primes
+  are listed.
+- *The accounting and a calibration* (consultant session, `BOTTOM_UP.md` at
+  40146c6 on its branch). One entropy, ln 10^200 = 460.5 nats: the exponent
+  at 200,000 is 78.3 for even N, 52.2 with random nonzero classes, 36.46
+  with the classes optimized (443 nats of pins buy 15.8, at 0.036 per nat;
+  one more pin buys 0.035 at 467, 0.016 at 2,003, 0.002 at 200,003), and
+  the 16.9 left are the window. About e^21 covers lie within 8 rows of the
+  best. Among the best 1% and 0.1% of a simulated window there is no
+  additive structure beyond shared pins. New: the success model run on the
+  69 published records of the least Goldbach summand (to 9,341 at
+  9.06·10^17) by exact time rescaling: in the fleet's range of exponents,
+  30 to 40 nats, 14 records, the excess is +0.06 ± 0.34 nats, so the
+  exponents used here are not contradicted by real records (below 5·10^13
+  the model is 0.6 to 0.9 nats optimistic, shrinking with N). Literature:
+  nothing below the Johnson-type radius is known for random lists, and the
+  hardness results are worst-case or conditional. Under Bateman–Horn a
+  polynomial family has no exceptions other than congruences and
+  identically reducible N − q.
 
 The object all of this points at, in the Opus session's words: three
 currencies exist (the window charges ln s per prime whatever the softness;
