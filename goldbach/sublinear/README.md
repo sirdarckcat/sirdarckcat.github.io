@@ -1901,6 +1901,65 @@ The law itself and its derivation are a measurement and a heuristic; an
 upper bound for g0 of this shape would bound D(n) by a multiple of r·ln² r
 and prove Goldbach's conjecture for large N, by the implication above.
 
+*The other direction: a fixed gap and the fewest digits* (`cover_dual.py`,
+`cover_dual.txt`; proposed by the user on 25 November). Instead of the
+largest g below 10^200, fix the gap Q and ask how small N can be with
+g(N) ≥ Q. The same calculation answers it. A number of size e^L can carry
+the odd primes up to about x = L as moduli (θ(x) = L); on those the
+complete covers end at D(L) = κ·L·ln² L; beyond the end the best cover
+leaves the fraction ρ(D/Q) of the rows that random classes leave (the table
+of "The same calculation above the end": ρ = 1 − √(K·D/Q) for small D/Q,
+0 from D = Q on); and the rows left by random classes carry
+2·C₂·π(Q)/L expected primes whatever the moduli are. So one member in e^E
+succeeds, with
+
+    E(L, Q) = 2·C₂·(π(Q)/L)·ρ(κ·L·ln² L / Q),
+
+zero from the size on where D(L) = Q (the gap is then forced by divisibility
+alone), and the ceiling of the game, the size at which a number with
+g ≥ Q first exists at all, is about L = √(2·C₂·π(Q)): the frontier a search
+can reach is at L = 2·C₂·π(Q)·ρ/(the logarithm of the trials it can afford),
+so it falls behind the ceiling like √π(Q) as the gap grows. With the
+recursion over the actual primes (rows about 2% below the best covers found
+where that could be checked):
+
+| gap Q = 200,000, digits | 100 | 150 | 200 | 220 | 230 | 240 | 260 | 300 | 350 | 400 | 500 | 600 | 800 | 1,000 | 1,300 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| moduli that fit | 49 | 69 | 89 | 96 | 100 | 103 | 110 | 125 | 142 | 159 | 192 | 224 | 286 | 347 | 434 |
+| fewest rows left | 1,994 | 1,697 | 1,474 | 1,407 | 1,371 | 1,344 | 1,285 | 1,168 | 1,050 | 943 | 762 | 611 | 370 | 185 | 0 |
+| chance per row, p | 0.0426 | 0.0305 | 0.0240 | 0.0221 | 0.0213 | 0.0205 | 0.0192 | 0.0170 | 0.0149 | 0.0133 | 0.0110 | 0.0094 | 0.0073 | 0.0060 | |
+| members per success, powers of ten | 36.9 | 22.4 | 15.4 | 13.5 | 12.7 | 12.0 | 10.7 | 8.6 | 6.8 | 5.5 | 3.6 | 2.5 | 1.2 | 0.5 | 0 |
+
+| gap Q = 1,000,000, digits | 400 | 600 | 800 | 1,000 | 1,200 | 1,500 | 2,000 | 2,480 | 3,000 | 4,000 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| moduli that fit | 159 | 224 | 286 | 347 | 405 | 491 | 629 | 759 | 895 | 1,151 |
+| fewest rows left | 6,476 | 5,514 | 4,802 | 4,222 | 3,744 | 3,130 | 2,315 | 1,683 | 1,130 | 324 |
+| members per success, powers of ten | 37.4 | 22.5 | 15.2 | 11.0 | 8.3 | 5.7 | 3.3 | 2.0 | 1.1 | 0.2 |
+
+For comparison the campaign's present design, 170,000 at 200 digits, needs
+10^13.2 members a success, and the fleet scans about 4.5·10^12 a day; a
+Fermat test costs roughly the cube of the number of digits and a member
+needs tests in proportion to the digits. On those terms a gap of 200,000
+costs at about 230 digits what 170,000 costs at 200; the units that remain
+would buy one expected success at about 225 digits, and one day of the
+fleet as it was on 24 November one at about 240, if its kernels ran at those
+sizes (they are built for 200 digits; that is the lead's and the GPU
+session's matter). The ceiling for this gap is 68.5 digits by the project's
+ceiling model, and divisibility alone forces it from about 1,300 digits. For
+a gap of 1,000,000: ceiling 142 digits, the same budget about 1,040 to 1,120
+digits, held today 2,480 digits, forced by divisibility from about 4,500.
+On closeness to the ceiling of its own size none of this beats the present
+campaign at equal cost (200,000 at 225 digits is 7.3% of that size's
+ceiling, where the present design is 8.0% of its own); closeness is bought
+more cheaply at smaller sizes, as the project's earlier thresholds show,
+because at a fixed share of the ceiling E grows in proportion to the digits.
+What the dual game does offer at once is records of its own that need no
+GPU: 200,000 at 300 to 400 digits and 1,000,000 at 1,500 to 2,000 digits are
+within reach of a few cores, and two sessions (uarch, Opus) started on them
+on 25 November with covers from a third (contractor); their row counts
+against the table above are a test of the recursion far from where it was
+built. Results to follow here.
+
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
 strike every odd prime below Q is
