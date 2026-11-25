@@ -1,4 +1,4 @@
-# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (in progress)
+# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (2,196 digits found; 2,000 next)
 
 This task comes from the research session (25 November). g(N) is the least prime p with N − p prime. Every odd prime
 q < Q = 1,000,003 is a row; the moduli are odd primes r, and each gets a nonzero class a_r. When N ≡ a_r (mod r) for every
@@ -53,4 +53,10 @@ members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains
 - **About 2,196 digits** (683 moduli, cover `hb5113_b1.txt`, 2,563 rows):
   - D has 2,189 digits.
   - Sieve: 2·10⁷ members against the primes in (5,113, 10⁹]. Survivors: mean 1,058.2, sd 24.8 (binomial), minimum 927.
-  - The 10,000 members with S ≤ 977 (3.27 sd below the mean) are being tested, lowest S first (`tested_d2190.jsonl`).
+  - The 10,000 members with S ≤ 977 (3.27 sd below the mean) were tested, lowest S first.
+  - **Hit at the 3,615th member** (k = 8,179,130, S = 970): **N has 2,196 digits, and g(N) = 1,001,491 if N − 1,001,491 is prime**
+    (it is a BPSW probable prime). Every N − q for an odd prime q < 1,001,491 is proved composite, so g(N) ≥ 1,001,491 holds
+    regardless.
+  - Cost: 501,670 Fermat tests, 9.1 CPU-hours; about 10.4 CPU-hours with the sieve and the cover.
+  - Everything is in `record_2196digit/`: N, the cover, the check from N alone, and a certificate with one reason per row.
+- **About 2,000 digits** (629 moduli, odd primes up to 4,657): next, with a better cover than `hb_b1.txt` (2,829 rows).
