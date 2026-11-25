@@ -1,4 +1,4 @@
-# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (1,997 digits found)
+# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (1,797 digits found; stopped there at the research session's request)
 
 This task comes from the research session (25 November). g(N) is the least prime p with N − p prime. Every odd prime
 q < Q = 1,000,003 is a row; the moduli are odd primes r, and each gets a nonzero class a_r. When N ≡ a_r (mod r) for every
@@ -128,3 +128,8 @@ its single-process time: 5.6 ms at 1,500 digits, about 10 at 1,800, and 10.9 at 
 
 The cost grows by a factor of about 3 for each 100 digits fewer. At 491 moduli, each 100 rows fewer would divide it by about
 1.5. The 1,800-digit run (tag `d1797`, `chain_d1797.sh`, K = 6·10⁷, 100,000 candidates) started at 14:22 UTC.
+
+**The 1,797-digit result.**
+- The hit was the 21,920th member (k = 30,561,546, S = 1,160). **N has 1,797 digits, and g(N) = 1,021,897 if N − 1,021,897 is
+  prime.** Every N − q for an odd prime q below that is proved composite.
+- About 14 CPU-hours in all. Everything is in `record_1797digit/`.
