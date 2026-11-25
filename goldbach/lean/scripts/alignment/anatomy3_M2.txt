@@ -1,0 +1,12 @@
+# tier k2 <= 10: 18,965 members; mean rows left at the line 28.32
+prime s | rows left before s | expected gain | mean gain | tilt theta_s | information | Poisson formula mu (theta e^theta - e^theta + 1) | cumulative share
+31 | 28.32 | 0.914 | 1.580 | 0.930 | 0.3184 | 0.7517 | 0.045
+37 | 26.74 | 0.723 | 1.319 | 0.909 | 0.2822 | 0.5589 | 0.086
+41 | 25.42 | 0.620 | 1.133 | 0.941 | 0.2529 | 0.5257 | 0.122
+61 | 20.62 | 0.338 | 0.715 | 1.092 | 0.2204 | 0.4307 | 0.293
+89 | 16.86 | 0.189 | 0.499 | 1.230 | 0.2125 | 0.3387 | 0.483
+97 | 16.36 | 0.169 | 0.469 | 1.226 | 0.2084 | 0.2986 | 0.513
+149 | 12.59 | 0.084 | 0.277 | 1.412 | 0.1574 | 0.2276 | 0.768
+199 | 9.97 | 0.050 | 0.205 | 1.590 | 0.1481 | 0.1952 | 1.000
+# sum of the informations of the 36 later primes: 7.01 nats; sum of the Poisson formula: 11.34; tilt: first prime 0.93, last 1.59
+# half of the information is reached at the prime 97 (number 15 of 36)

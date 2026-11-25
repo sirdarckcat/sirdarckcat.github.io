@@ -94,6 +94,7 @@ import GoldbachGaps.Cap.Thinning
 import GoldbachGaps.Cap.Hardness
 import GoldbachGaps.Cap.PairVariance
 import GoldbachGaps.Cap.SoftLists
+import GoldbachGaps.Cap.Inspection
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -440,7 +441,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `μ - z √v` rows hold the fraction `Φ(λ - z)` of the successes,
                `λ = -√v ln(1 - p)`; a member `z` standard deviations below the mean is
                `e^(λ z - λ²/2)` times as likely to succeed as the average one, which caps what
-               any search inside a progression can gain), `Radius` (lattice decoding and the
+               any search inside a progression can gain; `selection_fraction_two`: if the
+               search orders the members by an earlier count `x` while success depends on a
+               later count `ρ x + c + e`, `e` normal and independent of `x`, the members with
+               `x` at most `μ - z √v` hold the fraction `Φ(r λ - z)` of the successes, `r` the
+               correlation of the two counts, so the prize of the ideal order at the share `f`
+               of the successes is `ln Φ(Φ⁻¹(f) - r λ) - ln Φ(Φ⁻¹(f) - λ)`), `Radius` (lattice decoding and the
                search problem: reaching a smooth part `c` times the typical one needs
                `c² ≥ e ln K / 4`, so `c ≥ 3.88` for `K = 2^32`; in list form, a list of
                `2 ≤ ℓ ≤ r/2` classes modulo `r` carries `ln 2 - 2 ln r / r` more nats of
@@ -501,7 +507,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                which pinning with a full scan of the best windows misses the optimum: rows the
                odd primes below 160, moduli 3..13, even `N < 840`, optimum 6 rows at `N = 578`
                only, at least 7 in every best class of each of the seven maximal pinnable sets,
-               all by kernel evaluation. `scripts/alignment/` has the enumerations).
+               all by kernel evaluation. `scripts/alignment/` has the enumerations),
+               `Inspection` (the game in which what depends on the cover is free and the later
+               classes of a cell are hidden until it is looked at: a set of cells that proves
+               the optimum contains every cell whose free bound is below it, and those cells
+               with one that attains it are enough, `mem_of_certifies`, `certifies_of`, so the
+               value of the game is the number of cells whose free bound is below the optimum,
+               plus at most one; for finding a member at least as good as a target, with
+               independent cells, the decreasing order of the chances is the best order,
+               `searchCost_le_of_perm`; in `Example840` three of the 105 cells have a free
+               bound below the optimum and seven more have it equal, the optimum's own among
+               them, `cells_below_optimum`, `cells_at_optimum`).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

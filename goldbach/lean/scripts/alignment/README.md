@@ -41,7 +41,9 @@ the law of g_s for an unselected member is read off the class counts of R modulo
 | 199 | 10.0 | 0.05 | 0.20 | 1.56 | 0.14 | 1.00 |
 
 The tilt θ_s is the exponent that turns the unselected law of g_s into the tier's (one parameter per prime, maximum
-likelihood): about one nat per row at every prime, rising slowly from 0.9 to 1.6 as the rows get fewer. Each of the
+likelihood): about one nat per row at every prime, rising slowly from 0.9 to 1.6 as the rows get fewer (the rise is
+an effect of taking the primes in order: with the other primes held fixed the tilt is the same at every prime,
+section 5). Each of the
 37 primes carries 0.13 to 0.32 nats; their sum is 7.28 nats of the 8.52 of luck; half is reached only at 89, the
 fifteenth of them; the first carries 4%, the first three 12%. A tier member gains above expectation at 15.8 of the 37
 primes (9.1 for a member with the same cover), and its three luckiest primes give 4.7 of its 11.2 excess rows. The
@@ -223,3 +225,202 @@ Strikes and repeats, as in section 2: over all members 1,635 strikes on the 1,50
 repeats, exactly what strikes on random rows give. The best 1.1% have 1,711 strikes, 1,044 distinct and 667 repeats
 where chance would give 689 for that many strikes: an advantage of 47.1 rows = 24.9 from more strikes + 22.3 from
 fewer repeats. The best 0.1%: 59.9 = 30.4 + 29.5. Half and half, as in the miniature.
+
+## 5. Does the prize extrapolate? Three exact miniatures against the count over class vectors (`truth2.c`, `ensemble.c`, `fair_sample.py`, `depth_series.py`, `anatomy4.py`, `tilt_prize.py`)
+
+The research session's Result 3 gives the prize at 200 digits from a count of class vectors by rows left, with no N
+in it. It rests on two things that had been checked on one exact instance: that the N below the bound are a fair
+sample of the class vectors, in the far tail where the prize sits; and that the gain of a later prime s is (rows / s)
+times a price. Two more instances enumerated completely, one of them at five depths, against 6.4·10^9 class vectors
+drawn uniformly at random for each (`ensemble.c`; nonzero classes up to the prime after the line, as for members):
+
+| | X | target (rows) | line | members | successes | rows left at the line | at depth 200 | correlation r |
+|---|---|---|---|---|---|---|---|---|
+| M1 | 10^9 | 1,000 (167) | 23 | 157,947,020 | 256 | 36.80 ± 2.86 | 23.34 ± 3.14 | 0.579 |
+| M2 | 10^10 | 1,000 (167) | 29 | 1,528,521,322 | 12,283 | 35.50 ± 2.89 | 23.33 ± 3.14 | 0.604 |
+| M3 | 10^9 | 2,000 (302) | 23 | 157,946,861 | 0 | 66.22 ± 3.27 | 41.99 ± 3.93 | 0.528 |
+
+**(a) Fair sample, in the tail too** (`fair_sample_M1.txt`, `_M2`, `_M3`). Members with at most k rows left at depth
+200, exact count against the count for random class vectors scaled to the same number of members:
+
+| rarity of the level, nats | M1: exact / ensemble | M2 | M3 |
+|---|---|---|---|
+| about 16.5 | 13 / 9.0 | 90 / 91.5 = 0.98 | 8 / 7.6 |
+| about 14.7 | 62 / 64.3 = 0.96 | 592 / 622.6 = 0.95 | 115 / 125.6 = 0.92 |
+| about 12.9 | 401 / 376.8 = 1.06 | 3,739 / 3,737 = 1.000 | 411 / 460.1 = 0.89 |
+| about 11.3 | 1,965 / 1,930 = 1.018 | 18,965 / 19,093 = 0.993 | 1,558 / 1,567 = 0.994 |
+| about 8.4 | 33,598 / 33,092 = 1.015 | 324,523 / 324,297 = 1.001 | 40,895 / 40,256 = 1.016 |
+| about 6.1 | 343,538 / 340,108 = 1.010 | 3,333,965 / 3,332,755 = 1.000 | 250,902 / 247,782 = 1.013 |
+| about 4.2 | 2,235,494 / 2,217,292 = 1.008 | 21,705,777 / 21,702,591 = 1.000 | 2,351,456 / 2,323,224 = 1.012 |
+
+At X = 10^10 the two agree within the sampling error at every level. At X = 10^9 the true members have one to two
+percent more in every level of the tail, and it is one effect, a shift of the mean that depends only on how long the
+interval is against the depth z of the sieve:
+
+| | X as a power of z | mean rows left, true members − class vectors | relative |
+|---|---|---|---|
+| M2 at depth 50, 100, 200 | z^5.89, z^5.00, z^4.35 | −0.0001, +0.0001, −0.0001 (± 0.0001) | below 4·10^−6 |
+| M1, depth 200 | z^3.91 | −0.0095 ± 0.0003 | −4.1·10^−4 |
+| M3, depth 200 | z^3.91 | −0.0171 ± 0.0003 | −4.1·10^−4 |
+| M2 at depth 400 | z^3.84 | −0.0105 ± 0.0001 | −5.0·10^−4 |
+| M2 at depth 700 | z^3.51 | −0.0056 ± 0.0001 | −2.9·10^−4 |
+
+Nothing above the fourth power; below it (where products of four sieving primes start to exceed X) a few parts in
+ten thousand, not monotone, as the error term of a sieve is, and the same for 167 rows and for 302. At 200 digits and
+depth 50,000 the interval is z^42.6. The split of the tier between cover and position is the same too (cover nats of
+the tier k2 ≤ 10 of M2: 3.00 exact, 3.03 in the ensemble; mean rows left by the cover 28.32 and 28.28).
+
+**(b) The prize computed from class vectors is the prize, at every depth** (`depth_series.py` → `depth_series_M2.txt`;
+M2 enumerated again at depths 50, 100, 400 and 700, with 1.6·10^9 class vectors for each). Prize = ln of (members
+examined by cover first / by the ideal order at that depth) for the same number of successes, three ways: with the
+true successes; with the exact histogram and the chance (1 − p)^k for a member with k rows left, p fitted to the
+successes by level; with the histogram of random class vectors and the same chance.
+
+| depth | primes beyond the line | rows left | r | p | prize at 100 successes: true / exact histogram / class vectors | at 1,000 | at 3,000 |
+|---|---|---|---|---|---|---|---|
+| 50 | 5 | 31.14 ± 2.99 | 0.847 | 0.330 | 0.79 / 0.75 / 0.75 | 0.49 / 0.52 / 0.52 | 0.41 / 0.40 / 0.40 |
+| 100 | 15 | 27.02 ± 3.09 | 0.711 | 0.378 | 1.79 / 1.68 / 1.68 | 1.17 / 1.24 / 1.24 | 0.97 / 0.98 / 0.98 |
+| 200 | 36 | 23.33 ± 3.14 | 0.604 | 0.435 | 2.83 / 2.76 / 2.76 | 2.11 / 2.15 / 2.15 | 1.66 / 1.71 / 1.71 |
+| 400 | 68 | 20.89 ± 3.15 | 0.539 | 0.485 | 3.92 / 3.67 / 3.67 | 2.94 / 2.97 / 2.96 | 2.39 / 2.42 / 2.41 |
+| 700 | 115 | 19.13 ± 3.14 | 0.495 | 0.528 | 4.65 / 4.48 / 4.51 | 3.71 / 3.72 / 3.72 | 3.05 / 3.04 / 3.04 |
+
+The prize grows with the depth, from 0.4 to 3.0 nats at 3,000 successes, and the count over class vectors gives the
+exact histogram's prize to 0.03 nats at every depth; the true successes follow within their own noise (0.1 to 0.25
+nats at 100 successes, a few hundredths at 3,000). In M1: 3.86, 3.57, 3.04, 2.70, 1.93 nats at 1, 3, 10, 30, 100
+successes from class vectors, 3.85, 3.57, 3.06, 2.70, 1.93 from the exact histogram (the true successes give 5.44,
+5.06, 3.15, 2.79, 1.94: the first of them came early in the ideal order, after 13 members where 305 are expected).
+
+**(c) One price at every prime** (`anatomy4.py`, `ensemble_tier.c`). For a member and a later prime s let others_s
+be the rows left by every prime except s, and only_s the number of them in the member's class modulo s. In a
+population weighted by exp(−β·rows left), the class modulo s given all the other classes has the law
+exp(β·only_s) exactly, with the same β at every prime. So the claim is that the best members show one tilt in
+only_s, whose unselected mean is others_s / s. M2, the 18,965 members with at most 10 rows left, against the 79,301
+random class vectors with at most 10 (`anatomy4_M2.txt`):
+
+| s | rows left by the other primes | unselected mean of only_s | mean in the tier | tilt β_s | same mean in the ensemble tier |
+|---|---|---|---|---|---|
+| 31 | 10.93 | 0.359 | 1.160 | 1.595 | 1.162 |
+| 41 | 10.64 | 0.260 | 0.878 | 1.587 | 0.864 |
+| 61 | 10.36 | 0.170 | 0.593 | 1.609 | 0.582 |
+| 97 | 10.18 | 0.105 | 0.412 | 1.575 | 0.416 |
+| 149 | 10.03 | 0.067 | 0.263 | 1.588 | 0.263 |
+| 199 | 9.97 | 0.050 | 0.206 | 1.590 | 0.206 |
+
+| | tier | β fitted to each prime: least to largest (sd over the primes) | one β for all primes | largest error of that one β at a prime | slope of ln(members) by level at the tier | exact tier / ensemble tier, prime by prime |
+|---|---|---|---|---|---|---|
+| M1 | k2 ≤ 10 (1,965) | 1.47 to 1.68 (0.05) | 1.584 | 10% | 1.60 | 0.92 to 1.08, mean 1.000 |
+| M2 | k2 ≤ 10 (18,965) | 1.54 to 1.61 (0.016) | 1.579 | 3% | 1.60 | 0.96 to 1.02, mean 1.001 |
+| M3 | k2 ≤ 25 (1,558) | 1.12 to 1.27 (0.04) | 1.198 | 6% | 1.20 | 0.94 to 1.05, mean 0.999 |
+
+The scatter of β_s over the primes is the sampling error of the tier (1% with 19,000 members). So: yes. The gain of a
+later prime is (rows left by the other primes / s) times a factor fixed by one price β (3.2 at the prime 31 to 4.1 at
+199 in M2, the mean of the class counts under the weight e^(β·count); e^β = 4.85 is its value for Poisson counts);
+β is the slope of the logarithm of the number of members by level (the slope column, from the ensemble's counts at
+the top level of the tier), 1.58 nats per row at the tier of rarity 11.3 with 167 rows and 1.20 with 302; and the
+true members carry it prime by prime as the class vectors do. The tilt of section 1, rising from 0.9 to 1.6
+along the primes, was this one price seen through the order of the primes: a row struck at an early prime would often
+have been struck by a later one.
+
+**(d) A closed form, good for the miniatures only** (`tilt_prize.py`; `Cap.selection_fraction_two`). If the two
+counts were jointly normal with correlation r, and λ = −ln(1 − p)·sd(rows left at depth), then to collect the share
+f of the successes the ideal order examines the share Φ(Φ⁻¹(f) − λ) of the members and cover first the share
+Φ(Φ⁻¹(f) − rλ), so prize(f) = ln Φ(Φ⁻¹(f) − rλ) − ln Φ(Φ⁻¹(f) − λ). For M2 at depth 200 (r = 0.604, λ = 1.791):
+3.82, 3.63, 3.40, 3.17, 2.89, 2.60, 2.22, 1.77 nats at 1 to 3,000 successes, against 3.62, 3.46, 3.22, 3.03, 2.76,
+2.49, 2.15, 1.71 from the histogram: 0.06 to 0.2 too large, more in the tail. It shows what the prize depends on (how
+weakly the cover predicts the later count, and how many standard deviations the price buys), and it cannot be carried
+to 200 digits: there the best covers are 27 standard deviations below the mean cover, where no normal law holds. The
+count over class vectors is the tool at that distance, and (a) to (c) are the check of its two assumptions.
+
+## 6. The inspection game: how many windows must be looked at (`strategy.py`, `mustlook.py`, `chance_first.py`, `smallest_cells.py`; `GoldbachGaps/Cap/Inspection.lean`)
+
+The research session's question: on instances small enough to be exact, what is the cheapest procedure that finds
+the optimum, counting the candidates whose full score it computes, if it may read residues for free? Read literally
+this is empty, since a score is a function of residues. It is a game once something is hidden, and the choice made
+here is the one the search itself makes: **free** is whatever depends on the cover alone (for each cell c the set
+R_c of rows its classes leave, hence the least score LB(c) that any classes of the later primes could give it, its
+free bound, and the chance P_c(v) that a member with uniform later classes scores at most v); **hidden**, until the
+cell is looked at, are the classes of its members modulo the later primes.
+
+**Proving the optimum: the game is solved** (`mem_of_certifies`, `certifies_of`, `card_le_of_certifies`,
+`exists_certifies_card_le`). A set of cells proves the optimum v exactly when it contains every cell with LB(c) < v
+and one cell that attains v. So the least number of cells is #{c : LB(c) < OPT}, plus one if none of those holds an
+optimum; no adaptive procedure does better, and "increasing free bound, stop when the best score seen is at most the
+next bound" attains it up to the ties at LB = OPT.
+
+**The smallest instance** (rows below 160, cells the 105 even classes modulo 210, later primes 11 and 13;
+`smallest_cells.txt`; in the kernel: `Example840.cells_below_optimum`, `cells_at_optimum`). Three cells have free
+bound 5 (their candidates score 7 to 11); seven have 6, the optimum's own among them, so 578 has the best classes
+modulo 11 and 13 that its cover allows; the other 95 have 7 or more. Value of the game: 4 cells, 16 of the 420
+candidates. Bound first looks at 4 to 10 cells.
+
+*All seven designs at once* (`smallest_designs.py`; `free_bounds_optimum`, `free_bounds_all_but_two`, `tie_152`). A candidate lies in one
+cell of each maximal pinnable design, and each has its free bound. Taken together they exclude everything: every
+candidate is in some cell none of whose numbers could be left with fewer than 6 rows, and every candidate but 152 and
+578 in one none of whose numbers could be left with fewer than 7 (578 has bound 6 in all seven designs, 152 in five;
+for 91 of the 420 candidates the best of the seven bounds is the score itself, for 243 it is within one row).
+One full score, of 578, then proves the optimum, where the single design needs 16. This is the one place where a
+procedure does markedly better than "every candidate in the cells that could contain it", and it does not travel:
+the seven bounds are 1,497 cells' worth of work for 420 candidates, and a free bound is strong only while two or three
+moduli lie outside the design (next table).
+
+**The grid** (`strategy.txt`, 25 instances: targets 160 to 1,000, 105 to 15,015 cells, windows 2 to 8):
+
+| primes beyond the line | cells with LB < OPT, mean | share of the cells: mean (largest) | cells looked at before the first optimum: cover first | bound first | chance first |
+|---|---|---|---|---|---|
+| 1 | 1.9 | 0.06% (0.3%) | 3.7 | 5.4 | 1.4 |
+| 2 | 6.8 | 0.6% (2.9%) | 4.6 | 7.8 | 5.6 |
+| 3 | 64.6 | 1.4% (6.1%) | 9.2 | 6.5 | 4.8 |
+
+(Ties broken at the midpoint; "chance first" is the decreasing order of P_c(OPT), which uses the value of the
+optimum.) Under uniform later classes the cells are expected to hold 56.6 members at least as good as the optimum,
+over the 25 instances; they hold 56: the instances are what the game's model says.
+
+**The miniature, to full depth** (`mustlook.txt`: Q = 1,000, line 23, 200,000 random cells; the free bound is
+bracketed, from above by the greedy choice of one class per later prime, from below by letting each prime take its
+fullest class with overlaps ignored). Share of the cells that no free bound excludes:
+
+| primes beyond the line | OPT | at least | at most |
+|---|---|---|---|
+| 1 to 5 | 20 to 15 | 0.00% | 0.01% |
+| 6 | 14 | 0.01% | 0.09% |
+| 8 | 14 | 1.2% | 4.9% |
+| 10 | 12 | 3.5% | 16% |
+| 12 | 11 | 11% | 38% |
+| 15 | 11 | 40% | 60% |
+| 20 | 9 | 58% | 78% |
+| 30 | 7 | 78% | 99.4% |
+| 37 | 6 | 93% | 99.99% |
+
+The exact free bound of a cell with many later primes is a covering problem of its own (one class per prime, most
+rows covered); it was not solved, and the bracket is where the exact answer stops. It does not need to be: a free
+bound lets every later prime take its best class, each later prime strikes at least one row of its choice, and the
+bound is gone once the later primes outnumber the rows left. At 200 digits it is zero for every cover that matters:
+the best cover leaves 1,502 rows, and there are 17,894 primes between 463 and the target alone.
+
+**Finding rather than proving** (`searchCost_le_of_perm`; `chance_first.py`). To find a member at least as good as a
+target, with independent cells, what is seen in one cell says nothing about another, every procedure is an order,
+and the decreasing order of the chances P_c is the best one. On the grid it reaches the optimum earlier than cover
+first in 18 instances of 25 and later in 3 (4.0 cells against 5.8 on average). In the miniatures the chance of a
+cover is its number of rows left and the spread of the later count given the cover, and the spread hardly varies:
+its standard deviation is 2.56 on average and differs by 1% between covers with the same number of rows. Ordering the
+true members by the two-moment chance instead of the rows left collects the best tier 0.03 nats sooner (member by
+member +0.031 ± 0.009 in M1 and +0.034 ± 0.003 in M2, where it is positive at every share collected). At 200 digits
+the spread is the same to 0.01% for the 300 covers of the search file (`../selection_check`: 0.9835 to 0.9837 of the
+binomial value), and the two orders coincide.
+
+**So**: in the game the cheapest proof looks at every cell whose free bound is below the optimum, and nothing else
+helps; near the line that is a handful of cells, and with every further prime it is more, up to all of them. The
+cheapest search is by chance, which is cover first to 0.03 nats in the miniature and to nothing measurable at 200
+digits. What the
+game leaves out is any link between the later classes of different cells, which are one arithmetic progression's
+worth of points and not independent draws. Every use of that link tried so far is a family of
+`../pprime_families` (lattice decoding, merging, trees, buckets), each negative on the miniature; the game is the
+statement that without such a link nothing beats looking.
+
+To reproduce: `gcc -O3 -march=native -o truth2 truth2.c` and the same for `ensemble.c`, `ensemble_tier.c`;
+`./truth2 1000 29 31 200 A B 11 OUT` over slices [A, B) of [0, 10^10) for M2 (a few minutes on four cores; the
+lists `OUT.top` of the best members are not kept here), `./ensemble 1000 29 31 200 1600000000 SEED OUT`; the merged
+histograms are in `runs/`. Then `python fair_sample.py M2 runs/M2 -- runs/M2_ensemble`,
+`python depth_series.py 29 50:runs/M2_z50:runs/M2_z50_ensemble ...`,
+`python anatomy4.py 1000 29 31 200 10 runs/M2_ensemble.tier OUT_*.top`, `python strategy.py`, `python mustlook.py`,
+`python chance_first.py 1000 29 31 200 1e10 10 2000000 OUT_*.top`.

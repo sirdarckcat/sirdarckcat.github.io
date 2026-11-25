@@ -1,0 +1,12 @@
+OPT 6
+design (3, 5, 7) cells 105 cells with free bound below OPT 3 candidates in them 12
+design (3, 5, 11) cells 165 cells with free bound below OPT 5 candidates in them 13
+design (3, 5, 13) cells 195 cells with free bound below OPT 4 candidates in them 9
+design (3, 7, 11) cells 231 cells with free bound below OPT 7 candidates in them 14
+design (3, 7, 13) cells 273 cells with free bound below OPT 4 candidates in them 6
+design (5, 7, 11) cells 385 cells with free bound below OPT 7 candidates in them 8
+design (11, 13) cells 143 cells with free bound below OPT 8 candidates in them 24
+candidates not excluded by the free bound of any of the seven designs: 0 [] []
+with best bound == OPT: 2 [152, 578] [7, 6]
+histogram of the score minus the best bound over the designs: [(0, 91), (1, 152), (2, 121), (3, 41), (4, 12), (5, 2), (7, 1)]
+not excluded when all classes but one are read: 0 []

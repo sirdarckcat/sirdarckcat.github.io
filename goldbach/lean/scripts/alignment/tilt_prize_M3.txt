@@ -1,0 +1,10 @@
+# M3: X = 1e9, target 2000, line 23: members 157,946,861, successes 0
+# k1: mean 66.22, sd 3.268; k2: mean 41.99, sd 3.926; regression of k2 on k1: slope 0.634; correlation r = 0.528, r^2 = 0.279
+tier (k2 at most) | members | rarity | cover nats: exact | model r^2 z^2/2 with z from the tier's mean k2 | luck nats: exact
+23 | 115 | 14.13 | 3.32 | 3.38 | 10.81
+24 | 411 | 12.86 | 2.77 | 3.05 | 10.09
+25 | 1,558 | 11.53 | 2.40 | 2.72 | 9.13
+26 | 5,003 | 10.36 | 2.17 | 2.44 | 8.19
+27 | 14,998 | 9.26 | 1.96 | 2.16 | 7.30
+28 | 40,895 | 8.26 | 1.75 | 1.91 | 6.51
+29 | 104,980 | 7.32 | 1.55 | 1.67 | 5.77
