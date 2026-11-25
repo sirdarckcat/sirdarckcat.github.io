@@ -85,7 +85,8 @@ it; they are in "A floor under every cover" and the sections after it:
   with g = 216,289 (certified too) and a 319-digit number with g = 207,307,
   and for a gap of 1,000,000 a 2,196-digit number with g = 1,001,491 (Opus
   session, certified; 2,480 digits were held), then 1,997 digits with
-  g = 1,008,589 (certified as well); 300 digits is
+  g = 1,008,589 (certified as well) and 1,797 digits with g = 1,021,897
+  (rechecked here from N alone); 300 digits is
   running on the contractor session's cores. Section "The other direction".
 - A third game since the afternoon of the 25th, asked by the lead: the
   closeness frontier, the most digits at which a number with g at least
@@ -1056,6 +1057,52 @@ recomputed here unless said).
   count, gaps, the previous verdict: nothing; primes per member have 0.935
   of the binomial variance); a cheaper test on the G4 (the kernel is at
   the floor of the integer multiplier).
+- *Working backwards from the factor of 250* (Opus session,
+  `goldbach/bottom_up/batching.md` there, commit c188c95). Reaching 200,000
+  on the budget means disposing of e^36.5 candidates with e^31 units of
+  work, and every large batching factor in computational number theory
+  comes from one of eight mechanisms; for each, what two candidates would
+  have to share. Sieving along progressions: shared, and in use. Product
+  and remainder trees, fast multipoint evaluation, baby-step giant-step:
+  each needs one ring for the candidates, and a member's 1,502 tests are
+  modulo 1,502 different numbers in progressions whose difference M is
+  coprime to all of them. Made exact for baby-step giant-step: for a fixed
+  row the Fermat residue of member k is A·B^k with A = 2^(N0 − q − 1) and
+  B = 2^M, 24 squarings instead of 664 if A and B were known modulo
+  N0 + kM − q, and reducing them there is a full exponentiation each.
+  Relation reuse: a prime found rejects 17,984 even numbers, all within Q
+  of one another, none of them a member of a good cover (the families
+  where they are lose 10.9 nats). Lattices: radius 16.6 nats. Birthday:
+  half the exponent of a 900-nat deficit. Symmetry: the rows left have
+  none. What it leaves, as its opinion: a primality detector shared by
+  distinct moduli, or a family that is none of the eight.
+- *The statement in a model* (Opus session, `query_bound.md` there, commit
+  f0c206a; not recomputed). Window of K members, later primes with product
+  far above K, a weight on each residue of each prime, independent given
+  the cover (measured), score the sum. (A) If the members' residue vectors
+  are independent, any algorithm touches e^κ members to output one in the
+  top e^−κ. (B) For any algorithm that enumerates sub-progressions of its
+  choice, adaptively, knowing every weight: cost at least the minimum over
+  pin sets of max(1, P_I/K)/π(I, a); on the 200,000 cover two pins fit the
+  window (523 and 503) and save 0.49 nats at the 1.5% cut when a member of
+  a short progression costs what a member of a window does, and nothing
+  with the real sieve. (C) For algorithms that add partial solutions (the
+  problem is a knapsack in Z/P) there are upper bounds only. Its
+  hypotheses name what anything better has to break: weights that are not
+  independent given the cover, or members produced by an operation that is
+  neither an intersection of progressions nor a sum.
+- *The campaign as it stands, recomputed* (Opus session,
+  `campaign_table.md` there, commit 6683f3e; its own program from the cover
+  files, with the corrections of the day). Chance of ending at or above
+  200,000: 0.133% on the 170,000 design, 0.130% on 180,000, 0.295% on
+  190,000, 0.420% on 200,000 (mine: 0.13% and 0.40%), and 0.60 to 0.80% on
+  the 200,000 design with the engineering crumbs; at or above 180,000:
+  16.7% today, 20.7% on a 180,000 design. One point in it is new: if a kept
+  member's survivors are tested in increasing q, the first probable prime
+  is that member's g, so members that fail between the record and the
+  design level count as well, and a design above 170,000 stops being all
+  or nothing. Its expected-record columns used a stale record and are
+  being rerun; whether the fleet reads g this way has been asked.
 
 The object all of this points at, in the Opus session's words: three
 currencies exist (the window charges ln s per prime whatever the softness;
@@ -2901,6 +2948,7 @@ Results (every N recomputed here from N alone before it is listed):
 | 200,000 | 347 | 216,289 | uarch, 25 Nov 11:41 UTC | 141 moduli (3 to 821), 1,115 rows | 806 million, 318 million, 8.5 for the whole 350-digit phase (the hit itself after 319 million members and 1.04 CPU-hours on its second progression; the first, 142 moduli, gave none in 488 million where 1.75 were expected) | `records/g200k_347digit_g216289` there |
 | 1,000,000 | 2,196 | 1,001,491 | Opus, 25 Nov 12:12 UTC | 683 moduli (3 to 5,113), 2,563 rows (heat-bath annealing; the recursion's floor is 2,039) | 20 million sieved to 10^9, the 3,615 emptiest tested (501,670 tests at 66 ms), 10.4 | `goldbach/g_million/record_2196digit` on `ccr-c6e00296-3g7fp9`, commit 71172d4 |
 | 1,000,000 | 1,997 | 1,008,589 | Opus, 25 Nov 14:15 UTC | 629 moduli (3 to 4,657), 2,825 rows (the best of four anneals; floor 2,315) | 40 million sieved to 10^9, the 4,606 emptiest tested (565,572 tests, the first half with gmpy2 at 54 ms, the rest with the uarch kernel at 16 ms), 6.6 | `goldbach/g_million/record_1997digit` there, commit 23edb6f |
+| 1,000,000 | 1,797 | 1,021,897 | Opus, 25 Nov (committed 17:59 UTC) | 574 moduli (3 to 4,201), 3,103 rows (20,000 heat-bath sweeps from the 1,997-digit cover cut at 4,201) | 60 million sieved to 10^9, the 21,920 emptiest tested (2,435,204 tests at 17.2 ms), 14 | `goldbach/g_million/record_1797digit` there, commit d474cfc |
 
 Both are certified in the Lean kernel (`Gap200k_400digit_g200293.lean`,
 `Gap200k_400digit_g206593.lean` and `FixedGap.lean` on the Lean branch,
@@ -2957,9 +3005,19 @@ next sizes with the covers it can build and the vector kernel, sieve
 included, on four cores: 14 CPU-hours at 1,800 digits (574 moduli, 3,103
 rows), 35 at 1,700, 100 at 1,600 and 330 at 1,500 (491 moduli, 3,591 rows):
 a factor of three per hundred digits. My 45 CPU-hours at 1,500 digits
-assumed 3,100 rows there, the floor's error again. 1,797 digits is running
-since 14:22 UTC; the descent stops there for now, the cores going to the
-closeness frontier below.
+assumed 3,100 rows there, the floor's error again.
+
+The 1,797-digit number (g = 1,021,897 if N − 1,021,897 is prime; it passes
+25 rounds here and the Opus session's BPSW test) replaces the 1,997 digits
+and is the fewest digits held for a gap of a million. Checked here from N
+alone: of the 80,334 odd primes q below 1,025,000, N − q has a prime factor
+up to 10^6 for 78,452, and it fails a strong test for each of the 1,870
+others below 1,021,897 (1,758 of them below 1,000,003). The run went as its
+model said: survivors of mean 1,251.5 and sd 27.2 against 1,252 and 27.3,
+111.1 tests per prime against 112.1, the hit as the 21,920th member tested
+with 0.75 expected by then, and 14 CPU-hours where 14 were predicted. A
+kernel certificate has not been asked for yet. The descent stops here: the
+cores go to the 200-digit question.
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
