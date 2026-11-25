@@ -1,5 +1,5 @@
 #!/bin/bash
-# T5 (c): four anneals for the 629-moduli cover, one core each: the 5,113 recipe from greedy + descent (two seeds), and 20k sweeps
+# T5 (c), run from run/: four anneals for the 629-moduli cover, one core each: the 5,113 recipe from greedy + descent (two seeds), and 20k sweeps
 # from the 5,113 cover restricted to the moduli up to 4,657 (two seeds). heatbath2 (table weights).
 HB=../heatbath2; Q=1000003
 ( $HB $Q gd4657.txt 3000 2.0 6.0 1 gd_a1.txt 2> gd_a1.log && $HB $Q gd_a1.txt 20000 1.8 10.0 1 gd_b1.txt 2> gd_b1.log ) &
