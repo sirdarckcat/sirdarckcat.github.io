@@ -63,9 +63,10 @@ it; they are in "A floor under every cover" and the sections after it:
   bound. It makes no difference while the largest modulus is below about
   10^25, but it gives
   a theorem on paper, D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)², which beats every
-  bound of the order r·ln r (the consultant session wrote the proof out;
-  the Lean session is formalising a corollary), and it leaves the order of
-  D(n) open. At 200 digits nothing moves: complete covers on the 89 moduli
+  bound of the order r·ln r (the consultant session wrote the proof out),
+  and a theorem in the Lean kernel the same day: for every A and all large
+  X some even N ≤ X has no Goldbach summand below A·ln X·ln ln X. It leaves
+  the order of D(n) open. At 200 digits nothing moves: complete covers on the 89 moduli
   end at 15,907 to 15,919 by the recursion in both forms, where 15,907 has
   been found; rigorously 15,907 ≤ D(89) < 35,000, the upper end by an
   exhaustive search of the uarch session. Exact values of D(n) are known to
@@ -103,9 +104,10 @@ it; they are in "A floor under every cover" and the sections after it:
   some even N ≤ X has no Goldbach summand below c·ln X·ln ln X, for every
   c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
   N < 10^200 with every N − q, q prime below 16,981, divisible by a prime
-  ≤ 491, certified by divisibility alone. Since 25 November the first has a
-  successor on paper of a higher order, c·ln X·(ln ln X)²·ln₄ X/(ln₃ X)²
-  (the block of Erdős and Rankin; "A provable lower bound").
+  ≤ 491, certified by divisibility alone. Since 25 November the first holds
+  for every constant c, also proved in Lean, and has a successor on paper of
+  a higher order, c·ln X·(ln ln X)²·ln₄ X/(ln₃ X)² (the block of Erdős and
+  Rankin; "A provable lower bound").
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
@@ -813,10 +815,31 @@ is written out in `goldbach/gaps_map/COHERENT_BLOCK.md` (consultant
 session, commit 0761b84 on `ccr-cdb2641a-5zg8un`), read by its author and
 by me; the finite skeleton (a fixed layer, a pigeonhole layer and a mop-up
 layer) is `Cap/Layers.lean` in the Lean library, kernel-checked since 22
-November, and the Lean session began on 25 November to formalise the
-corollary for every A. At the sizes of this project the block is worse than
-what tempering finds (it overtakes random classes only near y = 10^25), so
-this is a theorem about large X and changes nothing at 200 digits.
+November.
+
+**Proved in the Lean kernel on 25 November** (commit 1f1b090 on
+`ccr-36ca7b46-8twf14`, `CoverEveryConstant.lean` and
+`Cap/CommonInteger.lean`, standard axioms, full build): the corollary for
+every constant.
+
+    eventually_exists_even_le_every_constant: for every real A and all large X there is an even N ≤ X,
+        N > A·ln X·ln ln X, with no Goldbach summand below A·ln X·ln ln X.
+    eventually_exists_classes_every_constant: for every real A and all large y there are classes modulo the odd
+        primes up to y such that every odd prime below ⌊A·y·ln y⌋ lies in one of them.
+
+The fixed layer is the primes in (z, y/4] on one common integer, found by
+averaging over N₁ in [Q, 2Q); the integers it has to count are the z-smooth
+ones (Rankin's bound from the Euler product in Mathlib) and those of the
+form B·p′ with p′ > y/4 (the prime number theorem and a harmonic sum); the
+pigeonhole layer is the odd primes up to (ln y)^K with K = ⌈300·A⌉ + 1; the
+mop-up layer is the primes in (y/4, y]. So the 1.349 of the first theorem
+is no longer a barrier of any kind, and the one earlier bound we found in
+the literature, (1/2 + o(1))·ln X·ln ln X, is passed by an arbitrary factor,
+formally. The order c·ln X·(ln₂ X)²·ln₄ X/(ln₃ X)² itself is on paper only
+(it needs the smooth-number count uniformly in K). At the sizes of this
+project the block is worse than what tempering finds (it overtakes random
+classes only near y = 10^25), so these are theorems about large X and
+change nothing at 200 digits.
 
 **At 200 digits, without luck.** Joint optimisation does much better than
 the asymptotic count suggests. Tempering on the 89 smallest odd primes
@@ -1950,7 +1973,11 @@ samples show 3.7 nats). The class of each single modulus tells the same
 story: at 40,111 the commonest class has 94 to 99% of the samples at every
 modulus up to 181 and 85% on average from 191 to 293; at 38,000 it has 71
 to 74% at every modulus from 7 to 113, the mark of three or four families
-rather than of free moduli. This is one start in one family.
+rather than of free moduli. This is one start in one family. (With the
+dispersions computed exactly from the primes the Lean session's
+implementation gives, for the first 41 and the first 61 moduli, 0.0 and
+10.4 nats at 40,111, 1.4 and 17.4 at 38,000, 32 and 81 at 25,000, and −57
+for the first 41 at 40,111 without the constraint: the same picture.)
 
 What it changes at the sizes counted:
 
@@ -2478,7 +2505,10 @@ one of the 159 moduli divides it and 1,011 (1,079) because it fails the
 base-2 Fermat test; and 10^399 ≤ N < 10^400. So "there is an even number
 below 10^400 with no Goldbach summand below 200,000" is a theorem. That
 N − g is prime, which makes g the exact value, rests on gmpy2's test here
-and is not certified.
+and is not certified. The 347-digit number is certified the same way
+(`Gap200k_347digit_g216289.lean`, commit 2c2cd89: 19,307 primes below
+216,289, 18,038 struck by one of the 141 moduli and 1,269 failing the
+base-2 Fermat test; five minutes of kernel time).
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
