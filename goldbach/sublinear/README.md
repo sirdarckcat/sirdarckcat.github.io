@@ -1582,13 +1582,22 @@ where the Opus session's tempering stopped one row short at the next target
 in runs four times longer; from 349 on the best cover is limited by run
 length.) And beyond what any search has reached:
 
-| x | 997 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 | 1,000,000 |
-|---|---|---|---|---|---|---|---|
-| moduli | 167 | 429 | 1,228 | 3,244 | 9,591 | 25,996 | 78,497 |
-| end by the recursion, whole pair sum | 45,607 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 | 2.21·10^8 |
-| / (x·ln² x) | 0.96 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 | 1.16 |
-| / (x·ln² x) with the closed formula | 0.95 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 | 1.19 |
-| best cover known (tempering at 997, greedy beyond) | 41,659 | 135,511 | 614,101 | | 9.65·10^6 | | |
+| x | 997 | 1,499 | 1,999 | 2,999 | 9,973 | 30,000 | 100,000 | 300,000 | 1,000,000 |
+|---|---|---|---|---|---|---|---|---|---|
+| moduli | 167 | 238 | 302 | 429 | 1,228 | 3,244 | 9,591 | 25,996 | 78,497 |
+| end by the recursion, whole pair sum | 45,607 | 79,974 | 115,729 | 197,124 | 912,464 | 3.51·10^6 | 1.50·10^7 | 5.46·10^7 | 2.21·10^8 |
+| / (x·ln² x) | 0.96 | 1.00 | 1.00 | 1.03 | 1.08 | 1.10 | 1.13 | 1.14 | 1.16 |
+| / (x·ln² x) with the closed formula | 0.95 | 0.98 | 0.99 | 1.01 | 1.07 | 1.10 | 1.14 | 1.16 | 1.19 |
+| best cover known (tempering to 1,999, greedy beyond) | 41,659 | 70,111 | 98,731 | 135,511 | 614,101 | | 9.65·10^6 | | |
+
+(The covers at 1,499 and 1,999 are the Opus session's, 160,000 sweeps from
+random starts, checked here: `complete_cover_70111_238primes.txt` and
+`complete_cover_98731_302primes.txt`, 0.875 and 0.855 of x·ln² x and 88 and
+85% of the recursion's end. Its whole series of tempered reach over x·ln² x
+at one budget, for x = 127, 149, 251, 349, 397, 599, 797, 997, 1,499, 1,999,
+is 0.775, 0.792, 0.842, 0.849, 0.856, 0.860, 0.870, 0.876, 0.875, 0.855: the
+first two are exact values of D, and from about 600 on it is the budget and
+not the end that stops the search, most at the largest size.)
 
 So the recursion gives the luck-free depth within 4% wherever it can be
 checked from 20 to 89 moduli, the three exact values of D included, and at
