@@ -1,0 +1,1 @@
+CHECK PASSED: g(N) = 147331, 13619 primes below g all give composite N - p, N - g is a probable prime; N = 9.3988e+199; 0.1 s
