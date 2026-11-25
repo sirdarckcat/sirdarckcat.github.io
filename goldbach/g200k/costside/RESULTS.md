@@ -212,3 +212,10 @@ work it removes.
 Item 2 (keep 0.75%) re-derived on today's batch before its A/B: 0.847 s = Fermat work 0.586 s (3.642M computed tests a window at the measured
 24.87M/s) + sieve ~0.204 s + 0.057 s unaccounted; capture 0.672 of keep 1.5%'s; hits/s **+1.3%** if the unaccounted part is fixed per batch,
 **+6.5%** if it scales with the Fermat work (the pipeline model's +4.9% to +8.5% was built on older batch times and is void).
+
+### Item 2 ADOPTED: keep 0.75% (GPU session, 25 Nov 21:25-22:25Z)
+
+gold-g4j at --skip-frac 0.9925 against gold-g4k at 0.985 (control 21:08-21:18Z, ratio 1.0008): windows/s 8.822 / 5.468 (x1.613), counted tests/s
+15.58M / 19.31M, computed 16.52M / 19.92M, waste 5.7% / 3.1%, launches a batch 69.2 / 88.1, expected design hits/s 1.0117e-6 / 9.576e-7:
+**+5.6%** against the predicted +1.3% to +6.5% (the upper end: the unaccounted 57 ms of a batch scales with the Fermat work).  Captured hit mass
+a window 1.147e-7 / 1.751e-7 = 0.655 (the CPU curves: 0.672).  Both G4s at 0.9925 since 22:29Z, on the present path (carry-over off).
