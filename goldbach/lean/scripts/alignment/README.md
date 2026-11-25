@@ -148,6 +148,25 @@ the best members. One pattern is real and known: eight pairs of best members lie
 (differences 24, 30, 30, 30, 60, 60, 60, 90) where 0.4 is expected, the inheritance between neighbours at a multiple
 of 30 that the research session has already priced.
 
+**More strikes, or fewer repeated strikes?** (`repeats.py`, `repeats_small.py`; asked by the research session.)
+For a member let L be the rows its cover left, K_s the number of them in its class modulo the later prime s, I the sum
+of the K_s (strikes), U the distinct rows struck, I − U the repeats. If the K_s strikes of each prime fell on a random
+K_s-subset of the L rows, independently for different primes, U would be U0 = L(1 − ∏(1 − K_s/L)) on average. For
+ordinary members this is exact (U − U0 = 0.00 to 0.01 rows in every control set). For the best members of the miniature:
+
+| tier | rows left by the cover | strikes I (same cover: ) | distinct U | repeats | repeats expected by chance for these strikes | advantage in rows = more strikes + fewer repeats |
+|---|---|---|---|---|---|---|
+| the optimum (k2 = 6) | 26 | 21 (11.7) | 20 | 1 | 6.3 | 10.5 = 5.2 + 5.3 |
+| k2 ≤ 8 (62) | 28.8 | 24.8 (13.1) | 21.0 | 3.8 | 8.0 | 10.4 = 6.3 + 4.1 |
+| k2 ≤ 10 (1,965) | 29.9 | 23.8 (13.5) | 20.2 | 3.6 | 7.1 | 9.2 = 5.7 + 3.5 |
+| k2 ≤ 12 (33,598) | 30.8 | 22.6 (13.9) | 19.1 | 3.5 | 6.4 | 7.8 = 5.0 + 2.9 |
+
+Both, and the second is not small: the best members have nearly twice the strikes of a member with the same cover, and
+half the repeats that chance would give for that many strikes; fewer repeats is 36 to 50% of their advantage. In the
+small instances (27 of them, true optima against candidates with the same design value) the share is 19% at four
+primes beyond the line and 39% at eight, and the optimum often has no repeat at all (19 strikes on 19 rows for target
+1,000 with the line after 11). The later primes of an optimum avoid each other's rows.
+
 ## 3. Statements (`GoldbachGaps/Cap/SoftLists.lean`, `GoldbachGaps/Cap/PairVariance.lean`)
 
 - **Lists below a bound.** The number of N < X in a product of lists is at most
@@ -155,8 +174,12 @@ of 30 that the research session has already priced.
   over subfamilies. A modulus r ≥ X caps it at |A_r| alone (`card_residues_in_le_of_le`), and any ℓ numbers lie in
   lists of ℓ classes (`exists_lists_holding`): when every listed prime exceeds the window, the most a product of lists
   can hold is exactly the length of its shortest list, however many primes are listed.
-- **Families and information** (`family_rarity_le`). If p is the law of the best members and q the law of all members
-  on whatever a family may read, a family F holds p(F)·ln(1/q(F)) ≤ KL(p‖q) + ln 2. With section 1: to hold half of
+- **Families and information** (`binary_kl_le`, `family_rarity_le`, `family_enrichment_le`,
+  `exp_neg_kl_le_of_holds_all`). If p is the law of the best members and q the law of all members on whatever a family
+  may read, then for a family F the two-point divergence between p(F) and q(F) is at most KL(p‖q); hence
+  p(F)·ln(1/q(F)) ≤ KL(p‖q) + ln 2; a family holding the share c of the best members is at most
+  exp((KL + ln 2)/c) times denser in them than the population; and a family holding all of them at most exp(KL)
+  times. With section 1: to hold half of
   the 1,965 best members at an enrichment of e^8.5 a family must read at least 3.9 nats, which is 13 to 20 of the 37
   later primes when its lists may depend on the cover, and is not available at all from the classes alone (1.4 nats in
   the 37 primes together).

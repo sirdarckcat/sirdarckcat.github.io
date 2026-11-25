@@ -16,7 +16,8 @@ of several classes per prime, as opposed to pinning one class.
   nothing in the worst case: the count is governed by the shortest list.
 
 * **Information.** `sum_mul_log_div_le` (the log-sum inequality), `binary_kl_le` and
-  `family_rarity_le`: let `p` be the law of the best members and `q` the law of all members on
+  `family_rarity_le`, `family_enrichment_le`, `exp_neg_kl_le_of_holds_all`: let `p` be the law of
+  the best members and `q` the law of all members on
   whatever a family is allowed to read (the classes modulo some primes, the cover). A family `F`
   that holds the share `p(F)` of the best members has `p(F) · ln (1 / q(F)) ≤ KL(p ‖ q) + ln 2`.
   So a family cannot be rarer than the information in what it reads allows, however its lists are
@@ -158,6 +159,50 @@ theorem family_rarity_le {Ω : Type*} [Fintype Ω] [DecidableEq Ω] (p q : Ω �
     rw [le_div_iff₀ h']
     nlinarith
   linarith
+
+/-- The same as a bound on the enrichment: a family that holds the share `p(F) > 0` of the best
+members is at most `exp ((KL(p ‖ q) + ln 2) / p(F))` times denser in them than the population is. -/
+theorem family_enrichment_le {Ω : Type*} [Fintype Ω] [DecidableEq Ω] (p q : Ω → ℝ)
+    (hp : ∀ ω, 0 ≤ p ω) (hq : ∀ ω, 0 < q ω) (hp1 : ∑ ω, p ω = 1) (hq1 : ∑ ω, q ω = 1)
+    (F : Finset Ω) (hF : 0 < ∑ ω ∈ F, p ω) :
+    (∑ ω ∈ F, p ω) / (∑ ω ∈ F, q ω) ≤
+      exp ((∑ ω, p ω * log (p ω / q ω) + log 2) / ∑ ω ∈ F, p ω) := by
+  have h := family_rarity_le p q hp hq hp1 hq1 F
+  have hne : F.Nonempty := by
+    rcases F.eq_empty_or_nonempty with h0 | h0
+    · rw [h0] at hF; simp at hF
+    · exact h0
+  have hQ : 0 < ∑ ω ∈ F, q ω := Finset.sum_pos (fun ω _ => hq ω) hne
+  have hP1 : ∑ ω ∈ F, p ω ≤ 1 := by
+    have : 0 ≤ ∑ ω ∈ Fᶜ, p ω := Finset.sum_nonneg fun ω _ => hp ω
+    linarith [Finset.sum_add_sum_compl F p]
+  have h2 : log (1 / ∑ ω ∈ F, q ω) ≤ (∑ ω, p ω * log (p ω / q ω) + log 2) / ∑ ω ∈ F, p ω := by
+    rw [le_div_iff₀ hF]; linarith
+  have h3 : 1 / ∑ ω ∈ F, q ω ≤ exp ((∑ ω, p ω * log (p ω / q ω) + log 2) / ∑ ω ∈ F, p ω) := by
+    have := Real.exp_le_exp.mpr h2
+    rwa [Real.exp_log (one_div_pos.mpr hQ)] at this
+  calc (∑ ω ∈ F, p ω) / (∑ ω ∈ F, q ω) = (∑ ω ∈ F, p ω) * (1 / ∑ ω ∈ F, q ω) := by ring
+    _ ≤ 1 * (1 / ∑ ω ∈ F, q ω) := mul_le_mul_of_nonneg_right hP1 (one_div_pos.mpr hQ).le
+    _ ≤ _ := by rw [one_mul]; exact h3
+
+/-- A family that holds *all* the best members has density at least `exp (- KL(p ‖ q))`: it is at
+most `exp (KL)` times denser in them than the population. -/
+theorem exp_neg_kl_le_of_holds_all {Ω : Type*} [Fintype Ω] [DecidableEq Ω] (p q : Ω → ℝ)
+    (hp : ∀ ω, 0 ≤ p ω) (hq : ∀ ω, 0 < q ω) (hp1 : ∑ ω, p ω = 1) (F : Finset Ω)
+    (hF : ∑ ω ∈ F, p ω = 1) :
+    exp (-∑ ω, p ω * log (p ω / q ω)) ≤ ∑ ω ∈ F, q ω := by
+  have hb := binary_kl_le p q hp hq F
+  have hPc : ∑ ω ∈ Fᶜ, p ω = 0 := by linarith [Finset.sum_add_sum_compl F p]
+  rw [hF, hPc, zero_mul, add_zero, one_mul] at hb
+  have hne : F.Nonempty := by
+    rcases F.eq_empty_or_nonempty with h0 | h0
+    · rw [h0] at hF; simp at hF
+    · exact h0
+  have hQ : 0 < ∑ ω ∈ F, q ω := Finset.sum_pos (fun ω _ => hq ω) hne
+  rw [Real.log_div one_ne_zero hQ.ne', Real.log_one, zero_sub] at hb
+  have : -∑ ω, p ω * log (p ω / q ω) ≤ log (∑ ω ∈ F, q ω) := by linarith
+  calc exp (-∑ ω, p ω * log (p ω / q ω)) ≤ exp (log (∑ ω ∈ F, q ω)) := Real.exp_le_exp.mpr this
+    _ = ∑ ω ∈ F, q ω := Real.exp_log hQ
 
 /-! ### The smallest instance found: target 160, bound 840 -/
 
