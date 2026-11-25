@@ -1,0 +1,3 @@
+N = 10492156463590001369800256 | digits 26 | g = 10303 | odd primes below g, all with N - p composite by a witness: 1262 | N - g proved prime | ceiling 19775 | closeness 52.10%
+N = 10621579671744600348710546 | digits 26 | g = 10159 | odd primes below g, all with N - p composite by a witness: 1245 | N - g proved prime | ceiling 19785 | closeness 51.35%
+N = 5471513744131872011405456 | digits 25 | g = 10357 | odd primes below g, all with N - p composite by a witness: 1269 | N - g proved prime | ceiling 19248 | closeness 53.81%
