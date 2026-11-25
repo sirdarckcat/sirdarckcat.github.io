@@ -82,3 +82,25 @@ richer in primes than another).  Nothing predicts; a factor two in tests a kept 
 About 0.3-0.45 nats on the cost side: keep 0.06, two-stage score 0.10-0.15, pass A at its integer floor 0.12, carried rounds
 0.07-0.1.  Whole nats would need the tests to get cheaper or fewer, and neither the kernel (at the IMAD floor) nor any predictor
 (above) offers that.
+
+## Appendix: the two-stage sieve as a GPU design (for the GPU session, if the lead wants it built)
+
+What it removes: the binning of the large-prime marks (and their apply) for the members that cannot make the cut.  What it does NOT
+remove: pass A's 7.1e9 start-position visits a 2^24 window - a visit is what computes where a (prime, row) pair hits, and only then is
+it known whether the hit lands on a candidate; skipping visits would mean candidate-major work (N_k mod s and a row lookup for every
+candidate and prime: ~9.5e12 operations a window), 1,300x more.
+
+1. Tile kernel with the primes below 10^6 only (today's small-prime marks): the bit matrix of the window (1,502 rows x 2^24 bits =
+   3.1 GB, written to DRAM) and the counts a6 of every member.
+2. Select the candidates: the emptiest 10-20% of each 32,768-block by a6 (s200_select's counting sort); a candidate bitmap of the window
+   (2^24 bits = 2 MB, L2-resident) and a candidate index.
+3. Pass A for the primes in (10^6, 10^8), unchanged (13.8 ms a 2^24 window).
+4. Pass B with a filter: a mark is binned only if its member's bit is set in the candidate bitmap (one L2 read a mark); 10-20% of the
+   marks reach the bins (pass B 8.4 ms -> ~1-2 ms, the bin apply ~12 ms -> ~1-2.5 ms).
+5. Apply the bins to the candidates' words of the matrix (re-read from DRAM, ~4 ms a window at 1.5 TB/s), recount a8 for the candidates.
+6. The final keep (0.5% of the window) by a8 among the candidates; their survivor rows as today.
+
+Estimated: 2.0-2.3 ns a member against 3.06 (with today's pass A), 1.5-1.6 ns if pass A reaches ~0.5 ps a visit; at the re-optimised
+keep of 0.5%: 0.10-0.15 nats, 0.23-0.27 nats.  Selection measured on this CPU (section 1): 96% (top 10%) to 99% (top 20%) of the
+captured hit mass of exact counts for every member, at the same 14.0 tests a kept member.  The filter check in pass B and the matrix
+round trip are the two costs not in today's pipeline; both are estimates.
