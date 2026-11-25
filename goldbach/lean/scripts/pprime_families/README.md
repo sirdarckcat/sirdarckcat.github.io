@@ -224,6 +224,22 @@ best covers joined with lists (134 configurations) it is positive in 10 at one s
 and in none at thirty. That is the tie-breaking effect of `ceilings.txt` and no more, bought with 0.7 to 23 million
 units of look-ups that would buy +5.6 / +5.6 / +3.2 if spent on scoring the cover-first prefix.
 
+## Under the campaign's scoring rule
+
+The rule set by the lead on 25 November for all of this work: work is counted in modular exponentiations with the
+verification priced, the baseline is sieve-then-verify (the funnel), and a mechanism that gains on the miniature needs
+a bound at 200 digits before it is called a gain. **It changes the sign of no row.** The reference of the tables above
+already is the funnel: the cover-first prefix sieved to depth 200 and verified in order of rows left, with the same
+sieve work as the family. "N examined" is the number of verifications, about two modular exponentiations each on
+either side (a row left at depth 200 is prime with probability 0.48, from the success rate by level). Pricing them
+adds to both sides in proportion to N examined, so a row is positive exactly when the family examines fewer N than
+the funnel of equal sieve work: in no configuration at 10 or 30 successes, in 2 at three and in 22 at one, and those
+24 are the rows already described as one event (all hold N = 60,119,912). Letting the funnel choose its own prefix can
+only lower the baseline further. The expected effect behind that event is small and is a saving of sieve work, not of
+verifications: the best third of the classes of 29 holds 32% of the members, 41% of the 1,965 best members and 28% of
+the 256 successes. That is the tenth of a nat of section 4 at most, it shrinks as the verification becomes the larger
+part of the cost, and since nothing here is reported as a gain there is nothing to bound at 200 digits.
+
 ## Files
 
 | file | what |
