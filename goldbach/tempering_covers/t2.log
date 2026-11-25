@@ -289,3 +289,8 @@ container restarted at about 01:32 UTC; driver restarted 01:33:11 (resumes from 
   x=1999 Q=99088 seed=4 sweeps=160000: best k 4  (1657 s)
   x=1999 Q=99088 seed=1 sweeps=160000: best k 1  (1662 s)
   x=1999 Q=99088 seed=3 sweeps=160000: best k 2  (1665 s)
+  x=1999 Q=98791 seed=4 sweeps=160000: best k 2  (1655 s)
+  x=1999 Q=98791 seed=3 sweeps=160000: best k 4  (1656 s)
+  x=1999 Q=98791 seed=1 sweeps=160000: best k 2  (1662 s)
+  x=1999 Q=98791 seed=2 sweeps=160000: best k 3  (1662 s)
+x=1999: largest Q reached 98495, smallest Q missed by all seeds 98791
