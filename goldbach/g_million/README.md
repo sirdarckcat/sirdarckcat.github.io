@@ -1,4 +1,4 @@
-# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (2,196 digits found; 2,000 next)
+# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (1,997 digits found)
 
 This task comes from the research session (25 November). g(N) is the least prime p with N − p prime. Every odd prime
 q < Q = 1,000,003 is a row; the moduli are odd primes r, and each gets a nonzero class a_r. When N ≡ a_r (mod r) for every
@@ -101,7 +101,10 @@ members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains
     `ccr-36ca7b46-8twf14`, commit `9d4555f`). The research session and the Lean session both checked the record from N alone.
 - **About 1,997 digits** (629 moduli, odd primes up to 4,657; cover `hb4657_rs1.txt`, 2,825 rows; tag `d1996`):
   - D has 1,990 digits.
-  - The plan: sieve 4·10⁷ members against the primes in (4,657, 10⁹], then test the 15,000 emptiest members
-    (`run/chain_d1996.sh`), stopping at the first hit.
-  - The model predicts survivors with mean about 1,153 and sd 26, a cut at about 3.4 sd, about 2.2 hits expected within the 15,000,
-    and about 8 CPU-hours of tests.
+  - Sieve: 4·10⁷ members against the primes in (4,657, 10⁹]. Survivors: mean 1,153.6, sd 26.0, minimum 1,019.
+  - The 15,000 members with S ≤ 1,066 (3.37 sd below the mean) were tested, lowest S first. From the 2,239th on they used the
+    uarch session's IFMA kernel (`test_members_fmw.py`), at 16.2 ms a test against 54 for gmpy2.
+  - **Hit at the 4,606th member** (k = 26,758,760, S = 1,058): **N has 1,997 digits, and g(N) = 1,008,589 if N − 1,008,589 is
+    prime** (it is a BPSW probable prime). Every N − q for an odd prime q < 1,008,589 is proved composite.
+  - Cost: 565,572 Fermat tests, 5.5 CPU-hours; about 6.6 CPU-hours with the sieve and the cover.
+  - Everything is in `record_1997digit/`.

@@ -1,0 +1,11 @@
+N: 1997 digits; 78,497 odd primes q < 1,000,003; 75,672 covered by the 629 moduli (up to 4657); 2,825 left (0 s)
+50,846,904 primes in (4657, 1,000,000,000] (9 s)
+  primes 0..4,194,304 of 50,846,904: 1,579 rows with a factor (15 s)
+  primes 12,582,912..16,777,216 of 50,846,904: 1,703 rows with a factor (32 s)
+  primes 25,165,824..29,360,128 of 50,846,904: 1,740 rows with a factor (49 s)
+  primes 37,748,736..41,943,040 of 50,846,904: 1,757 rows with a factor (66 s)
+  primes 50,331,648..50,846,904 of 50,846,904: 1,767 rows with a factor (78 s)
+1,767 rows left have a prime factor in (4657, 1,000,000,000]; 1,058 have none (78 s)
+Fermat: 1,058 of 1,058 fail base 2 (composite); 0 pass (91 s)
+sieve survivors for k = 26758760: 1058; same set as the rows with no factor <= B: True
+wrote record_1997digit/certificate.txt (91 s)
