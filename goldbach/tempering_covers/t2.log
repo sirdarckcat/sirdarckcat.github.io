@@ -273,3 +273,7 @@ container restarted at about 00:58 UTC; driver restarted 00:58:44 (resumes from 
   x=1999 Q=94936 seed=2 sweeps=160000: best k 0  (1679 s)
   x=1999 Q=94936 seed=3 sweeps=160000: best k 0  (1680 s)
 container restarted at about 01:32 UTC; driver restarted 01:33:11 (resumes from t2_runs.jsonl)
+  x=1999 Q=99682 seed=4 sweeps=160000: best k 5  (1674 s)
+  x=1999 Q=99682 seed=2 sweeps=160000: best k 4  (1683 s)
+  x=1999 Q=99682 seed=3 sweeps=160000: best k 3  (1689 s)
+  x=1999 Q=99682 seed=1 sweeps=160000: best k 3  (1690 s)
