@@ -97,8 +97,8 @@ it; they are in "A floor under every cover" and the sections after it:
 
 - Where 200,000 stands (the user's stated expectation, relayed on the 25th):
   the best cover there has 1,502 rows, 36.46 nats, and the units left buy
-  0.43% of a hit if all are put on it (0.14% on the present design); the
-  gap is 5.45 nats, a factor of 230. Every known lever is priced in "The
+  0.4% of a hit if all are put on it (0.13% on the present design); the
+  gap is 5.5 nats, a factor of 250. Every known lever is priced in "The
   gap to 200,000": together a few tenths of a nat. The only entry of the
   gap's size is the ideal-order prize, 3 to 11 nats net, which nothing
   collects; a new route to it would have to output a number with about
@@ -861,14 +861,17 @@ known lever is worth, with the number behind each. The other sessions'
 pieces are theirs and are marked.
 
 **The gap.** The best cover at 200,000 on the 89 moduli has 1,502 rows
-(`../fscan/cover/starts/q200000_m89.txt`), p = 0.02398, exponent 36.46 nats.
+(`../fscan/cover/starts/q200000_m89.txt`), p = 0.02398, exponent 36.46 nats
+at N = 10^200 itself and 36.54 averaged over a window uniform in N (the
+consultant session's correction; the figures below use 36.46 and are 8% too
+high for it).
 The fleet had 6,784.88 units left at 16:05 UTC (GPU session), 1.90 expected
 hits at its design level of 170,000 (1,248 rows, 30.30 nats). With the cut
 acting on the cover's own rows (`cover_design.py`): the chance that the
 campaign ends at or above 200,000 is 0.14% on the present design and 0.43%
 with every remaining unit on the 200,000 cover (0.35% at a design of
-190,000). One expected hit at 200,000 is 5.45 nats away, a factor of 230 in
-work. In machine terms a G4 pays 61 ns, 1.5 Fermat tests, per unit of hit
+190,000); 0.13% and 0.40% with the window average. One expected hit at
+200,000 is 5.5 nats away, a factor of 250 in work. In machine terms a G4 pays 61 ns, 1.5 Fermat tests, per unit of hit
 mass, so one expected hit at 200,000 is about 13 G4-years, where two G4s
 for two weeks are left.
 
@@ -881,7 +884,10 @@ for two weeks are left.
 | a 90th and 91st modulus, or primes folded into the modulus (`cover_fold.py`) | +0.115 and +0.118 gross | closed: the same selection the sieve makes; a window of 2^15 costs 1,700 ns a member against 3 (GPU session) |
 | modulus 463 traded for a longer window | 0 | 9 rows are covered by 463 alone (0.14 nats), which is what the saved set-up is worth |
 | covers chosen for the sieve's selection (`cover_selection.py`) | at most +0.07, nothing to select | closed: the survivors' sd is 0.962 of independent on every cover (0.967 at 170,000, 0.960 at 213,070), spread 0.0002; it is the pair structure of sifted primes |
-| second-order Hardy–Littlewood term | −0.064 | the same for every cover; it is the few percent by which hits fall short of (1 − p)^rows in the calibrations |
+| second-order Hardy–Littlewood term | −0.064 | the same for every cover; it is the few percent by which hits fall short of (1 − p)^rows in the calibrations (the consultant session measures −0.03 on a cover of its own: two pieces of −0.22 and +0.19 that cancel; third order about 0.01) |
+| algebraic forms, N = a² + c (consultant session, `goldbach/gaps_map/ROWS_AND_GAPS.md` on its branch) | −6.6 | at most 155 rows are forced composite and 15 of them are alive after the cover; the form leaves only the 49 moduli to 229 to pin (+238 rows) and restricts their classes (+49); break-even needs a family of density N^0.98 |
+| N in the top tenth of the decade | +0.08 | and nine tenths of the members are given up |
+| the record prime-gap toolbox and the covering theorems (consultant session) | 0 | the gap searchers use a common-offset cover, a combined sieve over multipliers and tests in order of yield, which is this pipeline with a worse cover; the Ford–Green–Konyagin–Maynard–Tao covering step needs ln x near 10^5 where x = 463 has 6.1 |
 | prime powers, composite moduli | 0 exactly | a row dies by a prime factor, and only N modulo that prime decides it |
 | session cores on the 200-digit scan | +0.03 | the fleet tests 52 million numbers a second; 28 cores add 2 million |
 | the ideal-order prize (Result 3) | 3 to 11 net | real and uncollected: see below |
