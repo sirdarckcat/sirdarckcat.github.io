@@ -1,0 +1,5 @@
+*.so
+*.so.*.tmp
+__pycache__/
+fmw_step_L*.h
+.build-*/

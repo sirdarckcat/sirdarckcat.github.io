@@ -29,16 +29,24 @@ import sieve200  # noqa: E402
 from sieve200 import Sieve200  # noqa: E402
 
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "fermat661"))
-FERMAT = os.environ.get("SEARCH_C_FERMAT", "auto")          # auto | gmpy2 | fm13
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "fermatw"))
+FERMAT = os.environ.get("SEARCH_C_FERMAT", "auto")          # auto | gmpy2 | fm13 | fmw
 try:
     import fm13  # noqa: E402
-    HAVE_FM13 = FERMAT != "gmpy2" and (fm13.available() or FERMAT == "fm13")
+    HAVE_FM13 = FERMAT not in ("gmpy2", "fmw") and (fm13.available() or FERMAT == "fm13")
     if HAVE_FM13:
         fm13.load()
 except Exception as e:                                       # no IFMA, no compiler: gmpy2 does the tests
     if FERMAT == "fm13":
         raise
     HAVE_FM13 = False
+try:
+    import fmw  # noqa: E402                                 # L limbs of 52 bits: numbers above fm13's 664 bits
+    HAVE_FMW = FERMAT not in ("gmpy2", "fm13") and (fmw.available() or FERMAT == "fmw")
+except Exception as e:
+    if FERMAT == "fmw":
+        raise
+    HAVE_FMW = False
 
 try:
     sieve200.load()                                               # compiles the C file on first use (needs gcc)
@@ -61,7 +69,22 @@ def init_spec(spec, sieve_b, block):
     sv = Sieve200(int(N0), int(M), U, sieve_b, logK=logK, exclude=cover)
     G.clear()
     G.update(N0=N0, M=M, U=U, block=block, Q=spec["Q"], cq=[N0 - q for q in U], sv=sv, cache=None,
-             chunk=max(1, sv.K // block), fm=fm13.Members(N0, M, U) if HAVE_FM13 else None)
+             chunk=max(1, sv.K // block), fm=_fermat_members(spec, N0, M, U))
+
+
+def _fermat_members(spec, N0, M, U):
+    """The C Fermat loop for this progression: fm13 (13 limbs) when every member N0 + k M - q, k < kmax, has at most 664
+    bits, else fmw with the smallest limb count that holds them; None (gmpy2) without IFMA.  kmax is the spec's (2^40 when it
+    has none), capped by ceiling_digits."""
+    kmax = int(spec.get("kmax", 1 << 40))
+    if spec.get("ceiling_digits"):
+        kmax = min(kmax, int((mpz(10) ** spec["ceiling_digits"] - N0) // M) + 1)
+    bits = int(N0 + kmax * M).bit_length()
+    if HAVE_FM13 and bits <= 664:
+        return fm13.Members(N0, M, U)
+    if HAVE_FMW:
+        return fmw.Members(N0, M, U, kmax)
+    return None
 
 
 def _window(k0):
@@ -98,7 +121,7 @@ def run_block(k0):
     for g in range(0, len(order), MEMBER_GROUP):
         js = np.ascontiguousarray(order[g:g + MEMBER_GROUP] + off, dtype=np.uint32)
         rows, offs = sv.survivors(bits, js)
-        if G["fm"] is not None:                                    # all the Fermat tests of the group in C (IFMA)
+        if G["fm"] is not None:                                    # all the Fermat tests of the group in C (IFMA: fm13 or fmw)
             fp = G["fm"].first_pass(js.astype(np.uint64) + (k0 - off), rows, offs)
             fp = fp.tolist()
             offs = offs.tolist()
