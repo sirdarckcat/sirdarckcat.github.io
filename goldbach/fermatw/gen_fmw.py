@@ -27,12 +27,49 @@ w("#define FMW_STEP(A, N, NINV, KB) do { \\")
 for g in range(G):
     w("  { __m512i *a_ = (A) + %d * %d; const __m512i *n_ = (N) + %d * %d; const __m512i ninv_ = (NINV)[%d]; const __mmask8 kb_ = (KB)[%d]; \\" % (g, L, g, L, g, g))
     w("    const __m512i zero_ = _mm512_setzero_si512(); \\")
-    if VAR == "win":
+    if VAR in ("win", "win2"):
         w("    __m512i T_[%d]; \\" % (2 * L))
     for i in range(L):
         w("    const __m512i a%d = a_[%d]; \\" % (i, i))
     # phase 1: column k = 0 .. 2L-1: e_k = sum lo(a_i a_j), i<j, i+j=k  +  sum hi(a_i a_j), i<j, i+j=k-1 ; t_k = 2 e_k + diag
-    for k in range(2 * L):
+    if VAR == "win2":
+        # columns in blocks of CB, each column with two accumulators (lo terms, hi terms), terms emitted round-robin over
+        # the 2 CB chains so that independent IFMAs are adjacent in program order (chains of ~L/2 instead of ~L)
+        CB = 4
+        for k0 in range(0, 2 * L, CB):
+            ks = [k for k in range(k0, min(k0 + CB, 2 * L))]
+            chains = []
+            for k in ks:
+                lo = [("lo", i, k - i) for i in range(L) if i < k - i < L]
+                hi = [("hi", i, k - 1 - i) for i in range(L) if i < k - 1 - i < L]
+                chains.append(("l%d" % k, lo))
+                chains.append(("h%d" % k, hi))
+            started = set()
+            depth = max(len(c[1]) for c in chains)
+            for d in range(depth):
+                for name, terms in chains:
+                    if d < len(terms):
+                        h, i, j = terms[d]
+                        if name in started:
+                            w("    %s = _mm512_madd52%s_epu64(%s, a%d, a%d); \\" % (name, h, name, i, j))
+                        else:
+                            started.add(name)
+                            w("    __m512i %s = _mm512_madd52%s_epu64(zero_, a%d, a%d); \\" % (name, h, i, j))
+            for k in ks:
+                parts = [n for n in ("l%d" % k, "h%d" % k) if n in started]
+                v = "e%d" % k
+                if len(parts) == 2:
+                    w("    __m512i %s = _mm512_add_epi64(%s, %s); %s = _mm512_add_epi64(%s, %s); \\" % (v, parts[0], parts[1], v, v, v))
+                elif len(parts) == 1:
+                    w("    __m512i %s = _mm512_add_epi64(%s, %s); \\" % (v, parts[0], parts[0]))
+                else:
+                    w("    __m512i %s = zero_; \\" % v)
+                if k % 2 == 0:
+                    w("    %s = _mm512_madd52lo_epu64(%s, a%d, a%d); \\" % (v, v, k // 2, k // 2))
+                else:
+                    w("    %s = _mm512_madd52hi_epu64(%s, a%d, a%d); \\" % (v, v, (k - 1) // 2, (k - 1) // 2))
+                w("    T_[%d] = %s; \\" % (k, v))
+    for k in (range(2 * L) if VAR != "win2" else []):
         terms = []
         for i in range(L):
             j = k - i
@@ -58,7 +95,7 @@ for g in range(G):
         if VAR == "win":
             w("    T_[%d] = %s; \\" % (k, v))
     # phase 2: reduction
-    if VAR == "win":
+    if VAR in ("win", "win2"):
         # window variables: t-index -> variable name; round i uses t_i .. t_{i+L}
         live = {}
         def var(c):

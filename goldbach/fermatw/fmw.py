@@ -12,7 +12,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "fmw.c")
 GEN = os.path.join(HERE, "gen_fmw.py")
-VARIANT = os.environ.get("FMW_VARIANT", "win")
+VARIANT = os.environ.get("FMW_VARIANT")             # default: win2 for L >= 21, win below (bench_ab.py)
 GROUPS = int(os.environ.get("FMW_GROUPS", "1"))
 
 
@@ -46,8 +46,12 @@ def _outdir():
     return d
 
 
+def default_variant(L):
+    return VARIANT or ("win2" if L >= 21 else "win")
+
+
 def build(L, variant=None, groups=None, force=False):
-    variant = variant or VARIANT
+    variant = variant or default_variant(L)
     groups = groups or GROUPS
     tag = hashlib.sha1(("".join(l for l in open("/proc/cpuinfo") if l.startswith("model name"))).encode()).hexdigest()[:8]
     d = _outdir()
@@ -72,7 +76,7 @@ _LIBS = {}
 
 
 def lib(L, variant=None, groups=None):
-    key = (L, variant or VARIANT, groups or GROUPS)
+    key = (L, variant or default_variant(L), groups or GROUPS)
     if key not in _LIBS:
         h = ctypes.CDLL(build(L, variant, groups))
         vp = ctypes.c_void_p
