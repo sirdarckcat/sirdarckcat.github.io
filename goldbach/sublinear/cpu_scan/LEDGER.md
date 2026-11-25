@@ -19,7 +19,7 @@ Sets of moduli the fleet has used, not to be scanned (GPU session, 19:58 UTC): t
 | set of moduli | covers | file | scanned by | status |
 |---|---|---|---|---|
 | first 88 odd primes + 557 | 8,543 (2 at 1,246 rows below 170,000, 83 at 1,247, 1,064 at 1,248, 7,211 at 1,249, 183 at 1,250) | `covers_first88_557.txt.xz` | research session, the first 3,000 in order of rows below 160,367 (four workers, every fourth each) | started 19:59 UTC 25 Nov |
-| first 88 odd primes + 523 | 8,572 (4 at 1,247, 154 at 1,248, 1,211 at 1,249, 6,922 at 1,250, 281 at 1,251) | `covers_first88_523.txt.xz` | offered to the uarch session | |
+| first 88 odd primes + 523 | 8,572 (4 at 1,247, 154 at 1,248, 1,211 at 1,249, 6,922 at 1,250, 281 at 1,251) | `covers_first88_523.txt.xz` | uarch session, the first 600 in order of rows (four workers, 18.9 million members a cover) | started 20:01 UTC 25 Nov, ends about 01:05 UTC |
 | first 88 odd primes + 613 | 8,537 | `covers_first88_613.txt.xz` | offered to the Opus session | |
 | first 88 odd primes + 503 | 8,582 | `covers_first88_503.txt.xz` | offered to the contractor session | |
 | first 88 odd primes + 479 | 8,582 | `covers_first88_479.txt.xz` | offered to the consultant session | |
@@ -33,7 +33,7 @@ cap 1,249 and seed 557; cap 1,250 and the 89th prime as seed for the others). Th
 Rescans, recorded so that they are not counted as new work: lines 113 to 116 of
 `../../fscan/cover/starts/q170000_m89.txt` (first 89 primes) were scanned whole here from 19:56 to 19:58 UTC before
 the GPU session's answer arrived (4 covers, 85.5 million members, 20.5 million tests, no find); the uarch session
-started on lines 1 to 112 of the same file at 19:49 UTC. The fleet had tested the emptiest 1.5% of one window of
+scanned 20 covers of lines 1 to 112 of the same file from 19:49 to 20:01 UTC (427 million members, no find). The fleet had tested the emptiest 1.5% of one window of
 2^24 members of each such cover on the 23rd.
 
 Check of the build used here (20:06 UTC): the best cover of the 557 set scanned whole at a target of 70,001 (557
