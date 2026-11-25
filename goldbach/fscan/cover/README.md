@@ -467,7 +467,12 @@ of every family that the scan, the unrestricted runs and 31 random starts
 point to, by 1.3 weighted rows over the next one, and the other families
 cannot add to the supply either (a family whose bottom is 1.3 rows higher
 has about a hundredth of family B's covers at any given level). What is not
-excluded is a family that none of these routes reaches.
+excluded is a family that none of these routes reaches. For the level that
+follows a design hit the two best families are even: the runner-up's best
+cover has 1,337 rows below 180,000 against family B's 1,340, and with a
+record of 172,000, 175,000 or 178,000 in hand and a design at 180,000 it
+scores 175,825, 177,289 and 179,243 against 175,837, 177,211 and 179,204
+(`rank_covers.py`, six days), differences of less than 80.
 
 **What each design level buys** (`brainstorm/design_menu.py`,
 `design_menu.txt`). The same model gives, for the best cover known at each
