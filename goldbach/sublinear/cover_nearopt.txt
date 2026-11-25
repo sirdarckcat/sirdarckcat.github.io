@@ -1,0 +1,45 @@
+# cover_nearopt.py ../fscan/cover/starts/q170000_m89r491.txt 170000 0   (25 November 2026)
+rows 1245 (file says 1245)
+single changes by delta (rows added): [(0, 1), (1, 25), (2, 109), (3, 271), (4, 740)]
+modulus: rows it covers alone, classes with delta <= 0, 1, 2, 3   (the top 14 moduli)
+  389: (12, 0, 0, 2, 2)
+  397: (12, 0, 0, 0, 0)
+  401: (13, 0, 0, 0, 0)
+  409: (8, 1, 9, 34, 71)
+  419: (9, 0, 0, 4, 22)
+  421: (9, 0, 1, 9, 24)
+  431: (9, 0, 3, 7, 25)
+  433: (9, 0, 0, 3, 15)
+  439: (9, 0, 0, 6, 22)
+  443: (12, 0, 0, 0, 0)
+  449: (9, 0, 0, 4, 13)
+  457: (10, 0, 0, 2, 6)
+  461: (9, 0, 1, 4, 16)
+  491: (10, 0, 0, 0, 5)
+with improvements counted as 0: 1 25 109 271
+within +1 rows: singles 26, independent pairs about 25.5, triples about 12.7
+within +2 rows: singles 135, independent pairs about 447, triples about 380
+within +3 rows: singles 406, independent pairs about 3.44e+03, triples about 5.84e+03
+
+# cover_nearopt.py ../fscan/cover/starts/q200000_m89.txt 200000 0
+rows 1502 (file says 1502)
+single changes by delta (rows added): [(0, 1), (1, 31), (2, 166), (3, 377), (4, 810)]
+modulus: rows it covers alone, classes with delta <= 0, 1, 2, 3   (the top 14 moduli)
+  389: (12, 0, 0, 0, 2)
+  397: (12, 0, 0, 1, 3)
+  401: (10, 0, 2, 12, 26)
+  409: (11, 0, 0, 4, 10)
+  419: (10, 0, 0, 10, 27)
+  421: (9, 0, 4, 18, 51)
+  431: (9, 0, 3, 22, 58)
+  433: (10, 0, 2, 8, 22)
+  439: (10, 0, 2, 4, 12)
+  443: (12, 0, 0, 0, 0)
+  449: (9, 1, 4, 12, 41)
+  457: (10, 0, 1, 8, 18)
+  461: (9, 0, 0, 7, 36)
+  463: (9, 0, 2, 14, 42)
+with improvements counted as 0: 1 31 166 377
+within +1 rows: singles 32, independent pairs about 31.5, triples about 15.7
+within +2 rows: singles 198, independent pairs about 678, triples about 579
+within +3 rows: singles 575, independent pairs about 6.2e+03, triples about 1.09e+04

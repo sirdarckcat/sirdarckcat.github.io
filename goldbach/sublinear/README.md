@@ -891,6 +891,7 @@ for two weeks are left.
 | N in the top tenth of the decade | +0.08 | and nine tenths of the members are given up |
 | the record prime-gap toolbox and the covering theorems (consultant session) | 0 | the gap searchers use a common-offset cover, a combined sieve over multipliers and tests in order of yield, which is this pipeline with a worse cover; the Ford–Green–Konyagin–Maynard–Tao covering step needs ln x near 10^5 where x = 463 has 6.1 |
 | prime powers, composite moduli | 0 exactly | a row dies by a prime factor, and only N modulo that prime decides it |
+| a larger supply of near-best covers (`cover_nearopt.py`; the GPU session's ledgers) | at most +0.003 | the two G4s take a new cover every window and run at 1,249 to 1,250 rows (mean 1,249.99 over the last day); 28,000 covers at 1,248 or fewer, 442,000 at 1,249 or fewer and 2.28 million at 1,250 or fewer have been made, the walks are two thirds repeats, and a count of single-class changes from the best cover (1 free, 25 at +1 row, 109 at +2, 271 at +3) agrees that this is what exists; an exhaustive file would add about a million covers at 1,250, one more day before the step to 1,251 |
 | session cores on the 200-digit scan | +0.035 | the uarch session measures 4.1·10^-12 expected hits per core-second at 200 digits; 28 cores are 3.5% of the fleet |
 | the ideal-order prize (Result 3) | 3 to 11 net | real and uncollected: see below |
 
