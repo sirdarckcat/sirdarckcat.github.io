@@ -1,0 +1,6 @@
+moves of cost <= 5: 2437 over 59 primes
+k = 2 moves: true minus predicted alive rows: mean -0.00, sd 0.33, min -1, max 1 (n = 289 sets)
+k = 3 moves: true minus predicted alive rows: mean -0.03, sd 0.60, min -2, max 2 (n = 271 sets)
+k = 4 moves: true minus predicted alive rows: mean +0.02, sd 0.73, min -2, max 2 (n = 223 sets)
+k = 6 moves: true minus predicted alive rows: mean +0.01, sd 1.10, min -3, max 3 (n = 138 sets)
+k = 8 moves: true minus predicted alive rows: mean -0.18, sd 1.69, min -6, max 5 (n = 106 sets)

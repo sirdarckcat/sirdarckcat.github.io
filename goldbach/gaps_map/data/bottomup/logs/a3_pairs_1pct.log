@@ -1,0 +1,13 @@
+rows 1524, window 2e+07, primes 460, mean strikes 445.3 sd 19.4 (model sd 19.4) in 150 s
+top fraction 0.0100: 215257 members, threshold mean + 2.35 sd
+mean ratio over all d <= 2000000: 0.9998 (should be 1 up to the finite-set correction)
+d with no band prime factor               :  1454759 lags, measured pair ratio 0.993 +- 0.000, Gaussian shared-variance prediction 1.000
+d divisible by exactly one band prime     :   506317 lags, measured pair ratio 1.015 +- 0.000, Gaussian shared-variance prediction 1.025
+d divisible by exactly two band primes    :    38924 lags, measured pair ratio 1.050 +- 0.000, Gaussian shared-variance prediction 1.061
+by the band prime s (single-prime multiples only):
+   s in [ 463,  600): measured 1.038, predicted 1.048 (19 primes)
+   s in [ 600,  900): measured 1.026, predicted 1.036 (45 primes)
+   s in [ 900, 1500): measured 1.014, predicted 1.023 (85 primes)
+   s in [1500, 2500): measured 1.006, predicted 1.015 (128 primes)
+   s in [2500, 4000): measured 1.001, predicted 1.010 (183 primes)
+additive energy proxy sum_d A(d)^2 over 1 <= d <= 2000000: measured / independent = 1.0000
