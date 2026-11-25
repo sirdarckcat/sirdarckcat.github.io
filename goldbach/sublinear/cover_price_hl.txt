@@ -139,7 +139,7 @@ x | moduli | end of complete covers, pair sum | / (x ln^2 x) | end, closed formu
 300000 | 25996 | 54,561,042 | 1.143 | 55,512,148 | 1.163
 1000000 | 78497 | 220,868,495 | 1.157 | 226,571,518 | 1.187
 
-## predictions on record before any measurement (25 November 2026, 07:40 UTC): loss theta - ln g0 at 60, 75, 85 and 93% of the Opus session's tempered reach
+## predictions on record before any measurement (25 November 2026, 07:31 UTC): loss theta - ln g0 at 60, 75, 85 and 93% of the Opus session's tempered reach
 ## at x = 797 (30,931), 1,499 (70,111) and 1,999 (98,731): cover_price_hl.py loss 797 18559 23198 26291 28766, etc.
 x = 797, 138 moduli, theta = 758.4
 Q | loss with the pair sum | with the closed formula | ln g0 measured | loss measured | measured / pair sum | measured / closed formula
