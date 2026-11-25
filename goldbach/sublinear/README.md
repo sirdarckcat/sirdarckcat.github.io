@@ -103,7 +103,9 @@ it; they are in "A floor under every cover" and the sections after it:
   some even N ≤ X has no Goldbach summand below c·ln X·ln ln X, for every
   c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
   N < 10^200 with every N − q, q prime below 16,981, divisible by a prime
-  ≤ 491, certified by divisibility alone.
+  ≤ 491, certified by divisibility alone. Since 25 November the first has a
+  successor on paper of a higher order, c·ln X·(ln ln X)²·ln₄ X/(ln₃ X)²
+  (the block of Erdős and Rankin; "A provable lower bound").
 - A third by-product is exact and small: D(n), how far the first n odd primes
   can strike every prime with no luck, is 5, 7, 19, 31, 43, 67, 103, 163,
   181, 223, 271, 331, 419, 499, 613, 709, 739, 859, 907, 1,051, 1,213, 1,279,
