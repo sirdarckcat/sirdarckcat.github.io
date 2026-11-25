@@ -5,6 +5,7 @@
 # on the thread count, and one thread does not spin on a shared machine), several at a time; a run whose output exists is skipped.
 #   python3 run_floor.py run [procs] [x ...]      the runs
 #   python3 run_floor.py start [procs] [x ...] [--target i]   a target once more (default the 93% one), started from the best tempered cover
+#   python3 run_floor.py all [procs] x [x ...]      per x: the 8 random-start runs, then cover starts at the 85% and 93% targets
 #   python3 run_floor.py report [x ...]           ln g0 per target and seed, slopes, ends (floor_report.md, floor_points.json)
 import json, math, os, subprocess, sys, re
 from concurrent.futures import ThreadPoolExecutor
@@ -59,6 +60,26 @@ def one_start(job):
     os.rename(out + ".part", out); print(f"done x={x} Q={Q} start at the tempered cover", flush=True)
     return out
 
+def quarters_drift(path):
+    """how far the run still moves: d(beta) = <k> in the 4th quarter minus the 2nd, at each temperature. Integrated over beta it is
+    the change of ln Z (so of ln g0) between those quarters, in nats, with the sign of ln g0 (positive: still rising, the run
+    underestimates). Also the largest |d| at the middle temperatures (0.5 <= beta <= 3) and at the cold ones (beta > 3), in rows."""
+    B, D = [], []
+    for line in open(path):
+        if line.startswith("BETA"):
+            t = line.split(); q = t.index("quarters")
+            B.append(float(t[1])); D.append(float(t[q + 4]) - float(t[q + 2]))
+    nats = -sum((D[i] + D[i + 1]) / 2 * (B[i + 1] - B[i]) for i in range(len(B) - 1))
+    mid = max((abs(d) for b, d in zip(B, D) if 0.5 <= b <= 3.0), default=0.0)
+    cold = max((abs(d) for b, d in zip(B, D) if b > 3.0), default=0.0)
+    return nats, mid, cold
+
+# the research session's figures for the loss theta - ln g0, written down before these runs (cover_price_hl.txt, commit 6d3ebdf on
+# ccr-d4a17dd0-7uu03r): (pair sum, closed formula) per target
+PRED = {797: [(434.0, 433.3), (535.5, 537.8), (601.6, 606.2), (656.3, 662.9)],
+        1499: [(791.9, 796.1), (978.2, 987.7), (1104.9, 1118.7), (1200.9, 1216.5)],
+        1999: [(1024.8, 1032.7), (1263.8, 1277.3), (1425.3, 1443.1), (1553.3, 1573.2)]}
+
 def reach_points(paths):
     """run cover_floor.py --reach on the given outputs; returns [(y, ln g0, samples beyond, path)]"""
     txt = subprocess.run([sys.executable, os.path.join(HERE, "cover_floor.py"), "--reach"] + paths, capture_output=True, text=True, check=True).stdout
@@ -77,6 +98,15 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(HERE, "runs"), exist_ok=True)
         jobs = [(x, Q, s, 2 * R[x][0]) for x in xs for Q in targets(R[x][0]) for s in SEEDS]
         with ThreadPoolExecutor(procs) as ex: list(ex.map(one, jobs))
+    elif mode == "all":                                  # per x in the given order: the 8 random-start runs, then cover starts at the 85% and 93% targets
+        procs = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+        xs = [int(a) for a in sys.argv[3:]]
+        os.makedirs(os.path.join(HERE, "runs"), exist_ok=True)
+        jobs = []
+        for x in xs:
+            Qs = targets(R[x][0]); Y = 2 * R[x][0]
+            jobs += [(one, (x, Q, s, Y)) for Q in Qs for s in SEEDS] + [(one_start, (x, Qs[2], Y)), (one_start, (x, Qs[3], Y))]
+        with ThreadPoolExecutor(procs) as ex: list(ex.map(lambda j: j[0](j[1]), jobs))
     elif mode == "start":
         procs = int(sys.argv[2]) if len(sys.argv) > 2 else 1
         args = sys.argv[3:]; ti = -1
@@ -164,6 +194,22 @@ if __name__ == "__main__":
                         allpts[x].update(tail85=dict(y=y, ln_g0=v, samples=c, interp=lin, line3=l3))
                         rep.append(f"- independent check from the tail of the {Qd[2]:,} run: ln g0({y:,}) = {v:.2f} ({c} samples) against {lin:.2f} between the 85% "
                                    f"and 93% points and {l3:.2f} on the line through the first three")
+            if x in PRED:
+                rep.append(f"\nLoss θ − ln g0 against the research session's figures (pair sum / closed formula), and the drift of each run between "
+                           "its 2nd and 4th quarters (nats, + = ln g0 still rising; largest change of <k> at the middle and the cold temperatures, rows):\n")
+                rep.append("| target Q | run | ln g0 | loss | predicted (pair sum) | measured / predicted | predicted (closed) | measured / predicted | drift (nats) | middle | cold |")
+                rep.append("|---|---|---|---|---|---|---|---|---|---|---|")
+                for i, Q in enumerate(Qd):
+                    ps, cf = PRED[x][i] if i < len(PRED[x]) else (float("nan"), float("nan"))
+                    runs_ = [(f"seed {s}", out_name(x, Q, s), at.get((Q, s))) for s in SEEDS]
+                    stp = start_name(x, Q)
+                    if os.path.exists(stp):
+                        _, sp = reach_points([stp]); v = [w for y, w, c, p in sp if y == Q and c == 0]
+                        runs_.append(("cover start", stp, v[0] if v else None))
+                    for tag, p, v in runs_:
+                        if v is None or not os.path.exists(p): continue
+                        dn, dm, dc = quarters_drift(p); loss = th - v
+                        rep.append(f"| {Q:,} | {tag} | {v:.2f} | {loss:.1f} | {ps:.1f} | {loss / ps:.3f} | {cf:.1f} | {loss / cf:.3f} | {dn:+.2f} | {dm:.2f} | {dc:.2f} |")
             rep.append("")
         hdr = ["### Summary", "", "c = slope in units of 1/ln²x. Ends are where a line reaches ln g0 = 0, as multiples of the tempered reach.", "",
                "| x | tempered reach | θ(x) | c, 0 to 60% | c, 60–75% | c, 75–85% | c, 85–93% | least-squares intercept − θ(x) | least-squares c | end: least squares | end: line through 60–85% | end: last interval | end: θ(x)·ln²x (c = 1) | 93% point below the 60–85% line (seed difference) | 93% from the tempered cover / random starts |",
