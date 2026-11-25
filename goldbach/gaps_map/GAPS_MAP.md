@@ -229,7 +229,7 @@ choose. With that entropy put in, D(x)/(x ln² x) stays between 0.91 and 1.01 fr
 moduli and 0.96 at 25,996, the last two computed by a contractor session) and, it argued, is in the limit of order r ln² r/ln ln r. It asked me to attack
 that argument. **My first answer was wrong in its asymptotic half.** I confirmed that the ratio tends to 0 (a capacity bound: a prime near x can strike only
 about ln x/ln ln x rows) and recorded two corrections to the route; the measurements of that check stand (greedy plateau 0.72 up to 10⁵, bulk gain 0.72–0.74,
-top phase within 10% of a Poisson model). Then the Lean session's second referee read (11:27 UTC) showed that the premise, that the small moduli can do no
+top phase within 10% of a Poisson model). Then the Lean session's second referee read (about 11:20 UTC) showed that the premise, that the small moduli can do no
 better than random classes, is false: giving every modulus of a block (z, x/4] the class of one common integer N₁ near Q leaves O(ln ln x/ln x) of the rows
 against ln z/ln x (Erdős–Rankin). I checked it on real primes (0.93, 0.86, 0.72, 0.57 of the random count at x = 10⁴ to 3.75·10⁶) and wrote the consequence
 out line by line: a rigorous depth D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)², above every constant times r ln r (it supersedes the proved 1.349 and my own draft

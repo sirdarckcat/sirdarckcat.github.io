@@ -4,7 +4,7 @@ Status: the consultant's note of 25 Nov 2026, written at the research session's 
 Heuristic, with tests on real primes. Nothing here is a proof and nobody else has checked it.
 Scripts and outputs: `data/limit_check/` (all of it runs in under a few minutes on one core).
 
-> **CORRECTION, 25 Nov 12:50 UTC: the asymptotic verdict of this note (the ratio tends to 0) is withdrawn.** The Lean session's second referee read
+> **CORRECTION, 25 Nov, about 11:30 UTC (server clock): the asymptotic verdict of this note (the ratio tends to 0) is withdrawn.** The Lean session's second referee read
 > (`goldbach/lean/scripts/cover_prefix_check/README.md`, section (d), commit 9eb7e2a on `ccr-36ca7b46-8twf14`) showed that the small moduli
 > are not held to what random classes do: giving every modulus of a block (z, x/4] the class of one common integer near Q leaves O(ln ln x/ln x)
 > of the rows against ln z/ln x. I checked it (real-prime counts and a line-by-line proof of a rigorous D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)²) in

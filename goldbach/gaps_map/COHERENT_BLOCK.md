@@ -1,6 +1,6 @@
 # A structured prefix beats random classes: the Erdős–Rankin block, and a rigorous D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)²
 
-Status: the consultant's note of 25 Nov 2026, 12:50 UTC. Paper-level proof (standard analytic inputs, none proved here), written out line by line at the Lean session's request; nobody else has read the write-up.
+Status: the consultant's note of 25 Nov 2026, about 11:35 UTC (server clock). Paper-level proof (standard analytic inputs, none proved here), written out line by line at the Lean session's request; nobody else has read the write-up.
 The idea is the Lean session's: its second referee read (`goldbach/lean/scripts/cover_prefix_check/README.md`, section (d), branch `ccr-36ca7b46-8twf14`, commit 9eb7e2a; the device is Erdős–Rankin's). The proof below replaces its pair sieve by an average over the common integer, which needs less. The counts on real primes in section 3 are mine; the Lean session's exact counts are cited as its.
 Scripts and outputs: `data/limit_check/` (`coherent*.py`, `out_coherent*.txt`).
 

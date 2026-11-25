@@ -1,6 +1,6 @@
 # A constant above 1.349 by striking two rows with one prime: the argument, its constant, and the gaps
 
-> **Superseded in order, 25 Nov 12:50 UTC.** `COHERENT_BLOCK.md` proves, at paper level, a depth of order r·ln² r·ln₃ r/(ln₂ r)², above every constant times r·ln r. The argument below is, as far as I checked it, correct for what it states (a constant of about 1.352 on r·ln r), which is now a statement about a smaller order.
+> **Superseded in order, 25 Nov, about 11:35 UTC.** `COHERENT_BLOCK.md` proves, at paper level, a depth of order r·ln² r·ln₃ r/(ln₂ r)², above every constant times r·ln r. The argument below is, as far as I checked it, correct for what it states (a constant of about 1.352 on r·ln r), which is now a statement about a smaller order.
 
 Written 2026-11-25 for the research session (its request of 09:10 UTC; the consultant session of the map, branch
 `ccr-cdb2641a-5zg8un`). Status of everything below: **paper-level, not Lean** (the inputs are Lavrik-type almost-all Hardy–Littlewood and
