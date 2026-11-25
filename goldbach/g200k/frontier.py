@@ -2,9 +2,12 @@
 """Closeness frontier rungs (doubling as hit-rate calibration): every N with d digits and N <= c 10^(d-1) whose N - q are all
 composite for the primes q < Q = ceil(0.10 * closeness.ceiling(ln(c 10^(d-1)))) has closeness >= 10% at d digits.
 
-    python3 frontier.py covers.txt d c_num c_den ncovers skip B out.json [--procs P] [--frac F] [--logK 22]
+    python3 frontier.py covers.txt d c_num c_den ncovers skip B out.json [--procs P] [--frac F] [--logK 22] [--cover-offset X]
 
-covers.txt: COVER / BEST lines for one set of moduli (ptcover's PT_DUMP); the first ncovers distinct ones, fewest rows first.
+covers.txt: COVER / BEST lines for one set of moduli (ptcover's PT_DUMP).  Ranking: the first 4,000 distinct ones by the
+dump's k, sorted by their rows at this Q (ties: dump order); a run takes ncovers of them from --cover-offset on (default 0),
+so runs with different offsets scan disjoint covers.  (The 101-, 105- and 110-digit rungs ranked only the first ncovers by
+the dump's k; covers_used in each output lists the covers exactly.)
 c = c_num / c_den (e.g. 11 10 for 1.1).  Each cover's progression N0 + k M is scanned over its k window (10^(d-1), c 10^(d-1)]
 (the first fraction F of it with --frac) by calib.py's scan: sieve200 to B, the emptiest 1 - skip of each 32,768-block of
 in-window members, fm13 / fmw until the first probable prime.  Recorded per rung: the histogram of tested survivor counts,
@@ -21,13 +24,14 @@ from sympy import primerange
 import closeness
 
 args = sys.argv[1:]
-procs, frac, logK = 1, 1.0, 22
-for flag in ("--procs", "--frac", "--logK"):
+procs, frac, logK, cov_off = 1, 1.0, 22, 0
+for flag in ("--procs", "--frac", "--logK", "--cover-offset"):
     if flag in args:
         i = args.index(flag); v = args[i + 1]; del args[i:i + 2]
         if flag == "--procs": procs = int(v)
         elif flag == "--frac": frac = float(v)
-        else: logK = int(v)
+        elif flag == "--logK": logK = int(v)
+        else: cov_off = int(v)                                       # skip the first cov_off covers (a rung split over runs)
 src, d, cn, cd, ncov, skip, B, out = args[0], int(args[1]), int(args[2]), int(args[3]), int(args[4]), float(args[5]), int(args[6]), args[7]
 LO = 10 ** (d - 1)
 HI = cn * 10 ** (d - 1) // cd                                        # N <= HI
@@ -43,12 +47,17 @@ for l in open(src):
     if cov in seen:
         continue
     seen.add(cov); covers.append((int(t[1]) if t[0] == "COVER" else 10 ** 9, cov))
-covers.sort(key=lambda x: x[0])
-covers = covers[:ncov]                                               # the dump's k is the cover's row count at its own Q
-primes = list(primerange(3, Q))
+covers.sort(key=lambda x: x[0])                                      # stable: ties keep the file's order
+POOL = 4000                                                          # the covers ranked by their rows at this Q: the first POOL by
+covers = covers[:max(POOL, cov_off + ncov)]                          # the dump's k (rows at the dump's own Q), so that runs with
+primes = list(primerange(3, Q))                                      # different offsets split one ranking
+P = np.array(primes, dtype=np.int64)
 specs = []
-for _, cov in covers:
-    rows = [q for q in primes if all(q % r != a for r, a in cov)]
+for idx, (_, cov) in enumerate(covers):
+    alive = np.ones(len(P), dtype=bool)
+    for r, a in cov:
+        alive &= (P % r) != a
+    rows = P[alive].tolist()
     M, N0 = 2, 0
     for r, a in cov:
         tt = ((a - N0) * pow(M, -1, r)) % r
@@ -57,9 +66,9 @@ for _, cov in covers:
     khi = (HI - N0) // M                                             # N0 + k M <= c 10^(d-1)
     khi = klo + int((khi - klo + 1) * frac) - 1
     if khi >= klo:
-        specs.append(dict(N0=N0, M=M, U=rows, cover=cov, klo=klo, khi=khi))
-specs.sort(key=lambda s: len(s["U"]))
-specs = specs[:ncov]
+        specs.append(dict(N0=N0, M=M, U=rows, cover=cov, klo=klo, khi=khi, idx=idx))
+specs.sort(key=lambda s: (len(s["U"]), s["idx"]))                    # fewest rows first, then the dump's order
+specs = specs[cov_off:cov_off + ncov]
 G = {}
 
 
@@ -157,7 +166,7 @@ if __name__ == "__main__":
     tested = sum(hist_all.values())
     mean_a = sum(a * n for a, n in hist_all.items()) / tested
     rows = [len(s["U"]) for s in specs]
-    res = {"digits": d, "c": [cn, cd], "Q": Q, "moduli": len(specs[0]["cover"]), "covers": len(specs), "rows_min": min(rows), "rows_max": max(rows),
+    res = {"digits": d, "c": [cn, cd], "Q": Q, "cover_offset": cov_off, "skip": skip, "B": B, "logK": logK, "moduli": len(specs[0]["cover"]), "covers": len(specs), "rows_min": min(rows), "rows_max": max(rows),
            "members": members, "tested": tested, "tests": tests, "prp": prps, "p_hat": p, "p_se": se, "expected": expd(p),
            "expected_lo": expd(p + se), "expected_hi": expd(p - se), "E_tested": mean_a * -math.log(1 - p), "found": len(hits),
            "candidates": len(cands), "hits": hits, "cpu_seconds": (time.time() - t0) * procs, "hist": hist_all,
