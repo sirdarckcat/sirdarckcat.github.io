@@ -95,6 +95,15 @@ it; they are in "A floor under every cover" and the sections after it:
   of a core-hour and 27 digits (g = 11,467, 52.75%) for one more. Section
   "The closeness frontier".
 
+- Where 200,000 stands (the user's stated expectation, relayed on the 25th):
+  the best cover there has 1,502 rows, 36.46 nats, and the units left buy
+  0.43% of a hit if all are put on it (0.14% on the present design); the
+  gap is 5.45 nats, a factor of 230. Every known lever is priced in "The
+  gap to 200,000": together a few tenths of a nat. The only entry of the
+  gap's size is the ideal-order prize, 3 to 11 nats net, which nothing
+  collects; a new route to it would have to output a number with about
+  1,116 rows left at depth 2,000 for under 10^9 operations.
+
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
   by the rows left at sieve depth 5,000 would reach one within the Colab units
@@ -840,6 +849,74 @@ fewer than e^30 operations in all for e^30 such N. About e^36 such N exist; the
 best covers give 1,439 ± 11 and nothing below about 1,340 within any budget
 considered here. A solution is worth 3.5 nats (a factor of 30) at the 10%
 target, and the same question at depth 5,000 (910 rows) is worth 8.8.
+
+## The gap to 200,000, lever by lever (25 November)
+
+On the afternoon of the 25th the lead relayed the user's goal in the user's
+words: the largest least Goldbach summand below 200 digits, 200,000
+expected, a million hoped for; and "your only shot is better maths". The
+closeness lines and the fixed-gap game below are by-products from then on.
+This section is the account asked for: how far 200,000 is, and what every
+known lever is worth, with the number behind each. The other sessions'
+pieces are theirs and are marked.
+
+**The gap.** The best cover at 200,000 on the 89 moduli has 1,502 rows
+(`../fscan/cover/starts/q200000_m89.txt`), p = 0.02398, exponent 36.46 nats.
+The fleet had 6,784.88 units left at 16:05 UTC (GPU session), 1.90 expected
+hits at its design level of 170,000 (1,248 rows, 30.30 nats). With the cut
+acting on the cover's own rows (`cover_design.py`): the chance that the
+campaign ends at or above 200,000 is 0.14% on the present design and 0.43%
+with every remaining unit on the 200,000 cover (0.35% at a design of
+190,000). One expected hit at 200,000 is 5.45 nats away, a factor of 230 in
+work. In machine terms a G4 pays 61 ns, 1.5 Fermat tests, per unit of hit
+mass, so one expected hit at 200,000 is about 13 G4-years, where two G4s
+for two weeks are left.
+
+| lever | worth, nats | status |
+|---|---|---|
+| design level 200,000 instead of 170,000 | it is the 0.43% itself; costs two thirds of the expected record improvements (0.63 expected members at or above 170,000 instead of 1.9) | the user's choice |
+| only the two G4s (GPU session: hits per unit G4 1, L4 0.64 to 0.75, T4 0.50 to 0.58) | +0.05 to +0.2 | the lead's choice; two to four more days of calendar time |
+| keep fraction and sieve depth (Opus session, `goldbach/two_stage/b_answer.md` on its branch) | under 0.1 | closed: a hard cut on the survivors is optimal, 1.5% is optimal at a sieve-to-test cost ratio of 0.0118 and within 0.1 nat from 0.004 to 0.03 (measured: 0.0054, 0.0079, 0.0093 on the three cards); a staged funnel gains nothing; depth beyond 10^8 costs 6.5 times the sieve |
+| cheaper compositeness screens | ceiling 2.4 to 3.0 if tests were free; concrete 0 | a member is rejected by finding one prime row, so a screen only shortens the queue; p−1 to 10^4 costs 21 tests for 9% of the survivors (uarch session measuring) |
+| a 90th and 91st modulus, or primes folded into the modulus (`cover_fold.py`) | +0.115 and +0.118 gross | closed: the same selection the sieve makes; a window of 2^15 costs 1,700 ns a member against 3 (GPU session) |
+| modulus 463 traded for a longer window | 0 | 9 rows are covered by 463 alone (0.14 nats), which is what the saved set-up is worth |
+| covers chosen for the sieve's selection (`cover_selection.py`) | at most +0.07, nothing to select | closed: the survivors' sd is 0.962 of independent on every cover (0.967 at 170,000, 0.960 at 213,070), spread 0.0002; it is the pair structure of sifted primes |
+| second-order Hardy–Littlewood term | −0.064 | the same for every cover; it is the few percent by which hits fall short of (1 − p)^rows in the calibrations |
+| prime powers, composite moduli | 0 exactly | a row dies by a prime factor, and only N modulo that prime decides it |
+| session cores on the 200-digit scan | +0.03 | the fleet tests 52 million numbers a second; 28 cores add 2 million |
+| the ideal-order prize (Result 3) | 3 to 11 net | real and uncollected: see below |
+
+So what exists adds up to a few tenths of a nat beyond the design choice,
+against 5.45.
+
+**The prize, with the fleet's constants.** Result 3 gives 5.9, 8.8 and 12.6
+nats for an order by rows left at depth 2,000, 5,000 and 20,000. A number
+that comes alone, outside a window, loses what the window sieve gives:
+with its rows known to depth z it costs 1/p_z tests (33, 30, 25.5) against
+the fleet's 1.5 per unit of hit mass, 2.8 to 3.1 nats; sieved on its own to
+10^6 and cut at 3%, about 4.8 tests, 1.2 nats. Net 2.8 to 4.7 nats at depth
+2,000, 5.8 to 7.6 at 5,000, 9.7 to 11.4 at 20,000. As a budget: an
+enumerator of the N with at most about 1,116 rows left at depth 2,000 breaks
+even with the fleet if it costs under 550 Fermat tests (10^9 operations)
+per N it outputs. Nothing outputs them:
+
+- A window does not contain them. In the best cover the rows left at depth
+  2,000 are 1,309 ± 14 where the ideal N have 1,116.
+- Enumeration with lists lands below 10^200 with chance e^−1,490 per
+  combination at depth 2,000; meet in the middle halves the exponent; the
+  four families run as programs on the miniature gain nothing (above).
+- The one structure the lists have, that they are all images of the same
+  rows, says that N is in the list of many primes exactly when the single
+  integer F(N) = ∏ (N − q) over the rows has a large smooth part. That is
+  the setting of root-finding modulo an unknown divisor (Coppersmith,
+  Howgrave-Graham, May; Boneh's CRT decoding for smooth integers in short
+  intervals): all k < K with gcd(F(N₀ + kM), P) ≥ d are found without
+  visiting them when ln K ≤ (ln d)²/(n·ln P), n the degree. With n = 1,502
+  and a window of 16.9 nats (`cover_lattice_bound.py`): a typical member's
+  smooth part is at most 20% of the d required (primes to 4,000: 1,870 nats
+  against 9,382), the best member of a window 24%; the method would handle
+  a window of two members. The degree is the number of rows, and nothing of
+  lower degree vanishes on them.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
