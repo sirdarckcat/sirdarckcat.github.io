@@ -797,6 +797,43 @@ real and of known size, the cover collects all of it that lies below the
 Chinese-remainder line, and beyond the line every method we know of costs more
 than scoring the members one by one.
 
+*Run as algorithms, and looked for outside the list* (25 November, at the
+lead's request: "prove nothing better exists, or find it"; both pieces are
+other sessions' work and are not recomputed here). Points 2 to 4 above are
+arithmetic. The Lean session ran the four families as programs on the
+miniature (`goldbach/lean/scripts/pprime_families/` on its branch, commit
+5351c0f; its member file reproduces the cover-first and ideal orders of
+Result 3 exactly) and scored each against the same work spent on the
+cover-first prefix. None gains. In none of 179 configurations of meet in the
+middle, the four-list tree and bucketing do the candidates hold more
+successes, or more of the members with at most 10 or 12 rows left, than the
+prefix of equal work; the lattice decoder (Howgrave-Graham and Coppersmith,
+which recovers planted numbers just above its certified threshold) returns
+nothing because what it needs does not exist: 60.9 nats of agreeing primes
+for one-class lists, where enumeration of every even N below 10^9 has at
+most 36.9. The only positive entries are one particular number at one
+success and tie-breaking inside a cover level (at most 0.12 nat at 10^4
+units of work, gone by 10^5). The measured reason is the list-gain bound
+above in one line: selecting the best class of 29, one member in 28, buys
+0.3 rows beyond the line, and the same selection on the cover buys 4.2.
+
+The consultant session proposed and scored seven mechanisms that are not in
+the grammar of the closure theorem (`goldbach/gaps_map/MECHANISMS.md` on its
+branch, commit 248a04c; three miniatures, the second and third out of
+sample): the size of N (0.1 to 0.3 nats, about 0.1 at 200 digits), any
+function of N modulo the primes to 23 (the Bayes-optimal statistic is worth
+at most 0.13), an early-abort funnel (no information; 0.4 to 0.95 once
+verification is priced, and it is what a real run does anyway), neighbours
+of successes (0.02), neighbours of near-successes (the paragraph in Result
+3: 1.45 nats when verification is free, −0.82 to +0.23 when it is priced,
+at most 0.035 at 200 digits), integers near a square (negative), the
+common-integer block as an order or as a family (null), and N/2 prime
+(null). Nothing computable from residues beats cover first by more than
+about 0.1 nat on the miniature. From this the lead fixed the rule for
+scoring any further proposal: work is counted in modular exponentiations
+with verification priced, the baseline is sieve-then-verify, and a gain on
+the miniature is given its bound at 200 digits before it counts.
+
 **Open problem (P′).** Find even N < 10^200 for which at most 1,320 of the
 primes q < 213,070 have N − q free of prime factors up to 1,000, at a cost of
 fewer than e^30 operations in all for e^30 such N. About e^36 such N exist; the
@@ -2745,6 +2782,34 @@ the 25% line and 2.4 on the 50% line: closeness is carried to more digits
 far more cheaply when it is small, the same fact as before (at a fixed
 share of the ceiling E grows in proportion to the digits, and in proportion
 to the share).
+
+The pipeline was checked end to end at the two sizes before the lines
+started (uarch session; its counts, every hit verified by it for every prime
+below the target). With the expected number computed from the measured
+chance per row and the histogram of the tested members:
+
+| digits | target | rows | exponent, nats | members | found | expected | ratio |
+|---|---|---|---|---|---|---|---|
+| 150 | 40,000 | 355 | 11.0 | 25.2 million | 39 | 35.2 | 1.11 |
+| 100 | 25,000 | 271 | 11.8 | 50.3 million | 44 | 46.5 | 0.95 |
+| 150 | 50,000 | 422 | 13.1 | 167.8 million | 24 | 34.9 | 0.69 |
+| 100 | 30,000 | 312 | 13.6 | 134.2 million | 29 | 25.8 | 1.13 |
+| 100 | 35,000 | 361 | 15.7 | 587.2 million | 19 | 15.9 | 1.19 |
+| 150 | 60,000 | 512 | 15.8 | 1,073.7 million | 18 | 16.8 | 1.07 |
+
+173 found against 175.0 expected, with no trend in the exponent up to 16
+nats (a bias of 6% in the chance per row would show as a ratio of 0.43 at
+the last rung). So the long waits for the first hits of the fixed-gap game
+above (5 found where about 12 were expected over those runs) are not
+reproduced where the counts are large, and no factor is applied to the
+estimates. The rows built at the frontier's targets sit on the floor at
+these sizes: 407 against 406 at 101 digits, 437 against 437 at 105, 483
+against 480 at 110, 532 against 525 at 115, 577 against 571 at 120. The
+ceilings themselves were rerun by the contractor session with
+`../ceiling_model.py` (200 particles): 465,350 at 100 digits (5% to 95%:
+462,099 to 471,125) against the table's 465,348, and 1,136,627 (1,131,431 to
+1,145,859) at 150 digits against 1,136,627; that is a check of the Monte
+Carlo noise and of nothing else.
 
 The 50% line is run with the repository's low-end scanner (`../fscan`:
 progressions modulo 2·3·…·43, one per residue vector on the 13 cover
