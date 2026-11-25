@@ -859,7 +859,19 @@ the kernel: the luck-free depth is within a factor (ln ln r)² of r·ln² r
 from below, where this morning the library had 1.349·r·ln r. The constants
 are what crude steps leave. The last factor, ln₃ y, which would give the
 c·y·ln² y·ln₃ y/(ln₂ y)² of the consultant's note, needs u^(−u) in place of
-e^(−u) in the smooth-number count and is on paper only. At the sizes of this
+e^(−u) in the smooth-number count and is on paper only.
+
+Is it new? A first search on 25 November (web search for lower bounds, omega
+results and covering arguments for the least prime of a Goldbach partition,
+the function of OEIS A002373) found one lower bound only, the
+(1/2 + o(1))·ln X·ln ln X of the 2026 preprint cited at the head of this
+section (arXiv:2605.21529, whose authors also say they found none), the
+conjectured upper order ln² n·ln ln n of Granville, van de Lune and te
+Riele, and the Erdős–Rankin literature for gaps between primes and for the
+Jacobsthal function, with nothing that carries it over to Goldbach
+summands. That is a quick search, not a proper one; the consultant session
+has been asked for the proper one, and until it is done the bound should
+be called new to us. At the sizes of this
 project the block is worse than what tempering finds (it overtakes random
 classes only near y = 10^25), so these are theorems about large X and
 change nothing at 200 digits.
