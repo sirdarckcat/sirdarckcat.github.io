@@ -28,6 +28,7 @@ member loop against gmpy2 on its 96 emptiest members of one window (2,163 tests,
 |---|---|---|---|---|
 | 25 Nov 20:20:40 | started | | | |
 | 25 Nov 20:22:52 | 4 (c0000 to c0003) | 84.7 million | 20,368,738 | 0 |
+| 25 Nov 22:13:37 | 216 (c0000 to c0215) | 4,572.3 million | 1,098,866,130 | 0 |
 
 125 s a cover a core on this machine (4 cores): about 115 covers an hour. Chance that a cover holds a record-beating
 member: about 7·10^−7 (the research session's figure), so the 3,000 covers together have about one chance in 500.
