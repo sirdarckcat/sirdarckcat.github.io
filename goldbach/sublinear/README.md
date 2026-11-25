@@ -2471,15 +2471,21 @@ digits; Opus: the gap of 1,000,000), and the first thing they showed is that
 the table above is too hopeful by a factor of two to four in members:
 
 - Rows. The recursion's floor is low by 4 to 7% at these ratios of Q to D
-  (the test at small targets above). Converged tempering finds 1,218 rows at
-  300 digits where the table has 1,168 (the run's own entropy reaches zero
-  at 1,218 to 1,222, so that is the bottom, not the search), and the uarch
-  session's runs have 1,113 at 350 digits (100,000 sweeps) and 1,010 at 400
-  (200,000 sweeps) against 1,050 and 943. At 2,000 and 2,190 digits for the
-  gap of 1,000,000 the Opus session is at 2,829 and 2,595 rows against 2,315
-  and 2,039, not converged: at 629 moduli a sampler that proposes classes at
-  random hardly moves the large moduli, and that session wrote a move that
-  draws the class of a modulus from all its classes at once.
+  and these sizes, and by more at larger ones. At 300 digits tempering finds
+  1,216 to 1,220 rows where the table has 1,168 (my run 1,218, three seeds
+  of the contractor session 1,219 and 1,220, a run of the uarch session
+  1,216; my run's entropy reached zero at 1,218 to 1,222 and I called that
+  the bottom, two rows too soon); at 350 digits 1,107 to 1,113 against
+  1,050; at 400 digits 1,009 to 1,012 against 943; at 290 digits 1,247
+  (two seeds) against 1,195. For the gap of 1,000,000 the Opus session's
+  covers have 2,825 rows on 629 moduli and 2,563 on 683, against 2,315 and
+  2,039, and they are near what exists: four anneals from different starts
+  end at 2,825 to 2,839 and thermodynamic integration from the cover puts
+  the floor of that basin at about 2,785. So the floor is 20% low at 629
+  moduli. The reason is the one found above for the frozen levels (the
+  largest class of a frozen level is put about a row too high, which adds
+  up with the number of moduli), and my first reading of that session's
+  covers, that they were far from converged, was wrong.
 - Tests. On a processor the cost is the Fermat tests, not the members
   (`cover_dual_cpu.py`, `cover_dual_cpu.txt`). With gmpy2 on one core here a
   base-2 test takes 0.11 ms at 200 digits, 0.30 at 300, 0.66 at 400, 30 at
@@ -2519,10 +2525,16 @@ mass at a cut that tests 2.4% of the members against 10.7%); the same
 calculation holds end to end in the uarch session's checks at 400 digits
 with smaller targets on the same cover (329 hits against 355 expected at
 Q = 30,000, 6 against 6.0 at 100,000, 10 against 9.0 at 130,000). So four
-cores reach 300 digits in about a day for the gap of 200,000 (16 hours
-expected here, started 09:36 UTC on 302 covers of 1,218 and 1,219 rows), and
-50 digits less cost a factor of 11 from 400 to 350 digits and of 29 from 350
-to 300.
+cores reach 300 digits in about a day for the gap of 200,000: one hit is
+expected per about 505 covers of 1,216 rows, each of 51 million members and
+two minutes on four cores here (the printed E^ is first order; the exact
+chance (1 − w·p′)^rows is e^(−0.18) smaller, as the uarch session pointed
+out, which turns the 440 covers of my first estimate into 525 at 1,218
+rows). The scan started at 09:36 UTC on my covers and went over at 12:55 to
+the 1,216- and 1,217-row covers of the uarch session, shared between this
+session, the contractor session (three cores) and, after its 319-digit
+point, the uarch session. 50 digits less cost a factor of 11 from 400 to
+350 digits and of 29 from 350 to 300.
 
 Results (every N recomputed here from N alone before it is listed):
 
