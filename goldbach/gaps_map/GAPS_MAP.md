@@ -248,3 +248,11 @@ e^(−u) in place of u^(−u)). The 1.349·r·ln r theorem is superseded formall
 the kernel (400 digits with no summand below 200,293 and 206,593; 347 digits below 216,289) and a 2,196-digit N for a gap of 1,000,000 (g ≥ 1,001,491,
 rechecked from N alone, certificate in progress) replaces the 2,480-digit height-game record. The map has boxes for the two theorems and the records.
 
+A literature check, requested by the research session for the lead (`LITERATURE_SEARCH.md`; 12:50 UTC): no earlier omega-result for the least Goldbach summand
+was found before 2026. Shi (arXiv 2605.21529, May to Sep 2026) proves (1/2 + o(1))·ln X·ln ln X by pigeonhole, weaker than ours. Radomskii (arXiv 2610.14127,
+Oct to Nov 2026; unrefereed) proves a theorem about blocks outside ℙ + B whose specialisation to B = the primes up to y gives, by my reading and the search agent's,
+a least summand of order ln X·(ln ln X)², more than the paper-level bound of `COHERENT_BLOCK.md` and without its ln₄/(ln₃)² loss; it depends on a large-shift lemma
+modelled on an OpenAI preprint on prime gaps. So (a) and (b) are probably not new as statements, if that lemma holds; the Lean proofs are independent of it. An
+unchecked observation of mine: the block combined with that lemma should give ln N·(ln ln N)³·ln₄N/(ln₃N)². Gaps of the search: the classical papers
+(Westzynthius, Erdős, Rankin) and pre-2000 Goldbach literature were not read.
+
