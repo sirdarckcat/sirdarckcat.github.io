@@ -1,0 +1,4 @@
+Q = 200,000, moduli 3..463 (89), odd primes below Q: 17,983
+average over all covers: rows E n = 2150.67; ordered pairs E n(n-1) = 4623830.8 (E n squared 4625397.3); same-class pair sum E T = 1168.515
+E T / (E n(n-1) x sum 1/((s-1)(s-2))) = 0.8562     [rows placed at random would give 1]
+sum over 463 < s < Q of 1/((s-1)(s-2)) = 2.951666e-04

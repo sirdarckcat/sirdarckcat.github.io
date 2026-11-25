@@ -92,6 +92,7 @@ import GoldbachGaps.Cap.Population
 import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Cap.Thinning
 import GoldbachGaps.Cap.Hardness
+import GoldbachGaps.Cap.PairVariance
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -476,7 +477,19 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `CoverDepth` says so: `sat_iff_coversList`, `sat_iff_exists_number`,
                `sat_iff_search`. So a method that is fast for arbitrary rows would decide
                satisfiability; with `BlackBox`, a method that beats the present search has to
-               use that the rows are the primes, and for that case nothing is proved).
+               use that the rows are the primes, and for that case nothing is proved),
+               `PairVariance` (the count of rows left by a deeper sieve, over a full period of
+               the sieving moduli: mean `n w` and variance
+               `n w (1 - w) + w² Σ_{q ≠ q'} (ρ(q, q') - 1)` exactly, `variance_leftCount`;
+               modulo one prime `r` of the cover with class `a`, neither `q` nor `q + d` is
+               excluded for `r - 2`, `r - 3` or `r - 4` classes of `q` according as `d = 0`,
+               `d = ±a` or neither, and the total over `d` does not depend on `a`,
+               `card_pair_avoid_two`, `sum_card_pair_avoid`; summed over all vectors of
+               nonzero classes, the pairs of rows with any given property are counted by local
+               factors in which no class appears, `sum_classes_pairs`. This is the formal part
+               of "the spread of the sieve count cannot be chosen through the cover";
+               `scripts/selection_check/` has the numbers, and the worst case over the classes
+               is measured, not proved).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

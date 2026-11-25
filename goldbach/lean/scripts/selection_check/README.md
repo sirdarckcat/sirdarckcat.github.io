@@ -109,6 +109,24 @@ which averages out. Hence
 
 and the spread of S cannot be chosen through the cover.
 
+**The average over every cover, exactly** (`class_average.py` → `class_average.txt`). Two distinct primes q, q′ are
+both rows for exactly ∏_r (r − 1 − ν_r) of the vectors of nonzero classes, ν_r the number of nonzero classes among
+q mod r and q′ mod r: r − 2 when r divides q − q′, r − 3 otherwise. So the averages over all covers of the rows, of the
+pairs of rows and of T are sums over the primes below Q with no cover in them: 2,150.67 rows, and
+E T / (E n(n − 1) × Σ 1/((s − 1)(s − 2))) = **0.8562**. The best cover of the file has 0.8556 and the greedy one 0.8560.
+
+**What is a theorem** (`GoldbachGaps/Cap/PairVariance.lean`, standard axioms):
+`variance_leftCount`, the formula for Var S as an identity over a full period of the sieving moduli;
+`card_pair_avoid_two`, the local count r − 2, r − 3 or r − 4 according as d = 0, d = ±a or neither, so that the class
+enters the pairs at difference d only through whether d = ±a, and `sum_card_pair_avoid`, its total over d, which does
+not depend on the class; `sum_classes_pairs`, the average over all covers of any count of pairs of rows as a sum of
+local factors without classes; `prime_of_not_dvd_of_lt_sq`, which makes the rows above 463 a sieve set.
+**What is not**: a bound for the worst choice of classes. The pair sum of one cover is a count in a window of length
+200,000 against a period of 193 digits, and no sieve gives such counts with the right constant; in the local model a
+single difference can gain up to the product of (r − 3)/(r − 4) over the moduli, a factor of several, and what keeps
+the sum at 0.856 is that the differences falling on ±a_r are spread evenly, which is measured (best, greedy and random
+covers within 0.2% of the exact average) and not proved.
+
 **What the missing spread is worth** (`measured_1e8.txt`). A row left at B is prime with chance p′ = p/w = 0.0712;
 p′·sd(S) = 1.283 nats per standard deviation (the research session's 1.265 used the smaller sd); with
 θ = −ln(1 − p′) = 0.0739 it is θ·sd(S) = 1.33. The hits of the average member exceed those of a member with exactly the mean S by ln E(1 − p′)^(S − ES) =
@@ -121,5 +139,5 @@ funnel that keeps only the best fraction f of the members the same change is wor
 
 `covlib.py` (reading a cover, its rows, p), `fold_check.py`, `selection_check.py FILE Q [B] [LINES]`,
 `members.py FILE Q LINE B OUTDIR` and `sieve_members.c` (the direct sieve), `combine.py`, `random_cover_check.py`,
-`pair_density.py`, and their outputs. The cover files are the research session's and are not copied here; put them in
+`pair_density.py`, `class_average.py`, and their outputs. The cover files are the research session's and are not copied here; put them in
 `data/`. Needs numpy; a few minutes, except the sieve to 10^8 (17 ms per member).
