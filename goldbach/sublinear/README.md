@@ -84,8 +84,15 @@ it; they are in "A floor under every cover" and the sections after it:
   two CPU-hours and certified in the Lean kernel, then a 347-digit number
   with g = 216,289 (certified too) and a 319-digit number with g = 207,307,
   and for a gap of 1,000,000 a 2,196-digit number with g = 1,001,491 (Opus
-  session, certified; 2,480 digits were held); 300 digits is running on
-  eleven cores of three sessions. Section "The other direction".
+  session, certified; 2,480 digits were held), then 1,997 digits with
+  g = 1,008,589 (rechecked here; certificate in preparation); 300 digits is
+  running on the contractor session's cores. Section "The other direction".
+- A third game since the afternoon of the 25th, asked by the lead: the
+  closeness frontier, the most digits at which a number with g at least
+  10%, 25%, 50% of its own size's ceiling is held (100, 46 and 25 digits
+  when it started). The cheap holder of d digits sits just above 10^(d−1).
+  First step: 26 digits at 50% (g = 10,303, 52.1%) for a third of a
+  core-hour. Section "The closeness frontier".
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
@@ -607,6 +614,39 @@ with g near 158,000 inherits about 6,000 of the 19,050 rows below 213,070 and is
 left with about 1,600 rows at risk, the same as a fresh member of the best
 cover (my count and the Lean session's agree), and it cannot be sieved in
 bulk.
+
+The same inheritance seeded by near-successes instead of successes
+(the consultant session, 25 November, among seven mechanisms it scored
+outside the grammar of the closure theorem; its numbers are its own and are
+not recomputed here): take the members with at most 5 prime rows as seeds,
+and score a neighbour N + s only on "clean" shifts, where no prime row of
+the seed is inherited. On the miniature this finds 127 successes for 4.31
+million members scored where the cover-first order needs 18.35 million, a
+gain of 1.45 nats, and 0.9 to 1.6 nats out of sample on two other
+miniatures. So on the miniature the cover-first order is the ideal order
+only for scoring that treats each N on its own. It does not carry to the
+campaign, and the reason can be counted (`cover_neighbours.py`,
+`cover_neighbours.txt`). Whatever the seeds are, the mechanism finds at
+most the successes the neighbours hold: with independent rows the chance
+that a shift is clean, summed over the number of prime rows of the seed, is
+the Poisson generating function, and the yield per stream member collapses
+to the sum over s of the plain chance that N + s succeeds, exp(−p·rows(N +
+s)). What the seeds buy is that most neighbours are rejected without a
+test. On the miniature a neighbour is nearly as good as a stream member
+(the stream has at most 30 rows left by its cover and the neighbours that
+succeed have 31 to 38, since the primes up to 23 do little of the work);
+on the campaign's cover (89 moduli, 1,248 rows at 170,000) every
+shifted member N + s, over all 170,000 even shifts below Q, has at least
+1,701 rows (median 2,269), and all the neighbours together hold 0.036
+successes per success of the cover itself. The rows of N + s that N has not
+decided do fall below 1,248 on a few shifts (1,201 at s = −2310, 1,213 at
+−2730, 1,216 at +2310), but a member passes the 500 inherited rows first
+with chance e^−12, so those shifts add 5·10^-5 of a member per member. The
+quantity that decides it is p times the inherited rows: about 4 on the
+miniature, 11 to 12 at 200 digits. For reading any such score: the
+miniature overstates every mechanism that reuses information between
+nearby N, because its cover is weak, and a mechanism should be given this
+bound at the campaign's size before it is relied on.
 
 What each prime beyond the line is worth, and costs, in the miniature (N
 ordered by rows left at depth z; gain in nats over cover first for 10, 30 and
@@ -2596,6 +2636,7 @@ Results (every N recomputed here from N alone before it is listed):
 | 200,000 | 319 | 207,307 | uarch, 25 Nov 13:22 UTC | 131 moduli (3 to 743), 1,183 rows | 1.44 billion, 296 million, 6.4 (a fifth of the 24 CPU-hours expected per hit) | `records/g200k_319digit_g207307` there, commit 3b9dcc4 |
 | 200,000 | 347 | 216,289 | uarch, 25 Nov 11:41 UTC | 141 moduli (3 to 821), 1,115 rows | 806 million, 318 million, 8.5 for the whole 350-digit phase (the hit itself after 319 million members and 1.04 CPU-hours on its second progression; the first, 142 moduli, gave none in 488 million where 1.75 were expected) | `records/g200k_347digit_g216289` there |
 | 1,000,000 | 2,196 | 1,001,491 | Opus, 25 Nov 12:12 UTC | 683 moduli (3 to 5,113), 2,563 rows (heat-bath annealing; the recursion's floor is 2,039) | 20 million sieved to 10^9, the 3,615 emptiest tested (501,670 tests at 66 ms), 10.4 | `goldbach/g_million/record_2196digit` on `ccr-c6e00296-3g7fp9`, commit 71172d4 |
+| 1,000,000 | 1,997 | 1,008,589 | Opus, 25 Nov 14:15 UTC | 629 moduli (3 to 4,657), 2,825 rows (the best of four anneals; floor 2,315) | 40 million sieved to 10^9, the 4,606 emptiest tested (565,572 tests, the first half with gmpy2 at 54 ms, the rest with the uarch kernel at 16 ms), 6.6 | `goldbach/g_million/record_1997digit` there, commit 23edb6f |
 
 Both are certified in the Lean kernel (`Gap200k_400digit_g200293.lean`,
 `Gap200k_400digit_g206593.lean` and `FixedGap.lean` on the Lean branch,
@@ -2633,6 +2674,24 @@ in the kernel (commit 9bd710a, `exists_319_digit_no_summand_below_207307`:
 17,326 of the 18,572 primes below 207,307 by a modulus, 1,246 by the
 Fermat test).
 
+The 1,997-digit number (g = 1,008,589 if N − 1,008,589 is prime; it passes
+25 rounds) replaces the 2,196 digits. Checked here from N alone: N − q has
+a prime factor below 10^6 for 77,663 of the 79,386 odd primes q below
+1,012,000 and fails a strong test for every one of the 1,707 others below
+1,008,589 (1,658 of them below 1,000,003). Its survivors were binomial as
+computed (mean 1,153.6, sd 26.0 against 1,153 and 26), the tests per prime
+122.8 against 124.6, and the hit came as the 4,606th member tested, with
+0.99 expected by then. The Lean certificate is in preparation. The Opus
+session's cost model, checked against both of its runs (4,700 to 5,400
+members to the first hit predicted at 1,997 digits, 4,606 taken), prices the
+next sizes with the covers it can build and the vector kernel, sieve
+included, on four cores: 14 CPU-hours at 1,800 digits (574 moduli, 3,103
+rows), 35 at 1,700, 100 at 1,600 and 330 at 1,500 (491 moduli, 3,591 rows):
+a factor of three per hundred digits. My 45 CPU-hours at 1,500 digits
+assumed 3,100 rows there, the floor's error again. 1,797 digits is running
+since 14:22 UTC; the descent stops there for now, the cores going to the
+closeness frontier below.
+
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
 in the first 69 million. A count that low or lower has probability 3.5%;
@@ -2641,6 +2700,68 @@ gmpy2, and the whole chain at three smaller targets on the same cover
 before going on, all in agreement, so it stands as luck until the next
 sizes say otherwise.)
 
+
+*The closeness frontier: the most digits at a fixed share of the ceiling*
+(`cover_frontier.py`, `cover_frontier.txt`; asked by the lead on 25
+November, CPU only). The first game fixes the size and asks for the largest
+g, the second fixes g and asks for the fewest digits. This one fixes the
+closeness g(N)/ceiling(N), the ceiling taken at N's own size
+(`../closeness.py`), and asks for the most digits at which a number with
+that closeness is held. Three lines: 10%, 25% and 50%. When it started they
+stood at 100 digits (g = 47,881, found that morning by the outside reviewer
+with the uarch session's tools on three cores), 46 digits (g = 20,551) and
+25 digits (g = 10,357). The uarch session has the 10% line, the Opus
+session the 25% line, this session the 50% line.
+
+What a digit costs. A d-digit number lies in [10^(d−1), 10^d) and the
+ceiling grows by 4 to 10% across that decade, so the cheapest d-digit
+holder sits just above 10^(d−1): scan 10^(d−1) < N ≤ c·10^(d−1) with the
+target Q = f·ceiling(c·10^(d−1)), and every hit has closeness at least f at
+d digits. With the model of the section above (the moduli that fit, the
+recursion's floor for the rows, one member in (1 − p)^−rows a hit) and the
+best c of a grid from 1.1 to 10:
+
+| 10% line, digits | 101 | 105 | 110 | 115 | 120 | 125 | 130 | 140 | 150 |
+|---|---|---|---|---|---|---|---|---|---|
+| target | 46,578 | 50,819 | 56,352 | 62,153 | 68,313 | 74,793 | 81,594 | 96,173 | 112,070 |
+| moduli that fit | 49 | 51 | 53 | 55 | 57 | 59 | 61 | 65 | 69 |
+| members per hit, powers of ten | 7.7 | 8.0 | 8.4 | 8.9 | 9.3 | 9.8 | 10.2 | 11.2 | 12.0 |
+
+| 25% line, digits | 47 | 48 | 49 | 50 | 51 | 52 | 53 | 55 | 57 | 60 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| target | 20,479 | 21,366 | 22,563 | 23,500 | 24,760 | 25,738 | 27,054 | 29,617 | 32,148 | 35,806 |
+| moduli that fit | 25 | 25 | 26 | 26 | 27 | 27 | 28 | 29 | 30 | 31 |
+| members per hit, powers of ten | 9.4 | 9.6 | 9.8 | 10.1 | 10.3 | 10.5 | 10.7 | 11.2 | 11.5 | 12.2 |
+
+| 50% line, digits | 26 | 27 | 28 | 29 | 30 | 31 | 32 |
+|---|---|---|---|---|---|---|---|
+| target | 9,907 | 10,901 | 12,141 | 12,930 | 14,138 | 15,196 | 16,456 |
+| moduli that fit | 13 | 14 | 15 | 15 | 16 | 16 | 17 |
+| members per hit, powers of ten | 10.7 | 11.0 | 11.4 | 11.8 | 12.2 | 12.7 | 13.1 |
+
+A digit costs a factor of about 1.25 in members on the 10% line, 1.6 on
+the 25% line and 2.4 on the 50% line: closeness is carried to more digits
+far more cheaply when it is small, the same fact as before (at a fixed
+share of the ceiling E grows in proportion to the digits, and in proportion
+to the share).
+
+The 50% line is run with the repository's low-end scanner (`../fscan`:
+progressions modulo 2·3·…·43, one per residue vector on the 13 cover
+primes, a byte score for every member and Fermat tests 24 at a time for
+the best fraction of a percent). At this end the vectors can be counted
+exactly (`../fscan/enumv`), and the recursion's floor is not the count that
+matters: at the 26-digit target the best vectors leave 183 rows (5 of
+them), 184 (22), 185 (113), 186 (499), 187 (2,019), 188 (7,097), where the
+floor says 189.
+
+Results (every N recomputed here from N alone, with a script that shares
+nothing with the scanners: N − p composite for every odd prime p below g by
+a Fermat witness or a small factor, N − g proved prime by a Lucas n − 1
+proof; then sent to the lead, who recomputes it again):
+
+| line | digits | N | g(N) | ceiling at N | closeness | found | cost |
+|---|---|---|---|---|---|---|---|
+| 50% | 26 | 10492156463590001369800256 | 10,303 | 19,775 | 52.10% | this session, 25 Nov 14:26 UTC, `fscan` on 10^25 < N ≤ 1.1·10^25 with target 9,907, the class with 187 rows | 0.35 core-hours for the classes 183 to 187 (2.0·10^11 members); 2 found against 0.65 expected by the scanner's count, the other being 10621579671744600348710546 with g = 10,159 (51.35%), found first, at 14:22 |
 
 **Conjecture (counting law), as it stands on 25 November at noon.** For Q
 up to the end it predicts, the number of class vectors modulo the odd primes
