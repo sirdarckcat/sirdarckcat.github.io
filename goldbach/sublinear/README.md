@@ -2181,6 +2181,32 @@ near x = 10^25, and a cover built from it at x = 10^4 reaches 0.39 to 0.48
 of x·ln² x where plain greedy reaches 0.71 and the constrained recursion
 1.0.
 
+The same asked directly at the campaign's size, since the floors there are
+counts of typical covers and the block shows that typical and best can
+differ (`cover_block_test.py`, `cover_block_test.txt`): the moduli of a
+block on the residues of one common integer (the best of 3,000 integers),
+the other moduli tempered on the rows left, against the same block with
+random classes (the best of 3,000 vectors).
+
+| target | block | block alone leaves: common integer, mean and best | random classes, mean and best | whole cover: common integer | random block | best cover known |
+|---|---|---|---|---|---|---|
+| 170,000 | (41, 113], 17 moduli | 12,257 and 12,117 | 12,213 and 12,139 | 1,342 | 1,348 | 1,248 |
+| 170,000 | (23, 113], 21 | 10,866 and 10,662 | 10,792 and 10,689 | 1,366 | 1,377 | |
+| 170,000 | (17, 113], 23 | 9,843 and 9,607 | 9,728 and 9,623 | 1,385 | 1,391 | |
+| 170,000 | (41, 199], 33 | 11,095 and 10,929 | 11,049 and 10,939 | 1,449 | 1,441 | |
+| 213,070 | (41, 113], 17 | 15,071 and 14,922 | 15,014 and 14,924 | 1,723 | 1,723 | 1,609 |
+| 213,070 | (23, 113], 21 | 13,357 and 13,136 | 13,267 and 13,159 | 1,742 | 1,749 | |
+
+On average a common integer leaves slightly more rows than random classes
+here (the device needs twice the target to be below the square of the
+block's upper end, and the target is thirteen to sixteen times above it),
+with a wider spread, so its best of 3,000 is a few rows ahead of the best
+random vector; and any frozen block, structured or not, costs 94 to 201
+rows at 170,000 and 114 to 133 at 213,070 against the best cover. So no
+structured cover of this kind comes near the measured floor on the 89
+moduli. (Tempering of the other moduli: 40,000 sweeps; longer runs might
+gain ten or twenty rows, not a hundred.)
+
 A prediction, and its test. The runs first made at 2,999 and 9,973 moduli
 were short (20,000 and 12,000 sweeps), and the one at Q = 300,000 was not in
 equilibrium: its mean row counts at the middle temperatures were still
@@ -2602,7 +2628,10 @@ So "there is an even number below 10^2196 with no Goldbach summand below
 
 The 319-digit number (g = 207,307) was rechecked here in the same way as
 the others (319 digits, in the classes of its 131 moduli, 1,183 rows left,
-every smaller prime ruled out, N − g passing 65 rounds).
+every smaller prime ruled out, N − g passing 65 rounds) and is certified
+in the kernel (commit 9bd710a, `exists_319_digit_no_summand_below_207307`:
+17,326 of the 18,572 primes below 207,307 by a modulus, 1,246 by the
+Fermat test).
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
