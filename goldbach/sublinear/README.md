@@ -2083,7 +2083,8 @@ with smaller targets on the same cover (329 hits against 355 expected at
 Q = 30,000, 6 against 6.0 at 100,000, 10 against 9.0 at 130,000). So four
 cores reach 300 digits in about a day for the gap of 200,000 (16 hours
 expected here, started 09:36 UTC on 302 covers of 1,218 and 1,219 rows), and
-each 50 digits less cost a factor of about 30. Results to follow here.
+50 digits less cost a factor of 11 from 400 to 350 digits and of 29 from 350
+to 300. Results to follow here.
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
