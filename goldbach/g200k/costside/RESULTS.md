@@ -104,3 +104,21 @@ Estimated: 2.0-2.3 ns a member against 3.06 (with today's pass A), 1.5-1.6 ns if
 keep of 0.5%: 0.10-0.15 nats, 0.23-0.27 nats.  Selection measured on this CPU (section 1): 96% (top 10%) to 99% (top 20%) of the
 captured hit mass of exact counts for every member, at the same 14.0 tests a kept member.  The filter check in pass B and the matrix
 round trip are the two costs not in today's pipeline; both are estimates.
+
+## Predictions for the approved items in the G4 pipeline (`pipeline.py`)
+
+The GPU session's a2 pipeline (depth 2): while both run, Fermat at 0.735 and the sieve at 0.43 of their solo speed; a batch of 2^26 members at keep 1.5%
+needs 1.318 s of Fermat alone and 0.434 s of sieve.  The Fermat time scales with the keep except the tail (0.175 s a pool at t_min = 4 ms, 0.09 s at
+t_min = 0; carry-over removes it); the two-stage sieve takes 2.0-2.3 / 3.06 of the sieve time; hits a batch from the measured capture curves.
+Expected hits a second against today (t_min 4 ms / t_min 0):
+
+| | keep 1.5% | 0.75% | 0.5% | 0.3% |
+|---|---|---|---|---|
+| rounds as now, one-stage | 1.000 / 1.000 | 1.049 / 1.085 | 0.964 / 1.016 | 0.818 / 0.881 |
+| rounds as now, two-stage top 10% | 1.019 / 1.019 | 1.128 / 1.182 | 1.123 / 1.217 | 1.013 / 1.111 |
+| carry-over, one-stage | 1.124 / 1.060 | 1.212 / 1.169 | 1.144 / 1.110 | 1.000 / 0.979 |
+| carry-over, two-stage top 20% | 1.167 / 1.098 | 1.369 / 1.297 | 1.337 / 1.291 | 1.211 / 1.180 |
+| carry-over, two-stage top 10% | 1.154 / 1.084 | 1.392 / 1.317 | 1.417 / 1.365 | 1.311 / 1.275 |
+
+The three together: x1.37-1.42 (0.31-0.35 nats).  The two-stage sieve alone at keep 1.5% is worth only 2-3% (the sieve is hidden behind the Fermat rounds); it pays
+once the keep is lowered and the batch turns sieve-bound.
