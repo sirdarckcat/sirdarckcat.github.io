@@ -107,4 +107,11 @@ PATCH = {
   detail_add="A later scoring on the exact miniature (MECHANISMS.md) puts numbers on seven candidates: none gains a nat at real cost, and the one that does in the scoring rule's own unit is bounded at +0.035 nats at the campaign's cover."),
 "t_archip": dict(
   detail_add="What the neighbours can give at the campaign's cover is bounded: the success mass of all neighbours is 3.6% of the member's own there, a ceiling of +0.035 nats (box ‘Neighbours of near-successes’)."),
+# ---------------- the bottom-up round (25 Nov, 19:10 UTC)
+"t_calib": dict(
+  detail_add="A later, independent check on real data (BOTTOM_UP.md section 5): the same independent-rows model, with a cover as the class vector modulo the small primes, reproduces the inter-record times of the 69 published records of the least Goldbach summand (OEIS A025018/A025019): an excess of +0.06 ± 0.34 nats for N from 8·10¹³ to 9·10¹⁷ (exponent 30 to 40 nats), 0.6 to 0.9 nats optimistic below 5·10¹³."),
+"s_lattice": dict(
+  detail_add="A later attack on this barrier (LATTICE_CHECK.md) recomputed it on another cover, simulated a whole window and tried hard lists, soft weights (closed form ratio² ≤ ln(1 + n/x)/ln K), subsets, products and per-prime exponents: the best decoder reaches 0.36 of the agreement it needs. The claim stands."),
+"m_floor": dict(
+  detail_add="A count of covers near the best from single-prime moves (BOTTOM_UP.md section 2) agrees with the table here: e^21 covers within 8 rows of the best against the e^19.7 a hit needs, 0.12 to 0.19 nats."),
 }

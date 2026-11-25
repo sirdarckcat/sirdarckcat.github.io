@@ -1,7 +1,7 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-192 results (95 read from the Lean source, 97 from documents, three of the latter being Lean statements of 25 Nov taken from the library's statement file) and 436 links; this note says what the structure shows.
+195 results (95 read from the Lean source, 100 from documents, three of the latter being Lean statements of 25 Nov taken from the library's statement file) and 451 links; this note says what the structure shows.
 Snapshot of 2026-11-25, about 09:00 UTC: Lean library read at `a1c77dc` (branch `ccr-36ca7b46-8twf14`), research at `48c73de`
 (`ccr-d4a17dd0-7uu03r`), the exact-search session at `018b7ed` (`ccr-b8c25887-i6tn9f`), the campaign at `ebb6e1e`
 (`ccr-8ffe9d7a-4ni11u`), the archipelago study at `d960f7f` (`ccr-c6e00296-3g7fp9`), the lead's merge at `43ab0b3`
@@ -269,3 +269,17 @@ the miniature's free verification rewards any mechanism that uses the exact prim
 modexps, against sieve-then-verify. A follow-up at the research session's request (15:20 UTC): choosing the seeds by a sieve proxy instead of full verification gives
 +0.3 to +0.6 against verifying every member and −0.5 to −2 nats against the funnel baseline, so reuse between scored members is worth nothing on the miniature once
 verification is priced.
+
+The three later notes of the helper session (19:10 UTC) have a box each: `ROWS_AND_GAPS.md` (where the 5.4 nats are not: seven candidates in the arithmetic of the
+rows, the prime-gap record toolbox, the covering theorems at x = 463), `LATTICE_CHECK.md` (the lattice claim attacked and standing: the best decoder reaches 0.36 of
+the agreement it needs; closed form ratio² ≤ ln(1 + n/x)/ln K = 0.086 for soft weights; a whole window of 2·10⁷ simulated) and `BOTTOM_UP.md` (the bottom-up round). The
+last note's structure is the new thing: the one entropy is ln 10²⁰⁰ = 460.5 nats, spent as 78.3 → 52.2 (1.7 nats, N coprime to the small primes) → 36.46 (443 nats of
+pins, 0.036 nats of exponent per nat) with 16.9 nats left as the window; every free source of information is a Gaussian-tail selection with a measured rate (cover
+0.58 nats per sd, window 1.33), and one more pin beyond 463 pays 0.035 nats per nat at 467 and 0.002 at 200,003, so no resource is left at a better price. Three items
+are closed with numbers: the supply of 3.6·10⁸ covers (e²¹ lie within 8 rows of the best: 0.12 to 0.19 nats, in line with the research session's thermodynamic
+integration), additive structure of the good members of a window (none beyond shared pins: pair ratios 0.99 to 1.08 against independent, additive energy 1.0000), and
+the model itself: the independent-rows model reproduces the 69 published records of the least Goldbach summand (OEIS A025018/A025019) with an excess of +0.06 ± 0.34 nats
+for N ≥ 8·10¹³, where the exponent is 30 to 40 nats like the campaign's (0.6 to 0.9 nats optimistic below 5·10¹³). The note also corrects two of my own earlier
+figures (a lone ideal N costs 1.9 to 3.4 nats, not 1.2 to 1.6; the window sieve costs 0.075 to 0.13 tests per member) and answers three literature points of the
+research session (Bernstein's batch smooth part costs 2,900 to 8,700 Fermat tests per member in wall-clock; no integer analogue of the Joux/Swan relations; root sieves
+are scans). The boxes link to `m_selection`, `m_floor`, `t_calib`, `s_lattice`, `c_lattice`, `c_johnson`, `e_fleet200`, `m_closure` and `t_archip`.
