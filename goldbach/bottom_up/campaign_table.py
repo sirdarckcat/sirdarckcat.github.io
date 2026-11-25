@@ -11,12 +11,12 @@
 # A design hit at D is decided beyond D by the cover's remaining rows in [D, G), each composite with probability 1 - p (they are not
 # sieved). For G below D the count needs each tested member's g, which the tests give for free if survivors are tested in increasing
 # q (the first probable prime found is g). Two expected records are given: from design hits only, and with every tested member's g.
-# The record held today is 112,249 (records/budget_1e200_200digit_g112249).
+# The record held today is 160,357 (found by the fleet on the 24th on an 89-prime cover; the research session, 18:24Z).
 #   python3 campaign_table.py [package_nats ...]
 import sys, math
 import numpy as np
 from statistics import NormalDist
-ND = NormalDist(); z0 = ND.inv_cdf(0.015); L = 200 * math.log(10); R0 = 112249; QMAX = 260000; B = 10 ** 8
+ND = NormalDist(); z0 = ND.inv_cdf(0.015); L = 200 * math.log(10); R0 = 160357; QMAX = 260000; B = 10 ** 8
 
 def primes_upto(n):
     s = np.ones(n + 1, bool); s[:2] = False
@@ -52,8 +52,8 @@ def table(package):
     for D, f, extra_run in DESIGNS:
         U, C, c = load(f); nbest = int((U < D).sum()); scale = (nbest + extra_run) / nbest
         p = C / L; pp = p / c; lamp = -math.log1p(-pp)
-        def n_below(G): return float((U < G).sum()) * scale
-        def sd(n): return 0.9836 * math.sqrt(n * c * (1 - c))
+        def n_below(G, U=U, scale=scale): return float((U < G).sum()) * scale     # defaults bind this design's cover
+        def sd(n, c=c): return 0.9836 * math.sqrt(n * c * (1 - c))
         nD = n_below(D); E_D = window_E(nD, C); delta = lamp * sd(nD); cap = ND.cdf(z0 + delta)
         pre[D] = dict(U=U, C=C, c=c, scale=scale, nD=nD, E=E_D, cap=cap, delta=delta, lamp=lamp, sd=sd, n_below=n_below, p=p)
     n170 = pre[170000]["nD"]
@@ -76,7 +76,8 @@ def table(package):
         P_design = np.array([(1 - math.exp(-Lam(G))) if G >= D else (1 - math.exp(-hits)) for G in grid])
         P_all = np.array([1 - math.exp(-Lam(G)) for G in grid])
         rec_design = R0 + float(np.sum(P_design)) * 250; rec_all = R0 + float(np.sum(P_all)) * 250
-        rows_out.append((D, r["nD"], r["E"], r["delta"], r["cap"], r["cost"], hits, probs, rec_design, rec_all))
+        dist = {x: 1 - math.exp(-Lam(x)) for x in range(165000, 200001, 5000)}     # P(final >= x), every tested member's g counted
+        rows_out.append((D, r["nD"], r["E"], r["delta"], r["cap"], r["cost"], hits, probs, rec_design, rec_all, dist))
     return rows_out
 
 if __name__ == "__main__":
@@ -85,6 +86,12 @@ if __name__ == "__main__":
         print(f"\nengineering package {pk:+.2f} nats (budget: 1.90 design hits at 170,000 as the fleet runs, times e^{pk:.2f})")
         print("design | rows run | exponent (window avg) | tilt | captured at 1.5% | cost/member | design hits | " +
               " | ".join(f"P(>= {G:,})" for G in GS) + " | E[record], design hits only | E[record], g of every tested member")
-        for D, n, E, d, cap, cost, hits, probs, rd, ra in table(pk):
+        out = table(pk)
+        for D, n, E, d, cap, cost, hits, probs, rd, ra, dist in out:
             ps = " | ".join(("%.3f%%" % (100 * probs[G])) if probs[G] is not None else "-" for G in GS)
             print(f"{D:,} | {n:.1f} | {E:.2f} | {d:.3f} | {cap:.3f} | {cost:.3f} | {hits:.4f} | {ps} | {rd:,.0f} | {ra:,.0f}")
+        xs = sorted(out[0][10])
+        print("distribution of the final record, every tested member's g counted (floor 160,357): P(final >= x)")
+        print("design | " + " | ".join(f"{x:,}" for x in xs))
+        for row in out:
+            print(f"{row[0]:,} | " + " | ".join(f"{100 * row[10][x]:.2f}%" for x in xs))

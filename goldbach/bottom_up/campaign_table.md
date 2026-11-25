@@ -13,38 +13,45 @@ session's `cover_design.py`.
 - **Cost per member:** 26% sieve (proportional to the rows) and 74% tests, the G4's measured split.
 - **Budget:** 1.90 expected design hits at 170,000 as the fleet runs (GPU session, 16:05Z).
 - **How a hit at D extends:** a design hit at D is decided beyond D by the cover's unsieved remaining rows in [D, G).
-- **The record held today:** 112,249.
+- **The record held today:** 160,357, the floor of every expected record (the fleet found it on the 24th; corrected at the research session's note, 18:24Z).
 
 ## No engineering package (the budget as it stands)
 
 | design | rows run | exponent | captured | design hits | P(≥ 170k) | P(≥ 180k) | P(≥ 190k) | P(≥ 200k) | P(≥ 213,070) | E[record], hits only | E[record], all g |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 170,000 | 1,250.5 | 30.42 | 17.0% | 1.90 | 85.0% | 16.7% | 1.40% | 0.133% | 0.006% | 166,957 | 172,106 |
-| 180,000 | 1,338.5 | 32.56 | 18.1% | 0.233 | – | 20.7% | 1.66% | 0.130% | 0.006% | 127,184 | 169,465 |
-| 190,000 | 1,424.5 | 34.65 | 19.1% | 0.030 | – | – | 2.94% | 0.295% | 0.012% | 114,656 | 168,790 |
-| 200,000 | 1,506.5 | 36.65 | 20.1% | 0.0042 | – | – | – | 0.420% | 0.018% | 112,636 | 168,361 |
+| 170,000 | 1,250.5 | 30.42 | 17.0% | 1.90 | 85.0% | 16.7% | 1.40% | 0.133% | 0.006% | 174,158 | 175,252 |
+| 180,000 | 1,338.5 | 32.56 | 18.1% | 0.233 | – | 20.7% | 1.66% | 0.130% | 0.006% | 165,310 | 173,154 |
+| 190,000 | 1,424.5 | 34.65 | 19.1% | 0.030 | – | – | 2.94% | 0.295% | 0.012% | 161,348 | 170,213 |
+| 200,000 | 1,506.5 | 36.65 | 20.1% | 0.0042 | – | – | – | 0.420% | 0.018% | 160,542 | 168,739 |
 
-## With the engineering package
+213,070 is 10% of the ceiling at 10^200.
 
-+0.35 nats is uarch's +0.3 plus G4s only at +0.05. +0.65 nats is +0.45 plus +0.2.
+## The distribution of the final record, with every tested member's g counted (floor 160,357)
 
-| design | P(≥ 180k) | P(≥ 190k) | P(≥ 200k) | E[record], hits only | E[record], all g |
-|---|---|---|---|---|---|
-| 170,000, +0.35 | 22.9% | 1.99% | 0.188% | 173,062 | 174,669 |
-| 200,000, +0.35 | – | – | 0.596% | 112,798 | 170,660 |
-| 170,000, +0.65 | 29.6% | 2.67% | 0.254% | 176,681 | 176,724 |
-| 200,000, +0.65 | – | – | 0.803% | 112,989 | 172,628 |
+P(final ≥ x), without the engineering package:
 
-The 180,000 and 190,000 designs are in `campaign_table.out`.
+| design | 165,000 | 170,000 | 175,000 | 180,000 | 185,000 | 190,000 | 195,000 | 200,000 |
+|---|---|---|---|---|---|---|---|---|
+| 170,000 | 98.3% | 85.0% | 46.2% | 16.7% | 5.65% | 1.40% | 0.45% | 0.13% |
+| 180,000 | 81.4% | 61.2% | 39.9% | 20.7% | 5.91% | 1.66% | 0.48% | 0.13% |
+| 190,000 | 65.5% | 40.6% | 27.0% | 12.0% | 6.48% | 2.94% | 0.82% | 0.30% |
+| 200,000 | 59.0% | 34.8% | 19.7% | 9.10% | 4.36% | 1.88% | 0.84% | 0.42% |
+
+With +0.35 nats and +0.65 nats, see `campaign_table.out`. At +0.65 the 200,000 design reaches 0.80% at 200,000, and the 170,000
+design reaches 99.96% at 165,000 and 29.6% at 180,000.
 
 ## Reading it
 
 - **The chance of 200,000 is under 1% for every design and package.** The best is 0.80%: the 200,000 design with the full package.
   The present design gives 0.13%.
-- **The expected record is highest with the 170,000 design:** 167,000–177,000 according to the package.
-- **"E[record], all g" assumes the tests run each kept member's survivors in increasing q.** Then the first probable prime found is
-  the member's g, at no extra cost, and members that fail just below the design level also count.
-  - With the 170,000 design this adds about 5,000 to the expected record without the package.
-  - With a 200,000 design it turns 112,636 into 168,361, because almost all of that design's expected record then comes from
-    members that fail between 160,000 and 200,000.
-  - If the fleet tests survivors in another order, only the "hits only" column applies.
+- **The design to pick depends on what is wanted.**
+  - The 170,000 design gives the highest expected record: 175,000 without the package, 177,000 with the full one.
+  - It is also best for every x up to 180,000.
+  - The 190,000 design is best at 185,000–195,000 (2.94% against 1.40% at 190,000).
+  - The 200,000 design is best only at 200,000 and above.
+- **"All g" assumes the tests run each kept member's survivors in increasing q.** Then the first probable prime found is the member's
+  g, at no extra cost, and members that fail just below the design level count. The research session is asking the GPU session
+  whether the fleet does this. The records below the design level (160,357 and 158,209) suggest it reads something of the kind.
+- **A correction to the first version of this table (6683f3e).** Its "all g" column for the 170,000–190,000 designs used the
+  200,000 cover's rows below the design level, because of a late-binding bug in `campaign_table.py`. The P(≥ G) columns at or above
+  the design level, and the 200,000 design's row, were not affected. The numbers above are after the fix.
