@@ -1,0 +1,44 @@
+# cover_selection.py ../fscan/cover/starts/q200000_m89.txt 200000 1e8 12
+12 covers of q200000_m89.txt, Q = 200000, sieve to 1e+08: w = 0.3332
+rows | Var(S) predicted | binomial | ratio of sd | mean variance/mean of the class counts modulo the primes 467..997 | p' * sd(S), nats per sd
+1502 | 308.8 | 333.7 | 0.9620 | 0.820 | 1.2649
+1502 | 308.8 | 333.7 | 0.9620 | 0.820 | 1.2649
+1502 | 308.9 | 333.7 | 0.9620 | 0.821 | 1.2650
+1502 | 308.8 | 333.7 | 0.9620 | 0.820 | 1.2650
+1502 | 308.8 | 333.7 | 0.9620 | 0.820 | 1.2649
+1502 | 308.8 | 333.7 | 0.9620 | 0.820 | 1.2649
+over the 12 covers: sd(S)/binomial sd: mean 0.9620, min 0.9620, max 0.9620;  p'*sd: 1.2649 to 1.2650
+
+# cover_selection.py ../fscan/cover/starts/q170000_m89.txt 170000 1e8 12
+12 covers of q170000_m89.txt, Q = 170000, sieve to 1e+08: w = 0.3332
+rows | Var(S) predicted | binomial | ratio of sd | mean variance/mean of the class counts modulo the primes 467..997 | p' * sd(S), nats per sd
+1248 | 259.4 | 277.3 | 0.9673 | 0.833 | 1.1593
+1249 | 259.6 | 277.5 | 0.9673 | 0.834 | 1.1598
+1248 | 259.4 | 277.3 | 0.9673 | 0.834 | 1.1594
+1248 | 259.4 | 277.3 | 0.9673 | 0.834 | 1.1594
+1248 | 259.4 | 277.3 | 0.9673 | 0.834 | 1.1594
+1248 | 259.4 | 277.3 | 0.9673 | 0.835 | 1.1594
+over the 12 covers: sd(S)/binomial sd: mean 0.9673, min 0.9672, max 0.9673;  p'*sd: 1.1593 to 1.1599
+
+# cover_selection.py ../fscan/cover/starts/q170000_m89r491.txt 170000 1e8 12
+12 covers of q170000_m89r491.txt, Q = 170000, sieve to 1e+08: w = 0.3332
+rows | Var(S) predicted | binomial | ratio of sd | mean variance/mean of the class counts modulo the primes 467..997 | p' * sd(S), nats per sd
+1245 | 258.9 | 276.6 | 0.9674 | 0.835 | 1.1580
+1245 | 258.9 | 276.6 | 0.9674 | 0.836 | 1.1580
+1246 | 259.1 | 276.8 | 0.9674 | 0.835 | 1.1584
+1246 | 259.1 | 276.8 | 0.9674 | 0.836 | 1.1584
+1246 | 259.1 | 276.8 | 0.9674 | 0.836 | 1.1584
+1246 | 259.1 | 276.8 | 0.9674 | 0.835 | 1.1584
+over the 12 covers: sd(S)/binomial sd: mean 0.9674, min 0.9673, max 0.9674;  p'*sd: 1.1580 to 1.1584
+
+# cover_selection.py ../fscan/cover/starts/q213070_m89.txt 213070 1e8 12
+12 covers of q213070_m89.txt, Q = 213070, sieve to 1e+08: w = 0.3332
+rows | Var(S) predicted | binomial | ratio of sd | mean variance/mean of the class counts modulo the primes 467..997 | p' * sd(S), nats per sd
+1609 | 329.4 | 357.5 | 0.9600 | 0.815 | 1.3065
+1609 | 329.5 | 357.5 | 0.9600 | 0.814 | 1.3065
+1609 | 329.4 | 357.5 | 0.9600 | 0.815 | 1.3065
+1609 | 329.5 | 357.5 | 0.9600 | 0.815 | 1.3065
+1609 | 329.4 | 357.5 | 0.9600 | 0.814 | 1.3064
+1609 | 329.4 | 357.5 | 0.9600 | 0.814 | 1.3065
+over the 12 covers: sd(S)/binomial sd: mean 0.9600, min 0.9599, max 0.9600;  p'*sd: 1.3064 to 1.3068
+
