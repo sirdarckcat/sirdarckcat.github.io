@@ -197,3 +197,18 @@ the drain that ends a run):
 
 The gap a round grew (6.5 -> 10.5 ms): the printed gap is wall minus the half's own kernels, so it includes the time a half's launch waits behind the
 other half's, now all large; it is not host time.  Throughput is for the production A/B (the gate's batches carried ~6 s of CPU verification).
+
+### The production A/B: carry-over FAILED (GPU session, 25 Nov 20:00-21:00Z)
+
+gold-g4j with carry-over (2377c5775be7 + fround 88f67789996f, --carry-over 1) against gold-g4k (baseline 4f27d916ea93), a second each:
+windows 5.409 / 5.470 (0.989), tests counted 19.10M / 19.32M (0.989), tests computed 19.10M / 19.92M (0.959), expected hits 9.461e-7 /
+9.572e-7 (0.988); launches a batch 44.0 / 88.0; control (both baseline, 19:41-19:49Z) 0.9985 / 0.9996.  **Hits/s -1.1% against the
+predicted +2.1% to +5.3%.**  The tests a window fell -3.05%, exactly as modelled; each batch took ~1% longer anyway: the carry path's own work
+(the concatenation of the carried members and their rows into every pool, the re-offsetting of their rows, ~20 more host syncs a batch, the
+bigger first rounds) cost ~4% of a batch, which the prediction priced at zero, and the tail launches it removed were already filled by the
+sieve (the lower end of the range).  Reverted; the present path stays.  Lesson: a prediction must price the new code's own work, not only the
+work it removes.
+
+Item 2 (keep 0.75%) re-derived on today's batch before its A/B: 0.847 s = Fermat work 0.586 s (3.642M computed tests a window at the measured
+24.87M/s) + sieve ~0.204 s + 0.057 s unaccounted; capture 0.672 of keep 1.5%'s; hits/s **+1.3%** if the unaccounted part is fixed per batch,
+**+6.5%** if it scales with the Fermat work (the pipeline model's +4.9% to +8.5% was built on older batch times and is void).
