@@ -1179,6 +1179,23 @@ recomputed here unless said).
   hypotheses name what anything better has to break: weights that are not
   independent given the cover, or members produced by an operation that is
   neither an intersection of progressions nor a sum.
+- *Algorithms that add partial solutions, measured* (Opus session,
+  `goldbach/bottom_up/statement_c/` there, commit cbeaee8; the class its
+  bound left open). The toy: the real tables of the 200,000 cover (rows in
+  each class of the first 6, 8 and 10 later primes), windows of 2^20 and
+  2^24, the score a sum over the primes, every count exact and the meet in
+  the middle also run for real (lists of 284,619 and 197,145, 62 matches,
+  the window's 62). In members touched per member output, at every depth
+  and every share harvested, adding partial solutions never beats pinning
+  plus scanning: 2.3 times worse at its closest (6 primes, 2^24, the
+  deepest 24 members), 10 to 10^8 times worse elsewhere; it beats plain
+  scanning only with 6 primes and loses even to that from 8 on. The
+  reason is one factor: a split into two lists pays 2·sqrt(P/K²) per
+  output, P the product of the primes, so it helps only beyond a depth of
+  ln(4P/K²) nats, 5.3 with 6 primes, 17.7 with 8 and 30.3 with 10, where a
+  window of 2^24 holds no depth beyond 16.6. Splitting each residue into a
+  sum, as the faster knapsack algorithms do, needs tables with additive
+  structure, and counts of rows in classes have none.
 - *The campaign as it stands, recomputed* (Opus session,
   `campaign_table.md` there, commit 6683f3e; its own program from the cover
   files, with the corrections of the day). Chance of ending at or above
