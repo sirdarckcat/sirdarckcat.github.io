@@ -1,0 +1,1 @@
+cover_d100_Q75000_49primes_k709.txt Q=40000 rows=404: 1610612736 members (k from 771751936), 32243712 tested, 259789929 tests, p^=0.12411+-0.00002; expected 8.02 (7.99..8.04), found 6 (candidates 6); E_tested=15.31; 1.16 CPU-h; digits <= 101

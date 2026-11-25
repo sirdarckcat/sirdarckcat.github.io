@@ -14,7 +14,10 @@ E_tested = mean tested count x -ln(1 - p^).
 | 100 | 30,000 | 312 | 13.6 | 11.63 | 134.2M | 2,686,976 | 0.12537 | 25.76 (25.57-25.96) | 29 | 1.13 | 0.08 | 100 |
 | 100 | 35,000 | 361 | 15.7 | 13.60 | 587.2M | 11,755,520 | 0.12477 | 15.92 (15.86-15.99) | 19 | 1.19 | 0.36 | 101 |
 | 150 | 60,000 | 512 | 15.8 | 14.12 | 1073.7M | 21,495,808 | 0.08356 | 16.77 (16.72-16.82) | 18 | 1.07 | 1.07 | 150 |
+| 100 | 40,000 | 404 | 17.6 | 15.31 | 1610.6M | 32,243,712 | 0.12411 | 8.02 (7.99-8.04) | 6 | 0.75 | 1.16 | 101 |
 
-Total: 173 found against 175.0 expected (0.99).
+Total: 179 found against 183.1 expected (0.98).
 
 Check of the driver: Q = 12,000 on the 100-digit cover (143 rows, E_tested 5.4): 487 found, 510.6 expected (t_12k.json).
+
+The rungs above E 15.7 continue as closeness-frontier rungs (frontier.py: many covers, d-digit windows), which test the same model.
