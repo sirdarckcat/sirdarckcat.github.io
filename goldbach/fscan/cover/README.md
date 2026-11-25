@@ -596,8 +596,8 @@ cover at Q = 170,000, 2,321 rows are alive; the fullest classes of the other
 67 moduli add up to 1,218 and a linear programme over them allows 1,151,
 where the cover strikes 1,073. So for a given choice of the small classes
 the bound is within 13% and a floor of 1,170 rows is certified by the
-programme; what cannot be done is the enumeration over the e^77 choices of
-those 22 classes.)
+programme; what cannot be done is the enumeration over the e^73 choices of
+those 22 classes (the product of r − 1 over the 22 moduli 3 to 83).)
 
 ## The brainstorm of 22 November 2026 (`brainstorm/`)
 

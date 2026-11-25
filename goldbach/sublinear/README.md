@@ -1212,7 +1212,8 @@ the rest by their fullest classes. Every class vector on the 89 moduli
 leaves at least 401 of the 15,496 odd primes below 170,000 unstruck (j = 6,
 3 seconds), at least 644 (j = 8, 4.5 million nodes, three minutes) and at
 least 777 (j = 10, 7.3·10^8 nodes, three and a half hours on one thread);
-each two moduli more cost forty times the nodes, and it stops there. These
+two moduli more cost 42 times the nodes from j = 6 to 8 and 163 times from
+8 to 10, and it stops there. These
 are theorems about every cover, where the 1,247 or 1,248 of the next section
 is a measurement: the certified floor is 62% of the best cover known, and
 the gap between them is again
@@ -1920,9 +1921,13 @@ the second of these twice, 150,000 sweeps each from random vectors (commit
 the predicted figure and 47 from the short run. The two long runs at 9,973
 moduli started on 24 November at 18:25 UTC and are not in; with the whole
 pair sum the figure for them is 3,394 (computed and written here at 19:07
-UTC the same day), with the closed formula 3,414. The first of the two
-(150,000 sweeps, commit 99815c7 there, read here after the figure was
-written) gives 3,465.9: it moved 116 nats from the short run toward the
+UTC the same day), with the closed formula 3,414. (Only the range 3,330 to
+3,414, written at 18:02, is earlier than any long run: that session had
+pushed the first run's output at 18:56, eleven minutes before the 3,394 was
+written, and what can be said for the 3,394 is that it was computed without
+reading it. And the test is one-sided, since every run of finite length
+reads too high.) The first of the two (150,000 sweeps, commit 99815c7
+there) gives 3,465.9: it moved 116 nats from the short run toward the
 predicted figure and stopped 52 to 72 short of it, and it is not in
 equilibrium either, its mean row counts at the middle temperatures still
 falling by about 1% from the first quarter of the run to the last. So this
@@ -2051,6 +2056,29 @@ reproduces the four small cases within 4% (48.7, 104, 229, 495), but it
 overshoots at the campaign's targets (1,267 and 1,642), so there is no single
 factor; where rows are quoted below for the fixed-gap game, the covers
 actually found are given beside the recursion's figure.
+
+Where the rows go, on one case. Walk the best cover at Q = 48,000 (229 rows
+left) through its moduli in increasing order beside the recursion's frozen
+solution (215 rows left, the same with or without the prefix constraint of
+the earlier section). Up to the modulus 101 the two agree: the cover has
+648 rows alive there against 643, and at nearly every modulus its class is
+the fullest there is (161 rows at 11 where the theory has 162, 31 at 43
+against 29, 12 at 101 against 13). From 131 to 263 the theory asks for
+classes fuller than any that exists: 10.4 rows at 131, where the fullest of
+the 130 classes has 9 and the cover takes one with 6; 8.7, 7.6, 6.6, 6.0 at
+163, 193, 229, 263, where the fullest have 8, 7, 6, 5. All of the
+difference builds up there (412 rows alive at 263 against 383), and the
+largest moduli then do as well as the theory or better. The cause is in the
+rate function: where a level is frozen its class is the largest of s − 1
+counts, and the largest of s − 1 Poisson-like counts lies about one row
+below the value at which the large-deviation rate equals ln(s − 1) (the
+Stirling factor of the point probability: [½·ln(2π·k) − ln(r/(r − 1))]/ln r
+rows for a count k that is r times its mean, 1.4 rows at 131). While the
+classes of a level are still many, the sum over them supplies that factor
+and the recursion is right; that is the difference between complete covers
+below the end (within 1.6% near the end) and the frozen floors above it (4
+to 14% low). A floor with the exact law of the largest count in the frozen
+levels has not been built.
 
 The same formula covers the table of Result 3, which was made the day
 before with a different sampler and for a different purpose. A number below
@@ -2252,6 +2280,16 @@ Results (every N recomputed here from N alone before it is listed):
 |---|---|---|---|---|---|---|
 | 200,000 | 400 | 200,293 | uarch, 25 Nov 09:31 UTC | 159 moduli (3 to 941), 1,010 rows | 72.4 million, 58.0 million, 1.78 (both hits) | `records/g200k_400digit_g200293` on `ccr-b8c25887-i6tn9f` |
 | 200,000 | 400 | 206,593 | the same run | the same | | `records/g200k_400digit_g206593` there |
+
+Both are certified in the Lean kernel (`Gap200k_400digit_g200293.lean`,
+`Gap200k_400digit_g206593.lean` and `FixedGap.lean` on the Lean branch,
+commit 6a2b774, standard axioms): for every prime q below 200,293
+(respectively 206,593), N − q is not prime, 16,996 (17,438) of them because
+one of the 159 moduli divides it and 1,011 (1,079) because it fails the
+base-2 Fermat test; and 10^399 ≤ N < 10^400. So "there is an even number
+below 10^400 with no Goldbach summand below 200,000" is a theorem. That
+N − g is prime, which makes g the exact value, rests on gmpy2's test here
+and is not certified.
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
 million members sieved: 6.8 expected in the 72.4 million, 2 found, and none
