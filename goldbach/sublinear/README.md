@@ -85,7 +85,7 @@ it; they are in "A floor under every cover" and the sections after it:
   with g = 216,289 (certified too) and a 319-digit number with g = 207,307,
   and for a gap of 1,000,000 a 2,196-digit number with g = 1,001,491 (Opus
   session, certified; 2,480 digits were held), then 1,997 digits with
-  g = 1,008,589 (rechecked here; certificate in preparation); 300 digits is
+  g = 1,008,589 (certified as well); 300 digits is
   running on the contractor session's cores. Section "The other direction".
 - A third game since the afternoon of the 25th, asked by the lead: the
   closeness frontier, the most digits at which a number with g at least
@@ -2719,7 +2719,12 @@ a prime factor below 10^6 for 77,663 of the 79,386 odd primes q below
 1,008,589 (1,658 of them below 1,000,003). Its survivors were binomial as
 computed (mean 1,153.6, sd 26.0 against 1,153 and 26), the tests per prime
 122.8 against 124.6, and the hit came as the 4,606th member tested, with
-0.99 expected by then. The Lean certificate is in preparation. The Opus
+0.99 expected by then. It is certified in the Lean kernel (commit 25b9abb,
+`exists_1997_digit_no_summand_below_1008589`: of the 79,143 odd primes
+below 1,008,589, 76,241 struck by one of the 629 moduli, 1,808 by a divisor
+supplied with the record, 1,094 by the base-2 Fermat test), so "there is an
+even number below 10^1997 with no Goldbach summand below 1,000,000" is a
+theorem; the primality of N − 1,008,589 is not certified. The Opus
 session's cost model, checked against both of its runs (4,700 to 5,400
 members to the first hit predicted at 1,997 digits, 4,606 taken), prices the
 next sizes with the covers it can build and the vector kernel, sieve
