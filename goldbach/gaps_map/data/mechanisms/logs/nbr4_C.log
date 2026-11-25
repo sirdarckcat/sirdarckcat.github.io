@@ -1,0 +1,5 @@
+C kmax=25 J<=5 cmin=46: stream 104951 (+177291 neighbour scans = 282242 units), successes 14 + 21 = 35; cover-first needs 565783 units for 35 -> gain +0.70 nats
+C kmax=26 J<=5 cmin=46: stream 394006 (+543629 neighbour scans = 937635 units), successes 29 + 71 = 100; cover-first needs 2860330 units for 100 -> gain +1.12 nats
+C kmax=27 J<=5 cmin=46: stream 1224260 (+1360414 neighbour scans = 2584674 units), successes 58 + 142 = 200; cover-first needs 8253515 units for 200 -> gain +1.16 nats
+C kmax=28 J<=5 cmin=46: stream 3249870 (+2835687 neighbour scans = 6085557 units), successes 110 + 224 = 334; cover-first needs 23735199 units for 334 -> gain +1.36 nats
+C kmax=29 J<=5 cmin=46: stream 7545396 (+4985673 neighbour scans = 12531069 units), successes 193 + 265 = 458; cover-first needs 43766376 units for 458 -> gain +1.25 nats

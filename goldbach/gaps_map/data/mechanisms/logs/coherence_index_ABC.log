@@ -1,0 +1,18 @@
+A k1max 37 subset 92058284 successes in subset 239
+evalN 46 s
+ coh distribution members [0.0, 0.0, 0.0002, 0.3886, 0.6008, 0.0104, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ coh distribution successes [0.0, 0.0, 0.0, 0.3808, 0.6109, 0.0084, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ mean coh: successes 3.628 vs k1-matched members 3.621
+ ordering by (k1, -coh): k=1: +0.31 (boot +0.27±0.12)  k=3: -0.13 (boot +0.13±0.24)  k=10: +0.08 (boot +0.05±0.09)  k=30: -0.02 (boot +0.00±0.07)  k=100: -0.00 (boot -0.00±0.02)
+B k1max 37 subset 184116906 successes in subset 768
+evalN 56 s
+ coh distribution members [0.0, 0.0, 0.0001, 0.4015, 0.5765, 0.0219, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ coh distribution successes [0.0, 0.0, 0.0, 0.3971, 0.5781, 0.0247, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ mean coh: successes 3.628 vs k1-matched members 3.620
+ ordering by (k1, -coh): k=1: +0.66 (boot +0.55±0.34)  k=3: +0.44 (boot +0.43±0.30)  k=10: +0.00 (boot +0.01±0.11)  k=30: +0.01 (boot +0.02±0.05)  k=100: -0.01 (boot -0.01±0.04)
+C k1max 35 subset 119228518 successes in subset 638
+evalN 34 s
+ coh distribution members [0.0, 0.0, 0.0004, 0.4275, 0.5627, 0.0094, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ coh distribution successes [0.0, 0.0, 0.0, 0.4091, 0.5815, 0.0094, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+ mean coh: successes 3.600 vs k1-matched members 3.581
+ ordering by (k1, -coh): k=1: +0.48 (boot +0.26±0.29)  k=3: -0.05 (boot -0.05±0.22)  k=10: -0.05 (boot -0.04±0.10)  k=30: +0.05 (boot +0.01±0.07)  k=100: +0.07 (boot +0.06±0.05)

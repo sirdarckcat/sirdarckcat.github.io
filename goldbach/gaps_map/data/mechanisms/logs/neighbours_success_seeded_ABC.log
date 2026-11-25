@@ -1,0 +1,12 @@
+A H=1000 top=None succ 256 success pairs found 2 neighbours scanned/seed 315.3 gain {1: (-0.152, 0.063), 3: (-0.021, 0.007), 10: (0.036, 0.08), 30: (0.06, 0.064), 100: (0.016, 0.018)}
+A H=2000 top=None succ 256 success pairs found 2 neighbours scanned/seed 631.4 gain {1: (-0.282, 0.109), 3: (-0.042, 0.014), 10: (0.022, 0.079), 30: (0.051, 0.064), 100: (0.013, 0.018)}
+A H=1000 top=30 succ 256 success pairs found 2 neighbours scanned/seed 30.6 gain {1: (-0.016, 0.007), 3: (-0.002, 0.001), 10: (0.049, 0.081), 30: (0.067, 0.064), 100: (0.019, 0.018)}
+A H=1000 top=10 succ 256 success pairs found 1 neighbours scanned/seed 11.2 gain {1: (-0.006, 0.003), 3: (-0.001, 0.0), 10: (-0.001, 0.0), 30: (-0.0, 0.0), 100: (-0.0, 0.0)}
+B H=1000 top=None succ 826 success pairs found 8 neighbours scanned/seed 315.2 gain {1: (-0.095, 0.034), 3: (-0.138, 0.039), 10: (-0.018, 0.003), 30: (0.012, 0.032), 100: (0.006, 0.016)}
+B H=2000 top=None succ 826 success pairs found 8 neighbours scanned/seed 631.1 gain {1: (-0.181, 0.062), 3: (-0.258, 0.067), 10: (-0.036, 0.006), 30: (-0.004, 0.032), 100: (-0.005, 0.015)}
+B H=1000 top=30 succ 826 success pairs found 6 neighbours scanned/seed 30.5 gain {1: (-0.01, 0.004), 3: (-0.014, 0.004), 10: (-0.002, 0.0), 30: (0.026, 0.033), 100: (0.016, 0.016)}
+B H=1000 top=10 succ 826 success pairs found 4 neighbours scanned/seed 11.0 gain {1: (-0.004, 0.002), 3: (-0.006, 0.002), 10: (-0.001, 0.0), 30: (-0.001, 0.0), 100: (-0.0, 0.0)}
+C H=900 top=None succ 662 success pairs found 8 neighbours scanned/seed 284.0 gain {1: (-0.174, 0.104), 3: (-0.031, 0.005), 10: (-0.039, 0.007), 30: (-0.02, 0.001), 100: (0.004, 0.014)}
+C H=1800 top=None succ 662 success pairs found 8 neighbours scanned/seed 568.3 gain {1: (-0.314, 0.171), 3: (-0.061, 0.01), 10: (-0.077, 0.013), 30: (-0.04, 0.002), 100: (-0.006, 0.014)}
+C H=900 top=30 succ 662 success pairs found 6 neighbours scanned/seed 29.9 gain {1: (-0.022, 0.014), 3: (-0.003, 0.001), 10: (-0.004, 0.001), 30: (-0.002, 0.0), 100: (0.013, 0.014)}
+C H=900 top=10 succ 662 success pairs found 4 neighbours scanned/seed 11.1 gain {1: (-0.01, 0.006), 3: (-0.001, 0.0), 10: (-0.002, 0.0), 30: (-0.001, 0.0), 100: (-0.0, 0.0)}
