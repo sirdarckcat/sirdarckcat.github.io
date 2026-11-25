@@ -5,34 +5,46 @@ this session (experiments, number theory) and the Lean session (proofs). This
 file is the running record of what has been tried, what is proved, what is
 only measured, and what is open.
 
-**Where it stands (24 November, evening).** No method was found, and the
-reason is now understood and quantified. Two results of the 24th sharpen
-it, both in "A floor under every cover" and the section after it:
+**Where it stands (25 November, morning).** No method was found, and the
+reason is now understood and quantified. The results of 24 November sharpen
+it; they are in "A floor under every cover" and the sections after it:
 
 - The covers in use are the best there are. A measurement that needs no
   search to succeed (the partition function over all class vectors, run from
   a random start and from the best cover and compared) puts a floor of 1,214
   rows under every cover on the 89 moduli at Q = 170,000 where the two starts
-  agree, and 1,247 or 1,248 at the bottom; the best cover found has 1,248.
-  At the 10% target no cover comes within 80 rows of what a 1% chance would
-  need. So better covers are not a way to 10%.
+  agree, and 1,247 or 1,248 at the bottom; the best cover found has 1,248,
+  and a certified floor (exhaustive, uarch session) stands at 777. Covers
+  come in families fixed by the classes of the smallest moduli; thirteen
+  families were searched to the bottom one by one and the fleet's is the
+  best (`../fscan/cover/README.md`). At the 10% target no cover comes within
+  80 rows of what a 1% chance would need. So better covers are not a way to
+  10%.
 - A law. The number of class vectors on the odd primes up to x that strike
   every odd prime below Q is exp(θ(x) − c·Q/ln² x) with c = 1.00 ± 0.03,
   measured from 45 to 1,228 moduli and derived, constant included and
-  nothing fitted, from the Hardy–Littlewood count of prime pairs (within 6%
-  at 33 points from 30 to 1,228 moduli, where the first-moment count is off
-  by a factor 1.5 to 1.9; 24 of the points were measured by the Opus session
-  after the derivation was written down, and a prediction made for a long
-  run at 429 moduli, 1,545 against the 1,589 of the short run, came in at
-  1,541 and 1,542); the same calculation predicts within 2% how few rows the
-  best cover leaves at the campaign's targets. In the limit the same
-  derivation gives c = 0.887, that is D(n) ~ 1.1275·r·ln² r (1.349 if the
-  rows were independent), approached from above after a maximum near 1.20;
-  c = 1.00 is where two slow corrections leave it at the sizes measured.
-  It gives D(n) = r·ln² r/c: the luck-free depth is known
-  to a few percent at every size, and at 200 digits it ends near 16,000 on 89
-  moduli, where 15,907 has been found; rigorously, 15,907 ≤ D(89) < 35,000,
-  the upper end by an exhaustive search of the uarch session.
+  nothing fitted, from the Hardy–Littlewood count of prime pairs (within 7%
+  at 36 points from 30 to 1,228 moduli, where the first-moment count is off
+  by a factor 1.5 to 1.9). Four figures were written down before they were
+  measured: the loss at 429 moduli (1,545 predicted, 1,541 and 1,542 found),
+  the count at the end of the 167 moduli (within 1.5%), D(35) (near 3,110,
+  between 3,040 and 3,190: it is 3,079), and the loss at 1,228 moduli (3,394
+  to 3,414), which is the one not settled: runs of growing length read
+  3,582, 3,465, 3,438 and are still coming down. The mechanism has also been
+  checked on complete covers themselves: the class a cover chooses strikes
+  e^(v·p) times an average class, as the price of the derivation says,
+  within about 20% while that factor runs from 1 to 185. The same
+  calculation predicts within 2% how few rows the best cover leaves at the
+  campaign's targets. In the limit it gives c = 0.887, that is
+  D(n) ~ 1.1275·r·ln² r (1.349 if the rows were independent), approached
+  from above after a maximum near 1.20; c = 1.00 is where two slow
+  corrections leave it at the sizes measured. The luck-free depth is thus
+  known to a few percent at every size, and at 200 digits it ends near
+  16,000 on 89 moduli, where 15,907 has been found; rigorously,
+  15,907 ≤ D(89) < 35,000, the upper end by an exhaustive search of the
+  uarch session. Exact values of D(n) are known to n = 35, and covers
+  complete to 41,659, 70,111 and 98,731 on 167, 238 and 302 moduli (Opus
+  session), the first of them certified in the Lean kernel.
 
 - The numbers wanted exist in abundance: about 10^175 even N below 10^200
   have g(N) ≥ 213,070 (10% of the ceiling), and a search that could order N
