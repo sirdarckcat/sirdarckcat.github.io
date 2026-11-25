@@ -273,7 +273,7 @@ verification is priced.
 The three later notes of the helper session (19:10 UTC) have a box each: `ROWS_AND_GAPS.md` (where the 5.4 nats are not: seven candidates in the arithmetic of the
 rows, the prime-gap record toolbox, the covering theorems at x = 463), `LATTICE_CHECK.md` (the lattice claim attacked and standing: the best decoder reaches 0.36 of
 the agreement it needs; closed form ratio² ≤ ln(1 + n/x)/ln K = 0.086 for soft weights; a whole window of 2·10⁷ simulated) and `BOTTOM_UP.md` (the bottom-up round). The
-last note's structure is the new thing: the one entropy is ln 10²⁰⁰ = 460.5 nats, spent as 78.3 → 52.2 (1.7 nats, N coprime to the small primes) → 36.46 (443 nats of
+last note's structure is the new thing: the one entropy is ln 10²⁰⁰ = 460.5 nats, spent as 78.3 (the mean number of representations of an even N) → 52.2 (1.7 nats, N coprime to the small primes) → 36.46 (443 nats of
 pins, 0.036 nats of exponent per nat) with 16.9 nats left as the window; every free source of information is a Gaussian-tail selection with a measured rate (cover
 0.58 nats per sd, window 1.33), and one more pin beyond 463 pays 0.035 nats per nat at 467 and 0.002 at 200,003, so no resource is left at a better price. Three items
 are closed with numbers: the supply of 3.6·10⁸ covers (e²¹ lie within 8 rows of the best: 0.12 to 0.19 nats, in line with the research session's thermodynamic

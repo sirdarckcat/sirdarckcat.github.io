@@ -5,7 +5,7 @@ For the research session and the lead (requests of 17:31 and 17:51 UTC 25 Nov). 
 ## 0. The result in twelve lines
 
 1. **Nothing in this round lowers the 36.46 nats**, and I could not find a place where the 5.4 are hiding. What the round adds is an accounting that says why, and three measurements that close open items.
-2. **The one entropy is ln 10^200 = 460.5 nats.** The exponent goes 78.3 (even N only) to 52.2 (N not divisible by any odd r up to 463, random classes: 1.7 nats of entropy) to 36.46 (classes optimised: 443 nats of pins, 15.8 nats of exponent, 0.036 per nat). 16.9 nats are left: the window of 2.2*10^7 members.
+2. **The one entropy is ln 10^200 = 460.5 nats.** The exponent goes 78.3 (the mean number of representations of an even N by a prime below Q and a prime) to 52.2 (N not divisible by any odd r up to 463, random classes: 1.7 nats of entropy) to 36.46 (classes optimised: 443 nats of pins, 15.8 nats of exponent, 0.036 per nat). 16.9 nats are left: the window of 2.2*10^7 members.
 3. **Every free source of information here is a Gaussian-tail selection**: tilt about rate * sqrt(2 S). The cover has rate 0.58 nats per sd (sd 24.0 rows over random covers, skew -0.04), so the random-energy bound is 17.3 nats and the best cover has taken 15.8 (91%). The window has 1.33 nats per sd; a whole window of 2*10^7 members simulated reaches +5.41 sd (Gaussian 5.34).
 4. **The marginal price is the same everywhere**: one more pin beyond 463, at its best class, pays 0.035 nats per nat of entropy at 467, 0.016 at 2,003, 0.002 at 200,003; the cover as a whole pays 0.036. Nothing is left unspent at a better price, and the 16.9 nats are the window the sieve needs.
 5. **Research's three points** (section 1): no known method beats the progression sieve (Bernstein's batch smooth part costs 2,900 to 8,700 Fermat tests per member in wall-clock, not 2 to 5); no integer analogue of the Joux/Swan relations exists, for a structural reason; no way to bias roots modulo medium primes without paying their logarithm, and the root sieve of the number field sieve is a scan.
@@ -75,7 +75,7 @@ Not that I know of, and the structure argues against it.
 
 | step | entropy used | rows | exponent | per nat |
 |---|---|---|---|---|
-| all 17,983 odd primes below Q, N even (row prime with chance 2/ln N) | 0.7 | 17,983 | 78.3 | |
+| all 17,983 odd primes below Q, N even (row prime with chance 2/ln N): the mean number of representations, a first-moment exponent | 0.7 | 17,983 | 78.3 | |
 | N not divisible by any odd r <= 463, random nonzero classes | 1.7 | 2,150.9 | 52.2 | 15.5 |
 | classes optimised: campaign / mine | 443 | 1,502 / 1,524 | 36.46 / 37.00 | 0.036 |
 | window: the members of one class vector | 16.9 | | -6.6 ideal at the pool 2*10^7; -2.4 realised | |
