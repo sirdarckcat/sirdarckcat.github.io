@@ -1,0 +1,18 @@
+# cover_neighbours.py ../fscan/cover/starts/q170000_m89.txt 170000 0 0.02398   (the campaign's 1,248-row cover; 25 November 2026)
+moduli 89 rows of N: 1248
+even shifts 0 < |s| < 170000: undecided rows U(s): min 1201 at s = -2310, 1st percentile 1496, median 2203;  rows of N itself: 1248
+  |s| <= 1000: min U = 1271 at s = -840 (inherited there 478); most inherited: 608 at s = -798 with U = 2224
+  |s| <= 10000: min U = 1201 at s = -2310 (inherited there 514); most inherited: 637 at s = 2002 with U = 4776
+  |s| <= 40000: min U = 1201 at s = -2310 (inherited there 514); most inherited: 637 at s = 2002 with U = 4776
+  |s| <= 170000: min U = 1201 at s = -2310 (inherited there 514); most inherited: 637 at s = 2002 with U = 4776
+  twelve smallest U: s=-2310: U=1201, inherited=514, s=-2730: U=1213, inherited=509, s=2310: U=1216, inherited=506, s=-9240: U=1235, inherited=501, s=-3990: U=1236, inherited=482, s=-5460: U=1236, inherited=506, s=2730: U=1236, inherited=506, s=-13860: U=1244, inherited=466, s=6930: U=1245, inherited=487, s=-10710: U=1254, inherited=470, s=9240: U=1257, inherited=465, s=-8610: U=1257, inherited=444
+rows of N + s in all (undecided + inherited): min 1701 at s = -8610, median 2269
+p = 0.02398: sum over all even shifts of exp(-p (rows(N+s) - rows(N))) = 3.577e-02  (successes among all neighbours per success in the cover)
+   largest single term: exp(-p*453) = 1.916e-05
+   per shift: chance that a member's inherited rows are all composite, exp(-p I), times the neighbour's advantage exp(p (rows(N) - U)):
+     s = -8610: I = 444, U = 1257: 2.38e-05 x 0.81
+     s = -13440: I = 410, U = 1292: 5.37e-05 x 0.35
+     s = -13860: I = 466, U = 1244: 1.40e-05 x 1.10
+     s = 3150: I = 428, U = 1285: 3.49e-05 x 0.41
+     s = -3630: I = 389, U = 1325: 8.89e-05 x 0.16
+     s = -6510: I = 447, U = 1267: 2.21e-05 x 0.63
