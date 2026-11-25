@@ -1302,6 +1302,44 @@ output-priced enumerator for random boxes {k < K : k mod sᵢ ∈ Aᵢ} with
 factoring: values of the one polynomial F(N) = ∏ (N − q) with unusually
 many small prime factors, found faster than by sieving.
 
+## A twelve-angle sweep (25 November, late evening)
+
+After the bottom-up round the same question was put to twelve independent
+agents of this session, one angle each, with the rule that an answer is a
+number computed on the real 200,000 cover (1,502 rows) and that any claim
+of 0.2 nats or more goes to three verifiers. None reached that bar. Their
+scripts are in the session's scratch space and are not in the repository;
+the numbers below are theirs, one program each, and are consistent with the
+figures already in this file wherever the two overlap.
+
+| angle | best mechanism found | net, nats | what else it measured |
+|---|---|---|---|
+| algebraic families of N | a quadratic with free coefficients, x pinned modulo the 49 primes to 229 (re-optimized cover 1,991 rows) and the best shifted list of quadratic residues at the 40 primes from 233 to 463: exponent 42.52 | −6.06 | with fixed coefficients and the identity N − P(z) = (x − z)(…): −7.7 to −7.8, only 5 to 12 rows actually saved (at most 208 prime values on 294 to 365 admissible points); N − q is reducible only for q a value of a polynomial of degree 2 or more, so the forced rows are of order √Q for half the room |
+| constructions of covers | the set of moduli searched together with the classes: at 200,000 drop 431 and 463, add 479 and 503: 1,499 rows, exponent 36.374 against 36.438 for the same walk on the first 89 primes (1,501 rows; the file's cover has 1,502) | +0.06 | at 213,070 +0.044; at 170,000 +0.064 where the fleet's 491 set already has +0.077; common-integer (Maier) covers: best of 367,333 has 1,878 rows; greedy without search 1,581 to 1,630 |
+| finding the best members of a window without scanning | none: sums over buckets of members, certified branch and bound, the Fourier lines of S, group testing | 0 | a solver that cost nothing would be worth +0.31 nats at the present keep, +1.37 for the emptiest 10^−3, +2.14 for 10^−4, +2.87 for 10^−5 and +4.10 for the single best member of a window: less than the gap, so the gap cannot be closed inside a window; with tables only to 4,096 a free solver loses |
+| cost of rejecting a member | sieve the rows that are tested first deeper than the others (84 rows, the first to 6·10^8) | +0.02 | order and stopping rule 0 (a hard cut on S and test to the first prime is the optimal policy); a shared start of the exponentiation +0.004; joint tests 1.2 to 1.3 times the separate ones; trial division by remainder trees 5 to 8 times short of break-even; tests at no cost at all would be worth 2.9 |
+| statistics of the scan | the cut itself: keep 0.80% (S ≤ 462) | +0.06 (the keep, already counted) | one threshold for the window instead of one per block +0.001; a cut that knows ln N +0.003; covers chosen by the variance of S +0.0003; windows chosen from summaries 0; an exact count to 10^9 at no extra cost +0.26, to 10^12 +0.84; the present count at half its cost +0.35 |
+| audit of the assumptions on real numbers | none: 56,191 members of the cover, every surviving row tested (31.7 million tests) | 0 ± 0.11 | primes found against expected 1.0011 ± 0.0007; dispersion of primes per member 0.996 ± 0.006 of binomial; no dependence on S, on k, on the row, between neighbouring members or between rows; the run of composites after a level is geometric |
+| constructors on tiny exact instances | none: 7,944 choices of pinned primes in a miniature, mixtures of them, annealing in N | −0.01 | cover first is the best choice of pins within noise; annealing in N is 2.0 nats worse (a move redraws every later class); 4,550 swaps of one modulus on the real cover give nothing below 1,502 rows |
+| the accounting of freedom | 463 replaced by 503: 1,500 rows | +0.05 (the same lever as the second row) | room is worth 0.02 to 0.035 nats per nat in every use; the gap to 200,000 is 23 to 27 more digits of N, to 213,070 33 to 38; smaller N for cheaper tests loses 20 to 1 |
+| analytic irregularities | none | 0 | second-order Hardy–Littlewood −0.029 exactly; primes found on 18,298 real members 1.0018 ± 0.0012 of the model; Maier and Buchstab below 10^−23 after the sieve; Chebyshev bias 10^−99; exceptional characters nothing under GRH |
+| sharing work between members | a second sieve stage from 10^8 to 10^9 fed by row lists shared between sibling covers | +0.03 (low confidence: three assumed prices) | a longer window with 463 dropped −0.07; one pin made affordable by shared lists −0.20 to −0.44; a kept member says 0.006 to 0.017 nats about a sibling that shares 2 to 6 later classes |
+| the literature | nothing published constructs such N (exhaustive verification to 4·10^18 only); polynomial selection for the number field sieve is the same two-stage design; one pin with a shared-table sieve | +0.05 (−0.15 to +0.16) | interleaved decoding of Chinese-remainder codes, dense subset sum, incremental sieves, power-residue lists: 0 or negative |
+| reformulations | the top of the cover and the later primes as one integer programme, solved to proven optimality: with the window kept as it is the present cover is the exact optimum (classes of r ≤ 283 fixed); with the 0.24 nats of slack, 449 and 461 replaced by 503 and 523 | +0.02 | the whole window spent on pins: 1,486 rows on 91 moduli, +0.35 gross, −1.6 to −3.1 with the cost of a number that comes alone; members sharing the classes of 467·479 have rows left correlated at 0.019: beyond the cover the landscape is flat noise |
+
+Three things in it were not in this file before. First, the ceiling of the
+whole in-window question: even a free oracle for the emptiest members of a
+window is worth at most 4.1 nats, so the 5.5 cannot come from better
+selection inside windows at all; what remains is structure across covers,
+where every member found comes alone. Second, a direct audit of the model
+at 200 digits with every row tested, which puts the exponent itself at
+±0.11 nats. Third, small but real: at 200,000 the cover on file is one row
+above what a walk finds in seconds on the same moduli, and two to three
+rows above the best set of moduli (+0.05 to +0.09 nats in all, which
+matters only if the design level moves to 200,000; at 170,000 the fleet's
+491 set already has it). The sweep's critic and second round follow below
+when they return.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
