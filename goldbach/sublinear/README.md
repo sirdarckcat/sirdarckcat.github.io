@@ -1163,7 +1163,9 @@ recomputed here unless said).
   pin sets of max(1, P_I/K)/π(I, a); on the 200,000 cover two pins fit the
   window (523 and 503) and save 0.49 nats at the 1.5% cut when a member of
   a short progression costs what a member of a window does, and nothing
-  with the real sieve. (C) For algorithms that add partial solutions (the
+  with the real sieve (recomputed here: the pair with the largest excess
+  that fits is 719 and 829, 13.1 rows above the mean, 0.245 sd of the
+  rows left, 0.53 nats at that cut). (C) For algorithms that add partial solutions (the
   problem is a knapsack in Z/P) there are upper bounds only. Its
   hypotheses name what anything better has to break: weights that are not
   independent given the cover, or members produced by an operation that is
