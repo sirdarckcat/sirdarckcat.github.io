@@ -169,3 +169,81 @@ and `log_zeta_eq_integral` (`ln ζ(s) = (s - 1) ∫_1^∞ B(t) t^{-s} dt` for `s
 `riemannZeta_residue_one`, Abel summation (`sum_mul_eq_sub_integral_mul₁`,
 `tendsto_sum_mul_atTop_nhds_one_sub_integral₀`), `Chebyshev.psi_le_const_mul_self` and
 `Real.le_sum_log_nat`.
+
+## Every constant (25 November 2026)
+
+`GoldbachGaps/CoverEveryConstant.lean` (with the finite counts in `Cap/CommonInteger.lean`) proves
+the covering bound for every constant in place of `c < 1.349…`: for every real `A` and all large
+`X` there is an even `N ≤ X`, larger than `A ln X ln ln X`, such that no `q < A ln X ln ln X` is a
+Goldbach summand of `N`. So the largest least Goldbach summand below `X` is not
+`O(ln X ln ln X)`; this was the research session's conjecture "for every `A`, infinitely many even
+`N` have no Goldbach summand below `A ln N ln ln N`".
+
+The cover has the three layers of `Cap/Layers.lean`. The fixed layer is the primes in `(z, y/4]`,
+all with the class of one common integer `N₁`: it leaves a row `q` only if `N₁ - q` has no prime
+factor in `(z, y/4]`. Averaged over `N₁ ∈ [Q, 2Q)` that is at most the share of the integers below
+`2Q` with no prime factor in `(z, y/4]` (`Cap.exists_common_integer`), which are `z`-smooth
+(Rankin's bound) or `B · p'` with `p' > y/4` prime (the prime number theorem and a harmonic sum):
+a share `O(ln ln y / ln y)`. The pigeonhole layer, the odd primes up to `z = ⌊ln y⌋^K - 1` with
+`K = ⌈300 A⌉ + 1`, leaves the share `O(1 / (K ln ln y))` of that, and the primes in `(y/4, y]` take
+one row each. It is the device of Erdős and Rankin for gaps between primes; the average over the
+common integer replaces a count of pairs of primes.
+
+`eventually_exists_even_le_of_stage` (in `CoverBound.lean`) is the passage from the cover of the odd
+primes up to `y` to a number below `X`, now stated on its own; both theorems use it.
+
+```lean
+eventually_exists_even_le_every_constant : ∀ (A : ℝ),
+  ∀ᶠ (X : ℕ) in Filter.atTop,
+    ∃ N,
+      A * Real.log ↑X * Real.log (Real.log ↑X) < ↑N ∧
+        N ≤ X ∧ Even N ∧ ∀ (q : ℕ), ↑q < A * Real.log ↑X * Real.log (Real.log ↑X) → ¬IsSummand N q
+eventually_exists_classes_every_constant : ∀ (A : ℝ),
+  ∀ᶠ (y : ℕ) in Filter.atTop,
+    ∃ a,
+      ∀ (q : ℕ),
+        Nat.Prime q → q ≠ 2 → q < ⌊A * ↑y * Real.log ↑y⌋₊ → ∃ r, (Nat.Prime r ∧ r ≠ 2 ∧ r ≤ y) ∧ q ≡ a r [MOD r]
+CoverCount.eventually_g0_pos_every_constant : ∀ (A : ℝ),
+  ∀ᶠ (y : ℕ) in Filter.atTop, 0 < CoverCount.g0 y ⌊A * ↑y * Real.log ↑y⌋₊
+CoverCount.eventually_prod_le_g0_every_constant : ∀ (A : ℝ),
+  ∀ᶠ (y : ℕ) in Filter.atTop,
+    ∀ x ≥ y,
+      ∏ r ∈ CoverCount.rowsBelow (x + 1) \ CoverCount.rowsBelow (y + 1), r ≤ CoverCount.g0 x ⌊A * ↑y * Real.log ↑y⌋₊
+Cap.exists_common_integer : ∀ (F P : Finset ℕ) {Q : ℕ},
+  0 < Q →
+    (∀ q ∈ P, q < Q) →
+      ∃ N₁,
+        Q ≤ N₁ ∧
+          N₁ < 2 * Q ∧
+            {q ∈ P | ∀ r ∈ F, ¬q ≡ N₁ [MOD r]}.card * Q ≤ P.card * {n ∈ Finset.Ico 1 (2 * Q) | ∀ r ∈ F, ¬r ∣ n}.card
+@Cap.card_no_factor_le : ∀ {z w X : ℕ},
+  0 < w →
+    X ≤ w * w →
+      {n ∈ Finset.Ico 1 X | ∀ r ∈ Cap.primesIoc z w, ¬r ∣ n}.card ≤
+        {n ∈ Finset.Ico 1 X | n ∈ (z + 1).smoothNumbers}.card + ∑ A ∈ Finset.Icc 1 (X / w), (X / A).primeCounting
+Cap.card_smooth_le_exp : ∀ (N X : ℕ) {σ : ℝ},
+  1 / 2 ≤ σ →
+    σ ≤ 1 →
+      ↑{n ∈ Finset.Ico 1 X | n ∈ N.smoothNumbers}.card ≤ ↑X ^ σ * Real.exp (4 * (↑N ^ (1 - σ) * (1 + Real.log ↑N)))
+eventually_card_smooth_le : ∀ (K : ℕ),
+  1 ≤ K →
+    ∀ᶠ (y : ℕ) in Filter.atTop,
+      ∀ (Q : ℕ),
+        y ≤ 2 * Q → ↑{n ∈ Finset.Ico 1 (2 * Q) | n ∈ (⌊Real.log ↑y⌋₊ ^ K).smoothNumbers}.card ≤ ↑Q / Real.log ↑y ^ 2
+@eventually_exists_even_le_of_stage : ∀ {c c' : ℝ},
+  0 < c' →
+    max c 0 < c' →
+      (∀ᶠ (y : ℕ) in Filter.atTop,
+          ∃ N,
+            Even N ∧
+              ⌊c' * ↑y * Real.log ↑y⌋₊ < N ∧
+                N ≤ ⌊c' * ↑y * Real.log ↑y⌋₊ + y + primorial y ∧ ∀ q < ⌊c' * ↑y * Real.log ↑y⌋₊, ¬IsSummand N q) →
+        ∀ᶠ (X : ℕ) in Filter.atTop,
+          ∃ N,
+            c * Real.log ↑X * Real.log (Real.log ↑X) < ↑N ∧
+              N ≤ X ∧ Even N ∧ ∀ (q : ℕ), ↑q < c * Real.log ↑X * Real.log (Real.log ↑X) → ¬IsSummand N q
+```
+
+What is not proved: the order beyond every constant. The same cover with `z` a small power of `y`
+should give `c · y ln² y · ln₃ y / (ln₂ y)²` rows (the order of Rankin's theorem with one more
+logarithm); that needs the count of smooth numbers uniformly in `K`, and is not written.

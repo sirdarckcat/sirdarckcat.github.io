@@ -1,4 +1,5 @@
 import GoldbachGaps.CoverBound
+import GoldbachGaps.CoverEveryConstant
 import GoldbachGaps.CoverCount
 
 /-!
@@ -22,8 +23,12 @@ bound `prod_le_g0` turns it into a lower bound for every larger set of moduli:
 * `eventually_g0_pos_six_fifths`, `eventually_prod_le_g0_six_fifths`: the same with the explicit
   `c = 1.2`.
 
-This is a lower bound for the count in the range `Q ≤ 1.349 y ln y`. The law the research session
-measures, loss `≈ Q / ln² x`, is smaller than this bound and is not proved.
+* `eventually_g0_pos_every_constant`, `eventually_prod_le_g0_every_constant`: the first two for
+  **every** constant `A` in place of `c < 1.349…`, from the cover with a fixed layer on a common
+  integer (`GoldbachGaps/CoverEveryConstant.lean`).
+
+These are lower bounds for the count in the range `Q ≤ A y ln y`. The law the research session
+measures, loss `≈ Q / ln² x`, is smaller than these bounds and is not proved.
 -/
 
 namespace GoldbachGaps.CoverCount
@@ -141,5 +146,23 @@ theorem eventually_prod_le_g0_six_fifths :
     ∀ᶠ y : ℕ in atTop, ∀ x ≥ y,
       ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊(1.2 : ℝ) * y * Real.log y⌋₊ :=
   eventually_prod_le_g0 (by norm_num) six_fifths_mul_lt_one
+
+/-- **`g0(y, ⌊A y ln y⌋) > 0` for all large `y`, for every constant `A`.** -/
+theorem eventually_g0_pos_every_constant (A : ℝ) :
+    ∀ᶠ y : ℕ in atTop, 0 < g0 y ⌊A * y * Real.log y⌋₊ := by
+  filter_upwards [eventually_exists_classes_every_constant A] with y ⟨a, ha⟩
+  refine (coverCount_pos_iff _ _ fun r hr => (mem_rowsBelow.1 hr).1.pos).2 ⟨a, fun q hq => ?_⟩
+  obtain ⟨hq1, hq2, hq3⟩ := mem_rowsBelow.1 hq
+  obtain ⟨r, ⟨hr1, hr2, hr3⟩, hqr⟩ := ha q hq1 hq2 hq3
+  exact ⟨r, mem_rowsBelow.2 ⟨hr1, hr2, by omega⟩, hqr⟩
+
+/-- For every constant `A`, all large `y` and every `x ≥ y`: among the class vectors modulo the odd
+primes up to `x`, at least the product of the odd primes in `(y, x]` cover every odd prime below
+`⌊A y ln y⌋`. In logarithms, `ln g0(x, A y ln y) ≥ θ(x) - θ(y)`. -/
+theorem eventually_prod_le_g0_every_constant (A : ℝ) :
+    ∀ᶠ y : ℕ in atTop, ∀ x ≥ y,
+      ∏ r ∈ rowsBelow (x + 1) \ rowsBelow (y + 1), r ≤ g0 x ⌊A * y * Real.log y⌋₊ := by
+  filter_upwards [eventually_g0_pos_every_constant A] with y hy x hx
+  exact prod_le_g0 hx hy
 
 end GoldbachGaps.CoverCount

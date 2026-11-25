@@ -555,40 +555,22 @@ theorem add_le_mul_of_one_add_le {E G t s : ℝ} (hE : 1 ≤ E) (hG : 1 + t ≤ 
   have h2 : E * (1 + t) ≤ E * G := mul_le_mul_of_nonneg_left hG (by linarith)
   nlinarith
 
-/-- **A lower bound for `max g` by covering.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
-for every `ε > 0` and all large `w`, then for every `c < 1/κ` and all large `X` there is an
-even `N ≤ X`, larger than `c ln X ln ln X`, such that no prime `q < c ln X ln ln X` is a
-Goldbach summand of `N`: every `N - q` is composite. -/
-theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (hM : MertensUpper κ)
-    (hc : c * κ < 1) :
+/-- **From a cover of the odd primes up to `y` to a number below `X`.** Suppose that for every
+large `y` there is an even `N` in the window `(Q, Q + y + primorial y]`, `Q = ⌊c' y ln y⌋`, with no
+Goldbach summand below `Q`. Then for every `c < c'` and all large `X` there is an even `N ≤ X`,
+larger than `c ln X ln ln X`, with no Goldbach summand below `c ln X ln ln X`. (Take `y` a little
+below `ln X`: the window then ends below `X`.) -/
+theorem eventually_exists_even_le_of_stage {c c' : ℝ} (hc'0 : 0 < c') (hcc' : max c 0 < c')
+    (hstage : ∀ᶠ y : ℕ in atTop, ∃ N, Even N ∧ ⌊c' * y * Real.log y⌋₊ < N ∧
+      N ≤ ⌊c' * y * Real.log y⌋₊ + y + primorial y ∧
+      ∀ q < ⌊c' * y * Real.log y⌋₊, ¬ IsSummand N q) :
     ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
       ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
-  -- constants: `c₀ = max c 0 < c' < 1/κ`, then `c₀/c' < a₁ < a < θ < 1`
+  -- constants: `c₀ = max c 0 < c'`, then `c₀/c' < a₁ < a < θ < 1`
   set c₀ := max c 0 with hc₀def
   have hc₀0 : 0 ≤ c₀ := le_max_right _ _
   have hcc₀ : c ≤ c₀ := le_max_left _ _
-  have hc₀κ : c₀ * κ < 1 := by
-    rcases max_cases c 0 with ⟨h, -⟩ | ⟨h, -⟩
-    · rw [hc₀def, h]
-      exact hc
-    · rw [hc₀def, h]
-      simp
-  have hc₀lt : c₀ < 1 / κ := by
-    rw [lt_div_iff₀ hκ]
-    exact hc₀κ
-  set c' := (c₀ + 1 / κ) / 2 with hc'def
-  have hc'0 : 0 < c' := by
-    have : 0 < 1 / κ := by positivity
-    rw [hc'def]
-    linarith
-  have hc₀c' : c₀ < c' := by
-    rw [hc'def]
-    linarith
-  have hc'κ : c' * κ < 1 := by
-    have h : c' < 1 / κ := by
-      rw [hc'def]
-      linarith
-    rwa [lt_div_iff₀ hκ] at h
+  have hc₀c' : c₀ < c' := hcc'
   set ρ := c₀ / c' with hρdef
   have hρ0 : 0 ≤ ρ := div_nonneg hc₀0 hc'0.le
   have hρ1 : ρ < 1 := by
@@ -612,7 +594,7 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
     have : c' * ρ < c' * a₁ := mul_lt_mul_of_pos_left hρa₁ hc'0
     linarith
   set K := (c' * a₁ * (-Real.log a₁) + 1) / (c' * a₁ - c₀) with hKdef
-  clear_value K θ a₁ a ρ c' c₀
+  clear_value K θ a₁ a ρ c₀
   -- sequences
   have hcast : Tendsto (fun X : ℕ => (X : ℝ)) atTop atTop := tendsto_natCast_atTop_atTop
   have hL : Tendsto (fun X : ℕ => Real.log (X : ℝ)) atTop atTop :=
@@ -621,7 +603,6 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
     Real.tendsto_log_atTop.comp hL
   have hy : Tendsto (fun X : ℕ => ⌊a * Real.log (X : ℝ)⌋₊) atTop atTop :=
     tendsto_nat_floor_atTop.comp (hL.const_mul_atTop ha0)
-  have hstage := eventually_exists_even_of_mertensUpper_nat hκ hM hc'0 hc'κ
   have hprim := eventually_primorial_le (show 0 < θ / a - 1 by
     rw [sub_pos, lt_div_iff₀ ha0]
     linarith)
@@ -723,6 +704,43 @@ theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (h
   · have h1 : (q : ℝ) + 1 ≤ c' * y * Real.log y := by linarith
     have h2 : q + 1 ≤ ⌊c' * (y : ℝ) * Real.log y⌋₊ := Nat.le_floor (by exact_mod_cast h1)
     omega
+
+/-- **A lower bound for `max g` by covering.** If `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ (κ + ε)/ln w`
+for every `ε > 0` and all large `w`, then for every `c < 1/κ` and all large `X` there is an
+even `N ≤ X`, larger than `c ln X ln ln X`, such that no prime `q < c ln X ln ln X` is a
+Goldbach summand of `N`: every `N - q` is composite. -/
+theorem eventually_exists_even_le_of_mertensUpper {κ c : ℝ} (hκ : 0 < κ) (hM : MertensUpper κ)
+    (hc : c * κ < 1) :
+    ∀ᶠ X : ℕ in atTop, ∃ N : ℕ, c * Real.log X * Real.log (Real.log X) < N ∧ N ≤ X ∧ Even N ∧
+      ∀ q : ℕ, (q : ℝ) < c * Real.log X * Real.log (Real.log X) → ¬ IsSummand N q := by
+  -- `c₀ = max c 0 < c' < 1/κ`
+  set c₀ := max c 0 with hc₀def
+  have hc₀0 : 0 ≤ c₀ := le_max_right _ _
+  have hcc₀ : c ≤ c₀ := le_max_left _ _
+  have hc₀κ : c₀ * κ < 1 := by
+    rcases max_cases c 0 with ⟨h, -⟩ | ⟨h, -⟩
+    · rw [hc₀def, h]
+      exact hc
+    · rw [hc₀def, h]
+      simp
+  have hc₀lt : c₀ < 1 / κ := by
+    rw [lt_div_iff₀ hκ]
+    exact hc₀κ
+  set c' := (c₀ + 1 / κ) / 2 with hc'def
+  have hc'0 : 0 < c' := by
+    have : 0 < 1 / κ := by positivity
+    rw [hc'def]
+    linarith
+  have hc₀c' : c₀ < c' := by
+    rw [hc'def]
+    linarith
+  have hc'κ : c' * κ < 1 := by
+    have h : c' < 1 / κ := by
+      rw [hc'def]
+      linarith
+    rwa [lt_div_iff₀ hκ] at h
+  exact eventually_exists_even_le_of_stage hc'0 hc₀c'
+    (eventually_exists_even_of_mertensUpper_nat hκ hM hc'0 hc'κ)
 
 /-- **Unconditional.** For all large `X` there is an even `N ≤ X` (above the threshold) such
 that `N - q` is composite for every prime `q < 0.73 · ln X · ln ln X`. The constant is

@@ -4,6 +4,7 @@ import GoldbachGaps.Covering
 import GoldbachGaps.Counting
 import GoldbachGaps.Mertens
 import GoldbachGaps.CoverBound
+import GoldbachGaps.CoverEveryConstant
 import GoldbachGaps.ECPP
 import GoldbachGaps.Desert
 import GoldbachGaps.DesertWitness
@@ -72,6 +73,7 @@ import GoldbachGaps.Cap.FirstMoment
 import GoldbachGaps.Cap.Poly
 import GoldbachGaps.Cap.Transfer
 import GoldbachGaps.Cap.Layers
+import GoldbachGaps.Cap.CommonInteger
 import GoldbachGaps.Cap.Selection
 import GoldbachGaps.Cap.Brainstorm
 import GoldbachGaps.Cap.Tilt
@@ -121,6 +123,22 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                Mertens' theorem (`eventually_exists_even_le_no_summand`). Inputs: the layered
                cover of `Cap.Layers`, the prime number theorem from Mathlib, `Mertens`, and an
                elementary bound `∏_{3 ≤ r ≤ w} (r - 2)/(r - 1) ≤ 1.367 / log w`.
+* `CoverEveryConstant` – **every constant.** For every real `A` and all large `X` there is an
+               even `N ≤ X` with `N - q` composite for every prime `q < A · log X · log log X`
+               (`eventually_exists_even_le_every_constant`): the largest least Goldbach summand
+               below `X` is not `O(log X · log log X)`. In depth form: for every `A` and all
+               large `y`, classes modulo the odd primes up to `y` cover every odd prime below
+               `A y ln y` (`eventually_exists_classes_every_constant`). The cover has three
+               layers (`Cap.Layers`): the primes in `(z, y/4]` all take the class of one common
+               integer `N₁`, the odd primes up to `z = ⌊ln y⌋^K - 1` take classes by the
+               first-moment law, the primes in `(y/4, y]` take one row each. Averaged over
+               `N₁ ∈ [Q, 2Q)` the fixed layer leaves at most the share of the integers below
+               `2Q` with no prime factor in `(z, y/4]` (`Cap.exists_common_integer`), so no
+               count of pairs of primes is needed: those integers are `z`-smooth (Rankin's
+               bound, `Cap.card_smooth_le_exp`, from Mathlib's Euler product over smooth
+               numbers) or `B · p'` with `p' > y/4` prime (the prime number theorem and a
+               harmonic sum, `sum_primeCounting_le`). `Cap.CommonInteger` holds the finite
+               counts. The device is that of Erdős and Rankin for gaps between primes.
 * `ECPP`     – a kernel-checkable elliptic-curve primality criterion (one Atkin–Morain
                step), proved sound against Mathlib's group law.
 * `Desert`   – a kernel-checkable test that no prime in a block is a Goldbach summand.
@@ -310,6 +328,8 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `c = 1.2`, `eventually_prod_le_g0_six_fifths`). At the same set of moduli
                (`eventually_prod_le_g0_self`): `ln g0(y, c y ln y) ≥ θ(y) - θ((c κ + ε) y)`
                with `κ = 2 C₂ e^{-γ}`, so the count is exponentially large in `y` there.
+               For every constant `A` in place of `c`: `eventually_g0_pos_every_constant`,
+               `eventually_prod_le_g0_every_constant`.
 * `CoverPairs` – two rows in one class of a modulus `s`: the exact step of the research
                session's derivation of the law. The pair weight `rho t d` of a smaller modulus
                (classes drawn among the `t - 1` nonzero ones; exact counts
