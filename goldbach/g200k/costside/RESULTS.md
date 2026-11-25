@@ -85,6 +85,13 @@ About 0.3-0.45 nats on the cost side: keep 0.06, two-stage score 0.10-0.15, pass
 
 ## Appendix: the two-stage sieve as a GPU design (for the GPU session, if the lead wants it built)
 
+**Withdrawn (25 Nov 18:42Z), before it was built: a net loss.**  Step 4's filter is one random lookup into the 2 MB candidate bitmap per
+large-prime mark, 7.1e9 a 2^24 window; random 4-byte accesses into an L2-resident buffer run at 136 G/s on the RTX PRO 6000 (the GPU
+session's bench_pipes, DEEPSIEVE.md): 52 ms a window (18 ms even at 400 G/s), against at most ~17 ms saved (85% of pass B's flush, 8.2
+ms, and of the tile kernel's bin reads, ~12 ms).  The estimate below priced the lookup at zero.  The filter cannot sit where the marks are
+made (a generate CTA's marks fall anywhere in the window: the bitmap does not fit its shared memory) and saves nothing where they are read
+(the reads are the cost).  The selection numbers of section 1 stand; only this way of using them fails.
+
 What it removes: the binning of the large-prime marks (and their apply) for the members that cannot make the cut.  What it does NOT
 remove: pass A's 7.1e9 start-position visits a 2^24 window - a visit is what computes where a (prime, row) pair hits, and only then is
 it known whether the hit lands on a candidate; skipping visits would mean candidate-major work (N_k mod s and a row lookup for every
@@ -105,7 +112,7 @@ keep of 0.5%: 0.10-0.15 nats, 0.23-0.27 nats.  Selection measured on this CPU (s
 captured hit mass of exact counts for every member, at the same 14.0 tests a kept member.  The filter check in pass B and the matrix
 round trip are the two costs not in today's pipeline; both are estimates.
 
-## Predictions for the approved items in the G4 pipeline (`pipeline.py`)
+## Predictions for the approved items in the G4 pipeline (`pipeline.py`; the two-stage rows are void, see the appendix; carry-over revised to 2-6%, see the end)
 
 The GPU session's a2 pipeline (depth 2): while both run, Fermat at 0.735 and the sieve at 0.43 of their solo speed; a batch of 2^26 members at keep 1.5%
 needs 1.318 s of Fermat alone and 0.434 s of sieve.  The Fermat time scales with the keep except the tail (0.175 s a pool at t_min = 4 ms, 0.09 s at
