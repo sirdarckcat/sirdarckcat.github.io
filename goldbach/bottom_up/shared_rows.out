@@ -1,0 +1,5 @@
+shared [3], D = 6: rows 8989, E = 58.7 (+22.3); members per tested integer 8192.6 (+9.01); net -13.3 nats
+shared [3, 5], D = 30: rows 6720, E = 54.9 (+18.5); members per tested integer 2048.2 (+7.62); net -10.9 nats
+shared [3, 5, 7], D = 210: rows 5570, E = 53.2 (+16.7); members per tested integer 341.4 (+5.83); net -10.9 nats
+shared [3, 5, 7, 11], D = 2310: rows 5006, E = 52.6 (+16.1); members per tested integer 34.1 (+3.53); net -12.6 nats
+shared [3, 5, 7, 11, 13], D = 30030: rows 4571, E = 52.0 (+15.6); members per tested integer 3.0 (+1.11); net -14.5 nats
