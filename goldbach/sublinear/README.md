@@ -2909,12 +2909,23 @@ arithmetic holds to 31 digits (numbers below 2^100; from 29 digits on the
 row bitset has to be widened).
 
 Results (every N recomputed here from N alone, with a script that shares
-nothing with the scanners: N − p composite for every odd prime p below g by
-a Fermat witness or a small factor, N − g proved prime by a Lucas n − 1
-proof; then sent to the lead, who recomputes it again):
+nothing with the scanners (`frontier_check.py`): N − p composite for every
+odd prime p below g by a Fermat witness or a small factor, N − g proved
+prime by a Lucas n − 1 proof, or above 10^40 by an ECPP certificate that
+PARI validates; then sent to the lead, who recomputes it again). The 25-,
+26- and 27-digit numbers are certified in the Lean kernel with g exact,
+both sides (commit 92508f2 on the Lean branch, `IsLeastSummand`; N − g
+prime by a Lucas certificate). From 15:25 UTC on the 25th, when the lead
+relayed that the goal is the largest g below 200 digits and nothing else,
+the lines run at the lowest priority on cores with no other use and get no
+further tuning; the rungs that were under way are listed as they finish.
 
 | line | digits | N | g(N) | ceiling at N | closeness | found | cost |
 |---|---|---|---|---|---|---|---|
+| 10% | 105 | 111086812381178333200189573604644201993650130859637567851411857685156514772092119302945604893853368574828 | 52,501 | 507,824 | 10.34% | uarch session, 25 Nov 16:24 UTC, 155 covers of 51 moduli and 437 to 438 rows, target 50,819 | 2.27 CPU-hours for the rung; 5 found against 5.78 expected |
+| 10% | 101 | 10188401875033888962498835206932939720063123082056657092949227286940139620543666709467036103292201198 | 51,907 | 465,431 | 11.15% | uarch session, 25 Nov 15:35 UTC, 37 covers of 49 moduli and 407 rows, target 46,578 | 1.35 CPU-hours; 7 found against 7.99 expected |
+| 25% | 48 | 106624760345015789778946730106958383522522275168 | 23,227 | 85,408 | 27.20% | Opus session, 25 Nov 16:15 UTC, 25 moduli, 275 rows, target 21,366 | 1.2 CPU-hours (31 covers where about 156 were expected to be needed) |
+| 25% | 47 | 14089922478764729766458850177675739861990219148 | 21,031 | 81,803 | 25.71% | Opus session, 25 Nov 15:36 UTC, 25 moduli, 264 rows, target 20,479 | 2.1 CPU-hours |
 | 50% | 27 | 111308182437581302718351168 | 11,467 | 21,736 | 52.75% | this session, 25 Nov 14:48 UTC, `fscan` on 10^26 < N ≤ 1.2·10^26 with target 10,901, the class with 206 rows | 1.1 core-hours (the classes 202 to 205, 6.3·10^11 members, and seven minutes of 206); 1 found against about 0.4 expected |
 | 50% | 26 | 10492156463590001369800256 | 10,303 | 19,775 | 52.10% | this session, 25 Nov 14:26 UTC, `fscan` on 10^25 < N ≤ 1.1·10^25 with target 9,907, the class with 187 rows | 0.35 core-hours for the classes 183 to 187 (2.0·10^11 members); 2 found against 0.65 expected by the scanner's count, the other being 10621579671744600348710546 with g = 10,159 (51.35%), found first, at 14:22 |
 
