@@ -79,7 +79,8 @@ The 140,000 calibration (the lead, 25 Nov 18:52Z), on the two G4s since 19:55Z:
   - N = 3.38·10^199, 200 digits.
   - It was checked on the CPU again from N and g alone (`runlogs/check_event.py`,
     `runlogs/2026-11-25/near_events_gold-g4j*`).
-  - It is not a record. Its N is below 158,209's (5.06·10^199) with a larger g, so it is on the (N, g) frontier.
+  - It is not a record, so it is calibration data only (the lead, 23:13Z). Sub-record events are not certified or
+    published; they stay in the cards' `near_events.jsonl` and `runlogs/` with N and g, for the count and the overshoot.
 - To 23:10Z, at 140,000: 1.57 expected, 1 found (in the 4 full hours: 1.17 expected, 0 found).
 
 The smaller fleet since 24 Nov 19:59Z, when partition 2 lost its G4 (14.4 h to 10:24Z on 25 Nov):
