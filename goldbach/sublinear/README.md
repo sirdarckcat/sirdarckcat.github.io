@@ -1032,6 +1032,30 @@ recomputed here unless said).
   selectivity, at most 0.10 nat, where one more scanned member buys a
   full nat; and the output is scattered members.
 
+- *The cost side from first principles* (uarch session,
+  `goldbach/g200k/costside/RESULTS.md` on its branch; measured on the real
+  1,502-row cover, G4 costs from the GPU session). The only positive nats
+  of the day, about 0.3 to 0.45 realistic and 0.5 on paper. Today's sieve
+  is at the floor of its own design (2.65 ns a member, set by the memory
+  traffic of the bins for the primes from 10^6 to 10^8), but the count has
+  to be exact only near the cut: exact to 10^6 for every member and to
+  10^8 only for the emptiest 10 to 20% captures 0.191 to 0.197 of the hit
+  mass at the 1.5% cut against 0.199, with bins five to ten times smaller
+  (0.10 to 0.15 nat; up to 0.27 with a faster start-position pass).
+  Carrying unfinished members into the next Fermat pool gives +15% test
+  throughput (0.07 to 0.1 nat); its simulation of the pool schedule
+  reproduces the fleet's profile of 23 November (20.4 million counted
+  tests a second where the kernel does 24.6; 3.1% waste). A keep of 0.75%
+  is 6% cheaper than 1.5%. Not available: start positions shared between
+  sibling covers (they share 98.3% of their rows, but the stored positions
+  cost more to move than to recompute); short windows (about −2 nats even
+  with lattice enumeration of the residues below Q); a predictor of which
+  survivor is the prime one (137,209 real survivors of 300 kept members,
+  every row tested: position, residues of q and of N − q, the member's
+  count, gaps, the previous verdict: nothing; primes per member have 0.935
+  of the binomial variance); a cheaper test on the G4 (the kernel is at
+  the floor of the integer multiplier).
+
 The object all of this points at, in the Opus session's words: three
 currencies exist (the window charges ln s per prime whatever the softness;
 scanning charges e^KL members per member kept, at 3 ns each; polynomial
