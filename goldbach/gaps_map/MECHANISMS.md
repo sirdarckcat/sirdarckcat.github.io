@@ -32,22 +32,22 @@ Cover first (order by rows alive at depth 23, ties random), expected cost in mem
 
 **(V) Verification priced.** A real run must also find, for every member it does not reject by sieving, a prime row (about 2.2 modexps when each alive row is prime with probability about 0.45). One modexp is about 139 units (5,000 modular operations at 200 digits). Under (V) a member costs about 306 units to reject and the sieve is a rounding error.
 
-Most mechanisms are unchanged by the choice. Two are not: the early-abort funnel and the neighbour search. The neighbour search needs the *exact* prime rows of its seeds, and that is exactly the quantity (A) hands over for free.
+Most mechanisms are unchanged by the choice, or lose a little (the "under (V)" column of the table gives the change). Two change qualitatively: the early-abort funnel, which is worth little when a member costs one unit and a good deal more when a member costs 306, and the neighbour search, which needs the *exact* prime rows of its seeds, the quantity (A) hands over for free.
 
 ## 2. The table
 
 Gains in nats against cover first, accounting (A). "o.o.s." = out of sample. Standard deviations are bootstrap; ± is one s.d.
 
-| # | mechanism | in L? | k=1 | k=3 | k=10 | k=30 | k=100 | verdict |
-|---|---|---|---|---|---|---|---|---|
-| M1 | size of N inside the range (logit on k1, 1/ln N, k1/ln N) | outside | +0.4…+0.9 (±0.4–0.9) | −0.4…+0.4 (±0.3–0.9) | +0.2…+0.6 (±0.15–0.5) | +0.05…+0.26 (±0.14–0.2) | +0.14…+0.27 (±0.06–0.09) | small, real, vanishes at 200 digits (≈0.1) |
-| M2 | any function of N mod 3..23 (Bayes-optimal shallow statistic: S₂ clumping, row weights, learned scores) | Congruence information | ≤ +0.12 | ≤ +0.13 | ≤ +0.11 | ≤ +0.08 | n/a | bounded by ≈0.1; any such statistic costs more than scoring |
-| M3 | early-abort funnel (sieve deeper, abort when rows alive exceed a threshold) | schedule, not information | 0.00 | 0.00…0.02 | 0.02…0.04 | 0.05…0.14 | 0.10…0.39 | under (A) ≈0; under (V) +0.14…+0.23 (k=10), +0.23…+0.41 (k=30), +0.39…+0.95 (k=100) |
-| M4a | neighbours N±h of found successes (Research's scoring, reproduced) | outside (per-instance) | −0.17…−0.10 | −0.14…−0.02 | −0.04…+0.04 | −0.02…+0.06 | 0.00…+0.02 | 2–8 success pairs per miniature; ≈0.02 extra successes per success |
-| **M4b** | **neighbours of NEAR-successes, clean shifts only** | outside (per-instance) | — | 0.00 | +0.08 | +0.8…+0.9 | **+1.4…+1.65 (k=78…127)** | **clears a nat from k≈40 under (A); between −0.8 and +0.2 under (V)** |
-| M5 | integers within Q of a perfect square (PolyImage degree 2; for calibration) | **in L** | −0.95 | −1.11 | −1.73 | n/a | n/a | forced rows give +0.07 for 2.8 nats of density |
-| M6 | coherent block: order by "same residue t at many primes", and the block family | Congruence class; the order is outside | +0.3…+0.7 (±0.3) | −0.1…+0.4 (±0.3) | −0.05…+0.08 (±0.1) | −0.02…+0.05 | −0.01…+0.07 | null: successes' mean index 3.63 vs 3.62 |
-| M7 | N/2 prime (N has no odd prime factor at all) | Congruence avoidance; the order needs a primality test | −0.23…0.00 | −0.36…+0.71 (±0.4) | −0.06…0.00 | +0.02…+0.05 | 0.00…+0.04 | rate +0.07…+0.16 nats, family costs 1.8 nats |
+| # | mechanism | in L? | k=1 | k=3 | k=10 | k=30 | k=100 | under (V) | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| M1 | size of N inside the range (logit on k1, 1/ln N, k1/ln N) | outside | +0.4…+0.9 (±0.4–0.9) | −0.4…+0.4 (±0.3–0.9) | +0.2…+0.6 (±0.15–0.5) | +0.05…+0.26 (±0.14–0.2) | +0.14…+0.27 (±0.06–0.09) | = (A) (N is known) | small, real, vanishes at 200 digits (≈0.1) |
+| M2 | any function of N mod 3..23 (Bayes-optimal shallow statistic: S₂ clumping, row weights, learned scores) | Congruence information | ≤ +0.12 | ≤ +0.13 | ≤ +0.11 | ≤ +0.08 | n/a | ≤ +0.1 before cost; the statistic costs ≥ 1 unit (the 256-sample estimate ≈ 190 units, −0.5) | bounded by ≈0.1; any such statistic costs more than scoring |
+| M3 | early-abort funnel (sieve deeper, abort when rows alive exceed a threshold) | schedule, not information | 0.00 | 0.00…0.02 | 0.02…0.04 | 0.05…0.14 | 0.10…0.39 | +0.03…+0.07 / +0.04…+0.17 / +0.14…+0.23 / +0.23…+0.41 / +0.39…+0.95 | under (A) ≈0; under (V) it is the baseline to beat |
+| M4a | neighbours N±h of found successes (Research's scoring, reproduced) | outside (per-instance) | −0.17…−0.10 | −0.14…−0.02 | −0.04…+0.04 | −0.02…+0.06 | 0.00…+0.02 | = (A) | 2–8 success pairs per miniature; ≈0.02 extra successes per success |
+| **M4b** | **neighbours of NEAR-successes, clean shifts only** | outside (per-instance) | — | 0.00 | +0.08 | +0.8…+0.9 | **+1.4…+1.65 (k=78…127)** | **−0.82…+0.23 over 15 cells** | **clears a nat from k≈40 under (A), not under (V); bounded at the campaign's cover by Research's +0.035 nats (§3.5)** |
+| M5 | integers within Q of a perfect square (PolyImage degree 2; for calibration) | **in L** | −0.95 | −1.11 | −1.73 | n/a | n/a | = (A) | forced rows give +0.07 for 2.8 nats of density |
+| M6 | coherent block: order by "same residue t at many primes", and the block family | Congruence class; the order is outside | +0.3…+0.7 (±0.3) | −0.1…+0.4 (±0.3) | −0.05…+0.08 (±0.1) | −0.02…+0.05 | −0.01…+0.07 | = (A); the index costs ≈ 12 units (−0.04) | null: successes' mean index 3.63 vs 3.62 |
+| M7 | N/2 prime (N has no odd prime factor at all) | Congruence avoidance; the order needs a primality test | −0.23…0.00 | −0.36…+0.71 (±0.4) | −0.06…0.00 | +0.02…+0.05 | 0.00…+0.04 | (A) − 0.38 (one modexp for N/2 per member) | rate +0.07…+0.16 nats, family costs 1.8 nats |
 
 The sections below give the definition, the number, the transfer to 200 digits and the files for each row.
 
@@ -147,10 +147,21 @@ So "sieve before you verify" is worth 0.1–0.4 nats at k = 10–30 and 0.4–0.
 
 No decay over a 1.5-fold increase in λ (here the negative log of the population success rate, which rises from 9.6 at Q = 700 to 14.3 at Q = 1100).
 
+*Research's identity, and what it says about scale* (Research, 14:36 UTC; the campaign figures are theirs, computed on their branch by `goldbach/sublinear/cover_neighbours.py` at 623e94c, and I have not recomputed them). With independent rows the yield of the policy per stream member is bounded by the success mass the neighbours hold: Σ_s P(N + s succeeds) = Σ_s exp(−p·(rows(N + s))), whatever the seeds know; the seed filter only decides which neighbours are worth scoring. Relative to the stream member's own mass this is R = Σ_s exp(−p·(rows(N + s) − rows(N))). I computed it on A over the 126 shifts (`nbrsum.c`, log `nbrsum_A.log`; ρ = 0.5, all usable shifts, all neighbours including those inside the stream):
+
+| stream prefix | R, all neighbours | R, neighbours outside the stream |
+|---|---|---|
+| k1 ≤ 28 | 5.6 | 5.1 |
+| k1 ≤ 29 | 7.7 | 6.4 |
+| k1 ≤ 30 | 10.5 | 7.5 |
+| k1 ≤ 31 | 14.0 | 8.3 |
+
+(ρ = 0.45 gives 12.4 and 9.5 at k1 ≤ 30.) So on the miniature the neighbours hold 5–14 times the stream's own success mass, which is what the +1.45 draws on: the policy collects about a quarter of the outside mass (80 distinct successes against 7.5 × 47 ≈ 350 expected) while scoring 1.7M of the roughly 100M neighbour pairs an exhaustive scan would need. At the campaign's cover (Research: 89 moduli, 1,248 rows alive at Q = 170,000, p = 0.02398, FFT over all even shifts) the same sum is **0.036**: the neighbours together hold 3.6 % of what the cover's own members hold, the largest single shift 0.002 %. Even if rejecting neighbours were free the ceiling is +0.035 nats, and about +0.00005 for the part worth testing. The scaling quantity is p·I(s) (p times the rows a neighbour inherits): about 4 on the miniature, 11–12 at the campaign's size. So M4b does not scale; it is a feature of a miniature in which a shift costs the neighbour less than the cover has paid.
+
 *Why it is not a result yet.*
 
 1. **Accounting (V) removes it.** To know that a stream member has at most J prime rows, you must test its alive rows until J + 1 primes turn up: about (J + 1)/0.5 modexps for a member that is not a seed (8, 12, 16 for J = 3, 5, 7), against 2.2 for plain rejection. (A) charges nothing for this, because the miniature's prime table is free. Pricing it (stream members × (J + 1)/0.5 + neighbour scans × 2.2, against cover first × 2.2) turns the 15 cells I ran (prefix k1 ≤ 28, 30, 32; J ≤ 3, 5, 7; c_min = 50, 70) from +0.45…+1.65 under (A) into **−0.82…+0.23 under (V)**. The quoted cell (kmax = 30, J ≤ 5, c_min = 50) is +1.45 under (A) and +0.14 under (V); the best (V) cell (kmax = 30, J ≤ 7, c_min = 50) is +1.50 and +0.23; at k = 30 (kmax = 28, J ≤ 7, c_min = 70: 30 successes for 485,807 units against 1,205,425) it is +0.91 under (A) and −0.81 under (V). What (A) measures is the value of *exact primality knowledge about the rows of the stream*, not the value of a method that gets it for less than the work it saves.
-2. **Not shown to scale to 200 digits.** With λ the mean number of prime rows in a best-cover member and f the fraction of rows a neighbour shares, a back-of-envelope yield ratio is R ≈ (λ^J / J!) · m_clean · e^(−λ(1−f)). At λ ≈ 33 and f ≈ 0.45 (the best a shift can do at Q = 10⁵) and J = 5 this is well below 1, and J = 10 needs eleven primes' worth of verification per stream member. The miniature sweep above does not show the decay this predicts over its range, and it cannot reach λ = 33. This is an open question, not a result either way.
+2. **It does not scale to 200 digits.** Research's identity above bounds the gain at the campaign's cover by +0.035 nats (R = 0.036 against 5–14 on the miniature). My own back-of-envelope estimate, R ≈ (λ^J / J!) · m_clean · e^(−λ(1−f)), pointed the same way and was less precise. The sweep over Q does not show the decay because it only reaches λ ≈ 14 and p·I(s) ≈ 4; the decay is in p·I(s), not in Q.
 3. **In-sample selection.** On A, about 30 cells (prefix × J × threshold) were run before choosing the one quoted; the B and C numbers and the sweep are out of sample in J and c_min, not in the idea.
 
 *What it does say.* Exact knowledge of which integers near N are prime is worth about 1.4 nats at k ≈ 100 on these miniatures; nothing in residues does. The miniature's free verification therefore *overstates* any mechanism that spends it, and the right comparison for such mechanisms is against a baseline that also owns that knowledge (sieve everything, verify only the best), not against cover first with free verification.
@@ -197,13 +208,13 @@ No decay over a 1.5-fold increase in λ (here the negative log of the population
 2. **Non-residue facts about N** (size, N/2 prime, algebraic neighbourhoods, coherence) gave +0.1…+0.3 (size, vanishing at scale), +0.1 (N/2 prime, at 1.8 nats of density), 0 (coherence) and −1…−2 (squares). None approaches a nat.
 3. **Schedules** (early abort) give ≤ 0.1 nats at k ≤ 30 under (A) and 0.1–0.4 under (V), 0.4–0.95 at k = 100 (§3.3). Under (V) this is the baseline to beat, and against it M4b's (V) numbers are lower still.
 4. **The only thing that moved a number past a nat is exact primality knowledge of nearby integers** (M4b), worth about 1.4 nats at k ≈ 100 when the knowledge is free and between −0.8 and +0.2 when it is paid for. The miniature's free verification is the reason the lead's accounting rewards it. Before the lead builds on any mechanism that consults the table of primes near N, the comparison should be redone under (V), against a baseline that sieves deeper before it verifies.
-5. **No mechanism here tests the claim at 200 digits.** The sweep to λ ≈ 14 shows no decay for M4b; the back-of-envelope scaling says there should be one. That is the open question the miniature cannot close.
+5. **The one miniature result does not reach 200 digits.** Research's identity bounds M4b at the campaign's cover by +0.035 nats (their computation, §3.5); the miniature's +1.4 comes from neighbours that hold 5–14 times the stream's mass, against 0.036 at the real cover. The miniature cannot see this, because the quantity that decides it, p times the number of rows a shift lets a neighbour inherit, is about 4 there and 11–12 at the real size.
+6. **The ideal order is not the only upper reference.** The ideal-versus-cover-first factor (229 at k = 1 on A, 23 at k = 10, 7 at k = 100) is the ideal *order* for independent scoring. Reusing information from members already scored (M4b) is a route that is not an order at all, and on the miniature it is worth more than any order other than the ideal; Research's bound shows why it is a miniature effect.
 
 ## 6. Not tested
 
 - (V) accounting for M1, M2, M6, M7 (their gains are ≤ 0.3 in (A) and the verification cost does not help them).
-- Scale: Q ≥ 1200 (the miniature code is built for 192 rows), X > 2·10⁹, and any λ above 15.
-- Seeds identified by sampling rather than full verification (a cheaper identification that keeps most of the gain would change §3.5).
+- Scale: Q ≥ 1200 (the miniature code is built for 192 rows), X > 2·10⁹, and any λ above 15 (for M4b Research's identity replaces this).
 - M4b with stream orders other than cover first, with shifts beyond |s| ≤ 1000, or with the stream chosen to *maximise* seeds.
 - A success-mass model to extrapolate M4b to Q = 1500 (X = 2·10⁹): fitted at Q = 1000 it underpredicts the stream's successes there by about 8× (0.6 predicted, 5 observed at kmax = 48), so I dropped it (`nbr5.c`, `scale_drive.py` are kept for the record; nothing quoted depends on them).
 - Combination of the funnel and M4b (the funnel changes which stream members are scored; the seeds need exact rows, so they do not combine for free).
