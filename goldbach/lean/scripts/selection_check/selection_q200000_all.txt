@@ -1,0 +1,17 @@
+# B = 1e+08: primes in (463, B]: 5,761,365
+# w: exact product 0.336642; ln 463 / ln B = 0.333198 (ratio 0.98977)
+# R = prod (1 - 1/(s-1)^2): exact 0.99970483; exp(-1/(463 ln 463)) = 0.99964817
+# data/q200000_m89.txt: 300 cover lines, Q = 200,000
+line | rows (claimed) | ordered pairs whose difference has a prime factor in (463, B] | sum of 1/(s0-2) over them, from the differences | from the class counts | with the exact w and R: E S | n w (1-w) | pair term w^2 sum(rho-1) | Var S | sd ratio | with w = ln 463/ln B and R = exp(-1/(463 ln 463)): n w (1-w) | Var S | sd ratio
+0 | 1502 (1502) | 807,396 | 569.346 | 569.346 | 505.64 | 335.42 | -10.91 | 324.51 | 0.9836 | 333.71 | 308.83 | 0.9620
+1 | 1502 (1502) | 807,182 | 569.286 | nan | 505.64 | 335.42 | -10.92 | 324.50 | 0.9836 | 333.71 | 308.83 | 0.9620
+2 | 1502 (1502) | 806,554 | 569.519 | nan | 505.64 | 335.42 | -10.89 | 324.53 | 0.9836 | 333.71 | 308.85 | 0.9620
+3 | 1502 (1502) | 806,632 | 569.388 | nan | 505.64 | 335.42 | -10.91 | 324.51 | 0.9836 | 333.71 | 308.84 | 0.9620
+4 | 1502 (1502) | 806,288 | 569.264 | nan | 505.64 | 335.42 | -10.92 | 324.50 | 0.9836 | 333.71 | 308.83 | 0.9620
+299 | 1503 (1503) | 807,364 | 570.057 | nan | 505.97 | 335.64 | -10.93 | 324.71 | 0.9836 | 333.93 | 309.02 | 0.9620
+# sd ratio over the first 300 lines: exact w and R: min 0.9835 max 0.9837 mean 0.9836; approximate w and R: min 0.9619 max 0.9621 mean 0.9620
+# over those lines: rows 1502 to 1503; Var S (exact constants) 324.48 to 324.82; binomial 335.42 to 335.64; sd S 18.013 to 18.023; mean variance/mean of the class counts modulo 467..997: 0.816 to 0.823
+
+real	0m18.227s
+user	0m15.965s
+sys	0m2.495s
