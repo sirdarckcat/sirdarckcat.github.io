@@ -1,0 +1,9 @@
+78,497 rows, 629 moduli up to 4657 (0 s)
+resumed from cover_X4657.txt: 3,028 rows left
+after 1-flip descent: 3,028 rows left (0 s)
+  local search 544: 3,027 rows left (77 s)
+  local search 593: 3,026 rows left (84 s)
+  local search 690: 3,023 rows left (98 s)
+  local search 1809: 3,022 rows left (254 s)
+  local search 2065: 3,021 rows left (288 s)
+  local search 2107: 3,020 rows left (294 s)

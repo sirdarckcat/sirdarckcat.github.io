@@ -57,7 +57,14 @@ class Cover:
 if __name__ == "__main__":
     X = int(sys.argv[1]); secs = float(sys.argv[2]) if len(sys.argv) > 2 else 0; seed = int(sys.argv[3]) if len(sys.argv) > 3 else 1
     t0 = time.time(); C = Cover(X); print(f"{len(C.rows):,} rows, {len(C.mods)} moduli up to {int(C.mods[-1])} ({time.time() - t0:.0f} s)", flush=True)
-    C.greedy(); g = C.left(); print(f"greedy (increasing order): {g:,} rows left ({time.time() - t0:.0f} s)", flush=True)
+    out = f"cover_X{X}.txt" if Q == 1000003 else f"cover_X{X}_Q{Q}.txt"
+    if os.environ.get("COVER_RESUME") and os.path.exists(out):            # continue from the best cover saved so far
+        cls = dict(tuple(map(int, w.split(":"))) for w in open(out).read().split("\n")[1].split())
+        for i, r in enumerate(C.mods):
+            C.cls[i] = cls[int(r)]; C.cnt += (C.R[i] == C.cls[i])
+        g = d = C.left(); print(f"resumed from {out}: {d:,} rows left", flush=True)
+    else:
+        C.greedy(); g = C.left(); print(f"greedy (increasing order): {g:,} rows left ({time.time() - t0:.0f} s)", flush=True)
     C.descend(); d = C.left(); print(f"after 1-flip descent: {d:,} rows left ({time.time() - t0:.0f} s)", flush=True)
     rng = np.random.default_rng(seed); best = d; bestcls = C.cls.copy(); bestcnt = C.cnt.copy(); it = acc = 0; t1 = time.time()
     while time.time() - t1 < secs:                                            # iterated local search
@@ -70,5 +77,6 @@ if __name__ == "__main__":
             if v < best: acc += 1; print(f"  local search {it}: {v:,} rows left ({time.time() - t0:.0f} s)", flush=True)
             best = v; bestcls = C.cls.copy(); bestcnt = C.cnt.copy()
         else: C.cls = bestcls.copy(); C.cnt = bestcnt.copy()
-    C.save(f"cover_X{X}.txt" if Q == 1000003 else f"cover_X{X}_Q{Q}.txt", f"greedy {g:,}, descent {d:,}, local search ({it} rounds, seed {seed}) {best:,}")
+    C.cls = bestcls; C.cnt = bestcnt
+    C.save(out, f"start {g:,}, descent {d:,}, local search ({it} rounds, seed {seed}) {best:,}")
     print(f"final: {best:,} rows left after {it} rounds of local search; written cover_X{X}.txt ({time.time() - t0:.0f} s)")

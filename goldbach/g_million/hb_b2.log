@@ -1,0 +1,5 @@
+78497 rows, 629 moduli; start: 2864 rows left
+sweep 1000 beta 1.649: 3749 rows left, best 2864
+sweep 2000 beta 1.813: 3593 rows left, best 2864
+sweep 3000 beta 1.994: 3464 rows left, best 2864
+sweep 4000 beta 2.192: 3343 rows left, best 2864
