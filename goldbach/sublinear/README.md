@@ -1954,11 +1954,36 @@ ceiling, where the present design is 8.0% of its own); closeness is bought
 more cheaply at smaller sizes, as the project's earlier thresholds show,
 because at a fixed share of the ceiling E grows in proportion to the digits.
 What the dual game does offer at once is records of its own that need no
-GPU: 200,000 at 300 to 400 digits and 1,000,000 at 1,500 to 2,000 digits are
-within reach of a few cores, and two sessions (uarch, Opus) started on them
-on 25 November with covers from a third (contractor); their row counts
-against the table above are a test of the recursion far from where it was
-built. Results to follow here.
+GPU. On a processor the cost is the Fermat tests, not the members
+(`cover_dual_cpu.py`, `cover_dual_cpu.txt`; base-2 tests with gmpy2 on one
+core here take 0.11 ms at 200 digits, 0.30 at 300, 0.66 at 400, 30 at 1,500
+and 51 at 2,000, as the Opus session also measured). After a sieve to B a
+member keeps S of its rows, about Poisson with mean μ = E/p′,
+p′ = p·ln B/ln x, and it is a hit with chance (1 − p′)^S; a member that is
+not a hit costs about 1/p′ tests. Sieving is cheap next to testing, so one
+sieves many more members than one tests and tests only those with S below a
+cut: the hits sit at μ − E, the cut that minimises the cost per hit lies 2.5
+to 4 standard deviations below μ, and it keeps a few per cent of the hits or
+less while it saves most of the tests. With a sieve to 10^9 and 3 ns per
+sieve mark (an assumption; the sessions will measure it), CPU-hours per hit:
+
+| gap 200,000, digits | 260 | 300 | 350 | 400 | 500 |
+|---|---|---|---|---|---|
+| every member tested | 49,000 | 650 | 18 | 1.3 | 0.04 |
+| only the emptiest tested | 3,200 | 55 | 2.0 | 0.18 | 0.009 |
+
+| gap 1,000,000, digits | 1,200 | 1,500 | 2,000 | 2,480 | 3,000 |
+|---|---|---|---|---|---|
+| every member tested | 71,000 | 420 | 3.4 | 0.38 | 0.09 |
+| only the emptiest tested | 12,000 | 100 | 1.3 | 0.19 | 0.05 |
+
+So four cores for a day reach about 300 digits for a gap of 200,000 and
+about 1,500 digits for 1,000,000; near those sizes every 10 digits less cost
+a factor of 2 to 3 for the first gap and every 100 digits less a factor of
+2.4 to 5 for the second. Two sessions (uarch, Opus) started on these on 25
+November with covers from a third (contractor); their row counts against the
+table above are a test of the recursion far from where it was built. Results
+to follow here.
 
 **Conjecture (counting law).** For Q between x and a fixed fraction of
 θ(x)·ln² x, the number of class vectors modulo the odd primes up to x that
