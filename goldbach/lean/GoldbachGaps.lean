@@ -517,7 +517,12 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                independent cells, the decreasing order of the chances is the best order,
                `searchCost_le_of_perm`; in `Example840` three of the 105 cells have a free
                bound below the optimum and seven more have it equal, the optimum's own among
-               them, `cells_below_optimum`, `cells_at_optimum`).
+               them, `cells_below_optimum`, `cells_at_optimum`, and the free bounds of all
+               seven designs together exclude every candidate, `free_bounds_optimum`; the link
+               between cells, numbers sharing a member's classes on later moduli `U` being
+               points of one progression, gives the room count and no more: at most
+               `X / ∏ U + 1` of them below `X` and at most one in each good cell once `∏ U`
+               exceeds the window, `card_good_sharing_le`).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),

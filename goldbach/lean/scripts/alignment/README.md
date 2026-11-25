@@ -417,6 +417,16 @@ worth of points and not independent draws. Every use of that link tried so far i
 `../pprime_families` (lattice decoding, merging, trees, buckets), each negative on the miniature; the game is the
 statement that without such a link nothing beats looking.
 
+**What the link can give** (asked by the research session after this section; `card_good_sharing_le`,
+`card_good_sharing_le_card`, `add_mul_prod_mod`). Moving by a multiple of the product P of a set U of later primes
+changes no class on U, so the numbers that share a member's classes on U are the points N + tP of one progression,
+each in a different cell while there are fewer than M of them. How many of them lie in good cells? The room count
+again: at most X/P + 1 in all, and at most (number of good cells)·(X/(MP) + 1), which is one for each good cell at
+most once P exceeds the window. It is `card_residues_in_le_sub` with the cover modulus as a single modulus carrying
+the list of good cells and one class on each prime of U. On average over the classes on U the number is exactly
+(members of good cells)/P. The progression is the pinnable design "U and whichever cover primes still fit below X",
+so the link is the freedom to choose what to pin, already counted in section 2, and nothing more.
+
 To reproduce: `gcc -O3 -march=native -o truth2 truth2.c` and the same for `ensemble.c`, `ensemble_tier.c`;
 `./truth2 1000 29 31 200 A B 11 OUT` over slices [A, B) of [0, 10^10) for M2 (a few minutes on four cores; the
 lists `OUT.top` of the best members are not kept here), `./ensemble 1000 29 31 200 1600000000 SEED OUT`; the merged

@@ -40,6 +40,12 @@ at.
   full score, of 578, then proves the optimum. The bounds are 1,497 cells' worth of work for 420
   candidates, and they are strong only because two or three moduli lie outside each design.
 
+* **The link between cells** (`card_good_sharing_le`, `card_good_sharing_le_card`,
+  `add_mul_prod_mod`). The later classes of different cells are not independent: the numbers
+  sharing a member's classes on a set `U` of later moduli are the points of one progression. What
+  that gives is the room count and no more: below `X` at most `X / ∏ U + 1` of them, and at most
+  one in each good cell once `∏ U` exceeds the window.
+
 `scripts/alignment/` has the numbers for the other instances: with one to three primes beyond the
 line the cells that must be looked at are at most a few percent, and the share rises with every
 later prime, to between 93% and all of them at the full depth of the miniature.
@@ -174,6 +180,75 @@ theorem searchCost_le_of_perm {l l' : List ℝ} (hperm : l.Perm l') (hsorted : l
           linarith
       _ = searchCost (a :: l'.erase a) := rfl
       _ ≤ searchCost l' := searchCost_cons_erase_le ha hmax h1'
+
+/-! ### The link between cells
+
+What the game hides is not independent from cell to cell: all the candidates are integers below
+one bound, so moving by a multiple of the product of a set `U` of later moduli changes no class on
+`U` (`add_mul_prod_mod`). The research session asked what that link can give: how many members of
+good cells can share a given member's classes on `U`? The room count, again
+(`card_good_sharing_le`, from `card_residues_in_le_sub` with the cover modulus as one modulus that
+carries the list of good cells): at most `X / ∏ U + 1`, being points of one progression, and at
+most one for each good cell once `∏ U` exceeds the window (`card_good_sharing_le_card`). -/
+
+section Link
+
+open Finset
+
+/-- **The link between cells is the room count.** `M` the cover modulus, `G` a set of classes
+modulo `M` (the good cells), `U` a set of later moduli, pairwise coprime and coprime to `M`, with a
+class `a s` for each. The numbers below `X` that lie in a good cell and have those classes on `U`
+are at most `X / ∏ U + 1` (they are points of one progression of step `∏ U`) and at most
+`#G · (X / (M ∏ U) + 1)`: at most one for each good cell once `∏ U` exceeds the window `X / M`. -/
+theorem card_good_sharing_le {M : ℕ} (hM : 0 < M) (G U : Finset ℕ) (a : ℕ → ℕ) (X : ℕ)
+    (hU : ∀ s ∈ U, 0 < s) (hcop : (U : Set ℕ).Pairwise Nat.Coprime)
+    (hMU : ∀ s ∈ U, Nat.Coprime M s) (hMnot : M ∉ U) :
+    #{N ∈ range X | N % M ∈ G ∧ ∀ s ∈ U, N % s = a s} ≤
+      min (X / (∏ s ∈ U, s) + 1) (#G * (X / (M * ∏ s ∈ U, s) + 1)) := by
+  classical
+  set A : ℕ → Finset ℕ := fun r => if r = M then G else {a r} with hA
+  have hAU : ∀ s ∈ U, A s = {a s} := fun s hs => by
+    have hsM : s ≠ M := fun e : s = M => hMnot (e ▸ hs)
+    simp [hA, hsM]
+  have hset : {N ∈ range X | N % M ∈ G ∧ ∀ s ∈ U, N % s = a s} =
+      {N ∈ range X | ∀ r ∈ insert M U, N % r ∈ A r} := by
+    refine Finset.filter_congr fun N _ => ?_
+    simp only [Finset.forall_mem_insert]
+    refine and_congr (by simp [hA]) (forall₂_congr fun s hs => ?_)
+    rw [hAU s hs, Finset.mem_singleton]
+  rw [hset]
+  refine le_min ?_ ?_
+  · have h := card_residues_in_le_sub (Finset.subset_insert M U) A X hU hcop
+    have h1 : ∏ r ∈ U, #(A r) = 1 := Finset.prod_eq_one fun s hs => by rw [hAU s hs]; simp
+    rwa [h1, one_mul] at h
+  · have hpos : ∀ r ∈ insert M U, 0 < r := fun r hr => by
+      rcases Finset.mem_insert.mp hr with rfl | hr
+      · exact hM
+      · exact hU r hr
+    have hcop' : ((insert M U : Finset ℕ) : Set ℕ).Pairwise Nat.Coprime := by
+      rw [Finset.coe_insert]
+      refine Set.Pairwise.insert hcop fun s hs _ => ⟨hMU s hs, (hMU s hs).symm⟩
+    have h := card_residues_in_le_sub (Finset.Subset.refl _) A X hpos hcop'
+    rw [Finset.prod_insert hMnot, Finset.prod_insert hMnot] at h
+    have h1 : ∏ r ∈ U, #(A r) = 1 := Finset.prod_eq_one fun s hs => by rw [hAU s hs]; simp
+    have h2 : #(A M) = #G := by simp [hA]
+    rwa [h1, mul_one, h2] at h
+
+/-- Beyond the window: at most one member in each good cell shares the classes. -/
+theorem card_good_sharing_le_card {M : ℕ} (hM : 0 < M) (G U : Finset ℕ) (a : ℕ → ℕ) {X : ℕ}
+    (hU : ∀ s ∈ U, 0 < s) (hcop : (U : Set ℕ).Pairwise Nat.Coprime)
+    (hMU : ∀ s ∈ U, Nat.Coprime M s) (hMnot : M ∉ U) (hX : X < M * ∏ s ∈ U, s) :
+    #{N ∈ range X | N % M ∈ G ∧ ∀ s ∈ U, N % s = a s} ≤ #G := by
+  have h := (card_good_sharing_le hM G U a X hU hcop hMU hMnot).trans (min_le_right _ _)
+  rwa [Nat.div_eq_of_lt hX, zero_add, mul_one] at h
+
+/-- The link itself: moving by a multiple of the product of `U` changes no class on `U`. -/
+theorem add_mul_prod_mod (U : Finset ℕ) (N t : ℕ) {s : ℕ} (hs : s ∈ U) :
+    (N + t * ∏ r ∈ U, r) % s = N % s := by
+  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun r => r) hs
+  rw [hc, ← mul_assoc, mul_comm (t * s) c, ← mul_assoc, Nat.add_mul_mod_self_right]
+
+end Link
 
 /-! ### The smallest instance -/
 
