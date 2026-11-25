@@ -1231,6 +1231,41 @@ recomputed here unless said).
   exponent for a share c; and lists of classes on primes beyond the window
   hold at most as many numbers as the shortest list, however many primes
   are listed.
+- *Does the prize extrapolate, and the inspection game* (Lean session,
+  sections 5 and 6 of its alignment README, commit 90c981a;
+  `GoldbachGaps/Cap/Inspection.lean`). Result 3 prices the ideal order at
+  200 digits from a count over class vectors with no N in it. Checked on
+  three miniatures enumerated completely (10^9 and 10^10 candidates, one of
+  them at five depths, each against 6.4·10^9 random class vectors): the N
+  below the bound are a fair sample of the class vectors in the tail too
+  (counts by level agree within sampling error at 10^10; at 10^9 a shift
+  of four parts in ten thousand that appears only when the interval is
+  shorter than the fourth power of the sieve depth, and at 200 digits and
+  depth 50,000 it is the 42nd); the prize from class vectors is the prize
+  of the exact histogram to 0.03 nats at every depth (0.4 nats with 5
+  later primes to 3.0 with 115, at 3,000 successes); and the best members
+  carry one price at every later prime, the slope of the logarithm of the
+  number of members by level (1.58 nats a row in one miniature, 1.20 in
+  another), to the sampling error. So the method of Result 3 stands, and
+  with it the size of what is not being collected. The game: what depends
+  on the cover alone is free (the rows a cell leaves, hence the least
+  score any later classes could give it), the later classes of its members
+  are hidden until the cell is looked at. Proved in the kernel: a set of
+  cells proves the optimum exactly when it contains every cell whose free
+  bound is below the optimum and one that attains it, and no adaptive
+  procedure does with fewer. In the smallest instance that is 4 cells of
+  105; in the miniature at full depth it is 93% or more of all cells; at
+  200 digits the free bound is zero for every cover that matters (1,502
+  rows left, 17,894 later primes below the target, each able to strike a
+  row). For finding instead of proving, with independent cells every
+  procedure is an order and the order by chance is the best; it is cover
+  first to 0.03 nats in the miniatures and to nothing measurable at 200
+  digits. One exception, which does not travel: in the smallest instance
+  the free bounds of all seven designs together single out the optimum
+  with one score computed. What the game leaves out is the link between
+  the later classes of different cells (they are the points of one
+  progression, not independent draws); every use of that link tried so
+  far has been negative.
 - *The accounting and a calibration* (consultant session, `BOTTOM_UP.md` at
   40146c6 on its branch). One entropy, ln 10^200 = 460.5 nats: the exponent
   at 200,000 is 78.3 for even N, 52.2 with random nonzero classes, 36.46
