@@ -2268,7 +2268,7 @@ to x that strike every odd prime below Q is exp(θ(x) − L(x, Q)), L the loss
 of the price recursion with the Hardy–Littlewood dispersions and with the
 entropy of every prefix of the moduli kept non-negative
 (`cover_price_prefix.py`). At the sizes counted (89 to 1,228 moduli) L is
-within 6% of the measured loss at all 26 points: high by up to 5.6% in the
+within 6% of the measured loss at all 24 points: high by up to 5.6% in the
 lower half of the range at 89 to 167 moduli, by 1 to 3% from 238 moduli on,
 and within 1.6% near the end; and L = 1.00·Q/ln² x within 5% there.
 Consequently D(n) = κ_n·r_n·ln² r_n, where κ_n is 0.77 to 0.91 for the
