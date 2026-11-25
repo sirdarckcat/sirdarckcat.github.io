@@ -949,6 +949,42 @@ per N it outputs. Nothing outputs them:
   between primes non-separably, or parametrise N by something other than a
   progression, and nobody here has a candidate for either.
 
+**What construction can do, and where the prize comes from** (same day,
+after the user asked that nothing be treated as closed and that new paths be
+built from the bottom up; `cover_softpins.py`, on the rows of the real
+200,000 cover). Three kinds of constraint on N modulo a prime s after 463,
+priced in rows gained per nat of freedom spent:
+
+| prime s | hard pin (the single best class) | soft list, the best 75% / 50% / 25% of the classes, any classes | the same fractions when the list must be an arithmetic progression of classes (what a lattice can impose, after multiplying by a unit) |
+|---|---|---|---|
+| 467 | 0.78 | 2.14 / 1.70 / 1.42 | 0.65 / 0.38 / 0.32 |
+| 701 | 0.89 | 1.78 / 1.49 / 1.28 | 0.40 / 0.33 / 0.31 |
+| 997 | 0.80 | 1.58 / 1.35 / 1.14 | 0.31 / 0.24 / 0.20 |
+| 1,999 | 0.43 | 0.87 / 0.94 / 0.76 | 0.16 / 0.12 / 0.10 |
+
+The middle column is the prize: a nat spread thinly over many later primes
+(avoid their emptiest classes) buys two to three times what the last cover
+prime buys, and the ideal population of Result 3 is the population that
+spends its 460 nats that way. The left column is everything a progression
+can construct, at one nat of pinned prime per nat of freedom, which no
+family exceeds: polynomial families N = c + M₁·g(t) have far longer windows
+and can be sieved like a quadratic sieve, but pin at rate 1/d beyond M₁,
+and the one soft handle they have (the shift of the image of g modulo each
+further prime) is worth 8% more kills at that prime; their members come out
+at 42 nats where the cover's have 36.5. The right column is what
+simultaneous approximation can impose softly, and it is worse than a hard
+pin. Enumerating numbers in arbitrary lists by meet in the middle is cheap
+only when the lists carry twice the entropy the size constraint removes,
+which leaves less selectivity than a plain cover; at capacity it costs
+e^(deficit/2), and the deficit at the depth that pays on a G4 (where a
+number that comes alone costs about 170 times a window member to sieve, a
+loss of 3.8 nats) is 900 nats or more. The window sieve is the one soft
+mechanism in use: by brute force it turns 4.2 nats of window into 2.7 nats.
+So the question the bottom-up round carries is a single one: a soft
+constraint on many primes at once that can be constructed rather than
+searched for. Nothing known does it; that is a statement about what is
+known.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
