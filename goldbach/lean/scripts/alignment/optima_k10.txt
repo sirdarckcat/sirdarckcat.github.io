@@ -1,0 +1,22 @@
+# tier k2 <= 10: 1,965 members
+# (1) classes modulo the cover primes: most frequent class, its share in the tier (1/(r-1) if uniform)
+  3: class 2 holds 0.952 of the tier (uniform 0.500); that class strikes 86 rows, the best class of 3 strikes 86
+  5: class 2 holds 0.728 of the tier (uniform 0.250); that class strikes 46 rows, the best class of 5 strikes 46
+  7: class 5 holds 0.301 of the tier (uniform 0.167); that class strikes 29 rows, the best class of 7 strikes 30
+  11: class 2 holds 0.213 of the tier (uniform 0.100); that class strikes 17 rows, the best class of 11 strikes 18
+  13: class 8 holds 0.174 of the tier (uniform 0.083); that class strikes 14 rows, the best class of 13 strikes 16
+  17: class 7 holds 0.115 of the tier (uniform 0.062); that class strikes 11 rows, the best class of 17 strikes 13
+  19: class 3 holds 0.129 of the tier (uniform 0.056); that class strikes 12 rows, the best class of 19 strikes 12
+  23: class 19 holds 0.088 of the tier (uniform 0.045); that class strikes 7 rows, the best class of 23 strikes 10
+  29: class 22 holds 0.065 of the tier (uniform 0.036); that class strikes 6 rows, the best class of 29 strikes 8
+# (2) pairs of tier members: primes at which the two share a class. Cover primes 3..23: 2.117 per pair (uniform classes would give 1.264)
+#     later primes 29..199: 0.4973 per pair (uniform 0.4513)
+#     pairs by the number of later primes with a common class: observed share (independent primes with the tier's own class frequencies)
+     0: 0.60523 (0.59386)  1: 0.30736 (0.31263)  2: 0.07323 (0.07907)  3: 0.01326 (0.01280)  4: 0.00092 (0.00149)  5: 0.00000 (0.00013)
+# (3) classes modulo 29 and 31 as points of the grid: chi-square against the product of the marginals 759 on 810 degrees of freedom (z = -1.27); fullest point holds 12 members, mean 2.26
+# (4) rows still left at depth 200: a row is left in 0.0584 of the tier members on average (0.1397 for all members)
+#     rows most often left in the tier: 379 (0.195; all members 0.139), 631 (0.193; all members 0.138), 151 (0.182; all members 0.138), 709 (0.176; all members 0.138), 331 (0.173; all members 0.139), 211 (0.173; all members 0.138), 499 (0.173; all members 0.138), 31 (0.172; all members 0.139), 571 (0.172; all members 0.139), 613 (0.170; all members 0.139), 919 (0.170; all members 0.138), 739 (0.167; all members 0.138)
+#     rows that are themselves moduli (3..199): left in 0.0593 of the tier on average (0.1441 for all); rows above 199: 0.0581 (0.1381)
+#     correlation between the two frequency profiles over the 167 rows: 0.043; ratio tier / all: 0.018 to 1.404
+# (5) closest pairs of tier members: 487460828 and 487460852 (difference 24), 78281246 and 78281276 (difference 30), 928448432 and 928448462 (difference 30), 921835202 and 921835232 (difference 30), 333860612 and 333860672 (difference 60), 80270822 and 80270882 (difference 60), 747329612 and 747329672 (difference 60), 557901062 and 557901152 (difference 90)
+#     expected number of pairs closer than 100,000 for 1965 uniform points below 1e9: 385.9; observed 368 among neighbours

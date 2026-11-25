@@ -1,0 +1,14 @@
+cover line 0: 89 moduli, 3..463; they are the odd primes up to 463: True; classes below their modulus: True
+rows (odd primes below 170,000 in none of the classes): 1248 (the line says 1248)
+p = 2 prod r/(r-1) / (200 ln 10) = 0.02398;  window = ln(10^200 / (2 prod r)) = 16.88 nats = 2^24.3 members
+exponent of the cover: rows x p = 29.93 nats;  exactly, -rows x ln(1 - p) = 30.30
+
+s | rows before | mean class rows/s | K_max | classes reaching K_max | gain, first order | gain, exact | ln(average member / (1-p)^rows) | p after | rows after | window after, log2 | cumulative gain
+467 | 1248 | 2.67 | 7 | 6 | +0.1040 | +0.1045 | -0.00020 | 0.02403 | 1241 | +15.5 | +0.104
+479 | 1241 | 2.59 | 8 | 1 | +0.1303 | +0.1311 | -0.00017 | 0.02409 | 1233 | +6.6 | +0.234
+487 | 1233 | 2.53 | 7 | 3 | +0.1078 | +0.1084 | -0.00013 | 0.02413 | 1226 | -2.3 | +0.342
+491 | 1226 | 2.50 | 10 | 1 | +0.1815 | +0.1829 | -0.00014 | 0.02418 | 1216 | -11.3 | +0.524
+499 | 1216 | 2.44 | 7 | 5 | +0.1106 | +0.1112 | -0.00009 | 0.02423 | 1209 | -20.3 | +0.634
+503 | 1209 | 2.40 | 8 | 1 | +0.1359 | +0.1368 | -0.00014 | 0.02428 | 1201 | -29.2 | +0.770
+509 | 1201 | 2.36 | 7 | 3 | +0.1129 | +0.1136 | -0.00012 | 0.02433 | 1194 | -38.2 | +0.883
+521 | 1194 | 2.29 | 7 | 4 | +0.1148 | +0.1155 | -0.00010 | 0.02438 | 1187 | -47.2 | +0.998

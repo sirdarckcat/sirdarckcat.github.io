@@ -1,0 +1,11 @@
+instance: rows = the 36 odd primes below 160; moduli [3, 5, 7, 11, 13]; candidates = even N in [160, 840) (340 of them)
+true optimum: 6 rows left, at N = [578]
+  N = 578: classes [(3, 2), (5, 3), (7, 4), (11, 6), (13, 6)]; rows struck by each modulus alone [18, 9, 6, 5, 4]; rows left [7, 31, 37, 79, 139, 157]
+pinnable sets (2 prod T <= X, maximal): design value, best cells, what a full scan of them finds
+  T = [3, 5, 7] (window 4.00): design value 9 in 2 cells; their 6 members have full scores [7, 7, 7, 8, 8, 9]; the optimum's cell has design value [10]
+  T = [3, 5, 11] (window 2.55): design value 10 in 4 cells; their 8 members have full scores [7, 7, 7, 7, 7, 9, 9, 10]; the optimum's cell has design value [11]
+  T = [3, 5, 13] (window 2.15): design value 10 in 3 cells; their 4 members have full scores [7, 8, 9, 9]; the optimum's cell has design value [11]
+  T = [3, 7, 11] (window 1.82): design value 12 in 10 cells; their 19 members have full scores [7, 7, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 10, 10, 10, 11, 11]; the optimum's cell has design value [13]
+  T = [3, 7, 13] (window 1.54): design value 12 in 3 cells; their 4 members have full scores [7, 7, 11, 12]; the optimum's cell has design value [13]
+  T = [5, 7, 11] (window 1.09): design value 17 in 2 cells; their 2 members have full scores [11, 15]; the optimum's cell has design value [18]
+  T = [11, 13] (window 2.94): design value 27 in 1 cells; their 3 members have full scores [8, 10, 17]; the optimum's cell has design value [28]

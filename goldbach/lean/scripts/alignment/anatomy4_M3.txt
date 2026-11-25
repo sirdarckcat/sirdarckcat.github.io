@@ -1,0 +1,17 @@
+# Q = 2000, line 23, depth 200; tier: at most 25 rows left, 1,558 members; ensemble tier: 63,289 class vectors
+prime s | rows left by the other primes | unselected mean of the rows s alone strikes | mean in the tier | ratio | tilt beta_s | ensemble tier: mean | ratio of the two means | sequential gain, exact | ensemble
+29 | 26.77 | 0.9552 | 2.1341 | 2.23 | 1.153 | 2.2060 | 0.967 | 2.994 | 3.064
+31 | 26.58 | 0.8575 | 1.9442 | 2.27 | 1.245 | 1.9153 | 1.015 | 2.583 | 2.597
+37 | 26.34 | 0.7119 | 1.7009 | 2.39 | 1.253 | 1.6416 | 1.036 | 2.254 | 2.190
+41 | 26.16 | 0.6382 | 1.5263 | 2.39 | 1.211 | 1.5391 | 0.992 | 1.995 | 2.011
+61 | 25.66 | 0.4206 | 1.0186 | 2.42 | 1.207 | 0.9978 | 1.021 | 1.230 | 1.208
+89 | 25.36 | 0.2850 | 0.7246 | 2.54 | 1.160 | 0.7361 | 0.984 | 0.832 | 0.835
+97 | 25.31 | 0.2609 | 0.6727 | 2.58 | 1.196 | 0.6715 | 1.002 | 0.749 | 0.759
+127 | 25.17 | 0.1982 | 0.5321 | 2.68 | 1.189 | 0.5354 | 0.994 | 0.583 | 0.578
+149 | 25.09 | 0.1684 | 0.4474 | 2.66 | 1.178 | 0.4538 | 0.986 | 0.475 | 0.478
+173 | 25.01 | 0.1446 | 0.3710 | 2.57 | 1.118 | 0.3958 | 0.937 | 0.377 | 0.406
+199 | 25.00 | 0.1256 | 0.3601 | 2.87 | 1.244 | 0.3448 | 1.044 | 0.360 | 0.345
+# tilt fitted prime by prime: least 1.118, largest 1.273, mean 1.192, sd over the 37 primes 0.038; one tilt fitted to all primes: beta = 1.198
+# with that one beta: predicted mean of the rows s alone strikes against the actual, over the primes: largest relative error 0.064, sum predicted 28.967, actual 28.967
+# ratio (mean in the tier) / (unselected mean): least 2.23, largest 2.87; e^beta = 3.31
+# exact tier against ensemble tier, prime by prime: rows s alone strikes, ratio 0.937 to 1.048 (mean 0.999); sequential gain, ratio 0.929 to 1.044 (mean 0.996)

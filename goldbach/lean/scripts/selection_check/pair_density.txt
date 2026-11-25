@@ -1,0 +1,12 @@
+model with the exact local factors of this cover: T / T_random = 0.8547
+model with the class-free average, (r - 1)/(r - 3) for each r >= 5 dividing d: T / T_random = 0.8547
+measured on line 0 (1502 rows): T / T_random = 0.8556
+ordered pairs of rows at a difference not divisible by 6: 0 of 2254502
+pairs of rows against the model, by the size of the local factor relative to its mean over the differences that can occur
+relative G from | to | differences | pairs of rows (ordered) | model | of which at differences with a prime factor above 463: pairs | model
+0 | 0.5 | 5684 | 167524 | 167960 | 97444 | 97569
+0.5 | 0.75 | 6334 | 255326 | 259049 | 106302 | 107391
+0.75 | 1 | 6923 | 403842 | 406109 | 203144 | 204525
+1 | 1.5 | 9231 | 775426 | 770872 | 305512 | 302301
+1.5 | 2.5 | 4903 | 606990 | 605334 | 94544 | 93204
+2.5 | 1e+09 | 259 | 45394 | 45179 | 450 | 425

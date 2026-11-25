@@ -1,0 +1,30 @@
+# members 157,947,020; rows left at depth 23: min 22, mean 36.80, sd 2.86; at depth 200: min 6, mean 23.34, sd 3.14
+# class vectors modulo 3..23: 36,495,360; members per class vector 4.33
+tier | members | total rarity, nats | cover nats | luck nats | k1 in the tier: min / 10% / median / 90% / max / mean | cover-first quantile of the median member | share of the tier inside the best 1% / 0.1% / 0.01% of the cover-first order | tier members with 22 rows left at depth 23, the least there is (14 members in all) | with at most 24 (888 in all)
+k2 <= 7 | 13 | 16.31 | 5.71 | 10.61 | 24 / 25 / 27 / 29 / 30 / 27.31 | 0.0401% | 0.899 / 0.632 / 0.238 | 0 | 1
+k2 <= 8 | 62 | 14.75 | 3.95 | 10.80 | 24 / 26 / 29 / 32 / 34 / 28.77 | 0.4413% | 0.748 / 0.355 / 0.110 | 0 | 1
+k2 <= 9 | 401 | 12.88 | 3.29 | 9.59 | 23 / 27 / 29 / 32 / 38 / 29.36 | 0.4413% | 0.603 / 0.250 / 0.064 | 0 | 6
+k2 <= 10 | 1,965 | 11.29 | 2.78 | 8.52 | 22 / 27 / 30 / 33 / 39 / 29.93 | 1.1563% | 0.506 / 0.180 / 0.050 | 1 | 18
+k2 <= 11 | 8,739 | 9.80 | 2.44 | 7.36 | 22 / 27 / 30 / 34 / 39 / 30.36 | 1.1563% | 0.435 / 0.138 / 0.035 | 1 | 47
+k2 <= 12 | 33,598 | 8.46 | 2.13 | 6.33 | 22 / 28 / 31 / 34 / 41 / 30.77 | 2.6449% | 0.369 / 0.105 / 0.024 | 1 | 105
+k2 <= 13 | 114,100 | 7.23 | 1.84 | 5.39 | 22 / 28 / 31 / 34 / 42 / 31.20 | 2.6449% | 0.305 / 0.078 / 0.016 | 3 | 209
+k2 <= 14 | 343,538 | 6.13 | 1.56 | 4.57 | 22 / 28 / 32 / 35 / 43 / 31.64 | 5.3947% | 0.247 / 0.056 / 0.010 | 7 | 355
+
+# luck inside a cover level: for a member with k1 = c, the share of all members with that k1 having k2 at most its own
+tier | median over the tier of -ln(P(k2 <= own | k1)) | mean | the same for the cover: -ln(cover-first quantile), median | mean
+k2 <= 7 | 9.87 | 10.66 | 7.82 | 7.67
+k2 <= 8 | 10.67 | 11.05 | 5.42 | 6.06
+k2 <= 9 | 10.24 | 9.90 | 5.42 | 5.44
+k2 <= 10 | 8.51 | 8.89 | 4.46 | 4.91
+k2 <= 11 | 7.79 | 7.78 | 4.46 | 4.53
+k2 <= 12 | 6.41 | 6.78 | 3.63 | 4.17
+k2 <= 13 | 5.81 | 5.88 | 3.63 | 3.83
+k2 <= 14 | 4.67 | 5.09 | 2.92 | 3.50
+
+# windows (members with the same class vector modulo M0): how the siblings of tier members fare
+tier | members | mean window size | tier members that are the best of their window | mean k2 of the siblings | mean of E[k2 | k1] over the tier (what a sibling is expected to have) | siblings also in the tier
+k2 <= 8 | 62 | 4.35 | 62 | 18.22 | 18.25 | 0
+k2 <= 9 | 401 | 4.41 | 401 | 18.75 | 18.62 | 0
+k2 <= 10 | 1,965 | 4.42 | 1,964 | 19.08 | 18.98 | 10
+k2 <= 11 | 8,739 | 4.43 | 8,726 | 19.37 | 19.25 | 64
+k2 <= 12 | 33,598 | 4.43 | 33,455 | 19.63 | 19.51 | 614

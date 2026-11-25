@@ -12,6 +12,16 @@ members with `R ≤ μ - z √v` hold the fraction `Φ(λ - z)` of all successes
 It is the exponential tilt of a Gaussian: weighting `N(μ, v)` by `e^{t x}` gives
 `e^{μ t + v t²/2} · N(μ + v t, v)` (`setIntegral_exp_mul_gaussianReal`), here with
 `t = ln(1 - p)`. `selection_fraction` is the claim, exactly.
+
+`selection_fraction_two` is the same for a search that orders the members by an earlier count (the
+rows left by the cover) while success depends on a later one (the rows left at full depth): if the
+later count is `ρ x + c + e` with `e` normal and independent of the earlier count `x`, the members
+with `x ≤ μ - z √v` hold the fraction `Φ(ρ λ₁ - z)` of the successes, `λ₁ = -√v ln (1 - p)`. In
+terms of the correlation `r` of the two counts and of `λ = -sd(later count) · ln (1 - p)` this is
+`Φ(r λ - z)`: ordering by the earlier count is ordering by a criterion whose `λ` is `r` times that
+of the later one. So to collect the share `f` of the successes the ideal order examines the share
+`Φ(Φ⁻¹(f) - λ)` of the members and cover first the share `Φ(Φ⁻¹(f) - r λ)`; their ratio is the prize
+of the ideal order (`scripts/alignment/`, section 5, compares it with three exact enumerations).
 -/
 
 namespace GoldbachGaps.Cap
@@ -110,5 +120,45 @@ theorem enrichment_at (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) {p : ℝ} (hp : p 
   congr 1
   have := Real.mul_self_sqrt v.coe_nonneg
   linear_combination (Real.log (1 - p) ^ 2 / 2) * this
+
+/-- **Selection on the earlier of two counts.** The earlier count is `x ~ N(μ, v)`; the later count
+is `ρ x + c + e` with `e ~ N(0, w)` independent of `x`; a member succeeds with probability
+`(1 - p)^(later count)`. Then the members with `x ≤ μ - z √v` hold the fraction `Φ(ρ λ₁ - z)` of
+the successes, `λ₁ = -√v · ln (1 - p)`. -/
+theorem selection_fraction_two (μ c ρ : ℝ) {v w : ℝ≥0} (hv : v ≠ 0) (hw : w ≠ 0) {p : ℝ}
+    (hp : p < 1) (z : ℝ) :
+    (∫ x in Set.Iic (μ - z * √(v : ℝ)), ∫ e, (1 - p) ^ (ρ * x + c + e) ∂(gaussianReal 0 w)
+        ∂(gaussianReal μ v)) /
+        (∫ x, ∫ e, (1 - p) ^ (ρ * x + c + e) ∂(gaussianReal 0 w) ∂(gaussianReal μ v)) =
+      (gaussianReal 0 1 (Set.Iic (-(ρ * (√(v : ℝ) * Real.log (1 - p))) - z))).toReal := by
+  have hpos : 0 < 1 - p := by linarith
+  have hs : 0 < √(v : ℝ) := Real.sqrt_pos.mpr (by exact_mod_cast pos_of_ne_zero hv)
+  set L := Real.log (1 - p) with hL
+  set K := rexp (L * c) * rexp (0 * L + w * L ^ 2 / 2) with hK
+  have hKpos : 0 < K := mul_pos (Real.exp_pos _) (Real.exp_pos _)
+  have hinner : ∀ x : ℝ, ∫ e, (1 - p) ^ (ρ * x + c + e) ∂(gaussianReal 0 w) =
+      K * rexp (ρ * L * x) := by
+    intro x
+    have h1 : ∀ e : ℝ, (1 - p) ^ (ρ * x + c + e) = rexp (L * (ρ * x + c)) * rexp (L * e) := by
+      intro e
+      rw [Real.rpow_def_of_pos hpos, ← Real.exp_add]
+      congr 1
+      ring
+    simp_rw [h1]
+    rw [integral_const_mul, integral_exp_mul_gaussianReal 0 hw, hK, ← Real.exp_add,
+      ← Real.exp_add, ← Real.exp_add]
+    congr 1
+    ring
+  simp_rw [hinner]
+  rw [integral_const_mul, integral_const_mul, mul_div_mul_left _ _ hKpos.ne',
+    setIntegral_exp_mul_gaussianReal μ hv _ measurableSet_Iic,
+    integral_exp_mul_gaussianReal μ hv, mul_div_cancel_left₀ _ (Real.exp_pos _).ne',
+    gaussianReal_Iic _ hv]
+  have key : (μ - z * √(v : ℝ) - (μ + v * (ρ * L))) / √(v : ℝ) =
+      -(ρ * (√(v : ℝ) * L)) - z := by
+    rw [div_eq_iff hs.ne']
+    have := Real.mul_self_sqrt v.coe_nonneg
+    linear_combination (ρ * L) * this
+  rw [key]
 
 end GoldbachGaps.Cap

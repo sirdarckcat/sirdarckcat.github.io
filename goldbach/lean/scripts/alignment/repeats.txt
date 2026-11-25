@@ -1,0 +1,21 @@
+set | members | rows left by the cover L | incidences I of the later classes on them | distinct rows struck U | repeats I - U | distinct expected with chance overlaps U0 | repeats expected | U - U0
+tier k2 <= 6 | 1 | 26.00 | 21.00 | 20.00 | 1.00 | 14.72 | 6.28 | +5.28
+  members with the same k1 | 19,515 | 26.00 | 11.70 | 9.48 | 2.22 | 9.49 | 2.22 | -0.00
+tier k2 <= 7 | 13 | 27.31 | 23.54 | 20.38 | 3.15 | 16.02 | 7.52 | +4.36
+  members with the same k1 | 162,913 | 27.85 | 12.57 | 10.19 | 2.38 | 10.19 | 2.38 | +0.00
+tier k2 <= 8 | 62 | 28.77 | 24.84 | 21.00 | 3.84 | 16.88 | 7.95 | +4.12
+  members with the same k1 | 192,193 | 28.92 | 13.05 | 10.58 | 2.47 | 10.58 | 2.48 | +0.00
+tier k2 <= 9 | 401 | 29.36 | 24.24 | 20.55 | 3.69 | 16.74 | 7.50 | +3.80
+  members with the same k1 | 197,881 | 29.42 | 13.27 | 10.76 | 2.51 | 10.76 | 2.52 | +0.01
+tier k2 <= 10 | 1,965 | 29.93 | 23.76 | 20.17 | 3.59 | 16.63 | 7.13 | +3.54
+  members with the same k1 | 199,056 | 29.96 | 13.52 | 10.96 | 2.56 | 10.95 | 2.56 | +0.01
+tier k2 <= 12 | 33,598 | 30.77 | 22.62 | 19.11 | 3.52 | 16.24 | 6.38 | +2.86
+  members with the same k1 | 200,002 | 30.77 | 13.89 | 11.26 | 2.62 | 11.25 | 2.63 | +0.01
+
+tier | advantage in distinct rows over members with the same cover | of which more strikes | fewer repeats | share of fewer repeats
+k2 <= 6 | 10.52 | 5.23 | 5.28 | 0.50
+k2 <= 7 | 10.20 | 5.83 | 4.36 | 0.43
+k2 <= 8 | 10.42 | 6.31 | 4.11 | 0.39
+k2 <= 9 | 9.79 | 5.99 | 3.80 | 0.39
+k2 <= 10 | 9.21 | 5.68 | 3.53 | 0.38
+k2 <= 12 | 7.84 | 4.99 | 2.85 | 0.36

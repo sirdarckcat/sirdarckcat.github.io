@@ -1,0 +1,15 @@
+B | members sieved | mean S measured | E S = n w | Var S measured (+- sampling sd) | variances of the blocks | formula, exact w and R | formula with w = ln 463/ln B, R = exp(-1/(463 ln 463)) | binomial n w (1 - w) | sd ratio measured | formula
+1e+06 | 165,000 | 674.17 | 674.16 | 354.84 (+- 1.24) | 357.7 352.1 350.8 353.7 360.3 352.7 352.2 359.7 351.0 351.1 361.9 | 352.20 | 326.61 | 371.57 | 0.9772 | 0.9736
+1e+07 | 165,000 | 577.90 | 577.87 | 344.48 (+- 1.20) | 345.9 341.8 341.0 348.1 348.8 347.3 341.7 349.9 342.8 334.6 347.4 | 341.29 | 321.67 | 355.54 | 0.9843 | 0.9798
+1e+08 | 165,000 | 505.69 | 505.64 | 326.98 (+- 1.14) | 330.5 322.9 323.0 327.4 330.1 328.8 326.4 330.8 328.3 318.4 330.3 | 324.51 | 308.83 | 335.42 | 0.9873 | 0.9836
+
+# histogram of S at B = 1e+08: 105,000 members, mean 505.66, variance 327.57, skewness +0.012, excess kurtosis +0.006
+# p = 0.02398; chance that a row left at B is prime p' = p / w = 0.07124; theta = -ln(1 - p') = 0.07391; theta x sd = 1.3377
+# ln E (1-p')^(S - E S): measured 0.8909; Gaussian theta^2 Var / 2 with the measured variance: 0.8947
+# what a larger spread would be worth, Gaussian S: ln of the hits captured by a funnel keeping the best fraction f, variance raised from the formula's value to the binomial value
+#   f = 1: +0.0298 nats
+#   f = 0.3: +0.0378 nats
+#   f = 0.1: +0.0467 nats
+#   f = 0.03: +0.0558 nats
+#   f = 0.01: +0.0634 nats
+#   f = 0.001: +0.0776 nats
