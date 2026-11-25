@@ -22,7 +22,7 @@ Sets of moduli the fleet has used, not to be scanned (GPU session, 19:58 UTC): t
 | first 88 odd primes + 523 | 8,572 (4 at 1,247, 154 at 1,248, 1,211 at 1,249, 6,922 at 1,250, 281 at 1,251) | `covers_first88_523.txt.xz` | uarch session, the first 600 in order of rows (four workers, 18.9 million members a cover) | started 20:01 UTC 25 Nov, ends about 01:05 UTC |
 | first 88 odd primes + 613 | 8,537 | `covers_first88_613.txt.xz` | Opus session, the first 3,000 in order of rows (four workers, 16.1 million members a cover) | started 20:05 UTC 25 Nov, ends about 09:50 UTC 26 Nov |
 | first 88 odd primes + 503 | 8,582 | `covers_first88_503.txt.xz` | contractor session, the first 2,400 in order of rows (three workers, 19.7 million members a cover) | started 20:06 UTC 25 Nov |
-| first 88 odd primes + 479 | 8,582 | `covers_first88_479.txt.xz` | offered to the consultant session | |
+| first 88 odd primes + 479 | 8,582 | `covers_first88_479.txt.xz` | consultant session, the first 3,000 in order of rows: three workers at the record target (every fourth cover, indices 0, 1, 2 mod 4), the fourth on a calibration target of 80,000 for about four hours before it joins them | started 20:06 UTC 25 Nov |
 | first 88 odd primes + 467 | 8,572 | `covers_first88_467.txt.xz` | offered to the Lean session | |
 
 Both files: the first-88 family-B covers of `../../fscan/cover/starts/q170000_m88f.txt` extended by the two fullest

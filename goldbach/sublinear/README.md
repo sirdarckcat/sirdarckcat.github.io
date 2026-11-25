@@ -86,8 +86,7 @@ it; they are in "A floor under every cover" and the sections after it:
   and for a gap of 1,000,000 a 2,196-digit number with g = 1,001,491 (Opus
   session, certified; 2,480 digits were held), then 1,997 digits with
   g = 1,008,589 (certified as well) and 1,797 digits with g = 1,021,897
-  (rechecked here from N alone); 300 digits is
-  running on the contractor session's cores. Section "The other direction".
+  (rechecked here from N alone, and certified). Section "The other direction".
 - A third game since the afternoon of the 25th, asked by the lead: the
   closeness frontier, the most digits at which a number with g at least
   10%, 25%, 50% of its own size's ceiling is held (100, 46 and 25 digits
@@ -3201,8 +3200,12 @@ up to 10^6 for 78,452, and it fails a strong test for each of the 1,870
 others below 1,021,897 (1,758 of them below 1,000,003). The run went as its
 model said: survivors of mean 1,251.5 and sd 27.2 against 1,252 and 27.3,
 111.1 tests per prime against 112.1, the hit as the 21,920th member tested
-with 0.75 expected by then, and 14 CPU-hours where 14 were predicted. A
-kernel certificate has not been asked for yet. The descent stops here: the
+with 0.75 expected by then, and 14 CPU-hours where 14 were predicted. It
+is certified in the Lean kernel (commit 90c3778 on the Lean branch,
+`exists_1797_digit_no_summand_below_1021897`: 76,827 rows by a modulus,
+2,049 by a divisor, 1,240 by the Fermat test; the primality of
+N − 1,021,897 is not certified), so "there is an even number below 10^1797
+with no Goldbach summand below 1,000,000" is a theorem. The descent stops here: the
 cores go to the 200-digit question.
 
 (At 400 digits the cut kept 7.1% of the hit mass, one hit expected per 10.7
