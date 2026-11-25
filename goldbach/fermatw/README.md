@@ -14,7 +14,8 @@ times 2^b per exponent bit, 8 lanes of different numbers), same member scheduler
 | `bench_fmw.py L [variant] [G]` | microseconds per test against gmpy2 |
 | `bench_ab.py L A B [reps]` | two variants alternately in one process (the machine is noisy): min and median |
 
-`../sieve200/search_c.py` uses it automatically when the members of a progression have more than 664 bits (fm13 below);
+`../sieve200/search_c.py` uses it automatically when the members of a progression have more than 672 bits (fm13 up to there:
+fm13 is exact for n < 2^672, see `../fermat661/test_fm13_range.py`; its documented 664 bits was a margin, not the limit);
 `SEARCH_C_FERMAT=gmpy2` turns both off.  On the g >= 200,000 cover at 400 digits (1,010 rows, B = 10^7, skip 0.98, 65,536
 members, one core) the scan statistics are identical to gmpy2's (tests = 42,483, prp = 1,312) at 10,789 members/s instead of 1,874.
 

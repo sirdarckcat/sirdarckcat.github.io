@@ -11,6 +11,7 @@ a number on the same core: about 11 times faster, same verdicts.
 | `fm13.py` | ctypes wrapper (`available()`: avx512ifma present; compiled with gcc on first use) |
 | `test_fm13.py` | final residue 2^(1-n) mod n and verdict against Python `pow`, on random numbers of 100 to 664 bits, mixed lengths in one batch, primes, base-2 pseudoprimes, edge values; the member scheduler against a plain loop |
 | `bench_fm13.py` | microseconds per test against gmpy2 |
+| `test_fm13_range.py [record.json]` | the exact range against gmpy2: exact up to 672 bits (16 n < R = 2^676 keeps the residue below 4n); from 673 bits false composites, never false PRPs; 10^5 random odd n and 5,000 primes in [2^664, 10^200) and every N - q of a record: exact |
 
 `../sieve200/search_c.py` uses it automatically on a CPU with IFMA (`SEARCH_C_FERMAT=gmpy2` turns it off).
 

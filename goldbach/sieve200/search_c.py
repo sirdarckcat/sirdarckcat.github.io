@@ -72,15 +72,19 @@ def init_spec(spec, sieve_b, block):
              chunk=max(1, sv.K // block), fm=_fermat_members(spec, N0, M, U))
 
 
+FM13_MAXBITS = 672    # fm13 keeps its residue below 4n while 16 n < R = 2^676: exact for n < 2^672 (checked against gmpy2
+                      # at every size 660..672 bits; from 673 bits it returns false composites, never false PRPs)
+
+
 def _fermat_members(spec, N0, M, U):
-    """The C Fermat loop for this progression: fm13 (13 limbs) when every member N0 + k M - q, k < kmax, has at most 664
-    bits, else fmw with the smallest limb count that holds them; None (gmpy2) without IFMA.  kmax is the spec's (2^40 when it
-    has none), capped by ceiling_digits."""
+    """The C Fermat loop for this progression: fm13 (13 limbs) when every member N0 + k M - q, k < kmax, has at most 672
+    bits (all of 10^200's 665-bit numbers among them), else fmw with the smallest limb count that holds them; None (gmpy2)
+    without IFMA.  kmax is the spec's (2^40 when it has none), capped by ceiling_digits."""
     kmax = int(spec.get("kmax", 1 << 40))
     if spec.get("ceiling_digits"):
         kmax = min(kmax, int((mpz(10) ** spec["ceiling_digits"] - N0) // M) + 1)
     bits = int(N0 + kmax * M).bit_length()
-    if HAVE_FM13 and bits <= 664:
+    if HAVE_FM13 and bits <= FM13_MAXBITS:
         return fm13.Members(N0, M, U)
     if HAVE_FMW:
         return fmw.Members(N0, M, U, kmax)
