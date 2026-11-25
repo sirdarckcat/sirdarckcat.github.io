@@ -1860,6 +1860,38 @@ zero), it gives 1,221 rows at 170,000 and 1,584 at 213,070: within 2% of the
 prime pairs and nothing else. The covers of the campaign are not good by
 accident of search; they are where the count of covers runs out.
 
+How far that floor can be trusted nearer the end (25 November; the fixed-gap
+game below works at Q = 3·D to 7·D, the campaign at 10·D to 13·D). On the
+same 89 moduli at four smaller targets, tempering for 30,000 sweeps (one
+core, four minutes each) against the recursion:
+
+| Q | 24,000 | 32,000 | 48,000 | 80,000 | 170,000 | 213,070 |
+|---|---|---|---|---|---|---|
+| D/Q | 0.66 | 0.50 | 0.33 | 0.20 | 0.094 | 0.075 |
+| floor by the recursion (rows) | 44 | 97 | 217 | 474 | 1,221 | 1,584 |
+| temperature β where its entropy reaches zero | 3.85 | 3.15 | 2.50 | 1.95 | 1.40 | 1.25 |
+| best cover found | 50 | 109 | 229 | 494 | 1,248 | 1,609 |
+| floor measured in the same run, the largest −ln Z/β | 50.2 | 108.8 | 230.2 | 495.6 | | |
+| found above the recursion's floor | 14% | 12% | 5.5% | 4.2% | 2.2% | 1.6% |
+
+The runs have converged (the best cover sits on the measured floor, and the
+entropy left at the coldest temperature is 4 to 12 nats), so the difference
+is the recursion's. Its ln Z is right within 4% at every temperature
+before the freezing: the measured loss θ − ln Z is 0.96 to 1.00 of the
+recursion's for β up to 2 at all four targets (`cover_floor_runs/small_targets/`). But the floor is a small
+difference of large numbers, and the recursion divides ln Z wrongly between
+energy and entropy at low temperature: at Q = 48,000 and β = 2.45 it has
+220 rows left and 7 nats of entropy where the run has 266 rows and 127
+nats, with nearly the same ln Z. The real ensemble freezes later and higher.
+So the recursion's floor is a lower estimate that is good to 2% where the
+freezing comes early (β near 1.3, the campaign) and 5 to 14% low where it
+comes late (β from 2.5 up, targets within three times the end of complete
+covers). Multiplying the recursion's loss by 1.03 before taking the floor
+reproduces the four small cases within 4% (48.7, 104, 229, 495), but it
+overshoots at the campaign's targets (1,267 and 1,642), so there is no single
+factor; where rows are quoted below for the fixed-gap game, the covers
+actually found are given beside the recursion's figure.
+
 The same formula covers the table of Result 3, which was made the day
 before with a different sampler and for a different purpose. A number below
 10^200 has 460 nats to spend on its residues, whatever the depth z, so the
