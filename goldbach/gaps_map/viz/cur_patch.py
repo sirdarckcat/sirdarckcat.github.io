@@ -1,6 +1,9 @@
 # Changes to boxes that were already on the 23 Nov map.  Each patched box is marked "changed" (since = "upd").
 # repl: {field: [(old text, new text)]} with the old text required to be present; *_add: text appended; any other key: replaced.
 PATCH = {
+"d_limit": dict(
+  detail_add="Doubted by the research session itself on 25 Nov 10:04 UTC and checked by the consultant (box ‘Why the ratio D/(x ln² x) should eventually fall’): the heuristic limit of the ratio is 0, like 1.349/(ln ln x − 1); the 0.72 to 0.9 seen is a plateau that holds up to about 10⁶ and 1.1275 is not a limit.",
+  chips_add=["questioned 25 Nov"]),
 # ---------------- Lean side
 "r_158209": dict(
   repl={"gist": [("The standing record.", "The record from 23 to 24 Nov; 160,357 now stands above it.")],

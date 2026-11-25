@@ -1,7 +1,7 @@
 # Goldbach-gap map: how the Lean proofs and the research results fit together
 
 Companion to the interactive page `viz/goldbach_map.html` (also published as an artifact). The page has
-183 results (95 from the Lean library, 88 from research documents) and 398 links; this note says what the structure shows.
+184 results (95 from the Lean library, 89 from research documents) and 403 links; this note says what the structure shows.
 Snapshot of 2026-11-25, about 09:00 UTC: Lean library read at `a1c77dc` (branch `ccr-36ca7b46-8twf14`), research at `48c73de`
 (`ccr-d4a17dd0-7uu03r`), the exact-search session at `018b7ed` (`ccr-b8c25887-i6tn9f`), the campaign at `ebb6e1e`
 (`ccr-8ffe9d7a-4ni11u`), the archipelago study at `d960f7f` (`ccr-c6e00296-3g7fp9`), the lead's merge at `43ab0b3`
@@ -27,7 +27,7 @@ sides meet at about sixty points (section 3).
 |---|---|---|---|
 | Records and certificates | 18 | Lean | g = 160,357 (200 digits, 24 Nov), g = 158,209, the earlier ladder, the pure covers (15,907 on 89 primes; up to 16,981 on 93), a family of 21,378,978 covered numbers, the record holders up to 10^12, a generator for A025018 proved correct, Goldbach and the 26 record holders below 2^25 by a kernel-run sieve; the certificate machinery: failed Fermat test ⇒ composite, block check, least-summand certificate, one elliptic-curve primality step and the group law it runs |
 | Covering principle | 8 | Lean | primorial core, covering certificate, every cover is realised, prime moduli suffice, kills are residues, a cover gives a number below a cap |
-| Cover depth and counting | 27 | Lean, docs, data | **new**: D(n) defined, exact in the kernel for up to nine moduli, certified covers up to 614,101 on 1,228 moduli, the count of covers and its exact pair-weight step (Lean); exact D(n) to 35, D(89) < 35,000, the measured law ln g0 = θ − Q/ln² x, its derivation, the conjectured limit 1.1275 and its referee check, why 1.349 is not the truth (research, uarch, Lean scripts, archipelago) |
+| Cover depth and counting | 28 | Lean, docs, data | **new**: D(n) defined, exact in the kernel for up to nine moduli, certified covers up to 614,101 on 1,228 moduli, the count of covers and its exact pair-weight step (Lean); exact D(n) to 35, D(89) < 35,000, the measured law ln g0 = θ − Q/ln² x, its derivation, the conjectured limit 1.1275 and its referee check, why the limit should fall instead (a check of 25 Nov), why 1.349 is not the truth (research, uarch, Lean scripts, archipelago) |
 | Asymptotic bounds | 14 | Lean | every odd prime is a least summand; effective form under Linnik; counting bound; covering bounds 0.73, 1.2 and 1.349 times ln X·ln ln X, with Mertens' third theorem proved from Mathlib |
 | Counting laws | 7 | Lean | budget law, first-moment pigeonhole, no free lunch, layered covers, value-set ceiling |
 | Search limits | 16 | Lean | hit mass, selection and tilt identities, the thinning law, lattice and Johnson radius, black-box bound, population bound, merge cost, list gain (0.207 rows per nat above Q), needles, 21 settled ideas, finding a cover for arbitrary rows is as hard as SAT |
@@ -190,7 +190,7 @@ Rebuild: `python3 gdata.py 1e18 2e7 e18` (and 1e12, 1e15), then `theory.py`, `ar
 
 ## 10. Update of 2026-11-25
 
-Built from the heads listed at the top. 47 boxes are new (19 Lean theorems, 28 research or computation, one of them my own draft proof), 33 existing boxes
+Built from the heads listed at the top. 48 boxes are new (19 Lean theorems, 29 research or computation, two of them my own: a draft proof and a check of the limit), 33 existing boxes
 were changed, and the page gained a lens, **New**, that colours boxes new (red), changed (ochre) or unchanged; the 'what
 changed' list at the top of the reading panel links to the main items. The groups 'Records' and 'Checkers' were merged and a
 group 'Cover depth and counting' was added.
@@ -223,4 +223,11 @@ A request from the research session on 25 Nov, at the user's standing instructio
 deletion argument behind 'why 1.349 is not the truth' can be made rigorous. Short answer: yes with classical inputs
 (Lavrik-type almost-all Hardy–Littlewood for shifts of size ≍ x, Selberg's upper bound for triples), giving a constant of about
 1.352 against 1.349 (about 1.48 if every second moment had its predicted value); the write-up is `PAIR_COVER.md`, with two inputs named as unchecked, and a box on the map (status: paper, not checked by anyone else).
+
+A second request, later the same morning (10:04 UTC): the research session doubted its own limit 1.1275 and asked for an attack on the
+argument. Short answer: the argument holds as a heuristic and the ratio D(x)/(x ln² x) should tend to 0, like 1.349/(ln ln x − 1), because a prime near x
+can strike only about ln x/ln ln x rows; two corrections to the route (the small moduli already remove 27% more rows than a random choice, and the
+right object is a capacity bound, not the first moment); on real primes greedy covers sit on a plateau at 0.72 up to 10⁵ and the model puts the
+maximum near 10⁵ to 10⁶ with a slow fall after it, so nothing changes at the campaign's sizes. The write-up is `LIMIT_CHECK.md` (scripts and outputs in
+`data/limit_check/`), with a box on the map (status: heuristic, not checked by anyone else).
 
