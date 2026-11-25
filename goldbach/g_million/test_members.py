@@ -25,6 +25,7 @@ def test_member(job):
 
 if __name__ == "__main__":
     tag, survf = sys.argv[1], sys.argv[2]; procs = int(sys.argv[3]) if len(sys.argv) > 3 else 4
+    stop_at_hit = "--stop-at-hit" in sys.argv
     setup = json.load(open(f"setup_{tag}.json"))
     done = set()
     log = f"tested_{tag}.jsonl"
@@ -45,5 +46,6 @@ if __name__ == "__main__":
             if r.get("hit"):
                 print(f"HIT: k = {r['k']} with {r['S']} survivors, all composite ({time.time() - t0:.0f} s)", flush=True)
                 open(f"hit_{tag}_k{r['k']}.json", "w").write(json.dumps(dict(k=r["k"], N=str(mpz(setup["N0"]) + r["k"] * mpz(setup["D"])))) + "\n")
+                if stop_at_hit: break
             if n % 200 == 0: print(f"  {n} tested ({time.time() - t0:.0f} s)", flush=True)
     print(f"done: {n} members tested in {time.time() - t0:.0f} s")
