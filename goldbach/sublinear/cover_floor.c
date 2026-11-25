@@ -38,6 +38,11 @@
 // samples are uniform over the complete covers at Q).  Printed at the end: "CLASSES n", then for every modulus
 // "CLS modulus classes_seen share_of_the_commonest entropy_in_nats": which moduli are frozen among complete covers.
 //
+// Prefixes: with COVER_FLOOR_PREFIXES="12,24,41" the same samples are also counted by the classes of their first 12, 24
+// and 41 moduli taken together (a hash of them), and "PREFIX m settings_seen share_of_the_commonest entropy_in_nats" is
+// printed for each: the entropy of the first m moduli among complete covers, which the sum of the single-modulus
+// entropies only bounds from above (plug-in estimate, too low when the settings seen are as many as the samples).
+//
 // Weighted rows: with the environment variable COVER_FLOOR_WEIGHTS=file ("q weight" lines, 64 = a full row, as
 // written by ../fscan/cover/brainstorm/soft_weights.py) the rows are the primes of that file, whatever Q, and the
 // energy is the weighted number of rows left, the campaign's measure of a cover.  Energies are then printed in rows
@@ -158,6 +163,13 @@ int main(int argc, char **argv) {
     if (nfam) for (size_t j = 0; j < (size_t)nb * famsize; j++) famE[j] = 2147483647;
     long *chist = NULL, cn = 0; int *coff = NULL;
     if (getenv("COVER_FLOOR_CLASSES")) { coff = malloc((nmod + 1) * sizeof(int)); coff[0] = 0; for (int m = 0; m < nmod; m++) coff[m + 1] = coff[m] + mod[m]; chist = calloc(coff[nmod], sizeof(long)); }
+    #define PFX_MAX 8
+    #define PFX_CAP (1u << 22)
+    int npfx = 0, pfxlen[PFX_MAX]; uint64_t *pfxkey[PFX_MAX]; long *pfxcnt[PFX_MAX], pfxn = 0;
+    if (getenv("COVER_FLOOR_PREFIXES")) {
+        char *t = strdup(getenv("COVER_FLOOR_PREFIXES"));
+        for (char *w = strtok(t, ", "); w && npfx < PFX_MAX; w = strtok(NULL, ", ")) { int m = atoi(w); if (m > nmod) m = nmod; if (m > 0) { pfxlen[npfx] = m; pfxkey[npfx] = calloc(PFX_CAP, sizeof(uint64_t)); pfxcnt[npfx] = calloc(PFX_CAP, sizeof(long)); npfx++; } }
+    }
     long *hist = calloc((size_t)nb * nbins, sizeof(long));
     float *hoff = weighted ? calloc((size_t)nb * nbins, sizeof(float)) : NULL;      // sum of (energy - start of the bin): the bin is printed at its mean energy
     long *acc = calloc(nb, sizeof(long)), *tried = calloc(nb, sizeof(long)), *sw_ok = calloc(nb, sizeof(long)), *sw_try = calloc(nb, sizeof(long));
@@ -199,6 +211,20 @@ int main(int argc, char **argv) {
                     for (; j < nx; j++) { int q = xrow[j], hit = 0; for (int m = 0; m < nmod && !hit; m++) hit = q % mod[m] == r->a[m]; if (!hit) break; }
                     #pragma omp atomic
                     rhist[j]++;
+                }
+                if (npfx && r->E == 0) {
+                    #pragma omp critical(pfx)
+                    {
+                        uint64_t h = 1469598103934665603ull; int m = 0; pfxn++;
+                        for (int j = 0; j < npfx; j++) {
+                            for (; m < pfxlen[j]; m++) { h ^= (uint64_t)r->a[m] + 1; h *= 1099511628211ull; h ^= h >> 29; }
+                            uint64_t key = h | 1; uint32_t pos = (uint32_t)(key * 11400714819323198485ull >> 42);
+                            for (uint32_t tr = 0; tr < PFX_CAP; tr++, pos = (pos + 1) & (PFX_CAP - 1)) {
+                                if (pfxkey[j][pos] == key) { pfxcnt[j][pos]++; break; }
+                                if (!pfxkey[j][pos]) { if (tr < PFX_CAP / 2) { pfxkey[j][pos] = key; pfxcnt[j][pos] = 1; } break; }
+                            }
+                        }
+                    }
                 }
                 if (chist && r->E == 0) {
                     for (int m = 0; m < nmod; m++) {
@@ -247,6 +273,12 @@ int main(int argc, char **argv) {
             fprintf(f, " %ld:%ld:%.2f", best, c[best], (double)e[best] / unit); c[best] = -c[best];
         }
         fprintf(f, "\n");
+    }
+    for (int j = 0; j < npfx; j++) {
+        long d = 0, mx = 0, tot = 0; double H = 0;
+        for (uint32_t q = 0; q < PFX_CAP; q++) if (pfxcnt[j][q]) { d++; tot += pfxcnt[j][q]; if (pfxcnt[j][q] > mx) mx = pfxcnt[j][q]; }
+        for (uint32_t q = 0; q < PFX_CAP; q++) if (pfxcnt[j][q]) { double pr = (double)pfxcnt[j][q] / tot; H -= pr * log(pr); }
+        fprintf(f, "PREFIX %d (moduli up to %d) settings_seen %ld of %ld samples (%ld counted) commonest %.4f entropy %.3f\n", pfxlen[j], mod[pfxlen[j] - 1], d, pfxn, tot, tot ? (double)mx / tot : 0.0, H);
     }
     if (chist) {
         fprintf(f, "CLASSES %ld\n", cn);

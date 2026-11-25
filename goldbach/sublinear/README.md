@@ -59,10 +59,11 @@ it; they are in "A floor under every cover" and the sections after it:
   one factor ln ln below the first-moment count. (The asymptotic part is a
   heuristic of one day; the consultant session checked it the same morning
   and it stands as a heuristic, with the asymptotic form of no use below
-  about 10^15. A direct test of the mechanism succeeded: among 1.5 million
-  sampled complete covers on 167 moduli the 41 moduli up to 181 are frozen,
-  carrying 6.6 nats of the 165 they could, exactly where the constrained
-  recursion puts the boundary. The
+  about 10^15. A direct test of the mechanism succeeded: among 1.1 million
+  sampled complete covers on 167 moduli near the end, the 41 smallest
+  moduli occur in six settings (one nat of entropy out of the 165 they
+  could carry), against 40,000 settings far from the end, and the frozen
+  part ends where the constrained recursion puts it. The
   one test left open on the 24th, 1,228 moduli, reads 3,438 to 3,465 in
   runs that are still falling, against 3,452 with the constraint and 3,409
   without, and decides nothing.) At 200 digits nothing moves: both versions
@@ -1880,37 +1881,53 @@ twelve moduli is 0.2 nats with the constraint and −16 without. And the
 runs at 1,228 moduli that would not come to equilibrium at 300,000 are
 runs in which the moduli up to 383 have to find one setting.
 
-A direct test of the freezing (`cover_floor.c` with COVER_FLOOR_CLASSES=1,
-which counts the classes of every sampled cover that leaves no row;
-`cover_floor_runs/classes/`). At 167 moduli and 40,111 the constrained
-recursion says the moduli up to 181 are frozen (41 moduli, with 165 nats of
-classes to choose from) and the entropy of the count, about 100 nats, sits
-in the moduli above. One run of 400,000 sweeps from the 41,659 cover gave
-1.5 million samples of complete covers; the entropy of the class of each
-modulus among them, summed over blocks of moduli (an upper bound for the
-entropy the block carries), beside the entropy of the same levels in the
-recursion:
+A direct test of the freezing (`cover_floor.c` with COVER_FLOOR_PREFIXES
+and COVER_FLOOR_CLASSES, which count, among the sampled covers that leave
+no row, the settings of the first m moduli taken together and the classes
+of each modulus; `cover_floor_runs/classes/`). The quantity the constraint
+is about can be measured: the entropy of the first m moduli among complete
+covers. On the 167 moduli, runs of 300,000 sweeps from the 41,659 cover at
+three targets (1.1 to 1.9 million samples each, uniform over the complete
+covers the run reaches):
 
-| moduli | 3 to 41 | 43 to 97 | 101 to 181 | 191 to 293 | 307 to 499 | 503 to 743 | 751 to 997 |
+| first m moduli (up to) | 6 (17) | 12 (41) | 24 (97) | 41 (181) | 61 (293) | 90 (467) | 120 (661) |
 |---|---|---|---|---|---|---|---|
-| how many | 12 | 12 | 17 | 20 | 33 | 37 | 36 |
-| classes to choose from, nats | 31 | 50 | 84 | 110 | 197 | 238 | 244 |
-| share of the commonest class, mean | 0.99 | 0.97 | 0.94 | 0.85 | 0.76 | 0.69 | 0.50 |
-| entropy among the sampled covers, nats | 0.6 | 1.7 | 4.3 | 11.0 | 28.7 | 43.9 | 76.7 |
-| the recursion with the constraint | 0.2 | −0.2 | 0.0 | 7.9 | 40.5 | 58.2 | −6.3 |
-| the recursion as it was | −16.5 | −19.9 | −5.6 | 14.7 | 51.0 | 70.2 | 10.4 |
+| classes to choose from, nats | 11 | 31 | 82 | 165 | 275 | 447 | 638 |
+| **Q = 40,111**: settings seen | 2 | 3 | 3 | 6 | 16 | 2,674 | 16,780 |
+| their entropy, nats | 0.07 | 0.45 | 0.45 | 1.07 | 2.1 | 3.6 | 5.3 |
+| recursion with the constraint | 3.1 | 0.2 | 0.0 | 0.0 | 7.9 | 42 | 90 |
+| recursion as it was | −1.1 | −16.5 | −36.4 | −42.1 | −27.4 | 16 | 73 |
+| **Q = 38,000**: settings seen | 5 | 8 | 11 | 21 | 3,065 | 82,522 | 418,474 |
+| their entropy, nats | 1.2 | 1.4 | 1.9 | 2.6 | 4.2 | 7.3 or more | 10.2 or more |
+| recursion with the constraint | 3.3 | 0.2 | 0.0 | 0.7 | 14 | 58 | 115 |
+| recursion as it was | −0.3 | −14.3 | −30.9 | −31.9 | −13.1 | 37 | 102 |
+| **Q = 25,000**: settings seen | 4 | 75 | 473 | 40,481 | 456,858 | 1.7 million | 1.9 million |
+| their entropy, nats | 0.6 | 3.7 | 4.9 | 8.3 or more | 11.5 or more | (as many as samples) | |
+| recursion with the constraint | 3.4 | 0.4 | 4.8 | 30 | 78 | 168 | 274 |
+| recursion as it was | 3.3 | 0.1 | 4.4 | 30 | 78 | 168 | 274 |
 
-The 41 moduli up to 181 carry 6.6 nats between them where they have 165 to
-give: frozen, as predicted, and the thaw begins where the constraint stops
-binding (0.1 to 0.4 nats a modulus up to 181, 0.55 on average from 191 to
-293, where the constrained recursion has 0.4). Above that the two differ in
-where the entropy sits, the samples having more of it in the last moduli
-(a modulus that finds nothing left to strike is free, which the recursion's
-last level, forced to strike everything, cannot show); the totals are 100
-nats in the recursion, 98.6 by the count, and at most 167 by this sum of
-single-modulus entropies, which counts shared freedom several times. This
-is one run in one family (the other family counted at this target has
-other classes on the small moduli, and by its count 2% of the covers).
+Near the end the 41 smallest moduli, which have 165 nats of classes to
+choose from, occur in six settings among 1.1 million complete covers at
+40,111 and in 21 among 1.4 million at 38,000: one or two nats of entropy
+where the unconstrained recursion needs −42 and −32 and the constrained one
+has 0.0 and 0.7. At 25,000, where neither version has a constraint binding
+beyond the first dozen moduli, the same 41 moduli occur in 40,000 settings.
+So the freezing is there, it sets in where the constraint starts to bind,
+and it reaches as far up the moduli as the constrained recursion says (the
+thaw: 16 settings of the first 61 moduli at 40,111, thousands of the first
+90). In the detail the two differ: beyond the frozen part the measured
+entropy grows more slowly than the recursion's (2.1 nats against 7.9 for
+the first 61 moduli at 40,111; a run of this length does not visit every
+setting that exists, so the measured figures are lower bounds, and the
+plug-in estimate saturates at the logarithm of the number of samples), and
+among the very first moduli the recursion spreads the entropy wrongly (it
+leaves the moduli 3 to 13 free, having no dispersion for them, where the
+samples have them fixed, and it freezes 17 to 41 at 25,000 where the
+samples show 3.7 nats). The class of each single modulus tells the same
+story: at 40,111 the commonest class has 94 to 99% of the samples at every
+modulus up to 181 and 85% on average from 191 to 293; at 38,000 it has 71
+to 74% at every modulus from 7 to 113, the mark of three or four families
+rather than of free moduli. This is one start in one family.
 
 What it changes at the sizes counted:
 
