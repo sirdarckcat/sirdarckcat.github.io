@@ -1,0 +1,35 @@
+sieve depth B, p_B, tests to a prime v=1/p_B, survivors mean/sd, exponent of an unselected member, and the selection gain in cost per success (nats) at sieve cost cs (modexp-equivalents per member)
+B=     2000 p_B=0.0294 v= 34.0 sd= 15.3  exponent(unselected)=36.09  cs=0.003 -> best f=6.03e-04, gain 1.40 nats
+B=     2000 p_B=0.0294 v= 34.0 sd= 15.3  exponent(unselected)=36.09  cs=0.010 -> best f=1.74e-03, gain 1.24 nats
+B=     2000 p_B=0.0294 v= 34.0 sd= 15.3  exponent(unselected)=36.09  cs=0.030 -> best f=5.49e-03, gain 1.08 nats
+B=     2000 p_B=0.0294 v= 34.0 sd= 15.3  exponent(unselected)=36.09  cs=0.100 -> best f=1.53e-02, gain 0.90 nats
+B=     2000 p_B=0.0294 v= 34.0 sd= 15.3  exponent(unselected)=36.09  cs=0.300 -> best f=3.76e-02, gain 0.71 nats
+
+B=    10000 p_B=0.0356 v= 28.1 sd= 18.3  exponent(unselected)=36.09  cs=0.003 -> best f=5.18e-04, gain 1.98 nats
+B=    10000 p_B=0.0356 v= 28.1 sd= 18.3  exponent(unselected)=36.09  cs=0.010 -> best f=1.55e-03, gain 1.76 nats
+B=    10000 p_B=0.0356 v= 28.1 sd= 18.3  exponent(unselected)=36.09  cs=0.030 -> best f=4.21e-03, gain 1.54 nats
+B=    10000 p_B=0.0356 v= 28.1 sd= 18.3  exponent(unselected)=36.09  cs=0.100 -> best f=1.20e-02, gain 1.29 nats
+B=    10000 p_B=0.0356 v= 28.1 sd= 18.3  exponent(unselected)=36.09  cs=0.300 -> best f=3.02e-02, gain 1.03 nats
+
+B=  1000000 p_B=0.0534 v= 18.7 sd= 19.3  exponent(unselected)=36.09  cs=0.003 -> best f=4.42e-04, gain 2.95 nats
+B=  1000000 p_B=0.0534 v= 18.7 sd= 19.3  exponent(unselected)=36.09  cs=0.010 -> best f=1.30e-03, gain 2.62 nats
+B=  1000000 p_B=0.0534 v= 18.7 sd= 19.3  exponent(unselected)=36.09  cs=0.030 -> best f=3.50e-03, gain 2.29 nats
+B=  1000000 p_B=0.0534 v= 18.7 sd= 19.3  exponent(unselected)=36.09  cs=0.100 -> best f=9.87e-03, gain 1.90 nats
+B=  1000000 p_B=0.0534 v= 18.7 sd= 19.3  exponent(unselected)=36.09  cs=0.300 -> best f=2.46e-02, gain 1.51 nats
+
+B= 20000000 p_B=0.0650 v= 15.4 sd= 18.7  exponent(unselected)=36.09  cs=0.003 -> best f=4.14e-04, gain 3.37 nats
+B= 20000000 p_B=0.0650 v= 15.4 sd= 18.7  exponent(unselected)=36.09  cs=0.010 -> best f=1.28e-03, gain 2.98 nats
+B= 20000000 p_B=0.0650 v= 15.4 sd= 18.7  exponent(unselected)=36.09  cs=0.030 -> best f=3.57e-03, gain 2.59 nats
+B= 20000000 p_B=0.0650 v= 15.4 sd= 18.7  exponent(unselected)=36.09  cs=0.100 -> best f=1.05e-02, gain 2.14 nats
+B= 20000000 p_B=0.0650 v= 15.4 sd= 18.7  exponent(unselected)=36.09  cs=0.300 -> best f=2.36e-02, gain 1.69 nats
+
+B=1000000000 p_B=0.0801 v= 12.5 sd= 17.7  exponent(unselected)=36.09  cs=0.003 -> best f=4.19e-04, gain 3.80 nats
+B=1000000000 p_B=0.0801 v= 12.5 sd= 17.7  exponent(unselected)=36.09  cs=0.010 -> best f=1.15e-03, gain 3.34 nats
+B=1000000000 p_B=0.0801 v= 12.5 sd= 17.7  exponent(unselected)=36.09  cs=0.030 -> best f=3.44e-03, gain 2.90 nats
+B=1000000000 p_B=0.0801 v= 12.5 sd= 17.7  exponent(unselected)=36.09  cs=0.100 -> best f=9.23e-03, gain 2.38 nats
+B=1000000000 p_B=0.0801 v= 12.5 sd= 17.7  exponent(unselected)=36.09  cs=0.300 -> best f=2.22e-02, gain 1.86 nats
+
+pool 2e+07: best survivors 450 vs mean 548 -> exponent reduction 6.61 nats (infinite sieve budget)
+pool 1e+09: best survivors 438 vs mean 548 -> exponent reduction 7.42 nats (infinite sieve budget)
+pool 1e+12: best survivors 420 vs mean 548 -> exponent reduction 8.63 nats (infinite sieve budget)
+pool 1e+15: best survivors 404 vs mean 548 -> exponent reduction 9.71 nats (infinite sieve budget)

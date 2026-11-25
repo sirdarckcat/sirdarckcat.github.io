@@ -1,0 +1,6 @@
+greedy: one class mod each prime <= 463 covers 1..y for y = 1321 (x ln x = 2842)
+ln x = 6.138, ln2 x = 1.814, ln3 x = 0.596
+x ln x/(ln2 x ln3 x) = 2629 ; Freiberg constant bound c < 1/(800 e^gamma) = 7.02e-04 -> guaranteed length ~ 1.8
+r=1 m=1 kappa=0.5 D=1: A=3, ln(1/delta) >= 5.08e+03 -> x^(1/20) = 1/delta needs ln x >= 1.02e+05 (x = 463 has ln x = 6.1)
+r=3 m=1 kappa=0.5 D=1: A=7, ln(1/delta) >= 1.19e+04 -> x^(1/20) = 1/delta needs ln x >= 2.37e+05 (x = 463 has ln x = 6.1)
+r=3 m=2 kappa=0.5 D=1: A=13, ln(1/delta) >= 2.20e+05 -> x^(1/20) = 1/delta needs ln x >= 4.40e+06 (x = 463 has ln x = 6.1)

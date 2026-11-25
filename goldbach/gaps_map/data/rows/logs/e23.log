@@ -1,0 +1,15 @@
+alive rows 1576
+prod_{p<=463}(1-1/p) = 0.09054 ; e^-gamma/ln463 = 0.09148
+N=10^198.0: p = 0.02423, -ln(1-p) = 0.02452, exponent for 1502 rows = 36.83
+N=10^199.0: p = 0.02410, -ln(1-p) = 0.02440, exponent for 1502 rows = 36.65
+N=10^199.7: p = 0.02402, -ln(1-p) = 0.02431, exponent for 1502 rows = 36.52
+N=10^200.0: p = 0.02398, -ln(1-p) = 0.02428, exponent for 1502 rows = 36.46
+  N=10^198.0 exponent (1502 rows) 36.83
+  N=10^198.5 exponent (1502 rows) 36.74
+  N=10^199.0 exponent (1502 rows) 36.65
+  N=10^199.5 exponent (1502 rows) 36.55
+  N=10^200.0 exponent (1502 rows) 36.46
+A = sum_{l>463} ln(1-1/(l-1)^2) = -2.952158e-04   (1/(463 ln 463) = 3.519e-04)
+pairs 1241100 ; sum over pairs of (C(d)-1) = -52.501 ; mean (C-1) = -4.230e-05
+second-order correction to ln P(no prime row) = p^2 * sum / (1-p)^2 = -0.03170 nats   [one-sided pieces: negative part -0.2212, positive part 0.1895]
+largest class of the alive rows mod l, l in (463, 3000): max (10, 523)
