@@ -65,3 +65,102 @@ each prime contributing about a fifth of a nat. A family that fixes or lists the
 sees at most the information those j primes carry, about 0.2 to 0.3 nats each even when the lists may depend on the
 cover, and a few hundredths when they may not; it cannot hold the tier at a density better than that allows. The only
 family that holds it at measurable density is "the best few percent of the covers, every member scored".
+
+## 2. Small instances, enumerated completely (`tiny.c`, `grid.py`, `smallest.py`, `optima.py`)
+
+An instance: rows = the odd primes below Q; moduli = the first k odd primes; candidates = every even N below X.
+score_j(N) = rows q with N − q divisible by none of the first j moduli. The line is the largest l with
+2·p_1···p_l ≤ X; a cell is a class modulo M = 2·p_1···p_l (a vector of classes of the first l moduli; every vector
+occurs below X), its design value is score_l, and its X/M members are its window. For each depth j beyond the line:
+
+- **OPT**: the least score_j over all candidates (the true optimum);
+- **D**: the least score_j over all class vectors of the first j moduli, no bound on N (what a cover on j primes
+  would do if X allowed it);
+- **scan**: the least score_j over the members of the best cells (pinning, then a full scan of the windows);
+- **mean**: the mean score_j over those members (pinning, no choice inside the window).
+
+**The grid** (`grid.txt`: Q = 200, 300, 500, 1000; line after 11, 13, 17, 19 or 23; windows 2, 4, 8 and the largest
+possible; 76 instances), by the number of primes beyond the line:
+
+| primes beyond the line | scan = OPT in | mean of scan − OPT, rows | largest | mean of (mean − scan) | mean of OPT − D |
+|---|---|---|---|---|---|
+| 1 | 66 of 76 | 0.13 | 1 | 1.25 | 0.41 (64 instances) |
+| 2 | 46 | 0.45 | 3 | 1.66 | 1.59 (32 instances) |
+| 3 | 39 | 0.67 | 3 | 1.89 | not enumerated |
+| 4 | 30 | 0.88 | 3 | 2.04 | not enumerated |
+
+For the 19 instances with Q = 1000 alone: scan − OPT = 0.32, 0.89, 1.16, 1.63 rows. So the window scan is worth one to
+two rows over pinning alone and that grows slowly; what the scan of the best cells still misses grows by about a
+quarter to a half of a row for each further prime; and already one prime beyond the line a cover on the same primes
+with no bound on N would do 0.4 rows better than anything below X.
+
+**The miniature to full depth** (`miniature_full.txt`: Q = 1000, X = 10^9, line after 23, all 5·10^8 even N; the best
+cells have 22 rows left and 15 members):
+
+| primes beyond the line (depth) | OPT | scan of the best cells | mean | design value of the best cell holding an optimum | cells at least that good |
+|---|---|---|---|---|---|
+| 1 (29) | 20 | 20 | 21.4 | 22 | 3 |
+| 2 (31) | 18 | 19 | 21.1 | 24 | 205 |
+| 4 (41) | 16 | 18 | 19.9 | 23 | 32 |
+| 6 (47) | 14 | 16 | 19.0 | 24 | 205 |
+| 9 (61) | 13 | 16 | 18.1 | 27 | 23,751 |
+| 12 (73) | 11 | 15 | 17.4 | 26 | 5,708 |
+| 17 (101) | 10 | 14 | 16.4 | 26 | 5,708 |
+| 20 (109) | 9 | 14 | 16.1 | 33 | 5,003,554 |
+| 23 (131) | 8 | 13 | 15.8 | 28 | 82,812 |
+| 28 (157) | 7 | 13 | 15.3 | 27 | 23,751 |
+| 37 (199) | 6 | 10 | 14.6 | 26 | 5,708 |
+
+The gap between the scan of the best cells and the optimum is 0, 1, 0, 2 rows for the first four primes, 2 to 4 from
+the fifth to the nineteenth and 4 to 6 after; the optimum's own cell is 0 to 6 rows worse than the best (once 11),
+which puts it between the 3rd and the 80,000th cell of 36.5 million in cover-first order.
+
+**The smallest instance** in which pinning cannot reach the optimum (`smallest.py`, `smallest_instance.txt`; searched
+with candidates above the rows, X at least 5Q, every pinnable set allowed, a set being pinnable when twice its
+product is at most X and maximal when no further modulus fits): rows the 36 odd primes below 160, moduli
+3, 5, 7, 11, 13, X = 840 (the least X is 800). The optimum is 6 rows left, at N = 578 only (classes 2, 3, 4, 6, 6;
+rows left 7, 31, 37, 79, 139, 157). The seven maximal pinnable sets:
+
+| pinned set | window | design value | full scores of the members of its best cells | design value of the cell of 578 |
+|---|---|---|---|---|
+| 3, 5, 7 | 4.0 | 9 | 7, 7, 7, 8, 8, 9 | 10 |
+| 3, 5, 11 | 2.5 | 10 | 7 ×5, 9, 9, 10 | 11 |
+| 3, 5, 13 | 2.2 | 10 | 7, 8, 9, 9 | 11 |
+| 3, 7, 11 | 1.8 | 12 | 7, 7, 8 ×7, 9 ×5, 10 ×3, 11, 11 | 13 |
+| 3, 7, 13 | 1.5 | 12 | 7, 7, 11, 12 | 13 |
+| 5, 7, 11 | 1.1 | 17 | 11, 15 | 18 |
+| 11, 13 | 2.9 | 27 | 8, 10, 17 | 28 |
+
+In every design the optimum's cell is exactly one row short of the best, and it is the best number below X. This is
+in the kernel (`Cap.Example840`: `optimum`, `pinning_misses`, `optimum_second_best`, `pinnable_iff`). For Q = 100 to
+200 in steps of 20 and the moduli 3..13, Q = 160 is the only target with such an instance below 2,310.
+
+**What the best members share** (`optima_k10.txt`, the 1,965 best members of the miniature).
+The classes of the smallest primes, and less and less of them: 95% are in the best class of 3 (half would be by
+chance), 73% in the best class of 5 (a quarter), then 30% in one class of 7 (a sixth), 21% at 11, 17% at 13, 12% at
+17, 13% at 19, 9% at 23 and 6.5% at 29, each about twice the uniform share, the favoured class being the best or
+nearly the best of its prime. Nothing beyond that: two best members share a class at 0.497 of the 37 later primes on
+average (0.451 for uniform classes), the number of later primes shared follows the law of independent primes, and
+the classes modulo 29 and 31 as points of the 29 × 31 grid are independent (χ² = 759 on 810 degrees of freedom). The
+rows still left are not particular rows: the rows outside the favoured classes of 3 and 5, each left in about 15% of
+the best members. One pattern is real and known: eight pairs of best members lie within 90 of each other
+(differences 24, 30, 30, 30, 60, 60, 60, 90) where 0.4 is expected, the inheritance between neighbours at a multiple
+of 30 that the research session has already priced.
+
+## 3. Statements (`GoldbachGaps/Cap/SoftLists.lean`, `GoldbachGaps/Cap/PairVariance.lean`)
+
+- **Lists below a bound.** The number of N < X in a product of lists is at most
+  (∏_{r∈S′} |A_r|)·(X/∏_{r∈S′} r + 1) for every subfamily S′ of the moduli (`card_residues_in_le_sub`), so the least
+  over subfamilies. A modulus r ≥ X caps it at |A_r| alone (`card_residues_in_le_of_le`), and any ℓ numbers lie in
+  lists of ℓ classes (`exists_lists_holding`): when every listed prime exceeds the window, the most a product of lists
+  can hold is exactly the length of its shortest list, however many primes are listed.
+- **Families and information** (`family_rarity_le`). If p is the law of the best members and q the law of all members
+  on whatever a family may read, a family F holds p(F)·ln(1/q(F)) ≤ KL(p‖q) + ln 2. With section 1: to hold half of
+  the 1,965 best members at an enrichment of e^8.5 a family must read at least 3.9 nats, which is 13 to 20 of the 37
+  later primes when its lists may depend on the cover, and is not available at all from the classes alone (1.4 nats in
+  the 37 primes together).
+- **Two and three primes beyond the line.** There is no formula better than the enumeration: inside a cell the class
+  vectors available at the later primes are the w points N0 + kM (k < w) of a line in the product of the residue
+  rings, direction (M mod s_1, M mod s_2, …), and the best of them is what the tables above list. The exact statements
+  are the two bounds OPT ≥ D (a cover on the same primes with no bound on N) and OPT ≤ scan, and the grid shows both
+  strict from the first prime on.

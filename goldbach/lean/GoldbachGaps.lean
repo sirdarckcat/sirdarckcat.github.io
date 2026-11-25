@@ -93,6 +93,7 @@ import GoldbachGaps.Cap.ListGain
 import GoldbachGaps.Cap.Thinning
 import GoldbachGaps.Cap.Hardness
 import GoldbachGaps.Cap.PairVariance
+import GoldbachGaps.Cap.SoftLists
 import GoldbachGaps.Gpu.Limbs
 import GoldbachGaps.Gpu.MontSqr
 import GoldbachGaps.Gpu.Fermat
@@ -489,7 +490,18 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                factors in which no class appears, `sum_classes_pairs`. This is the formal part
                of "the spread of the sieve count cannot be chosen through the cover";
                `scripts/selection_check/` has the numbers, and the worst case over the classes
-               is measured, not proved).
+               is measured, not proved), `SoftLists` (lists of several classes per modulus:
+               the count of `N < X` in all the lists is at most the budget bound of every
+               subfamily of the moduli, `card_residues_in_le_sub`; a modulus `≥ X` caps it at
+               the length of its own list, and any `ℓ` numbers lie in lists of length `ℓ`, so
+               beyond the window the count is governed by the shortest list,
+               `card_residues_in_le_of_le`, `exists_lists_holding`; a family read from given
+               coordinates satisfies `p(F) ln (1 / q(F)) ≤ KL(p ‖ q) + ln 2`, `family_rarity_le`,
+               with the log-sum inequality; and `Example840`, the smallest instance found in
+               which pinning with a full scan of the best windows misses the optimum: rows the
+               odd primes below 160, moduli 3..13, even `N < 840`, optimum 6 rows at `N = 578`
+               only, at least 7 in every best class of each of the seven maximal pinnable sets,
+               all by kernel evaluation. `scripts/alignment/` has the enumerations).
 * `Gpu.*`    – the GPU Fermat kernel `fermat2` of `goldbach/phd/campaign3_gpu/gpu_fermat.py`
                (commit `6ef621f`, branch `ccr-8ffe9d7a-4ni11u`), one thread, for any number
                of 32-bit limbs: `Limbs` (carry chain, borrow chain, comparison loop, shift),
