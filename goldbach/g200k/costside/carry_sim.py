@@ -6,7 +6,9 @@ Steady state over pools: rounds, tests computed / counted (waste), launches unde
 deferral of the slice lines (pools until the last member of a slice is decided; two slices a half-pool)."""
 import numpy as np, sys
 rng = np.random.default_rng(1)
-p, target, dmax, NEW, CNT = 0.0714, 1 << 18, 8, 503808, 423
+import os
+p, target, dmax, CNT = 0.0714, 1 << 18, 8, 423
+NEW = int(os.environ.get("CARRY_NEW", "503808"))      # kept members a half-pool a batch (keep 1.5%: 503,808; 0.75%: 251,904)
 NP = 14
 def run(S):
     # carried state: X (first-PRP pos), cnt, pos, slice id

@@ -159,3 +159,8 @@ found records followed by a restart; over 48 batches waste 2.75% -> 0.06% and ro
 What it can gain on a G4: the waste (3.0% of the Fermat tests, ~2% of a batch) for certain; the 18 small rounds a half-pool only where the sieve does not already
 fill them.  The GPU session's control-stream run (gap 0.10 s a half-pool shorter, batch unchanged) says the gaps between rounds are hidden already; the expected
 batch time is therefore 2-6% shorter, not the 6-12% of the pipeline model above.
+
+At keep 0.75% (item 2: 251,904 kept members a half-pool a batch, `CARRY_NEW=251904 python3 carry_sim.py 65537 131073`) the rounds as now are worse
+and carry-over is worth more: without it 34.9 rounds a pool, waste 5.72%, 17.9 launches under target / 2; with the default stop 15.0 rounds, waste
+0.00%, no small launch (smallest 132,984), slice lines deferred 1-9 batches (mean 5.0).  The two items are complements: carry-over removes 3.0% of
+the tests at 1.5% and 5.7% at 0.75%.
