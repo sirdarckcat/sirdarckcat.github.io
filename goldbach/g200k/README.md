@@ -41,3 +41,34 @@ The 400-digit scan had no hit in its first 69.2M members, where the survivor cou
 during the drought (sieve against brute force with rows above 2^16, fmw against gmpy2 on the scanned range, the same cover at
 Q = 30,000 / 100,000 / 130,000 with 329 / 6 / 10 hits found against 355 / 6.0 / 9.0 predicted, the first-prime positions of 52,480
 tested members against the geometric law up to position 333, and the rows that kill members) all agreed with the model.
+
+## The closeness frontier, 10% line (frontier.py)
+
+Rungs of the frontier asked for by the lead (most digits at which an N with closeness >= 10% at its own size is held), each
+also a point of the hit-rate calibration: `frontier.py` (one rung: many PT_DUMP covers of one set of moduli, the window
+10^(d-1) < N <= c 10^(d-1), target Q = 0.10 ceiling(c 10^(d-1))), `frontier_combine.py` (a rung split over runs with
+`--cover-offset`), `frontier_recheck.py` (every hit from N alone), `frontier_row.py` (the table row and hits file).
+Results: `frontier/RESULTS.md`.
+
+Speed (101 digits, 407 rows, one 2^22-member window, all four cores busy): the old pipeline (fm13's 13 limbs on 333-bit
+numbers, 2^20 windows, numpy selection, s200_extract) cost about 500 CPU-s an expected hit; now about 207 (2.4x):
+
+- fmw with the limbs the numbers need (7 at 333 bits, 8 at 353-404): 2.30 us a test against fm13's 6.90; two groups
+  of 8 lanes up to 8 limbs (1.22x at 7, 1.11x at 8; `fermatw/README.md`).
+- sieve windows of 2^22 members: 0.52 us a member against 0.87 at 2^20 (the per-prime work of the primes above the
+  window is per window; 2^23 rows no longer fit the 2 MB L2).  c chosen so that a cover is a whole number of windows
+  (120 digits: c = 1.1991218, 15 windows) saves the last, mostly empty window (6% at 120 digits).
+- s200_select and s200_csr (C) for the selection and the survivor lists: s200_extract's 430 strided reads a member cost
+  4.6 us a selected member.
+- skip 0.97 (the emptiest 3% of each block) instead of 0.98: cost per expected hit 207 against 245 CPU-s (flat from 0.96 to
+  0.975).  B = 10^7 stays: 10^8 raises the kept hit mass by 20% at a cost of 3x in the sieve.
+
+Where the time goes at 120 digits (578 rows, 396 bits): about 40% the sieve (2.5 s a window: marks of the primes 400..16384
+29%, 16384..2^20 33%, 2^20..2^22 18%, beyond 9%, patterns and counts 10%) and 58% the Fermat tests (9.5 a tested member, the
+first probable prime ends a member).  Both are within about 1.3x of what this approach can do on this core: the L1 mark loop
+takes 2.1 cycles a mark (an L1 byte tile 1.4, but 8x the per-tile work), and the 8-limb step runs at 74% of the two
+512-bit ports that every IFMA, add and shift shares (2 IFMA a cycle measured, 4.1 GHz).
+
+Cost per expected hit (CPU-s, skip 0.97, one full window of the rung's best cover, four busy cores; the range is the window's
+own p^ against p scaled from 101 digits): 105 digits 513-563, 110 1,930-2,370, 115 7,440-7,990, 120 18,100-21,600 (before
+the two-group fmw; about 5% less with it), so about x3.8 per 5 digits; 125 is about 15-20 CPU-h an expected hit.
