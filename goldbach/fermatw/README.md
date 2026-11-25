@@ -35,6 +35,13 @@ at L = 20 / 23 / 26: L = 20 runs at about 80% of it, L = 23 and 26 at 50-60%.  `
 runs in one process, 16-30 each, three other cores busy; min / median us): L = 20 30.7 / 35.3 vs 30.1 / 33.3; L = 21 37.7 / 44.9
 vs 38.7 / 45.8; L = 23 45.8 / 62.2 vs 50.7 / 64.3; L = 26 75.9 / 95.6 vs 91.2 / 102.1.
 
+Small L (the 100-120 digit frontier rungs: 7 limbs at 333-352 bits, 8 at 353-404): one group of 8 lanes is latency-bound
+(the reduction is a chain of L rounds, each multiplier waiting for the previous round's column), so `default_groups(L)` runs
+two groups (16 lanes a step, `FMW_GROUPS` overrides) up to L = 8.  Interleaved A/B (abn-style: the configurations alternate
+in one process, 200-300 short calls each, all four cores busy), min us/test G = 1 against G = 2: L = 6 1.69 / 1.31 (1.29x),
+L = 7 1.77 / 1.45 (1.22x), L = 8 2.45 / 2.22 (1.11x), L = 9 4.38 / 4.20, L = 10 4.16 / 4.07; G = 3 is not faster at 7 or 8.
+Below 13 limbs fmw is the kernel to use rather than fm13: at 333 bits fm13 takes 6.9 us a test, fmw's 7 limbs 2.3 (G = 1).
+
 ## Large L (2,000-2,200 digits)
 
 The straight-line steps stop paying above about 64 limbs: at L = 128 the step is 50,000 IFMAs of code (1.16 MB, 3 minutes to

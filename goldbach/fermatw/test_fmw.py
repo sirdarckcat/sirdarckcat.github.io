@@ -29,12 +29,12 @@ for L in Ls:
     # random odd numbers at the top size and mixed sizes
     ns = [rng.getrandbits(mb) | (1 << (mb - 1)) | 1 for _ in range(64)]
     check(ns, L)
-    ns = [rng.getrandbits(rng.randint(mb - 300, mb)) | 1 for _ in range(64)]
+    ns = [rng.getrandbits(rng.randint(max(8, mb - 300), mb)) | 1 for _ in range(64)]
     ns = [n for n in ns if n > 3]
     check(ns, L)
     # primes near the top size and mixed
     ps = [int(gmpy2.next_prime(rng.getrandbits(mb - 1) | (1 << (mb - 2)))) for _ in range(24)]
-    ps += [int(gmpy2.next_prime(rng.getrandbits(rng.randint(mb - 200, mb - 1)))) for _ in range(16)]
+    ps += [int(gmpy2.next_prime(rng.getrandbits(rng.randint(max(8, mb - 200), mb - 1)))) for _ in range(16)]
     vd = fmw.test(ps, L)
     assert vd.all(), (L, vd)
     # base-2 pseudoprimes: (2^p - 1) for prime p is a base-2 psp when composite? use products of primes p with 2^(n-1)=1:

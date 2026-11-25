@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "fmw.c")
 GEN = os.path.join(HERE, "gen_fmw.py")
 VARIANT = os.environ.get("FMW_VARIANT")             # default: win2 for L >= 21, win below (bench_ab.py)
-GROUPS = int(os.environ.get("FMW_GROUPS", "1"))
+GROUPS = int(os.environ.get("FMW_GROUPS", "0"))          # 0: default_groups(L)
 
 
 def _flags():
@@ -46,6 +46,12 @@ def _outdir():
     return d
 
 
+def default_groups(L):
+    """2 groups of 8 lanes up to 8 limbs (two independent steps interleaved hide the latency of the reduction chain:
+    1.29x at L = 6, 1.22x at 7, 1.11x at 8, interleaved A/B on 4 busy cores), 1 from 9 on (1.04x at 9, 1.02x at 10)"""
+    return GROUPS or (2 if L <= 8 else 1)
+
+
 def default_variant(L):
     """win below 21 limbs, win2 for 21..47, loop (fmwl2_step.h, product scanning in register column blocks) from 48 on, where the
     straight-line steps stop paying (bench_ab.py / the loop A/B in README)"""
@@ -54,7 +60,7 @@ def default_variant(L):
 
 def build(L, variant=None, groups=None, force=False):
     variant = variant or default_variant(L)
-    groups = groups or GROUPS
+    groups = groups or default_groups(L)
     tag = hashlib.sha1(("".join(l for l in open("/proc/cpuinfo") if l.startswith("model name"))).encode()).hexdigest()[:8]
     d = _outdir()
     hdr = f"fmw_step_L{L}_{variant}_g{groups}.h"
@@ -86,7 +92,7 @@ _LIBS = {}
 
 
 def lib(L, variant=None, groups=None):
-    key = (L, variant or default_variant(L), groups or GROUPS)
+    key = (L, variant or default_variant(L), groups or default_groups(L))
     if key not in _LIBS:
         h = ctypes.CDLL(build(L, variant, groups))
         vp = ctypes.c_void_p
