@@ -3,3 +3,4 @@ runs/*/hb_tmp.txt
 runs/*/run.log
 runs/*/done.txt
 runs/*/found.jsonl
+runs/*.log
