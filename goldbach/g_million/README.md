@@ -108,6 +108,8 @@ members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains
     prime** (it is a BPSW probable prime). Every N − q for an odd prime q < 1,008,589 is proved composite.
   - Cost: 565,572 Fermat tests, 5.5 CPU-hours; about 6.6 CPU-hours with the sieve and the cover.
   - Everything is in `record_1997digit/`.
+  - The Lean session certified g(N) ≥ 1,008,589 in the kernel (`exists_1997_digit_no_summand_below_1008589`, branch
+    `ccr-36ca7b46-8twf14`, commit `25b9abb`).
 
 ## The next sizes: what they cost
 

@@ -27,6 +27,23 @@ This replaces the 2,196-digit N of `../record_2196digit/` as the smallest N foun
   - `certificate_to_g.txt` gives one reason per row for all 79,143 odd primes q < 1,008,589: 76,241 by a modulus, 1,808 by a factor,
     1,094 by Fermat.
 
+## Kernel certificate (the Lean session)
+
+The Lean session built and checked this certificate (branch `ccr-36ca7b46-8twf14`, commit `25b9abb`). It uses only the axioms
+propext, Classical.choice and Quot.sound.
+
+It proves two theorems, in `goldbach/lean/GoldbachGaps/FixedGap.lean`:
+- `exists_1997_digit_no_summand_below_1008589`: there is an even N with 10^1996 ≤ N < 10^1997 such that N − q is not prime for any
+  prime q < 1,008,589.
+- `exists_lt_ten_pow_1997_no_summand_below_1000000`: the same with N < 10^1997 and the bound 1,000,000.
+
+The certificate is the module `Gap1M_1997digit_g1008589`.
+- **How it works:** it is in witness form, with a base and 31 parts, built two at a time in 986 s.
+- **The N:** it is `N.txt` digit for digit.
+- **Before generating it**, the Lean session checked everything from `N.txt` and `cover.txt` alone. It found exactly the counts
+  above (76,241 + 1,808 + 1,094 to g), and no line of `certificate_to_g.txt` disagreed.
+- **Not certified:** that N − 1,008,589 is prime.
+
 ## How it was found
 
 1. **Cover** (`cover.txt`, 629 moduli, the odd primes up to 4,657): 2,825 of the 78,497 rows are in no class.
