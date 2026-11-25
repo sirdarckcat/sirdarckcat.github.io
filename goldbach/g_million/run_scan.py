@@ -18,4 +18,5 @@ if not os.path.exists(cand):
 if not os.path.exists(surv):
     subprocess.run(["./sieve", f"setup_{tag}.bin", str(X), str(B), str(K), counts, cand, surv + ".part"], env=dict(os.environ, OMP_NUM_THREADS="4"), check=True)
     os.rename(surv + ".part", surv)
-subprocess.run([sys.executable, "test_members.py", tag, surv, "4", "--stop-at-hit"], check=True)
+tester = os.environ.get("T5_TESTER", "test_members.py")          # test_members_fmw.py: the IFMA kernel
+subprocess.run([sys.executable, tester, tag, surv, "4", "--stop-at-hit"], check=True)

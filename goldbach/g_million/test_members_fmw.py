@@ -56,11 +56,12 @@ if __name__ == "__main__":
         if k not in done: jobs.append((k, [int(v) for v in t[2:]]))
     jobs.sort(key=lambda j: len(j[1]))
     chunks = [jobs[i:i + chunk] for i in range(0, len(jobs), chunk)]
-    print(f"{len(jobs)} members to test ({len(done)} already done), {len(chunks)} chunks of {chunk}, fmw kernel L = "
-          f"{fmw.limbs_for((int(setup['N0']) + 40_000_000 * int(setup['D'])).bit_length())}", flush=True)
-    fmw.lib(fmw.limbs_for((int(setup["N0"]) + 40_000_000 * int(setup["D"])).bit_length()))   # compile once, before the workers
+    kmax = max([k for k, _ in jobs] + [0]) + 1                    # the kernel's limb count is set by the largest member tested
+    L = fmw.limbs_for((int(setup["N0"]) + kmax * int(setup["D"])).bit_length())
+    print(f"{len(jobs)} members to test ({len(done)} already done), {len(chunks)} chunks of {chunk}, fmw kernel L = {L}", flush=True)
+    fmw.lib(L)                                                    # compile once, before the workers
     t0 = time.time(); n = 0; nt = 0; hit = None
-    with Pool(procs, initializer=init, initargs=(setup["N0"], setup["D"], U, 40_000_000)) as pool, open(log, "a") as f:
+    with Pool(procs, initializer=init, initargs=(setup["N0"], setup["D"], U, kmax)) as pool, open(log, "a") as f:
         for res in pool.imap(run_chunk, chunks):
             for r in res:
                 f.write(json.dumps(r) + "\n"); n += 1; nt += r["tests"]

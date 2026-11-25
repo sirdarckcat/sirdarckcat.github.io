@@ -108,3 +108,21 @@ members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains
     prime** (it is a BPSW probable prime). Every N − q for an odd prime q < 1,008,589 is proved composite.
   - Cost: 565,572 Fermat tests, 5.5 CPU-hours; about 6.6 CPU-hours with the sieve and the cover.
   - Everything is in `record_1997digit/`.
+
+## The next sizes: what they cost
+
+`cost_model.py` gives the expected CPU-hours to a hit. It checks against both runs: it predicts 4,700–5,400 members to the
+first hit at 1,997 digits, and the hit came at 4,606.
+
+The covers come from 20k-sweep anneals (`anneal_next.sh`). The kernel's per-core time with all 4 cores busy is about 1.5 times
+its single-process time: 5.6 ms at 1,500 digits, about 10 at 1,800, and 10.9 at 2,000 digits.
+
+| digits | moduli (up to) | rows | expected CPU-hours | on 4 cores |
+|---|---|---|---|---|
+| 1,800 | 574 (4,201) | 3,103 (`hb4201_b2.txt`) | 14 | 3.4 h |
+| 1,700 | 547 (3,947) | about 3,290 (interpolated) | 35 | 9 h |
+| 1,600 | 519 (3,727) | about 3,450 (interpolated) | 100 | 25 h |
+| 1,500 | 491 (3,527) | 3,591 (`hb3527_b1.txt`) | 330 | 3.4 days |
+
+The cost grows by a factor of about 3 for each 100 digits fewer. At 491 moduli, each 100 rows fewer would divide it by about
+1.5. The 1,800-digit run (tag `d1797`, `chain_d1797.sh`, K = 6·10⁷, 100,000 candidates) started at 14:22 UTC.
