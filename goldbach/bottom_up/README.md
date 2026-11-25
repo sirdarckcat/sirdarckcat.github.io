@@ -77,3 +77,26 @@ Context **[M]**: the model ceiling at 10^200 (`closeness.py`) is 2,130,704, so 2
 - There, decades of work have found nothing output-sensitive beyond sieving and special-q, and special-q is folding a prime into
   the modulus.
 - Our F is fully split, so its "smoothness" is many independent per-factor events.
+
+## 7. Meet in the middle and representations, as currencies **[P under the stated costs]**
+
+- Meet in the middle lists {k < K : k mod s_i ∈ A_i} at cost about output when ∏ s_i ≤ K²·∏ τ_i. So a soft-constrained prime costs
+  (ln s + KL)/2 of window instead of ln s.
+- At s = 467 that gives 0.39 rows per nat (keep the heaviest half), 0.63 (the heaviest quarter) and 0.85 (the heaviest eighth).
+  That is never above a pin (0.94), and below the cover's last modulus (463: 9 rows for 6.14 nats, 1.47 rows per nat).
+- **Group structure:** the problem is a knapsack in Z/P: k = Σ e_i·t_i (mod P), with t_i ∈ A_i and target [0, K). So
+  representation techniques apply. For subset sum they lower the exponent from 1/2 (meet in the middle) to about 0.29 (HGJ) and
+  0.23 (BCJ).
+- Against a deficit of 900 to 1,500 nats that leaves 200 to 350, a constant factor in the exponent. Something sub-exponential would
+  need structure in the A_i, such as intervals or cosets. §8 measures that it is absent.
+
+## 8. Is U structured modulo the next primes? — `structure_of_U.py` **[M]**
+
+Over the research session's 300 covers at 200,000 (all at 1,502–1,503 rows), at p = 467, 479, 487, 491 and 499:
+- the heaviest class holds 8–9 rows in every cover, and that is what a pin there kills;
+- the best coset c + (squares) holds 53.1–54.3% of U, against 50% for no structure. That 3–4% is the "8% more kills" of the
+  quadratic shift;
+- the heaviest half of the classes holds 69–71%, the Poisson level for about 3 rows a class.
+
+By the CRT, a prime's residues mod the cover moduli and mod a later prime are independent. So the cover has no systematic handle on
+U mod p: near-floor covers differ only in noise, and here they barely differ at all. The boxes that a later family meets are random.
