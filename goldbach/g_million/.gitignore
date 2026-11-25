@@ -5,3 +5,5 @@ heatbath
 sieve
 *.u16
 setup_*.bin
+run/
+*.log
