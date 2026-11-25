@@ -1,0 +1,28 @@
+(1) the fleet at 200,000: 1,502 rows alive at depth 463; sieve to B, keep the best fraction f, test them (tests to the first prime = 1/p_B)
+   B=1e+08 f=0.015 sieve cost 0.0054 test: 1.10 tests per unit of hit mass (kept 20.9% of the mass; v = 14.0)
+   B=1e+08 f=0.015 sieve cost 0.0093 test: 1.12 tests per unit of hit mass (kept 20.9% of the mass; v = 14.0)
+   B=1e+08 f=0.015 sieve cost 0.0118 test: 1.13 tests per unit of hit mass (kept 20.9% of the mass; v = 14.0)
+   B=1e+08 f=0.030 sieve cost 0.0054 test: 1.48 tests per unit of hit mass (kept 29.8% of the mass; v = 14.0)
+   B=1e+08 f=0.030 sieve cost 0.0093 test: 1.49 tests per unit of hit mass (kept 29.8% of the mass; v = 14.0)
+   B=1e+08 f=0.030 sieve cost 0.0118 test: 1.50 tests per unit of hit mass (kept 29.8% of the mass; v = 14.0)
+   B=1e+09 f=0.015 sieve cost 0.0054 test: 0.85 tests per unit of hit mass (kept 25.2% of the mass; v = 12.5)
+   B=1e+09 f=0.015 sieve cost 0.0093 test: 0.87 tests per unit of hit mass (kept 25.2% of the mass; v = 12.5)
+   B=1e+09 f=0.015 sieve cost 0.0118 test: 0.88 tests per unit of hit mass (kept 25.2% of the mass; v = 12.5)
+   B=1e+09 f=0.030 sieve cost 0.0054 test: 1.18 tests per unit of hit mass (kept 35.2% of the mass; v = 12.5)
+   B=1e+09 f=0.030 sieve cost 0.0093 test: 1.20 tests per unit of hit mass (kept 35.2% of the mass; v = 12.5)
+   B=1e+09 f=0.030 sieve cost 0.0118 test: 1.20 tests per unit of hit mass (kept 35.2% of the mass; v = 12.5)
+
+(2) an isolated ideal N: 1,116 rows alive at depth 2,000 (Result 3); cost of testing it as it comes, and with its own sieve to 10^6 then a cut at 3%
+   depth  2000: p_z = 0.0295, tests to the first prime 1/p_z = 33.9 -> against 1.5: 3.12 nats
+      own sieve to 10^6 (0.25 test per N), keep 3%: 4.88 tests per unit of mass (kept 17.9%) -> 1.18 nats against 1.5
+      own sieve to 10^6 (0.65 test per N), keep 3%: 7.11 tests per unit of mass (kept 17.9%) -> 1.56 nats against 1.5
+   depth  5000: p_z = 0.0330, tests to the first prime 1/p_z = 30.3 -> against 1.5: 3.01 nats
+      own sieve to 10^6 (0.25 test per N), keep 3%: 5.70 tests per unit of mass (kept 14.5%) -> 1.34 nats against 1.5
+      own sieve to 10^6 (0.65 test per N), keep 3%: 8.46 tests per unit of mass (kept 14.5%) -> 1.73 nats against 1.5
+   depth 20000: p_z = 0.0383, tests to the first prime 1/p_z = 26.1 -> against 1.5: 2.86 nats
+      own sieve to 10^6 (0.25 test per N), keep 3%: 7.29 tests per unit of mass (kept 12.4%) -> 1.58 nats against 1.5
+      own sieve to 10^6 (0.65 test per N), keep 3%: 10.52 tests per unit of mass (kept 12.4%) -> 1.95 nats against 1.5
+
+(3) break-even budget for an enumerator of ideal N at depth 2,000: E + T = c_fleet * e^gain, gain = 5.9 nats (33.4 against 39.3)
+   c_fleet = 1.43: E + T = 522 Fermat tests (T = 33 to reject, or 5 to 7 with own sieve and cut) ; 550 tests = 10^9 operations means 1.8e+06 operations per test
+   c_fleet = 1.50: E + T = 548 Fermat tests (T = 33 to reject, or 5 to 7 with own sieve and cut) ; 550 tests = 10^9 operations means 1.8e+06 operations per test
