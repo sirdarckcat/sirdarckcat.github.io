@@ -44,7 +44,9 @@ This directory is that read. Nothing here is a proof.
   random classes: a classical device (Erdős, Rankin). With that prefix the write-up's own count for the
   top moduli forbids nothing below about `x ln³x · ln₃x / (3 (ln₂x)³)` and allows more than with random
   classes at every size, so the bound with `1/ln ln r` is not derived; and in outline the same device gives a rigorous `D(n) ≥ c · r ln² r · ln₃ r / (ln₂ r)²`,
-  which is more than every constant times `r ln r`. None of this shows at the sizes that can be computed:
+  which is more than every constant times `r ln r` (that last statement, `D(n) ≥ A r ln r` for every
+  `A` and all large `n`, is now proved in Lean, `GoldbachGaps/CoverEveryConstant.lean`). None of this
+  shows at the sizes that can be computed:
   the block leaves 2% fewer rows than random classes at `x = 10^4`, 9% fewer at `10^6`, and half as many
   only near `x = 10^25`.
 
@@ -283,9 +285,20 @@ average to a constant.
   which is Rankin's bound for gaps with one more logarithm, because only primes have to be struck. It
   exceeds `A r ln r` for every `A` (the theorem in `GoldbachGaps/CoverBound.lean` has `A < 1.349`), and
   through the classes `N ≡ a_t` it says that infinitely many even `N` have no Goldbach summand below
-  `c · ln N (ln₂ N)² ln₄ N/(ln₃ N)²`. I have not written it out line by line; the consultant session, which
-  holds the asymptotic part, should check it before it is cited. It is far from formalisable here (it
-  needs the upper-bound sieve for a pair of linear forms and the count of smooth numbers).
+  `c · ln N (ln₂ N)² ln₄ N/(ln₃ N)²`. I have not written this order out line by line; the consultant
+  session, which holds the asymptotic part, should check it before it is cited.
+* **Every constant, in the kernel** (added the same day). The weaker statement, which the write-up
+  has as a conjecture, is now a theorem in Lean: for every `A` and all large `y`, classes modulo the
+  odd primes up to `y` cover every odd prime below `A y ln y`, and for all large `X` there is an even
+  `N ≤ X` with no Goldbach summand below `A ln X ln ln X`
+  (`GoldbachGaps/CoverEveryConstant.lean`: `eventually_exists_classes_every_constant`,
+  `eventually_exists_even_le_every_constant`; standard axioms only). Two things made it short. The
+  finite skeleton with a fixed layer was already there (`Cap/Layers.lean`, written on 22 November for
+  the research session's own Erdős–Rankin adaptation). And the sieve for pairs of primes is not
+  needed: averaged over the common integer `N₁ ∈ [Q, 2Q)`, the layer leaves at most the share of the
+  integers below `2Q` that have no prime factor in it (`Cap.exists_common_integer`), and that is a
+  count of integers: Rankin's bound for the smooth ones, the prime number theorem and a harmonic sum
+  for the others. The pigeonhole layer is the odd primes up to `⌊ln y⌋^K - 1`, `K = ⌈300 A⌉ + 1`.
 * At the sizes that can be computed nothing changes. The block beats random classes by 2% at `x = 10^4`
   and by a factor two only near `x = 10^25`, and the tilted classes of the constrained count do better
   than either there (they reach `1.0 x ln² x` at `x = 9,973`, where random classes below the top and the
