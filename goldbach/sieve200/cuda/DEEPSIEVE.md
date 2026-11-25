@@ -751,3 +751,22 @@ fallback on nearly every CTA (slower than without the flag; the static_assert do
 computes this for its actual stage_cap / rcta / tiles and refuses to start above 32 expected entries a CTA, naming the slot count to use (`gbig.onepass_slots_for`); the RTX deployment (0.55) passes
 unchanged; `DEEP_GEN_SLOT_C_ANY=1` lets the CPU tests that force overflow on purpose through.
 
+
+## Thread-block clusters on the RTX PRO 6000: no bin-free large-prime pass (`probe_cluster.py`, gold-g4j, 25 Nov 22:30Z)
+
+The lead's question: could a cluster hold a whole row of a 2^24 window (2 MB of bits) in distributed shared memory, so that the large-prime marks
+are reduced straight into it and the bins (pass B's flush and the tile kernel's bin reads) disappear?  Measured, 512 threads a CTA, random 32-bit
+AND reductions, the whole GPU (G operations a second):
+
+| cluster x shared a CTA | memory a cluster | local (own CTA, `red.shared::cta`) | remote (random CTA of the cluster, `mapa` + `red.shared::cluster`) | loop alone |
+|---|---|---|---|---|
+| 1 x 32-99 KB | 32-99 KB | 2,701-2,847 | 1,799-2,187 (the shared-window path aimed at itself) | 2,264-2,502 |
+| 2 x 32-99 KB | 64-198 KB | 2,641-2,828 | 39.0-41.0 | 2,153-2,465 |
+| 4 x 32-99 KB | 128-396 KB | 2,116-2,747 | 25.6-26.4 | 1,726-2,380 |
+| 8 x 32-99 KB | 256-792 KB | 2,115-2,274 | 18.6-21.6 | 1,725-2,000 |
+| 16 x 32-99 KB (non-portable size) | 512-1,584 KB | 2,114-2,272 | 15.9-16.0 | 1,722-1,994 |
+
+Every configuration launched; the largest cluster memory is 1,584 KB, 0.77 of a 2^24 row.  Remote reductions cost 70-130 times a local one, and
+the local rate is the loop's own: the cost is in crossing SMs, not in the instruction.  A bin-free pass (7.1e9 marks a 2^24 window at the remote
+rate, pass A's visits scaled by 2^24 / the window a cluster holds) costs 173-886 ms a window against today's ~34 ms of large-prime work: 5-26x
+slower.  Closed; the bins stay.
