@@ -931,7 +931,13 @@ design triples the chance of 200,000 and gives up 6,500 of expectation and
 the 85% chance of passing 170,000. The engineering crumbs move the whole
 table by their nats (+0.65: 176,800 expected and 29.6% at 180,000 on the
 170,000 design; 0.80% at 200,000 on the 200,000 design), about 4,800 of g
-per nat. Three things tried on top of it, none of which moves it:
+per nat. The expected record peaks at the present level: a cover built for
+165,000 on the same moduli (1,212 rows there, 1,253 below 170,000) gives
+174,600, as the 175,000 cover does on the other side. Among the 3,924
+covers of the fleet's family file the rows above 170,000 differ too little
+to be worth ranking by (at equal rows below 170,000 the weighted count
+below has sd 0.6 rows, the rows from 170,000 to 180,000 sd 1.1). Three
+more things tried on top of it, none of which moves it:
 
 - the level at which the sieve and the cut act, for a given cover: the
   170,000 cover with the cut on its rows below 162,500 to 180,000 gives
