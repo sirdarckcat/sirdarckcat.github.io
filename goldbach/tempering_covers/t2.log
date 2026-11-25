@@ -268,3 +268,8 @@ x=1499: largest Q reached 70059, smallest Q missed by all seeds 70275
   x=1999 Q=90416 seed=4 sweeps=160000: best k 0  (1267 s)
   x=1999 Q=90416 seed=2 sweeps=160000: best k 0  (1278 s)
 container restarted at about 00:58 UTC; driver restarted 00:58:44 (resumes from t2_runs.jsonl)
+  x=1999 Q=94936 seed=4 sweeps=160000: best k 0  (1662 s)
+  x=1999 Q=94936 seed=1 sweeps=160000: best k 1  (1673 s)
+  x=1999 Q=94936 seed=2 sweeps=160000: best k 0  (1679 s)
+  x=1999 Q=94936 seed=3 sweeps=160000: best k 0  (1680 s)
+container restarted at about 01:32 UTC; driver restarted 01:33:11 (resumes from t2_runs.jsonl)
