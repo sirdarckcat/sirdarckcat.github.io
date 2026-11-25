@@ -12,7 +12,7 @@ for d in dirs:
         for line in open(d + "/search.log"):
             if line.startswith("["):
                 n += 1; last = line.strip()
-            elif "SUCCESS" in line or "Traceback" in line or "Error" in line:
+            elif "SUCCESS" in line or "Traceback" in line or "Error" in line or "REJECTED" in line or "DISCREPANCY" in line:   # + failed re-checks (old and new engine)
                 succ.append(line.strip())
     fl = [l for l in open(d + "/found.jsonl").read().splitlines() if l.strip()] if os.path.exists(d + "/found.jsonl") else []
     fnd = f"{len(fl)} lines, last: {fl[-1][:300]}" if fl else ""
