@@ -1,0 +1,13 @@
+gold-g4d c170v: 152400 slices, 38100 batches, found lines 0, expected design hits (sum) 2.6761e-02, expected near-misses (sum, where logged) 1.7355e-01, first 2026-11-23T10:57:46 last 2026-11-23T20:04:18
+gold-g4d c170: 29940 slices, 14970 batches, found lines 0, expected design hits (sum) 1.2972e-02, expected near-misses (sum, where logged) 0.0000e+00, first 2026-11-23T03:54:56 last 2026-11-23T10:57:37
+gold-g4d c170r: 451396 slices, 112849 batches, found lines 1, expected design hits (sum) 7.9645e-02, expected near-misses (sum, where logged) 4.2312e-01, first 2026-11-23T20:18:15 last 2026-11-24T19:13:07
+gold-g4d cover491 ledger_p0.txt: 463534 covers, sha256 08b4a908fab5f3d3
+gold-g4d vecgen491 chunks 576
+cap raised to 1249 cap raised to 1250 
+gold-g4d row guard: [rg] 2026-11-24T19:09:27Z consumed 450188 | base 1250.000 (measured 1248.000 over 3260 vectors at cap 1248, now cap 1250) | last 2000 1249.994 (+-0.006) | all 1249.657 | ['SKIPF=0.985'] | trip False
+gold-g4d cpu share campaign3_hi_0: 32414 slices
+gold-g4d cpu share campaign3_hi_1: 32414 slices
+gold-g4d cpu share campaign3_hi_2: 32414 slices
+gold-g4d cpu share campaign3_hi_3: 32413 slices
+gold-g4d vec89 made 164790
+gold-g4d vec491 made 463534

@@ -23,12 +23,19 @@ that one stays on the frontier.
     (×1.05-1.09 against the 463 production).
   - On the L4s and the T4: options, one-pass and the top 16 levels (×1.17), then the top32-shifted family-B vectors
     (×1.05).
-  - Colab ends every runtime at 24 h. All seven GPUs were replaced at ~23 h, and their state carried over.
+  - Colab ends every runtime at 24 h. In the first round (23 Nov 20:19Z - 24 Nov 00:48Z) all seven GPUs were replaced and
+    their state carried over. gold-gpu and the three RTX cards were replaced when Colab ended them, and the two L4s and the
+    T4 at ~23 h.
 - **Checked** the five usual ways (`certify_c3.sh`, `CLAIM_Q=158209`):
   - 14,711 witnesses;
   - PARI primecert valid, re-verified by `ecpp_check.py` (21 steps);
   - slop's stdlib verifier: PASS, with g > 158,209, N < 10^200 and ≤ 200 digits;
   - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+- **The campaign since.** Colab now holds G4s and L4s at two each. In the second round (24 Nov, ~23 h stops) two shares
+  lost their card. So five GPUs run: two RTX PRO 6000s, two L4s and a T4. RTX partition 2 and one L4 share wait in their
+  snapshots and are retried every 10 min. Expected and found counts are in `phd/campaign3_gpu/TALLY.md`.
+  - The rule since 24 Nov 22:46 UTC: no card is stopped early. Each runs to Colab's 24 h end, with snapshots at ~23 h and
+    ~23.75 h, and is replaced only after Colab has ended it (`phd/campaign3_gpu/README.md`).
 
 ## The 200-digit budget game (2026-11-23, 12:48 UTC): g(N) = 158,209 below 10^200
 
