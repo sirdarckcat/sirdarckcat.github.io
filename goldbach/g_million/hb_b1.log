@@ -3,3 +3,4 @@ sweep 1000 beta 1.649: 3778 rows left, best 2864
 sweep 2000 beta 1.813: 3616 rows left, best 2864
 sweep 3000 beta 1.994: 3454 rows left, best 2864
 sweep 4000 beta 2.192: 3279 rows left, best 2864
+sweep 5000 beta 2.410: 3179 rows left, best 2864

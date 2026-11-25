@@ -2,3 +2,6 @@ __pycache__/
 ptcover_big
 bench_*
 heatbath
+sieve
+*.u16
+setup_*.bin
