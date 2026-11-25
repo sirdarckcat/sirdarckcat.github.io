@@ -33,10 +33,10 @@ Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
    congruent mod 3. The measured E is 1.00 to 1.15 times this, so it is a lower bound in practice; it ignores the gain
    from congruences mod 5, 7, … N₃/N is 0.35 to 0.48, not ½, because pairs at small multiples of r′ are congruent mod 3
    less often than random pairs. So the convexity step should be applied to the classes of 3r′. The exact expectation,
-   computed from 48 sampled target pairs per large prime, matches the 20-draw mean within 4%, which checks the code.
+   computed from 48 sampled target pairs per large prime, matches the 20-draw mean within 4.3%, which checks the code.
 3. **(iii) The second moments are fine.** mean(E²)/mean(E)² per large prime is 1.26 at x = 3,000, C = 1, and falls to
    1.0002 at large C and x.
-4. **(iv) Conflicts are O(1).** mean X / (mean E₁ · mean E₂) · |S| is 3.87 to 4.04 in every setting. That is 4, the value
+4. **(iv) Conflicts are O(1).** mean X / (mean E₁ · mean E₂) · |S| is 3.87 to 4.10 in every setting. That is 4, the value
    for independent degrees.
 5. **(v) Deletion gives a constant near 1.5, not 2.** The largest fraction of good large primes (exactly one marked
    pair, meeting no marked pair of another prime) is 0.09 to 0.11 at C = 1.35 (θ ≈ 0.2 to 0.35), 0.12 to 0.14 at C = 2,
@@ -46,8 +46,7 @@ Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
    - C* (the largest C with nothing left in at least half the draws), w = x^0.9: 1.39, 1.93, 2.47, 3.14 at x = 3·10³,
      10⁴, 3·10⁴, 10⁵.
    - With w = x/2: 1.12, 1.40, 1.56, 1.78.
-   - C*/ln x is still rising (0.17 to 0.27 with w = x^0.9). The order of the large primes matters little: increasing
-     is best by 3% to 7% over decreasing, and random lies between.
+   - C*/ln x is still rising (0.17 to 0.27 with w = x^0.9). The order of the large primes matters little. At x = 3,000 the three orders agree within 1%; from x = 10⁴ on, increasing beats decreasing by 2% to 9%, and random lies between.
    - This stays below the all-greedy reach (5.52 to 8.38) and below ln x / ln ln x (3.85 to 4.71). Choosing the small
      primes' classes greedily instead of at random is worth a factor 2.7 to 4 at these sizes.
    - At C* the large primes strike mostly 2 to 4 survivors each: at x = 10⁵, w = x^0.9, C = 3, 28% strike two, 34%
@@ -84,12 +83,10 @@ C* (Report B), by the order of the large primes:
 - The trends of the smaller x continue. With w = x^0.9, C* = 1.39, 1.93, 2.47, 3.14 and now 4.47, so C*/ln x = 0.32. With
   w = x/2, C* = 1.12, 1.40, 1.56, 1.78 and now 2.17. Increasing order beats decreasing by 3.5% and 6.9%.
 - The fraction of good large primes at C = 1.35 is 0.09 to 0.11, as before, and the conflicts stay at 4.
-- E / balls behaves differently at each C.
-  - At C = 1.35 it keeps its slow rise. With w = x/2 it is 0.50, 0.53, 0.55, 0.57 at x = 3·10³ to 10⁵ and 0.57 at 10⁶.
-    With w = x^0.9 it is 0.52 to 0.63, now 0.65.
-  - At C = 2 it is flat: 0.665 → 0.662 and 0.726 → 0.727.
-  - At C = 4 it is lower than at 10⁵: 0.832 → 0.790 and 0.872 → 0.831. That is not noise, since E summed over 78,000 large
-    primes varies little between draws (E² ratio 1.000). I have no explanation for the drop.
+- E / balls keeps rising slowly with x at every C. With w = x/2 it goes from 0.532 at x = 10⁵ to 0.572 at 10⁶ (C = 1.35),
+  from 0.619 to 0.662 (C = 2) and from 0.763 to 0.790 (C = 4). With w = x^0.9 it goes from 0.587 to 0.651, 0.671 to 0.727
+  and 0.795 to 0.831. (An earlier version of this section compared these with the "≥2 / Poisson" column of the smaller runs
+  and reported a drop at C = 4; that was a column mix-up, pointed out by the consultant session.)
 - The θ = 0.9 hybrid of T3 measured C* = 4.477 at x = 10⁶ independently, with 2 other draws and a bracketed bisection. That
   agrees with 4.471 here.
 

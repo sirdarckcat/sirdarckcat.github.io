@@ -37,30 +37,41 @@ x ≥ 997 are also in `complete_cover_<reach>_<moduli>primes.txt`. All were rech
 ## Findings
 
 1. **The reach as a multiple of x·ln²x is 0.775, 0.792, 0.842, 0.849, 0.856, 0.860, 0.870, 0.876, 0.875 and 0.855** for
-   x = 127 to 1,999. At this budget it is flat from 797 to 1,499. It is lower at 1,999, where the one successful seed at the
-   top needed 96% of the budget.
+   x = 127 to 1,999. It is flat from 797 to 1,499 and lower at 1,999, where the one successful seed at the top needed 96%
+   of the budget. This series does not come from one protocol throughout:
+   - at 349 and 397 the best vectors come from the 4× longer runs;
+   - x = 997 started from the 40,111 cover;
+   - 599 and above were not probed with longer runs.
+   The bracket columns of the table are the planned budget alone.
 2. **The misses are a wall up to x = 251 and a matter of run length from about 350 on.** At x = 127, 149 and 251 every seed
    reached k = 1 at the smallest missed Q early (by sweep 490 to 17,605). It stayed there in runs four times longer (320,000
    sweeps, `t2_probe.py`). The wall at 127 is the exact optimum: the uarch session has since proved D(30) = 2,311. At
    x = 349 and 397 the longer runs cross the miss: 2 of 4 seeds at 10,116 and 4 of 4 at 12,131. From 397 on, the successful
    seeds at the top need 50–97% of the budget. So the entries from 349 on are lower bounds set by the budget.
 3. **The tempered reach is close to where complete covers end, as counted.** The count is the research session's
-   `cover_floor`, run at 60, 75, 85 and 93% of the tempered reach for x = 127 to 599. The results are in `floor/` and
-   summarised in `floor/floor_report.md`.
-   - ln(number of complete covers) falls from θ(x) at Q = 0 with slope about 1.02·Q/ln²x for x ≥ 251.
-   - It then bends down near the end: the slope is 1.2 to 1.6 between 85 and 93%. The bend is real. A run started from the
-     best tempered cover agrees with the random starts at x = 127 to 349 and at every 85% target. At the 93% targets of 397
-     and 599 the random starts undercount by 1–2 and about 6 nats, but the bend remains.
-   - A straight line through the last interval ends at 0.96 to 1.01 × the tempered reach. A line of slope 1 through θ(x)
-     would end about 10% further out.
+   `cover_floor`, run at 60, 75, 85 and 93% of the tempered reach for x = 127 to 1,999. The 93% target was also run once
+   from the best tempered cover (and the 85% one at 397 to 1,999). The results are in `floor/`, all nine sizes in
+   `floor/floor_report.md`.
+   - ln(number of complete covers) falls from θ(x) at Q = 0 with slope about 1.0·Q/ln²x (0.98 to 1.05 for x ≥ 251) up
+     to about 75–85% of the reach.
+   - Over the last interval (85 → 93%), random starts give slopes of 1.13 to 1.64. The cover start agrees with them at 93%
+     up to x = 349 (within 0.3 nats), so there the steepening is real: 1.24, 1.62, 1.25 and 1.52 at x = 127, 149, 251, 349.
+   - From 397 on the random starts undercount at 93%: by 1.5, 5.8, 6.6, 20.8 and 14.2 nats at x = 397, 599, 797, 1,499,
+     1,999. With the cover-start values the slope is 1.21, 1.22, 1.09, 0.98 and 1.03. So the bend is clear up to 599,
+     weaker at 797, and gone at 1,499 and 1,999. At those two sizes even the cover-start values are still rising (drift
+     +3 to +10 nats), so they are lower bounds.
+   - With the cover-start values, the straight line through the last interval ends at 0.96 to 1.03 × the tempered reach
+     up to 599, and at 1.06, 1.11 and 1.12 × reach at 797, 1,499 and 1,999. There the reach is limited by the budget.
+     A line of slope 1 through θ(x) ends 9–14% beyond the reach.
 4. **At x = 997 near the end** (`floor/run_997.py`, `floor/x997_report.md`):
    - The counts at Q = 39,000 and 40,111 are ln g0 = 130.2 and 98.6 started from the 40,111 cover, 119–121 and 74–80 from
      random starts, and 94.6 at 40,111 started from the random family's best vector.
    - So the random starts mostly had not arrived. The two families of small-prime classes differ by about 4 nats.
-   - The complete covers sampled at 40,111 reached 40,459, the first cover past 40,111 on these moduli. The Lean session
-     certified it (Cover40459.lean).
-   - Tempering from the 40,111 start then reached 41,047 (also certified, Cover41047.lean) and 41,659. Both are in a
-     small-prime frame close to the second family's, not the start cover's.
+   - The complete covers sampled at 40,111 reached 40,459, the first cover past 40,111 on these moduli.
+   - Tempering from the 40,111 start then reached 41,047 and 41,659. Both are in a small-prime frame close to the second
+     family's, not the start cover's.
+   - The Lean session has certified all three in the kernel: Cover40459.lean, Cover41047.lean and Cover41659.lean, on its
+     branch `ccr-36ca7b46-8twf14` (commit 673c39d for the last).
    - The count-based end of complete covers at 997 is at or below about 43,600, so 41,659 is at least 0.955 of it.
 
 ## Files
