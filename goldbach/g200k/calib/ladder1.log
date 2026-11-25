@@ -1,0 +1,7 @@
+cover_d100_Q75000_49primes_k709.txt Q=25000 rows=271: 50331648 members (k from 0), 1007616 tested, 7952668 tests, p^=0.12670+-0.00013; expected 46.48 (45.99..46.97), found 44 (candidates 44); E_tested=10.05; 0.03 CPU-h; digits <= 99
+cover_d150_Q123000_69primes_k1003.txt Q=40000 rows=355: 25165824 members (k from 0), 503808 tested, 5950387 tests, p^=0.08466+-0.00012; expected 35.16 (34.67..35.66), found 39 (candidates 39); E_tested=9.61; 0.02 CPU-h; digits <= 148
+cover_d100_Q75000_49primes_k709.txt Q=30000 rows=312: 134217728 members (k from 50331648), 2686976 tested, 21431837 tests, p^=0.12537+-0.00008; expected 25.76 (25.57..25.96), found 29 (candidates 29); E_tested=11.63; 0.08 CPU-h; digits <= 100
+cover_d150_Q123000_69primes_k1003.txt Q=50000 rows=422: 167772160 members (k from 25165824), 3358720 tested, 39963781 tests, p^=0.08404+-0.00005; expected 34.94 (34.71..35.17), found 24 (candidates 24); E_tested=11.52; 0.15 CPU-h; digits <= 149
+cover_d100_Q75000_49primes_k709.txt Q=35000 rows=361: 587202560 members (k from 184549376), 11755520 tested, 94215996 tests, p^=0.12477+-0.00004; expected 15.92 (15.86..15.99), found 19 (candidates 19); E_tested=13.60; 0.36 CPU-h; digits <= 101
+cover_d150_Q123000_69primes_k1003.txt Q=60000 rows=512: 1073741824 members (k from 192937984), 21495808 tested, 257238915 tests, p^=0.08356+-0.00002; expected 16.77 (16.72..16.82), found 18 (candidates 18); E_tested=14.12; 1.07 CPU-h; digits <= 150
+LADDER1 DONE
