@@ -2,6 +2,7 @@
 
 Status: the consultant's note of 25 Nov 2026, about 11:35 UTC (server clock). Paper-level proof (standard analytic inputs, none proved here), written out line by line at the Lean session's request; nobody else has read the write-up.
 The idea is the Lean session's: its second referee read (`goldbach/lean/scripts/cover_prefix_check/README.md`, section (d), branch `ccr-36ca7b46-8twf14`, commit 9eb7e2a; the device is Erdős–Rankin's). The proof below replaces its pair sieve by an average over the common integer, which needs less. The counts on real primes in section 3 are mine; the Lean session's exact counts are cited as its.
+Update, later the same day: the Lean session has proved the theorem in the kernel except for the factor ln₃ (see section 4, first bullet); Step 1 below was rewritten to count integers first, as its proof does, which removes the need for Brun–Titchmarsh.
 Scripts and outputs: `data/limit_check/` (`coherent*.py`, `out_coherent*.txt`).
 
 Notation: ln₂ = ln ln, ln₃ = ln ln ln, ln₄ = ln ln ln ln. Rows are the odd primes q < Q. Moduli are the odd primes t ≤ x; one class c_t per modulus strikes the rows q ≡ c_t (mod t) (q = t is struck by the class 0). D(n) is the largest Q for which some classes on the first n odd primes strike every row below Q; r is the n-th odd prime, so r ~ x.
@@ -25,20 +26,19 @@ The rest of the cover is ordinary: each odd prime up to z takes its fullest clas
 Take w = x/4, ln z = ln x·ln₃x/(3·ln₂x), Q = c·x·ln²x·ln₃x/(ln₂x)² with c fixed at the end, M = 2Q/w (so ln M ≤ 2·ln₂x), and let P be the odd primes below Q. Inputs, all classical:
 
 * (F1) Chebyshev: π(X) ≤ C₀X/ln X; and the prime number theorem: π(x) − π(x/4) ≥ 0.7·x/ln x for large x.
-* (F2) Brun–Titchmarsh: an interval of length h ≥ 2 contains at most 2h/ln h primes.
+* (F2) Not used any more. An earlier version of Step 1 counted pairs (N₁, q) and needed the Brun–Titchmarsh inequality; counting the integers n first, as the Lean session's kernel proof does (`Cap.exists_common_integer`), avoids it.
 * (F3) Mertens: ∏_{3≤t≤z}(1 − 1/(t − 1)) ≤ C₂/ln z.
 * (F4) Smooth numbers, by Rankin's trick (derived here, no deep theorem needed). For any σ > 1/2, Ψ(X, z) ≤ X^σ·∏_{t≤z}(1 − t^(−σ))^(−1). Take σ = 1 − η/ln z with e^η = u, u = ln X/ln z. By convexity e^(ηs) ≤ 1 + (e^η − 1)s on [0, 1], so Σ_{t≤z} t^(−σ) ≤ Σ_{t≤z}(1/t)(1 + (e^η − 1)·ln t/ln z) = ln ln z + O(1) + (e^η − 1)(1 + o(1)) (Mertens), and the terms t^(−2σ) add O(1). Hence Ψ(X, z) ≤ C·X·ln z·exp(−u ln u + u). Here u = (1 + o(1))·3 ln₂x/ln₃x = o(ln₂x), so u ln u = 3 ln₂x·(1 − o(1)) and Ψ(2Q, z) ≤ Q/(ln x)^(2−o(1)) (the factor ln z ≤ ln x costs one power).
 
-**Step 1: the block, averaged over N₁.** For N₁ ∈ (Q, 2Q] let L(N₁) be the rows q ∈ P with no prime factor of N₁ − q in (z, w]. For q ∈ L(N₁), n = N₁ − q lies in [1, 2Q) and (by section 1) is either (i) z-smooth, or (ii) n = a·p, p > w prime, a < M. Count pairs (N₁, q):
+**Step 1: the block, averaged over N₁.** For N₁ ∈ (Q, 2Q] let L(N₁) be the rows q ∈ P with no prime factor of N₁ − q in (z, w]. Fix a row q. As N₁ runs over (Q, 2Q], n = N₁ − q runs over Q distinct integers of [1, 2Q) (because q < Q). A row q lies in L(N₁) only if n has no prime factor in (z, w], so for each q the number of N₁ with q ∈ L(N₁) is at most F, the number of integers n ∈ [1, 2Q) with no prime factor in (z, w]. Summing over q,
 
-* (i) at most Ψ(2Q, z)·π(Q), choosing n first and then q.
-* (ii) at most Σ_{a<M} Σ_{w<p≤2Q/a} #{q prime: Q − ap < q ≤ 2Q − ap, q < Q}. Each inner interval has length at most Q, so by (F2) holds at most 2Q/ln Q primes; and by (F1) there are at most C₀·2Q/(a·ln(2Q/a)) ≤ 2C₀Q/(a·ln w) primes p. So (ii) ≤ (4C₀Q²/(ln Q·ln w))·Σ_{a<M} 1/a = O(Q²·ln₂x/ln²x).
+  Σ_{N₁} |L(N₁)| ≤ |P|·F,  so some N₁ has |L(N₁)| ≤ |P|·F/Q ≤ (C₀/ln Q)·F.
 
-Dividing by the Q choices of N₁, some N₁ has
+An integer n < 2Q < w² with no prime factor in (z, w] has at most one prime factor above w, so it is either (i) z-smooth, or (ii) n = a·p with p > w prime and a < M (all prime factors of a at most z, which is not needed). By (F4) and (F1),
 
-  |L(N₁)| ≤ C₁·Q·ln₂x/ln²x,
+  F ≤ Ψ(2Q, z) + Σ_{a<M} π(2Q/a) ≤ Q/(ln x)^(2−o(1)) + Σ_{a<M} 2C₀Q/(a·ln w) ≤ Q/(ln x)^(2−o(1)) + 2C₀Q(1 + ln M)/ln w,
 
-because the average of (i) is at most Ψ(2Q,z)π(Q)/Q ≤ Q/(ln x)^(3−o(1)) by (F4), which is smaller than the right side. Fix this N₁ and give every t ∈ B the class N₁ mod t.
+because 2Q/a > w for a < M. Hence |L(N₁)| ≤ C₁·Q·ln₂x/ln²x for a suitable N₁ and a constant C₁ (the smooth part is smaller by a power of ln x). Fix this N₁ and give every t ∈ B the class N₁ mod t.
 
 **Step 2: the small primes.** Take the odd primes t ≤ z in increasing order. Let S be the set of rows still alive. All rows of S except possibly q = t lie in the t − 1 nonzero classes mod t, so the fullest class holds at least (|S| − 1)/(t − 1) of them; give t that class. Then |S| becomes at most |S|·(1 − 1/(t − 1)) + 1. After all of them, by (F3),
 
@@ -73,7 +73,7 @@ Block (z, y], greedy classes on the odd primes up to z, greedy classes on the pr
 
 ## 4. What this changes
 
-* **The proved order.** For large n, D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)². Together with the proved upper window D(n) ≪ r^(4+ε) (r^(2+ε) under Elliott–Halberstam), the order of D(n) is open between these. Not formalisable in Lean soon: it needs the smooth-number estimate and Brun–Titchmarsh (the averaging and the greedy lemma of Step 2 alone could be); the inputs (F1) to (F4) are classical, and (F4) is elementary.
+* **The proved order.** For large n, D(n) ≥ c·r·ln² r·ln₃ r/(ln₂ r)². Together with the proved upper window D(n) ≪ r^(4+ε) (r^(2+ε) under Elliott–Halberstam), the order of D(n) is open between these. Formalised in the kernel by the Lean session up to the factor ln₃ (`CoverEveryConstant.lean`, `Cap/CommonInteger.lean`, commits 1f1b090 and 38b0909, with the integers counted first as in Step 1 above, the prime number theorem with a harmonic sum, Rankin's bound with e^(−u), and the prime-counting input from Mathlib); the factor ln₃ is the difference between e^(−u) and u^(−u) in the smooth count and is on paper only. The inputs (F1), (F3), (F4) are classical, and (F4) is elementary.
 * **`LIMIT_CHECK.md`.** The capacity form for the top primes and every measurement stand. What goes: the premise that the small moduli leave what random classes leave, up to a Gaussian saving of 2/√(ln x) from the entropy of their settings. The block is a family of settings with entropy about ln x nats (one integer N₁) whose effect on the rows left is unbounded (ratio to random: 0.07 at ln x = 1000), so the lower tail of the alive count is not Gaussian. My test of a structured prefix ("all classes 1") used the wrong family: it made every modulus up to x/ln x coherent, the small ones too, and coherent small moduli strike the same rows over and over (only the rows with N₁ − q prime survive them, about 1/ln Q of all rows, more than the κ/ln x that random classes leave); it left 1.09 to 1.18 times the rows of a random prefix. The block is coherent only above z, with the small moduli random or greedy. The first run of 3.2 shows the same thing from the other side: at x = 10⁴ a coherent block starting at z = 20 leaves more rows than random classes (0.398 against 0.383 for y = x/4, 0.459 against 0.420 for y = x/8), and one starting at z = 50 or more leaves fewer (`out_coherent_x10000_Q072.txt`).
 * **The limits.** "D(n) ≤ (e^γ/(2C₂) + o(1))·r ln² r/ln ln r" is not derived, by the research session's entropy argument or by my capacity check, and "D(n)/(r ln² r) → 0" is not shown. The count for the top moduli (classes of ln x/ln₂x rows each) applied to the block prefix forbids nothing below about x·ln³x·ln₃x/(3(ln₂x)³) (the Lean session's `block_capacity.txt`; it is the write-up's own count applied to a prefix it had excluded, and not a claim that covers exist there, which would need a second moment). Nothing contradicts the earlier numbers: the rigorous lower bound here is below r ln² r/ln₂ r.
 * **The law ln g0 = θ − c·Q/ln² x, the constrained recursion, the plateau.** They describe the covers the entropy count sees, which is what can be computed. The block's covers are rare and isolated at these sizes; the count can end where typical covers end and D(n) can still be larger, once the structured ones exist. At x ≤ 10⁶ the block is not competitive (3.2).
