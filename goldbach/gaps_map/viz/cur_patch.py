@@ -22,7 +22,8 @@ PATCH = {
   detail_add="Since 24 Nov the classes are stated on their own (exists_classes_of_layers), before the numbers N are built from them, so the covering bound can be read as a statement about the cover depth."),
 "l_cb_sharp": dict(
   repl={"note": [("The record 158,209 is about 40 times larger", "The record 160,357 is about 42 times larger")]},
-  detail_add="Since 24 Nov the file also states the cover itself, in depth form, as its own theorem; this one is built from it."),
+  detail_add="Since 24 Nov the file also states the cover itself, in depth form, as its own theorem; this one is built from it.",
+  note_add=" Superseded in order on 25 Nov at paper level by a structured prefix (box ‘A structured prefix beats random classes’)."),
 "l_cb073": dict(
   detail_add="Since 24 Nov it is built from the cover stated in depth form."),
 # ---------------- length of the primality chains: counted as applications of the step check (the Lean files and the record READMEs count them so)
@@ -67,11 +68,12 @@ PATCH = {
         "note": [("against 7.4% found by search", "against 7.5% found by search")]},
   detail_add="A 94th prime (499) does not pay; a local search around the cover finds nothing; complete covers continue on larger sets to 41,659 (167 moduli, Lean-checked), 70,111 (238) and 98,731 (302)."),
 "m_thm1": dict(
-  detail_add="Since 24 Nov: a sketch for beating the constant exists (pairs of survivors struck by one large prime and a deletion argument, giving (1 + δ)·1.349 with δ about 0.1 measured; a Rödl nibble for any constant), certified covers reach 3.5 to 5 times the proved constant (up to 614,101 on 1,228 moduli), and the research session conjectures D(n) ≈ 1.1275 · r ln² r."),
+  detail_add="Since 24 Nov: a sketch for beating the constant exists (pairs of survivors struck by one large prime and a deletion argument, giving (1 + δ)·1.349 with δ about 0.1 measured; a Rödl nibble for any constant), certified covers reach 3.5 to 5 times the proved constant (up to 614,101 on 1,228 moduli), and the research session conjectures D(n) ≈ 1.1275 · r ln² r.",
+  note_add=" Superseded in order on 25 Nov at paper level: a structured prefix gives r·ln² r·ln₃ r/(ln₂ r)² (box ‘A structured prefix beats random classes’)."),
 "m_thm2": dict(
   detail_add="A computed non-asymptotic bound at record size now exists too: D(89) < 35,000 by exhaustive search (4.6·10^8 nodes), and D(n) is known exactly to n = 35. Lean shows that depth below the next prime squared minus two for every n would imply Goldbach."),
 "m_lower": dict(
-  detail_add="The research session conjectured on 24 Nov that divisibility by primes up to ln N forces a least summand of (1.1275 + o(1))·ln N·(ln ln N)²; it withdrew that on 25 Nov and now has the order ln N·(ln ln N)²/ln ln ln N (heuristic, under check), between the proved order and ln²N·ln ln N."),
+  detail_add="The research session conjectured on 24 Nov that divisibility by primes up to ln N forces a least summand of (1.1275 + o(1))·ln N·(ln ln N)²; it withdrew that on 25 Nov and now has the order ln N·(ln ln N)²/ln ln ln N (heuristic), which is not derived either. At paper level the least summand can be as large as c·ln N·(ln₂N)²·ln₄N/(ln₃N)² for infinitely many N (box ‘A structured prefix beats random classes’), above the proved order and below ln²N·ln ln N."),
 "m_ceiling": dict(
   repl={"note": [("The standing record 158,209 is 7.43% of it.", "The standing record 160,357 is 7.53% of it.")]},
   detail_add="Lean's independent closed formula (one constant fitted on the scan of every even N up to 10^12) puts the expected maximum below 10^200 at 2,133,689, 0.14% above; the ceiling is known to about 0.4%."),
