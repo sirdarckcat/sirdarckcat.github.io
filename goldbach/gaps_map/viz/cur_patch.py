@@ -1,9 +1,6 @@
 # Changes to boxes that were already on the 23 Nov map.  Each patched box is marked "changed" (since = "upd").
 # repl: {field: [(old text, new text)]} with the old text required to be present; *_add: text appended; any other key: replaced.
 PATCH = {
-"d_limit": dict(
-  detail_add="Doubted by the research session itself on 25 Nov 10:04 UTC and checked by the consultant (box ‘Why the ratio D/(x ln² x) should eventually fall’): the heuristic limit of the ratio is 0, like 1.349/(ln ln x − 1); the 0.72 to 0.9 seen is a plateau that holds up to about 10⁶ and 1.1275 is not a limit.",
-  chips_add=["questioned 25 Nov"]),
 # ---------------- Lean side
 "r_158209": dict(
   repl={"gist": [("The standing record.", "The record from 23 to 24 Nov; 160,357 now stands above it.")],
@@ -74,7 +71,7 @@ PATCH = {
 "m_thm2": dict(
   detail_add="A computed non-asymptotic bound at record size now exists too: D(89) < 35,000 by exhaustive search (4.6·10^8 nodes), and D(n) is known exactly to n = 35. Lean shows that depth below the next prime squared minus two for every n would imply Goldbach."),
 "m_lower": dict(
-  detail_add="The research session now conjectures that divisibility by primes up to ln N forces a least summand of (1.1275 + o(1))·ln N·(ln ln N)², between the proved order and ln²N·ln ln N."),
+  detail_add="The research session conjectured on 24 Nov that divisibility by primes up to ln N forces a least summand of (1.1275 + o(1))·ln N·(ln ln N)²; it withdrew that on 25 Nov and now has the order ln N·(ln ln N)²/ln ln ln N (heuristic, under check), between the proved order and ln²N·ln ln N."),
 "m_ceiling": dict(
   repl={"note": [("The standing record 158,209 is 7.43% of it.", "The standing record 160,357 is 7.53% of it.")]},
   detail_add="Lean's independent closed formula (one constant fitted on the scan of every even N up to 10^12) puts the expected maximum below 10^200 at 2,133,689, 0.14% above; the ceiling is known to about 0.4%."),
