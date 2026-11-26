@@ -30,6 +30,9 @@ Digits of a hit = log10 M + log10 k, and with the cut the first found hit comes 
 | 347 | 216,289 | `../records/g200k_347digit_g216289/N.txt` (k = 302,750,559) | 141 moduli to 821, 1,115 rows (`cover348_141_k1115.txt`) | 10^7, emptiest 0.5%, K = 2^21 | 318.8M | 44.3M | 1 | 1.04 (4 cores, 16 min) |
 | (350) | none | | 142 moduli to 823, 1,113 rows (`cover350_k1113.txt`) | 10^7, emptiest 2%, K = 2^19 | 487.6M (its whole 350-digit range) | 273.7M | 0 | 7.5 |
 | 319 | 207,307 | `../records/g200k_319digit_g207307/N.txt` (k = 1,430,868,604) | 131 moduli to 743, 1,183 rows (`cover319_131_k1183.txt`) | 10^7, emptiest 0.8%, K = 2^21 | 1.443G | 295.5M | 1 | 6.4 (4 cores, 96 min) |
+| (300) | none (parked, then stopped) | | 125 moduli, 1,216 rows (`covers125_le1217.txt.xz`, 24 of its covers) | 10^7, emptiest 0.8% | 1.23G (24 covers of 51.3M members below 10^300) | 238M | 0 | 3.6 |
+
+The 300-digit attempt (25 Nov 13:21-14:50 UTC, logs in `scan300/`): 24 covers of the 125-moduli dump, every member below 10^300, no hit against 0.056 expected (the sum over covers of K e^-E^ hit% from the summary lines). The lead parked it before it could matter, and it stopped there at the wind-down of 26 Nov; by that formula, which runs about 1.5 times high, one hit at 300 digits costs some 65 to 100 CPU-hours on these covers.
 
 The 350-digit phase: the 142-moduli cover's range below 10^350 ends at k = 4.82e8 (M has 341.3 digits) and held no hit
 (1.75 expected from its survivor counts, P(0) = 17%); the 141-moduli cover (M 338.4 digits, every member below 10^350 up to
@@ -72,3 +75,7 @@ takes 2.1 cycles a mark (an L1 byte tile 1.4, but 8x the per-tile work), and the
 Cost per expected hit (CPU-s, skip 0.97, one full window of the rung's best cover, four busy cores; the range is the window's
 own p^ against p scaled from 101 digits): 105 digits 513-563, 110 1,930-2,370, 115 7,440-7,990, 120 18,100-21,600 (before
 the two-group fmw; about 5% less with it), so about x3.8 per 5 digits; 125 is about 15-20 CPU-h an expected hit.
+
+## The 200-digit side scan on idle cores (`cpu_scan_523/`)
+
+For the research session, at the record target 160,367 below 10^200: 1,616 covers on the first 88 odd primes and 523 (c0000-c1615 of research's dump), 3.06e10 members, 7.3e9 Fermat tests, 41.5 core-hours, no find against 0.0015 expected. The ledger, the logs and the tally are in `cpu_scan_523/`.
