@@ -1793,10 +1793,47 @@ average, against 36.5 for the best cover at 200,000).
 
 World 1 is in the kernel (Lean session, `GoldbachGaps/Worlds/NoCoupling.lean`,
 commit 15a3606: the coordinatewise optimum, and the k best listed with at
-most 1 + m·n candidates for the n-th). The verified pages of this session's
-agents (the catalogue of forcing mechanisms, groups, the second opinions,
-and the replacement through other fields) and the transfer table across
-worlds follow.
+most 1 + m·n candidates for the n-th).
+
+### The transfer table (first form, 26 November 02:00 UTC)
+
+One row per tool. Status: K = in the Lean kernel; 2 = proved or computed
+twice independently; 1 = one session's proof or computation so far (the
+verifiers of this session's pages and the second opinions on Worlds 2 and
+4 are still out, and rows will be revised as they report). "Worth" is at
+200 digits, in nats of the exponent (36.5 at 200,000 with the best cover).
+No row is offered as closed: a "no" below says which ingredient is absent
+and what the nearest thing costs.
+
+| tool | world | what it does there | status | over Z | nearest integer form and its price | worth if it could be had |
+|---|---|---|---|---|---|---|
+| free coordinates | 1 | best class at every prime; the k best in O(k log k) | K | yes, for moduli of product at most X | the cover: it is the 15.7 nats between random classes (52.2) and the best cover (36.5) | had |
+| one character in an arc, and the programme over partial sums | 5 | N < X is one linear condition of precision e^(−D); extreme members at cost m e^D Σ r; optimal up to 18m among methods that carry a state across a cut | K (identity); 1 (bounds) | yes: it is a statement about Z | itself; but D grows by ln r a prime: 26.5 at seven later primes, 496 for the primes to 1,000, and those to 509 carry 1.1% of the score | 0.07 nats at seven primes (measured), for single numbers |
+| meet in the middle on the arc | 5 | e^(D/2), optimal when the halves are used through their positions only | 1 | yes | itself: reaches D near 40 | as the last row |
+| the counting rule | 5 | the N below X at each level are the unconstrained count times e^(−D) | 2 (two exhaustive lists against the prediction) | yes | itself | 0: counting is free, finding is not |
+| chosen classes | 3 | N ≡ R_π strikes a class of rows | K | yes | the cover | had |
+| aligned classes | 3 | one residue for all small moduli strikes whole degrees but q − 1 rows | 1 | yes: one common integer | 1,878 rows against 1,502 | −9 |
+| parity by the discriminant, forcing rows | 3 | N′ = 0 (or N = λA⁴ in characteristic 2): the parity of the number of factors of N − Q is fixed for whole families of rows | K (p odd); 2 (p = 2, odd degrees over F_2) | no | none: every additive Leibniz map on Z is zero; the arithmetic derivative needs the factorisation | up to the whole exponent |
+| parity as a selection statistic | 3 | the rows that can still succeed are counted for every member; reaches the record after 0.008% of the members | 1 (Lean session, measured) | no | the count of rows surviving the sieve: the emptiest 1.5% of members hold 20% of the hits | 1.4 to 2.3 (model) |
+| ties by an additive symmetry | 3, 6 | σ(N) = N ties the rows π and σ(π); on orbit-closed sets of rows the trials are divided by the order h; the invariant family reaches the depth of the best of all | K (identity); 1 (law on complete degrees); 2 (Z[i] at radius 3,000) | no: the additive bijections of Z are ±1, and the rational primes are the rows every Galois group fixes | the cover (rows tied through a common factor): 96% of the room to divide the exponent by 1.43, where a symmetry of order h spends 1 − 1/h to divide it by h | 18.2 for an involution pairing the rows |
+| Artin–Schreier forcing | 3 | N = A(x^p − x) with one linear condition forces every row C(x^p − x) | 2 | no: Q has no extension unramified at every prime, and its abelian extensions are cyclotomic, whose splitting laws are congruences | identically reducible families: at most about √Q rows, −6 net | small |
+| powers, cyclotomic, Carlitz | 3 | a congruence on the exponent pins all primes of a degree | 1 | yes, exactly (2^m modulo 2^L − 1) | at par with a congruence; the powers of two leave 2,088 rows at best | −14 |
+| decoding to the Johnson radius | 2 | lists every N with enough weighted agreement | 2 (two derivations, given the published radius) | yes | on Z it is the Chinese-remainder enumeration of the whole window with its threshold moved by at most 2.6%: at least 2.5·10^4 scans | negative |
+| folding, multiplicities | 2 | decoding beyond the Johnson radius | 1 | no automorphism of the places; but for a separable score the lists are products in both worlds, so nothing is lost by its absence | pins (two primes fit in the window): 0.32 nats at unit cost | needs lists that tie coordinates, which a separable score does not give |
+| a random window defeats every algorithm | 4 | cost at least ½ min(e^κ, P/K) for any tables | 1 | it says where to look: only the structure of the window can help, and the window is the arc above | | |
+| exact trellis of the window | 4, 5 | at least min(P_I, P_Ic, X) states at every cut | 2 (two derivations) | yes | no exact programme over the places below the size of the window | |
+| merges that split the places | 4 | at least 2√(P/K²) e^(κ/2) an output | 1 | yes | beat scanning only for ln P < 48.4, seven primes | |
+| structure in the tables (progressions, intervals, cosets, characters) | 4, 5 | would let lattice or algebraic methods list members at any precision | 2 (three measurements) | absent: every test at the level of random tables (characters 0.84 of noise; a progression of classes buys 0.32 rows per nat, 0.36 on random tables) | free lists, which no lattice method takes | |
+
+Read down the "over Z" column: what the integers keep is what is built on
+congruences and on order (the cover, the arc, counting, meet in the
+middle); what they lose is what is built on an automorphism (ties, folding)
+or on a derivation (parity, inseparability) or on an unramified extension
+(Artin–Schreier). The three losses are three faces of one fact, that Z is
+the initial ring: no proper subring to be invariant over, no derivation,
+no unramified cover. The replacement round (nine lenses, running) asks
+whether any other field, ring or group attached to the numbers N − q can
+stand in for one of them.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
