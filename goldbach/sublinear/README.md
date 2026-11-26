@@ -293,7 +293,15 @@ of degree ≤ 2 left over F_9 (J = 1), 3 of 55 over F_5 (J = 2), 7 of 136
 over F_16 (J = 1). (Checked again here over prime fields by complete
 enumeration of R, `aligned_check.py`: 0 of 32 rows left over F_3 with
 J = 3, for R = x⁴ + 2x² + 2; 3 of 55 over F_5 with J = 2; 5 of 28 over
-F_7 with J = 1.) What makes this possible is the ultrametric: all monic
+F_7 with J = 1. The Lean session reproduced the three figures and put the
+statement in the kernel, `dvd_sub_iff_of_aligned` and
+`not_irreducible_sub_of_aligned`, its commit 7a0849e. It also measured
+aligned classes against the exact optimum over every choice of classes at
+the same moduli, where that can be enumerated: 1 row left against 0 over
+F_3 with J = 1 and J = 2, 3 against 0 over F_5 with J = 1, 5 against 2
+over F_7 with J = 1. So aligned classes are an explicit design that comes
+within one to three rows of the best cover with no search, at a p-th of
+the desert's degree; they are not the optimum.) What makes this possible is the ultrametric: all monic
 polynomials of degree J + 1 lie within degree J of R, where on the
 integers only the q within z of R do (the common-integer cover there
 leaves 1,876 rows against 1,502 for chosen classes). The estimate
@@ -1657,7 +1665,17 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
   Bleichenbacher–Nguyen, with noisy Chinese remaindering as its integer
   twin) and is used as a hardness assumption. On the integers nothing is
   known beyond the Johnson radius except for random errors with interleaved
-  codes, and no paper states the obstruction.
+  codes, and no paper states the obstruction. Its addendum (its commit
+  2805ba4): the integer counterpart of decoding with several polynomials
+  is Cohn and Heninger's lattice method for approximate common divisors,
+  which for m received words with a common agreement set reaches, on
+  generic inputs and under an independence hypothesis they cannot prove,
+  the radius 1 − R^(m/(m+1)); in the polynomial case the same bound is a
+  theorem because the code supplies the further relations, and no integer
+  code is known that does. And prime-power moduli do not enlarge the
+  radius but do create an obstruction of their own: x^d has exponentially
+  many small roots modulo k^d (the multiples of k), the integer form of
+  subfield lists.
 
 - *A second, independent page* (an agent of this session, which could not
   see the Opus session's page; verifiers pending). It reaches the same
@@ -1779,9 +1797,16 @@ q = 7: 110 at 8, 181 at 10; q = 9: 120 at 6, 122 at 8, 151 at 9.
   order after 0.009%); q = 5, n = 12: 278 and q = 7, n = 10: 181, generic;
   q = 9, n = 9: 151, three members, all translation-invariant (x^9 − x + 1
   among them), best generic 148. The family attains the degree-depth of the
-  best of all in 16 cases of 16, and exceeds it in 3. Eight of the 45
-  records are structured, all at n divisible by p: six translation-
-  invariant, one with a derivative of degree 1; everything else is generic.
+  best of all in 16 cases of 16, and exceeds it in 3. In its final count
+  (47 exhaustive instances, its commit aa8f73e) the record is generic in
+  39 and structured in eight, all at n divisible by p: seven translation-
+  invariant and one with a derivative of degree 1. The record's cell has a
+  median 8 rows more than the best cell; cover first reaches the record
+  after a median 3.1% of the members, the parity order after 0.006%. With
+  the orbit count as exponent its family law has a median error of 5.6%
+  over 59 table entries, against 9.7% for the plain p-th root; and it
+  reproduces the Frobenius family over F_9 (28.5, 27.0, 21.1, 10.0 times
+  more members with every row of degree ≤ 2 failing, n = 6 to 9).
   Its cell model for the counts is biased high (predicted over true: median
   1.21 at 3,000 successes or more, 1.54 at 10 to 30, within a factor 2.4
   everywhere), which moves the predicted record level by a few rows.
