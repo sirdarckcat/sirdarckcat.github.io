@@ -2200,7 +2200,11 @@ irreducible f, g of one degree.
 
 (The page on other fields of the first workflow was stopped by a safety
 filter a few minutes into its work and was not retried; this round covers
-its question.)
+its question. The lens of this round on coding theory and cryptanalysis
+was stopped the same way twenty minutes into its work and was not retried
+either; the coding-theory side of its question is World 2 above, and its
+other half, which hardness assumptions an enumerator for arbitrary tables
+would contradict, is left unanswered here.)
 
 **Additive combinatorics, Diophantine approximation and the geometry of
 numbers** (page returned; verifiers pending), for the constraint of low
