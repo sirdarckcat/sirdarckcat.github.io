@@ -620,7 +620,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                `k` (`sum_crt_modEq`, `exists_int_sum_div_eq`), so for `N < P` the integers
                below `X` are the class vectors whose character has fractional part below
                `X / P` (`lt_iff_fract_sum_div_lt`): one additive constraint of precision
-               `X / P` on a separable score.
+               `X / P` on a separable score. The same in the notation of the research
+               session's statement, for every integer and a real bound (`int_sum_crt_modEq`,
+               `lt_iff_fract_sum_mul_div_lt`), and the two facts under its dynamic programme
+               over partial sums: on a subset of the moduli different partial assignments have
+               different partial sums modulo the partial product (`eq_of_partial_sum_modEq`),
+               and assignments that agree outside the subset have full sums differing by the
+               difference of their partial sums (`sum_sub_sum_eq_of_agree`).
 
 ## Building
 
