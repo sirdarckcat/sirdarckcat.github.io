@@ -1,0 +1,21 @@
+additive characters of the rows modulo the 213 primes 467..1999 (h = 1..(s-1)/2)
+
+the 300 covers at 200,000 (rows U): 300 sets, size 1503.0
+  class counts             mean power 0.8435 (sd over sets 0.0007) | per-prime max / ln s: mean 1.087 | largest over the 213 primes: mean 4.007, max 4.719
+  heaviest 1/8 of classes  mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 1.050 | largest over the 213 primes: mean 2.271, max 3.392
+  heaviest 1/4             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 1.098 | largest over the 213 primes: mean 2.742, max 3.793
+  heaviest 1/2             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 1.084 | largest over the 213 primes: mean 3.238, max 4.781
+
+R1: random subsets of the odd primes below 200,000: 300 sets, size 1503.0
+  class counts             mean power 0.9521 (sd over sets 0.0027) | per-prime max / ln s: mean 0.937 | largest over the 213 primes: mean 1.636, max 2.747
+  heaviest 1/8 of classes  mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.979 | largest over the 213 primes: mean 1.718, max 2.525
+  heaviest 1/4             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.984 | largest over the 213 primes: mean 1.732, max 2.313
+  heaviest 1/2             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.987 | largest over the 213 primes: mean 1.753, max 2.531
+
+R2: i.i.d. uniform residues (pure noise): 300 sets, size 1503.0
+  class counts             mean power 1.0000 (sd over sets 0.0030) | per-prime max / ln s: mean 0.981 | largest over the 213 primes: mean 1.737, max 2.369
+  heaviest 1/8 of classes  mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.978 | largest over the 213 primes: mean 1.701, max 2.377
+  heaviest 1/4             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.984 | largest over the 213 primes: mean 1.734, max 2.314
+  heaviest 1/2             mean power 1.0000 (sd over sets 0.0000) | per-prime max / ln s: mean 0.985 | largest over the 213 primes: mean 1.739, max 2.569
+
+largest character over the 213 primes (class counts): covers 4.007 +- 0.327, R1 1.636 +- 0.195
