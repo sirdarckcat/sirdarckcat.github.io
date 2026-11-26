@@ -1836,6 +1836,68 @@ derivation of Z is zero; and Q has no extension unramified at every prime
 whether any other field, ring or group attached to the numbers N − q can
 stand in for one of them.
 
+### The replacement round (26 November; nine lenses, running)
+
+The last clause of the user's direction: for each tool the integers lack
+(ties by symmetry; a cheap parity; forcing by inseparability; lists that
+tie coordinates; a constraint of low precision), is there another field,
+ring, group or invariant attached to the numbers N − q in which it exists
+and connects back to "N − q is composite for many q at once" below the
+price of a Fermat test a row? Nine agents work the question each inside one
+field of mathematics, every proposal tested on the real cover or on real
+200-digit numbers, and two verifiers attack each page. Pages are recorded
+here as they return, with their status; nothing is offered as closed.
+
+**Algebraic groups, elliptic curves and primality theory** (page returned;
+verifiers pending, so the statements are the agent's). No substitute; two
+exact identities that say where the parity lives over Z, and seven
+obstruction statements. Its sample: 100 members of the real 200,000 cover
+sieved to 10^8, 50,636 surviving rows, 3,591 of them prime (7.09%).
+
+- *Where the parity lives.* (i) For odd squarefree n and k ≡ 3 (mod 4)
+  prime to every p − 1, p | n, the map x ↦ x^k is a permutation of Z/n and
+  μ(n) = (−1)^((n−1)/2) · sgn(x ↦ x^k) (17,403 cases by explicit cycles, no
+  failure). This is the integer counterpart of Stickelberger–Swan, where
+  the parity is the sign of Frobenius. (ii) For the curve
+  E_n: y² + xy = x³ − 36nx − n and n prime to 6 with 1 + 1728n squarefree,
+  the root number is −(−1)^ω(n) (12,151 curves against PARI, no failure).
+  Neither is a shortcut: Frobenius is linear over F_q, so its sign is a
+  determinant, hence a discriminant; the power map is linear over nothing,
+  and the only known ways to its sign or to that root number pass through
+  the factorisation of n or 10^300 terms of an L-series.
+- *Obstructions for a cheap parity.* Every sign of a Z/n-linear map is a
+  Jacobi symbol (Zolotarev; for matrices (det A / n)), a completely
+  multiplicative function of n, so for a fixed determinant a residue
+  condition: the cover. No function of residues of n modulo small numbers,
+  and no sum of such over small primes, correlates with the parity
+  (Siegel–Walfisz for the Liouville function). In a family of elliptic
+  curves the root number is either a residue-type function or contains the
+  Liouville function of a polynomial value (Rohrlich; Helfgott): there is
+  no third case. Measured: root numbers of quadratic twists by N − q are
+  constant on all 868 residue classes examined; 37 cheap invariants of a
+  surviving row (Jacobi symbols with fixed and with n-dependent tops,
+  parities from the Euclidean algorithm, truncated exponentiations) on the
+  50,636 real rows: largest |z| 1.95, mean z² 0.83 where 1.00 is no
+  information.
+- *Batching tests across rows.* 2^(N−1) = 2^(n−1)·2^q makes the exponent
+  common, and one exponentiation modulo the product of the rows followed by
+  a remainder tree gives every test at once, at 1.6 times the separate
+  tests for two rows, 4.8 for eight, 23 for a whole member: a product of k
+  moduli makes each multiplication cost at least k separate ones. The one
+  batching the problem has is of another kind: "p divides N − q" is decided
+  in Z/p, which does not depend on the row. That is the sieve.
+- *Partial tests.* A step of P − 1, P + 1 or an elliptic curve before the
+  Fermat test proves compositeness when the group order at a prime factor
+  is smooth: at best 0.0078 rows decided per Fermat test of work (P − 1 to
+  460), as the Dickman function predicts, 128 times short of breaking even.
+- *Ties.* Two sieved rows of a member are coprime (a common factor divides
+  q′ − q), and by the upper-bound sieve the members on which two given rows
+  are both prime number at most 8·S·X/ln² X: a tie between two rows on a
+  set of density d forces both to be prime with frequency at most
+  8S/(d ln² X), so a tie on a large set is a forcing, and over Z a forcing
+  is a class condition. Isogenies and twists tie nothing: objects with bad
+  primes at two coprime rows have different conductors.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
