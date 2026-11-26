@@ -117,9 +117,11 @@ for path, r in runs:
 
 print('### The translation-invariant family\n')
 print('F_d = members of the family with every row of degree at most d failing; G_d = members of all with the same,')
-print('from the cell model. The law is F_d ≈ G_d^(1/p).\n')
-print('| q | n | members of the family | all members | d | rows of degree ≤ d | F_d | G_d | G_d^(1/p) |')
-print('|---|---|---|---|---|---|---|---|---|')
+print('from the cell model. The law: F_d ≈ (members of the family) × (G_d / all members)^(orbits / rows), the orbits')
+print('being those of the rows of degree at most d under t ↦ t + 1 (last column); with every orbit of size p this is')
+print('G_d^(1/p) (the column before).\n')
+print('| q | n | members of the family | all members | d | rows of degree ≤ d | orbits | F_d | G_d | G_d^(1/p) | by orbits |')
+print('|---|---|---|---|---|---|---|---|---|---|---|')
 def skey(p):
     m = re.search(r'q(\d+)n(\d+)', p); return (int(m.group(1)), int(m.group(2)))
 fam_rows = []
@@ -133,10 +135,10 @@ for path in sorted(glob.glob(os.path.join(sym_dir, 'q*.txt')), key=skey):
         continue
     q, n, fam = int(m1.group(1)), int(m1.group(2)), int(m1.group(3))
     fam_rows.append((q, n, fam, m2.group(1), m2.group(2), m3.groups(), m4.group(1) if m4 else 'beyond the rows used'))
-    for d, rws, F, G, root in re.findall(r'd=(\d+): rows (\d+) \| family (\d+) of \d+ \| all (\S+) \| root (\S+)', s):
+    for d, rws, F, G, root, orb, ref in re.findall(r'd=(\d+): rows (\d+) \| family (\d+) of \d+ \| all (\S+) \| root (\S+) \| orbits (\d+) \| refined (\S+)', s):
         if int(F) > 0 or float(root) > 0.005:
             if float(G) < 0.3 * q ** n:
-                print(f"| {q} | {n} | {fam:,} | {q ** n:.2g} | {d} | {int(rws):,} | {int(F):,} | {float(G):.3g} | {float(root):.3g} |")
+                print(f"| {q} | {n} | {fam:,} | {q ** n:.2g} | {d} | {int(rws):,} | {int(orb):,} | {int(F):,} | {float(G):.3g} | {float(root):.3g} | {float(ref):.3g} |")
 print()
 print("| q | n | best L in the family | D | level of the best of all members (cell model: 10, 1, 0.1 members expected) | members of all expected at the family's best L |")
 print('|---|---|---|---|---|---|')

@@ -1,11 +1,11 @@
 q=7 n=21: 4088 rows of degree <= 5, 584 orbits; family of 343 members
-family: tests 7464, mean L 84.8, time 1 s
+family: tests 7464, mean L 84.8, time 0 s
 family best: L=805 (D=5, g index 148), L=765 (D=5, g index 97), L=733 (D=5, g index 309), L=732 (D=5, g index 100), L=215 (D=4, g index 255), L=211 (D=4, g index 75), L=209 (D=4, g index 111), L=203 (D=4, g index 26)
 cell model for all 7^21 members: line of 7 moduli (823543 cells), chance of a row left 0.1401; rows R with 10, 1, 0.1 members expected: 900, 957, 1013
-BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
-  d=1: rows 7 | family 343 of 343 | all 3.93e+17 | root 326
-  d=2: rows 28 | family 284 of 343 | all 1.39e+17 | root 281
-  d=3: rows 140 | family 133 of 343 | all 7.57e+14 | root 134
-  d=4: rows 728 | family 4 of 343 | all 1.2e+04 | root 3.83
-  d=5: rows 4088 | family 0 of 343 | all 8.77e-58 | root 7.06e-09
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 7 | family 343 of 343 | all 3.93e+17 | root 326 | orbits 1 | refined 326
+  d=2: rows 28 | family 284 of 343 | all 1.39e+17 | root 281 | orbits 4 | refined 281
+  d=3: rows 140 | family 133 of 343 | all 7.57e+14 | root 134 | orbits 20 | refined 134
+  d=4: rows 728 | family 4 of 343 | all 1.2e+04 | root 3.83 | orbits 104 | refined 3.83
+  d=5: rows 4088 | family 0 of 343 | all 8.77e-58 | root 7.06e-09 | orbits 584 | refined 7.06e-09
 expected number of members of all 7^21 at the family's best level L >= 805: 508

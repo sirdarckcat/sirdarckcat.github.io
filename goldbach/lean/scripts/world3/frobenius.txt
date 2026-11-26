@@ -1,0 +1,4 @@
+q=9 n=6: every row of degree <= 2 failing: 666 of all 531441 members (0.001253); 26 of the 729 members with coefficients in F_3 (0.035665); ratio 28.5; record among them 103, of all 120
+q=9 n=7: every row of degree <= 2 failing: 2187 of all 4782969 members (0.000457); 27 of the 2187 members with coefficients in F_3 (0.012346); ratio 27.0; record among them 75, of all 94
+q=9 n=8: every row of degree <= 2 failing: 69138 of all 43046721 members (0.001606); 222 of the 6561 members with coefficients in F_3 (0.033836); ratio 21.1; record among them 113, of all 122
+q=9 n=9: every row of degree <= 2 failing: 1326618 of all 387420489 members (0.003424); 674 of the 19683 members with coefficients in F_3 (0.034243); ratio 10.0; record among them 151, of all 151

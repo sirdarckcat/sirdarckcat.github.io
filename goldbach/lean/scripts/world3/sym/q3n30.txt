@@ -1,16 +1,16 @@
 q=3 n=30: 9382 rows of degree <= 10, 3134 orbits; family of 59049 members
-family: tests 2924044, mean L 112.3, time 227 s
+family: tests 2924044, mean L 112.3, time 171 s
 family best: L=2190 (D=9, g index 58070), L=1829 (D=9, g index 19916), L=1829 (D=9, g index 13727), L=1829 (D=9, g index 13406), L=1826 (D=9, g index 49442), L=1639 (D=9, g index 13502), L=1622 (D=9, g index 13511), L=1622 (D=9, g index 6563)
 cell model for all 3^30 members: line of 6 moduli (19683 cells), chance of a row left 0.1602; rows R with 10, 1, 0.1 members expected: 2057, 2214, 2390
-BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
-  d=1: rows 3 | family 59049 of 59049 | all 1.86e+14 | root 5.7e+04
-  d=2: rows 6 | family 56779 of 59049 | all 1.67e+14 | root 5.51e+04
-  d=3: rows 14 | family 46332 of 59049 | all 1.29e+14 | root 5.05e+04
-  d=4: rows 32 | family 38588 of 59049 | all 7.84e+13 | root 4.28e+04
-  d=5: rows 80 | family 26962 of 59049 | all 2.61e+13 | root 2.97e+04
-  d=6: rows 196 | family 14681 of 59049 | all 3.47e+12 | root 1.51e+04
-  d=7: rows 508 | family 2841 of 59049 | all 3.09e+10 | root 3.14e+03
-  d=8: rows 1318 | family 51 of 59049 | all 3.93e+05 | root 73.2
-  d=9: rows 3502 | family 0 of 59049 | all 5.5e-09 | root 0.00177
-  d=10: rows 9382 | family 0 of 59049 | all 1.06e-45 | root 1.02e-15
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 3 | family 59049 of 59049 | all 1.86e+14 | root 5.7e+04 | orbits 1 | refined 5.7e+04
+  d=2: rows 6 | family 56779 of 59049 | all 1.67e+14 | root 5.51e+04 | orbits 2 | refined 5.51e+04
+  d=3: rows 14 | family 46332 of 59049 | all 1.29e+14 | root 5.05e+04 | orbits 6 | refined 4.84e+04
+  d=4: rows 32 | family 38588 of 59049 | all 7.84e+13 | root 4.28e+04 | orbits 12 | refined 4.11e+04
+  d=5: rows 80 | family 26962 of 59049 | all 2.61e+13 | root 2.97e+04 | orbits 28 | refined 2.87e+04
+  d=6: rows 196 | family 14681 of 59049 | all 3.47e+12 | root 1.51e+04 | orbits 68 | refined 1.43e+04
+  d=7: rows 508 | family 2841 of 59049 | all 3.09e+10 | root 3.14e+03 | orbits 172 | refined 3e+03
+  d=8: rows 1318 | family 51 of 59049 | all 3.93e+05 | root 73.2 | orbits 442 | refined 70.3
+  d=9: rows 3502 | family 0 of 59049 | all 5.5e-09 | root 0.00177 | orbits 1174 | refined 0.0016
+  d=10: rows 9382 | family 0 of 59049 | all 1.06e-45 | root 1.02e-15 | orbits 3134 | refined 9.24e-16
 expected number of members of all 3^30 at the family's best level L >= 2190: 1.52

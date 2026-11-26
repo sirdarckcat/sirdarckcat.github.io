@@ -2,13 +2,13 @@ q=3 n=9: 1318 rows of degree <= 8, 442 orbits; family of 27 members
 family: tests 340, mean L 29.4, time 0 s
 family best: L=200 (D=7, g index 14), L=101 (D=6, g index 1), L=84 (D=6, g index 20), L=84 (D=6, g index 2), L=37 (D=5, g index 7), L=36 (D=5, g index 8), L=33 (D=5, g index 4), L=32 (D=5, g index 17)
 cell model for all 3^9 members: line of 6 moduli (19683 cells), chance of a row left 0.5332; rows R with 10, 1, 0.1 members expected: 107, 148, 187
-BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
-  d=1: rows 3 | family 27 of 27 | all 1.34e+04 | root 23.8
-  d=2: rows 6 | family 24 of 27 | all 9.3e+03 | root 21
-  d=3: rows 14 | family 13 of 27 | all 4.01e+03 | root 15.9
-  d=4: rows 32 | family 9 of 27 | all 1.15e+03 | root 10.5
-  d=5: rows 80 | family 4 of 27 | all 45.1 | root 3.56
-  d=6: rows 196 | family 1 of 27 | all 0.0721 | root 0.416
-  d=7: rows 508 | family 0 of 27 | all 2.82e-10 | root 0.000656
-  d=8: rows 1318 | family 0 of 27 | all 1.44e-27 | root 1.13e-09
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 3 | family 27 of 27 | all 1.34e+04 | root 23.8 | orbits 1 | refined 23.8
+  d=2: rows 6 | family 24 of 27 | all 9.3e+03 | root 21 | orbits 2 | refined 21
+  d=3: rows 14 | family 13 of 27 | all 4.01e+03 | root 15.9 | orbits 6 | refined 13.7
+  d=4: rows 32 | family 9 of 27 | all 1.15e+03 | root 10.5 | orbits 12 | refined 9.32
+  d=5: rows 80 | family 4 of 27 | all 45.1 | root 3.56 | orbits 28 | refined 3.22
+  d=6: rows 196 | family 1 of 27 | all 0.0721 | root 0.416 | orbits 68 | refined 0.351
+  d=7: rows 508 | family 0 of 27 | all 2.82e-10 | root 0.000656 | orbits 172 | refined 0.000555
+  d=8: rows 1318 | family 0 of 27 | all 1.44e-27 | root 1.13e-09 | orbits 442 | refined 9.77e-10
 expected number of members of all 3^9 at the family's best level L >= 200: 0.0697

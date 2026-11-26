@@ -604,7 +604,10 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                is a non-zero constant then `discr f = (-1)^(n(n-1)/2) · lc(f)^(n-2) · γ^n`
                (`discr_of_derivative_eq_C`), so for even `n` with `χ(-1)^(n(n-1)/2) = 1` every
                row with `N' - Q'` a non-zero constant fails
-               (`not_irreducible_sub_of_derivative_sub_eq_C`).
+               (`not_irreducible_sub_of_derivative_sub_eq_C`). Aligned classes: if `N ≡ R`
+               modulo a `V` divisible by every irreducible of degree at most `J`, the row `Q`
+               fails whenever `R - Q` is non-constant of degree at most `J`
+               (`not_irreducible_sub_of_aligned`).
 * `Worlds.*` – the toy worlds of the research programme of 26 November 2026: a score
                `S(N) = ∑ r, f r (N mod r)` and a constraint that couples the coordinates; in
                each world, can the points with extreme score be produced at a cost

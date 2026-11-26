@@ -609,6 +609,25 @@ The same for a row: `N' - Q' = γ ≠ 0` constant, `deg (N - Q)` even and at lea
               (quadraticChar F) (-1) ^ ((N - Q).natDegree * ((N - Q).natDegree - 1) / 2) = 1 → ¬Irreducible (N - Q)
 ```
 
+### `dvd_sub_iff_of_aligned`
+
+Aligned classes (`N ≡ R` modulo `V`, the same `R` at every modulus): a divisor `π` of `V` divides `N - Q` exactly when it divides `R - Q`.
+
+```lean
+@dvd_sub_iff_of_aligned : ∀ {F : Type u_1} [inst : Field F] {N R Q V π : Polynomial F},
+  π ∣ V → V ∣ N - R → (π ∣ N - Q ↔ π ∣ R - Q)
+```
+
+### `not_irreducible_sub_of_aligned`
+
+**Aligned classes: the rows they strike.** `V` divisible by every irreducible of degree at most `J`, `N ≡ R` modulo `V`, `R - Q` not constant and of degree at most `J`, `deg (N - Q) > J`: `N - Q` is not irreducible. With `R` and `Q` monic of degree `J + 1` this is every `Q` but the `R - c`.
+
+```lean
+@not_irreducible_sub_of_aligned : ∀ {F : Type u_1} [inst : Field F] {N R Q V : Polynomial F} {J : ℕ},
+  (∀ (π : Polynomial F), Irreducible π → π.natDegree ≤ J → π ∣ V) →
+    V ∣ N - R → 0 < (R - Q).natDegree → (R - Q).natDegree ≤ J → J < (N - Q).natDegree → ¬Irreducible (N - Q)
+```
+
 ## Checks by factorisation
 
 `../../scripts/parity_check/gen_parity.py` (the general parity formula over `F_3`, `F_5`, `F_7`),

@@ -2,11 +2,11 @@ q=5 n=15: 3409 rows of degree <= 6, 685 orbits; family of 125 members
 family: tests 2592, mean L 73.6, time 0 s
 family best: L=472 (D=5, g index 6), L=351 (D=5, g index 9), L=284 (D=5, g index 11), L=283 (D=5, g index 14), L=282 (D=5, g index 13), L=254 (D=5, g index 43), L=253 (D=5, g index 42), L=252 (D=5, g index 16)
 cell model for all 5^15 members: line of 6 moduli (78125 cells), chance of a row left 0.2119; rows R with 10, 1, 0.1 members expected: 389, 431, 473
-BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
-  d=1: rows 5 | family 125 of 125 | all 2.13e+10 | root 116
-  d=2: rows 15 | family 104 of 125 | all 1.05e+10 | root 101
-  d=3: rows 55 | family 71 of 125 | all 7.81e+08 | root 60.1
-  d=4: rows 205 | family 21 of 125 | all 1.85e+05 | root 11.3
-  d=5: rows 829 | family 0 of 125 | all 4.93e-10 | root 0.0138
-  d=6: rows 3409 | family 0 of 125 | all 1.65e-69 | root 1.75e-14
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 5 | family 125 of 125 | all 2.13e+10 | root 116 | orbits 1 | refined 116
+  d=2: rows 15 | family 104 of 125 | all 1.05e+10 | root 101 | orbits 3 | refined 101
+  d=3: rows 55 | family 71 of 125 | all 7.81e+08 | root 60.1 | orbits 11 | refined 60.1
+  d=4: rows 205 | family 21 of 125 | all 1.85e+05 | root 11.3 | orbits 41 | refined 11.3
+  d=5: rows 829 | family 0 of 125 | all 4.93e-10 | root 0.0138 | orbits 169 | refined 0.0115
+  d=6: rows 3409 | family 0 of 125 | all 1.65e-69 | root 1.75e-14 | orbits 685 | refined 1.48e-14
 expected number of members of all 5^15 at the family's best level L >= 472: 0.105

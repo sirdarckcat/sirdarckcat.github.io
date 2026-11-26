@@ -326,6 +326,15 @@ static void family_trans(FILE *f, uint8_t s) {    // members g(t^p - s^(p-1) t),
   char name[32]; snprintf(name, sizeof name, "trans%d", s);
   family_out(f, name, size, h); free(h);
 }
+static void family_frob(FILE *f) {               // q = 9: the members with every coefficient in F_3 (fixed by the Frobenius)
+  uint64_t size = 1; for (int i = 0; i < n; i++) size *= 3;
+  uint64_t *h = calloc(nrow + 1, 8);
+  for (uint64_t x = 0; x < size; x++) {
+    uint64_t y = x, idx = 0; for (int i = 0; i < n; i++) { idx += (y % 3) * pw[i]; y /= 3; }
+    h[L_of(idx)]++;
+  }
+  family_out(f, "frobenius", size, h); free(h);
+}
 static void families(FILE *f) {
   uint8_t fp[48];
   if (n % p == 0) { for (int i = 0; i < n; i++) fp[i] = (i % p == 0); family_mask(f, "insep", fp); }
@@ -334,7 +343,7 @@ static void families(FILE *f) {
   family_mask(f, "scal-1", fp);
   if (q > 3) { for (int i = 0; i < n; i++) fp[i] = ((n - i) % (q - 1) == 0); family_mask(f, "scalall", fp); }
   if (q == 9) { for (int i = 0; i < n; i++) fp[i] = ((n - i) % 4 == 0); family_mask(f, "scal4", fp); }
-  if (q == 9) { family_trans(f, 1); family_trans(f, 3); family_trans(f, 4); family_trans(f, 7); }
+  if (q == 9) { family_frob(f); family_trans(f, 1); family_trans(f, 3); family_trans(f, 4); family_trans(f, 7); }
   else family_trans(f, 1);
 }
 

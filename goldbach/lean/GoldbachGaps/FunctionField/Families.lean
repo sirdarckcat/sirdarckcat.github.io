@@ -14,6 +14,13 @@ that are not generic are explained by the statements of this file.
 * `card_monic_cell`: the same for pairwise coprime monic moduli of total degree at most `n` with one residue each.
   This is the count that carries an error `± 1` in the integers (`Cap.card_good_sharing_le`).
 
+## Aligned classes
+
+* `dvd_sub_iff_of_aligned`, `not_irreducible_sub_of_aligned`: if `N ≡ R` modulo a `V` divisible by every
+  irreducible of degree at most `J` (the same `R` at every modulus), a row `Q` is struck exactly when `R - Q` has a
+  factor of degree at most `J`; for `R - Q` non-constant of degree at most `J` (every monic `Q` of degree `J + 1`
+  but the `R - c`, when `R` is monic of degree `J + 1`) the row fails.
+
 ## Symmetry: rows succeed in orbits
 
 * `irreducible_sub_apply_iff`: if a ring automorphism `φ` fixes `N`, then `N - φ Q` is irreducible exactly when
@@ -328,5 +335,43 @@ theorem card_monic_cell {ι : Type*} (s : Finset ι) (P r : ι → F[X]) (hP : �
   exact Nat.card_congr (Equiv.subtypeEquivRight fun M => by rw [hiff M])
 
 end Cells
+
+section Aligned
+
+variable {F : Type*} [Field F]
+
+/-- **Aligned classes: which moduli strike a row.** If `N ≡ R` modulo `V` and `π` divides `V`, then `π` divides
+`N - Q` exactly when it divides `R - Q`. -/
+theorem dvd_sub_iff_of_aligned {N R Q V π : F[X]} (hπV : π ∣ V) (hN : V ∣ N - R) :
+    π ∣ N - Q ↔ π ∣ R - Q := by
+  have e : N - Q = (N - R) + (R - Q) := by ring
+  rw [e]
+  exact dvd_add_right (hπV.trans hN)
+
+/-- **Aligned classes: the rows they strike.** Let `V` be divisible by every irreducible polynomial of degree at
+most `J` and `N ≡ R` modulo `V` (one `R` for all the moduli). If `R - Q` is not constant and has degree at most `J`,
+then `N - Q` is not irreducible as soon as its degree exceeds `J`. For `R` and `Q` monic of degree `J + 1` this is
+every `Q` except the `R - c`. -/
+theorem not_irreducible_sub_of_aligned {N R Q V : F[X]} {J : ℕ}
+    (hV : ∀ π : F[X], Irreducible π → π.natDegree ≤ J → π ∣ V) (hN : V ∣ N - R)
+    (hRQ : 0 < (R - Q).natDegree) (hJ : (R - Q).natDegree ≤ J) (hdeg : J < (N - Q).natDegree) :
+    ¬Irreducible (N - Q) := by
+  have hne : R - Q ≠ 0 := by
+    intro h
+    rw [h, natDegree_zero] at hRQ
+    exact lt_irrefl 0 hRQ
+  have hnu : ¬IsUnit (R - Q) := fun h => by
+    rw [natDegree_eq_zero_of_isUnit h] at hRQ
+    exact lt_irrefl 0 hRQ
+  obtain ⟨π, hπ, hπd⟩ := WfDvdMonoid.exists_irreducible_factor hnu hne
+  have hπJ : π.natDegree ≤ J := (natDegree_le_of_dvd hπd hne).trans hJ
+  have hπNQ : π ∣ N - Q := (dvd_sub_iff_of_aligned (hV π hπ hπJ) hN).mpr hπd
+  intro hirr
+  have hassoc : Associated π (N - Q) := hπ.associated_of_dvd hirr hπNQ
+  have hdegeq : π.natDegree = (N - Q).natDegree :=
+    natDegree_eq_of_degree_eq (degree_eq_degree_of_associated hassoc)
+  omega
+
+end Aligned
 
 end GoldbachGaps.FunctionField

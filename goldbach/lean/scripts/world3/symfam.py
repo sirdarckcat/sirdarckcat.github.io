@@ -141,11 +141,13 @@ print(f"cell model for all {q}^{n} members: line of {len(moduli)} moduli ({ncell
 upto = {}
 for j, (d, _, _) in enumerate(rows):
     upto[d] = j + 1
-print("BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)")
+print("BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))")
 for d in sorted(upto):
     Fd = sum(v for k, v in hist.items() if k >= upto[d])
     Gd = predicted(upto[d])
-    print(f"  d={d}: rows {upto[d]} | family {Fd} of {q**m} | all {Gd:.3g} | root {Gd ** (1.0 / q):.3g}")
+    orb = sum(1 for j in orbit_first if j < upto[d])
+    refined = q ** m * (Gd / float(q ** n)) ** (orb / upto[d]) if Gd > 0 else 0.0
+    print(f"  d={d}: rows {upto[d]} | family {Fd} of {q**m} | all {Gd:.3g} | root {Gd ** (1.0 / q):.3g} | orbits {orb} | refined {refined:.3g}")
 Lb = best[0][0]
 if Lb < len(rows):
     print(f"expected number of members of all {q}^{n} at the family's best level L >= {Lb}: {predicted(Lb):.3g}")

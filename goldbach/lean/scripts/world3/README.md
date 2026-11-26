@@ -17,7 +17,8 @@ factor among the first z irreducibles. A *cell* at a line of z moduli is a choic
 `irreducible_sub_comp_X_add_C_iff` (if N(t + c) = N(t), the rows Q(t) and Q(t + c) succeed together),
 `not_irreducible_sub_of_derivative_eq` (a row with Q′ = N′ never succeeds), `discr_of_derivative_eq_C` and
 `not_irreducible_sub_of_derivative_sub_eq_C` (when N′ − Q′ is a non-zero constant the discriminant is
-±lc^(n−2)·γ^n, and for even n with χ(−1)^(n(n−1)/2) = 1 the row fails). Everything else on this page is measured.
+±lc^(n−2)·γ^n, and for even n with χ(−1)^(n(n−1)/2) = 1 the row fails), `not_irreducible_sub_of_aligned` (aligned
+classes, section 3). Everything else on this page is measured.
 
 All tables are in `tables.md` (written by `tables.py`); the numbers quoted below are copied from it.
 
@@ -101,7 +102,12 @@ irreducibility (q = 3, n = 15: an odd row left at the line is irreducible with c
 after the quartics 0.98; q = 3, n = 18: 0.54 after the quadratics). Where the chance is small the gain is the usual
 0.5/Φ(−λσ) (parity alone, no sieve, q = 3,
 n = 12, 1,018 successes: predicted 6.9, measured 6.8). The parity count needs one discriminant for every row left of
-every member: it saves irreducibility tests, not members touched.
+every member: it saves irreducibility tests, not members touched. The research session's reading through the sieve:
+with u = n over the depth of the sieve, a rough polynomial with an odd number of factors is irreducible with chance
+2/(u·ω(u) + ρ(u − 1)) (ω Buchstab's function, ρ Dickman's; exact for u ≤ 3); these instances sit at u = 3 to 6 and
+the 200-digit search at u about 25, where a free parity would be worth a factor 2 (1.4 nats in all) and no more.
+The ratios above grow toward the record because the share of members kept shrinks there, not because parity knows
+more.
 
 ## 2. The translation-invariant family beyond the enumerable range (`symfam.py`)
 
@@ -112,11 +118,19 @@ the best generic member; 7^7: 89 and 78; members with every row of degree at mos
 121 true).
 
 **The law.** Let F_d be the number of members of the family with every row of degree at most d failing, and G_d the
-number of all members with the same. Then F_d ≈ G_d^(1/p), within about 20% over five orders of magnitude
-(`tables.md`, last section). For instance at q = 3, n = 30 (59,049 members of 2·10^14): d = 6, 7, 8 give
-F = 14,681, 2,841, 51 against cube roots 15,100, 3,140, 73; at q = 5, n = 25 (3,125 of 3·10^17): d = 2, 3, 4, 5 give
-2,831, 2,067, 809, 9 against fifth roots 2,760, 2,020, 728, 15; at q = 7, n = 21 (343 of 6·10^17): d = 1, 2, 3, 4
-give 343, 284, 133, 4 against seventh roots 326, 281, 134, 3.8.
+number of all members with the same. Then
+
+    F_d ≈ (members of the family) × (G_d / all members)^(orbits / rows),
+
+orbits and rows being those of degree at most d. Most orbits have p rows, and then this is G_d^(1/p); the rows that
+the translation fixes (those in F_p[t^p − t]: 2 of the 8 cubics and 2 of the 116 sextics at q = 3) are orbits of one
+(the refinement is the research session's verifiers'). Over the 59 entries of the table with F_d ≥ 20 the median
+error is 5.6% with the orbit count and 9.7% with the plain p-th root; the largest is 46% (21 against 11 at
+5^15, d = 4). For instance at q = 3, n = 30 (59,049 members of 2·10^14): d = 6, 7, 8 give F = 14,681, 2,841, 51
+against cube roots 15,100, 3,140, 73; at q = 5, n = 25 (3,125 of 3·10^17): d = 2, 3, 4, 5 give 2,831, 2,067, 809, 9
+against fifth roots 2,760, 2,020, 728, 15; at q = 7, n = 21 (343 of 6·10^17): d = 1, 2, 3, 4 give 343, 284, 133, 4
+against seventh roots 326, 281, 134, 3.8. Part of it is an ordinary cover: for q = p every member of the family is
+constant on F_p, so N − (t − a) has the root a + N(0) and every linear row fails by divisibility.
 
 **What it gives.** In terms of D (every row of degree below D fails), the family of q^(n/p) members attains the D of
 the best of all q^n members in every case computed (16: q = 3: n = 9 to 33; q = 5: n = 10 to 25; q = 7: n = 7 to 21), and
@@ -138,11 +152,39 @@ of successful orbits among the 270 orbits of degree-8 rows is distributed as ind
 chance (0.3 for an orbit left after degree 3), the best members have 10 orbits left, and 5 members have no success at
 degree 8, as that predicts (`famdist.py`).
 
-The tool, stated for any world: a group of ring automorphisms that fixes N and permutes the rows divides the number
-of independent trials by the order of the group on every orbit-closed set of rows. F_q[t] has t ↦ at + b and the
-Frobenius on the coefficients, and its orbit-closed sets are the degrees; Z has only ±1.
+The tool, stated for any world: a group of ring automorphisms that fixes N and permutes the rows replaces the rows
+of every orbit-closed set by their orbits. F_q[t] has t ↦ at + b and the Frobenius on the coefficients, and its
+orbit-closed sets are the degrees; Z has only ±1. The Frobenius is a second instance: over F_9 it fixes the members
+with coefficients in F_3, rows off F_3[t] pair up, and for even n the rows in F_3[t] fail outright (a polynomial of
+even degree over F_3 is never irreducible over F_9). Measured with `w3` (family `frobenius`): every row of degree at
+most 2 fails 28, 27, 21 and 10 times more often among those members than among all, at n = 6, 7, 8, 9
+(`frobenius.txt`; the research session's verifiers found the same range), and the record of 9^9 is one of them.
 
-## 3. Checks
+## 3. Aligned classes (`aligned.py`)
+
+A third design, the research session's: one polynomial R of degree J + 1 gives the class at every modulus of degree
+at most J (N ≡ R modulo their product V_J). Then a row Q is struck exactly when R − Q has a factor of degree at most
+J (`dvd_sub_iff_of_aligned`): every monic Q of degree J + 1 except the R − c (`not_irreducible_sub_of_aligned`), and
+the rows of lower degree except those with R − Q irreducible. Its figures are reproduced: F_3, J = 3:
+R = x⁴ + 2x² + 2 leaves none of the 32 rows of degree at most 4; F_5, J = 2: 3 of 55; F_7, J = 1: 5 of 28. It is an
+explicit design with room deg V_J, a p-th of the parity desert's. It is not the best choice of classes: where every
+choice can be enumerated the best cells leave fewer rows of the same target.
+
+| q | J | moduli (total degree) | rows of degree ≤ J + 1 | fewest rows left, all cells | cells attaining it | fewest, aligned cells | aligned cells attaining it |
+|---|---|---|---|---|---|---|---|
+| 3 | 1 | 3 (3) | 6 | 0 | 2 of 27 | 1 | 3 of 9 |
+| 3 | 2 | 6 (9) | 14 | 0 | 680 of 19,683 | 1 | 8 of 27 |
+| 5 | 1 | 5 (5) | 15 | 0 | 2 of 3,125 | 3 | 10 of 25 |
+| 7 | 1 | 7 (7) | 28 | 2 | 21 of 823,543 | 5 | 21 of 49 |
+| 3 | 3 | 14 (33) | 32 | not enumerable | | 0 | 3 of 81 |
+| 5 | 2 | 15 (25) | 55 | not enumerable | | 3 | 5 of 125 |
+| 11 | 1 | 11 (11) | 66 | not enumerable | | 9 | 55 of 121 |
+
+In the exhaustive runs "the best cells" are always the best over every choice of classes, so the aligned cells are
+among the cells compared there; their targets (rows of degree at most J + 1, with V_J of degree at most n) are far
+below the records of section 1.
+
+## 4. Checks
 
 `check_w3.py` recomputes, with FLINT factorisations of every member and none of the sieve code, the histogram of L,
 the rows left after the linear factors and the count of odd-squarefree rows with the successes at every level, on
@@ -151,12 +193,13 @@ also checks the number of irreducibles of degree n, the number of squarefree pol
 Möbius function sums to 0. `symfam.py` reproduces the family's records of the exhaustive runs (297 at 3^15, 206 at
 5^10).
 
-## 4. Files
+## 5. Files
 
 `w3.c` (the enumeration: `w3 q n mu b OUT [extra cutoff ranks] [-l line ranks] [-t targets]`; mu is the inverse of the
 leading coefficient, b the number of low coefficients in a block, rows of degree below b are used), `run_all.sh` (the
 runs of this page), `analyse.py` (every table of one run), `summary.py`, `tables.py` (the tables of this page →
-`tables.md`), `check_w3.py`, `symfam.py q n dmax [quadratics in the line]`, `as_family.py q`, `as_rate.py`, `famdist.py`, `outlier.py`. `runs/` holds
+`tables.md`), `check_w3.py`, `symfam.py q n dmax [quadratics in the line]`, `as_family.py q`, `as_rate.py`, `famdist.py`, `outlier.py`,
+`aligned.py q J`. `runs/` holds
 the outputs without the four bulky kinds of line (the histograms by depth and the joint tables, 60 MB in all; rerun
 to get them), `tables/` the output of `analyse.py` for each run, `sym/` the outputs of `symfam.py`. The largest runs
 (3^18, 9^9: 3.9·10^8 members) take about an hour and 1 GB each; needs gcc, python-flint for the checks and the family.
