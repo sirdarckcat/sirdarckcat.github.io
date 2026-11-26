@@ -1606,10 +1606,21 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
 
   and the informative term is at most 2.6% of ln K. So on the integers the
   decoder is the Chinese-remainder enumeration of the whole window with its
-  threshold moved by a hair: with exact prime sums, places to 5.2·10^9 and
-  an input of 6.2·10^17 table entries for the deepest member of a full
-  window (3.9·10^10 scans), and at least 2.5·10^4 scans at every window
-  size down to two members. The lists restricted to the classes that are
+  threshold moved by a hair. How much input that is depends on what the
+  weight table may know (a correction by the verifier of the second page
+  below, 26 November 03:40 UTC). A table over all the classes of every
+  place needs, with exact prime sums, places to 5.2·10^9 and 6.2·10^17
+  entries for the deepest member of a full window. A table confined to the
+  classes that the window's members occupy does better: a place larger
+  than the window has at most K occupied classes and then carries mass
+  ln p/K instead of ln p/p, so M is Σ ln p/min(p, K), reached with places
+  to 1.5·10^8 and 1.7·10^14 weighted classes, 8·10^6 a member. In no case
+  does it take fewer than one weighted class a member, which is the
+  enumeration of the window: that, and not the figures first given here
+  (at least 2.5·10^4 scans at every window size, which held only for
+  tables that ignore which classes are occupied; for a window of two
+  members two weighted classes at one prime suffice), is the margin that
+  is proved. The lists restricted to the classes that are
   struck at all have mass Σ ρ ln p/p = 1.75 (the integral of
   (1 − e^(−1500/t))/t from 467), a tenth of what is needed. In F_q[x] the
   places must cover 0.974 n layers of degree, an input of at least
@@ -1656,8 +1667,11 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
   population whose luck is spread thinly over many places is captured only
   when the weighted classes fill about ln K nats of Mertens mass. Its
   integer figures, with ln K = 16.88: mass 16.82 needed, places to
-  9.3·10^9, 1.9·10^18 table entries; weights confined to the classes that
-  hold rows supply at most 2.07 nats, enough for a window of 8 members. And
+  9.3·10^9, 1.9·10^18 table entries (for tables over all classes; its
+  verifier corrected the reading as above: with weights on occupied classes
+  only, places to 1.5·10^8 and 1.7·10^14 weighted classes, and never fewer
+  than one a member); weights confined to the classes that hold rows supply
+  at most 2.07 nats, enough for a window of 8 members. And
   it states what IS priced by the output in this world: (O1) product lists
   on an information set (places of total degree at most n): the consistent
   N are q^(n−T) ∏ l_i exactly, one Chinese-remainder combination each,
@@ -2006,7 +2020,7 @@ and what the nearest thing costs.
 | ties by an additive symmetry | 3, 6 | σ(N) = N ties the rows π and σ(π); on orbit-closed sets of rows the trials are divided by the order h; the invariant family reaches the depth of the best of all | K (identity); 1 (law on complete degrees); 2 (Z[i] at radius 3,000) | no: the additive bijections of Z are ±1, and the rational primes are the rows every Galois group fixes | the cover (rows tied through a common factor): 96% of the room to divide the exponent by 1.43, where a symmetry of order h spends 1 − 1/h to divide it by h | 18.2 for an involution pairing the rows |
 | Artin–Schreier forcing | 3 | N = A(x^p − x) with one linear condition forces every row C(x^p − x) | 2 | no: Q has no extension unramified at every prime, and its abelian extensions are cyclotomic, whose splitting laws are congruences | identically reducible families: at most about √Q rows, −6 net | small |
 | powers, cyclotomic, Carlitz | 3 | a congruence on the exponent pins all primes of a degree | 1 | yes, exactly (2^m modulo 2^L − 1) | at par with a congruence; the powers of two leave 2,088 rows at best | −14 |
-| decoding to the Johnson radius | 2 | lists every N with enough weighted agreement | 2 (two derivations, given the published radius) | yes | on Z it is the Chinese-remainder enumeration of the whole window with its threshold moved by at most 2.6%: at least 2.5·10^4 scans | negative |
+| decoding to the Johnson radius | 2 | lists every N with enough weighted agreement | 2 (two derivations, given the published radius) | yes | on Z it is the Chinese-remainder enumeration of the whole window with its threshold moved by at most 2.6%: never fewer than one weighted class a member (8·10^6 a member for the full window) | negative |
 | folding, multiplicities | 2 | decoding beyond the Johnson radius | 1 | no automorphism of the places; but for a separable score the lists are products in both worlds, so nothing is lost by its absence | pins (two primes fit in the window): 0.32 nats at unit cost | needs lists that tie coordinates, which a separable score does not give |
 | a random window defeats every algorithm | 4 | cost at least ½ min(e^κ, P/K) for any tables | 1 | it says where to look: only the structure of the window can help, and the window is the arc above | | |
 | exact trellis of the window | 4, 5 | at least min(P_I, P_Ic, X) states at every cut | 2 (two derivations) | yes | no exact programme over the places below the size of the window | |
