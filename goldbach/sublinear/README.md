@@ -2130,6 +2130,63 @@ irreducible f, g of one degree.
 filter a few minutes into its work and was not retried; this round covers
 its question.)
 
+**Additive combinatorics, Diophantine approximation and the geometry of
+numbers** (page returned; verifiers pending), for the constraint of low
+precision. Its base: the exact sieve count of every one of the 21,378,978
+members of the real window at four depths (to 10^8: mean 505.64, sd 18.01,
+least 412). No substitute; three questions answered on the real window and
+two new theorems on coordinates.
+
+- *What lattice reduction sees.* Encode a choice from a list G of classes
+  of s as an integer vector with coordinate sum 1. A vector that is not a
+  single class has squared norm at least 3, with equality for a + b − c; so
+  once every class of Z/s is a + b − c with a, b, c in G, every member of
+  the window is a lattice point within a factor √3 of the best and the
+  lattice no longer distinguishes the list. For random lists that happens
+  from about s^(1/3) classes, 8 to 10 here; measured: the real lists of the
+  best 20 classes saturate at all 12 primes tried, and LLL recovers a
+  planted member in 6 of 6 trials with lists of 3, 4 and 5 classes, in 5 of
+  6 with 6, and never with 7 or more. On the real lists (5 to 20% of the
+  classes, 4 to 8 primes) it returned none of the 152, 28 and 1 members
+  that a scan finds.
+- *What does list the members agreeing with the most lists:* cosets on
+  pairs or triples of primes chosen so that every large enough agreement
+  contains one (0.2 to 2% of the scan's work at 12 primes), or meet in the
+  middle on the arc for agreement with all lists (output-priced to four
+  primes). Both returned exactly the scan's sets in 15 instances. Their
+  worth is nothing: the members with the highest agreement on 12 primes
+  have 1.3 to 2.0 times an average member's chance, where the 1.5% kept by
+  sieve count have 12.5 times; the agreement count correlates −0.04 to
+  −0.07 with the sieve count.
+- *No coordinates between residues and digits* (two theorems, proved, and
+  checked exhaustively on small cases). (B) In any coordinate system that
+  maps the window onto a full product, so that the size constraint is
+  trivial, a modulus whose every table stays a sum over coordinates has its
+  residue read by one coordinate, and the pairwise coprime moduli of that
+  kind have product at most K, unless one coordinate is k itself. On the
+  real window: two later primes, 0.17% of the variance of the sieve count.
+  (C) In any coordinates at all (blocks, digits, one-hot, redundant, any
+  order), a layered programme whose paths are the members and in which
+  every score is a sum of edge weights has at least K edges as soon as the
+  moduli scored have product K² or more: from six later primes on the real
+  window, and for the full problem from the primes to 1,000.
+- *No additive structure in the best members.* The top 0.93% of the real
+  window by sieve count (199,493 members) has additive energy 1.000016
+  times that of a random set of its size, and largest Fourier coefficient
+  1.15% of its size against 0.95% at random; the structure there is, 20
+  standard deviations in a sharper statistic but 6·10^−6 of the energy,
+  sits at fractions a/s with s a later prime (two top members are 0.3 to
+  0.8% more often congruent modulo 467, 479, 487 or 1,009, as the
+  single-prime bias predicts). The top 0.1%, 0.01% and 0.001%: nothing.
+- *Generalised birthday on the arc* needs each of 2^a groups of lists to
+  hold e^(D/(a+1)) partial sums; with the cover pinned that fits only to
+  seven later primes with lists of half the classes, which select nothing.
+  The problem sits at knapsack density one by construction.
+- *How separable the count is.* The share of the variance of the exact
+  sieve count that is a sum of functions of single residues is
+  W ln(1/W)/(1 − W), 55% at depth 10^8 (measured within 3% on 12 primes):
+  the rest is rows struck more than once.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
