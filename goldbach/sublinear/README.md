@@ -1687,6 +1687,28 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
   (O2) is lists that are progressions or intervals of classes, which a
   lattice imposes; the tables have none (above).
 
+  *Its second verifier* (mathematics): the theorems stand (the Johnson
+  accounting, the necessary condition through marginals, the two
+  output-priced cases, the folded decoder on product lists, which it
+  extends by induction to the derivative-code decoder with cylinder
+  lists); three readings were too strong. (i) Inside the guarantee and
+  with dense lists the interpolation step does enumerate abundant sets
+  (run: 13 points over F_13 with lists of 12 classes, lines: all 58
+  consistent lines listed); what holds is a price: in 10,164 such
+  configurations the linear system was never smaller than 2.5 times the
+  information-set count. (ii) The necessary condition bounds populations
+  with near-uniform marginals; a decoder that captured only a thin,
+  strongly tilted subset is not excluded by it, so "excluded by a proof at
+  every window size" was an overclaim. What the verifier proves in its
+  place, for weightings assigned to classes blindly (a random-list model):
+  the expected number of outputs is below e^(M_W + σ′), M_W the sum of
+  ln p/p² over the weighted classes, so such a decoder needs uniform mass
+  ln g to return g members. Whether some weighting captures a thin
+  enriched subset more cheaply than pins is not settled by anything here.
+  (iii) "Only a pin buys mass at rate 1" holds marginally: restricting a
+  place of norm m to B classes gains ln m (1/B − 1/m) of mass for
+  ln(m/B) of population, a ratio that is largest, 1 − 1/m, at B = 1.
+
 So the barrier that folding breaks is not the one this problem is behind:
 list recovery is by definition the regime of few consistent codewords, and
 here there are e^31 and more, wanted at unit cost each.
