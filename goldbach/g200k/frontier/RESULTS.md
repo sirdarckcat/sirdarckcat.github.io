@@ -14,8 +14,13 @@ p^ -+ 1 s.e.).  Nominal E = rows x -ln(1 - p0), p0 = e^gamma ln(p_n) / ln N; E_t
 | 105 | 1.2 | 50,819 | 51 | 155 | 437-438 | 18.2 | 16.23 | 2.92G | 58,414,850 | 0.11982 | 0.98 | 5.78 (5.77-5.79) | 5 | 0.86 | 2.27 | 0.1034 (g = 52,501) |
 | 110 | 1.2 | 56,352 | 53 | 200 | 483 | 19.3 | 17.55 | 6.22G | 186,905,400 | 0.11434 | 0.97 | 5.01 (5.00-5.01) | 5 | 1.00 | 2.98 | 0.1054 (g = 59,377) |
 
+| 120 | 1.199122 | 68,361 | 57 | 200 | 578-579 | 21.4 | 19.75 | 12.58G | 377,659,200 | 0.10473 | 0.97 | 1.12 (1.12-1.12) | 0 | 0.00 | 6.23 | - |
+
 The 101- and 105-digit rungs ran on the code before dce3cf2 (fm13 at 333-346 bits, 2^20 windows); the same rungs cost about
 0.55 and 0.9 CPU-h with the current code.  The 110-digit rung ran on dce3cf2 + 87493df (fmw at 8 limbs, one group).
-Together: 17 found against 18.78 expected (0.91).
+Together: 17 found against 18.78 expected (0.91).  The 120-digit rung is half of the one planned: covers 0-199 of the 400 (`f120a.json`, 25 Nov
+16:22-19:29Z); the other half (covers 200-399) was lost unfinished when the container was recycled at ~22:05Z (it writes its result only at
+the end), and the lead's rule (side games only on idle cores) puts its rerun behind the 200-digit CPU scan.  With it: 17 found against 19.90
+expected (0.85).
 
-Hits: hits101.txt, hits105.txt, hits110.txt (digits, g, closeness, N).
+Hits: hits101.txt, hits105.txt, hits110.txt, hits120.txt (none) (digits, g, closeness, N).
