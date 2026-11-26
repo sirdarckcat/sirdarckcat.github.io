@@ -151,12 +151,8 @@ not answered beyond the NP-completeness result for arbitrary tables.
 
 - Whether to restart the 200-digit search, and on which design (section 1.1).
 - Whether to submit the cover-depth sequence (how far the first n odd primes reach, exact to n = 35) to the OEIS.
-- Whether to keep the outside review's verbatim quotes of the owner's messages (its section 2 table and two quotes in
-  its Part 1) in a public pull request.
 
 ## 6. Housekeeping
 
 - Older sections of `RESULTS.md` quote closeness against the earlier fitted ceiling; the first sections and the
   closeness table use the computed one.
-- Two places in the gaps map and the archipelagos study linked to private claude.ai pages. They now link to the copies
-  of those pages in this repository.

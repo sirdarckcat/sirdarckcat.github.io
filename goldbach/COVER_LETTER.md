@@ -505,7 +505,7 @@ three standard ones appear. `goldbach/lean/HANDOVER.md` has the details.
 
 ## Who did what
 
-| session | branch | what it did | its handover note |
+| session | branch | what it did | its handover note, under `goldbach/` |
 |---|---|---|---|
 | coordinator (this pull request) | `ccr-2ce9e63a-hn0fuw` | coordination and merging; the height-game construction and its first two records; the threshold-game scanner `tscan` and the 25- to 63-digit threshold records; the computed ceiling; second checks of records | this letter |
 | GPU search | `ccr-8ffe9d7a-4ni11u` | the 200-digit GPU program and the Colab fleet; every record below 10^200; the larger height records; the record log `RESULTS.md` | `phd/campaign3_gpu/HANDOVER.md` |
