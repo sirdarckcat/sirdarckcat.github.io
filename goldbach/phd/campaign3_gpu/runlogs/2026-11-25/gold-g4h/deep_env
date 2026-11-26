@@ -1,0 +1,1 @@
+--deep 1 --klog 25 --slice 33554432 --sieve-b 100000000 --p-est 0.0715 --deep-max-rows 1300 --pool-threads 2 --pipeline 1 --pipeline-depth 2 --trace-pipeline 1 --deep-tile-threads 512 --log-near-exp 1

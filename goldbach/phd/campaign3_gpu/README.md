@@ -1,5 +1,10 @@
 # campaign3 on a GPU
 
+**Stopped on 26 Nov 2026 at 08:39:40 UTC** (the user's decision to stop all work). Every Colab runtime was released; 6,394.81
+compute units remain. `HANDOVER.md` is the plain-language account (what the search did, what it found and cost, what was
+dropped, the state at the stop); `TALLY.md` has the final expected-against-found tables; `runlogs/2026-11-26/` holds the
+final run records and the list of the cards' final snapshots.
+
 `campaign3` (`../campaign3/`) searches the budget game below 10^199 with the Q = 122,000 cover:
 any hit gives g(N) ≥ 122,011 > 119,419. At this size nearly all the time goes to base-2
 Fermat tests of ~661-bit complements N − q. This directory runs the same search with those

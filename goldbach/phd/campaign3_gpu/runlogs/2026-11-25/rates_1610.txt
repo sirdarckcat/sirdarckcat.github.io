@@ -1,0 +1,7 @@
+# The last hour of each running card's own gpu3_stats.log (peek_rate.py), 2026-11-25T16:05:32Z: batch wall, slices, tests a slice, Fermat tests computed a second, expected design hits a second.
+# Windows: RTX 2^24 members a slice (vector mode, f = 0.985), L4/T4 2^25 (campaign mode, f = 0.97). Units: Current balance: 6784.88 compute units Usage rate: 28.30/hr Active assignments: 5 
+gold-g4g [rt] /content/c170r last hour 2192 s: 2999 batches, 11996 slices, 5.473 slices/s, batch wall 0.731 s (logged mean 0.702 s), tests counted 3530904 computed 3642013 a slice, 19.931 M tests computed/s, expected hits/s 9.5772e-07
+gold-g4h [rt] /content/c170r last hour 2194 s: 2999 batches, 11996 slices, 5.468 slices/s, batch wall 0.732 s (logged mean 0.702 s), tests counted 3530917 computed 3642025 a slice, 19.913 M tests computed/s, expected hits/s 9.5697e-07
+gold-l4g [rt] /content/c170g last hour 3599 s: 442 batches, 884 slices, 0.246 slices/s, batch wall 8.143 s (logged mean 8.102 s), tests counted 14141572 computed 14586181 a slice, 3.583 M tests computed/s, expected hits/s 1.1736e-07
+gold-l4i [rt] /content/c170g last hour 3598 s: 449 batches, 898 slices, 0.250 slices/s, batch wall 8.013 s (logged mean 8.000 s), tests counted 14141570 computed 14585970 a slice, 3.640 M tests computed/s, expected hits/s 1.1925e-07
+gold-xt4c [rt] /content/c170g last hour 3593 s: 408 batches, 408 slices, 0.114 slices/s, batch wall 8.806 s (logged mean 8.800 s), tests counted 14142891 computed 15001470 a slice, 1.703 M tests computed/s, expected hits/s 5.4413e-08

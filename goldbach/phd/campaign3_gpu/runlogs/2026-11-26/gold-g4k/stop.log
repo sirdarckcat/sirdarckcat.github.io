@@ -1,0 +1,13 @@
+08:39:45 gold-g4k: [sab] stopped /content/c170r | left: 0
+08:39:47 gold-g4k: after the stop [cnt] 1294004 0 (slices, campaign procs)
+08:39:51 gold-g4k: final calibration lines 15
+08:39:52 gold-g4k: near events 3, FOUNDLINES 0
+08:39:58 gold-g4k: [snap] e1c5a76b6071 | rc 0  | size 62 MB | 5 s | 219 entries
+[colab] Downloaded '/content/s
+08:40:12 gold-g4k: snapshot fresh (1294004 slices, 65030606 bytes, sha256 25a2263c5a6d6000, engine 2377c5775be7)
+08:40:16 gold-g4k: found lines pulled (0)
+[colab] Session terminated.
+08:40:25 gold-g4k: released
+STOPG4-DONE gold-g4k
+
+[exited with code 0]

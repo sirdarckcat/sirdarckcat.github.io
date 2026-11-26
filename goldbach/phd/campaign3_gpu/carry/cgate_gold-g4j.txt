@@ -1,0 +1,15 @@
+CGATE paused 1407 19:49:21
+CGATE run A rc=2 19:50:11
+CGATE run B rc=2 19:51:02
+CGATE run C rc=2 19:51:12
+CGATE resumed 1407 19:51:12
+CGATE slices: A 28, B 28, same names True, lines differing 0 []
+CGATE found: A 820 events (g 50527..91909), B 820 (0 in found.jsonl, 820 in near_events.jsonl), same set True, split correct True, duplicates in B 0
+CGATE tests counted: A 98,824,669, B 98,824,669, equal True
+CGATE profile A: 14 half-pool lines (12 after warm-up): members 503,808, rounds 43.0, tests computed 7,281,627, kernels 0.419 s, wall 0.700 s, gap 0.281 s a half-pool
+CGATE profile B: 16 half-pool lines (14 after warm-up): members 554,859, rounds 22.4, tests computed 6,328,696, kernels 0.325 s, wall 0.561 s, gap 0.236 s a half-pool
+CGATE runA: 7 batch lines, tests computed 101,947,058
+CGATE runB: 8 batch lines, tests computed 99,269,388
+CGATE known case (carry-over engine): 23 near-misses, identical to the CPU brute force's 23: True
+CGATE PASSED
+CGATE-DONE

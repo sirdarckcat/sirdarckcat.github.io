@@ -1,0 +1,29 @@
+# test_recheck.py on the two patched engines, 2026-11-25T10:37:26Z, this session's container
+== search_gpu5.py (sha256 4f27d916ea93)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed first PRP row q=160343, the CPU re-check failed; g(N) from N alone = 160357
+1. record member, wrong claim q = 160,343 (a prime row below the true first PRP): true g 160357 (expect 160357), recorded 1, nf 0, 0.45 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed first PRP row q=160343, the CPU re-check failed; g(N) from N alone = 160357 (re-check Error)
+      SUCCESS-NEARMISS q170000_m89r491_p0c00524_v232@3382594 k=19221795 digits=200 g=160357 (g(N) from N on the CPU after a kernel discrepancy, design Q=170000)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed a design hit (no PRP row below Q=170000), the CPU re-check failed; g(N) from N alone = 160357
+2. record member, claimed design hit (no PRP below Q): true g 160357 (expect 160357), recorded 1, nf 0, 0.17 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed a design hit (no PRP row below Q=170000), the CPU re-check failed; g(N) from N alone = 160357 (re-check Error)
+      SUCCESS-NEARMISS q170000_m89r491_p0c00524_v232@3382594 k=19221795 digits=200 g=160357 (g(N) from N on the CPU after a kernel discrepancy, design Q=170000)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221796: the GPU claimed first PRP row q=165001, the CPU re-check failed; g(N) from N alone = 619
+3. member k+1 (true g 619 < 160,357), wrong claim q = 165,001: true g 619 (expect 619), recorded 0, nf 0, 0.00 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221796: the GPU claimed first PRP row q=165001, the CPU re-check failed; g(N) from N alone = 619 (re-check Error)
+found.jsonl: 2 lines [(160357, True, 160343, True), (160357, True, None, True)]; kernel_discrepancy.jsonl: 3 lines
+RECHECK-TEST PASSED
+== fround/search_gpu5_fr.py (sha256 30c34d151dd4)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed first PRP row q=160343, the CPU re-check failed; g(N) from N alone = 160357
+1. record member, wrong claim q = 160,343 (a prime row below the true first PRP): true g 160357 (expect 160357), recorded 1, nf 0, 0.37 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed first PRP row q=160343, the CPU re-check failed; g(N) from N alone = 160357 (re-check Error)
+      SUCCESS-NEARMISS q170000_m89r491_p0c00524_v232@3382594 k=19221795 digits=200 g=160357 (g(N) from N on the CPU after a kernel discrepancy, design Q=170000)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed a design hit (no PRP row below Q=170000), the CPU re-check failed; g(N) from N alone = 160357
+2. record member, claimed design hit (no PRP below Q): true g 160357 (expect 160357), recorded 1, nf 0, 0.15 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221795: the GPU claimed a design hit (no PRP row below Q=170000), the CPU re-check failed; g(N) from N alone = 160357 (re-check Error)
+      SUCCESS-NEARMISS q170000_m89r491_p0c00524_v232@3382594 k=19221795 digits=200 g=160357 (g(N) from N on the CPU after a kernel discrepancy, design Q=170000)
+C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221796: the GPU claimed first PRP row q=165001, the CPU re-check failed; g(N) from N alone = 619
+3. member k+1 (true g 619 < 160,357), wrong claim q = 165,001: true g 619 (expect 619), recorded 0, nf 0, 0.00 s -> OK
+      C3GPU-KERNEL-DISCREPANCY q170000_m89r491_p0c00524_v232@3382594 k=19221796: the GPU claimed first PRP row q=165001, the CPU re-check failed; g(N) from N alone = 619 (re-check Error)
+found.jsonl: 2 lines [(160357, True, 160343, True), (160357, True, None, True)]; kernel_discrepancy.jsonl: 3 lines
+RECHECK-TEST PASSED

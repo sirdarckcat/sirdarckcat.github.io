@@ -267,6 +267,47 @@ def verify_near_miss(spec, k, q):
     return {"k": k, "N": str(N), "digits": len(str(N)), "g": int(q), "near_miss": True, "Q": int(spec["Q"])}
 
 
+def true_g(N):
+    """g(N) from N alone: the least prime p with N - p a probable prime (gmpy2.is_prime, 25 rounds; a False is definite).  Only for a
+    CPU re-check that failed (the lead's rule of 25 Nov 10:20Z): the GPU's claim is then replaced by the CPU's value."""
+    import gmpy2                                           # noqa: E402
+    N = mpz(N)
+    p = mpz(2)
+    while not gmpy2.is_prime(N - p, 25):
+        p = gmpy2.next_prime(p)
+    return int(p)
+
+
+def kernel_discrepancy(spec, k, claimed_q, out, lines):
+    """A CPU re-check of a GPU claim failed (claimed_q: the member's claimed first-PRP row; None: a claimed design hit).  Never silent:
+    g(N) is recomputed from N alone, logged loudly (C3GPU-KERNEL-DISCREPANCY on stdout, i.e. the driver log, in the search log, and in
+    kernel_discrepancy.jsonl next to --out), and returned as a found.jsonl record when it is at or above --near-miss (Q without it)."""
+    N = mpz(spec["N0"]) + k * mpz(spec["M"])
+    g = true_g(N)
+    Q = int(spec["Q"])
+    claim = f"first PRP row q={claimed_q}" if claimed_q is not None else f"a design hit (no PRP row below Q={Q})"
+    msg = f"C3GPU-KERNEL-DISCREPANCY {spec['name']} k={k}: the GPU claimed {claim}, the CPU re-check failed; g(N) from N alone = {g}"
+    print(msg, flush=True)
+    lines.append(f"  {msg} (re-check Error)")
+    rec = {"k": int(k), "N": str(N), "digits": len(str(N)), "g": g, "near_miss": g < Q, "Q": Q, "name": spec["name"],
+           "kernel_discrepancy": True, "claimed_q": claimed_q}
+    with open(os.path.join(os.path.dirname(os.path.abspath(out.name)), "kernel_discrepancy.jsonl"), "a") as fh:
+        fh.write(json.dumps(dict(rec, time=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))) + "\n")
+    return rec if g >= (args.near_miss or Q) else None
+
+
+def record_discrepancy(spec, k, claimed_q, out, lines, found):
+    """kernel_discrepancy, and the record written like any other found line when g reaches the threshold.  Returns 1 for a design hit."""
+    res = kernel_discrepancy(spec, k, claimed_q, out, lines)
+    if not res:
+        return 0
+    found.append(res)
+    kind = "SUCCESS-NEARMISS" if res["near_miss"] else "SUCCESS"
+    lines.append(f"  {kind} {spec['name']} k={k} digits={res['digits']} g={res['g']} (g(N) from N on the CPU after a kernel discrepancy, design Q={spec['Q']})")
+    out.write(json.dumps(res) + "\n"); out.flush()
+    return 0 if res["near_miss"] else 1
+
+
 def run_pool(tester, kv, cnt, cols, target=None):
     """Members kv[m] with survivors cols[indptr[m]:indptr[m+1]] (global cq rows, ascending q).
     Returns per member: tests counted up to the first PRP, whether a PRP was found, success, the global row of the first
@@ -484,6 +525,8 @@ def run_batch(batch, out, pipe=None):
                 found.append(res); nf += 1
                 lines.append(f"  SUCCESS {spec['name']} k={k} digits={res['digits']} g={res['g']}")
                 out.write(json.dumps(res) + "\n"); out.flush()
+            else:                                                # the CPU found a PRP row below Q: recompute g(N), never drop it silently
+                nf += record_discrepancy(spec, int(k), None, out, lines, found)
         for k, q in sorted(s["near"]):
             res = verify_near_miss(spec, int(k), int(q))
             if res:                                              # not counted in found= (that is design-Q successes)
@@ -493,6 +536,7 @@ def run_batch(batch, out, pipe=None):
                 out.write(json.dumps(res) + "\n"); out.flush()
             else:
                 lines.append(f"  NEARMISS-REJECTED {spec['name']} k={k} q={q} (CPU check failed)")
+                nf += record_discrepancy(spec, int(k), int(q), out, lines, found)
         kd = max(s["kdone"], 1)
         phat = s["prps"] / s["tests"] if s["tests"] else 0.0
         e_hat = (s["alive"] / kd) * phat

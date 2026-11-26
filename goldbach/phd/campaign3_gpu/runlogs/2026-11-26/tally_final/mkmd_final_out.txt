@@ -1,0 +1,29 @@
+| GPU (cards) | slices | members | hit mass | mean E^ | expected design hits (logged) | found | |
+|---|---|---|---|---|---|---|---|
+| **c170**: 88-moduli covers, campaign mode, 23 Nov 03:55Z to 10:57Z (RTX) / 16:51Z (L4, T4) | | | | | | | |
+| RTX PRO 6000 (gold-g4) | 29,940 | 1004.62e9 | 253.309e9 | 30.21 | 0.0130 | 0 |  |
+| RTX PRO 6000 (gold-g4b) | 25,998 | 872.35e9 | 219.963e9 | 30.21 | 0.0113 | 0 |  |
+| RTX PRO 6000 (gold-g4c) | 29,438 | 987.78e9 | 249.064e9 | 30.21 | 0.0128 | 0 |  |
+| L4 (gold-l4b) | 9,134 | 306.49e9 | 77.279e9 | 30.21 | 0.0040 | 0 |  |
+| L4 (gold-l4c) | 9,458 | 317.36e9 | 80.022e9 | 30.21 | 0.0041 | 0 |  |
+| T4 (gold-xt4) | 4,678 | 156.97e9 | 39.580e9 | 30.21 | 0.0020 | 0 |  |
+| **c170v**: 89-moduli vectors, RTX vector mode, 23 Nov 10:26Z to 20:52Z | | | | | | | |
+| RTX PRO 6000 (gold-g4) | 152,400 | 2556.85e9 | 442.861e9 | 30.05 | 0.0268 | 0 |  |
+| RTX PRO 6000 (gold-g4b) | 162,136 | 2720.19e9 | 477.902e9 | 30.05 | 0.0289 | 0 |  |
+| RTX PRO 6000 (gold-g4c) | 164,980 | 2767.91e9 | 477.567e9 | 30.04 | 0.0289 | 0 | near-miss 158,209 |
+| **c170f**: m88f family-B covers, campaign mode, 23 Nov 16:51Z to 24 Nov 00:44Z | | | | | | | |
+| L4 (gold-l4b) | 5,638 | 189.18e9 | 47.660e9 | 30.16 | 0.0026 | 0 |  |
+| L4 (gold-l4c) | 6,210 | 208.37e9 | 49.093e9 | 30.16 | 0.0027 | 0 |  |
+| T4 (gold-xt4) | 3,145 | 105.53e9 | 26.588e9 | 30.16 | 0.0014 | 0 |  |
+| **c170r**: 491-family vectors, RTX vector mode, top windows, 23 Nov 20:18Z to the stop (26 Nov 08:39:40Z) | | | | | | | |
+| RTX PRO 6000 (partition 0: gold-g4d → g4g → g4j) | 1,313,477 | 22036.49e9 | 3351.119e9 | 30.01 | 0.2088 | 0 | near-miss 160,357 on gold-g4d; 2 calibration events |
+| RTX PRO 6000 (partition 1: gold-g4e → g4h → g4k) | 1,294,004 | 21709.78e9 | 3337.256e9 | 30.01 | 0.2080 | 0 | 3 calibration events |
+| RTX PRO 6000 (partition 2: gold-g4f) | 452,792 | 7596.59e9 | 1275.857e9 | 30.01 | 0.0799 | 0 | waited for a G4 from 24 Nov 19:59Z |
+| **c170g**: top32-shifted m88f family-B, L4/T4 top levels, 23 Nov 20:20Z to 25 Nov 19:44Z | | | | | | | |
+| L4 (gold-l4d → l4g → l4j) | 41,964 | 1408.08e9 | 354.806e9 | 30.11 | 0.0201 | 0 | stopped 25 Nov 19:43Z (G4s only) |
+| L4 (gold-l4e) | 20,612 | 691.62e9 | 174.275e9 | 30.11 | 0.0099 | 0 | waited for an L4 from 24 Nov 22:39Z |
+| L4 (gold-l4f → l4i) | 39,336 | 1319.90e9 | 332.586e9 | 30.11 | 0.0188 | 0 | stopped 25 Nov 19:44Z |
+| T4 (gold-xt4b → xt4c) | 17,447 | 585.42e9 | 147.515e9 | 30.11 | 0.0084 | 0 | stopped 25 Nov 19:42Z |
+| **all logged** | 3,782,787 | 67.54e12 | 11.414e12 | | **0.692** | **0** | |
+near-misses expected by threshold (RTX, where logged): {'140000': 7.154, '157837': 0.1281, '158209': 1.601, '160357': 0.726}
+since 25 Nov 19:55Z (the calibration): {'gold-g4j': (0.046, {'140000': 3.778}, 387116), 'gold-g4k': (0.0453, {'160357': 0.0152, '140000': 3.3709}, 368292)}
