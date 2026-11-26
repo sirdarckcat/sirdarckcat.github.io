@@ -5,15 +5,35 @@ def load(fn, name):
     exec(open(os.path.join(V, fn)).read(), ns)
     return ns[name]
 NODES = {}
-for fn, nm in (("cur_lean1.py", "N1"), ("cur_lean2.py", "N2"), ("cur_lean4.py", "N4")):
+for fn, nm in (("cur_lean1.py", "N1"), ("cur_lean2.py", "N2"), ("cur_lean4.py", "N4"), ("cur_lean5.py", "N5")):
     NODES.update(load(fn, nm))
 NODES["c_brainstorm"] = load("cur_lean3.py", "N3")["c_brainstorm"] if os.path.exists(os.path.join(V, "cur_lean3.py")) else None
 NODES = {k: v for k, v in NODES.items() if v}
 LEAN = load("spec_lean.py", "LEAN"); ALSO = load("spec_lean.py", "ALSO")
 E_LEAN = load("cur_edges_lean.py", "E_LEAN")
+_e5 = load("cur_edges_lean5.py", "E_LEAN5"); _drop = load("cur_edges_lean5.py", "E_DROP")
+assert not (set(_e5) & set(E_LEAN)), ("new lean edge text collides with an old one", sorted(set(_e5) & set(E_LEAN)))
+E_LEAN.update(_e5)
+for _k in _drop: E_LEAN.pop(_k)
 RES_NODES, RES_EDGES = {}, {}
 if os.path.exists(os.path.join(V, "cur_res.py")):
     RES_NODES = load("cur_res.py", "R_NODES"); RES_EDGES = load("cur_res.py", "R_EDGES")
+# ---- patches to boxes that existed in the previous map (cur_patch.py): fields replaced or appended, and marked as updated
+PATCH = load("cur_patch.py", "PATCH") if os.path.exists(os.path.join(V, "cur_patch.py")) else {}
+for pid, pp in PATCH.items():
+    tgt = NODES.get(pid) or RES_NODES.get(pid)
+    assert tgt is not None, ("patch for an unknown box", pid)
+    for k, v in pp.items():
+        if k == "repl":
+            for fld, pairs in v.items():
+                for old, new in pairs:
+                    assert old in tgt.get(fld, ""), ("patch text not found", pid, fld, old[:50])
+                    tgt[fld] = tgt[fld].replace(old, new)
+        elif k == "detail_add": tgt["detail"] = (tgt.get("detail", "") + " " + v).strip()
+        elif k == "note_add": tgt["note"] = (tgt.get("note", "") + " " + v).strip()
+        elif k == "chips_add": tgt["chips"] = list(tgt.get("chips", [])) + list(v)
+        else: tgt[k] = v
+    tgt.setdefault("since", "upd")
 META = load("meta.py", "META"); GROUPS = load("meta.py", "GROUPS"); LENSES = load("meta.py", "LENSES")
 raw = json.load(open(os.path.join(V, "graph_lean.json"))); direct = json.load(open(os.path.join(V, "direct_lean.json")))
 assert set(NODES) >= set(LEAN), ("lean nodes without curation", sorted(set(LEAN) - set(NODES)))
@@ -32,14 +52,14 @@ for i in LEAN:
     meta = [["Lean name", short(info["decl"]), True], ["File", path_of(info["module"]), True]]
     if ALSO.get(i): meta.append(["Also covers", ", ".join(short(a) for a in ALSO[i]), False])
     n = dict(id=i, group=c["group"], title=c["title"], gist=c["gist"], detail=c.get("detail", ""), chips=c.get("chips", []),
-             f=dict(status=c["status"], impact=c["impact"]), meta=meta, source=src, sourceLabel="Lean statement and proof (first lines)",
+             f=dict(status=c["status"], impact=c["impact"], since=c.get("since", "old")), meta=meta, source=src, sourceLabel="Lean statement and proof (first lines)",
              search=short(info["decl"]) + " " + " ".join(short(a) for a in ALSO.get(i, [])) + " " + info["module"].split(".")[-1])
     if c.get("note"): n["note"] = dict(level=c["impact"], text=c["note"])
     nodes.append(n)
 for i, c in RES_NODES.items():
     assert c["group"] in gids, (i, c["group"])
     n = dict(id=i, group=c["group"], title=c["title"], gist=c["gist"], detail=c.get("detail", ""), chips=c.get("chips", []),
-             f=dict(status=c["status"], impact=c["impact"]), meta=[[k, v, False] for k, v in c.get("where", [])], search=c.get("search", ""))
+             f=dict(status=c["status"], impact=c["impact"], since=c.get("since", "old")), meta=[[k, v, False] for k, v in c.get("where", [])], search=c.get("search", ""))
     if c.get("note"): n["note"] = dict(level=c["impact"], text=c["note"])
     if c.get("source"): n["source"] = c["source"]; n["sourceLabel"] = c.get("sourceLabel", "Quoted from the document")
     nodes.append(n)
@@ -109,4 +129,5 @@ t = t.replace("/*DATA*/", js).replace("/*PAGETITLE*/", META["pageTitle"]).replac
 open(os.path.join(V, "goldbach_map.html"), "w").write(t)
 print("page bytes", len(t))
 skel = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0;font:14px system-ui} [hidden]{display:none!important}</style></head><body>'
-open(os.path.join(V, "gb_test_shell.html"), "w").write(skel + t + "</body></html>")
+if os.environ.get("GB_TEST_SHELL"):
+    open(os.environ["GB_TEST_SHELL"], "w").write(skel + t + "</body></html>")  # only for browser tests; not part of the repo

@@ -1,0 +1,19 @@
+A1: window length Q = 200000 = (ln N)^1.990 ; primes expected in the window Q/ln N = 434.3
+    rough positions (odd, outside the pinned classes) R = 17893 (8.9% of the window); alive rows (prime offsets among them) n = 1524 = 8.5% of them
+    prime probability of a rough position pi = 0.02398; expected primes in the window R*pi = 429; expected primes at forbidden positions n*pi = 36.55 (exponent)
+    probability that a window has no prime at all: exp(-434) against exp(-36.6) for g(N) >= Q
+
+A2: exchange rate of one extra pin at a prime s > 463 at its best class, on this cover (rows struck, nats of exponent per nat of entropy ln s):
+       s   ln s  best class rows  exponent gain (0.02398 per row)  gain per nat
+     467   6.15         9                    0.216            0.0351
+     479   6.17         9                    0.216            0.0350
+     503   6.22         8                    0.192            0.0308
+     541   6.29         7                    0.168            0.0267
+     701   6.55         7                    0.168            0.0256
+    1009   6.92         5                    0.120            0.0173
+    2003   7.60         5                    0.120            0.0158
+    5003   8.52         3                    0.072            0.0084
+   20011   9.90         2                    0.048            0.0048
+  100003  11.51         1                    0.024            0.0021
+  200003  12.21         1                    0.024            0.0020
+    for comparison the cover itself: the 89 pins cost 443.6 nats and take the random-cover mean 2,151 alive rows down to 1524 (0.034 nats of exponent per nat)

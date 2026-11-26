@@ -1,0 +1,5 @@
+odd primes below Q: 17983
+moduli 89 3 463
+ln(2*prod odd primes <=463) = 443.64 = 10^192.67 ; ln(1e200) = 460.52
+greedy alive rows 1587 0.0 s
+after coordinate descent (4 passes) alive rows 1576

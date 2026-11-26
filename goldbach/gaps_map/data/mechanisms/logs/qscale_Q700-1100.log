@@ -1,0 +1,29 @@
+X=2000000000 Q=700 rows=124 allowed=315894296 successes=21820 depths: 23 31 43 61 97 199
+Q=700: successes 21820, rows 124, cmin 37, kmax candidates [22, 23]
+Q700 kmax=22 J<=5 cmin=37: stream 7613686 (+25031784 neighbour scans = 32645470 units), successes 3178 + 10669 = 13847; cover-first needs 87999878 units for 13847 -> gain +0.99 nats
+Q700 kmax=23 J<=5 cmin=37: stream 18136480 (+43739053 neighbour scans = 61875533 units), successes 5661 + 11467 = 17128; cover-first needs 141080353 units for 17128 -> gain +0.82 nats
+X=2000000000 Q=800 rows=138 allowed=315894279 successes=6885 depths: 23 31 43 61 97 199
+Q=800: successes 6885, rows 138, cmin 41, kmax candidates [25, 27]
+Q800 kmax=25 J<=5 cmin=41: stream 6011440 (+13329604 neighbour scans = 19341044 units), successes 862 + 2862 = 3724; cover-first needs 66357874 units for 3724 -> gain +1.23 nats
+Q800 kmax=27 J<=5 cmin=41: stream 31677813 (+38392419 neighbour scans = 70070232 units), successes 2472 + 3757 = 6229; cover-first needs 205353746 units for 6229 -> gain +1.08 nats
+X=2000000000 Q=900 rows=153 allowed=315894263 successes=2190 depths: 23 31 43 61 97 199
+Q=900: successes 2190, rows 153, cmin 46, kmax candidates [28, 29]
+Q900 kmax=28 J<=5 cmin=46: stream 6499599 (+6894121 neighbour scans = 13393720 units), successes 333 + 797 = 1130; cover-first needs 54854352 units for 1130 -> gain +1.41 nats
+Q900 kmax=29 J<=5 cmin=46: stream 15091747 (+12179640 neighbour scans = 27271387 units), successes 573 + 962 = 1535; cover-first needs 99750174 units for 1535 -> gain +1.30 nats
+X=2000000000 Q=1100 rows=183 allowed=315894230 successes=208 depths: 23 31 43 61 97 199
+Q=1100: successes 208, rows 183, cmin 55, kmax candidates [34, 36]
+Q1100 kmax=34 J<=5 cmin=55: stream 5690633 (+2201834 neighbour scans = 7892467 units), successes 31 + 55 = 86; cover-first needs 36133379 units for 86 -> gain +1.52 nats
+Q1100 kmax=36 J<=5 cmin=55: stream 26855344 (+5977048 neighbour scans = 32832392 units), successes 70 + 91 = 161; cover-first needs 115549750 units for 161 -> gain +1.26 nats
+
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-sirdarckcat-github-io/54e27181-2b2c-56e5-ab43-57d33fc27438/scratchpad/mech/qscale.py", line 9, in <module>
+    m = Mini(pre); k1 = np.asarray(m.k[:, 0]).astype(np.int64); s = np.asarray(m.s)
+  File "/tmp/claude-0/-home-user-sirdarckcat-github-io/54e27181-2b2c-56e5-ab43-57d33fc27438/scratchpad/mech/ev.py", line 5, in __init__
+    self.idx = np.memmap(prefix + '.idx.u32', dtype=np.uint32, mode='r')
+               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/site-packages/numpy/_core/memmap.py", line 235, in __new__
+    f_ctx = open(
+        os.fspath(filename),
+        ('r' if mode == 'c' else mode) + 'b'
+    )
+FileNotFoundError: [Errno 2] No such file or directory: 'Q1200.idx.u32'

@@ -1,0 +1,7 @@
+Fermat test base 2 (mpz_powm), 665-bit modulus: 77.6 us
+mpz_mul of two 1.0e+06-bit numbers: 0.003 s = 44 Fermat tests
+mpz_mul of two 1.0e+07-bit numbers: 0.044 s = 562 Fermat tests
+mpz_mul of two 1.0e+08-bit numbers: 0.497 s = 6404 Fermat tests
+mpz_mul of two 3.0e+08-bit numbers: 1.914 s = 24667 Fermat tests
+mpz_tdiv_r of a 1.44e+08-bit number by a 1e+06-bit one: 0.570 s = 7339 Fermat tests
+mpz_tdiv_r of a 1.44e+08-bit number by a 1e+07-bit one: 0.878 s = 11311 Fermat tests

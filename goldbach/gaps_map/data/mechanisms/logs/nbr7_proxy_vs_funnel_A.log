@@ -1,0 +1,17 @@
+funnel baseline thf 18 [(14, 0.52), (28, 1.3), (47, 2.72), (64, 4.89), (86, 7.73), (118, 10.96)]
+funnel baseline thf 20 [(14, 0.71), (28, 1.94), (47, 4.48), (67, 8.86), (95, 15.38), (132, 23.83)]
+funnel baseline thf 22 [(14, 0.77), (28, 2.23), (47, 5.47), (67, 11.57), (96, 21.62), (134, 36.16)]
+funnel baseline thf 99 [(14, 0.78), (28, 2.3), (47, 5.77), (67, 12.67), (97, 24.94), (135, 44.65)]
+A kmax=30 seeds k199<=14, verify k199<=18: stream 2612970, verified 1229567 (seed candidates 115557), scans 656060, successes 47 + 17 = 64; cost 5.47M tests; best funnel-only at equal successes 4.89M -> gain -0.11 nats
+A kmax=30 seeds k199<=16, verify k199<=18: stream 2612970, verified 1229567 (seed candidates 484593), scans 2099165, successes 47 + 62 = 109; cost 13.61M tests; best funnel-only at equal successes 10.04M -> gain -0.30 nats
+A kmax=30 seeds k199<=16, verify k199<=20: stream 2612970, verified 2029015 (seed candidates 484593), scans 2099165, successes 47 + 62 = 109; cost 15.37M tests; best funnel-only at equal successes 10.04M -> gain -0.43 nats
+A kmax=30 seeds k199<=18, verify k199<=20: stream 2612970, verified 2029015 (seed candidates 1229567), scans 4256498, successes 47 + 98 = 145; cost 31.56M tests; best funnel-only at equal successes infM -> gain +inf nats
+A kmax=30 seeds k199<=16, verify k199<=22: stream 2612970, verified 2475995 (seed candidates 484593), scans 2099165, successes 47 + 62 = 109; cost 16.35M tests; best funnel-only at equal successes 10.04M -> gain -0.49 nats
+A kmax=30 seeds k199<=18, verify k199<=22: stream 2612970, verified 2475995 (seed candidates 1229567), scans 4256498, successes 47 + 98 = 145; cost 32.55M tests; best funnel-only at equal successes infM -> gain +inf nats
+A kmax=29 seeds k199<=16, verify k199<=20: stream 1039832, verified 879250 (seed candidates 259025), scans 1187002, successes 28 + 40 = 68; cost 7.88M tests; best funnel-only at equal successes 5.37M -> gain -0.38 nats
+A kmax=31 seeds k199<=16, verify k199<=20: stream 5742016, verified 4010231 (seed candidates 782340), scans 3154199, successes 67 + 72 = 139; cost 25.97M tests; best funnel-only at equal successes infM -> gain +inf nats
+A kmax=31 seeds k199<=18, verify k199<=20: stream 5742016, verified 4010231 (seed candidates 2205233), scans 6966619, successes 67 + 110 = 177; cost 56.26M tests; best funnel-only at equal successes infM -> gain +inf nats
+A kmax=29 seeds k199<=18, verify k199<=20: stream 1039832, verified 879250 (seed candidates 586631), scans 2191392, successes 28 + 63 = 91; cost 15.12M tests; best funnel-only at equal successes 8.23M -> gain -0.61 nats
+Wed Nov 25 15:05:39 UTC 2026
+
+[exited with code 0]

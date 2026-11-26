@@ -1,0 +1,6 @@
+A kmax=30 theta=12 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 15906 (0.6%), seeds 15906, scans 121522, successes 47+1=48; (A) gain +0.01; (V) cost 6.2M vs cover-first 6.1M -> (V) gain -0.01
+A kmax=30 theta=14 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 115557 (4.4%), seeds 115557, scans 656060, successes 47+17=64; (A) gain +0.48; (V) cost 8.5M vs cover-first 11.6M -> (V) gain +0.31
+A kmax=30 theta=16 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 484593 (18.5%), seeds 484593, scans 2099165, successes 47+62=109; (A) gain +1.10; (V) cost 16.6M vs cover-first 31.1M -> (V) gain +0.63
+A kmax=30 theta=18 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 1229567 (47.1%), seeds 1229567, scans 4256498, successes 47+98=145; (A) gain +1.25; (V) cost 32.8M vs cover-first 52.9M -> (V) gain +0.48
+A kmax=30 theta=20 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 2029015 (77.7%), seeds 2029015, scans 6024701, successes 47+117=164; (A) gain +1.29; (V) cost 50.5M vs cover-first 68.8M -> (V) gain +0.31
+A kmax=30 theta=99 J<=99 cmin=50: stream 2612970, seed candidates (k199<=theta) 2612970 (100.0%), seeds 2612970, scans 7009843, successes 47+126=173; (A) gain +1.29; (V) cost 64.2M vs cover-first 77.3M -> (V) gain +0.19

@@ -1,0 +1,21 @@
+rows 17983 moduli 89 alive rows of this cover 1524
+single moves with cost 0, <=1, <=2, <=5, <=10 over all primes: 1 43 168 2437 13618
+independent-move estimate of ln #(covers with at most n0 + Delta alive rows):
+   Delta =   0 rows: S =   0.69 nats (slope to next: 2.81 nats per row)
+   Delta =   1 rows: S =   4.41 nats (slope to next: 2.50 nats per row)
+   Delta =   2 rows: S =   7.40 nats (slope to next: 2.32 nats per row)
+   Delta =   3 rows: S =  10.05 nats (slope to next: 2.19 nats per row)
+   Delta =   5 rows: S =  14.76 nats (slope to next: 2.01 nats per row)
+   Delta =   8 rows: S =  21.00 nats (slope to next: 1.83 nats per row)
+   Delta =  10 rows: S =  24.81 nats (slope to next: 1.75 nats per row)
+   Delta =  12 rows: S =  28.42 nats (slope to next: 1.68 nats per row)
+   Delta =  15 rows: S =  33.54 nats (slope to next: 1.59 nats per row)
+   Delta =  20 rows: S =  41.50 nats (slope to next: 1.48 nats per row)
+   Delta =  25 rows: S =  48.91 nats (slope to next: 1.40 nats per row)
+   Delta =  30 rows: S =  55.90 nats (slope to next: 1.33 nats per row)
+   Delta =  40 rows: S =  68.92 nats (slope to next: 1.22 nats per row)
+   Delta =  50 rows: S =  80.95 nats (slope to next: 1.14 nats per row)
+   Delta =  60 rows: S =  92.21 nats (slope to next: 1.08 nats per row)
+   Delta =  80 rows: S = 112.98 nats (slope to next: 0.98 nats per row)
+   Delta = 100 rows: S = 131.93 nats (slope to next: 0.90 nats per row)
+covers needed: e^19.7 = 3.6e+08 -> Delta = 8 rows, cost 0.19 nats of exponent (p = 0.02398)

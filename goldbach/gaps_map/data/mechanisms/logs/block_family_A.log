@@ -1,0 +1,4 @@
+coherent block family: members with N mod prod(B) in (Q,2Q]  (the same small integer t is the residue at every prime of B)
+ B={31,37,41}: members 3358710 density 0.0213 (cost 3.85 nats); k1-matched mean-P ratio 1.014 (ln +0.013); predicted successes 5.52, observed 11
+ B={31,37,41,43}: members 78017 density 0.0005 (cost 7.61 nats); k1-matched mean-P ratio 1.046 (ln +0.045); predicted successes 0.13, observed 0
+ B={31,37,41,43,47}: members 1701 density 0.0000 (cost 11.44 nats); k1-matched mean-P ratio 0.956 (ln -0.045); predicted successes 0.00, observed 0

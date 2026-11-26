@@ -1,0 +1,12 @@
+A kmax=28 J<=3 cmin=50: stream 354228 (+90063 neighbour scans = 444291 units), successes 14 + 6 = 20; cover-first needs 648058 units for 20 -> gain +0.38 nats
+A kmax=28 J<=3 cmin=70: stream 354228 (+23801 neighbour scans = 378029 units), successes 14 + 5 = 19; cover-first needs 599087 units for 19 -> gain +0.46 nats
+A kmax=28 J<=7 cmin=50: stream 354228 (+754751 neighbour scans = 1108979 units), successes 14 + 39 = 53; cover-first needs 3551684 units for 53 -> gain +1.16 nats
+A kmax=28 J<=7 cmin=70: stream 354228 (+131579 neighbour scans = 485807 units), successes 14 + 16 = 30; cover-first needs 1205425 units for 30 -> gain +0.91 nats
+A kmax=30 J<=3 cmin=50: stream 2612970 (+377397 neighbour scans = 2990367 units), successes 47 + 26 = 73; cover-first needs 6853511 units for 73 -> gain +0.83 nats
+A kmax=30 J<=3 cmin=70: stream 2612970 (+97269 neighbour scans = 2710239 units), successes 47 + 18 = 65; cover-first needs 5429111 units for 65 -> gain +0.69 nats
+A kmax=30 J<=7 cmin=50: stream 2612970 (+3787842 neighbour scans = 6400812 units), successes 47 + 110 = 157; cover-first needs 28613162 units for 157 -> gain +1.50 nats
+A kmax=30 J<=7 cmin=70: stream 2612970 (+635056 neighbour scans = 3248026 units), successes 47 + 74 = 121; cover-first needs 16939523 units for 121 -> gain +1.65 nats
+A kmax=32 J<=3 cmin=50: stream 11299493 (+873372 neighbour scans = 12172865 units), successes 97 + 42 = 139; cover-first needs 21753835 units for 139 -> gain +0.58 nats
+A kmax=32 J<=3 cmin=70: stream 11299493 (+215102 neighbour scans = 11514595 units), successes 97 + 29 = 126; cover-first needs 18114529 units for 126 -> gain +0.45 nats
+A kmax=32 J<=7 cmin=50: stream 11299493 (+9939936 neighbour scans = 21239429 units), successes 97 + 123 = 220; cover-first needs 65575852 units for 220 -> gain +1.13 nats
+A kmax=32 J<=7 cmin=70: stream 11299493 (+1577194 neighbour scans = 12876687 units), successes 97 + 99 = 196; cover-first needs 46291350 units for 196 -> gain +1.28 nats

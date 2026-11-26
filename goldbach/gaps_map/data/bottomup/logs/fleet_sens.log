@@ -1,0 +1,8 @@
+P(final >= G) for the 170,000 design (1.90 design hits, no package) when the mean overshoot beyond the design level is theta times the model (theta = 1 is the table)
+theta | 175,000 | 180,000 | 185,000 | 190,000 | 195,000 | 200,000
+1.00 | 46.15% | 16.72% | 5.65% | 1.40% | 0.45% | 0.13%
+0.80 | 37.35% | 9.69% | 2.40% | 0.41% | 0.10% | 0.02%
+1.26 | 54.17% | 25.66% | 11.26% | 3.81% | 1.55% | 0.59%
+1.50 | 59.33% | 32.91% | 16.97% | 6.99% | 3.32% | 1.49%
+1.58 | 60.71% | 35.08% | 18.87% | 8.19% | 4.05% | 1.90%
+alive rows between 170,000 and 200,000: 299.3 (kappa 0.02427): the model suppresses design hits by e^-7.27 at 200,000

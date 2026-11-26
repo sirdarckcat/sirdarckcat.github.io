@@ -1,0 +1,12 @@
+F(c): computed in 2s; max 155 at c=-398 ; mean 20.1 ; 99.9th pct 104
+best c: [(-398, 155), (163, 147), (2608, 145), (652, 144), (5692, 142), (1423, 141), (10432, 139), (30493, 139)]
+pinned primes up to 229 : 49 ; unpinned 40 ; tail product 0.8873
+unrestricted, 89 pinned: alive 1576
+unrestricted, 49 pinned + 40 random: alive 2044 -> 1814 after the unpinned primes
+c=   -398 forced rows 155 : restricted 49 pinned -> alive at risk 1848 (forced alive after pinned: 15) ; net rows vs 89 pinned: -272  = -6.61 nats
+c=    163 forced rows 147 : restricted 49 pinned -> alive at risk 1854 (forced alive after pinned: 14) ; net rows vs 89 pinned: -278  = -6.74 nats
+c=   2608 forced rows 145 : restricted 49 pinned -> alive at risk 1842 (forced alive after pinned: 15) ; net rows vs 89 pinned: -266  = -6.46 nats
+c=    652 forced rows 144 : restricted 49 pinned -> alive at risk 1850 (forced alive after pinned: 13) ; net rows vs 89 pinned: -274  = -6.65 nats
+c=      0 forced rows   0 : restricted 49 pinned -> alive at risk 1849 (forced alive after pinned: 0) ; net rows vs 89 pinned: -273  = -6.63 nats
+c=   1000 forced rows  48 : restricted 49 pinned -> alive at risk 1844 (forced alive after pinned: 2) ; net rows vs 89 pinned: -268  = -6.50 nats
+c=  -1000 forced rows  29 : restricted 49 pinned -> alive at risk 1870 (forced alive after pinned: 0) ; net rows vs 89 pinned: -294  = -7.13 nats

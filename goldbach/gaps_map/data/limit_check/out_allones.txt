@@ -1,0 +1,3 @@
+x=1000: rows=3575  alive with all bulk classes = 1: 573   random bulk: 526   ratio 1.09
+x=10000: rows=48633  alive with all bulk classes = 1: 5756   random bulk: 5140   ratio 1.12
+x=100000: rows=619818  alive with all bulk classes = 1: 59685   random bulk: 50624   ratio 1.18

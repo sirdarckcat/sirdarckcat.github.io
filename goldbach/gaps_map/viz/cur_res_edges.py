@@ -81,7 +81,7 @@ R_EDGES = {
 "m_classical>l_linnik": D("proved in Lean (with Linnik)", "The effective form of thm:dirichlet under Linnik's theorem.", "Effective.lean docstring"),
 "m_classical>c_transfer": D("proved in Lean", "A prime gap hands over a Goldbach gap, one way only.", "Transfer.lean (content match with the thesis proposition)"),
 "m_proofcarrying>x_least": D("the certificate theorem", "The decidable check plus a primality proof for N − g is the complete certificate theorem.", "Desert.lean docstring of isLeastSummand_of_noSummandIn"),
-"m_proofcarrying>r_158209": D("delivered for the budget game", "The standing record is the first record carried by such a proof.", "Record200_g158209.lean header"),
+"m_proofcarrying>r_158209": D("delivered for the budget game", "The first record carried by such a proof was 158,209; 160,357 is carried the same way.", "Record200_g158209.lean header"),
 "m_selection>c_hits": D("hit mass is the expectation", "Lean proves that the logged hit mass is exactly the expected number of successes.", "Selection.lean header"),
 "m_selection>c_selection": D("tilt of a Gaussian", "Lean proves the claim from the research session's feedback of 2026-11-22.", "Tilt.lean header"),
 "m_selection>c_tilt": D("what the best member is worth", "Lean quantifies the enrichment of the best member among K.", "Tilt.lean header"),
