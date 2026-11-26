@@ -27,35 +27,50 @@ ln by the degree.
 **The theorem.** Suppose such an N exists at depth κ of G. Take residues at distinct places as independent and uniform (the CRT
 idealization) and the tail as Gaussian. Then
 
-    Λ := Σ_π (ln Q_π)/Q_π  ≥  ( √(ln K) − √(2κ · ln Q_min / Q_min) )².
+    M := Σ_π (ln Q_π)/Q_π  ≥  ln K − 2κ · ln Q_min / Q_min.
 
-**Proof.** Write m2_π = ‖g_π‖²/Q_π and u_π = √(Q_π m2_π / ln Q_π). The mean of g_π is at most √m2_π = u_π √(ln Q_π/Q_π).
+The research session's split of the tables into their mean and their deviation (26 Nov, 01:12 UTC) gives this tight form. The
+first version of this page had the looser (√(ln K) − √(2κ ln Q_min/Q_min))², from bounding the two parts separately.
 
-- So E G + z·sd G ≤ ‖u‖ (√Λ + z √(ln Q_min/Q_min)), by Cauchy–Schwarz twice.
-- The right-hand side of the guarantee is √(ln K)·‖u‖.
+**Proof.** Write g_π = ḡ_π + d_π, where ḡ_π is the mean over the classes and Σ_a d_π(a) = 0.
+
+- **The mean part.** U = Σ ḡ_π is the same for every member, so it carries no information. By Cauchy–Schwarz,
+  U ≤ √(M · A) with A = Σ Q_π ḡ_π²/ln Q_π. The cheapest choice is ḡ_π ∝ ln Q_π/Q_π.
+- **The deviation part.** D(N) = Σ d_π(N mod π) has mean 0 and variance at most max(ln Q/Q) · B, where B = Σ ‖d_π‖²/ln Q_π.
+- **The member.** At z standard deviations, G(N) ≤ √(M·A) + z√(max ln Q/Q)·√B ≤ √(M + z² max ln Q/Q) · √(A + B).
+  This is Cauchy–Schwarz on the two parts together.
+- **The guarantee.** Its right-hand side is √(ln K)·√(A + B).
 - Set z = √(2κ). ∎
 
-**Weights restricted to a fraction ρ of the classes.** The mean bound becomes √ρ_π·√m2_π, so Λ_ρ = Σ ρ_π ln Q/Q.
+**What the theorem says.**
+- The deviation, which is the only informative part, enters only at second order, through z²·ln Q_min/Q_min. That is at most
+  2·ln K·0.0132 = 0.026·ln K.
+- So everything else has to come from the uninformative mean part. The decoder is the CRT enumeration of the whole window, with its
+  threshold moved slightly.
+- With the real tables, the classes that strike a row have density about 1,500/p. Their Mertens mass Σ ρ ln p/p converges to about
+  1.8, against ln K = 16.6.
 
-- Λ per unit of input is ln Q / Q² whatever the density.
+**Weights restricted to a fraction ρ of the classes.** M becomes Σ ρ_π ln Q/Q.
+
+- Mass per unit of input is ln Q/Q² whatever the density.
 - So the cheapest places are full tables on all primes from 467 up.
 - The decoder reads every weight it uses, so its time is at least Σ p over those places.
 
 **Exact prime sums (`johnson_cost.py`, `johnson_cost.out`).**
 
-| window ln K | depth κ | places 467..y | decoder input | ÷ scan of the window |
-|---|---|---|---|---|
-| 16.6 | 16.6 | y = 5.7·10⁷ | 9.5·10¹³ | 5.8·10⁶ |
-| 16.6 | 8.3 | y = 2.2·10⁸ | 1.3·10¹⁵ | 8.2·10⁷ |
-| 16.6 | 4.2 | y = 6.0·10⁸ | 9.2·10¹⁵ | 5.7·10⁸ |
-| 12.4 | 12.4 | y = 3.0·10⁶ | 3.1·10¹¹ | 1.3·10⁶ |
-| 4 (about the window left by two pins) | 4 | y = 8,191 | 3.9·10⁶ | 7.1·10⁴ |
-| ln 2 | ln 2 | y = 773 | 2.9·10⁴ | 1.5·10⁴ |
+| window ln K | depth κ | places 467..y | decoder input | ÷ scan of the window | first version's ÷ scan |
+|---|---|---|---|---|---|
+| 16.6 | 16.6 | y = 5.2·10⁹ | 6.2·10¹⁷ | 3.9·10¹⁰ | 5.8·10⁶ |
+| 16.6 | 8.3 | y = 6.5·10⁹ | 9.6·10¹⁷ | 5.9·10¹⁰ | 8.2·10⁷ |
+| 16.6 | 4.2 | y = 7.2·10⁹ | 1.2·10¹⁸ | 7.3·10¹⁰ | 5.7·10⁸ |
+| 12.4 | 12.4 | y = 8.7·10⁷ | 2.2·10¹⁴ | 8.9·10⁸ | 1.3·10⁶ |
+| 4 (about the window left by two pins) | 4 | y = 24,251 | 3.1·10⁷ | 5.7·10⁵ | 7.1·10⁴ |
+| ln 2 | ln 2 | y = 947 | 5.0·10⁴ | 2.5·10⁴ | 1.5·10⁴ |
 
-**In F_q[t].** The places of degree d have Σ d/q^d ≤ 1, so Λ is at most the number of degree layers used.
+**In F_q[t].** The places of degree d have Σ d/q^d ≤ 1, so M is at most the number of degree layers used.
 
-- The places must therefore span about n(1 − ε)² degrees, with ε = √(2 ln Q_min/Q_min)·√(κ/room) ≤ 0.162 at Q_min = 467.
-- The input is then at least (q^n)^(2(1−ε)²), that is members^1.40.
+- The places must therefore span at least n(1 − 2 ln Q_min/Q_min) = 0.974 n degrees at Q_min = 467.
+- The input is then at least about (q^n)^1.95, that is members^1.95.
 
 **Your Guruswami–Sudan statement [P].**
 
@@ -94,7 +109,7 @@ idealization) and the tail as Gaussian. Then
 **(iii) The correct statement [P, given the radius].**
 - Typical members are guaranteed iff (Σ ρ_i ln p_i)² ≥ ln K · Σ ρ_i p_i ln p_i.
 - By Cauchy–Schwarz this needs the Mertens mass Λ_ρ = Σ ρ_i ln p_i/p_i ≥ ln K.
-- Members at depth κ need (√(ln K) − √(2κ ln p_min/p_min))² (W2.1).
+- Members at depth κ need M ≥ ln K − 2κ ln p_min/p_min (W2.1).
 
 **(iv) Reed–Solomon (places t − a, m ≤ q): the claim holds [P asymptotically; M at q = 467].**
 - The guarantee needs τ > √(kρq/m) ≥ √(kρ). Existence needs k ln q ≥ m·KL(τ‖ρ).
@@ -104,7 +119,7 @@ idealization) and the tail as Gaussian. Then
 
 **(v) The integers [P, M].**
 - Λ grows like ln(y/467) (Mertens), so the guarantee does meet existing members.
-- But only with places up to 5.7·10⁷–6·10⁸, at an input of 1.5·10⁴ times the scan or more (W2.1). So it is not vacuous, just dominated.
+- But only with places up to 5·10⁹–7·10⁹, at an input of 2.5·10⁴ times the scan or more (W2.1). So it is not vacuous, just dominated.
 - **The research session's moral stands:** list recovery certifies few consistent codewords; we are in the regime of e^(room − κ) of
   them.
 
@@ -174,7 +189,7 @@ anywhere else.
 
 - **Interpolation through places of total norm at most the room.** This is pinning (Theorem B): n places of degree 1 in F_q[t], two
   primes ≥ 467 in Z. It is the only one.
-- **Johnson-type decoders.** For random lists the guarantee region lies beyond the room unless the input exceeds the scan by ×1.5·10⁴
+- **Johnson-type decoders.** For random lists the guarantee region lies beyond the room unless the input exceeds the scan by ×2.5·10⁴
   or more (W2.1).
 - **Folded RS, multiplicity and subspace-design codes.** They need sparse lists (ℓ ≤ |Σ|^O(ε)) that correlate coordinates. Our lists
   are dense and product (W2.2).

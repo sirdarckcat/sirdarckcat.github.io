@@ -82,7 +82,7 @@ D = ln(P/K) = 1,479.6 nats.
 | an interval window, with lists that are intervals or progressions of classes | lattice enumeration | exponential in the number of constrained places | absent in substance (measured below) |
 | a subspace window (F_{p^a}[t]), with lists that are F_p-subspaces | linear algebra | output | absent: Z/p has no subfields |
 | a window holding a polynomial family, with lists that are multiplicative cosets | power and norm families | output, at a share K^(1/d − 1) of the window | absent: no heavy coset (research: 0.84 of noise, largest 1.35 ln r) |
-| a code, with agreement beyond the Johnson radius | GS / KV / GSS | poly(input) | radius beyond the room unless the input is ≥ ×1.5·10⁴ the scan (W2.1) |
+| a code, with agreement beyond the Johnson radius | GS / KV / GSS | poly(input) | radius beyond the room unless the input is ≥ ×2.5·10⁴ the scan (W2.1) |
 | a split of the places, merged (M) | lists and range queries | ≥ 2√(P/K²)·e^(κ/2) per output | beats the scan only if ln P < 48.4 |
 
 **Reading the table.**
