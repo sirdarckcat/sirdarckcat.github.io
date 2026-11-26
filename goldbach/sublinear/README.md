@@ -1681,7 +1681,11 @@ agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
 
 *The catalogue of forcing mechanisms in F_q[x]* (an agent of this session;
 its two verifiers have not reported, so the statements are its own; every
-formula was checked by it against python-flint factorisations). Each line:
+formula was checked by it against python-flint factorisations, and C2 for
+rows of odd degree over F_2 and C4 over F_3, F_5, F_7 again here with a
+separate program, `ff_mechanisms_check.py`: 2,363 and 1,800 instances
+without a disagreement, and with the hypothesis dropped the parity formula
+fails in 720 of 1,332). Each line:
 a way to make N − Q reducible for many rows at once without luck, what it
 evades in the model of independent rows with local densities, and its
 image over the integers.
