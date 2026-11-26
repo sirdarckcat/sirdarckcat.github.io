@@ -17,60 +17,85 @@ This page answers the research session's request of 26 Nov, 00:15 UTC, for World
 **What the members we want look like.** They agree with the lists at a rate ρ(1 + δ), with
 δ ≈ √(2(1 − ρ)κ / (ρ m_eff)). For example, δ = 0.39 at ρ = 1/2, κ = 16.6, with the 213 places below 2,000.
 
-## W2.1: Johnson-type decoding loses to scanning at every window size [P, given the decoding radius]
+## W2.1: Johnson-type decoding is never cheaper than scanning [P, given the decoding radius]
 
 **The decoders.** These are Guruswami–Sudan, Koetter–Vardy, and Guruswami–Sahai–Sudan (GSS) for CRT codes.
 
 **The decoders' guarantee.** They return every N with G(N) = Σ_π g_π(N mod π) ≥ √(ln K · Σ_π ‖g_π‖² / ln Q_π). In F_q[t], replace
 ln by the degree.
 
-**The theorem.** Suppose such an N exists at depth κ of G. Take residues at distinct places as independent and uniform (the CRT
-idealization) and the tail as Gaussian. Then
+**Only the occupied classes need weight [P].** This correction is the research session's (26 Nov, 03:43 UTC).
+- At a place Q the window occupies min(Q, K) classes. Weight on any other class helps no member.
+- Above K, each occupied class holds one member, and its label is that member's own index (k mod Q = k).
+- The first two versions of this page weighted every class. For consecutive primes that overstated the decoder's input 7,000 to
+  25,000 times (table below).
 
-    M := Σ_π (ln Q_π)/Q_π  ≥  ln K − 2κ · ln Q_min / Q_min.
+**The theorem.** Suppose such an N exists at depth κ of G. Take residues at distinct places as independent and uniform over the
+occupied classes (the CRT idealization) and the tail as Gaussian. Then
 
-The research session's split of the tables into their mean and their deviation (26 Nov, 01:12 UTC) gives this tight form. The
-first version of this page had the looser (√(ln K) − √(2κ ln Q_min/Q_min))², from bounding the two parts separately.
+    M′ := Σ_π (ln Q_π)/min(Q_π, K)  ≥  ln K − 2κ·a,      a = the largest (ln Q_π)/min(Q_π, K) among the places used.
 
-**Proof.** Write g_π = ḡ_π + d_π, where ḡ_π is the mean over the classes and Σ_a d_π(a) = 0.
+For K ≥ 467, a = ln 467/467 = 0.0132, unless some place above K exceeds e^(0.0132 K).
+
+**Proof.** On the occupied classes O_π, write g_π = ḡ_π + d_π, where ḡ_π is the mean over O_π and Σ d_π = 0 there.
 
 - **The mean part.** U = Σ ḡ_π is the same for every member, so it carries no information. By Cauchy–Schwarz,
-  U ≤ √(M · A) with A = Σ Q_π ḡ_π²/ln Q_π. The cheapest choice is ḡ_π ∝ ln Q_π/Q_π.
-- **The deviation part.** D(N) = Σ d_π(N mod π) has mean 0 and variance at most max(ln Q/Q) · B, where B = Σ ‖d_π‖²/ln Q_π.
-- **The member.** At z standard deviations, G(N) ≤ √(M·A) + z√(max ln Q/Q)·√B ≤ √(M + z² max ln Q/Q) · √(A + B).
+  U ≤ √(M′ · A) with A = Σ |O_π| ḡ_π²/ln Q_π. The cheapest choice is ḡ_π ∝ ln Q_π/|O_π|.
+- **The deviation part.** D(N) = Σ d_π(N mod π) has mean 0 and variance at most a·B, where B = Σ ‖d_π‖²/ln Q_π.
+- **The member.** At z standard deviations, G(N) ≤ √(M′·A) + z√a·√B ≤ √(M′ + z²a) · √(A + B).
   This is Cauchy–Schwarz on the two parts together.
 - **The guarantee.** Its right-hand side is √(ln K)·√(A + B).
 - Set z = √(2κ). ∎
 
+The split into mean and deviation is the research session's (26 Nov, 01:12 UTC). The first version of this page bounded the two
+parts separately, which gave the looser (√(ln K) − √(2κa))².
+
 **What the theorem says.**
-- The deviation, which is the only informative part, enters only at second order, through z²·ln Q_min/Q_min. That is at most
-  2·ln K·0.0132 = 0.026·ln K.
-- So everything else has to come from the uninformative mean part. The decoder is the CRT enumeration of the whole window, with its
-  threshold moved slightly.
-- With the real tables, the classes that strike a row have density about 1,500/p. Their Mertens mass Σ ρ ln p/p converges to about
-  1.8, against ln K = 16.6.
+- **[P] The deviation enters only at second order.** It is the only informative part, and it contributes 2κa ≤ 0.026·ln K.
+- **[P] The decoder needs places above K.**
+  - The primes from 467 to K give M′ ≤ ln(K/467); the exact sums are 0.07 below it.
+  - That leaves the decoder about 5.8 nats short at every window size measured (ln K from 8 to 18.4). In general it falls short for
+    every window below e^233.
+- **[P, in the model] It names every member.**
+  - Every certified member therefore needs weight at a place above K. There its class is the member itself.
+  - Weights that carry no information on which members are deep must therefore name every member: at least one weighted class
+    per member (research).
+  - So the decoder is the enumeration of the window with its threshold moved slightly. It is never cheaper than the scan.
+- **[P, in the model] Its cheapest place set.**
+  - Each weighted class buys a mass of ln Q/min(Q, K)². That falls as Q grows to K and then rises as ln Q/K².
+  - So the cheapest set is the primes from 467 to some y0 in full, plus places above K as large as the model allows.
+  - Keeping a = 0.0132 caps those places at ln Q ≤ 0.0132 K. At ln K = 16.6 the cheapest set is then the primes to y0 = 1.2·10⁵,
+    plus 811 places that each name the whole window: 851 weighted classes per member.
+  - Without that cap, one place of ln Q ≥ K ln K names the window once: one class per member, the floor.
+- **The real tables.** The classes that strike a row have density about 1,500/p.
+  - Their mass converges to about 1.8 (Ein(3.2)), against ln K = 16.6.
+  - Above K they add only about 1,500·ln(ln y/ln K)/K.
 
-**Weights restricted to a fraction ρ of the classes.** M becomes Σ ρ_π ln Q/Q.
+**Exact prime sums [M] (`johnson_cost.py`, `johnson_cost.out`).** Weighted classes per member of the window:
 
-- Mass per unit of input is ln Q/Q² whatever the density.
-- So the cheapest places are full tables on all primes from 467 up.
-- The decoder reads every weight it uses, so its time is at least Σ p over those places.
+| window ln K | depth κ | consecutive primes 467..y | per member | cheapest with a = 0.0132: primes 467..y0, places above K | per member | without the cap | previous version (every class) |
+|---|---|---|---|---|---|---|---|
+| 16.88 (research's window) | 16.88 | y = 1.45·10⁸ = 6.8 K | 7.5·10⁶ | y0 = 1.39·10⁵, 821 | 861 | 1 | — |
+| 16.6 | 16.6 | y = 1.10·10⁸ = 6.8 K | 5.7·10⁶ | y0 = 1.21·10⁵, 811 | 851 | 1 | 3.9·10¹⁰ |
+| 16.6 | 8.3 | y = 1.13·10⁸ | 5.9·10⁶ | y0 = 1.20·10⁵, 828 | 868 | 1 | 5.9·10¹⁰ |
+| 16.6 | 4.2 | y = 1.15·10⁸ | 6.0·10⁶ | y0 = 1.20·10⁵, 836 | 876 | 1 | 7.3·10¹⁰ |
+| 12.4 | 12.4 | y = 1.67·10⁶ | 1.2·10⁵ | y0 = 13,327, 667 | 708 | 1 | 8.9·10⁸ |
+| 8 | 8 | y = 20,959 | 2,120 | y0 = 1,259, 519 | 552 | 1 | 1.8·10⁷ |
+| 4 (about the window left by two pins) | 4 | y = 643, every place above K = 55 | 27 | — (no place has a ≤ 0.0132) | — | 1 | 5.7·10⁵ |
+| ln 2 | ln 2 | y = 467: two classes at one prime (research) | 1 | — | — | 1 | 2.5·10⁴ |
 
-**Exact prime sums (`johnson_cost.py`, `johnson_cost.out`).**
+- **Research's figures** are for consecutive primes at ln K = 16.88: y ≈ 1.5·10⁸, 1.7·10¹⁴ classes and 8·10⁶ per member. This
+  script gives 1.45·10⁸, 1.6·10¹⁴ and 7.5·10⁶.
+- **[O] The decoder's work exceeds its input.** Interpolating over moduli of 10⁸ nats or more is not counted here: the 811 places of
+  2.1·10⁵ nats each, or the one place of K ln K.
 
-| window ln K | depth κ | places 467..y | decoder input | ÷ scan of the window | first version's ÷ scan |
-|---|---|---|---|---|---|
-| 16.6 | 16.6 | y = 5.2·10⁹ | 6.2·10¹⁷ | 3.9·10¹⁰ | 5.8·10⁶ |
-| 16.6 | 8.3 | y = 6.5·10⁹ | 9.6·10¹⁷ | 5.9·10¹⁰ | 8.2·10⁷ |
-| 16.6 | 4.2 | y = 7.2·10⁹ | 1.2·10¹⁸ | 7.3·10¹⁰ | 5.7·10⁸ |
-| 12.4 | 12.4 | y = 8.7·10⁷ | 2.2·10¹⁴ | 8.9·10⁸ | 1.3·10⁶ |
-| 4 (about the window left by two pins) | 4 | y = 24,251 | 3.1·10⁷ | 5.7·10⁵ | 7.1·10⁴ |
-| ln 2 | ln 2 | y = 947 | 5.0·10⁴ | 2.5·10⁴ | 1.5·10⁴ |
-
-**In F_q[t].** The places of degree d have Σ d/q^d ≤ 1, so M is at most the number of degree layers used.
-
-- The places must therefore span at least n(1 − 2 ln Q_min/Q_min) = 0.974 n degrees at Q_min = 467.
-- The input is then at least about (q^n)^1.95, that is members^1.95.
+**In F_q[t].** The window is deg N < n, with q^n members.
+- The places of one degree e ≤ n carry a mass of at most 1.
+- Above degree n, each occupied class is one member, since a polynomial of degree < n is its own residue. A place of degree e
+  carries e/q^n (research).
+- So the layers up to n and about one more suffice: of order q^(2n)/n weighted classes, quadratic in the window. The previous
+  version's members^1.95, times a factor from the starting degree, assumed every class weighted.
+- Larger places lower the cost as in Z, down to one class per member.
 
 **Your Guruswami–Sudan statement [P].**
 
@@ -78,8 +103,10 @@ first version of this page had the looser (√(ln K) − √(2κ ln Q_min/Q_min)
   same holds for any places, since Σ_{deg π = d} d ≤ q^d. Confirmed.
 - **The agreement our members have.** At τ = ρ(1 + δ), GS needs n < ρ(1 + δ)², so it returns no member of degree ≥ 1. At q = 467 and
   ρ = 1/2, the region GS guarantees and the region where members exist (n ln q ≥ m·KL(τ‖ρ)) are disjoint.
-- **The weighted Johnson radius on the primes 467..y** is √(ρ ln K / 2) = 2.88√ρ. That is at least 2.9 times the random agreement at
-  every ρ, and above 1 (unreachable) for ρ > 0.12.
+- **The weighted Johnson radius on the primes 467..y,** for y ≤ K, is √(ρ ln K / 2) = 2.88√ρ. That is at least 2.9 times the random
+  agreement at every ρ, and above 1 (unreachable) for ρ > 0.12.
+  - Places above K lower it, to √(ρ K ln K/y) for y ≫ K. But each listed class there is one member.
+  - It reaches the random agreement ρ only at y ≈ K ln K/ρ, which is about K² weighted classes.
 
 ## The Johnson barrier on generic lists: the research session's claim of 26 Nov, 00:41 UTC, checked
 
@@ -107,9 +134,9 @@ first version of this page had the looser (√(ln K) − √(2κ ln Q_min/Q_min)
   - Then about half of all members are guaranteed. Yet the mean of ln p over their agreement sets is 6.15, above l ln l/(l − 1) = 5.47.
 
 **(iii) The correct statement [P, given the radius].**
-- Typical members are guaranteed iff (Σ ρ_i ln p_i)² ≥ ln K · Σ ρ_i p_i ln p_i.
-- By Cauchy–Schwarz this needs the Mertens mass Λ_ρ = Σ ρ_i ln p_i/p_i ≥ ln K.
-- Members at depth κ need M ≥ ln K − 2κ ln p_min/p_min (W2.1).
+- Typical members are guaranteed iff (Σ ρ_i ln p_i)² ≥ ln K · Σ ρ_i min(p_i, K) ln p_i, counting occupied classes only.
+- By Cauchy–Schwarz this needs the mass Λ_ρ = Σ ρ_i ln p_i/min(p_i, K) ≥ ln K.
+- Members at depth κ need M′ ≥ ln K − 2κa (W2.1).
 
 **(iv) Reed–Solomon (places t − a, m ≤ q): the claim holds [P asymptotically; M at q = 467].**
 - The guarantee needs τ > √(kρq/m) ≥ √(kρ). Existence needs k ln q ≥ m·KL(τ‖ρ).
@@ -118,8 +145,10 @@ first version of this page had the looser (√(ln K) − √(2κ ln Q_min/Q_min)
 - So on generic lists the decoder returns nothing beyond pins for every k ≥ 2.
 
 **(v) The integers [P, M].**
-- Λ grows like ln(y/467) (Mertens), so the guarantee does meet existing members.
-- But only with places up to 5·10⁹–7·10⁹, at an input of 2.5·10⁴ times the scan or more (W2.1). So it is not vacuous, just dominated.
+- Λ grows like ln(y/467) up to K and like (θ(y) − θ(K))/K beyond, so the guarantee does meet existing members. With consecutive
+  primes that happens at y ≈ 6.8 K.
+- But the places above K name the members one by one: at least one weighted class per member (W2.1). So it is not vacuous, just
+  never cheaper than the scan.
 - **The research session's moral stands:** list recovery certifies few consistent codewords; we are in the regime of e^(room − κ) of
   them.
 
@@ -180,7 +209,7 @@ anywhere else.
 - And a score of N mod s gives cylinder lists in it anyway.
 
 **Prime-power accounting [P].**
-- A modulus s^e contributes e ln s/s^e to Λ and costs s^e of input. Λ falls by e/s^(e−1) per place (1/233 at s = 467, e = 2), and by
+- A modulus s^e ≤ K contributes e ln s/s^e to Λ and costs s^e of input. Λ falls by e/s^(e−1) per place (1/233 at s = 467, e = 2), and by
   e/s^(2(e−1)) per unit of input.
 - The hard-list GS condition worsens by √(2/s) per place.
 - The extra digits of N are redundancy that a score of N mod s cannot constrain. So prime powers never help decoding here.
@@ -189,8 +218,8 @@ anywhere else.
 
 - **Interpolation through places of total norm at most the room.** This is pinning (Theorem B): n places of degree 1 in F_q[t], two
   primes ≥ 467 in Z. It is the only one.
-- **Johnson-type decoders.** For random lists the guarantee region lies beyond the room unless the input exceeds the scan by ×2.5·10⁴
-  or more (W2.1).
+- **Johnson-type decoders.** The guarantee needs places above the window's size, and there the input names the members one by one.
+  That is at least one weighted class per member, and about 850 under the Gaussian model's own condition (W2.1).
 - **Folded RS, multiplicity and subspace-design codes.** They need sparse lists (ℓ ≤ |Σ|^O(ε)) that correlate coordinates. Our lists
   are dense and product (W2.2).
 - **Bleichenbacher–Nguyen noisy polynomial interpolation and noisy Chinese remaindering [O].** These have full agreement and a single
