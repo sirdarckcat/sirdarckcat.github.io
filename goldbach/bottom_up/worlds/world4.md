@@ -138,7 +138,9 @@ some k ∈ [0, K) has k mod s_i ∈ A_i for every i. This is the case of 0/1 tab
 
 **The same statement, earlier.** Manders and Adleman (1978) proved it with prime-power moduli and A_i the two square roots of a
 quadratic residue: is there an x ≤ c with x² ≡ a (mod b)? It stays NP-complete when the factorisation of b is given. Their
-reduction passes through the knapsack Σ c_j α_j = τ, α_j = ±1.
+reduction passes through the knapsack Σ c_j α_j = τ, α_j = ±1. Research's README cites it in this form (two classes a modulus,
+Garey–Johnson AN1), and the Lean session proved in the kernel that the cover question itself, with arbitrary rows, contains SAT
+(`Cap/Hardness.lean`, its commit 84040ae). The proof above is a third route, through World 5's identity.
 
 **What it answers.** Research's replacement round left one question open, because its coding-theory and cryptanalysis lens was
 stopped by a filter: which hardness assumption would an enumerator for arbitrary tables contradict?
