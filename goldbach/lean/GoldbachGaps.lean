@@ -108,6 +108,7 @@ import GoldbachGaps.FunctionField.ParityDesert
 import GoldbachGaps.FunctionField.DesertDegree
 import GoldbachGaps.FunctionField.Families
 import GoldbachGaps.Worlds.NoCoupling
+import GoldbachGaps.Worlds.Arc
 
 /-!
 # Least Goldbach summands in Lean
@@ -613,7 +614,13 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                among at most `1 + |ι| · n` candidates, the zero vector and the successors of
                the `n` points before it (`exists_next_best`, `eq_zero_or_succ_of_lower`,
                `card_candidates_le`, `exists_best_list_candidates`). The cost is proportional
-               to the output; whatever is hard elsewhere is the coupling.
+               to the output; whatever is hard elsewhere is the coupling. `Arc` (World 5, the
+               product of the `ℤ/r`): with `c r` an inverse of `P / r` modulo `r`, the classes
+               `b r = c r · (N mod r) mod r` satisfy `∑ r, b r / r = N / P + k` for an integer
+               `k` (`sum_crt_modEq`, `exists_int_sum_div_eq`), so for `N < P` the integers
+               below `X` are the class vectors whose character has fractional part below
+               `X / P` (`lt_iff_fract_sum_div_lt`): one additive constraint of precision
+               `X / P` on a separable score.
 
 ## Building
 
