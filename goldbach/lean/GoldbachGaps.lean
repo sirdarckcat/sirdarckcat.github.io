@@ -106,6 +106,7 @@ import GoldbachGaps.Gpu28.Kernel
 import GoldbachGaps.FunctionField.Stickelberger
 import GoldbachGaps.FunctionField.ParityDesert
 import GoldbachGaps.FunctionField.DesertDegree
+import GoldbachGaps.FunctionField.Families
 import GoldbachGaps.Worlds.NoCoupling
 
 /-!
@@ -592,6 +593,17 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                false. `scripts/parity_check/` compares the general formula
                with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
                the rows of higher degree with a smooth derivative (`smooth_rows.py`).
+               `Families`: what the exhaustive enumerations of `scripts/world3/` show. Cells
+               are exactly equidistributed: pairwise coprime monic moduli of total degree at
+               most `n` and one residue each are met by exactly `q^(n - total degree)` monic
+               polynomials of degree `n` (`card_monic_cell`). Rows succeed in orbits: if
+               `N(t + c) = N(t)` then `N - Q(t + c)` is irreducible exactly when `N - Q` is
+               (`irreducible_sub_comp_X_add_C_iff`). Parity through the derivative: a row with
+               `Q' = N'` never succeeds (`not_irreducible_sub_of_derivative_eq`); if `f' = γ`
+               is a non-zero constant then `discr f = (-1)^(n(n-1)/2) · lc(f)^(n-2) · γ^n`
+               (`discr_of_derivative_eq_C`), so for even `n` with `χ(-1)^(n(n-1)/2) = 1` every
+               row with `N' - Q'` a non-zero constant fails
+               (`not_irreducible_sub_of_derivative_sub_eq_C`).
 * `Worlds.*` – the toy worlds of the research programme of 26 November 2026: a score
                `S(N) = ∑ r, f r (N mod r)` and a constraint that couples the coordinates; in
                each world, can the points with extreme score be produced at a cost

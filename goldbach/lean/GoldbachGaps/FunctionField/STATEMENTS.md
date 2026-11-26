@@ -1,6 +1,6 @@
 # The function-field statements, as they stand in Lean
 
-Files: `Stickelberger.lean` and `ParityDesert.lean` in this directory, namespace
+Files: `Stickelberger.lean`, `ParityDesert.lean` and `Families.lean` in this directory, namespace
 `GoldbachGaps.FunctionField`. Every theorem depends on `propext`, `Classical.choice` and
 `Quot.sound` only. Notation in the paraphrases: `n = deg N`, `d = deg Q`, `λ` the leading
 coefficient of `N`, `e = deg Q'`, `ℓ` the leading coefficient of `Q'`. "Every irreducible factor
@@ -416,6 +416,197 @@ Any degree, with the sign criterion `(-1)^(d+1+e) χ(ℓ)^(n-d) = 1` in place of
                                 ((Polynomial.C c * V ^ ringChar F).natDegree - Q.natDegree) =
                             1 →
                           ¬Irreducible (Polynomial.C c * V ^ ringChar F - Q)
+```
+
+## File `Families.lean`: the mechanisms seen in the exhaustive enumerations (`scripts/world3/`)
+
+Same namespace, same axioms. Cells first, then symmetry, then parity through the derivative.
+
+### `card_monic_modByMonic_eq`
+
+`P` monic of degree at most `n`, `deg r < deg P`: exactly `q^(n - deg P)` monic polynomials of degree `n` are `r` modulo `P`.
+
+```lean
+@card_monic_modByMonic_eq : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] {P : Polynomial F},
+  P.Monic →
+    ∀ (r : Polynomial F),
+      r.degree < P.degree →
+        ∀ {n : ℕ},
+          P.natDegree ≤ n →
+            Nat.card { M // M.Monic ∧ M.natDegree = n ∧ M %ₘ P = r } = Fintype.card F ^ (n - P.natDegree)
+```
+
+### `exists_forall_dvd_sub`
+
+Chinese remainders (any field): for pairwise coprime `P i`, `i ∈ s`, some `r₀` is congruent to `r i` modulo `P i` for every `i ∈ s`.
+
+```lean
+@exists_forall_dvd_sub : ∀ {F : Type u_1} [inst : Field F] {ι : Type u_2} (s : Finset ι) (P r : ι → Polynomial F),
+  ((↑s).Pairwise fun i j ↦ IsCoprime (P i) (P j)) → ∃ r₀, ∀ i ∈ s, P i ∣ r₀ - r i
+```
+
+### `card_monic_cell`
+
+**Cells are exactly equidistributed.** Pairwise coprime monic moduli `P i` (`i ∈ s`) of total degree at most `n`, one residue `r i` of degree below `deg P i` for each: exactly `q^(n - ∑ deg P i)` monic polynomials of degree `n` have all these residues. (In the integers the same count is `X / ∏ r ± 1`, `Cap.card_good_sharing_le`.)
+
+```lean
+@card_monic_cell : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] {ι : Type u_2} (s : Finset ι)
+  (P r : ι → Polynomial F),
+  (∀ i ∈ s, (P i).Monic) →
+    ((↑s).Pairwise fun i j ↦ IsCoprime (P i) (P j)) →
+      (∀ i ∈ s, (r i).degree < (P i).degree) →
+        ∀ {n : ℕ},
+          ∑ i ∈ s, (P i).natDegree ≤ n →
+            Nat.card { M // M.Monic ∧ M.natDegree = n ∧ ∀ i ∈ s, M %ₘ P i = r i } =
+              Fintype.card F ^ (n - ∑ i ∈ s, (P i).natDegree)
+```
+
+### `irreducible_sub_apply_iff`
+
+Any commutative ring: if a ring automorphism `φ` fixes `N`, then `N - φ Q` is irreducible exactly when `N - Q` is.
+
+```lean
+@irreducible_sub_apply_iff : ∀ {R : Type u_1} [inst : CommRing R] (φ : R ≃+* R) {N Q : R},
+  φ N = N → (Irreducible (N - φ Q) ↔ Irreducible (N - Q))
+```
+
+### `irreducible_comp_X_add_C_iff`
+
+The translate `Q(t + c)` is irreducible exactly when `Q` is.
+
+```lean
+@irreducible_comp_X_add_C_iff : ∀ {F : Type u_1} [inst : Field F] {Q : Polynomial F} (c : F),
+  Irreducible (Q.comp (Polynomial.X + Polynomial.C c)) ↔ Irreducible Q
+```
+
+### `natDegree_comp_X_add_C`
+
+… and has the same degree.
+
+```lean
+@natDegree_comp_X_add_C : ∀ {F : Type u_1} [inst : Field F] (Q : Polynomial F) (c : F),
+  (Q.comp (Polynomial.X + Polynomial.C c)).natDegree = Q.natDegree
+```
+
+### `monic_comp_X_add_C`
+
+… and is monic when `Q` is.
+
+```lean
+@monic_comp_X_add_C : ∀ {F : Type u_1} [inst : Field F] {Q : Polynomial F},
+  Q.Monic → ∀ (c : F), (Q.comp (Polynomial.X + Polynomial.C c)).Monic
+```
+
+### `irreducible_sub_comp_X_add_C_iff`
+
+**Rows succeed in orbits.** If `N(t + c) = N(t)`, then `N - Q(t + c)` is irreducible exactly when `N - Q` is.
+
+```lean
+@irreducible_sub_comp_X_add_C_iff : ∀ {F : Type u_1} [inst : Field F] {N Q : Polynomial F} (c : F),
+  N.comp (Polynomial.X + Polynomial.C c) = N →
+    (Irreducible (N - Q.comp (Polynomial.X + Polynomial.C c)) ↔ Irreducible (N - Q))
+```
+
+### `not_irreducible_of_derivative_eq_zero`
+
+Perfect field: a polynomial with zero derivative is not irreducible.
+
+```lean
+@not_irreducible_of_derivative_eq_zero : ∀ {F : Type u_1} [inst : Field F] [PerfectField F] {f : Polynomial F},
+  Polynomial.derivative f = 0 → ¬Irreducible f
+```
+
+### `not_irreducible_sub_of_derivative_eq`
+
+Perfect field: a row with `Q' = N'` never succeeds.
+
+```lean
+@not_irreducible_sub_of_derivative_eq : ∀ {F : Type u_1} [inst : Field F] [PerfectField F] {N Q : Polynomial F},
+  Polynomial.derivative Q = Polynomial.derivative N → ¬Irreducible (N - Q)
+```
+
+### `squarefree_of_derivative_eq_C`
+
+If `f' = γ` is a non-zero constant, `f` is squarefree.
+
+```lean
+@squarefree_of_derivative_eq_C : ∀ {F : Type u_1} [inst : Field F] {f : Polynomial F} {γ : F},
+  γ ≠ 0 → Polynomial.derivative f = Polynomial.C γ → Squarefree f
+```
+
+### `discr_of_derivative_eq_C`
+
+**The discriminant when the derivative is a non-zero constant.** `f' = γ ≠ 0`, `n = deg f ≥ 2`: `discr f = (-1)^(n(n-1)/2) · lc(f)^(n-2) · γ^n`.
+
+```lean
+@discr_of_derivative_eq_C : ∀ {F : Type u_1} [inst : Field F] {f : Polynomial F} {γ : F},
+  γ ≠ 0 →
+    Polynomial.derivative f = Polynomial.C γ →
+      2 ≤ f.natDegree →
+        f.discr = (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) * f.leadingCoeff ^ (f.natDegree - 2) * γ ^ f.natDegree
+```
+
+### `parity_of_derivative_eq_C`
+
+Finite field of odd characteristic, `f' = γ ≠ 0`, `n = deg f ≥ 2`, `r` the number of irreducible factors of `f`: `(-1)^(n + r) = χ(-1)^(n(n-1)/2) · χ(lc f)^(n-2) · χ(γ)^n`.
+
+```lean
+@parity_of_derivative_eq_C : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {f : Polynomial F} {γ : F},
+      γ ≠ 0 →
+        Polynomial.derivative f = Polynomial.C γ →
+          2 ≤ f.natDegree →
+            (-1) ^ (f.natDegree + (UniqueFactorizationMonoid.normalizedFactors f).card) =
+              (quadraticChar F) (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) *
+                  (quadraticChar F) f.leadingCoeff ^ (f.natDegree - 2) *
+                (quadraticChar F) γ ^ f.natDegree
+```
+
+### `even_card_factors_of_derivative_eq_C`
+
+If moreover `n` is even and `χ(-1)^(n(n-1)/2) = 1`, then `r` is even.
+
+```lean
+@even_card_factors_of_derivative_eq_C : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {f : Polynomial F} {γ : F},
+      γ ≠ 0 →
+        Polynomial.derivative f = Polynomial.C γ →
+          2 ≤ f.natDegree →
+            Even f.natDegree →
+              (quadraticChar F) (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) = 1 →
+                Even (UniqueFactorizationMonoid.normalizedFactors f).card
+```
+
+### `not_irreducible_of_derivative_eq_C`
+
+… and `f` is not irreducible.
+
+```lean
+@not_irreducible_of_derivative_eq_C : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F] [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {f : Polynomial F} {γ : F},
+      γ ≠ 0 →
+        Polynomial.derivative f = Polynomial.C γ →
+          2 ≤ f.natDegree →
+            Even f.natDegree → (quadraticChar F) (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) = 1 → ¬Irreducible f
+```
+
+### `not_irreducible_sub_of_derivative_sub_eq_C`
+
+The same for a row: `N' - Q' = γ ≠ 0` constant, `deg (N - Q)` even and at least 2, `χ(-1)^(n(n-1)/2) = 1`: `N - Q` is not irreducible. For `N = G(t^p) + t² + ct + d` this is every monic quadratic `Q` with linear coefficient other than `c` (and those with linear coefficient `c` have `Q' = N'`).
+
+```lean
+@not_irreducible_sub_of_derivative_sub_eq_C : ∀ {F : Type u_1} [inst : Field F] [inst_1 : Fintype F]
+  [inst_2 : DecidableEq F],
+  ringChar F ≠ 2 →
+    ∀ {N Q : Polynomial F} {γ : F},
+      γ ≠ 0 →
+        Polynomial.derivative N - Polynomial.derivative Q = Polynomial.C γ →
+          2 ≤ (N - Q).natDegree →
+            Even (N - Q).natDegree →
+              (quadraticChar F) (-1) ^ ((N - Q).natDegree * ((N - Q).natDegree - 1) / 2) = 1 → ¬Irreducible (N - Q)
 ```
 
 ## Checks by factorisation
