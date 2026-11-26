@@ -1,0 +1,14 @@
+q=3 n=15: 1318 rows of degree <= 8, 442 orbits; family of 243 members
+family: tests 5623, mean L 54.5, time 0 s
+family best: L=297 (D=7, g index 227), L=246 (D=7, g index 191), L=242 (D=7, g index 242), L=228 (D=7, g index 86), L=226 (D=7, g index 200), L=226 (D=7, g index 104), L=226 (D=7, g index 14), L=219 (D=7, g index 107)
+cell model for all 3^15 members: line of 6 moduli (19683 cells), chance of a row left 0.3204; rows R with 10, 1, 0.1 members expected: 406, 481, 561
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 3 | family 243 of 243 | all 1.16e+07 | root 226 | orbits 1 | refined 226
+  d=2: rows 6 | family 222 of 243 | all 9.35e+06 | root 211 | orbits 2 | refined 211
+  d=3: rows 14 | family 153 of 243 | all 5.62e+06 | root 178 | orbits 6 | refined 163
+  d=4: rows 32 | family 119 of 243 | all 2.34e+06 | root 133 | orbits 12 | refined 123
+  d=5: rows 80 | family 70 of 243 | all 3.35e+05 | root 69.4 | orbits 28 | refined 65.2
+  d=6: rows 196 | family 21 of 243 | all 8.39e+03 | root 20.3 | orbits 68 | refined 18.4
+  d=7: rows 508 | family 0 of 243 | all 0.362 | root 0.713 | orbits 172 | refined 0.65
+  d=8: rows 1318 | family 0 of 243 | all 8.1e-11 | root 0.000433 | orbits 442 | refined 0.000399
+expected number of members of all 3^15 at the family's best level L >= 297: 370

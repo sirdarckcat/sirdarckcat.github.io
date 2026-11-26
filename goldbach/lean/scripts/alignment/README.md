@@ -429,7 +429,8 @@ so the link is the freedom to choose what to pin, already counted in section 2, 
 
 To reproduce: `gcc -O3 -march=native -o truth2 truth2.c` and the same for `ensemble.c`, `ensemble_tier.c`;
 `./truth2 1000 29 31 200 A B 11 OUT` over slices [A, B) of [0, 10^10) for M2 (a few minutes on four cores; the
-lists `OUT.top` of the best members are not kept here), `./ensemble 1000 29 31 200 1600000000 SEED OUT`; the merged
+lists `OUT.top` of the best members are in `runs/top/`: `check_1e9.top` for M1, `m2a_0..3.top` and `m2b.top` for M2,
+`depth_z*_*.top` for the depth series), `./ensemble 1000 29 31 200 1600000000 SEED OUT`; the merged
 histograms are in `runs/`. Then `python fair_sample.py M2 runs/M2 -- runs/M2_ensemble`,
 `python depth_series.py 29 50:runs/M2_z50:runs/M2_z50_ensemble ...`,
 `python anatomy4.py 1000 29 31 200 10 runs/M2_ensemble.tier OUT_*.top`, `python strategy.py`, `python mustlook.py`,

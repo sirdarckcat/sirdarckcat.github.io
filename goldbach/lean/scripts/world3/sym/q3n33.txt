@@ -1,0 +1,16 @@
+q=3 n=33: 9382 rows of degree <= 10, 3134 orbits; family of 177147 members
+family: tests 9609699, mean L 122.9, time 572 s
+family best: L=2277 (D=9, g index 38786), L=2162 (D=9, g index 17117), L=2149 (D=9, g index 108497), L=2126 (D=9, g index 50078), L=2098 (D=9, g index 83536), L=2097 (D=9, g index 20753), L=2088 (D=9, g index 145286), L=2088 (D=9, g index 24947)
+cell model for all 3^33 members: line of 6 moduli (19683 cells), chance of a row left 0.1456; rows R with 10, 1, 0.1 members expected: 2522, 2693, 2864
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 3 | family 177147 of 177147 | all 5.06e+15 | root 1.72e+05 | orbits 1 | refined 1.72e+05
+  d=2: rows 6 | family 171114 of 177147 | all 4.61e+15 | root 1.66e+05 | orbits 2 | refined 1.66e+05
+  d=3: rows 14 | family 142399 of 177147 | all 3.64e+15 | root 1.54e+05 | orbits 6 | refined 1.48e+05
+  d=4: rows 32 | family 118801 of 177147 | all 2.3e+15 | root 1.32e+05 | orbits 12 | refined 1.27e+05
+  d=5: rows 80 | family 83913 of 177147 | all 8.3e+14 | root 9.4e+04 | orbits 28 | refined 9.1e+04
+  d=6: rows 196 | family 47916 of 177147 | all 1.27e+14 | root 5.03e+04 | orbits 68 | refined 4.78e+04
+  d=7: rows 508 | family 10741 of 177147 | all 1.73e+12 | root 1.2e+04 | orbits 172 | refined 1.15e+04
+  d=8: rows 1318 | family 337 of 177147 | all 6.02e+07 | root 392 | orbits 442 | refined 378
+  d=9: rows 3502 | family 0 of 177147 | all 1.95e-05 | root 0.0269 | orbits 1174 | refined 0.0246
+  d=10: rows 9382 | family 0 of 177147 | all 1.41e-38 | root 2.42e-13 | orbits 3134 | refined 2.21e-13
+expected number of members of all 3^33 at the family's best level L >= 2277: 275

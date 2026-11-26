@@ -1,0 +1,11 @@
+q=7 n=7: 4088 rows of degree <= 5, 584 orbits; family of 7 members
+family: tests 34, mean L 20.1, time 0 s
+family best: L=31 (D=3, g index 3), L=29 (D=3, g index 5), L=29 (D=3, g index 1), L=28 (D=3, g index 4), L=9 (D=2, g index 2), L=8 (D=2, g index 0), L=7 (D=2, g index 6)
+cell model for all 7^7 members: line of 7 moduli (823543 cells), chance of a row left 0.4203; rows R with 10, 1, 0.1 members expected: 74, 89, 104
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 7 | family 7 of 7 | all 2.5e+05 | root 5.9 | orbits 1 | refined 5.9
+  d=2: rows 28 | family 4 of 7 | all 7.88e+03 | root 3.6 | orbits 4 | refined 3.6
+  d=3: rows 140 | family 0 of 7 | all 0.000353 | root 0.321 | orbits 20 | refined 0.321
+  d=4: rows 728 | family 0 of 7 | all 1.8e-41 | root 1.51e-06 | orbits 104 | refined 1.51e-06
+  d=5: rows 4088 | family 0 of 7 | all 7.09e-261 | root 6.85e-38 | orbits 584 | refined 6.85e-38
+expected number of members of all 7^7 at the family's best level L >= 31: 5.07e+03
