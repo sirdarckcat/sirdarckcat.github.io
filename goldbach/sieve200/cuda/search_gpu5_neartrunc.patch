@@ -1,0 +1,57 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -34,6 +34,12 @@
+                 help="report a tested member whose FIRST probable-prime row q (rows ascending, every earlier row composite) is >= this: "
+                      "then g(N) = q whatever the design Q. Verified on the CPU (every prime below q composite, N - q prime) and written to "
+                      "--out with near_miss = true. 0: off. It changes nothing about which members are tested or how")
++ap.add_argument("--near-truncate", type=int, default=int(os.environ.get("NEAR_TRUNCATE", "0")), choices=(0, 1),
++                help="1 (needs --near-miss G): cut every spec's row list at G before anything is built (sieve200/cuda/near_trunc.py, NEARTRUNC.md).  The rows at or above G cannot change whether a member is a "
++                     "near-miss, but they are in the alive count the selection ranks the members by and in every row list: with them gone the kept members are the ones with the fewest alive rows BELOW G "
++                     "(measured on the production vector at B = 1e8: x1.065 expected near-misses per kept member, design hits x0.937) and the sieve has ~7% fewer rows.  A member with no probable prime "
++                     "among the rows below G is a 'success' of the cut list: the CPU then finds its first probable prime among the rows at or above G (a near-miss, verified as always) or confirms a design "
++                     "success on the FULL list.  0: off (the default; the whole list, as before)")
+ ap.add_argument("--goldbach", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+ ap.add_argument("--target", type=int, default=1 << 20, help="most tests in one launch")
+ ap.add_argument("--dmax", type=int, default=8, help="most complements of one member in one launch")
+@@ -93,6 +99,7 @@
+                 help="kernel 28's step file: fermat28_step_s1.cuh or _s1r.cuh with --k28-asm 1 (sm_120), _s1rw.cuh or _s1w.cuh with --k28-asm 0 (sm_80/89)")
+ ap.add_argument("--k28-asm", type=int, default=int(os.environ.get("K28_ASM", "1")), choices=(0, 1), help="kernel 28: PTX mad.wide (1) or plain C (0)")
+ args = ap.parse_args()
++assert not args.near_truncate or args.near_miss > 0, "--near-truncate 1 needs --near-miss G (the threshold the row lists are cut at)"
+ sys.path.insert(0, args.goldbach)
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ import search                      # noqa: E402  (init_spec, verify_success)
+@@ -120,6 +127,9 @@
+         for f in ("residual", "cover"):
+             if isinstance(s.get(f), str):
+                 s[f] = json.loads(s[f])
++        if args.near_truncate:                                   # the rows at or above --near-miss are kept as s["residual_full"] for the CPU checks (near_trunc.py, sieve200/cuda)
++            from near_trunc import truncate_spec                 # noqa: E402
++            truncate_spec(s, args.near_miss)
+     return specs
+ 
+ 
+@@ -475,13 +485,16 @@
+     for si, spec in enumerate(batch):
+         s = st[si]
+         nf = 0
+-        for k in sorted(s["succ"]):
+-            res = search.verify_success(spec, int(k))
+-            if res:
+-                res["name"] = spec["name"]
+-                found.append(res); nf += 1
+-                lines.append(f"  SUCCESS {spec['name']} k={k} digits={res['digits']} g={res['g']}")
+-                out.write(json.dumps(res) + "\n"); out.flush()
++        if args.near_truncate:                                   # the GPU saw only the rows below --near-miss: settle its successes on the full list; a near-miss joins s["near"] (verified just below)
++            from near_trunc import settle_successes              # noqa: E402
++            succ = settle_successes(spec, s["succ"], args.near_miss, search.verify_success, s["near"])
++        else:
++            succ = [(int(k), res) for k in sorted(s["succ"]) for res in [search.verify_success(spec, int(k))] if res]
++        for k, res in succ:
++            res["name"] = spec["name"]
++            found.append(res); nf += 1
++            lines.append(f"  SUCCESS {spec['name']} k={k} digits={res['digits']} g={res['g']}")
++            out.write(json.dumps(res) + "\n"); out.flush()
+         for k, q in sorted(s["near"]):
+             res = verify_near_miss(spec, int(k), int(q))
+             if res:                                              # not counted in found= (that is design-Q successes)

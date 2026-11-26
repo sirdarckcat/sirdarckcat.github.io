@@ -1,0 +1,196 @@
+/* CPU build of gsieve_kernels.cuh: every CTA is run by blockDim.x pthreads with a real barrier for __syncthreads, atomics are
+   GCC atomics.  Used by test_gsieve.py to check the kernel source bit for bit against sieve200.c. */
+#include <cstdint>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <pthread.h>
+#define __global__
+#define __device__
+#define __forceinline__ inline __attribute__((always_inline))
+#define __shared__ static
+static inline unsigned long long __umul64hi(unsigned long long a, unsigned long long b) { return (unsigned long long)(((unsigned __int128)a * b) >> 64); }
+static inline unsigned atomicAnd(unsigned *p, unsigned v) { return __atomic_fetch_and(p, v, __ATOMIC_RELAXED); }
+static inline unsigned atomicAdd(unsigned *p, unsigned v) { return __atomic_fetch_add(p, v, __ATOMIC_RELAXED); }
+static inline unsigned __funnelshift_l(unsigned lo, unsigned hi, unsigned s) { return (unsigned)((((unsigned long long)hi << 32) | lo) << (s & 31) >> 32); }
+struct uint4 { unsigned x, y, z, w; };
+static inline unsigned __umulhi(unsigned a, unsigned b) { return (unsigned)(((unsigned long long)a * b) >> 32); }
+struct dim_t { unsigned x, y; };
+static thread_local dim_t threadIdx;
+static dim_t blockIdx, blockDim;
+static pthread_barrier_t g_bar;
+static pthread_barrier_t g_bar1;          /* named barrier 1 of the pipelined tile kernel (bar.sync 1, TILE_PIPE_AT): g_bar1_n threads, 0 = none */
+static unsigned g_bar1_n = 0;
+static unsigned char *g_dyn;
+static void __syncthreads() { pthread_barrier_wait(&g_bar); }
+static inline unsigned min(unsigned a, unsigned b) { return a < b ? a : b; }
+static inline int __ffs(unsigned v) { return __builtin_ffs((int)v); }     /* CUDA's min(unsigned, unsigned) (GEN_MINRED) */
+/* the shuffle of the CPU emulation: every thread of the CTA calls it at the same point (a CTA barrier is then a valid warp barrier) */
+static unsigned g_shfl[1024];
+static inline unsigned __shfl_up_sync(unsigned, unsigned v, unsigned d) {
+    g_shfl[threadIdx.x] = v; __syncthreads();
+    const unsigned lane = threadIdx.x & 31u, r = (lane >= d) ? g_shfl[threadIdx.x - d] : v;
+    __syncthreads();
+    return r;
+}
+#define S200G_DYNSHARED(type, name) type *name = (type *)g_dyn
+#ifndef KLOG
+#define KLOG 12
+#endif
+#ifndef LLOG
+#define LLOG 11
+#endif
+#ifndef NTHREADS
+#define NTHREADS 64
+#endif
+#include "gsieve_kernels.cuh"
+
+typedef void (*kfn)(void *);
+struct launch_t { kfn f; void *args; unsigned tid; };
+static void *thr(void *a) { launch_t *l = (launch_t *)a; threadIdx.x = l->tid; l->f(l->args); return nullptr; }
+static void run_grid(unsigned grid, unsigned block, size_t dyn_bytes, kfn f, void *args) {
+    g_dyn = (unsigned char *)aligned_alloc(64, (dyn_bytes + 63) / 64 * 64 + 64);
+    blockDim.x = block;
+    for (unsigned b = 0; b < grid; b++) {
+        blockIdx.x = b;
+        pthread_barrier_init(&g_bar, nullptr, block);
+        if (g_bar1_n) pthread_barrier_init(&g_bar1, nullptr, g_bar1_n);
+        pthread_t *th = (pthread_t *)malloc(sizeof(pthread_t) * block);
+        launch_t *l = (launch_t *)malloc(sizeof(launch_t) * block);
+        for (unsigned t = 0; t < block; t++) { l[t] = {f, args, t}; pthread_create(&th[t], nullptr, thr, &l[t]); }
+        for (unsigned t = 0; t < block; t++) pthread_join(th[t], nullptr);
+        pthread_barrier_destroy(&g_bar);
+        if (g_bar1_n) pthread_barrier_destroy(&g_bar1);
+        free(th); free(l);
+    }
+    free(g_dyn);
+}
+
+struct sieve_args { const u32 *U, *S, *INV; const u64 *MU; const u32 *N0M, *KM; int nS; u32 *bits; };
+static void sieve_tramp(void *a) { sieve_args *x = (sieve_args *)a; s200g_sieve(x->U, x->S, x->INV, x->MU, x->N0M, x->KM, x->nS, x->bits); }
+extern "C" void cpu_sieve(int nU, const u32 *U, const u32 *S, const u32 *INV, const u64 *MU, const u32 *N0M, const u32 *KM, int nS, u32 *bits) {
+    sieve_args a{U, S, INV, MU, N0M, KM, nS, bits};
+    run_grid(nU, NTHREADS, (size_t)KW * 4, sieve_tramp, &a);
+}
+struct count_args { const u32 *bits; int nU; u16 *counts; };
+static void count_tramp(void *a) { count_args *x = (count_args *)a; s200g_count(x->bits, x->nU, x->counts); }
+extern "C" void cpu_count(const u32 *bits, int nU, u16 *counts) {
+    count_args a{bits, nU, counts};
+    run_grid((KW + NTHREADS - 1) / NTHREADS, NTHREADS, 0, count_tramp, &a);
+}
+struct select_args { const u16 *counts; int maxc, nkeep; double p; u32 *keys; double *stats; };
+static void select_tramp(void *a) { select_args *x = (select_args *)a; s200g_select(x->counts, x->maxc, x->nkeep, x->p, x->keys, x->stats); }
+extern "C" void cpu_select(const u16 *counts, int maxc, int nkeep, double p_est, u32 *keys, double *stats) {
+    select_args a{counts, maxc, nkeep, p_est, keys, stats};
+    const unsigned nb = ((maxc + 2) + 3) & ~3u;
+    unsigned n2 = 1; while (n2 < (unsigned)nkeep) n2 <<= 1;
+    run_grid(1u << (KLOG - LLOG), NTHREADS, 4 * (nb + ((unsigned)nkeep <= MAXKEEP_SORT ? n2 : 0) + 8), select_tramp, &a);
+}
+struct rows_args { const u32 *bits; int nU; const u32 *member; const i64 *offs; int nsel; u16 *rows; };
+static void rows_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows_tramp, &a);
+}
+static void rows2_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows2(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows2(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rows2_tramp, &a);
+}
+static void rowsnost_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows_nost(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows_nost(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rowsnost_tramp, &a);
+}
+static void rowsnold_tramp(void *a) { rows_args *x = (rows_args *)a; s200g_rows_nold(x->bits, x->nU, x->member, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rows_nold(const u32 *bits, int nU, const u32 *member, const i64 *offs, int nsel, u16 *rows) {
+    rows_args a{bits, nU, member, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rowsnold_tramp, &a);
+}
+struct ord_args { const u32 *keys; int nkeep; u32 *ord; };
+static void ord_tramp(void *a) { ord_args *x = (ord_args *)a; s200g_order(x->keys, x->nkeep, x->ord); }
+extern "C" void cpu_order(const u32 *keys, int nkeep, u32 *ord, int nb) {
+    ord_args a{keys, nkeep, ord};
+    run_grid(nb, NTHREADS, 0, ord_tramp, &a);
+}
+struct rord_args { const u32 *bits; int nU; const u32 *member; const i64 *offs; const u32 *ord; int nsel; u16 *rows; };
+static void rord_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+static void rord2_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord2(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+static void rordnost_tramp(void *a) { rord_args *x = (rord_args *)a; s200g_rows_ord_nost(x->bits, x->nU, x->member, x->offs, x->ord, x->nsel, x->rows); }
+extern "C" void cpu_rows_ord(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rord_tramp, &a);
+}
+extern "C" void cpu_rows_ord2(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rord2_tramp, &a);
+}
+extern "C" void cpu_rows_ord_nost(const u32 *bits, int nU, const u32 *member, const i64 *offs, const u32 *ord, int nsel, u16 *rows) {
+    rord_args a{bits, nU, member, offs, ord, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rordnost_tramp, &a);
+}
+struct rmask_args { const u32 *bits; int nU; const u32 *member; int nsel; u32 *masks; };
+static void rmask_tramp(void *a) { rmask_args *x = (rmask_args *)a; s200g_rowmask(x->bits, x->nU, x->member, x->nsel, x->masks); }
+extern "C" void cpu_rowmask(const u32 *bits, int nU, const u32 *member, int nsel, u32 *masks) {
+    rmask_args a{bits, nU, member, nsel, masks};
+    const unsigned ng = (nU + 31) / 32;
+    for (unsigned g = 0; g < ng; g++) {                                  /* grid (chunks, groups): blockIdx.y a row group */
+        blockIdx.y = g;
+        run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rmask_tramp, &a);
+    }
+    blockIdx.y = 0;
+}
+struct rlist_args { const u32 *masks; int nU; const i64 *offs; int nsel; u16 *rows; };
+static void rlist_tramp(void *a) { rlist_args *x = (rlist_args *)a; s200g_rowlist(x->masks, x->nU, x->offs, x->nsel, x->rows); }
+extern "C" void cpu_rowlist(const u32 *masks, int nU, const i64 *offs, int nsel, u16 *rows) {
+    rlist_args a{masks, nU, offs, nsel, rows};
+    run_grid((nsel + NTHREADS - 1) / NTHREADS, NTHREADS, 0, rlist_tramp, &a);
+}
+extern "C" unsigned cpu_kw() { return KW; }
+
+struct n0m_args { const u32 *N0L; int nl; const u32 *S; const u64 *MU; int nS; u32 *out; };
+static void n0m_tramp(void *a) { n0m_args *x = (n0m_args *)a; s200g_n0m(x->N0L, x->nl, x->S, x->MU, x->nS, x->out); }
+extern "C" void cpu_n0m(const u32 *N0L, int nl, const u32 *S, const u64 *MU, int nS, u32 *out) {
+    n0m_args a{N0L, nl, S, MU, nS, out};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, n0m_tramp, &a);
+}
+
+struct km_args { const u32 *S; u64 k0; int nS; u32 *out; };
+static void km_tramp(void *a) { km_args *x = (km_args *)a; s200g_km(x->S, x->k0, x->nS, x->out); }
+extern "C" void cpu_km(const u32 *S, u64 k0, int nS, u32 *out) {
+    km_args a{S, k0, nS, out};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, km_tramp, &a);
+}
+struct fin_args { const u32 *keys; int nsel, nkeep; u64 k0; u16 *cnt; u32 *member; u64 *kout; i64 *offs, *total; };
+static void fin_tramp(void *a) { fin_args *x = (fin_args *)a; s200g_finalize(x->keys, x->nsel, x->nkeep, x->k0, x->cnt, x->member, x->kout, x->offs, x->total); }
+extern "C" void cpu_finalize(const u32 *keys, int nsel, int nkeep, u64 k0, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    fin_args a{keys, nsel, nkeep, k0, cnt, member, kout, offs, total};
+    run_grid(1, NTHREADS, 0, fin_tramp, &a);
+}
+
+struct fsum_args { const u32 *keys; int nkeep; u32 *btot; };
+static void fsum_tramp(void *a) { fsum_args *x = (fsum_args *)a; s200g_fin_sums(x->keys, x->nkeep, x->btot); }
+extern "C" void cpu_fin_sums(const u32 *keys, int nkeep, u32 *btot, int nb) {
+    fsum_args a{keys, nkeep, btot};
+    run_grid(nb, NTHREADS, 0, fsum_tramp, &a);
+}
+struct fmain_args { const u32 *keys; int nkeep, nb; u64 k0; const u32 *btot; u16 *cnt; u32 *member; u64 *kout; i64 *offs, *total; };
+static void fmain_tramp(void *a) { fmain_args *x = (fmain_args *)a; s200g_fin_main(x->keys, x->nkeep, x->nb, x->k0, x->btot, x->cnt, x->member, x->kout, x->offs, x->total); }
+extern "C" void cpu_fin_main(const u32 *keys, int nkeep, int nb, u64 k0, const u32 *btot, u16 *cnt, u32 *member, u64 *kout, i64 *offs, i64 *total) {
+    fmain_args a{keys, nkeep, nb, k0, btot, cnt, member, kout, offs, total};
+    run_grid(nb, NTHREADS, 0, fmain_tramp, &a);
+}
+
+struct prep_args { const u32 *S, *INV, *INVP, *N0M; u64 k0; int nS; uint4 *TAB; };
+static void prep_tramp(void *a) { prep_args *x = (prep_args *)a; s200g_prep(x->S, x->INV, x->INVP, x->N0M, x->k0, x->nS, x->TAB); }
+extern "C" void cpu_prep(const u32 *S, const u32 *INV, const u32 *INVP, const u32 *N0M, u64 k0, int nS, uint4 *TAB) {
+    prep_args a{S, INV, INVP, N0M, k0, nS, TAB};
+    run_grid((nS + NTHREADS - 1) / NTHREADS, NTHREADS, 0, prep_tramp, &a);
+}
+struct sieve_sh_args { const u32 *U; const uint4 *TAB; int nS; u32 *bits; };
+static void sieve_sh_tramp(void *a) { sieve_sh_args *x = (sieve_sh_args *)a; s200g_sieve_sh(x->U, x->TAB, x->nS, x->bits); }
+extern "C" void cpu_sieve_sh(int nU, const u32 *U, const uint4 *TAB, int nS, u32 *bits, int threads) {
+    sieve_sh_args a{U, TAB, nS, bits};
+    run_grid(nU, threads, (size_t)KW * 4 + 4, sieve_sh_tramp, &a);      /* the CTA size of this kernel is free; one more word: the dummy of S200G_UNROLL 3 */
+}

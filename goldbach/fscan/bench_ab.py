@@ -3,7 +3,9 @@
 
 Interleaved timing of two or more revisions of goldbach/fscan on this machine; the first is the reference for the
 percentages.  A revision is a git revision (e383cbc, HEAD, origin/branch ...) or WORK for the files in the working tree,
-optionally followed by extra compiler flags after an @:  WORK@-DSCORE_MODE=1  WORK@-DFM_GROUPS=3.  Each is built from its own copy with a light
+optionally followed by extra compiler flags after an @:  WORK@-DSCORE_MODE=1  WORK@-DFM_GROUPS=3.
+A spec that ends in +smt (WORK+smt) is timed while a copy of the same program scans a larger slice on --load, which should be
+the other hardware thread of the core of --cpu: it shows how much a thread slows down when its sibling runs the same work.  Each is built from its own copy with a light
 timer around scan_vector (TSC cycles a member, vector enumeration excluded) and a checksum over every kept member
 (k, n0, rows left), runs `rounds` times alternately on one thread pinned to one CPU, and the script prints the
 minimum and the median of each and whether all runs gave identical statistics and checksums.  The minimum is the
@@ -17,6 +19,7 @@ ap.add_argument("revs", nargs="+")
 ap.add_argument("--rounds", type=int, default=5); ap.add_argument("--slice", default="7/1500")
 ap.add_argument("--cc", default="gcc -O3 -march=native -fopenmp -Wno-unused-result -Wno-parentheses")
 ap.add_argument("--cpu", default="2"); ap.add_argument("--cls", type=int, default=194)
+ap.add_argument("--load", default=None, help="CPU for a background copy of the same program while a spec ending in +smt is timed (the SMT sibling of --cpu)")
 args = ap.parse_args()
 here = os.path.dirname(os.path.abspath(__file__))
 repo = subprocess.run(["git", "-C", here, "rev-parse", "--show-toplevel"], capture_output=True, text=True).stdout.strip()
@@ -36,6 +39,7 @@ def timer_patch(s):
     return s.replace(old, '    { unsigned long long c = 0, h = 0; for (int t = 0; t < threads; t++) { c += TT[t]->ab_cyc; h += TT[t]->ab_hash; }\n      printf("AB cycles/member %.4f  hash %016llx\\n", (double)c / (double)total.members, h); }\n' + old, 1)
 
 def build(spec):
+    spec = spec.replace("+smt", "")
     rev, _, extra = spec.partition("@")
     d = tempfile.mkdtemp(prefix="bench_ab_")
     for f in FILES:
@@ -52,14 +56,29 @@ def build(spec):
     subprocess.run(shlex.split(args.cc) + shlex.split(extra) + ["-o", exe, os.path.join(d, "fscan.c"), "-lm"], check=True)
     return exe
 
-exes = {r: build(r) for r in args.revs}
+built = {}
+exes = {}
+for r in args.revs:
+    key = r.replace('+smt', '')
+    if key not in built: built[key] = build(key)
+    exes[r] = built[key]
 th = 99 + args.cls - 194
-cmd = lambda e: (["taskset", "-c", args.cpu] if subprocess.run(["which", "taskset"], capture_output=True).returncode == 0 else []) + \
-    [e, "10007", "383", str(args.cls), str(args.cls), "4e18", "1e23", str(th), "113", f"rref={args.cls}", f"slice={args.slice}", "threads=1"]
+have_taskset = subprocess.run(["which", "taskset"], capture_output=True).returncode == 0
+def mkcmd(e, cpu, sl):
+    return (["taskset", "-c", cpu] if have_taskset else []) + [e, "10007", "383", str(args.cls), str(args.cls), "4e18", "1e23", str(th), "113", f"rref={args.cls}", f"slice={sl}", "threads=1"]
+cmd = lambda e: mkcmd(e, args.cpu, args.slice)
+load_cmd = lambda e: mkcmd(e, args.load, "1/40")               # a different slice, about 5 times more work than the timed one: it scans for the whole run
 res = {k: [] for k in exes}; sig = {k: set() for k in exes}
+import time
 for r in range(args.rounds):
     for k, e in exes.items():
+        bg = None
+        if k.endswith("+smt"):
+            if not args.load: raise SystemExit("+smt needs --load CPU")
+            bg = subprocess.Popen(load_cmd(e), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(6)                                      # let it finish its vector enumeration and start scanning
         out = subprocess.run(cmd(e), capture_output=True, text=True).stdout
+        if bg: bg.terminate(); bg.wait()
         c = float(re.search(r"AB cycles/member ([\d.]+)", out).group(1)); h = re.search(r"hash (\w+)", out).group(1)
         st = re.search(r"vectors=(\d+) members=(\d+) selected=(\d+) kept=(\d+) tests=(\d+) prps=(\d+) found=(\d+)", out).groups()
         res[k].append(c); sig[k].add((h,) + st)

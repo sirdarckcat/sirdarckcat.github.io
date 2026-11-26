@@ -110,11 +110,15 @@ _Static_assert(NB % 4 == 0, "NB must be a multiple of 4");
    Measured on one Emerald Rapids core (48 KB L1, three load pipes), whole scanner, min of 5 interleaved runs: with AVX-512
    1 is 10.7% faster than 0 and 2 is 10.2% faster (the 43.5 KB of tables do not fit beside the exact stage's traffic); with
    AVX2 0 is the fastest, 1 and 2 are 8% slower (the 29.5 KB of tables fit, so the extra loads and ALU work are pure cost).
-   Zen 2 (32 KB L1, two load pipes) is in between and was NOT measured: a simulated 32 KB 8-way L1 gives the score loop's
-   misses 28.3% in mode 0 against 11.9% in mode 1, but mode 1 doubles the loads.  Time all three there: selftest_ab.sh does. */
+   Zen 2 (EPYC 7B12: 32 KB L1, two load pipes), measured on a Colab runtime with the production scan paused, same method: 0 is
+   the reference, 1 is 0.6% slower, 2 is 2.1% faster (a simulated 32 KB 8-way L1 puts the score loop's L1 misses at 28.3% in
+   mode 0 and 11.9% in mode 1, but mode 1 doubles the loads and mode 2 does not).  Other cores are untested: selftest_ab.sh
+   times all three. */
 #ifndef SCORE_MODE
-#ifdef __AVX512BW__
+#if defined(__AVX512BW__)
 #define SCORE_MODE 1
+#elif defined(__znver2__)
+#define SCORE_MODE 2
 #else
 #define SCORE_MODE 0
 #endif
@@ -174,6 +178,7 @@ typedef struct {
     member_t slot[FM_LANES]; int act[FM_LANES];
     stats_t st;
     u64 hs[256], ha[257];
+    u16 cand_d[CK + 8]; int cand_a[CK + 8]; u64 cand_m[CK + 8][4];     /* the candidates of a chunk: todo entry, rows left, mask */
 } tls_t;
 
 static u128 parse_big(const char *s) {
@@ -248,11 +253,11 @@ static void fermat_drain(tls_t *T, int need) {
 
 /* ---------------------------------------------------------------- one vector */
 
-static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
-    u32 off[MAXS + 64] __attribute__((aligned(64)));
+/* class c = (phi + d) mod s of every prime, then the byte offset of its mask row in mbuf (u32: 32 * c + 8 * moff[p]) */
+static inline void exact_offsets(const u16 *phi, int d, u32 *off) {
     extern u16 SPv[MAXS + 32], RECv[MAXS + 32];
     const vw_t dv = vw_set1(d);
-    for (int p = 0; p < ns; p += VW) {                    /* class c = (phi + d) mod s of every prime, then the byte offset of its row */
+    for (int p = 0; p < ns; p += VW) {
         vw_t x = vw_add(vw_loadu(phi + p), dv);
         vw_t s = vw_loadu(SPv + p);
         vw_t q = vw_mulhi(x, vw_loadu(RECv + p));
@@ -261,20 +266,49 @@ static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
         vd_store(off + p, vd_add(vd_row(x, 0), vd_loadu(MOFB + p)));
         vd_store(off + p + VWD, vd_add(vd_row(x, 1), vd_loadu(MOFB + p + VWD)));
     }
+}
+#define ROW(off, p) _mm256_load_si256((const __m256i *)(mb + (off)[p]))
+static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
+    u32 off[MAXS + 64] __attribute__((aligned(64)));
+    exact_offsets(phi, d, off);
     /* the rows that some prime kills, OR-ed (the load folds into the vpor), four accumulators */
     const u8 *mb = (const u8 *)T->mbuf;
     __m256i k0 = _mm256_setzero_si256(), k1 = k0, k2 = k0, k3 = k0;
     int p = 0;
     for (; p + 4 <= ns; p += 4) {
-        k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
-        k1 = _mm256_or_si256(k1, _mm256_load_si256((const __m256i *)(mb + off[p + 1])));
-        k2 = _mm256_or_si256(k2, _mm256_load_si256((const __m256i *)(mb + off[p + 2])));
-        k3 = _mm256_or_si256(k3, _mm256_load_si256((const __m256i *)(mb + off[p + 3])));
+        k0 = _mm256_or_si256(k0, ROW(off, p));
+        k1 = _mm256_or_si256(k1, ROW(off, p + 1));
+        k2 = _mm256_or_si256(k2, ROW(off, p + 2));
+        k3 = _mm256_or_si256(k3, ROW(off, p + 3));
     }
-    for (; p < ns; p++) k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
+    for (; p < ns; p++) k0 = _mm256_or_si256(k0, ROW(off, p));
     k0 = _mm256_or_si256(_mm256_or_si256(k0, k1), _mm256_or_si256(k2, k3));
     _mm256_storeu_si256((__m256i *)mask, _mm256_andnot_si256(k0, _mm256_loadu_si256((const __m256i *)T->rowmask)));
     return __builtin_popcountll(mask[0]) + __builtin_popcountll(mask[1]) + __builtin_popcountll(mask[2]) + __builtin_popcountll(mask[3]);
+}
+/* two candidates: both chains of SIMD arithmetic that give the row offsets are issued before the first row load, and the two
+   OR loops are interleaved, so the latency of one candidate is hidden by the other (stand-alone, AVX-512: 100-112 -> 81-93 TSC
+   cycles a candidate) */
+static inline void exact_stage2(tls_t *T, const u16 *phi, int d0, int d1, u64 *mask0, u64 *mask1, int *a0, int *a1) {
+    u32 offA[MAXS + 64] __attribute__((aligned(64))), offB[MAXS + 64] __attribute__((aligned(64)));
+    exact_offsets(phi, d0, offA); exact_offsets(phi, d1, offB);
+    const u8 *mb = (const u8 *)T->mbuf;
+    __m256i x0 = _mm256_setzero_si256(), x1 = x0, x2 = x0, x3 = x0, y0 = x0, y1 = x0, y2 = x0, y3 = x0;
+    int p = 0;
+    for (; p + 4 <= ns; p += 4) {
+        x0 = _mm256_or_si256(x0, ROW(offA, p));     y0 = _mm256_or_si256(y0, ROW(offB, p));
+        x1 = _mm256_or_si256(x1, ROW(offA, p + 1)); y1 = _mm256_or_si256(y1, ROW(offB, p + 1));
+        x2 = _mm256_or_si256(x2, ROW(offA, p + 2)); y2 = _mm256_or_si256(y2, ROW(offB, p + 2));
+        x3 = _mm256_or_si256(x3, ROW(offA, p + 3)); y3 = _mm256_or_si256(y3, ROW(offB, p + 3));
+    }
+    for (; p < ns; p++) { x0 = _mm256_or_si256(x0, ROW(offA, p)); y0 = _mm256_or_si256(y0, ROW(offB, p)); }
+    x0 = _mm256_or_si256(_mm256_or_si256(x0, x1), _mm256_or_si256(x2, x3));
+    y0 = _mm256_or_si256(_mm256_or_si256(y0, y1), _mm256_or_si256(y2, y3));
+    const __m256i rm = _mm256_loadu_si256((const __m256i *)T->rowmask);
+    _mm256_storeu_si256((__m256i *)mask0, _mm256_andnot_si256(x0, rm));
+    _mm256_storeu_si256((__m256i *)mask1, _mm256_andnot_si256(y0, rm));
+    *a0 = __builtin_popcountll(mask0[0]) + __builtin_popcountll(mask0[1]) + __builtin_popcountll(mask0[2]) + __builtin_popcountll(mask0[3]);
+    *a1 = __builtin_popcountll(mask1[0]) + __builtin_popcountll(mask1[1]) + __builtin_popcountll(mask1[2]) + __builtin_popcountll(mask1[3]);
 }
 u16 SPv[MAXS + 32] __attribute__((aligned(64))), RECv[MAXS + 32] __attribute__((aligned(64)));
 
@@ -358,12 +392,20 @@ static void scan_vector(tls_t *T) {
                 todo_d[ntodo++] = (u16)(VB * b + j) | (u16)(((mm >> j) & 1) << 14) | (u16)(((sm >> j) & 1) << 15);
             }
         }
-        for (int i = 0; i < ntodo; i++) {
-            int d = todo_d[i] & 0x3fff, issel = (todo_d[i] >> 14) & 1, issam = todo_d[i] >> 15;
+        int nc = 0;
+        for (int i = 0; i < ntodo; i++) {                 /* the candidates inside the range */
+            u64 k = kc + (todo_d[i] & 0x3fff);
+            if (k >= kmin && k <= kmax) T->cand_d[nc++] = todo_d[i];
+        }
+        for (int j = 0; j < nc; j += 2) {                 /* their exact stage, two at a time */
+            if (j + 1 < nc) exact_stage2(T, phi, T->cand_d[j] & 0x3fff, T->cand_d[j + 1] & 0x3fff, T->cand_m[j], T->cand_m[j + 1], &T->cand_a[j], &T->cand_a[j + 1]);
+            else T->cand_a[j] = exact_stage(T, phi, T->cand_d[j] & 0x3fff, T->cand_m[j]);
+        }
+        for (int i = 0; i < nc; i++) {
+            int d = T->cand_d[i] & 0x3fff, issel = (T->cand_d[i] >> 14) & 1, issam = T->cand_d[i] >> 15;
             u64 k = kc + d;
-            if (k < kmin || k > kmax) continue;
-            u64 mask[4];
-            int a = exact_stage(T, phi, d, mask);
+            const u64 *mask = T->cand_m[i];
+            int a = T->cand_a[i];
             if (issel) st->sel++;
             if (!issam && (!issel || a > Ta)) continue;
             double w = exp(l1 * a);

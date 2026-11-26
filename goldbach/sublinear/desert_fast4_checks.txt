@@ -1,0 +1,42 @@
+# desert_fast4.c checks (uarch, 24 Nov 2026), 4-core container
+# counting mode against brute force over ALL vectors (desert_brute_count.c), n = 2..9:
+brute n=2 D=7 optimal vectors=2
+brute n=3 D=19 optimal vectors=1
+brute n=4 D=31 optimal vectors=2
+brute n=5 D=43 optimal vectors=2
+brute n=6 D=67 optimal vectors=6
+brute n=7 D=103 optimal vectors=6
+brute n=8 D=163 optimal vectors=1
+brute n=9 D=181 optimal vectors=2
+n=2 r=5 COUNT D=7 optimal vectors=2 above D=0 nodes=2 (below the 2 split prefixes) seconds=0.0 vector: 3:0 5:0
+n=3 r=7 COUNT D=19 optimal vectors=1 above D=0 nodes=6 (below the 6 split prefixes) seconds=0.0 vector: 3:2 5:3 7:0
+n=4 r=11 COUNT D=31 optimal vectors=2 above D=0 nodes=26 (below the 24 split prefixes) seconds=0.0 vector: 3:2 5:3 7:5 11:7
+n=5 r=13 COUNT D=43 optimal vectors=2 above D=0 nodes=64 (below the 60 split prefixes) seconds=0.0 vector: 3:2 5:2 7:3 11:8 13:0
+n=6 r=17 COUNT D=67 optimal vectors=6 above D=0 nodes=147 (below the 120 split prefixes) seconds=0.0 vector: 3:2 5:3 7:5 11:4 13:5 17:7
+n=7 r=19 COUNT D=103 optimal vectors=6 above D=0 nodes=237 (below the 210 split prefixes) seconds=0.0 vector: 3:2 5:2 7:3 11:2 13:9 17:9 19:0
+n=8 r=23 COUNT D=163 optimal vectors=1 above D=0 nodes=387 (below the 336 split prefixes) seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13
+n=9 r=29 COUNT D=181 optimal vectors=2 above D=0 nodes=840 (below the 504 split prefixes) seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:10 19:3 23:13 29:14
+# proof runs: the next prime after D as the known value must be NOT ATTAINED:
+n=10 r=31 NOT ATTAINED: no vector strikes every odd prime below 227, so D(10) < 227; nodes=2099 (below the 720 split prefixes) seconds=0.0
+n=11 r=37 NOT ATTAINED: no vector strikes every odd prime below 277, so D(11) < 277; nodes=11411 (below the 990 split prefixes) seconds=0.0
+n=12 r=41 NOT ATTAINED: no vector strikes every odd prime below 337, so D(12) < 337; nodes=43328 (below the 1320 split prefixes) seconds=0.0
+n=13 r=43 NOT ATTAINED: no vector strikes every odd prime below 421, so D(13) < 421; nodes=82280 (below the 1716 split prefixes) seconds=0.0
+n=14 r=47 NOT ATTAINED: no vector strikes every odd prime below 503, so D(14) < 503; nodes=271998 (below the 2184 split prefixes) seconds=0.1
+n=15 r=53 NOT ATTAINED: no vector strikes every odd prime below 617, so D(15) < 617; nodes=1043369 (below the 2730 split prefixes) seconds=0.2
+# normal runs n = 1..15 (desert_check.py: all as published):
+n=1 r=3 D=5 nodes=1 (below the 1 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:0
+n=2 r=5 D=7 nodes=2 (below the 2 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:0 5:0
+n=3 r=7 D=19 nodes=6 (below the 6 split prefixes) rebuilds=0 zero-option cuts=0 seconds=0.0 vector: 3:2 5:3 7:0
+n=4 r=11 D=31 nodes=25 (below the 24 split prefixes) rebuilds=6 zero-option cuts=17 seconds=0.0 vector: 3:2 5:3 7:5 11:7
+n=5 r=13 D=43 nodes=66 (below the 60 split prefixes) rebuilds=41 zero-option cuts=20 seconds=0.0 vector: 3:2 5:2 7:3 11:8 13:0
+n=6 r=17 D=67 nodes=126 (below the 120 split prefixes) rebuilds=106 zero-option cuts=16 seconds=0.0 vector: 3:2 5:3 7:5 11:9 13:7 17:3
+n=7 r=19 D=103 nodes=230 (below the 210 split prefixes) rebuilds=212 zero-option cuts=9 seconds=0.0 vector: 3:2 5:2 7:3 11:2 13:9 17:9 19:0
+n=8 r=23 D=163 nodes=496 (below the 336 split prefixes) rebuilds=383 zero-option cuts=6 seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:9 19:3 23:13
+n=9 r=29 D=181 nodes=1026 (below the 504 split prefixes) rebuilds=604 zero-option cuts=1 seconds=0.0 vector: 3:2 5:2 7:5 11:7 13:5 17:10 19:3 23:13 29:14
+n=10 r=31 D=223 nodes=2656 (below the 720 split prefixes) rebuilds=846 zero-option cuts=11 seconds=0.0 vector: 3:2 5:2 7:5 11:9 13:8 17:7 19:3 23:20 29:23 31:13
+n=11 r=37 D=271 nodes=12111 (below the 990 split prefixes) rebuilds=1167 zero-option cuts=20 seconds=0.0 vector: 3:2 5:3 7:6 11:9 13:1 17:7 19:18 23:15 29:11 31:5 37:19
+n=12 r=41 D=331 nodes=44158 (below the 1320 split prefixes) rebuilds=1519 zero-option cuts=42 seconds=0.0 vector: 3:2 5:3 7:3 11:6 13:8 17:7 19:10 23:1 29:10 31:17 37:19 41:37
+n=13 r=43 D=419 nodes=84778 (below the 1716 split prefixes) rebuilds=1922 zero-option cuts=32 seconds=0.0 vector: 3:1 5:3 7:1 11:4 13:11 17:13 19:17 23:18 29:21 31:21 37:5 41:19 43:21
+n=14 r=47 D=499 nodes=376428 (below the 2184 split prefixes) rebuilds=2568 zero-option cuts=78 seconds=0.1 vector: 3:2 5:2 7:5 11:2 13:4 17:3 19:14 23:7 29:2 31:8 37:3 41:29 43:30 47:40
+n=15 r=53 D=613 nodes=1267965 (below the 2730 split prefixes) rebuilds=3285 zero-option cuts=16 seconds=0.2 vector: 3:2 5:2 7:6 11:10 13:8 17:11 19:8 23:18 29:19 31:3 37:26 41:31 43:34 47:11 53:8
+# SAT (desert_sat.py, CaDiCaL 1.9.5): n = 8, 10, 12, 13 CONFIRMED (UNSAT at the next prime after D; SAT at D with the model's least unstruck prime = D); UNSAT time grows ~x9 per n (36 s at n = 12, 329 s at n = 13): not a check beyond n ~ 14

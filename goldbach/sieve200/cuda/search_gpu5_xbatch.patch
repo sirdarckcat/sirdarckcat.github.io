@@ -1,0 +1,153 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 08:05:15.124201420 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 08:05:15.125741536 +0000
+@@ -57,6 +57,11 @@
+ ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2),
+                 help="2: a pool's members are tested as two halves in two threads, each on its own CUDA stream (run_pool_split): while one half's host code runs between its Fermat rounds (syncs, ~40 small "
+                      "cupy launches) the other half's kernel keeps the GPU busy; the same per-member results as 1 (counted tests, PRP flags, successes, first-PRP rows)")
++ap.add_argument("--pipeline", type=int, default=0, choices=(0, 1),
++                help="1: ONE sieve thread for the whole campaign (sieve200/cuda/overlap.py Pipeline): it plans the next batch itself and sieves its windows on a high-priority stream while the Fermat rounds of "
++                     "the pool of the previous window run, across batch boundaries (with --overlap the sieve of a batch cannot start before the previous batch's Fermat has ended); needs --flush-each-window 1")
++ap.add_argument("--flush-each-window", type=int, default=0, choices=(0, 1),
++                help="1: test the pool after every window (a deep window keeps ~1M members: with --pool 2097152 the pool is tested once a batch, after ALL its windows are sieved, so nothing can overlap)")
+ ap.add_argument("--overlap", type=int, default=0, choices=(0, 1),
+                 help="1: the sieve of the next window runs in a second thread on its own high-priority CUDA stream (sieve200/cuda/overlap.py) while the Fermat rounds of the pool run")
+ ap.add_argument("--sieve200", default=os.environ.get("SIEVE200_DIR", "/content/gs/goldbach/sieve200"), help="the uarch session's goldbach/sieve200 (with cuda/)")
+@@ -77,8 +82,8 @@
+ from gpu_fermat3 import kernel as kernel3      # noqa: E402
+ sys.path.insert(0, os.path.join(args.sieve200, "cuda"))
+ from gpu_sieve import GpuFeeder               # noqa: E402
+-if args.overlap:
+-    from overlap import overlapped               # noqa: E402  (sieve200/cuda, uarch b344e85)
++if args.overlap or args.pipeline:
++    from overlap import overlapped, Pipeline     # noqa: E402  (sieve200/cuda, uarch b344e85)
+ if args.kernel == 28:
+     sys.path.insert(0, os.environ.get("FERMAT28_DIR", "/content/f28"))
+     import gpu_fermat28                       # noqa: E402
+@@ -303,8 +308,30 @@
+     return out
+ 
+ 
+-def run_batch(batch, out):
+-    """Sieve, select and test the slices in batch as one pool. Returns (lines, found, stats)."""
++def batch_plan(batch, K):
++    """(slice index, spec, kstart, kmax) of every slice of a batch, checked before any GPU work; the sieve thread (--pipeline) and run_batch use the same plan"""
++    plan = []
++    for si, spec in enumerate(batch):
++        kstart, kmax = spec["kstart"], spec["kmax"]
++        if spec.get("ceiling_digits"):
++            kcap = int((mpz(10) ** spec["ceiling_digits"] - mpz(spec["N0"])) // mpz(spec["M"]))
++            kmax = min(kmax, kcap + 1)
++        assert kstart % K == 0 and (kmax - kstart) % K == 0, "slices must be whole GPU sieve windows"
++        plan.append((si, spec, kstart, kmax))
++    return plan
++
++
++def sieve_windows(batch):
++    """the sieve: (slice index, window) in order"""
++    K = 1 << args.klog
++    for si, spec, kstart, kmax in batch_plan(batch, K):
++        fd = feeder_for(spec)
++        for w0 in range(kstart, kmax, K):
++            yield si, fd.window(w0)
++
++
++def run_batch(batch, out, pipe=None):
++    """Sieve, select and test the slices in batch as one pool. Returns (lines, found, stats).  pipe: the campaign's Pipeline (--pipeline 1): its windows instead of a sieve of our own."""
+     t0 = time.time()
+     tester = MultiTester(batch)
+     L = args.block
+@@ -321,7 +348,7 @@
+         kv = cp.concatenate([c[1] for c in pool])
+         cnt = cp.concatenate([c[2] for c in pool])
+         cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])      # (a deep window is a pool of its own: no 1.5 GB copy)
+-        if args.overlap:
++        if args.overlap or args.pipeline:
+             cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
+         pool.clear(); npool[0] = 0
+         tests_m, prp_m, succ_m, frow, g, nl = (run_pool_split if args.pool_threads > 1 else run_pool)(tester, kv, cnt, cols)
+@@ -343,34 +370,22 @@
+             print(f"[profile-pool] flush wall {time.perf_counter() - t_flush:.3f} s (the pool's Fermat rounds, its concatenations and the per-slice statistics)", flush=True)
+ 
+     K = 1 << args.klog
+-    plan = []                                                    # (si, spec, kstart, kmax), checked before any GPU work
+-    for si, spec in enumerate(batch):
+-        kstart, kmax = spec["kstart"], spec["kmax"]
+-        if spec.get("ceiling_digits"):
+-            kcap = int((mpz(10) ** spec["ceiling_digits"] - mpz(spec["N0"])) // mpz(spec["M"]))
+-            kmax = min(kmax, kcap + 1)
+-        assert kstart % K == 0 and (kmax - kstart) % K == 0, "slices must be whole GPU sieve windows"
++    plan = batch_plan(batch, K)                                  # (si, spec, kstart, kmax), checked before any GPU work
++    for si, spec, kstart, kmax in plan:
+         st[si]["kmax"] = kmax
+-        plan.append((si, spec, kstart, kmax))
+-
+-    def windows():                                               # the sieve: (slice index, window) in order
+-        for si, spec, kstart, kmax in plan:
+-            fd = feeder_for(spec)
+-            for w0 in range(kstart, kmax, K):
+-                yield si, fd.window(w0)
+-
+-    for si, w in (overlapped(cp, windows()) if args.overlap else windows()):
++    nwin = sum(len(range(kstart, kmax, K)) for _, _, kstart, kmax in plan)
++    for si, w in (pipe.windows(nwin) if pipe else overlapped(cp, sieve_windows(batch)) if args.overlap else sieve_windows(batch)):
+         st[si]["alive"] += int(w.alive_total.sum())
+         st[si]["kdone"] += K
+         st[si]["hmk"] += float(w.hm_kept.sum()); st[si]["hma"] += float(w.hm_all.sum())
+         rows32 = w.rows.astype(cp.int32)
+         rows32 += np.int32(tester.off[si])                       # in place: one int32 copy of the survivor rows, not two (uarch b344e85)
+         pool.append((si, w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
+-        if args.overlap:
++        if args.overlap or args.pipeline:
+             cp.cuda.get_current_stream().synchronize()           # the copies above are done before w's arrays go back to the sieve thread's allocator
+         w.rows = None                                            # after the synchronize (uarch 5499787): the u16 rows go back to the pool only once read
+         npool[0] += int(w.k.size)
+-        if npool[0] >= args.pool:
++        if npool[0] >= args.pool or args.flush_each_window:
+             flush()
+     flush()
+     dt = (time.time() - t0) / len(batch)
+@@ -418,26 +433,38 @@
+             if m:
+                 done.add(m.group(1))
+     out = open(FOUND, "a")
+-    while True:
+-        if not args.no_stop and os.path.exists(FOUND) and os.path.getsize(FOUND) > 0:
+-            print("C3GPU-HIT: found.jsonl is not empty", flush=True)
+-            return 3
++
++    def select_batch(excluded):                                  # the next `--batch` slices that are not in `excluded`
+         batch = []
+         top = (args.kmax - 1) // args.slice * args.slice
+         k0s = range(top, args.klo - 1, -args.slice) if args.desc else range(args.klo // args.slice * args.slice, args.kmax, args.slice)
+         for k0 in k0s:
+             for s in specs:
+                 name = f"{s['name']}@{k0}"
+-                if name not in done:
++                if name not in excluded:
+                     batch.append(dict(s, name=name, kstart=k0, kmax=min(k0 + args.slice, args.kmax)))
+                     if len(batch) >= args.batch:
+                         break
+             if len(batch) >= args.batch:
+                 break
++        return batch
++
++    planned = set(done)                                          # --pipeline: the sieve thread plans ahead of the batches that are finished
++
++    def plan_next():
++        b = select_batch(planned)
++        planned.update(x["name"] for x in b)
++        return b
++    pipe = Pipeline(cp, plan_next, sieve_windows) if args.pipeline else None
++    while True:
++        if not args.no_stop and os.path.exists(FOUND) and os.path.getsize(FOUND) > 0:
++            print("C3GPU-HIT: found.jsonl is not empty", flush=True)
++            return 3
++        batch = pipe.next_batch() if pipe else select_batch(done)
+         if not batch:
+             print("C3GPU-EXHAUSTED", flush=True)
+             return 2
+-        lines, found, stats = run_batch(batch, out)
++        lines, found, stats = run_batch(batch, out, pipe)
+         with open(LOG, "a") as f:
+             f.write("\n".join(lines) + "\n")
+         with open(STATS, "a") as f:

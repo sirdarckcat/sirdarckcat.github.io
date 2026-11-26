@@ -1,0 +1,375 @@
+--- search_gpu5.py	(phd/campaign3_gpu/search_gpu5.py @ 9385f3b, sha256 4f27d916ea93..., deployed on the G4s from tonight)
++++ search_gpu5.py	(--carry-over / --carry-stop: sha256 bf10e5fb8bf0...)
+@@ -60,6 +60,15 @@
+ ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2),
+                 help="2: a pool's members are tested as two halves in two threads, each on its own CUDA stream (run_pool_split): while one half's host code runs between its Fermat rounds (syncs, ~40 small "
+                      "cupy launches) the other half's kernel keeps the GPU busy; the same per-member results as 1 (counted tests, PRP flags, successes, first-PRP rows)")
++ap.add_argument("--carry-over", type=int, default=0, choices=(0, 1),
++                help="1 (campaign mode, --fused-rounds 1): a pool (each part of it with --pool-threads 2) stops at the first round that would start with fewer than --carry-stop active "
++                     "members, and its undecided members go on in the next pool with the rows they have left (fround.run_pool_fused stop_below / carry_state, the uarch session's "
++                     "g200k/costside): no tail of small rounds, and with the default stop no test past a first PRP.  A slice's line is printed, with its SUCCESS / NEARMISS lines in "
++                     "run_batch's order, once every member of the slice is decided (a few batches later); its counted tests and expected hits / near-misses go into the stats line of "
++                     "that batch; its found records are written as soon as they are verified, each N once (a record already in found.jsonl is not written again).  A restart redoes "
++                     "the slices whose lines were not printed.  The per-member results, so the slice lines (but their s and k/s), are those of a run without it")
++ap.add_argument("--carry-stop", type=int, default=0,
++                help="--carry-over: a pool (a part) stops at the first round with fewer active members than this; 0: (its target) // 2 + 1, i.e. D = 1 in every round")
+ ap.add_argument("--pipeline", type=int, default=0, choices=(0, 1),
+                 help="1: ONE sieve thread for the whole campaign (sieve200/cuda/overlap.py Pipeline): it plans the next batch itself and sieves its windows on a high-priority stream while the Fermat rounds of "
+                      "the previous pool run, across batch boundaries (with --overlap the sieve of a batch cannot start before the previous batch's Fermat has ended).  Either --flush-each-window 1 "
+@@ -95,6 +104,7 @@
+                 help="kernel 28's step file: fermat28_step_s1.cuh or _s1r.cuh with --k28-asm 1 (sm_120), _s1rw.cuh or _s1w.cuh with --k28-asm 0 (sm_80/89)")
+ ap.add_argument("--k28-asm", type=int, default=int(os.environ.get("K28_ASM", "1")), choices=(0, 1), help="kernel 28: PTX mad.wide (1) or plain C (0)")
+ args = ap.parse_args()
++assert not args.carry_over or (args.fused_rounds and args.campaign), "--carry-over needs --fused-rounds 1 and --campaign"
+ sys.path.insert(0, args.goldbach)
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ import search                      # noqa: E402  (init_spec, verify_success)
+@@ -429,6 +439,313 @@
+     return out
+ 
+ 
++_CT = {}                            # --carry-over: slice name -> (its cq rows on the device, the q of its rows, its first row at or above --near-miss): made once, when the slice is new
++_CT_KM = []                         # (the Fermat kernel, M) of the last CarryTester built with new slices (a drain has none)
++
++
++class CarryTester(MultiTester):
++    """--carry-over: MultiTester over every open slice (old_specs: the slices with members carried from the last pool; new_specs: the batch's).  The new slices are checked and their rows
++    made by MultiTester itself, exactly as run_batch does; the older slices' tables are taken from _CT.  test() is MultiTester's."""
++    def __init__(self, old_specs, new_specs, limbs=21):
++        if new_specs:
++            mt = MultiTester(new_specs, limbs)
++            ends = mt.off[1:] + [int(mt.cq.shape[0])]
++            qrow = cp.asnumpy(mt.qrow)
++            thr = cp.asnumpy(mt.thr_row) if hasattr(mt, "thr_row") else None
++            for i, (s, a, b) in enumerate(zip(new_specs, mt.off, ends)):
++                _CT[s["name"]] = (mt.cq[a:b], qrow[a:b], int(thr[i]) - a if thr is not None else 0)
++            _CT_KM[:] = [mt.k, mt.M]
++        self.k, self.M = _CT_KM
++        parts, self.off, qs, thr, n = [], [], [], [], 0
++        for s in old_specs + new_specs:
++            part, q, t = _CT[s["name"]]
++            self.off.append(n); parts.append(part); qs.append(q); thr.append(n + t)
++            n += int(part.shape[0])
++        self.cq = parts[0] if len(parts) == 1 else cp.concatenate(parts)
++        self.qrow = cp.asarray(np.concatenate(qs).astype(np.int64))
++        if args.log_near_exp and args.near_miss:
++            self.thr_row = cp.asarray(np.array(thr, dtype=np.int32))
++
++
++class SliceState:
++    """--carry-over: a slice whose line is not printed yet"""
++    def __init__(self, uid, spec):
++        self.uid, self.spec = uid, spec
++        self.st = dict(alive=0, hmk=0.0, hma=0.0, kdone=0, tests=0, prps=0, succ=[], near=[], kmax=0)     # run_batch's per-slice statistics (succ / near: decided, not yet verified)
++        self.windows_left = 0                                    # windows of the slice not yet in a pool
++        self.outstanding = 0                                     # its members in a pool (or carried) and not decided
++        self.ehits = self.enear = 0.0                            # expected hits / near-misses of its members, at the p^ of the pool each entered (run_batch's sums)
++        self.groups = {}                                         # (0, k) / (1, k, q) -> the lines of a verified success / near-miss: printed before the slice line, in run_batch's order
++        self.nf = 0                                              # design hits (found= of the slice line)
++        self.dt = 0.0                                            # its batch's seconds a slice
++
++
++class DedupOut:
++    """found.jsonl with --carry-over: a record whose N is already in the file (written before a restart that redoes its slice) is not written again; .written counts the new ones"""
++    def __init__(self, f, seen):
++        self.f, self.seen, self.name, self.written = f, seen, f.name, 0
++
++    def write(self, s):
++        N = json.loads(s)["N"]
++        if N in self.seen:
++            return
++        self.seen.add(N)
++        self.written += 1
++        self.f.write(s)
++
++    def flush(self):
++        self.f.flush()
++
++
++class Carry:
++    """--carry-over: the open slices (lines not printed; uid order) and, for every part of the pool (run_pool_split's halves), its undecided members: k, the rows they have left (as rows of
++    their own slice's list: the tester's global rows change with the batch), their slice's uid, the tests counted so far"""
++    def __init__(self, nparts, found_path):
++        self.open, self.uid, self.parts, self.seen = [], 0, [None] * nparts, set()
++        if os.path.exists(found_path):
++            for l in open(found_path):
++                try:
++                    self.seen.add(json.loads(l)["N"])
++                except (ValueError, KeyError, TypeError):
++                    pass
++
++    def members(self):
++        return sum(int(p["kv"].size) for p in self.parts if p is not None)
++
++    def rows(self):
++        return sum(int(p["cols"].size) for p in self.parts if p is not None)
++
++
++def _expand(lens, vals):
++    """vals[m] repeated lens[m] times (lens int64 >= 1)"""
++    total = int(lens.sum()) if int(lens.size) else 0
++    if total == 0:
++        return cp.zeros(0, vals.dtype)
++    seg = cp.searchsorted(cp.cumsum(lens), cp.arange(total), side="right")
++    return vals[seg]
++
++
++def run_batch_carry(batch, out, pipe, carry, final=False):
++    """run_batch with --carry-over: the batch's slices join the open ones; a pool is the batch's kept members plus the members carried from the last pool, and stops at --carry-stop
++    (final: runs to its end).  Returns (lines, found records written, stats) like run_batch; the lines are those of the slices completed in this batch, in the order the slices were made."""
++    import fround                                               # noqa: E402  (FERMAT28_DIR: next to gpu_fermat28.py; with stop_below / carry_state / carry_rows)
++    t0 = time.time()
++    new = []
++    for spec in batch:
++        new.append(SliceState(carry.uid, spec))
++        carry.uid += 1
++    old = list(carry.open)
++    carry.open.extend(new)
++    slices = old + new                                          # the tester's variants, uid ascending
++    if not slices:
++        return [], [], f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} batch (carry-over: nothing open)"
++    slot = {s.uid: i for i, s in enumerate(slices)}
++    tester = CarryTester([s.spec for s in old], [s.spec for s in new])
++    off_g = cp.asarray(np.array(tester.off, dtype=np.int32))
++    uid_g = cp.asarray(np.array([s.uid for s in slices], dtype=np.int64))
++    uid0 = slices[0].uid
++    lut_h = np.full(carry.uid - uid0, -1, dtype=np.int32)
++    for s in slices:
++        lut_h[s.uid - uid0] = slot[s.uid]
++    lut = cp.asarray(lut_h)                                     # uid - uid0 -> the slice's variant in this tester
++    P = args.pool_threads
++    tgt = args.target // P                                      # run_pool_split's halves: half the target each
++    S = args.carry_stop or tgt // 2 + 1
++    nsl = len(slices)
++    dout = DedupOut(out, carry.seen)
++    gt = [0, 0]                                                 # tests computed, launches (this batch's pools)
++    pool, npool = [], [0]
++
++    def flush(fin):
++        if not pool and carry.members() == 0:
++            return
++        if pool:                                                # the new members, as run_batch's flush
++            sid = cp.concatenate([cp.full(int(c[1].size), c[0], cp.int32) for c in pool])
++            kv = cp.concatenate([c[1] for c in pool])
++            cnt = cp.concatenate([c[2] for c in pool])
++            cols = pool[0][3] if len(pool) == 1 else cp.concatenate([c[3] for c in pool])
++            if args.overlap or args.pipeline:
++                cp.cuda.get_current_stream().synchronize()
++        else:
++            sid, kv, cnt, cols = cp.zeros(0, cp.int32), cp.zeros(0, cp.int64), cp.zeros(0, cp.int64), cp.zeros(0, cp.int32)
++        pool.clear(); npool[0] = 0
++        n = int(kv.size)
++        if n:
++            nper = cp.asnumpy(cp.bincount(sid, minlength=nsl))
++            for i, s in enumerate(slices):
++                s.outstanding += int(nper[i])
++        offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])
++        cuts = [n * h // P for h in range(P + 1)]               # (P = 2: run_pool_split's mid = n // 2)
++        parts = []
++        for h in range(P):
++            a, b = cuts[h], cuts[h + 1]
++            ca, cb = int(offs[a]), int(offs[b])
++            c = carry.parts[h]
++            if c is not None:                                   # the carried members first, their rows moved to this tester's variants
++                sl_c = lut[c["uid"] - uid0]
++                colsg = c["cols"] + _expand(c["cnt"], off_g[sl_c])
++                parts.append(dict(kv=cp.concatenate([c["kv"], kv[a:b]]), cnt=cp.concatenate([c["cnt"], cnt[a:b]]), cols=cp.concatenate([colsg, cols[ca:cb]]).astype(cp.int32),
++                                  sl=cp.concatenate([sl_c, sid[a:b]]), prev=cp.concatenate([c["tests"], cp.zeros(b - a, cp.int64)])))
++            else:
++                parts.append(dict(kv=kv[a:b], cnt=cnt[a:b], cols=cols[ca:cb], sl=sid[a:b], prev=cp.zeros(b - a, cp.int64)))
++        cp.cuda.get_current_stream().synchronize()              # the parts are complete before the threads read them on their own streams
++        stop = 0 if fin else S
++        res, err = [None] * P, []
++
++        def run(h):
++            pt = parts[h]
++            return fround.run_pool_fused(tester, pt["kv"], pt["cnt"], pt["cols"], target=tgt, dmax=args.dmax, check_range=(args.kernel == 28), profile=bool(args.profile_pool),
++                                         stop_below=stop, carry_state=True)
++        if P == 1:
++            res[0] = run(0)
++        else:
++            if not _SPLIT_STREAMS:
++                _SPLIT_STREAMS.extend(_fermat_stream() for _ in range(2))
++            dev = cp.cuda.Device().id
++
++            def work(h):
++                try:
++                    cp.cuda.Device(dev).use()
++                    with _SPLIT_STREAMS[h]:
++                        res[h] = run(h)
++                        _SPLIT_STREAMS[h].synchronize()
++                except BaseException as e:                      # handed to the caller
++                    err.append(e)
++            ths = [threading.Thread(target=work, args=(h,)) for h in range(P)]
++            for t in ths:
++                t.start()
++            for t in ths:
++                t.join()
++            if err:
++                raise err[0]
++        tt = pp = 0
++        for r in res:
++            gt[0] += r[4]; gt[1] += r[5]
++            tt += int(r[0].sum()); pp += int(r[1].sum())
++        if n and tt:                                            # the new members' expected hits (and near-misses) at this pool's p^, as run_batch's flush
++            eh = cp.asnumpy(cp.bincount(sid, weights=(1.0 - pp / tt) ** cnt.astype(cp.float64), minlength=nsl))
++            for i, s in enumerate(slices):
++                s.ehits += float(eh[i])
++            if args.log_near_exp and args.near_miss:
++                cbl = count_below(cols, offs, sid, tester.thr_row)
++                en = cp.asnumpy(cp.bincount(sid, weights=(1.0 - pp / tt) ** cbl.astype(cp.float64), minlength=nsl))
++                for i, s in enumerate(slices):
++                    s.enear += float(en[i])
++        for h in range(P):
++            pt = parts[h]
++            tests_m, prp_m, succ_m, frow, _, _, unf, pos, _ = res[h]
++            done = cp.ones(int(pt["kv"].size), cp.bool_)
++            if int(unf.size):
++                done[unf] = False
++            sl, tot = pt["sl"], pt["prev"] + tests_m
++            nd = cp.asnumpy(cp.bincount(sl[done], minlength=nsl))
++            td = cp.asnumpy(cp.bincount(sl[done], weights=tot[done].astype(cp.float64), minlength=nsl))       # (integers below 2^53: exact)
++            npr = cp.asnumpy(cp.bincount(sl[prp_m], minlength=nsl))
++            for i, s in enumerate(slices):
++                s.outstanding -= int(nd[i])
++                s.st["tests"] += int(round(float(td[i])))
++                s.st["prps"] += int(npr[i])
++            ms = cp.nonzero(succ_m)[0]
++            for i, k in zip(sl[ms].tolist(), pt["kv"][ms].tolist()):
++                slices[i].st["succ"].append(int(k))
++            if args.near_miss:                                  # first-PRP row >= the threshold: g(N) = that q
++                qf = cp.where(frow >= 0, tester.qrow[cp.maximum(frow, 0)], -1)
++                nm = cp.nonzero(qf >= args.near_miss)[0]
++                for i, k, q in zip(sl[nm].tolist(), pt["kv"][nm].tolist(), qf[nm].tolist()):
++                    slices[i].st["near"].append((int(k), int(q)))
++            if int(unf.size):                                   # the undecided go on in the next pool: their rows left, as rows of their own slice
++                lens, cols_u = fround.carry_rows(pt["cnt"], pt["cols"], unf, pos)
++                sl_u = sl[unf]
++                carry.parts[h] = dict(kv=pt["kv"][unf], cnt=lens, cols=(cols_u - _expand(lens, off_g[sl_u])).astype(cp.int32), uid=uid_g[sl_u], tests=tot[unf])
++            else:
++                carry.parts[h] = None
++        cp.cuda.get_current_stream().synchronize()              # (as run_pool_split: done before the parts' arrays go back to their streams' free lists)
++
++    K = 1 << args.klog
++    plan = batch_plan(batch, K) if batch else []
++    for si, spec, kstart, kmax in plan:
++        new[si].st["kmax"] = kmax
++        new[si].windows_left = len(range(kstart, kmax, K))
++    nwin = sum(s.windows_left for s in new)
++    if nwin:
++        for si, w in (pipe.windows(nwin) if pipe else overlapped(cp, sieve_windows(batch)) if args.overlap else sieve_windows(batch)):
++            s = new[si]
++            s.st["alive"] += int(w.alive_total.sum())
++            s.st["kdone"] += K
++            s.st["hmk"] += float(w.hm_kept.sum()); s.st["hma"] += float(w.hm_all.sum())
++            rows32 = w.rows.astype(cp.int32)
++            rows32 += np.int32(tester.off[slot[s.uid]])
++            pool.append((slot[s.uid], w.k.astype(cp.int64), w.cnt.astype(cp.int64), rows32))
++            if args.overlap or args.pipeline:
++                cp.cuda.get_current_stream().synchronize()
++            w.rows = None
++            npool[0] += int(w.k.size)
++            s.windows_left -= 1
++            if npool[0] >= args.pool or args.flush_each_window:
++                flush(False)
++    flush(final)
++    dt = (time.time() - t0) / max(len(batch), 1)
++    for s in new:
++        s.dt = dt
++    for s in slices:                                            # verify what was decided in this batch's pools: found records written now (run_batch's order within a slice)
++        spec = s.spec
++        for k in sorted(s.st["succ"]):
++            gl = []
++            res = search.verify_success(spec, int(k))
++            if res:
++                res["name"] = spec["name"]
++                s.nf += 1
++                gl.append(f"  SUCCESS {spec['name']} k={k} digits={res['digits']} g={res['g']}")
++                dout.write(json.dumps(res) + "\n"); dout.flush()
++            else:                                               # the CPU found a PRP row below Q: recompute g(N), never drop it silently
++                s.nf += record_discrepancy(spec, int(k), None, dout, gl, [])
++            s.groups[(0, int(k))] = gl
++        s.st["succ"] = []
++        for k, q in sorted(s.st["near"]):
++            gl = []
++            res = verify_near_miss(spec, int(k), int(q))
++            if res:                                             # not counted in found= (that is design-Q successes)
++                res["name"] = spec["name"]
++                gl.append(f"  SUCCESS-NEARMISS {spec['name']} k={k} digits={res['digits']} g={res['g']} (first PRP row, design Q={spec['Q']})")
++                dout.write(json.dumps(res) + "\n"); dout.flush()
++            else:
++                gl.append(f"  NEARMISS-REJECTED {spec['name']} k={k} q={q} (CPU check failed)")
++                s.nf += record_discrepancy(spec, int(k), int(q), dout, gl, [])
++            s.groups[(1, int(k), int(q))] = gl
++        s.st["near"] = []
++    lines, printed = [], []
++    for s in slices:                                            # the slices every member of which is decided: their lines, as run_batch's
++        if s.windows_left or s.outstanding:
++            continue
++        printed.append(s)
++        spec, st_ = s.spec, s.st
++        for key in sorted(s.groups):
++            lines.extend(s.groups[key])
++        kd = max(st_["kdone"], 1)
++        dts = max(s.dt, 1e-9)
++        phat = st_["prps"] / st_["tests"] if st_["tests"] else 0.0
++        e_hat = (st_["alive"] / kd) * phat
++        hshare = st_["hmk"] / st_["hma"] if st_["hma"] else 1.0
++        lines.append(f"[{spec['name']}] k=[{spec['kstart']},{st_['kmax']}) {s.dt:.0f}s ({kd/dts:.0f} k/s) tests={st_['tests']} "
++                     f"prp={st_['prps']} p^={phat:.4f} alive/k={st_['alive']/kd:.1f} E^={e_hat:.2f} "
++                     f"hit%={100*hshare:.1f} found={s.nf}")
++        _CT.pop(spec["name"], None)
++    done_uids = {s.uid for s in printed}
++    carry.open = [s for s in carry.open if s.uid not in done_uids]
++    assert not final or not carry.open, "a final pool left slices open"
++    tests = sum(s.st["tests"] for s in printed)
++    eh = sum(s.ehits for s in printed)
++    en = sum(s.enear for s in printed)
++    head = f"batch {batch[0]['name']}..{batch[-1]['name']}" if batch else "batch (carry-over drain)"
++    stats = (f"{time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())} {head} "
++             f"({len(batch)} slices) {dt*len(batch):.1f}s: tests {tests} counted, {gt[0]} computed "
++             f"(waste {100*(1-tests/max(gt[0],1)):.1f}%), {gt[1]} launches, expected hits {eh:.4e}, "
++             + (f"expected near>={args.near_miss} {en:.4e}, " if args.log_near_exp and args.near_miss else "")
++             + f"found {dout.written} [v5 gpu-sieve]" + (f" [near-miss >= {args.near_miss}]" if args.near_miss else "")
++             + f" [carry-over: {len(printed)} slice lines; {carry.members()} members / {carry.rows()} rows into the next pool; {len(carry.open)} slices open]")
++    return lines, [], stats
++
++
+ def batch_plan(batch, K):
+     """(slice index, spec, kstart, kmax) of every slice of a batch, checked before any GPU work; the sieve thread (--pipeline) and run_batch use the same plan"""
+     plan = []
+@@ -609,6 +926,7 @@
+             if m:
+                 done.add(m.group(1))
+     out = open(FOUND, "a")
++    carry = Carry(args.pool_threads, FOUND) if args.carry_over else None
+ 
+     def select_batch(excluded):                                  # the next `--batch` slices that are not in `excluded`
+         if src:
+@@ -640,15 +958,23 @@
+             return 3
+         batch = pipe.next_batch() if pipe else select_batch(done)
+         if not batch:
++            if carry is not None and carry.open:                 # --carry-over: the members still undecided, to their end; the last slice lines
++                lines, found, stats = run_batch_carry([], out, None, carry, final=True)
++                if lines:
++                    with open(LOG, "a") as f:
++                        f.write("\n".join(lines) + "\n")
++                with open(STATS, "a") as f:
++                    f.write(stats + "\n")
+             print("C3GPU-EXHAUSTED", flush=True)
+             return 2
+-        lines, found, stats = run_batch(batch, out, pipe)
++        lines, found, stats = run_batch_carry(batch, out, pipe, carry) if carry is not None else run_batch(batch, out, pipe)
+         if pipe and args.trace_pipeline:
+             ps = pipe.take_stats()
+             print(f"[pipeline] batch {batch[0]['name']}..{batch[-1]['name']}: the consumer waited {ps['wait']:.3f} s for the sieve; the sieve thread made {ps['windows']} windows in {ps['busy']:.3f} s "
+                   f"and waited {ps['idle']:.3f} s for the consumer ({time.strftime('%H:%M:%S', time.gmtime())}Z)", flush=True)
+-        with open(LOG, "a") as f:
+-            f.write("\n".join(lines) + "\n")
++        if lines:                                                # (--carry-over: a batch may complete no slice)
++            with open(LOG, "a") as f:
++                f.write("\n".join(lines) + "\n")
+         with open(STATS, "a") as f:
+             f.write(stats + "\n")
+         done.update(b["name"] for b in batch)
