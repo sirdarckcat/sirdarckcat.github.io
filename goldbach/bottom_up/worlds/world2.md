@@ -66,6 +66,48 @@ idealization) and the tail as Gaussian. Then
 - **The weighted Johnson radius on the primes 467..y** is √(ρ ln K / 2) = 2.88√ρ. That is at least 2.9 times the random agreement at
   every ρ, and above 1 (unreachable) for ρ > 0.12.
 
+## The Johnson barrier on generic lists: the research session's claim of 26 Nov, 00:41 UTC, checked
+
+**The exact forms.**
+- **Reed–Solomon, confirmed verbatim.** Theorem 3 of Sudan's survey (AAECC 2001, after Guruswami–Sudan) returns every p with k
+  coefficients such that Σ_{i : p(x_i) = y_i} w_i > √(k(ε + Σ_i w_i²)), over distinct pairs (x_i, y_i). A list is several pairs
+  sharing one x_i. With unit weights this gives agreement > √(k m ℓ).
+- **The integers.** The survey quotes three bounds, for K ≤ p_1 ⋯ p_k with the primes sorted:
+  - Goldreich–Ron–Sudan: n − √(2nk log p_n/log p_1);
+  - Boneh: n − √(nk log p_n/log p_1);
+  - Guruswami–Sahai–Sudan: n − √(n(k + ε)), with weights favouring the small moduli.
+- **The weighted form used here,** Σ_agree w_i ln p_i ≥ √(ln K · Σ_i w_i² ln p_i), is the same interpolation in the ideal-code frame.
+  Its unit-weight case is Boneh's bound. The Guruswami–Sahai–Sudan paper itself could not be read from here.
+
+**(i) The algebra, per agreement set: correct.** Fix the agreement set A, with every l_i = l ≥ 2.
+- The guarantee and a first moment K·∏_A (l/p_i) ≥ 1 give a² ≥ ln K · l · a ≥ (a − |A| ln l) · l · a.
+- So the mean of ln p_i over A is at most l ln l/(l − 1). For l = 1 they force A = everything, with total inside the room.
+
+**(ii) The premise undercounts [P].**
+- A member exists if some agreement set works. The first moment is K · P(Σ_i B_i ln p_i ≥ a), with B_i independent Bernoulli(ρ_i).
+- It carries the entropy of the choice of A, about C(m, |A|). So it can be ≫ 1 while every single A has K∏_A ρ_i ≪ 1.
+- **A counterexample to (i) as a statement about the decoder.** Take m equal places of norm p, with lists of l = ρp.
+  - The guarantee starts at t* = √(ln K · m l/ln p) agreements. That is below the typical ρm once m ≥ ln K · p/(ρ ln p).
+  - Example: p = 467, l = 233, ln K = 16.6 needs m ≥ 2,521. At m = 3,000, t* = 1,375 < 1,500.
+  - Then about half of all members are guaranteed. Yet the mean of ln p over their agreement sets is 6.15, above l ln l/(l − 1) = 5.47.
+
+**(iii) The correct statement [P, given the radius].**
+- Typical members are guaranteed iff (Σ ρ_i ln p_i)² ≥ ln K · Σ ρ_i p_i ln p_i.
+- By Cauchy–Schwarz this needs the Mertens mass Λ_ρ = Σ ρ_i ln p_i/p_i ≥ ln K.
+- Members at depth κ need (√(ln K) − √(2κ ln p_min/p_min))² (W2.1).
+
+**(iv) Reed–Solomon (places t − a, m ≤ q): the claim holds [P asymptotically; M at q = 467].**
+- The guarantee needs τ > √(kρq/m) ≥ √(kρ). Existence needs k ln q ≥ m·KL(τ‖ρ).
+- These are incompatible once q · min_u u·KL(√(kρ/u)‖ρ) > k ln q.
+- At q = 467 that is 41 > 6.2 (k = 1, ρ = 1/2) and 307 > 18.4 (k = 3, ρ = 1/8). Equivalently, Λ = m/q ≤ 1 < k.
+- So on generic lists the decoder returns nothing beyond pins for every k ≥ 2.
+
+**(v) The integers [P, M].**
+- Λ grows like ln(y/467) (Mertens), so the guarantee does meet existing members.
+- But only with places up to 5.7·10⁷–6·10⁸, at an input of 1.5·10⁴ times the scan or more (W2.1). So it is not vacuous, just dominated.
+- **The research session's moral stands:** list recovery certifies few consistent codewords; we are in the regime of e^(room − κ) of
+  them.
+
 ## W2.2: folding and multiplicities buy nothing for separable scores [P]
 
 **What a separable score gives.** A score that is a sum over places gives product lists for folded symbols (L_a1 × … × L_as). It
@@ -89,6 +131,14 @@ exactly RS list recovery at the same points.
 
 **So** every beyond-Johnson decoder needs lists that correlate coordinates. Separable scores never produce them, in F_q[t] or
 anywhere else.
+
+**In the many-solutions regime.**
+- **[P]** The conditions above fail for dense product lists whatever the size of the output.
+- **[O]** The decoders' certificates cannot hold e^(room − κ) generic members anyway. Those certificates are at most L roots, or (in
+  Guruswami–Wang) an affine subspace of dimension at most s − 1. For random lists the deep members span the room, so any subspace
+  that contains them is the whole room, and enumerating it is scanning.
+- **The linearisation route (Arora–Ge style)** turns a list of size ℓ into a degree-ℓ equation in the coefficients. It needs about k^ℓ
+  places, so it works for constant ℓ only, and that is again the few-solutions regime.
 
 ## (b) What folding uses, and prime powers
 
