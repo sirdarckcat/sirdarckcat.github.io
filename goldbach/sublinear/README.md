@@ -1742,6 +1742,20 @@ corrections, which also refine the paragraph on symmetry above:
   falls with depth, toward the bare factor of about 2 from testing only
   the rows that can succeed; it grows with selectivity.
 
+The second verifier reproduces all 41 instances again, with a third design
+of enumerator, and every table of the page, and confirms the last
+correction instance by instance (at 10% kept the factor falls from 3.1 to
+2.5 at q = 3, n = 16 and from 5.0 to 4.0 at q = 9, n = 8 as the survival
+goes from 10^−2 to 10^−5). It adds two things. For q = p the whole
+translation-invariant family passes degree 1 by divisibility: such an N is
+constant on F_p, so N − (x − a) has the root a + N(0); part of the family's
+advantage is therefore an ordinary cover. And the first-moment model with
+sieve and parity over-predicts the deep counts by 3 to 28%, growing with
+depth and statistically significant (the first verifier reads it as the
+sub-binomial dispersion of the rows struck, the toy form of this file's
+second-order term). Cover first saves 1.4 to 3.8 nats of a blind search in
+the generic instances.
+
 *The catalogue of forcing mechanisms in F_q[x]* (an agent of this session;
 its two verifiers have not reported, so the statements are its own; every
 formula was checked by it against python-flint factorisations, and C2 for
