@@ -1679,6 +1679,38 @@ moving the rows, where the integers have no automorphism and every rational
 prime is fixed by every Galois group. Had the parity been available, the
 agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
 
+*The catalogue of forcing mechanisms in F_q[x]* (an agent of this session;
+its two verifiers have not reported, so the statements are its own; every
+formula was checked by it against python-flint factorisations). Each line:
+a way to make N − Q reducible for many rows at once without luck, what it
+evades in the model of independent rows with local densities, and its
+image over the integers.
+
+| | mechanism | statement | evades | over Z |
+|---|---|---|---|---|
+| C0 | chosen classes | N ≡ R_π (mod π) strikes the rows Q ≡ R_π | nothing: these are the local factors | the cover, in use |
+| C0′ | aligned classes | N ≡ R modulo every irreducible of degree ≤ J: a row is struck iff R − Q has a factor of degree ≤ J; with deg R = J + 1 every row of degree J + 1 is struck but q − 1 of them (proved) | the independence of the local conditions: a polynomial of degree ≤ J cannot avoid all primes of degree ≤ J | exists (one common integer for all classes): 1,878 rows against 1,502, about 9 nats worse than chosen classes |
+| C1 | parity, p odd | N′ = 0: the parity of the number of factors of N − Q depends on N only modulo Q′ (Result 1; kernel) | the product of local densities: a global factor 0 | none: every additive map D on Z with D(ab) = aD(b) + bD(a) is zero (D(1) = 0, D(n) = nD(1)) |
+| C2 | parity, p = 2 | N = λA⁴, Q′ = S², S dividing A: the parity of the number of factors of N − Q is explicit in deg Q, deg A, the number of factors of Q and one trace; for q a power of 4 every row of odd degree ≤ 2J + 1 fails when A is a multiple of the lcm of the polynomials of degree ≤ J (proved by the agent through the discriminant modulo 8 over the Witt ring; 38,520 instances, no disagreement; Swan's trinomials are the case N = x^(8m)) | as C1, with a modulus of half the degree | none |
+| C3 | symmetry | σ(N) = N for an automorphism σ: N − σ(Q) = σ(N − Q) (kernel) | the independence between rows: tied rows are the same event | none: the additive bijections of Z are ±1 |
+| C4 | Artin–Schreier | N = A(x^p − x) with the trace of the second coefficient of A zero: N − C(x^p − x) is reducible for every C of degree ≤ deg A − 2 (proved from the criterion that x^p − x − g is irreducible iff Tr g ≠ 0; 1,800 pairs, no exception) | a Chebotarev condition in the Z/p-extension y^p − y = x, unramified outside infinity | none: Q has no extension unramified at every prime; the nearest, identically reducible families, force at most about √Q rows (the twelve-angle sweep: −6 nats) |
+| C5 | powers, cyclotomic, Carlitz | m ≡ m₀ (mod q^D − 1) iff x^m ≡ x^(m₀) modulo the product of the primes of degree dividing D (proved) | nothing: it is a congruence at par | exists exactly (m mod L fixes 2^m mod 2^L − 1): the 565 powers of two between 10^30 and 10^200 leave 2,088 rows at best, what random classes leave: 14 nats worse than the cover |
+| C6 | Frobenius powers | N = x^(q^m) is the aligned class R = x on the primes of degree dividing m; its use is that the product of the small primes, x^(q^J) − x, is sparse | | no Frobenius; the product of the small primes is the primorial |
+| C7 | integer shadows | Jacobi symbols; the arithmetic derivative n′ (Jacobi(n′ | n) = (−1)^C(k,2) with k the number of prime factors ≡ 3 mod 4: blind to the number of factors); genus theory and root numbers (need the factorisation) | | measured: the mean Liouville function of N − q is 0 ± 0.036 for N a square, a cube, a power of a primorial |
+
+Its two side results. Nothing beyond parity is forced: for N′ = 0 the
+whole discriminant of N − Q is determined, but only its square class
+constrains the factorisation, and in the desert the factorisation types of
+N − Q are those of control polynomials with the same small factors
+restricted to the forced parity (χ² p = 0.85 and 0.11 on 3,564 values);
+the sign is the only non-trivial one-dimensional character of the
+symmetric group. And a caution that travels: in the toy the parity desert
+beats a cover of the same degree only when q is large for the room (F_16,
+degree 64: no row left against 321); over F_4 a greedy cover of degree 80
+strikes all 294 rows of degree ≤ 5 and the desert does not. The integer
+problem sits in the regime of cover and luck, where the toy's own best
+design is also a cover.
+
 **World 6 (a ring of integers with an automorphism: the Gaussian
 integers)** (`gauss_ties.py`, `gauss_ties.txt`). The tie of World 3 is not
 a matter of characteristic p.
