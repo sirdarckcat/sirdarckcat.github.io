@@ -1816,6 +1816,45 @@ average, against 36.5 for the best cover at 200,000).
   not DP states, not lists of partial residue vectors on a split of the
   places."
 
+*A second, independent page on the converse* (an agent of this session;
+verifiers pending), on the real window and the 579 later primes from 467 to
+5,000:
+
+- *Progression lists give a lattice enumerator with a certificate*
+  (proved). If at each of m moduli the list is a progression of classes of
+  length L_i, the k below K in all the lists are the points of a lattice
+  of dimension m + 1 in a box, their number is E = K ∏ L_i/s_i up to the
+  factor ∏(1 ± τ_j) read off any basis, and a breadth-first search over
+  the basis steps visits them all; the cost per solution is bounded when
+  the basis is short against the box. The certificate has a floor: the room
+  left unconstrained plus the logarithm of the guaranteed work is at least
+  2.01 nats a coordinate. Run on the real window: nine instances to six
+  primes, the solution sets identical to brute force.
+- *The rows are a sifted interval* (proved; 467² exceeds 200,000): the rows
+  above 463 are exactly the odd q below Q with q mod r outside {0, a_r} for
+  the 89 cover primes. So every table is a fold of one indicator and its
+  additive Fourier coefficients are samples of one trigonometric sum; all
+  rows are 1 modulo 6 and lie in 15 classes modulo 210. This structure is
+  real (largest additive coefficient 2.4 ln s on these primes against 0.98
+  for shuffled tables, and over 100 ln s above Q, where every heavy class
+  lies in the one progression 1 + 6t) and worth almost nothing: at most
+  0.02 to 0.11 rows per nat of constraint, against 0.78 for a pin at 467.
+- *The only correlation between tables* is one row struck twice: for
+  primes s < s′ with s s′ > Q the classes of an integer c modulo both
+  share the row c and no other (predicted and measured).
+- *Absent at the level of noise:* heavy progressions or intervals of
+  classes in any labelling (best heavy progression 0.277 rows per nat
+  against 0.271 on shuffled tables), heavy cosets of any index from 2 to
+  12, additive closure (the sum of two members of the top 1% is a random
+  member: −0.04 ± 0.03 rows), and any dependence between the residues of
+  the window's members: the whole real window matches the product model
+  down to the 10^−6 tail.
+- *The bar for any enumerator of list constraints,* whatever the structure
+  of its lists: on these tables it is worth, for the whole window, 33 rows
+  at no overhead against 13 to 17 for two pins (+0.4 to +0.5 nats), +0.1 to
+  +0.2 at an overhead of a quarter of a nat of room a prime, and nothing
+  from 0.9 to 1.2 nats a prime; the lattice certificate above costs 2.01.
+
 World 1 is in the kernel (Lean session, `GoldbachGaps/Worlds/NoCoupling.lean`,
 commit 15a3606: the coordinatewise optimum, and the k best listed with at
 most 1 + m·n candidates for the n-th).
