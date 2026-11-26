@@ -11,6 +11,7 @@
 | 3 | 15 | 1 | 14,348,907 | 481 | 7 | 6,348 | 0.95 | generic | 10 | 2.4% | 1.9% | 0.0016% |
 | 3 | 16 | 1 | 43,046,721 | 476 | 7 | 31,965 | 9.8 | generic | 12 | 3.8% | 3.1% | 0.016% |
 | 3 | 17 | 1 | 129,140,163 | 600 | 8 | 15 | 3.2 | generic | 12 | 1.9% | 1.5% | 0.00033% |
+| 3 | 18 | 1 | 387,420,489 | 754 | 8 | 121 | 0.56 | generic | 14 | 3.1% | 2.7% | 0.0092% |
 | 3 | 12 | non-square | 531,441 | 335 | 7 | 27 | 0.18 | generic | 4 | 0.57% | 0.39% | 0.00075% |
 | 3 | 13 | non-square | 1,594,323 | 361 | 7 | 198 | 0.98 | generic | 5 | 0.33% | 0.23% | 0.0006% |
 | 3 | 14 | non-square | 4,782,969 | 403 | 7 | 1,296 | 1.3 | generic | 4 | 0.056% | 0.036% | 0.0078% |
@@ -21,6 +22,7 @@
 | 5 | 9 | 1 | 1,953,125 | 138 | 4 | 3,035 | 1.5 | generic | 10 | 15% | 13% | 0.0051% |
 | 5 | 10 | 1 | 9,765,625 | 206 | 5 | 1 | 0.091 | translation-invariant | 20 | 30% | 29% | 0.35% |
 | 5 | 11 | 1 | 48,828,125 | 201 | 4 | 272,305 | 4.7 | generic | 14 | 5.4% | 3.9% | 0.0042% |
+| 5 | 12 | 1 | 244,140,625 | 278 | 5 | 65 | 0.57 | generic | 7 | 0.07% | 0.051% | 0.00022% |
 | 5 | 7 | non-square | 78,125 | 68 | 4 | 15 | 4 | generic | 3 | 5.1% | 3.5% | 0.045% |
 | 5 | 8 | non-square | 390,625 | 119 | 4 | 235 | 0.33 | generic | 7 | 4.5% | 3.4% | 0.0027% |
 | 5 | 9 | non-square | 1,953,125 | 136 | 4 | 3,155 | 1.7 | generic | 5 | 1.4% | 1% | 0.0063% |
@@ -30,6 +32,7 @@
 | 7 | 7 | 1 | 823,543 | 78 | 3 | 7,032 | 5.2 | generic | 9 | 37% | 33% | 0.4% |
 | 7 | 8 | 1 | 5,764,801 | 110 | 3 | 104,741 | 2.9 | generic | 8 | 1.5% | 1% | 0.0054% |
 | 7 | 9 | 1 | 40,353,607 | 136 | 3 | 1,164,394 | 6.4 | generic | 8 | 2.4% | 1.8% | 0.033% |
+| 7 | 10 | 1 | 282,475,249 | 181 | 4 | 98 | 3.8 | generic | 5 | 0.011% | 0.007% | 1.4e-05% |
 | 7 | 6 | non-square | 117,649 | 64 | 3 | 490 | 0.96 | generic | 4 | 3.2% | 2.2% | 0.029% |
 | 7 | 7 | non-square | 823,543 | 149 | 4 | 1 | 0.00013 | translation-invariant, deg N' = 0 | 5 | 1.3% | 0.93% | 6% |
 | 7 | 8 | non-square | 5,764,801 | 131 | 3 | 105,294 | 0.19 | generic | 15 | 35% | 32% | 0.0056% |
@@ -43,8 +46,9 @@
 | 9 | 6 | non-square | 531,441 | 97 | 3 | 150 | 0.0089 | translation-invariant | 6 | 14% | 11% | 0.36% |
 | 9 | 7 | non-square | 4,782,969 | 86 | 3 | 2,286 | 6.4 | generic | 12 | 38% | 34% | 0.19% |
 | 9 | 8 | non-square | 43,046,721 | 121 | 3 | 66,528 | 3.6 | generic | 10 | 3.2% | 2.4% | 0.12% |
+| 9 | 9 | non-square | 387,420,489 | 161 | 3 | 1,330,398 | 2.5 | translation-invariant | 13 | 4.5% | 3.6% | 0.0018% |
 
-41 instances. Record member generic in 34. Cell model at the record between 0.2 and 10 in 32. Rows more than the best cell: median 8, range 0 to 20. Members in cells at least as good: median 4.5%. Cover first reaches the record after a median 3.4% of the members, the parity order after 0.0078%.
+45 instances. Record member generic in 37. Cell model at the record between 0.2 and 10 in 36. Rows more than the best cell: median 8, range 0 to 20. Members in cells at least as good: median 4.1%. Cover first reaches the record after a median 3.2% of the members, the parity order after 0.0063%.
 
 ### What cover first finds with a share of the work
 
@@ -58,6 +62,7 @@ success comes within the given share of the members, in cover-first order at the
 | 3 | 15 | 1 | 481 | 314 | 364 | 386 | 481 | 481 | 481 | 481 |
 | 3 | 16 | 1 | 476 | 383 | 446 | 446 | 476 | 446 | 476 | 476 |
 | 3 | 17 | 1 | 600 | 441 | 441 | 525 | 600 | 600 | 600 | 600 |
+| 3 | 18 | 1 | 754 | 479 | 607 | 607 | 754 | 754 | 754 | 754 |
 | 3 | 13 | non-square | 361 | 276 | 276 | 361 | 361 | 361 | 361 | 361 |
 | 3 | 14 | non-square | 403 | 242 | 403 | 403 | 403 | 403 | 403 | 403 |
 | 3 | 15 | non-square | 459 | 364 | 364 | 400 | 459 | 459 | 459 | 459 |
@@ -65,11 +70,13 @@ success comes within the given share of the members, in cover-first order at the
 | 5 | 9 | 1 | 138 | 109 | 109 | 109 | 109 | 138 | 138 | 138 |
 | 5 | 10 | 1 | 206 | 122 | 136 | 152 | 152 | 152 | 152 | 206 |
 | 5 | 11 | 1 | 201 | 170 | 185 | 185 | 201 | 201 | 201 | 201 |
+| 5 | 12 | 1 | 278 | 196 | 278 | 278 | 278 | 278 | 278 | 278 |
 | 5 | 9 | non-square | 136 | 90 | 120 | 120 | 136 | 136 | 136 | 136 |
 | 5 | 10 | non-square | 207 | 132 | 207 | 207 | 207 | 207 | 207 | 207 |
 | 5 | 11 | non-square | 195 | 141 | 168 | 168 | 195 | 168 | 179 | 195 |
 | 7 | 8 | 1 | 110 | 90 | 90 | 99 | 110 | 110 | 110 | 110 |
 | 7 | 9 | 1 | 136 | 107 | 126 | 126 | 136 | 126 | 136 | 136 |
+| 7 | 10 | 1 | 181 | 181 | 181 | 181 | 181 | 181 | 181 | 181 |
 | 7 | 8 | non-square | 131 | 81 | 81 | 101 | 101 | 131 | 131 | 131 |
 | 7 | 9 | non-square | 177 | 98 | 107 | 135 | 177 | 135 | 135 | 135 |
 | 9 | 7 | 1 | 94 | 49 | 63 | 69 | 79 | 63 | 79 | 94 |
@@ -77,6 +84,7 @@ success comes within the given share of the members, in cover-first order at the
 | 9 | 9 | 1 | 151 | 127 | 127 | 137 | 151 | 143 | 143 | 151 |
 | 9 | 7 | non-square | 86 | 65 | 65 | 71 | 76 | 76 | 76 | 86 |
 | 9 | 8 | non-square | 121 | 86 | 110 | 110 | 121 | 110 | 110 | 121 |
+| 9 | 9 | non-square | 161 | 123 | 133 | 142 | 161 | 161 | 161 | 161 |
 
 ### Targets, cover first against the parity order
 
@@ -106,6 +114,19 @@ q = 3, n = 17, monic; line = first 8 irreducibles, cells of 9 members.
 | 525 | 11 | 16.9 | 3,476,151 | 377,438 | 9.2 | 692,177 | 2,590 |
 | 600 | 1 | 3.18 | 1,788,224 | 285 | 6,280.0 | 1,998,856 | 420 |
 
+q = 3, n = 18, monic; line = first 8 irreducibles, cells of 27 members.
+
+| target (rows) | successes | cell model | members before half of the successes: cover first | parity order | ratio | members before the first success: cover first | parity order |
+|---|---|---|---|---|---|---|---|
+| 355 | 10,026 | 1.27e+04 | 10,034,889 | 608,013 | 16.5 | 43 | 1 |
+| 392 | 3,276 | 4.49e+03 | 11,768,912 | 428,601 | 27.5 | 504 | 3 |
+| 432 | 1,025 | 1.51e+03 | 11,205,857 | 314,278 | 35.7 | 1,761 | 11 |
+| 479 | 301 | 442 | 9,641,582 | 212,391 | 45.4 | 16,592 | 18 |
+| 515 | 101 | 161 | 9,643,250 | 165,925 | 58.1 | 236,115 | 358 |
+| 565 | 33 | 58 | 11,010,004 | 109,792 | 100.3 | 297,630 | 168 |
+| 607 | 10 | 19.9 | 9,619,686 | 42,273 | 227.6 | 110,741 | 928 |
+| 754 | 1 | 0.557 | 9,758,090 | 28,044 | 348.0 | 10,536,683 | 35,822 |
+
 q = 5, n = 10, monic; line = first 7 irreducibles, cells of 5 members.
 
 | target (rows) | successes | cell model | members before half of the successes: cover first | parity order | ratio | members before the first success: cover first | parity order |
@@ -118,6 +139,32 @@ q = 5, n = 10, monic; line = first 7 irreducibles, cells of 5 members.
 | 136 | 34 | 37.3 | 469,373 | 2,623 | 178.9 | 5,718 | 1 |
 | 152 | 10 | 10.2 | 407,026 | 314 | 1,294.9 | 19,006 | 6 |
 | 206 | 1 | 0.0911 | 2,784,629 | 27,636 | 100.8 | 2,838,028 | 33,842 |
+
+q = 5, n = 12, monic; line = first 8 irreducibles, cells of 5 members.
+
+| target (rows) | successes | cell model | members before half of the successes: cover first | parity order | ratio | members before the first success: cover first | parity order |
+|---|---|---|---|---|---|---|---|
+| 130 | 10,264 | 1.23e+04 | 12,855,438 | 774,257 | 16.6 | 40 | 1 |
+| 145 | 3,197 | 4.09e+03 | 12,667,568 | 529,807 | 23.9 | 145 | 2 |
+| 161 | 1,041 | 1.35e+03 | 10,857,223 | 281,218 | 38.6 | 318 | 6 |
+| 179 | 304 | 401 | 9,278,469 | 179,347 | 51.7 | 2,400 | 11 |
+| 196 | 111 | 133 | 4,310,084 | 55,753 | 77.3 | 3,909 | 35 |
+| 224 | 30 | 17.3 | 3,846,273 | 98,865 | 38.9 | 235,546 | 3,040 |
+| 259 | 10 | 2.62 | 440,068 | 63,568 | 6.9 | 53,677 | 319 |
+| 278 | 2 | 0.573 | 123,693 | 526 | 235.4 | 123,693 | 526 |
+
+q = 7, n = 10, monic; line = first 8 irreducibles, cells of 7 members.
+
+| target (rows) | successes | cell model | members before half of the successes: cover first | parity order | ratio | members before the first success: cover first | parity order |
+|---|---|---|---|---|---|---|---|
+| 97 | 10,192 | 1.24e+04 | 22,165,611 | 908,395 | 24.4 | 558 | 1 |
+| 108 | 3,257 | 4.14e+03 | 19,782,531 | 568,360 | 34.8 | 630 | 2 |
+| 119 | 1,025 | 1.39e+03 | 18,344,061 | 375,258 | 48.9 | 3,882 | 4 |
+| 130 | 326 | 458 | 19,722,714 | 293,676 | 67.2 | 3,448 | 14 |
+| 139 | 109 | 183 | 19,504,887 | 256,974 | 75.9 | 77,017 | 31 |
+| 154 | 30 | 45 | 13,559,486 | 374,146 | 36.2 | 14,571 | 41 |
+| 163 | 10 | 19.9 | 5,362,697 | 198,360 | 27.0 | 18,898 | 314 |
+| 181 | 2 | 3.75 | 19,874 | 40 | 490.7 | 19,874 | 40 |
 
 q = 9, n = 8, monic; line = first 7 irreducibles, cells of 9 members.
 
@@ -195,6 +242,53 @@ q = 3, n = 17, monic, the first 600 rows; line = first 8 irreducibles (cells of 
 | 508 | 1 | 6 | 10.8 | 44 | 6,909,714 |
 | 1318 | 0 | 5 | 9.2 | 41 | 2,420,118 |
 
+q = 3, n = 18, monic, the first 754 rows; line = first 8 irreducibles (cells of 27 members); the best cells have 40 rows left and 135 members.
+
+| depth (irreducibles sieved) | optimum over all members | best member of the best cells | mean there | rows left at the line of the best cell holding an optimum | members in cells at least that good |
+|---|---|---|---|---|---|
+| 8 | 40 | 40 | 40.0 | 40 | 135 |
+| 10 | 32 | 33 | 37.1 | 41 | 1,026 |
+| 14 | 24 | 26 | 32.1 | 42 | 4,914 |
+| 20 | 21 | 23 | 29.7 | 42 | 4,914 |
+| 32 | 15 | 18 | 25.7 | 46 | 280,422 |
+| 50 | 13 | 16 | 23.7 | 42 | 4,914 |
+| 80 | 10 | 13 | 21.0 | 44 | 50,382 |
+| 120 | 8 | 12 | 20.0 | 54 | 12,093,867 |
+| 196 | 6 | 10 | 18.1 | 47 | 570,348 |
+| 508 | 3 | 5 | 15.2 | 51 | 4,537,053 |
+| 1318 | 1 | 4 | 12.7 | 54 | 12,093,867 |
+| 3502 | 0 | 4 | 11.5 | 54 | 12,093,867 |
+
+q = 5, n = 12, monic, the first 278 rows; line = first 8 irreducibles (cells of 5 members); the best cells have 38 rows left and 5 members.
+
+| depth (irreducibles sieved) | optimum over all members | best member of the best cells | mean there | rows left at the line of the best cell holding an optimum | members in cells at least that good |
+|---|---|---|---|---|---|
+| 8 | 38 | 38 | 38.0 | 38 | 5 |
+| 10 | 32 | 33 | 34.8 | 41 | 2,395 |
+| 15 | 20 | 25 | 28.4 | 44 | 77,585 |
+| 25 | 16 | 22 | 26.4 | 42 | 9,605 |
+| 55 | 10 | 16 | 21.0 | 42 | 9,605 |
+| 100 | 9 | 14 | 19.6 | 43 | 29,790 |
+| 205 | 6 | 11 | 17.4 | 55 | 17,436,905 |
+| 400 | 5 | 11 | 16.0 | 53 | 8,927,630 |
+| 829 | 3 | 9 | 13.0 | 43 | 29,790 |
+| 3409 | 0 | 8 | 11.6 | 45 | 169,800 |
+
+q = 7, n = 10, monic, the first 181 rows; line = first 8 irreducibles (cells of 7 members); the best cells have 33 rows left and 14 members.
+
+| depth (irreducibles sieved) | optimum over all members | best member of the best cells | mean there | rows left at the line of the best cell holding an optimum | members in cells at least that good |
+|---|---|---|---|---|---|
+| 8 | 33 | 33 | 33.0 | 33 | 14 |
+| 9 | 31 | 31 | 32.4 | 33 | 14 |
+| 12 | 27 | 28 | 31.0 | 36 | 2,065 |
+| 18 | 19 | 25 | 27.3 | 41 | 570,983 |
+| 28 | 14 | 19 | 22.2 | 40 | 233,898 |
+| 60 | 11 | 15 | 20.0 | 40 | 233,898 |
+| 140 | 5 | 10 | 16.4 | 44 | 5,143,201 |
+| 200 | 5 | 10 | 15.9 | 44 | 5,143,201 |
+| 728 | 2 | 7 | 11.7 | 38 | 30,688 |
+| 4088 | 0 | 5 | 9.8 | 38 | 30,688 |
+
 q = 9, n = 9, monic, the first 151 rows; line = first 8 irreducibles (cells of 9 members); the best cells have 35 rows left and 27 members.
 
 | depth (irreducibles sieved) | optimum over all members | best member of the best cells | mean there | rows left at the line of the best cell holding an optimum | members in cells at least that good |
@@ -249,6 +343,11 @@ from the cell model. The law is F_d ≈ G_d^(1/p).
 | 3 | 30 | 59,049 | 2.1e+14 | 6 | 196 | 14,681 | 3.47e+12 | 1.51e+04 |
 | 3 | 30 | 59,049 | 2.1e+14 | 7 | 508 | 2,841 | 3.09e+10 | 3.14e+03 |
 | 3 | 30 | 59,049 | 2.1e+14 | 8 | 1,318 | 51 | 3.93e+05 | 73.2 |
+| 3 | 33 | 177,147 | 5.6e+15 | 5 | 80 | 83,913 | 8.3e+14 | 9.4e+04 |
+| 3 | 33 | 177,147 | 5.6e+15 | 6 | 196 | 47,916 | 1.27e+14 | 5.03e+04 |
+| 3 | 33 | 177,147 | 5.6e+15 | 7 | 508 | 10,741 | 1.73e+12 | 1.2e+04 |
+| 3 | 33 | 177,147 | 5.6e+15 | 8 | 1,318 | 337 | 6.02e+07 | 392 |
+| 3 | 33 | 177,147 | 5.6e+15 | 9 | 3,502 | 0 | 1.95e-05 | 0.0269 |
 | 5 | 10 | 25 | 9.8e+06 | 2 | 15 | 22 | 1.87e+06 | 18 |
 | 5 | 10 | 25 | 9.8e+06 | 3 | 55 | 11 | 3.6e+04 | 8.15 |
 | 5 | 10 | 25 | 9.8e+06 | 4 | 205 | 1 | 0.115 | 0.648 |
@@ -280,6 +379,7 @@ from the cell model. The law is F_d ≈ G_d^(1/p).
 | 3 | 24 | 2056 | 9 | 1262 1438 1561 | 7.27e-06 |
 | 3 | 27 | 1580 | 9 | 1656 1788 1925 | 36.2 |
 | 3 | 30 | 2190 | 9 | 2057 2214 2390 | 1.52 |
+| 3 | 33 | 2277 | 9 | 2522 2693 2864 | 275 |
 | 5 | 10 | 206 | 5 | 153 181 206 | 0.0957 |
 | 5 | 15 | 472 | 5 | 389 431 473 | 0.105 |
 | 5 | 20 | 718 | 5 | 739 796 855 | 22.6 |
