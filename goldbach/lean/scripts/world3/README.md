@@ -98,7 +98,8 @@ the members, cover first after 3%. So the gain is 10 to 20 at ten thousand succe
 not a small factor. The reason is the size of the instances: an odd squarefree polynomial with no factor of degree at
 most z is irreducible or has at least three factors of degree above z, so parity and a shallow sieve nearly decide
 irreducibility (q = 3, n = 15: an odd row left at the line is irreducible with chance 0.67, after the cubics 0.85,
-after the quartics 0.98; q = 3, n = 18: 0.56 after the quadratics). Where the chance is small the gain is the usual 0.5/Φ(−λσ) (parity alone, no sieve, q = 3,
+after the quartics 0.98; q = 3, n = 18: 0.54 after the quadratics). Where the chance is small the gain is the usual
+0.5/Φ(−λσ) (parity alone, no sieve, q = 3,
 n = 12, 1,018 successes: predicted 6.9, measured 6.8). The parity count needs one discriminant for every row left of
 every member: it saves irreducibility tests, not members touched.
 
