@@ -290,7 +290,10 @@ its verifier pointed out that it refutes the old sentence for every q).
 Best R found by that page and its verifier: over F_3 with J = 3 every row
 of degree ≤ 4 struck at room 33, against the desert's 99; 7 of the 45 rows
 of degree ≤ 2 left over F_9 (J = 1), 3 of 55 over F_5 (J = 2), 7 of 136
-over F_16 (J = 1). What makes this possible is the ultrametric: all monic
+over F_16 (J = 1). (Checked again here over prime fields by complete
+enumeration of R, `aligned_check.py`: 0 of 32 rows left over F_3 with
+J = 3, for R = x⁴ + 2x² + 2; 3 of 55 over F_5 with J = 2; 5 of 28 over
+F_7 with J = 1.) What makes this possible is the ultrametric: all monic
 polynomials of degree J + 1 lie within degree J of R, where on the
 integers only the q within z of R do (the common-integer cover there
 leaves 1,876 rows against 1,502 for chosen classes). The estimate
