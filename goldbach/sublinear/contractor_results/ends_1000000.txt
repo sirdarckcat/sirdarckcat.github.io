@@ -1,0 +1,2 @@
+x | moduli | end, recursion as it was | / (x ln^2 x) | end with the constraint | / (x ln^2 x) | moduli frozen up to (at the end), weight at 3
+1000000 | 78497 | 220,208,874 | 1.154 | 178,643,117 | 0.936 | 999983, 35.17
