@@ -1499,10 +1499,21 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
   or more, at least 1.5·10^4 times. With lists of density ρ at every place
   and full agreement it recovers only N of degree below 1/ρ; at the
   agreement that deep members really have it recovers nothing of degree 1 or
-  more. (My own form of the same fact, checked by it: with lists of two or
-  more classes the region the radius guarantees and the region where a
-  consistent N exists by the first-moment count are disjoint, so on generic
-  lists the guarantee is empty beyond pins inside the room.)
+  more. (A shorter form of mine, that with lists of two or more classes the
+  guarantee is empty beyond pins, was wrong as stated, and the Opus session
+  found the error (its commit 1ebff90): I had counted the N agreeing on one
+  fixed set of places, where the guarantee covers every N whose own set of
+  agreements qualifies, and the choice of that set carries entropy. Its
+  example: 3,000 places of norm 467 with lists of 233 classes guarantee
+  every N with 1,375 agreements, fewer than the 1,500 a typical N has.
+  Counted properly, the guarantee meets existing members exactly when the
+  Mertens mass Σ ρ_i ln p_i/p_i of the lists reaches about ln K. For
+  Reed–Solomon codes that mass is at most 1 and below the dimension, so
+  there the claim holds and nothing beyond pins is returned on generic
+  lists; on the integers the mass grows like ln(y/467) and is reached with
+  places to 5.7·10^7 and beyond, which is the cost above. On the integers
+  the decoder is therefore not empty, only dominated: it is an enumerator
+  priced by its output plus an input of at least 1.5·10^4 scans.)
 - *Proved:* folding and multiplicities, which carry list decoding beyond
   that radius to capacity, buy nothing for a separable score, on average or
   in the worst case: a separable score gives product lists on folded
