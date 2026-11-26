@@ -1454,6 +1454,61 @@ returned are then scored exactly):
 | 467, 479, 487, 491 | 7.83 | 930,720 | 1,471 (one class of the cover changed at no cost or at one row, 31 or 32 rows hit) | at most 1,472 | 2.6 min |
 | five (to 499) | 14.0 | 4.7·10^8 | not run | | about 500 times the last |
 
+*In the kernel* (Lean session, `GoldbachGaps/Worlds/Arc.lean`, its commit
+db981be, standard axioms): the statement (`int_sum_crt_modEq`,
+`lt_iff_fract_sum_mul_div_lt`); that the P_t partial assignments on a
+subset t of the moduli have P_t different partial sums
+(`eq_of_partial_sum_modEq`); and that two assignments agreeing outside t
+differ in the full sum by exactly the difference of their partial sums over
+t (`sum_sub_sum_eq_of_agree`). Its reading of the bucket rule, which is the
+precise one: a kept partial assignment replaces another of its bucket at
+each of the m steps, so the survivor is within mη = (X/P)/4 of the point it
+stands for, and the output is at least as good as the best N in
+[X/4, 3X/4): ln 2 nats of candidates and nothing else. And its warning
+against over-reading "output price": for ONE cover the alternative is to
+list the cover's e^17 members, and against that the trellis wins up to
+three later primes (by 500 at three) and loses from five on; its content is
+the other reading, over all class vectors of the cover's moduli at once,
+where listing is impossible, and there the score is the first-order part
+of the rows left, not the rows left.
+
+*A second, independent page* (an agent of this session, scripts under its
+scratch directory; its two verifiers have not reported, so the statements
+are its own): the same identity and programme with a certificate (a relaxed
+set listed in order of score and filtered exactly; states ⌈m e^D/ε⌉), a
+list form of meet in the middle whose cost lies between e^(D/2) and e^D,
+and lower bounds: an exact trellis of the integer interval in residue
+coordinates has at least min(P_I, P_Ic, X) states at every cut (the same
+bound as the Opus session's, by a fooling set); an ε-approximate one at
+least e^D/(18ε), so the programme's state count is optimal up to the factor
+18m among all methods that carry a state across a cut; and in a model where
+the two halves are used only through their positions, q queries find a
+feasible pair with probability at most (q²/4 + 1)e^(−D), so e^(D/2) is
+optimal there. On the real cover, first-order score, best N below 10^200
+over all class vectors against the best member of the cover's own window:
+
+| later primes | D | best over all N < 10^200 | best of the own window | work |
+|---|---|---|---|---|
+| 3 (to 487) | 1.63 | 1,478 (14 points) | 1,478 | 21 states |
+| 4 (to 491) | 7.83 | 1,471 (2 points) | 1,472 | 15,012 states; lists of 571 |
+| 5 (to 499) | 14.04 | 1,465 (2 points) | 1,467 | 10^7 states, 1.5 s; lists of 36,982 |
+| 6 (to 503) | 20.26 | 1,459 (4 points, one with 1,458 exact rows) | 1,461 | lists of 1.8·10^7, 5.5 s |
+| 7 (to 509) | 26.49 | 1,453 | 1,456 | lists of 6.2·10^7 and two windows, 17 s |
+
+(The first two rows reproduce the table above.) The gain of the joint
+optimum over the own window is 0, 1, 2, 2, 3 rows: 0.07 nats at seven
+primes, for a handful of numbers that each come alone. The number of N
+below X within a slack σ of the unconstrained optimum is the unconstrained
+count times e^(−D) to sampling error (12,000 predicted, 11,983 found; 589
+and 596; 122 and 117; 3.98 and 4): counting is free, finding is not. And
+the reason nothing of this kind reaches the score: the primes up to 509
+carry 1.1% of the variance of the first-order score, those up to 1,000
+8.9% (D = 496), up to 2,000 16.8% (D = 1,479), up to 200,000 59.9%
+(D = 199,058). The classes of a later prime that hold many rows form no
+progression or interval beyond chance (a list restricted to a progression
+of classes buys 0.32 rows per nat of constraint, 0.36 on random tables; a
+free list 1.52; a pin 0.77).
+
 The exact optimum over every N below 10^200 at sieve depth 491 is one row
 better than what cover first finds. That is the theorem at work and also
 its measure: the dynamic programme reaches the true joint optimum, the
@@ -1594,10 +1649,15 @@ q = 7: 110 at 8, 181 at 10; q = 9: 120 at 6, 122 at 8, 151 at 9.
   most d all fail: F_d ≈ G_d^(1/p) within about 20% over five orders of
   magnitude (q = 3, n = 24, family of 6,561, d = 5 to 8: 2,646, 1,329, 147,
   1 against 2,850, 1,280, 176, 1.65; q = 5, n = 20, family of 625, d = 2 to
-  5: 561, 359, 102, 0 against 534, 362, 103, 0.76). The family of q^(n/p)
+  5: 561, 359, 102, 0 against 534, 362, 103, 0.76; q = 3, n = 30, family of
+  59,049 among 2·10^14, d = 6 to 8: 14,681, 2,841, 51 against 15,100,
+  3,140, 73; q = 5, n = 25, family of 3,125 among 3·10^17, d = 2 to 5:
+  2,831, 2,067, 809, 9 against 2,760, 2,020, 728, 15; q = 7, n = 21, family
+  of 343 among 6·10^17, d = 1 to 4: 343, 284, 133, 4 against 326, 281, 134,
+  3.8; its scripts and tables at its commit 32fe8ff). The family of q^(n/p)
   members attains the same greatest degree-depth D as the best of all q^n
-  in 13 cases of 13 and a greater one in 3 (q = 3, n = 21: D = 9, where
-  0.005 members of all are expected): a member whose rows of degree at most
+  in the 15 cases computed and a greater one in 3 (q = 3, n = 21: D = 9,
+  where 0.005 members of all are expected): a member whose rows of degree at most
   d all fail costs the p-th root of the generic work. Inside a degree there
   is no saving: an orbit's rows are spread over the degree, the first j
   rows lie in about j orbits, and a family member's count of rows runs on
@@ -1639,7 +1699,8 @@ a line are smaller on average, and on the real axis a few rows are
 rational). The deepest of the 3,500 real targets (g = 101) and of the 4,949
 diagonal ones (g = 121) are deeper than the deepest of the 19,233,748
 generic ones (g = 97). With |N| ≤ 3,000: 61 on the real axis among 1,500
-targets, 61 among 3,530,680 generic ones.
+targets, 61 among 3,530,680 generic ones (every count of that run
+recomputed by the contractor session with its own program: identical).
 
 So the mechanism lives in characteristic 0 and under an archimedean size
 constraint; what it needs is an additive symmetry of the primes that fixes
