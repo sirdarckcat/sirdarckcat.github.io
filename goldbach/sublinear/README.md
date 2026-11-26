@@ -1379,6 +1379,114 @@ to 0.6 nats, against a gap of about 5.6 once cover supply is counted.
 Closing it needs the enumerator, more digits, or 250 times the work; the
 round shows no fourth option."
 
+## Toy worlds first (26 November)
+
+On the evening of the 25th the lead relayed a direction from the user, in
+the user's words: "could we start with a proof on smaller toy examples (like
+in groups or similar) which we know can't be transferred to integers but at
+least give us a library of tools and ideas, and then attempt to transfer
+what we can to integers and what we can't try to replace somehow with other
+fields". The lead gave it a shape, which is followed here. The object is
+the same in every world: a score S(N) = Σ_r f_r(N mod r) over "primes" r,
+and a constraint that couples the coordinates (for the integers, N < X).
+The question in every world: can the members with extreme score be produced
+at a cost proportional to the output? Each world gets a page: a theorem (an
+output-priced algorithm, a forcing mechanism or a lower bound), the
+ingredients of its proof, and for each ingredient whether the integers have
+it and what the nearest substitute costs. Negative transfers are results;
+nothing in this section is offered as closed.
+
+| world | constraint | who |
+|---|---|---|
+| 1 | none: N anywhere in the product of the Z/r | here; one kernel statement by the Lean session |
+| 2 | N in a linear code (polynomials of bounded degree over F_q: list recovery) | Opus session (theorems), consultant (literature), and an independent page here |
+| 3 | the Goldbach problem in F_q[x] itself | here (catalogue of forcing mechanisms, transfer), Lean session (exact enumerations); Result 1 above is its first theorem |
+| 4 | the random box: residues as independent draws | Opus session (lower bound for all black-box algorithms, and the converse); the labelling test here |
+| 5 | groups: N in a Bohr set of a product of cyclic groups | here |
+
+**World 1 (no coupling).** If N may be any element of ∏ Z/r, the best N
+takes the best class at every r, and the k best are listed in time
+O(k log k) after sorting each table (repeatedly replace one coordinate of
+an already listed point by its next-best class, with a heap). Ingredients:
+the score is a sum over coordinates, and the coordinates are independent.
+The integers have the first always and the second only for moduli whose
+product is at most X (the Chinese remainder theorem): the cover is exactly
+World 1 for the 89 primes that fit below 10^200. So the whole difficulty is
+the coupling.
+
+**World 5 (groups): the size constraint is one character in an arc**
+(`arc_dp.py`, `arc_dp.txt`). Let r_1, …, r_m be pairwise coprime, P their
+product, u_i the inverse of P/r_i modulo r_i, and x_i = x mod r_i.
+
+*Statement.* For every integer x, x ≡ Σ_i x_i u_i (P/r_i) (mod P); hence for
+0 ≤ x < P and any X, x < X exactly when the fractional part of
+Σ_i x_i u_i / r_i is below X/P.
+
+*Proof.* Modulo r_j every term with i ≠ j vanishes and the j-th is
+x_j u_j (P/r_j) ≡ x_j; the moduli are coprime. Divide by P. ∎
+
+So inside the group ∏ Z/r_i the integers below X are the points where one
+additive character, the sum of the bijections c ↦ c u_i / r_i of Z/r_i onto
+the multiples of 1/r_i modulo 1, lies in an arc of length X/P: a Bohr set
+of rank one. The problem is a separable score under a single linear
+constraint of precision e^(−D), D = ln(P/X).
+
+*Algorithm.* Process the moduli in any order and keep, for each bucket of
+width η of the partial sum modulo 1, the best partial score with its exact
+partial sum; at the end read the buckets inside the arc and check each
+point exactly. With η = (X/P)/(4m) that is 4m·e^D buckets and Σ r_i
+transitions a bucket: time O(m e^D Σ r_i). Two partial assignments in one
+bucket differ by less than η in every completion, so the only points it
+can miss lie within a quarter of the arc from its ends. The members with
+extreme score are therefore produced at a cost proportional to the output
+exactly when D is O(log m): the constraint has a trellis with e^D states
+and no smaller one in these coordinates (in mixed-radix digits the
+constraint is trivial and the score is not separable).
+
+*On the real cover* (the 200,000 cover, 1,502 rows; score to first order
+around it: the exact change in rows for one changed class of a cover
+modulus, minus the rows hit by the classes of the later primes; the points
+returned are then scored exactly):
+
+| later primes added | D = ln(P/X) | buckets | best N below 10^200 over all class vectors, rows left | best member of the cover's own window (every k, brute force) | time |
+|---|---|---|---|---|---|
+| 467, 479, 487 | 1.63 | 1,876 | 1,478 (cover unchanged, 8 + 8 + 8 rows hit) | 1,478 | 3 s |
+| 467, 479, 487, 491 | 7.83 | 930,720 | 1,471 (one class of the cover changed at no cost or at one row, 31 or 32 rows hit) | at most 1,472 | 2.6 min |
+| five (to 499) | 14.0 | 4.7·10^8 | not run | | about 500 times the last |
+
+The exact optimum over every N below 10^200 at sieve depth 491 is one row
+better than what cover first finds. That is the theorem at work and also
+its measure: the dynamic programme reaches the true joint optimum, the
+joint optimum gains almost nothing while D is small (a pin costs the
+entropy of a few near-best cover classes, as counted in "The gap to
+200,000"), and D grows by ln s per prime: 14 at 499, about 1,500 at 2,000,
+10^8 at the depth of the fleet's sieve. Ingredients: separability (the
+integers have it to first order around a cover only: the true score is a
+count of a union); the single character (exact for the integers); a
+constraint of low precision (the integers do not have it beyond a few
+primes past the cover). Worst-case tables make this a multiple-choice
+knapsack with a modular target; whether e^D is optimal there is being
+checked in the literature. What would have to be true of the tables for a
+rank-one Bohr set of high precision to be tractable is exactly what
+Worlds 2 and 4 ask.
+
+**World 4, one entry of its converse table, tested** (`table_characters.py`,
+`.txt`). Is there a labelling of the classes in which the heavy classes of
+the real tables are structured? In the labelling by discrete logarithm the
+transform of a table is the list of character sums Σ χ(q) over the rows.
+For the 213 primes r from 467 to 1,999: mean power over the nontrivial
+characters 0.84 of the noise level (random rows: 1.00); characters of order
+2, 3, 4, 5, 6: 0.84, 0.74, 0.98, 0.91, 0.74 (± 0.07 to 0.10); the largest
+character at a prime is 0.84 ln r on average and at most 1.35 ln r, against
+1.00 and 1.94 for random rows. The tables are flatter than noise in the
+multiplicative labelling (the rows are spread over classes more evenly than
+independent balls) and no coset of any subgroup is heavy. In the additive
+labelling (class index as an integer) the largest coefficient is 1.08 ln r
+on average, with one prime at 3.4 ln r.
+
+Worlds 2, 3 and 4 and the transfer table across worlds follow as the pages
+return.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
