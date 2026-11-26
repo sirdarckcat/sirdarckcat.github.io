@@ -1,0 +1,15 @@
+q=3 n=21: 3502 rows of degree <= 9, 1174 orbits; family of 2187 members
+family: tests 74292, mean L 78.0, time 4 s
+family best: L=1572 (D=9, g index 59), L=640 (D=8, g index 2156), L=612 (D=8, g index 1687), L=594 (D=8, g index 589), L=593 (D=8, g index 56), L=591 (D=8, g index 1463), L=591 (D=8, g index 551), L=582 (D=8, g index 950)
+cell model for all 3^21 members: line of 6 moduli (19683 cells), chance of a row left 0.2288; rows R with 10, 1, 0.1 members expected: 915, 1034, 1152
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
+  d=1: rows 3 | family 2187 of 2187 | all 8.99e+09 | root 2.08e+03
+  d=2: rows 6 | family 2056 of 2187 | all 7.75e+09 | root 1.98e+03
+  d=3: rows 14 | family 1546 of 2187 | all 5.37e+09 | root 1.75e+03
+  d=4: rows 32 | family 1254 of 2187 | all 2.74e+09 | root 1.4e+03
+  d=5: rows 80 | family 803 of 2187 | all 6.34e+08 | root 859
+  d=6: rows 196 | family 336 of 2187 | all 4.25e+07 | root 349
+  d=7: rows 508 | family 28 of 2187 | all 4.45e+04 | root 35.4
+  d=8: rows 1318 | family 1 of 2187 | all 0.0053 | root 0.174
+  d=9: rows 3502 | family 0 of 2187 | all 1.12e-23 | root 2.24e-08
+expected number of members of all 3^21 at the family's best level L >= 1572: 4.79e-05

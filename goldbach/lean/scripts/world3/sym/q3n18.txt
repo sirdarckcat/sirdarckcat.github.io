@@ -1,0 +1,15 @@
+q=3 n=18: 3502 rows of degree <= 9, 1174 orbits; family of 729 members
+family: tests 19644, mean L 62.5, time 1 s
+family best: L=582 (D=8, g index 473), L=565 (D=8, g index 563), L=554 (D=8, g index 142), L=529 (D=8, g index 88), L=521 (D=8, g index 385), L=515 (D=8, g index 674), L=512 (D=8, g index 491), L=297 (D=7, g index 245)
+cell model for all 3^18 members: line of 6 moduli (19683 cells), chance of a row left 0.2670; rows R with 10, 1, 0.1 members expected: 646, 738, 825
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
+  d=1: rows 3 | family 729 of 729 | all 3.24e+08 | root 687
+  d=2: rows 6 | family 677 of 729 | all 2.72e+08 | root 648
+  d=3: rows 14 | family 489 of 729 | all 1.78e+08 | root 562
+  d=4: rows 32 | family 383 of 729 | all 8.32e+07 | root 436
+  d=5: rows 80 | family 228 of 729 | all 1.58e+07 | root 251
+  d=6: rows 196 | family 72 of 729 | all 7.1e+05 | root 89.2
+  d=7: rows 508 | family 7 of 729 | all 206 | root 5.91
+  d=8: rows 1318 | family 0 of 729 | all 1.86e-06 | root 0.0123
+  d=9: rows 3502 | family 0 of 729 | all 3.22e-31 | root 6.85e-11
+expected number of members of all 3^18 at the family's best level L >= 582: 44.9

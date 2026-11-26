@@ -1,0 +1,370 @@
+==============================================================================================================
+q=3 n=13 mu=2 (NON-square leading coefficient)  members 1,594,323  irreducible of degree n: 122,640  rows used: 1318  exhausted: 0
+cutoffs (index: first r irreducibles, total degree): 0:3:3, 1:6:9, 2:7:12, 3:8:15, 4:10:21, 5:14:33, 6:20:57, 7:32:105, 8:50:195, 9:80:345, 10:120:585, 11:196:1041
+record: L_max = 361 (degree of the first success 7), attained by 1 members; mean L = 14.32; 1/p0 = 13.00; naive ceiling ln(members)/-ln(1-p0) = 178; ratio 2.02
+largest D with every row of degree < D failing: D = 7 (198 members)
+--------------------------------------------------------------------------------------------------------------
+target: the first 97 rows fail; successes S = 10131; random order: 157 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |    97.00   97 | 0.0769 |          677 |          157.4      797,083.3 |    32.33 | 0.2308 |     1.05e+03 |           12.9      147,097.3
+        3 |    28.74   10 | 0.2596 |     1.28e+04 |           23.2      117,346.1 |    13.65 | 0.5468 |     1.28e+04 |            1.0       33,347.3
+        6 |    20.19    3 | 0.3696 |     1.15e+04 |            4.3       96,469.7 |    10.01 | 0.7458 |     1.14e+04 |            1.0       14,193.8
+        7 |    19.44    2 | 0.3839 |     1.14e+04 |           13.1       94,891.2 |     9.68 | 0.7711 |     1.13e+04 |            1.0       13,828.0
+        8 |    18.72    1 | 0.3986 |     1.12e+04 |            7.0       88,994.3 |     9.37 | 0.7966 |     1.11e+04 |            1.0       12,971.8
+       10 |    17.36    1 | 0.4299 |      1.1e+04 |            2.5       81,164.8 |     8.80 | 0.8474 |     1.08e+04 |            1.0        8,447.6
+       14 |    14.92    0 | 0.5001 |     1.07e+04 |            1.0       55,511.0 |     7.91 | 0.9435 |     1.03e+04 |            1.0        5,065.5
+       20 |    13.85    0 | 0.5387 |     1.06e+04 |            1.0       51,364.2 |     7.65 | 0.9748 |     1.02e+04 |            1.0        5,065.5
+       32 |    12.03    0 | 0.6203 |     1.04e+04 |            1.0       35,712.4 |     7.46 | 1.0000 |     1.01e+04 |            1.0        5,065.5
+       50 |    11.14    0 | 0.6697 |     1.04e+04 |            1.0       26,859.4 |     7.46 | 1.0000 |     1.01e+04 |            1.0        5,065.5
+       80 |     9.66    0 | 0.7721 |     1.04e+04 |            1.0       14,712.0 |     7.46 | 1.0000 |     1.01e+04 |            1.0        5,065.5
+      120 |     8.90    0 | 0.8380 |     1.03e+04 |            1.0       11,015.7 |     7.46 | 1.0000 |     1.01e+04 |            1.0        5,065.5
+      196 |     7.46    0 | 1.0000 |     1.01e+04 |            1.0        5,065.5 |     7.46 | 1.0000 |     1.01e+04 |            1.0        5,065.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 3 rows left, 81 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |   3 |   3 |    3.00 |   3 | 81
+        7 |   2 |   2 |    2.89 |   3 | 81
+        8 |   1 |   1 |    2.78 |   3 | 81
+       10 |   1 |   1 |    2.58 |   3 | 81
+       14 |   0 |   0 |    2.19 |   3 | 81
+       20 |   0 |   0 |    2.04 |   3 | 81
+       32 |   0 |   0 |    1.78 |   3 | 81
+       50 |   0 |   0 |    1.70 |   3 | 81
+       80 |   0 |   0 |    1.59 |   3 | 81
+      120 |   0 |   0 |    1.44 |   3 | 81
+      196 |   0 |   0 |    1.26 |   3 | 81
+    members examined to the first success / to half: cover first 4.3 / 96,469.7; odd rows left 1.0 / 14,193.8; cover then parity 1.0 / 63,384.5
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 2 rows left, 9 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |   2 |   2 |    2.00 |   2 | 9
+        8 |   1 |   1 |    1.67 |   2 | 9
+       10 |   1 |   1 |    1.67 |   2 | 9
+       14 |   0 |   1 |    1.67 |   3 | 441
+       20 |   0 |   1 |    1.44 |   3 | 441
+       32 |   0 |   1 |    1.33 |   3 | 441
+       50 |   0 |   1 |    1.11 |   3 | 441
+       80 |   0 |   1 |    1.00 |   3 | 441
+      120 |   0 |   1 |    1.00 |   3 | 441
+      196 |   0 |   1 |    1.00 |   3 | 441
+    members examined to the first success / to half: cover first 13.1 / 94,891.2; odd rows left 1.0 / 13,828.0; cover then parity 10.0 / 61,382.6
+--------------------------------------------------------------------------------------------------------------
+target: the first 129 rows fail; successes S = 3211; random order: 497 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   129.00  129 | 0.0769 |         52.3 |          496.4      796,913.8 |    43.00 | 0.2308 |          113 |           21.7      125,327.2
+        3 |    38.22   13 | 0.2596 |      4.3e+03 |           59.4       95,328.3 |    18.15 | 0.5468 |     4.31e+03 |            1.0       18,591.9
+        6 |    26.84    4 | 0.3696 |     3.81e+03 |            8.2       67,002.0 |    13.31 | 0.7458 |     3.79e+03 |            1.0        6,941.7
+        7 |    25.85    3 | 0.3839 |     3.76e+03 |            3.2       61,324.7 |    12.87 | 0.7711 |     3.74e+03 |            1.0        5,270.5
+        8 |    24.89    2 | 0.3986 |     3.72e+03 |            1.5       60,159.6 |    12.46 | 0.7966 |     3.65e+03 |            1.0        5,225.6
+       10 |    23.08    2 | 0.4299 |      3.6e+03 |            4.8       53,204.9 |    11.71 | 0.8474 |     3.54e+03 |            1.0        4,113.0
+       14 |    19.84    1 | 0.5001 |     3.47e+03 |            1.3       36,238.9 |    10.52 | 0.9435 |     3.33e+03 |            1.0        1,605.5
+       20 |    18.42    0 | 0.5387 |     3.43e+03 |            1.0       31,011.6 |    10.18 | 0.9748 |     3.29e+03 |            1.0        1,605.5
+       32 |    16.00    0 | 0.6203 |     3.33e+03 |            1.0       18,415.3 |     9.92 | 1.0000 |     3.21e+03 |            1.0        1,605.5
+       50 |    14.82    0 | 0.6697 |     3.31e+03 |            1.0       15,130.2 |     9.92 | 1.0000 |     3.21e+03 |            1.0        1,605.5
+       80 |    12.85    0 | 0.7721 |     3.27e+03 |            1.0        6,659.4 |     9.92 | 1.0000 |     3.21e+03 |            1.0        1,605.5
+      120 |    11.84    0 | 0.8380 |     3.28e+03 |            1.0        4,742.7 |     9.92 | 1.0000 |     3.21e+03 |            1.0        1,605.5
+      196 |     9.92    0 | 1.0000 |     3.21e+03 |            1.0        1,605.5 |     9.92 | 1.0000 |     3.21e+03 |            1.0        1,605.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 4 rows left, 81 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |   4 |   4 |    4.00 |   4 | 81
+        7 |   3 |   3 |    3.85 |   4 | 81
+        8 |   2 |   2 |    3.70 |   4 | 81
+       10 |   2 |   2 |    3.42 |   4 | 81
+       14 |   1 |   1 |    2.94 |   4 | 81
+       20 |   0 |   1 |    2.70 |   6 | 3,564
+       32 |   0 |   0 |    2.37 |   4 | 81
+       50 |   0 |   0 |    2.25 |   4 | 81
+       80 |   0 |   0 |    1.96 |   4 | 81
+      120 |   0 |   0 |    1.74 |   4 | 81
+      196 |   0 |   0 |    1.46 |   4 | 81
+    members examined to the first success / to half: cover first 8.2 / 67,002.0; odd rows left 1.0 / 6,941.7; cover then parity 1.0 / 43,002.1
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 3 rows left, 12 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |   3 |   3 |    3.00 |   3 | 12
+        8 |   2 |   2 |    2.83 |   3 | 12
+       10 |   2 |   2 |    2.75 |   3 | 12
+       14 |   1 |   1 |    2.42 |   3 | 12
+       20 |   0 |   1 |    2.33 |   5 | 1,194
+       32 |   0 |   1 |    2.00 |   4 | 159
+       50 |   0 |   0 |    1.75 |   3 | 12
+       80 |   0 |   0 |    1.58 |   3 | 12
+      120 |   0 |   0 |    1.33 |   3 | 12
+      196 |   0 |   0 |    1.08 |   3 | 12
+    members examined to the first success / to half: cover first 3.2 / 61,324.7; odd rows left 1.0 / 5,270.5; cover then parity 1.0 / 57,019.5
+--------------------------------------------------------------------------------------------------------------
+target: the first 153 rows fail; successes S = 1034; random order: 1,542 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   153.00  153 | 0.0769 |         7.66 |        1,540.4      796,391.8 |    51.00 | 0.2308 |         21.3 |           28.5       91,033.1
+        3 |    45.33   16 | 0.2596 |     1.65e+03 |          181.7       99,606.5 |    21.53 | 0.5468 |     1.65e+03 |            1.0        9,425.8
+        6 |    31.84    7 | 0.3696 |      1.4e+03 |           23.2       68,493.5 |    15.78 | 0.7458 |     1.39e+03 |            1.0        3,468.0
+        7 |    30.66    5 | 0.3839 |     1.38e+03 |            2.0       56,914.3 |    15.26 | 0.7711 |     1.37e+03 |            1.0        1,920.3
+        8 |    29.52    4 | 0.3986 |     1.36e+03 |           13.8       56,445.2 |    14.77 | 0.7966 |     1.32e+03 |            1.0        1,797.3
+       10 |    27.38    3 | 0.4299 |     1.31e+03 |            3.0       47,469.4 |    13.89 | 0.8474 |     1.28e+03 |            1.0        1,628.7
+       14 |    23.53    1 | 0.5001 |     1.23e+03 |            4.8       35,557.0 |    12.47 | 0.9435 |     1.13e+03 |            1.0          517.0
+       20 |    21.85    1 | 0.5387 |      1.2e+03 |            2.5       27,856.1 |    12.07 | 0.9748 |      1.1e+03 |            1.0          517.0
+       32 |    18.97    1 | 0.6203 |     1.14e+03 |            2.4       15,110.5 |    11.77 | 1.0000 |     1.03e+03 |            1.0          517.0
+       50 |    17.57    0 | 0.6697 |     1.13e+03 |            1.0        9,361.3 |    11.77 | 1.0000 |     1.03e+03 |            1.0          517.0
+       80 |    15.24    0 | 0.7721 |     1.12e+03 |            1.0        5,253.3 |    11.77 | 1.0000 |     1.03e+03 |            1.0          517.0
+      120 |    14.04    0 | 0.8380 |     1.11e+03 |            1.0        2,018.1 |    11.77 | 1.0000 |     1.03e+03 |            1.0          517.0
+      196 |    11.77    0 | 1.0000 |     1.03e+03 |            1.0          517.0 |    11.77 | 1.0000 |     1.03e+03 |            1.0          517.0
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 7 rows left, 324 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |   7 |   7 |    7.00 |   7 | 324
+        7 |   5 |   5 |    6.74 |   7 | 324
+        8 |   4 |   4 |    6.48 |   7 | 324
+       10 |   3 |   3 |    5.99 |   7 | 324
+       14 |   1 |   2 |    5.16 |   9 | 11,016
+       20 |   1 |   2 |    4.78 |   8 | 2,187
+       32 |   1 |   1 |    4.18 |   7 | 324
+       50 |   0 |   1 |    3.88 |   8 | 2,187
+       80 |   0 |   0 |    3.37 |   7 | 324
+      120 |   0 |   0 |    3.05 |   7 | 324
+      196 |   0 |   0 |    2.49 |   7 | 324
+    members examined to the first success / to half: cover first 23.2 / 68,493.5; odd rows left 1.0 / 3,468.0; cover then parity 1.0 / 35,381.6
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 5 rows left, 3 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |   5 |   5 |    5.00 |   5 | 3
+        8 |   4 |   4 |    4.67 |   5 | 3
+       10 |   3 |   3 |    4.00 |   5 | 3
+       14 |   1 |   3 |    3.67 |   8 | 5,709
+       20 |   1 |   3 |    3.67 |   7 | 1,143
+       32 |   1 |   2 |    3.00 |   7 | 1,143
+       50 |   0 |   2 |    2.67 |   7 | 1,143
+       80 |   0 |   1 |    1.67 |   7 | 1,143
+      120 |   0 |   0 |    1.33 |   5 | 3
+      196 |   0 |   0 |    1.00 |   5 | 3
+    members examined to the first success / to half: cover first 2.0 / 56,914.3; odd rows left 1.0 / 1,920.3; cover then parity 1.0 / 53,509.0
+--------------------------------------------------------------------------------------------------------------
+target: the first 186 rows fail; successes S = 311; random order: 5,126 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   186.00  186 | 0.0769 |        0.546 |        5,110.0      794,607.0 |    62.00 | 0.2308 |         2.18 |          170.0       61,893.0
+        3 |    55.11   18 | 0.2596 |          563 |          369.1       57,389.2 |    26.17 | 0.5468 |          568 |            1.0        5,264.2
+        6 |    38.71    9 | 0.3696 |          462 |           44.2       41,379.5 |    19.19 | 0.7458 |          462 |            1.0        1,227.5
+        7 |    37.27    7 | 0.3839 |          453 |           21.5       38,497.1 |    18.56 | 0.7711 |          448 |            1.0        1,036.8
+        8 |    35.89    6 | 0.3986 |          441 |           48.2       37,600.0 |    17.96 | 0.7966 |          431 |            1.0          681.0
+       10 |    33.28    5 | 0.4299 |          423 |           10.5       32,457.4 |    16.88 | 0.8474 |          413 |            1.0          585.0
+       14 |    28.61    3 | 0.5001 |          389 |            4.7       22,747.1 |    15.16 | 0.9435 |          354 |            1.0          155.5
+       20 |    26.56    2 | 0.5387 |          380 |            5.0       18,095.4 |    14.68 | 0.9748 |          335 |            1.0          155.5
+       32 |    23.07    1 | 0.6203 |          357 |            2.2        8,696.0 |    14.31 | 1.0000 |          311 |            1.0          155.5
+       50 |    21.36    1 | 0.6697 |          349 |            3.2        4,932.6 |    14.31 | 1.0000 |          311 |            1.0          155.5
+       80 |    18.53    0 | 0.7721 |          352 |            1.0        1,825.0 |    14.31 | 1.0000 |          311 |            1.0          155.5
+      120 |    17.07    0 | 0.8380 |          354 |            1.0          617.5 |    14.31 | 1.0000 |          311 |            1.0          155.5
+      196 |    14.31    0 | 1.0000 |          311 |            1.0          155.5 |    14.31 | 1.0000 |          311 |            1.0          155.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 9 rows left, 972 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |   9 |   9 |    9.00 |   9 | 972
+        7 |   7 |   7 |    8.67 |   9 | 972
+        8 |   6 |   6 |    8.33 |   9 | 972
+       10 |   5 |   5 |    7.73 |   9 | 972
+       14 |   3 |   3 |    6.65 |   9 | 972
+       20 |   2 |   2 |    6.18 |   9 | 972
+       32 |   1 |   1 |    5.38 |   9 | 972
+       50 |   1 |   1 |    4.99 |   9 | 972
+       80 |   0 |   1 |    4.33 |  10 | 5,265
+      120 |   0 |   0 |    4.00 |   9 | 972
+      196 |   0 |   0 |    3.33 |   9 | 972
+    members examined to the first success / to half: cover first 44.2 / 41,379.5; odd rows left 1.0 / 1,227.5; cover then parity 1.0 / 30,164.0
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 7 rows left, 42 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |   7 |   7 |    7.00 |   7 | 42
+        8 |   6 |   6 |    6.76 |   7 | 42
+       10 |   5 |   5 |    6.33 |   7 | 42
+       14 |   3 |   4 |    5.69 |   8 | 477
+       20 |   2 |   3 |    5.17 |   8 | 477
+       32 |   1 |   2 |    4.41 |   8 | 477
+       50 |   1 |   2 |    4.12 |   8 | 477
+       80 |   0 |   2 |    3.71 |  10 | 9,552
+      120 |   0 |   1 |    3.40 |   8 | 477
+      196 |   0 |   0 |    2.83 |   7 | 42
+    members examined to the first success / to half: cover first 21.5 / 38,497.1; odd rows left 1.0 / 1,036.8; cover then parity 12.5 / 22,627.0
+--------------------------------------------------------------------------------------------------------------
+target: the first 214 rows fail; successes S = 117; random order: 13,627 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   214.00  214 | 0.0769 |        0.058 |       13,511.2      790,406.4 |    71.33 | 0.2308 |        0.329 |          301.0       74,987.2
+        3 |    63.41   20 | 0.2596 |          239 |          808.9       47,320.9 |    30.11 | 0.5468 |          241 |            1.0        2,712.3
+        6 |    44.53   10 | 0.3696 |          196 |          104.3       27,848.6 |    22.07 | 0.7458 |          193 |            1.0          649.3
+        7 |    42.88    8 | 0.3839 |          192 |          105.8       29,259.1 |    21.35 | 0.7711 |          186 |            1.0          669.6
+        8 |    41.30    7 | 0.3986 |          185 |          254.7       24,413.3 |    20.67 | 0.7966 |          179 |            1.0          507.5
+       10 |    38.29    5 | 0.4299 |          177 |           70.8       23,712.0 |    19.43 | 0.8474 |          169 |            1.0          259.3
+       14 |    32.92    4 | 0.5001 |          161 |           41.6       15,627.2 |    17.45 | 0.9435 |          138 |            1.0           58.5
+       20 |    30.56    3 | 0.5387 |          157 |            9.5       12,609.5 |    16.89 | 0.9748 |          131 |            1.0           58.5
+       32 |    26.54    1 | 0.6203 |          148 |            1.0        6,574.6 |    16.46 | 1.0000 |          117 |            1.0           58.5
+       50 |    24.58    1 | 0.6697 |          144 |            2.4        3,198.1 |    16.46 | 1.0000 |          117 |            1.0           58.5
+       80 |    21.32    0 | 0.7721 |          146 |            1.0          889.9 |    16.46 | 1.0000 |          117 |            1.0           58.5
+      120 |    19.64    0 | 0.8380 |          150 |            1.0          227.9 |    16.46 | 1.0000 |          117 |            1.0           58.5
+      196 |    16.46    0 | 1.0000 |          117 |            1.0           58.5 |    16.46 | 1.0000 |          117 |            1.0           58.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 10 rows left, 729 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |  10 |  10 |   10.00 |  10 | 729
+        7 |   8 |   8 |    9.63 |  10 | 729
+        8 |   7 |   7 |    9.26 |  10 | 729
+       10 |   5 |   5 |    8.60 |  10 | 729
+       14 |   4 |   4 |    7.42 |  10 | 729
+       20 |   3 |   3 |    6.89 |  10 | 729
+       32 |   1 |   1 |    5.98 |  10 | 729
+       50 |   1 |   1 |    5.51 |  10 | 729
+       80 |   0 |   1 |    4.79 |  12 | 11,421
+      120 |   0 |   0 |    4.40 |  10 | 729
+      196 |   0 |   0 |    3.68 |  10 | 729
+    members examined to the first success / to half: cover first 104.3 / 27,848.6; odd rows left 1.0 / 649.3; cover then parity 1.0 / 22,456.2
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 8 rows left, 33 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |   8 |   8 |    8.00 |   8 | 33
+        8 |   7 |   7 |    7.64 |   8 | 33
+       10 |   5 |   5 |    7.30 |   8 | 33
+       14 |   4 |   4 |    6.51 |   8 | 33
+       20 |   3 |   4 |    5.85 |   9 | 396
+       32 |   1 |   2 |    4.70 |  10 | 2,313
+       50 |   1 |   2 |    4.39 |   9 | 396
+       80 |   0 |   2 |    4.03 |  11 | 7,554
+      120 |   0 |   2 |    3.70 |  10 | 2,313
+      196 |   0 |   1 |    3.12 |   9 | 396
+    members examined to the first success / to half: cover first 105.8 / 29,259.1; odd rows left 1.0 / 669.6; cover then parity 36.5 / 19,417.0
+--------------------------------------------------------------------------------------------------------------
+target: the first 248 rows fail; successes S = 31; random order: 51,430 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   248.00  248 | 0.0769 |      0.00382 |       49,822.6      772,250.7 |    82.67 | 0.2308 |        0.033 |          887.0       91,750.5
+        3 |    73.48   26 | 0.2596 |         54.4 |        4,217.9       80,138.3 |    34.89 | 0.5468 |         52.8 |           25.0        2,373.0
+        6 |    51.61   13 | 0.3696 |         44.1 |          142.0       23,799.5 |    25.58 | 0.7458 |         40.7 |            3.7          871.2
+        7 |    49.70   11 | 0.3839 |         42.4 |           17.0       26,342.8 |    24.74 | 0.7711 |         39.2 |            1.0          506.3
+        8 |    47.86   10 | 0.3986 |         40.7 |           98.0       29,926.5 |    23.95 | 0.7966 |         37.7 |            1.0          220.7
+       10 |    44.38    7 | 0.4299 |         38.6 |          591.2       31,682.5 |    22.51 | 0.8474 |         34.5 |            1.0          311.9
+       14 |    38.15    5 | 0.5001 |         34.3 |           93.0       14,643.1 |    20.22 | 0.9435 |         27.4 |            1.0           54.0
+       20 |    35.41    4 | 0.5387 |         33.1 |           18.0        6,463.3 |    19.57 | 0.9748 |         30.7 |            1.0           15.5
+       32 |    30.75    3 | 0.6203 |         30.7 |            5.2        3,548.5 |    19.08 | 1.0000 |           31 |            1.0           15.5
+       50 |    28.49    1 | 0.6697 |         30.4 |            1.0        1,422.2 |    19.08 | 1.0000 |           31 |            1.0           15.5
+       80 |    24.71    0 | 0.7721 |         32.6 |            1.0          181.2 |    19.08 | 1.0000 |           31 |            1.0           15.5
+      120 |    22.77    0 | 0.8380 |         33.7 |            1.0           64.9 |    19.08 | 1.0000 |           31 |            1.0           15.5
+      196 |    19.08    0 | 1.0000 |           31 |            1.0           15.5 |    19.08 | 1.0000 |           31 |            1.0           15.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 13 rows left, 567 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |  13 |  13 |   13.00 |  13 | 567
+        7 |  11 |  11 |   12.52 |  13 | 567
+        8 |  10 |  10 |   12.04 |  13 | 567
+       10 |   7 |   7 |   11.18 |  13 | 567
+       14 |   5 |   5 |    9.59 |  13 | 567
+       20 |   4 |   4 |    8.90 |  13 | 567
+       32 |   3 |   3 |    7.72 |  13 | 567
+       50 |   1 |   2 |    7.15 |  16 | 13,608
+       80 |   0 |   1 |    6.20 |  15 | 5,265
+      120 |   0 |   0 |    5.70 |  13 | 567
+      196 |   0 |   0 |    4.77 |  13 | 567
+    members examined to the first success / to half: cover first 142.0 / 23,799.5; odd rows left 3.7 / 871.2; cover then parity 7.0 / 13,777.2
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 11 rows left, 33 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |  11 |  11 |   11.00 |  11 | 33
+        8 |  10 |  10 |   10.61 |  11 | 33
+       10 |   7 |   8 |   10.03 |  13 | 1,332
+       14 |   5 |   5 |    8.67 |  11 | 33
+       20 |   4 |   5 |    7.61 |  12 | 318
+       32 |   3 |   4 |    6.70 |  12 | 318
+       50 |   1 |   2 |    6.24 |  15 | 10,875
+       80 |   0 |   2 |    5.58 |  14 | 4,074
+      120 |   0 |   1 |    5.15 |  13 | 1,332
+      196 |   0 |   0 |    4.18 |  11 | 33
+    members examined to the first success / to half: cover first 17.0 / 26,342.8; odd rows left 1.0 / 506.3; cover then parity 5.0 / 24,046.2
+--------------------------------------------------------------------------------------------------------------
+target: the first 276 rows fail; successes S = 10; random order: 159,432 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   276.00  276 | 0.0769 |     0.000406 |      144,938.5      724,692.7 |    92.00 | 0.2308 |      0.00494 |        1,610.0      134,503.0
+        3 |    81.78   29 | 0.2596 |         19.4 |       11,810.0       88,573.8 |    38.83 | 0.5468 |         18.7 |          347.0        3,882.5
+        6 |    57.44   14 | 0.3696 |         16.1 |          243.5       36,754.5 |    28.47 | 0.7458 |         14.8 |           19.5          833.0
+        7 |    55.31   12 | 0.3839 |         15.4 |           17.0       48,252.3 |    27.53 | 0.7711 |         13.7 |           26.0          639.0
+        8 |    53.26   10 | 0.3986 |         14.8 |           89.0       49,436.5 |    26.65 | 0.7966 |         12.8 |           30.0          313.2
+       10 |    49.39    8 | 0.4299 |         13.9 |          198.0       45,854.2 |    25.05 | 0.8474 |         11.3 |            6.0          140.0
+       14 |    42.45    5 | 0.5001 |         12.1 |          304.0       21,062.7 |    22.50 | 0.9435 |         9.76 |            1.0           17.8
+       20 |    39.41    5 | 0.5387 |         11.6 |           25.0       10,441.5 |    21.78 | 0.9748 |         11.2 |            1.0            5.0
+       32 |    34.23    3 | 0.6203 |         10.6 |           86.0        3,512.0 |    21.23 | 1.0000 |           10 |            1.0            5.0
+       50 |    31.70    2 | 0.6697 |         10.4 |            2.0        1,268.5 |    21.23 | 1.0000 |           10 |            1.0            5.0
+       80 |    27.50    1 | 0.7721 |         10.7 |            2.0           42.2 |    21.23 | 1.0000 |           10 |            1.0            5.0
+      120 |    25.34    0 | 0.8380 |         11.7 |            1.0           16.2 |    21.23 | 1.0000 |           10 |            1.0            5.0
+      196 |    21.23    0 | 1.0000 |           10 |            1.0            5.0 |    21.23 | 1.0000 |           10 |            1.0            5.0
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 14 rows left, 486 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |  14 |  14 |   14.00 |  14 | 486
+        7 |  12 |  12 |   13.48 |  14 | 486
+        8 |  10 |  10 |   12.97 |  14 | 486
+       10 |   8 |   8 |   12.04 |  14 | 486
+       14 |   5 |   5 |   10.32 |  14 | 486
+       20 |   5 |   5 |    9.57 |  14 | 486
+       32 |   3 |   4 |    8.31 |  16 | 2,673
+       50 |   2 |   2 |    7.70 |  14 | 486
+       80 |   1 |   2 |    6.68 |  19 | 23,814
+      120 |   0 |   1 |    6.11 |  18 | 12,636
+      196 |   0 |   0 |    5.09 |  14 | 486
+    members examined to the first success / to half: cover first 243.5 / 36,754.5; odd rows left 19.5 / 833.0; cover then parity 77.0 / 23,897.3
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 12 rows left, 33 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |  12 |  12 |   12.00 |  12 | 33
+        8 |  10 |  10 |   11.54 |  12 | 33
+       10 |   8 |   8 |   10.85 |  12 | 33
+       14 |   5 |   5 |    9.48 |  12 | 33
+       20 |   5 |   5 |    8.30 |  12 | 33
+       32 |   3 |   5 |    7.15 |  15 | 2,289
+       50 |   2 |   2 |    6.64 |  12 | 33
+       80 |   1 |   2 |    5.85 |  18 | 21,597
+      120 |   0 |   1 |    5.42 |  15 | 2,289
+      196 |   0 |   0 |    4.36 |  12 | 33
+    members examined to the first success / to half: cover first 17.0 / 48,252.3; odd rows left 26.0 / 639.0; cover then parity 5.0 / 39,000.5
+--------------------------------------------------------------------------------------------------------------
+target: the first 361 rows fail; successes S = 1; random order: 1,594,323 members a success
+  depth z | rows left: mean, min | chance p_z | model successes (indep. rows) | cover order: first success, half | odd rows left: mean | chance | model | parity order: first, half
+     none |   361.00  361 | 0.0769 |      4.5e-07 |      797,162.0      398,581.0 |   120.33 | 0.2308 |      1.7e-05 |        3,928.5        3,576.2
+        3 |   106.96   37 | 0.2596 |         1.26 |       29,525.0       14,762.5 |    50.79 | 0.5468 |         1.17 |          131.5           93.8
+        6 |    75.12   18 | 0.3696 |         1.03 |        7,817.0        6,298.0 |    37.24 | 0.7458 |        0.841 |          131.0           89.0
+        7 |    72.34   16 | 0.3839 |        0.982 |        3,713.0        2,974.0 |    36.01 | 0.7711 |        0.789 |            9.5            4.8
+        8 |    69.66   15 | 0.3986 |        0.929 |        7,453.5        6,183.2 |    34.86 | 0.7966 |        0.654 |           12.5            6.2
+       10 |    64.60   10 | 0.4299 |        0.875 |        6,921.5        5,728.8 |    32.77 | 0.8474 |        0.623 |            5.5            2.8
+       14 |    55.53    9 | 0.5001 |        0.719 |        4,075.5        3,270.8 |    29.43 | 0.9435 |         0.33 |            2.0            1.0
+       20 |    51.55    7 | 0.5387 |        0.698 |          108.0           77.5 |    28.49 | 0.9748 |         1.14 |            1.0            0.5
+       32 |    44.77    4 | 0.6203 |        0.623 |          178.0          127.5 |    27.77 | 1.0000 |            1 |            1.0            0.5
+       50 |    41.47    3 | 0.6697 |        0.635 |           53.5           35.8 |    27.77 | 1.0000 |            1 |            1.0            0.5
+       80 |    35.96    2 | 0.7721 |        0.714 |          151.0          104.0 |    27.77 | 1.0000 |            1 |            1.0            0.5
+      120 |    33.14    1 | 0.8380 |        0.853 |            1.5            0.8 |    27.77 | 1.0000 |            1 |            1.0            0.5
+      196 |    27.77    0 | 1.0000 |            1 |            1.0            0.5 |    27.77 | 1.0000 |            1 |            1.0            0.5
+  line = first 6 irreducibles (total degree 9, cells of 81 members); best cells: 18 rows left, 81 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        6 |  18 |  18 |   18.00 |  18 | 81
+        7 |  16 |  16 |   17.33 |  18 | 81
+        8 |  15 |  15 |   16.67 |  18 | 81
+       10 |  10 |  10 |   15.42 |  18 | 81
+       14 |   9 |   9 |   13.23 |  18 | 81
+       20 |   7 |   7 |   12.27 |  18 | 81
+       32 |   4 |   6 |   10.72 |  21 | 2,430
+       50 |   3 |   4 |    9.86 |  23 | 10,854
+       80 |   2 |   2 |    8.53 |  18 | 81
+      120 |   1 |   1 |    7.80 |  18 | 81
+      196 |   0 |   1 |    6.46 |  23 | 10,854
+    members examined to the first success / to half: cover first 7,817.0 / 6,298.0; odd rows left 131.0 / 89.0; cover then parity 4,800.0 / 4,791.0
+  line = first 7 irreducibles (total degree 12, cells of 3 members); best cells: 16 rows left, 9 members
+    depth | OPT | scan of the best cells | mean there | design value of the best cell holding an optimum | members at least that good
+        7 |  16 |  16 |   16.00 |  16 | 9
+        8 |  15 |  15 |   15.22 |  16 | 9
+       10 |  10 |  13 |   14.33 |  18 | 300
+       14 |   9 |   9 |   11.89 |  16 | 9
+       20 |   7 |   9 |   11.22 |  17 | 75
+       32 |   4 |   6 |    9.67 |  20 | 2,235
+       50 |   3 |   6 |    9.00 |  22 | 10,353
+       80 |   2 |   5 |    8.22 |  18 | 300
+      120 |   1 |   5 |    7.44 |  18 | 300
+      196 |   0 |   3 |    5.56 |  21 | 5,190
+    members examined to the first success / to half: cover first 3,713.0 / 2,974.0; odd rows left 9.5 / 4.8; cover then parity 2,238.0 / 2,236.5
+--------------------------------------------------------------------------------------------------------------
+families (size; then, at each target: successes in the family | expected at the rate of all members | (successes of all)^(1/order of the group) for the symmetric ones)
+  derivdeg<=0  size      729  record in family 133  97: 7 | 4.63;  129: 2 | 1.47;  153: 0 | 0.473;  186: 0 | 0.142;  214: 0 | 0.0535;  248: 0 | 0.0142;  276: 0 | 0.00457;  361: 0 | 0.000457
+  derivdeg<=1  size     2187  record in family 133  97: 16 | 13.9;  129: 4 | 4.4;  153: 0 | 1.42;  186: 0 | 0.427;  214: 0 | 0.16;  248: 0 | 0.0425;  276: 0 | 0.0137;  361: 0 | 0.00137
+  derivdeg<=2  size     2187  record in family 133  97: 16 | 13.9;  129: 4 | 4.4;  153: 0 | 1.42;  186: 0 | 0.427;  214: 0 | 0.16;  248: 0 | 0.0425;  276: 0 | 0.0137;  361: 0 | 0.00137
+  scal-1       size      729  record in family 102  97: 1 | 4.63;  129: 0 | 1.47;  153: 0 | 0.473;  186: 0 | 0.142;  214: 0 | 0.0535;  248: 0 | 0.0142;  276: 0 | 0.00457;  361: 0 | 0.000457
+--------------------------------------------------------------------------------------------------------------
+top members (L, degree of first success, N' = 0, values at the points of F_q, odd-squarefree rows among the first L, rows left by depth, odd rows left by depth):
+  L=361 D=7 insep=0 M=10212110202121 values=111 dM=12 trans=- scal=- odd=81 k=37,23,21,21,19,15,10,8,6,5,1,0 o=9,5,3,3,2,1,0,0,0,0,0,0
+  L=347 D=7 insep=0 M=11021011122002 values=222 dM=12 trans=- scal=- odd=90 k=43,26,24,23,22,16,12,7,6,1,1,0 o=14,5,4,3,2,1,1,0,0,0,0,0
+  L=328 D=7 insep=0 M=10211000221121 values=122 dM=12 trans=- scal=- odd=69 k=44,26,26,25,21,17,13,10,8,6,3,0 o=12,5,5,4,3,0,0,0,0,0,0,0
+  L=311 D=7 insep=0 M=11022122110201 values=111 dM=12 trans=- scal=- odd=87 k=33,21,20,19,19,14,13,11,6,3,2,0 o=9,4,3,3,3,1,1,0,0,0,0,0
+  L=304 D=7 insep=0 M=10111211000221 values=111 dM=12 trans=- scal=- odd=91 k=32,20,17,15,12,10,8,7,6,2,0,0 o=16,7,5,3,1,1,0,0,0,0,0,0
+  L=289 D=7 insep=0 M=11202201020011 values=111 dM=12 trans=- scal=- odd=83 k=30,15,13,13,13,10,7,6,3,3,2,0 o=11,5,4,4,4,3,0,0,0,0,0,0
+  L=287 D=7 insep=0 M=12201010012022 values=222 dM=12 trans=- scal=- odd=76 k=35,20,20,20,18,14,12,6,5,3,3,0 o=8,2,2,2,2,0,0,0,0,0,0,0
+  L=285 D=7 insep=0 M=10021012010021 values=121 dM=12 trans=- scal=- odd=65 k=37,23,20,18,17,12,11,8,6,2,2,0 o=10,5,4,4,4,0,0,0,0,0,0,0
+  L=278 D=7 insep=0 M=10112022201002 values=222 dM=12 trans=- scal=- odd=63 k=34,23,22,21,17,15,12,10,7,2,1,0 o=8,4,4,3,1,0,0,0,0,0,0,0
+  L=276 D=7 insep=0 M=10000021222121 values=122 dM=12 trans=- scal=- odd=72 k=38,24,23,21,18,16,14,12,9,8,4,0 o=13,6,6,6,4,2,0,0,0,0,0,0
+  L=274 D=7 insep=0 M=12212022112021 values=111 dM=12 trans=- scal=- odd=63 k=28,19,18,18,16,13,11,10,7,5,3,0 o=5,2,1,1,0,0,0,0,0,0,0,0
+  L=274 D=7 insep=0 M=12222000200221 values=111 dM=12 trans=- scal=- odd=75 k=28,14,13,13,13,10,9,8,5,1,1,0 o=8,2,1,1,1,0,0,0,0,0,0,0
+TIME sieve 0.1 pass1 1.3 pass2 6.7

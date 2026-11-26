@@ -1,0 +1,14 @@
+q=3 n=12: 1318 rows of degree <= 8, 442 orbits; family of 81 members
+family: tests 1411, mean L 40.8, time 0 s
+family best: L=265 (D=7, g index 13), L=200 (D=7, g index 38), L=200 (D=7, g index 8), L=164 (D=6, g index 7), L=163 (D=6, g index 17), L=130 (D=6, g index 4), L=129 (D=6, g index 23), L=125 (D=6, g index 76)
+cell model for all 3^12 members: line of 6 moduli (19683 cells), chance of a row left 0.3998; rows R with 10, 1, 0.1 members expected: 238, 297, 362
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
+  d=1: rows 3 | family 81 of 81 | all 4.03e+05 | root 73.9
+  d=2: rows 6 | family 70 of 81 | all 3.08e+05 | root 67.6
+  d=3: rows 14 | family 45 of 81 | all 1.64e+05 | root 54.7
+  d=4: rows 32 | family 39 of 81 | all 5.84e+04 | root 38.8
+  d=5: rows 80 | family 16 of 81 | all 5.38e+03 | root 17.5
+  d=6: rows 196 | family 3 of 81 | all 52.4 | root 3.74
+  d=7: rows 508 | family 0 of 81 | all 0.0001 | root 0.0465
+  d=8: rows 1318 | family 0 of 81 | all 6.27e-17 | root 3.97e-06
+expected number of members of all 3^12 at the family's best level L >= 265: 3.64

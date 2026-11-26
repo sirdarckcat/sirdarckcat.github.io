@@ -1,0 +1,15 @@
+q=3 n=24: 3502 rows of degree <= 9, 1174 orbits; family of 6561 members
+family: tests 262996, mean L 91.2, time 15 s
+family best: L=2056 (D=9, g index 1034), L=737 (D=8, g index 5993), L=727 (D=8, g index 163), L=713 (D=8, g index 2590), L=703 (D=8, g index 776), L=681 (D=8, g index 2296), L=681 (D=8, g index 1822), L=680 (D=8, g index 4397)
+cell model for all 3^24 members: line of 6 moduli (19683 cells), chance of a row left 0.2002; rows R with 10, 1, 0.1 members expected: 1262, 1438, 1561
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root)
+  d=1: rows 3 | family 6561 of 6561 | all 2.48e+11 | root 6.28e+03
+  d=2: rows 6 | family 6271 of 6561 | all 2.18e+11 | root 6.02e+03
+  d=3: rows 14 | family 4894 of 6561 | all 1.58e+11 | root 5.4e+03
+  d=4: rows 32 | family 3930 of 6561 | all 8.64e+10 | root 4.42e+03
+  d=5: rows 80 | family 2646 of 6561 | all 2.32e+10 | root 2.85e+03
+  d=6: rows 196 | family 1329 of 6561 | all 2.08e+09 | root 1.28e+03
+  d=7: rows 508 | family 147 of 6561 | all 5.44e+06 | root 176
+  d=8: rows 1318 | family 1 of 6561 | all 4.48 | root 1.65
+  d=9: rows 3502 | family 0 of 6561 | all 7.94e-18 | root 2e-06
+expected number of members of all 3^24 at the family's best level L >= 2056: 7.27e-06
