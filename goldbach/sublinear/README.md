@@ -1977,9 +1977,11 @@ average, against 36.5 for the best cover at 200,000).
   not DP states, not lists of partial residue vectors on a split of the
   places."
 
-*A second, independent page on the converse* (an agent of this session;
-verifiers pending), on the real window and the 579 later primes from 467 to
-5,000:
+*A second, independent page on the converse* (an agent of this session; its
+mathematics verifier: sound, the theorem and the three propositions true
+as stated and reproduced on 3,316 further instances, six secondary
+statements corrected, which are folded in below; the numbers verifier is
+still out), on the real window and the 579 later primes from 467 to 5,000:
 
 - *Progression lists give a lattice enumerator with a certificate*
   (proved). If at each of m moduli the list is a progression of classes of
@@ -1989,8 +1991,14 @@ verifiers pending), on the real window and the 579 later primes from 467 to
   the basis steps visits them all; the cost per solution is bounded when
   the basis is short against the box. The certificate has a floor: the room
   left unconstrained plus the logarithm of the guaranteed work is at least
-  2.01 nats a coordinate. Run on the real window: nine instances to six
-  primes, the solution sets identical to brute force.
+  2.01 nats a coordinate, and for a guaranteed work factor of e it is
+  ln n + 1.01 nats a coordinate (the verifier's sharpening): in the real
+  window the certificate holds for at most three primes with lists of half
+  or a quarter of the classes. Run on the real window: nine instances to
+  six primes, the solution sets identical to brute force. (The floor is
+  for this certificate; enumeration of lattice points in a convex body in
+  time 2^O(n) times the output is known without any condition on the
+  basis: Dadush, Peikert and Vempala.)
 - *The rows are a sifted interval* (proved; 467² exceeds 200,000): the rows
   above 463 are exactly the odd q below Q with q mod r outside {0, a_r} for
   the 89 cover primes. So every table is a fold of one indicator and its
@@ -1998,11 +2006,20 @@ verifiers pending), on the real window and the 579 later primes from 467 to
   rows are 1 modulo 6 and lie in 15 classes modulo 210. This structure is
   real (largest additive coefficient 2.4 ln s on these primes against 0.98
   for shuffled tables, and over 100 ln s above Q, where every heavy class
-  lies in the one progression 1 + 6t) and worth almost nothing: at most
-  0.02 to 0.11 rows per nat of constraint, against 0.78 for a pin at 467.
-- *The only correlation between tables* is one row struck twice: for
-  primes s < s′ with s s′ > Q the classes of an integer c modulo both
-  share the row c and no other (predicted and measured).
+  lies in the one progression 1 + 6t) and worth little: 0.02 rows per nat
+  of constraint for that progression, up to 0.10 for the best short
+  progressions of rows at a prime just above Q, against 0.78 for a pin at
+  467. Below Q the best progression lists are the short ones (0.47 rows
+  per nat at a sixty-fourth of the classes, 0.77 for two classes, real and
+  shuffled tables alike), about 4 rows in the window where two pins give
+  13, and short lists are the ones the certificate cannot cover.
+- *The only row shared between tables:* for primes s < s′ with s s′ > Q
+  the classes of an integer c modulo both share the row c and no other
+  (proved). The covariance this predicts is the leading term; the verifier
+  measured a second, smaller correlation of the same origin (a label that
+  is a row is 1 modulo 6, and its class has the fewest further slots),
+  −5 to −39% of the main term by range. Both are redundancy, not
+  structure an enumerator can use.
 - *Absent at the level of noise:* heavy progressions or intervals of
   classes in any labelling (best heavy progression 0.277 rows per nat
   against 0.271 on shuffled tables), heavy cosets of any index from 2 to
