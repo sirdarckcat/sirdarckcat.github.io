@@ -31,8 +31,16 @@ member loop against gmpy2 on its 96 emptiest members of one window (2,163 tests,
 | 25 Nov 22:13:37 | 216 (c0000 to c0215) | 4,572.3 million | 1,098,866,130 | 0 |
 | 25 Nov 23:36:24 | 372 (c0000 to c0371) | 7,874.5 million | 1,892,405,624 | 0 |
 | 26 Nov 02:18:21 | 604 (c0000 to c0603) | 12,785.5 million | 3,072,621,766 | 0 |
+| 26 Nov 04:12:57 (last cover written; the machine restarted then) | **796 (c0000 to c0795)** | **16,849.8 million** | **4,049,367,418** | **0** |
 
 125 s a cover a core on this machine (4 cores): about 115 covers an hour when the cores are free (from 00:30 UTC on
 26 November the enumerations of `scripts/world3/` shared them, and the scan ran at about 60% of that). Chance that a cover holds a record-beating
 member: about 7·10^−7 (the research session's figure), so the 3,000 covers together have about one chance in 500.
 A find goes to the research session in full, which recomputes it from N alone before anyone else is told.
+
+**Final.** The workers stopped when the machine restarted at about 04:13 UTC on 26 November, after 796 of the 3,000
+covers (c0000 to c0795, contiguous; the four covers in progress were lost). They were not restarted: the user decided
+that morning to stop all work in every session. 796 covers × 7·10^−7 makes 5.6·10^−4 expected record-beating members;
+none was found. `logs/` holds the four workers' logs, one line per cover (rows, members, tests, probable primes,
+finds). To resume, start the same command lines on `f467_w*.json` after removing the done covers from each worker's
+list.
