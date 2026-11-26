@@ -1337,8 +1337,47 @@ at 200 digits with every row tested, which puts the exponent itself at
 above what a walk finds in seconds on the same moduli, and two to three
 rows above the best set of moduli (+0.05 to +0.09 nats in all, which
 matters only if the design level moves to 200,000; at 170,000 the fleet's
-491 set already has it). The sweep's critic and second round follow below
-when they return.
+491 set already has it). Those covers are rechecked here from their
+classes and kept beside the others in `../fscan/cover/starts/`: 1,501 rows
+on the first 89 primes (`q200000_m89_r1501.txt`, exponent 36.438), 1,500
+with 463 replaced by 503 (`q200000_m89s503.txt`, 36.407), 1,499 with 431
+and 463 replaced by 479 and 503 (`q200000_m89s479s503.txt`, 36.374, 2^24.08
+members below 10^200), against 1,502 and 36.462 for the cover used so far.
+
+The sweep's critic was asked for angles that had not been run and named
+none ("no angle that was not run and has a credible mechanism worth a nat
+or more"); so there was no second round. What it marked as accepted or
+rejected without a sound number, none of which moves the account by more
+than about 0.7 nats:
+
+- The ceiling of 4.1 nats for a free in-window oracle is for one window of
+  2^24 at sieve depth 10^8, and its last step is a binomial-tail
+  extrapolation (measured to +3.3). With tables to 10^10 or 10^12 the same
+  model gives +5.0 and +5.9, and it says nothing about members taken
+  across covers, where the 5.9 to 14.8 of Result 3 lives.
+- The audit's ±0.11 covers the level and the dispersion of the primes per
+  member. Deep in a run of composites (100 survivors or more passed) its
+  hazard reads 0.975 ± 0.020 of the model, a 1.3 sd reading that would be
+  worth +0.7 nats if it persisted and is not excluded by that data alone;
+  the hits at other sizes say it does not persist (`frontier_overshoot.py`:
+  0.975 ± 0.040 of the modelled run length on 666 hits, in the opposite
+  direction). A difference between even and odd k of 0.35% in the prime
+  rate (2.6 sd, no mechanism, +0.065 nats if real) is unresolved; the
+  fleet's logs could settle both at no cost.
+- The gain from the set of moduli comes out between 0 and +0.09 depending
+  on who searched and how long; two tempering runs of 150,000 sweeps at
+  200,000 (first 89 primes; 479 and 503 for 431 and 463) were started here
+  to decide it.
+- The gap of 5.5 nats is taken at the best cover; with the millions of
+  covers a campaign consumes it is about 0.1 nat more, as the forecast
+  above already counts (1,506.5 rows as run).
+- The cost of a number that comes alone (1.9 to 3.4 nats) is a model, not
+  a measurement; it gates only items worth a few tenths.
+
+Its bottom line, in its words: the attainable crumbs "come to roughly 0.3
+to 0.6 nats, against a gap of about 5.6 once cover supply is counted.
+Closing it needs the enumerator, more digits, or 250 times the work; the
+round shows no fourth option."
 
 ## A provable lower bound (proved in Lean on 23 November)
 
