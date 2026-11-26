@@ -1,0 +1,221 @@
+Clean build of the Lean library in goldbach/lean on 26 November 2026: the Lean files as at commit 031aee3 (unchanged
+in later commits), Lean v4.37.0-rc1, Mathlib from `lake exe cache get`, on a machine with 4 cores and 15 GB of memory.
+It passed, in about two hours.
+
+A first `lake build` worked on up to four files at once and took 55 minutes (3,295 s); the system stopped six record
+files for lack of memory ("Lean exited with code 137"). Those six were then built one at a time, in 60 minutes: for
+each, the time below is its own, and the memory is the largest size its process reached, which counts Mathlib files
+read from disk into memory (the machine's memory in use without such files was at most 7.2 GB, sampled every 5 s).
+A second `lake build` then built the 4 files that import them, in 359 s. The other times are as Lake reported them in
+the first run, where up to four files shared the machine, so they are longer than for a file built alone.
+
+ seconds  file
+  1286.0  GoldbachGaps.Cover614101
+   806.0  GoldbachGaps.Record199_g125269
+   698.0  GoldbachGaps.Record200_g158209  built alone, largest process 10.1 GB (stopped in the first run)
+   692.0  GoldbachGaps.Record200_g160357  built alone, largest process 10.2 GB (stopped in the first run)
+   667.0  GoldbachGaps.Record199_g133981  built alone, largest process 10.4 GB (stopped in the first run)
+   622.0  GoldbachGaps.Record200_g157837  built alone, largest process 10.2 GB (stopped in the first run)
+   530.0  GoldbachGaps.Record200_g146191  built alone, largest process 10.0 GB (stopped in the first run)
+   398.0  GoldbachGaps.Record199  built alone, largest process 9.6 GB (stopped in the first run)
+   379.0  GoldbachGaps.Gap200k_347digit_g216289
+   354.0  GoldbachGaps.Gap200k_400digit_g206593
+   346.0  GoldbachGaps.Record150
+   343.0  GoldbachGaps.Gap200k_400digit_g200293
+   334.0  GoldbachGaps.Gap200k_319digit_g207307
+   198.0  GoldbachGaps.Cover135511
+    97.0  GoldbachGaps.RankSieve
+    74.0  GoldbachGaps.Gap1M_2196digit_g1001491_0
+    67.0  GoldbachGaps.Cap.Inspection
+    57.0  GoldbachGaps.Gap1M_1797digit_g1021897_30
+    55.0  GoldbachGaps.Cap.SoftLists
+    55.0  GoldbachGaps.Gap1M_2196digit_g1001491_11
+    55.0  GoldbachGaps.Gap1M_2196digit_g1001491_1
+    53.0  GoldbachGaps.Cover41659
+    51.0  GoldbachGaps.Gap1M_1797digit_g1021897_0
+    51.0  GoldbachGaps.CoverEveryConstant
+    50.0  GoldbachGaps.Cover41047
+    50.0  GoldbachGaps.Gap1M_1997digit_g1008589_5
+    50.0  GoldbachGaps.Gap1M_2196digit_g1001491_6
+    49.0  GoldbachGaps.Gap1M_1997digit_g1008589_30
+    49.0  GoldbachGaps.Gap1M_2196digit_g1001491_4
+    49.0  GoldbachGaps.Gap1M_2196digit_g1001491_3
+    49.0  GoldbachGaps.Gap1M_2196digit_g1001491_2
+    49.0  GoldbachGaps.CoverDepthMore
+    48.0  GoldbachGaps.Gap1M_1997digit_g1008589_2
+    47.0  GoldbachGaps.Gap1M_1997digit_g1008589_16
+    47.0  GoldbachGaps.Gap1M_1997digit_g1008589_6
+    47.0  GoldbachGaps.Gap1M_2196digit_g1001491_5
+    46.0  GoldbachGaps.Gap1M_1797digit_g1021897_25
+    46.0  GoldbachGaps.Gap1M_1997digit_g1008589_1
+    46.0  GoldbachGaps.Gap1M_2196digit_g1001491_26
+    46.0  GoldbachGaps.Gap1M_2196digit_g1001491_12
+    46.0  GoldbachGaps.Gap1M_2196digit_g1001491_9
+    45.0  GoldbachGaps.Cover40459
+    45.0  GoldbachGaps.RankData
+    45.0  GoldbachGaps.Gap1M_1997digit_g1008589_8
+    45.0  GoldbachGaps.Gap1M_1997digit_g1008589_0
+    45.0  GoldbachGaps.Gap1M_2196digit_g1001491_25
+    44.0  GoldbachGaps.Gap1M_1797digit_g1021897_14
+    44.0  GoldbachGaps.Gap1M_1797digit_g1021897_11
+    44.0  GoldbachGaps.Gap1M_1997digit_g1008589_28
+    43.0  GoldbachGaps.Cover40111
+    43.0  GoldbachGaps.Gap1M_2196digit_g1001491_22
+    43.0  GoldbachGaps.Gap1M_2196digit_g1001491_20
+    43.0  GoldbachGaps.Gap1M_2196digit_g1001491_17
+    43.0  GoldbachGaps.Gap1M_2196digit_g1001491_8
+    42.0  GoldbachGaps.Gap1M_1797digit_g1021897_27
+    42.0  GoldbachGaps.Gap1M_1797digit_g1021897_26
+    42.0  GoldbachGaps.Gap1M_1797digit_g1021897_16
+    42.0  GoldbachGaps.Gap1M_1797digit_g1021897_15
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_22
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_21
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_19
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_14
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_4
+    42.0  GoldbachGaps.Gap1M_1997digit_g1008589_3
+    42.0  GoldbachGaps.Gap1M_2196digit_g1001491_24
+    42.0  GoldbachGaps.Gap1M_2196digit_g1001491_23
+    41.0  GoldbachGaps.Gap1M_1797digit_g1021897_19
+    41.0  GoldbachGaps.Gap1M_1797digit_g1021897_13
+    41.0  GoldbachGaps.Gap1M_1797digit_g1021897_9
+    41.0  GoldbachGaps.Gap1M_1997digit_g1008589_12
+    41.0  GoldbachGaps.Gap1M_1997digit_g1008589_9
+    41.0  GoldbachGaps.Gap1M_2196digit_g1001491_21
+    41.0  GoldbachGaps.Gap1M_2196digit_g1001491_14
+    41.0  GoldbachGaps.Gap1M_2196digit_g1001491_13
+    41.0  GoldbachGaps.Gap1M_2196digit_g1001491_10
+    41.0  GoldbachGaps.Gap1M_2196digit_g1001491_7
+    40.0  GoldbachGaps.Gap1M_1797digit_g1021897_29
+    40.0  GoldbachGaps.Gap1M_1797digit_g1021897_1
+    40.0  GoldbachGaps.Gap1M_1997digit_g1008589_26
+    40.0  GoldbachGaps.Gap1M_1997digit_g1008589_7
+    39.0  GoldbachGaps.Gap1M_1797digit_g1021897_20
+    39.0  GoldbachGaps.Gap1M_1797digit_g1021897_4
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_24
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_18
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_17
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_15
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_11
+    39.0  GoldbachGaps.Gap1M_1997digit_g1008589_10
+    39.0  GoldbachGaps.Gap1M_2196digit_g1001491_16
+    38.0  GoldbachGaps.Gap1M_1797digit_g1021897_17
+    38.0  GoldbachGaps.Gap1M_1797digit_g1021897_6
+    38.0  GoldbachGaps.Gap1M_1797digit_g1021897_2
+    38.0  GoldbachGaps.Gap1M_1997digit_g1008589_23
+    38.0  GoldbachGaps.Gap1M_2196digit_g1001491_27
+    38.0  GoldbachGaps.Gap1M_2196digit_g1001491_19
+    37.0  GoldbachGaps.Gap1M_1797digit_g1021897_22
+    37.0  GoldbachGaps.Gap1M_1797digit_g1021897_21
+    37.0  GoldbachGaps.Gap1M_1797digit_g1021897_12
+    37.0  GoldbachGaps.Gap1M_1797digit_g1021897_7
+    37.0  GoldbachGaps.Gap1M_1997digit_g1008589_25
+    37.0  GoldbachGaps.Gap1M_1997digit_g1008589_20
+    36.0  GoldbachGaps.Cover32971
+    36.0  GoldbachGaps.Gap1M_1797digit_g1021897_8
+    36.0  GoldbachGaps.Gap1M_1797digit_g1021897_3
+    36.0  GoldbachGaps.Gap1M_2196digit_g1001491_28
+    35.0  GoldbachGaps.Gap1M_2196digit_g1001491_18
+    34.0  GoldbachGaps.Gap1M_1797digit_g1021897_28
+    34.0  GoldbachGaps.Gap1M_1797digit_g1021897_5
+    34.0  GoldbachGaps.Gap1M_1997digit_g1008589_29
+    34.0  GoldbachGaps.Gap1M_1997digit_g1008589_27
+    34.0  GoldbachGaps.Gap1M_1997digit_g1008589_13
+    34.0  GoldbachGaps.Gap1M_2196digit_g1001491_15
+    33.0  GoldbachGaps.Gap1M_1797digit_g1021897_10
+    32.0  GoldbachGaps.CoverBound
+    32.0  GoldbachGaps.Gap1M_1797digit_g1021897_24
+    32.0  GoldbachGaps.Gap1M_1797digit_g1021897_18
+    31.0  GoldbachGaps.Gap1M_2196digit_g1001491_30
+    30.0  GoldbachGaps.Gap1M_1797digit_g1021897_23
+    30.0  GoldbachGaps.Gap1M_2196digit_g1001491_29
+    26.0  GoldbachGaps.FixedGap
+    24.0  GoldbachGaps.Fscan.Fermat26
+    22.0  GoldbachGaps.Gap1M_1797digit_g1021897_31
+    21.0  GoldbachGaps.RankPatterns
+    18.0  GoldbachGaps.Cover16981
+    17.0  GoldbachGaps.Cover16747
+    17.0  GoldbachGaps.Cover15907
+    16.0  GoldbachGaps.Cover16381
+    14.0  GoldbachGaps.CoverDepthGreedy
+    12.0  GoldbachGaps.CompleteCover
+    12.0  GoldbachGaps.CoverDepth
+    11.0  GoldbachGaps.Fscan.Fermat30
+    11.0  GoldbachGaps.Record23_g11701
+    10.0  GoldbachGaps.Record27_g11467
+    10.0  GoldbachGaps.Record23_g10771
+    10.0  GoldbachGaps.Record23_g10729
+     9.9  GoldbachGaps.Record26_g10159
+     9.6  GoldbachGaps.Record26_g10303
+     9.5  GoldbachGaps.Fscan.Fermat52
+     9.5  GoldbachGaps.Record25_g10357
+     8.9  GoldbachGaps.Cover8311
+     8.1  GoldbachGaps.Mertens
+     7.8  GoldbachGaps.Gpu28.Step
+     7.8  GoldbachGaps.RecordGen
+     7.6  GoldbachGaps.Cap.Radius
+     7.1  GoldbachGaps.NeedlePairs
+     6.8  GoldbachGaps.FunctionField.ParityDesert
+     6.8  GoldbachGaps.Cover4909
+     6.5  GoldbachGaps.Gpu.MontSqr
+     6.4  GoldbachGaps.DesertWitness
+     6.1  GoldbachGaps.Counting
+     6.1  GoldbachGaps.Needles
+     5.7  GoldbachGaps.FunctionField.Stickelberger
+     5.7  GoldbachGaps.BitSieve
+     5.7  GoldbachGaps.RankTable
+     5.6  GoldbachGaps.Gpu.Fermat
+     5.5  GoldbachGaps.Gpu.Limbs
+     5.5  GoldbachGaps.Cap.ListGain
+     5.4  GoldbachGaps.ECPP
+     5.4  GoldbachGaps.Fscan.Kernel52
+     5.4  GoldbachGaps.Cap.Population
+     5.4  GoldbachGaps.Gpu28.Kernel
+     5.4  GoldbachGaps.CoverCountAsymptotic
+     5.3  GoldbachGaps.CoverPairSums
+     5.1  GoldbachGaps.Cap.Layers
+     5.1  GoldbachGaps.Gap1M_1797digit_g1021897
+     5.1  GoldbachGaps.CoverCount
+     4.9  GoldbachGaps.CoverPairs
+     4.7  GoldbachGaps.Cap.Thinning
+     4.7  GoldbachGaps.Gpu28.Final
+     4.7  GoldbachGaps.Fscan.Kernel26
+     4.7  GoldbachGaps.FunctionField.Families
+     4.7  GoldbachGaps.Cap.CommonInteger
+     4.6  GoldbachGaps.Worlds.Arc
+     4.4  GoldbachGaps.Covering
+     4.4  GoldbachGaps.RecordInfinite
+     4.3  GoldbachGaps.Gpu28.Conv
+     4.2  GoldbachGaps.Worlds.NoCoupling
+     4.2  GoldbachGaps.RecordWalk
+     4.1  GoldbachGaps.Cap.Brainstorm
+     4.0  GoldbachGaps.Cap.PairVariance
+     4.0  GoldbachGaps.Cover1471
+     4.0  GoldbachGaps.Gap1M_1997digit_g1008589
+     4.0  GoldbachGaps.RecordGenRun
+     3.9  GoldbachGaps.Fscan.ClassStage
+     3.9  GoldbachGaps.Basic
+     3.8  GoldbachGaps.Cap.Tilt
+     3.8  GoldbachGaps.Cap.Hardness
+     3.7  GoldbachGaps.Gap1M_1997digit_g1008589_Base
+     3.6  GoldbachGaps.Cap.FirstMoment
+     3.4  GoldbachGaps.FunctionField.DesertDegree
+     3.3  GoldbachGaps.Fscan.Kernel30
+     3.3  GoldbachGaps.NeedleClusters
+     3.2  GoldbachGaps.Cap.BlackBox
+     3.2  GoldbachGaps.Gap1M_2196digit_g1001491_Base
+     3.1  GoldbachGaps.Cap.Transfer
+     3.1  GoldbachGaps.Closeness
+     3.1  GoldbachGaps.Gap1M_2196digit_g1001491
+     3.0  GoldbachGaps.Fscan.Schedule
+     3.0  GoldbachGaps.Cap.Selection
+     3.0  GoldbachGaps.Effective
+     2.9  GoldbachGaps.Desert
+     2.8  GoldbachGaps.Cap.Rows
+     2.8  GoldbachGaps.Gap1M_1797digit_g1021897_Base
+     2.7  GoldbachGaps.Cap.Poly
+     2.7  GoldbachGaps.Cap.Budget
+          GoldbachGaps  (in the second `lake build`, 359 s for the 4)
+          GoldbachGaps.CoverCountRun  (in the second `lake build`, 359 s for the 4)
+          GoldbachGaps.CoverDepthRun  (in the second `lake build`, 359 s for the 4)
+          GoldbachGaps.Records  (in the second `lake build`, 359 s for the 4)

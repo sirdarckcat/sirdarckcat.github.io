@@ -126,9 +126,18 @@ measurements in `scripts/` (searches, heuristics, enumerations) are not proofs u
 
 Install `elan` (Lean's version manager). In `goldbach/lean`, run `lake exe cache get` (it downloads the compiled
 Mathlib for the pinned version) and then `lake build`. The toolchain is Lean v4.37.0-rc1 (`lean-toolchain`).
-Most files take seconds; the record and certificate files take minutes each and up to about 7 GB of memory each.
-(A timed clean build of the whole library is in progress; its numbers will replace this sentence.)
-Then `lake env lean scripts/check_axioms.lean` (about 5 seconds, 4.5 GB) prints the axioms used by the whole
+
+A build from scratch of all 209 files passed on 26 November on a machine with 4 cores and 15 GB of memory, in about
+two hours. Most files take seconds, about a dozen take 5 to 21 minutes, and the six 199- and 200-digit record files
+`Record200_g160357`, `Record200_g158209`, `Record200_g157837`, `Record200_g146191`, `Record199_g133981` and
+`Record199` each use about 10 GB of memory. `lake build` works on up to one file per core at once, so on that machine
+the system stopped those six for lack of memory (`Lean exited with code 137`). Building each of them alone
+(`lake build GoldbachGaps.Record200_g160357`, and so on) and then running `lake build` again passed: 55 minutes for
+the first `lake build`, 60 for the six and 6 for the rest (`scripts/build_times.txt` has every file). The many
+warnings are all of one kind, that the files do not use Mathlib's new "module system" (a way of organising files);
+they do not concern the proofs.
+
+Then `lake env lean scripts/check_axioms.lean` (about 5 seconds, 4.6 GB) prints the axioms used by the whole
 library; for one theorem, write `import GoldbachGaps` and `#print axioms GoldbachGaps.<name>` in a file and run
 `lake env lean` on it.
 
