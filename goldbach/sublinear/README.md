@@ -1489,31 +1489,39 @@ on average, with one prime at 3.4 ln r.
 the consultant's literature page, `goldbach/gaps_map/TOY_WORLDS_LITERATURE.md`
 on its branch (195e7bd); statements theirs, marked as they mark them.
 
-- *Proved, given the published decoding radius:* decoding up to the Johnson
-  radius (Guruswami–Sudan, Koetter–Vardy; on the integers
-  Goldreich–Ron–Sudan, Boneh, Guruswami–Sahai–Sudan) returns a member at
-  depth κ of a window of K only if Σ ln Q/Q over the places used is at least
-  (√ln K − √(2κ ln Q_min/Q_min))². With the full window that needs places to
-  5.7·10^7 and an input of 9.5·10^13 table entries at κ = 16.6, and more at
-  smaller κ: 6·10^6 to 6·10^8 times the scan; for any window of two members
-  or more, at least 1.5·10^4 times. With lists of density ρ at every place
-  and full agreement it recovers only N of degree below 1/ρ; at the
-  agreement that deep members really have it recovers nothing of degree 1 or
-  more. (A shorter form of mine, that with lists of two or more classes the
-  guarantee is empty beyond pins, was wrong as stated, and the Opus session
-  found the error (its commit 1ebff90): I had counted the N agreeing on one
-  fixed set of places, where the guarantee covers every N whose own set of
-  agreements qualifies, and the choice of that set carries entropy. Its
-  example: 3,000 places of norm 467 with lists of 233 classes guarantee
-  every N with 1,375 agreements, fewer than the 1,500 a typical N has.
-  Counted properly, the guarantee meets existing members exactly when the
-  Mertens mass Σ ρ_i ln p_i/p_i of the lists reaches about ln K. For
-  Reed–Solomon codes that mass is at most 1 and below the dimension, so
-  there the claim holds and nothing beyond pins is returned on generic
-  lists; on the integers the mass grows like ln(y/467) and is reached with
-  places to 5.7·10^7 and beyond, which is the cost above. On the integers
-  the decoder is therefore not empty, only dominated: it is an enumerator
-  priced by its output plus an input of at least 1.5·10^4 scans.)
+- *Proved, given the published decoding radius; derived twice* (the Opus
+  session's first form, then a sharper one from a split of the weights that
+  I proposed and it made exact, its commit 844daa8). Write the multiplicity
+  that the decoder gives to class a at place p as a mean over the classes
+  plus a deviation. The mean part is the full list: it carries no
+  information, and with its best weights (∝ 1/p) it contributes exactly the
+  Mertens mass M = Σ ln p/p of all the places used. The deviation part is
+  the only one that knows the tables, and a member z standard deviations
+  out in it adds at most z²·max(ln p/p). The guarantee of decoding up to
+  the Johnson radius (Guruswami–Sudan, Koetter–Vardy; on the integers
+  Goldreich–Ron–Sudan, Boneh, Guruswami–Sahai–Sudan) therefore reaches a
+  member at depth κ of a window of K only if
+
+      M + 2κ·ln p_min/p_min ≥ ln K,
+
+  and the informative term is at most 2.6% of ln K. So on the integers the
+  decoder is the Chinese-remainder enumeration of the whole window with its
+  threshold moved by a hair: with exact prime sums, places to 5.2·10^9 and
+  an input of 6.2·10^17 table entries for the deepest member of a full
+  window (3.9·10^10 scans), and at least 2.5·10^4 scans at every window
+  size down to two members. The lists restricted to the classes that are
+  struck at all have mass Σ ρ ln p/p = 1.75 (the integral of
+  (1 − e^(−1500/t))/t from 467), a tenth of what is needed. In F_q[x] the
+  places must cover 0.974 n layers of degree, an input of at least
+  members^1.95. With lists of density ρ at every place and full agreement
+  the decoder recovers only N of degree below 1/ρ. (A shorter form of mine,
+  that with lists of two or more classes the guarantee is empty beyond
+  pins, was wrong as stated, and the Opus session found the error: I had
+  counted the N agreeing on one fixed set of places, where the guarantee
+  covers every N whose own set of agreements qualifies, and the choice of
+  that set carries entropy. For Reed–Solomon codes the Mertens mass is at
+  most 1 and below the dimension, so there the claim holds and nothing
+  beyond pins is returned on generic lists.)
 - *Proved:* folding and multiplicities, which carry list decoding beyond
   that radius to capacity, buy nothing for a separable score, on average or
   in the worst case: a separable score gives product lists on folded
@@ -1573,16 +1581,33 @@ q = 7: 110 at 8, 181 at 10; q = 9: 120 at 6, 122 at 8, 151 at 9.
   rows: for N = G(x^p) + x² + cx + d and n even that is every quadratic row
   at once, with no congruence and no luck (the record at q = 9, n = 6).
   Result 1 is the case N′ = 0.
-- *Symmetry: the one mechanism that changes the exponent.* If N is
-  invariant under a group H of translations (N = g(x^p − x) for H = F_p),
-  then N − Q(x + b) = (N − Q)(x + b): a row and its translates succeed or
-  fail together, so the member has a |H|-th of the trials, and the
-  invariant members are the |H|-th root of all. Measured: the number of
-  successes in the invariant family is close to S^(1/p) when S succeed
-  among all (q = 5, n = 10, 25 invariant members: 7, 1, 1, … against 6.4,
-  5.0, 4.1, …), and in all eleven instances with p | n an invariant N
-  attains the greatest depth. The work to reach a level is about the p-th
-  root of the generic work. All six structured records use one of these two
+- *Symmetry: the one mechanism that changes the exponent, on complete
+  degrees.* If N is invariant under a group H of translations
+  (N = g(x^p − x) for H = F_p), then N − Q(x + b) = (N − Q)(x + b): a row
+  and its translates succeed or fail together (in the kernel for any ring
+  automorphism fixing N: the Lean session's `irreducible_sub_apply_iff`,
+  with the statements on the derivative above, its commit b761cbc). On a
+  set of rows closed under the translations, and in F_q[x] that means the
+  complete degrees, the member has a |H|-th of the trials. Measured by the
+  Lean session (cell model calibrated on the exhaustive runs), with F_d the
+  members of the family and G_d the members of all whose rows of degree at
+  most d all fail: F_d ≈ G_d^(1/p) within about 20% over five orders of
+  magnitude (q = 3, n = 24, family of 6,561, d = 5 to 8: 2,646, 1,329, 147,
+  1 against 2,850, 1,280, 176, 1.65; q = 5, n = 20, family of 625, d = 2 to
+  5: 561, 359, 102, 0 against 534, 362, 103, 0.76). The family of q^(n/p)
+  members attains the same greatest degree-depth D as the best of all q^n
+  in 13 cases of 13 and a greater one in 3 (q = 3, n = 21: D = 9, where
+  0.005 members of all are expected): a member whose rows of degree at most
+  d all fail costs the p-th root of the generic work. Inside a degree there
+  is no saving: an orbit's rows are spread over the degree, the first j
+  rows lie in about j orbits, and a family member's count of rows runs on
+  like a generic member's (the Lean session's correction of its own first
+  report and of the first form of this paragraph; its test: the q(q − 1)
+  polynomials λ(x^q − x + c) have best counts 96 and 145 at q = 11 and 13,
+  where one member of all is expected near 277 and 417). Exhaustive records
+  since: q = 3, n = 17: 600 (generic); q = 9, n = 9: 151, three members,
+  all translation-invariant (x^9 − x + 1 among them), best generic 148. All
+  six structured records among the first 35 instances use one of these two
   mechanisms.
 
 Transfer of World 3, as it stands: none of the three. Parity of the number
@@ -1593,6 +1618,45 @@ characteristic p; and the symmetry needs a group acting on the ring and
 moving the rows, where the integers have no automorphism and every rational
 prime is fixed by every Galois group. Had the parity been available, the
 agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
+
+**World 6 (a ring of integers with an automorphism: the Gaussian
+integers)** (`gauss_ties.py`, `gauss_ties.txt`). The tie of World 3 is not
+a matter of characteristic p.
+
+*Statement.* Let σ be an additive bijection of a ring that sends primes to
+primes (a ring automorphism, or one followed by multiplication by a unit).
+If σ(N) = N, then N − σ(π) = σ(N − π), so the rows π and σ(π) of the target
+N succeed or fail together.
+
+In Z[i] the maps z ↦ u z̄ (u a unit) fix the two axes and the two diagonals;
+a target on one of them has half the independent trials of a generic target
+at every norm. *Measured:* g(N) = the least norm of a Gaussian prime π with
+N − π a Gaussian prime, for every even N with |N| ≤ 7,000 in a quarter
+plane. The logarithm of the frequency of g(N) > m is 0.53 to 0.61 times
+the generic one on the real axis and 0.45 to 0.55 on the diagonal, for
+every m up to 89 (one half if the tie were the only effect; the targets of
+a line are smaller on average, and on the real axis a few rows are
+rational). The deepest of the 3,500 real targets (g = 101) and of the 4,949
+diagonal ones (g = 121) are deeper than the deepest of the 19,233,748
+generic ones (g = 97). With |N| ≤ 3,000: 61 on the real axis among 1,500
+targets, 61 among 3,530,680 generic ones.
+
+So the mechanism lives in characteristic 0 and under an archimedean size
+constraint; what it needs is an additive symmetry of the primes that fixes
+some targets. *The integers:* the additive bijections of Z are ±1, and −1
+fixes only 0. Seen from Z[i] or from any Galois ring of integers, the
+rational primes, the rows of our game, are exactly the rows that the group
+fixes, so they are tied to nothing; the ties are among the other rows, and
+they are ties because two rows test the same rational integer (the norm).
+In the integers the numbers N − q are distinct, and under the prime-tuples
+conjecture their primality is tied only through common residues, which is
+the cover. The cover is the integers' form of this tool: "N in a subring
+over which the ring is Galois" has no meaning in Z, which has no proper
+subring, and becomes "N in a coset of an ideal". The exchange rates differ:
+a symmetry of order h spends the share 1 − 1/h of the room and divides the
+exponent by h; the cover spends 96% of the room (443 of 460 nats) and
+divides it by 1.43 (52 nats for random non-zero classes, 2,152 rows on
+average, against 36.5 for the best cover at 200,000).
 
 **World 4 (the random box).** Opus session, `worlds/world4.md` (476df3d).
 
