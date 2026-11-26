@@ -102,7 +102,7 @@ they alone can strike every prime) is known for n up to 35 (computed twice to n 
 In the reverse game, the fewest digits for a given gap, numbers with g = 216,289 at 347 digits and g = 1,021,897 at
 1,797 digits were found (certified in Lean).
 
-*The side scan.* Idle cores of six sessions scanned about 6,000 covers the fleet never used, at the record target.
+*The side scan.* Idle cores of six sessions scanned about 6,500 covers the fleet never used, at the record target.
 Nothing was found, as expected: about 0.004 finds were due (`cpu_scan/LEDGER.md`).
 
 ## Corrections and withdrawals
