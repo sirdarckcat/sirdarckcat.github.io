@@ -1714,6 +1714,34 @@ moving the rows, where the integers have no automorphism and every rational
 prime is fixed by every Galois group. Had the parity been available, the
 agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
 
+*Verification of this session's enumeration page* (the first of its two
+verifiers; the other is recomputing numbers). An independent C program
+reproduces all 41 instances with their complete histograms of G, so the
+records above are computed three times; the tie lemma and the statement on
+the derivative stand (5,785 further polynomials, no failure). Its
+corrections, which also refine the paragraph on symmetry above:
+
+- The saving on a complete degree is by the number of orbits, not by the
+  order of the group. Rows of degree divisible by p include rows that the
+  translations fix (for q = 3: 2 of the 8 rows of degree 3, 2 of the 116 of
+  degree 6). With orbits/rows as the exponent, degree by degree, the law
+  fits within 5 to 8% where the plain p-th root is 13 to 18% off at d = 4.
+- The symmetry group is larger than the translations. Reflections
+  x ↦ −x + b fix some optima when p does not divide n (the unique optimum
+  at q = 5, n = 6; all three at q = 3, n = 4). And for q = 9 the Frobenius
+  on the coefficients fixes every N with coefficients in F_3: among those,
+  depth 3 is reached 10 to 29 times more often than among all N
+  (n = 6 to 9), and for even n every row with coefficients in F_3 is
+  forced, a polynomial of even degree over F_3 being never irreducible
+  over F_9. This is the toy model of a Galois ring of integers, and it
+  says what World 6 says: the gain sits on the rows that are not rational,
+  and the rational rows are forced only in the sense of the larger ring.
+- For every N and every translation b, D(N(x + b)) = D(N): the counts of
+  members at a depth are sums over these orbits.
+- At a fixed share of members kept, the advantage of the parity statistic
+  falls with depth, toward the bare factor of about 2 from testing only
+  the rows that can succeed; it grows with selectivity.
+
 *The catalogue of forcing mechanisms in F_q[x]* (an agent of this session;
 its two verifiers have not reported, so the statements are its own; every
 formula was checked by it against python-flint factorisations, and C2 for
