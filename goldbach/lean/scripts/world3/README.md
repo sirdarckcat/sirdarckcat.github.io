@@ -48,9 +48,9 @@ miniature, so luck outweighs the cover sooner. With a share of the work cover fi
 
 Never at N′ = 0. In the enumerable range the record member is generic in 34 of the first 41 instances (no symmetry,
 derivative of high degree) and uses parity by luck: the record at q = 3, n = 12 has 24 rows left at the line, where the
-best cell has 17, and only 2 of them are squarefree with an odd number of factors, where 12 are expected. The six
-structured records are all at n divisible by p (the seventh, 9^9, is shared by three translation-invariant
-members, among them t⁹ − t + 1, invariant under every translation of F_9; the best generic member has 148):
+best cell has 17, and only 2 of them are squarefree with an odd number of factors, where 12 are expected. The seven
+structured records are all at n divisible by p (the last, 9^9, is shared by three translation-invariant
+members, among them t⁹ − t + 1, invariant under every translation of F_9):
 
 | instance | record member | L | best generic | members the cell model expects at L |
 |---|---|---|---|---|
@@ -107,20 +107,22 @@ member; 7^7: 89 and 78).
 
 **The law.** Let F_d be the number of members of the family with every row of degree at most d failing, and G_d the
 number of all members with the same. Then F_d ≈ G_d^(1/p), within about 20% over five orders of magnitude
-(`tables.md`, last section). For instance at q = 3, n = 21 (2,187 members of 10^10): d = 5, 6, 7, 8 give
-F = 803, 336, 28, 1 against cube roots 859, 349, 35, 0.17; at q = 5, n = 20 (625 of 10^14): d = 2, 3, 4, 5 give
-561, 359, 102, 0 against fifth roots 534, 362, 103, 0.76.
+(`tables.md`, last section). For instance at q = 3, n = 30 (59,049 members of 2·10^14): d = 6, 7, 8 give
+F = 14,681, 2,841, 51 against cube roots 15,100, 3,140, 73; at q = 5, n = 25 (3,125 of 3·10^17): d = 2, 3, 4, 5 give
+2,831, 2,067, 809, 9 against fifth roots 2,760, 2,020, 728, 15; at q = 7, n = 21 (343 of 6·10^17): d = 1, 2, 3, 4
+give 343, 284, 133, 4 against seventh roots 326, 281, 134, 3.8.
 
 **What it gives.** In terms of D (every row of degree below D fails), the family of q^(n/p) members attains the D of
-the best of all q^n members in every case computed, and a larger one in three (3^9: 7 against 6; 5^10: 5 against 4;
-3^21: 9, where the model expects 0.005 members of all with D = 9). A member with "every row of degree at most d
+the best of all q^n members in every case computed (q = 3: n = 9 to 30; q = 5: n = 10 to 25; q = 7: n = 7 to 21), and
+a larger one in three (3^9: 7 against 6; 5^10: 5 against 4; 3^21: 9, where the model expects 0.005 members of all
+with D = 9). A member with "every row of degree at most d
 fails" costs the p-th root of the generic work.
 
 **What it does not give.** Inside a degree the first j rows lie in about j different orbits, so a family member
 faces as many independent trials as a generic one. Above the last degree it passes, its L runs on like a generic
 member's: the family's best L sits just above a degree boundary (1,572 = 1,318 + 254 at 3^21; 2,056 = 1,318 + 738 at
 3^24; 582 = 508 + 74 at 3^18) and is above or below the best L of all members according to where the generic level
-falls between two boundaries (above at 3^21 and 3^24, below at 3^18 and 3^27). The same holds for the family
+falls between two boundaries (above at 3^21 and 3^24, below at 3^18 and 3^27, equal at 3^30: 2,190 against 2,214). The same holds for the family
 invariant under every translation of F_q, the q(q − 1) polynomials λ(t^q − t + c) (`as_family.py`): its largest D
 is the generic one or more (D ≥ 4 at q = 5 and 7, where the generic level has D = 3; D = 3 at q = 11 and 13), its
 largest L is not (96 at q = 11, 145 at q = 13, where the naive level is 277 and 417).
