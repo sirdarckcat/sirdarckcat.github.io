@@ -1,0 +1,19 @@
+# Rechecks of the closeness-frontier holders, from N alone, by the reviewer on 26 Nov 2026 (demo/verify_g.py:
+# every odd prime q below g gives N - q failing a base-2 Fermat test or a strong test to 16 bases; N - g passes the
+# strong test to 16 bases, a probable prime, not a proof).
+
+## 110 digits, g = 59377
+N = 11771255832457003357982908844820241203805323892964697968658975982569153137990134742352608931363483486347865878
+digits 110 first q with N-q a strong probable prime (16 bases): 59377 claimed 59377 MATCH | base-2 Fermat passes seen: 1 | g/ln^2N=0.9414 | 1.4s
+
+## 101 digits, g = 51907
+N = 10188401875033888962498835206932939720063123082056657092949227286940139620543666709467036103292201198
+digits 101 first q with N-q a strong probable prime (16 bases): 51907 claimed 51907 MATCH | base-2 Fermat passes seen: 1 | g/ln^2N=0.9789 | 1.0s
+
+## 48 digits, g = 23227
+N = 106624760345015789778946730106958383522522275168
+digits 48 first q with N-q a strong probable prime (16 bases): 23227 claimed 23227 MATCH | base-2 Fermat passes seen: 1 | g/ln^2N=1.9808 | 0.1s
+
+## 27 digits, g = 11467
+N = 111308182437581302718351168
+digits 27 first q with N-q a strong probable prime (16 bases): 11467 claimed 11467 MATCH | base-2 Fermat passes seen: 1 | g/ln^2N=3.1880 | 0.0s
