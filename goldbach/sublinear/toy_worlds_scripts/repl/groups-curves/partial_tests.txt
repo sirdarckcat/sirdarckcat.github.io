@@ -1,0 +1,22 @@
+survivors 50636: composite 47045, prime 3591
+Fermat test 121.9 us; of the composites, Fermat base 2 rejects 47045/47045; primes pass 3591/3591
+
+P-1 stage 1 (base 2): one exponentiation by E = lcm(1..B1), then one gcd
+   B1   bits(E)  cost/Fermat  kills  rate      predicted   kills per Fermat-unit   false kills on primes
+    30       42     0.063       0/47045 0.00000  0.00001   0.00000      0
+   100      136     0.205      16/47045 0.00034  0.00044   0.00166      0
+   460      662     0.997     367/47045 0.00780  0.00631   0.00782      0
+  2000     2878     4.334    1514/47045 0.03218  0.02626   0.00742      0
+ 10000    14447    21.758    1001/12000 0.08342  0.06905   0.00383      0
+ 50000    72115   108.607     424/3000 0.14133  0.13148   0.00130      0
+
+P+1 stage 1 (Lucas V, seed 3; finds p with p+1 or p-1 smooth, by the sign of (5/p)): cost 2 modular mult per bit
+   100      136     0.410       2/15000 0.00013  0.00044   0.00033
+   460      662     1.994     124/15000 0.00827  0.00631   0.00415
+
+ECM stage 1, one curve (Suyama, sigma = 11): about 10 modular mult per bit (6 mult + 4 squarings + 1 by a constant)
+    50       72     1.084 (timed 1.8)       5/20000 0.00025  pred(order/12 smooth) 0.00031   per unit 0.000231
+   100      136     2.048 (timed 3.5)      36/20000 0.00180  pred(order/12 smooth) 0.00168   per unit 0.000879
+   460      662     9.970 (timed 16.5)     113/6000 0.01883  pred(order/12 smooth) 0.01519   per unit 0.001889
+
+For comparison, per Fermat-unit of work: the Fermat test itself rejects 1.0 composite; break-even for a pre-test is a kill rate equal to its cost.

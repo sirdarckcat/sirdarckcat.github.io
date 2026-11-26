@@ -1,0 +1,33 @@
+rows R = 1502; cover primes: 89 up to 463; window ln K = 24.35 ln 2 = 16.878
+later primes 467..1999993: 148843; sum ln p / p over them = 8.2962 (ln(2000000/463) = 8.3709)
+typical member: expected strikes at the later primes to 1e8, with repeats: 1635.1
+
+depth kappa | tilt theta | strikes (x typical) | X = sum (ln p/p) chi2_p | chi2 at 467 | KL at 467 | Mertens mass needed ln K - X | places to y = 463 e^(ln K - X) | pi(y) ~ y/ln y | README bound (sqrt(ln K) - sqrt(2 kappa ln467/467))^2 -> y
+  1.0 | 0.0357 | 1690.9 (1.034) | 0.0034 | 0.0030 | 0.0015 | 16.875 | 9.867e+09 | 4.287e+08 | 15.571 -> 2.680e+09
+  4.2 | 0.0723 | 1750.1 (1.070) | 0.0146 | 0.0126 | 0.0062 | 16.864 | 9.758e+09 | 4.242e+08 | 14.257 -> 7.197e+08
+  8.0 | 0.0990 | 1794.4 (1.097) | 0.0279 | 0.0239 | 0.0117 | 16.850 | 9.628e+09 | 4.188e+08 | 13.318 -> 2.816e+08
+ 12.0 | 0.1205 | 1830.8 (1.120) | 0.0420 | 0.0359 | 0.0174 | 16.836 | 9.493e+09 | 4.132e+08 | 12.576 -> 1.341e+08
+ 16.6 | 0.1409 | 1866.0 (1.141) | 0.0584 | 0.0497 | 0.0239 | 16.820 | 9.339e+09 | 4.068e+08 | 11.884 -> 6.708e+07
+ 30.0 | 0.1868 | 1947.7 (1.191) | 0.1071 | 0.0904 | 0.0425 | 16.771 | 8.895e+09 | 3.883e+08 | 10.366 -> 1.471e+07
+
+the same for sub-windows (pins spend the rest of the window): K_s members, alignment at depth min(16.6, ln K_s):
+K_s = 2: X = 0.0024; Mertens mass needed 0.691; places 463 < p <= 923.8: about 59.85 primes = 29.9 per member; dense tables sum p ~ y^2/(2 ln y) = 6.25e+04 = 3.12e+04 per member
+K_s = 16: X = 0.0096; Mertens mass needed 2.763; places 463 < p <= 7337: about 748.9 primes = 46.8 per member; dense tables sum p ~ y^2/(2 ln y) = 3.02e+06 = 1.89e+05 per member
+K_s = 1024: X = 0.0241; Mertens mass needed 6.907; places 463 < p <= 4.628e+05: about 3.54e+04 primes = 34.6 per member; dense tables sum p ~ y^2/(2 ln y) = 8.21e+09 = 8.02e+06 per member
+K_s = 1.049e+06: X = 0.0486; Mertens mass needed 13.814; places 463 < p <= 4.624e+08: about 2.318e+07 primes = 22.1 per member; dense tables sum p ~ y^2/(2 ln y) = 5.36e+15 = 5.11e+09 per member
+K_s = 2.138e+07: X = 0.0584; Mertens mass needed 16.820; places 463 < p <= 9.339e+09: about 4.068e+08 primes = 19.0 per member; dense tables sum p ~ y^2/(2 ln y) = 1.9e+18 = 8.88e+10 per member
+
+support form of Theorem 2: sum over the (p, c) that carry a weight of ln p * pi_p(c)^2 must exceed ln K_s; the least number
+of weighted classes that can reach it (greedy, exact histograms for the primes to 2e6):
+K_s = 2: at least 51681 weighted classes = 2.58e+04 per member (all classes of all primes to 2e6 give 8.299); weights only on the classes that hold a row give at most 1.831 in all
+K_s = 16: at least 3567931 weighted classes = 2.23e+05 per member (all classes of all primes to 2e6 give 8.306); weights only on the classes that hold a row give at most 1.888 in all
+K_s = 256: at least 695453968 weighted classes = 2.72e+06 per member (all classes of all primes to 2e6 give 8.315); weights only on the classes that hold a row give at most 1.937 in all
+K_s = 1024: at least 9848249884 weighted classes = 9.62e+06 per member (all classes of all primes to 2e6 give 8.320); weights only on the classes that hold a row give at most 1.958 in all
+K_s = 4096: at least 140878527973 weighted classes = 3.44e+07 per member (all classes of all primes to 2e6 give 8.325); weights only on the classes that hold a row give at most 1.977 in all
+full window, theta = 0.1409: weights only on the classes that hold a row: sum over primes to 2e6 = 2.071, tail to infinity < R e^(2 theta) / 2e6 = 0.0010; against ln K = 16.878
+
+prime powers as places: the mass of p^e is e ln p / p^e instead of ln p / p
+   sum over p >= 2 (to 2000000) and e >= 2 of e ln p / p^e = 1.98233
+   sum over p > 463 (to 2000000) and e >= 2 of e ln p / p^e = 0.00416
+   cylinder lists (a list of classes mod p lifted to p^e): d/l term e ln p / (l p^(e-1)) against ln p / l: ratio e / p^(e-1): p=2,e=2: 1.0000, p=2,e=3: 0.7500, p=3,e=2: 0.6667, p=5,e=2: 0.4000, p=467,e=2: 0.0043
+exit 0

@@ -1,0 +1,77 @@
+A[k], covers at first-order cost exactly k: [2, 59, 1128, 16507, 202243, 2165385, 20830117, 183376981, 1497177893, 11450132754, 82665492440, 566895437330, 3711417521782, 23294678609561, 140666378734875, 819697261743913, 4621475142118120]
+ln cumulative A: [0.69, 4.11, 7.08, 9.78, 12.3, 14.68, 16.96, 19.15, 21.26, 23.3, 25.29, 27.22, 29.11, 30.95, 32.76, 34.53, 36.26]
+
+j=1 later 467: D = -10.732, e^D = 2.184e-05, e^(D/2) = 0.004674, Gmax = 8, unconstrained optimum 1494
+  slack  0: points 6  expected below X 2.747e+05   lists: covers 2, later 3  sum 5
+
+j=2 later 479: D = -4.560, e^D = 0.01046, e^(D/2) = 0.1023, Gmax = 16, unconstrained optimum 1486
+  slack  0: points 24  expected below X 2294   lists: covers 2, later 12  sum 14
+  slack  1: points 856  expected below X 8.181e+04   lists: covers 61, later 74  sum 135
+
+j=3 later 487: D = 1.628, e^D = 5.096, e^(D/2) = 2.257, Gmax = 24, unconstrained optimum 1478
+  slack  0: points 72  expected below X 14.13   lists: covers 2, later 36  sum 38
+  slack  1: points 2712  expected below X 532.2   lists: covers 61, later 294  sum 355
+  slack  2: points 6.114e+04  expected below X 1.2e+04   lists: covers 1189, later 1593  sum 2782
+  slack  3: points 1.035e+06  expected below X 2.031e+05   lists: covers 1.77e+04, later 7469  sum 2.516e+04
+
+j=4 later 491: D = 7.825, e^D = 2502, e^(D/2) = 50.02, Gmax = 32, unconstrained optimum 1470
+  slack  0: points 72  expected below X 0.02878   lists: covers 2, later 36  sum 38
+  slack  1: points 3144  expected below X 1.257   lists: covers 61, later 510  sum 571
+  slack  2: points 7.921e+04  expected below X 31.66   lists: covers 1189, later 4257  sum 5446
+  slack  3: points 1.473e+06  expected below X 588.9   lists: covers 1.77e+04, later 2.639e+04  sum 4.409e+04
+  slack  4: points 2.232e+07  expected below X 8923   lists: covers 2.199e+05, later 1.333e+05  sum 3.532e+05
+  slack  5: points 2.902e+08  expected below X 1.16e+05   lists: covers 2.385e+06, later 5.768e+05  sum 2.962e+06
+
+j=5 later 499: D = 14.037, e^D = 1.248e+06, e^(D/2) = 1117, Gmax = 39, unconstrained optimum 1463
+  slack  0: points 360  expected below X 0.0002884   lists: covers 2, later 180  sum 182
+  slack  1: points 1.745e+04  expected below X 0.01398   lists: covers 61, later 3414  sum 3475
+  slack  2: points 4.761e+05  expected below X 0.3813   lists: covers 1189, later 3.579e+04  sum 3.698e+04
+  slack  3: points 9.474e+06  expected below X 7.588   lists: covers 1.77e+04, later 2.698e+05  sum 2.875e+05
+  slack  4: points 1.523e+08  expected below X 122   lists: covers 2.199e+05, later 1.622e+06  sum 1.842e+06
+  slack  5: points 2.088e+09  expected below X 1672   lists: covers 2.385e+06, later 8.226e+06  sum 1.061e+07
+  slack  6: points 2.522e+10  expected below X 2.02e+04   lists: covers 2.322e+07, later 3.632e+07  sum 5.953e+07
+  slack  7: points 2.747e+11  expected below X 2.2e+05   lists: covers 2.066e+08, later 1.425e+08  sum 3.491e+08
+
+j=6 later 503: D = 20.258, e^D = 6.28e+08, e^(D/2) = 2.506e+04, Gmax = 48, unconstrained optimum 1454
+  slack  0: points 360  expected below X 5.733e-07   lists: covers 2, later 180  sum 182
+  slack  1: points 1.817e+04  expected below X 2.893e-05   lists: covers 61, later 3774  sum 3835
+  slack  2: points 5.145e+05  expected below X 0.0008194   lists: covers 1189, later 4.442e+04  sum 4.561e+04
+  slack  3: points 1.061e+07  expected below X 0.0169   lists: covers 1.77e+04, later 3.809e+05  sum 3.986e+05
+  slack  4: points 1.765e+08  expected below X 0.2811   lists: covers 2.199e+05, later 2.629e+06  sum 2.849e+06
+  slack  5: points 2.502e+09  expected below X 3.984   lists: covers 2.385e+06, later 1.539e+07  sum 1.778e+07
+  slack  6: points 3.123e+10  expected below X 49.72   lists: covers 2.322e+07, later 7.884e+07  sum 1.021e+08
+  slack  7: points 3.51e+11  expected below X 558.9   lists: covers 2.066e+08, later 3.604e+08  sum 5.67e+08
+  slack  8: points 3.611e+12  expected below X 5750   lists: covers 1.704e+09, later 1.492e+09  sum 3.196e+09
+  slack  9: points 3.441e+13  expected below X 5.479e+04   lists: covers 1.315e+10, later 5.651e+09  sum 1.88e+10
+
+j=7 later 509: D = 26.490, e^D = 3.196e+11, e^(D/2) = 5.654e+05, Gmax = 56, unconstrained optimum 1446
+  slack  0: points 360  expected below X 1.126e-09   lists: covers 2, later 180  sum 182
+  slack  1: points 1.997e+04  expected below X 6.247e-08   lists: covers 61, later 4674  sum 4735
+  slack  2: points 6.122e+05  expected below X 1.915e-06   lists: covers 1189, later 6.671e+04  sum 6.79e+04
+  slack  3: points 1.355e+07  expected below X 4.239e-05   lists: covers 1.77e+04, later 6.855e+05  sum 7.032e+05
+  slack  4: points 2.405e+08  expected below X 0.0007524   lists: covers 2.199e+05, later 5.62e+06  sum 5.84e+06
+  slack  5: points 3.619e+09  expected below X 0.01132   lists: covers 2.385e+06, later 3.88e+07  sum 4.119e+07
+  slack  6: points 4.777e+10  expected below X 0.1495   lists: covers 2.322e+07, later 2.331e+08  sum 2.563e+08
+  slack  7: points 5.663e+11  expected below X 1.772   lists: covers 2.066e+08, later 1.245e+09  sum 1.452e+09
+  slack  8: points 6.126e+12  expected below X 19.17   lists: covers 1.704e+09, later 6.004e+09  sum 7.708e+09
+  slack  9: points 6.125e+13  expected below X 191.6   lists: covers 1.315e+10, later 2.645e+10  sum 3.96e+10
+  slack 10: points 5.713e+14  expected below X 1787   lists: covers 9.582e+10, later 1.073e+11  sum 2.031e+11
+  slack 11: points 5.01e+15  expected below X 1.567e+04   lists: covers 6.627e+11, later 4.04e+11  sum 1.067e+12
+  slack 12: points 4.156e+16  expected below X 1.3e+05   lists: covers 4.374e+12, later 1.418e+12  sum 5.792e+12
+
+j=8 later 521: D = 32.746, e^D = 1.665e+14, e^(D/2) = 1.29e+07, Gmax = 64, unconstrained optimum 1438
+  slack  0: points 720  expected below X 4.323e-12   lists: covers 2, later 360  sum 362
+  slack  1: points 4.138e+04  expected below X 2.485e-10   lists: covers 61, later 1.007e+04  sum 1.013e+04
+  slack  2: points 1.309e+06  expected below X 7.86e-09   lists: covers 1189, later 1.545e+05  sum 1.556e+05
+  slack  3: points 2.983e+07  expected below X 1.791e-07   lists: covers 1.77e+04, later 1.708e+06  sum 1.726e+06
+  slack  4: points 5.442e+08  expected below X 3.268e-06   lists: covers 2.199e+05, later 1.512e+07  sum 1.534e+07
+  slack  5: points 8.41e+09  expected below X 5.05e-05   lists: covers 2.385e+06, later 1.13e+08  sum 1.154e+08
+  slack  6: points 1.139e+11  expected below X 0.0006842   lists: covers 2.322e+07, later 7.384e+08  sum 7.616e+08
+  slack  7: points 1.385e+12  expected below X 0.008316   lists: covers 2.066e+08, later 4.305e+09  sum 4.512e+09
+  slack  8: points 1.536e+13  expected below X 0.09222   lists: covers 1.704e+09, later 2.276e+10  sum 2.446e+10
+  slack  9: points 1.573e+14  expected below X 0.9446   lists: covers 1.315e+10, later 1.103e+11  sum 1.234e+11
+  slack 10: points 1.503e+15  expected below X 9.024   lists: covers 9.582e+10, later 4.943e+11  sum 5.902e+11
+  slack 11: points 1.349e+16  expected below X 81.02   lists: covers 6.627e+11, later 2.063e+12  sum 2.726e+12
+  slack 12: points 1.146e+17  expected below X 687.9   lists: covers 4.374e+12, later 8.061e+12  sum 1.244e+13
+  slack 13: points 9.245e+17  expected below X 5552   lists: covers 2.767e+13, later 2.961e+13  sum 5.728e+13
+  slack 14: points 7.124e+18  expected below X 4.278e+04   lists: covers 1.683e+14, later 1.027e+14  sum 2.71e+14

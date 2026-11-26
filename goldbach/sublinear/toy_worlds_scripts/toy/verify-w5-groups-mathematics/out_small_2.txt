@@ -1,0 +1,7 @@
+T4(b),(c): EXHAUSTIVE maximum over all rectangles inside R_max = [-E0, X+E0) (every subset A of the side of size P_I)
+   4(b): 108 cases, max area / bound = 0.915;  4(c) (with E0 <= X): 90 cases, max strip points in a rectangle / bound = 0.699;
+   (c') points of [0,X) in one rectangle <= (2(X+E0)/P_Ic+1)(2X/P_I+1) (min with I, Ic exchanged): 108 cases, max ratio 0.313
+
+real	0m0.197s
+user	0m0.096s
+sys	0m0.009s

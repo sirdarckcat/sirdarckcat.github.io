@@ -1,0 +1,15 @@
+(a) 213 primes 467..1999, 4194304 members of the real window: pairs 22578
+    z = corr sqrt(members): mean -0.0020, rms 0.2483 (independent: 1), largest |z| 2.84 (expected about 4.48); |z| > 3: 0 (expected 61)
+    mean over the window against mean of the table: largest |difference|/sd(table) sqrt(members) = 0.03;  variance over the window / variance of the table: mean 1.00000
+    Var(S) over the window 258.388; sum of table variances 258.439; ratio 0.99980 (sampling sd about 0.00207)
+(b) top 1% of S among k < 2^21: 24235 members, mean S 352.21 against 309.51 for all (sd 16.07)
+    S(k1 + k2) over 399980 pairs of top members: mean 309.461, sd of that mean 0.025; all members 309.505: excess -0.044 rows
+    S(2 k1) over top members: mean 309.590 (excess +0.085, sd of mean 0.103)
+(c) common-integer labelling
+    primes in [467,1000): 78 primes, 3003 pairs: mean corr +0.00600 +- 0.00075; predicted from the shared row c +0.00557
+    primes in [2000,5000): 122 primes, 7381 pairs: mean corr +0.02483 +- 0.00023; predicted from the shared row c +0.02854
+    primes in [20000,60000): 123 primes, 7503 pairs: mean corr +0.22300 +- 0.00056; predicted from the shared row c +0.23156
+
+real	0m47.170s
+user	1m4.226s
+sys	0m7.544s

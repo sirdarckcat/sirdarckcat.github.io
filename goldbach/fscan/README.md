@@ -100,13 +100,25 @@ beside class 194). Together the three classes had 0.35 expected successes
 and found none (probability 0.70).
 
 Class 197 was run with this scanner by another session of the project on
-six machines (`slice=0/6` … `5/6`), and it found two numbers, both checked
-here from N alone with `check.py`:
+six machines (`slice=0/6` … `5/6`). It found five numbers; the rows left at
+383 and at 131,072 below are recomputed here from N alone:
 
-| N | digits | g(N) | k | N0 | build | closeness |
-|---|---|---|---|---|---|---|
-| 83668534093338795647672 | 23 | 10,159 | 6,395,326 | 10397114829367892 | AVX2, EPYC 7B12 | 63.3% |
-| 78209882584085138254532 | 23 | 10,399 | 5,978,086 | 10225887175291952 | AVX-512 IFMA | 65.0% |
+| N | g(N) | k | N0 | rows left at 383 / 131,072 |
+|---|---|---|---|---|
+| 83668534093338795647672 | 10,159 | 6,395,326 | 10397114829367892 | 111 / 40 |
+| 78209882584085138254532 | 10,399 | 5,978,086 | 10225887175291952 | 110 / 46 |
+| 54284735534856910692542 | 11,701 | 4,149,333 | 2210234510102552 | 112 / 37 |
+| 35505990484772441527442 | 10,771 | 2,713,952 | 4203163900268882 | 111 / 50 |
+| 30625623272505310405982 | 10,729 | 2,340,914 | 4112540293798562 | 113 / 43 |
+
+Five against 0.78 expected for the class is a 0.13% event (about 2% for
+all the classes run, 5 against 1.6). The expectation itself checks out
+where it can be tested with many events: at Q = 7,001, half of class 137
+below 3·10^21 (`runs/calib/`), the same code finds 50 successes against
+48.7 expected (51.5 without the pair factor), all 50 verified from N alone,
+and their mean overshoot g − Q is 316 against 307 predicted. The tests per
+kept member in class 195 are 4.859 against 4.861 for the model's prime
+probability.
 
 The record before them was N = 5471513744131872011405456 (25 digits,
 g = 10,357), found with `tscan`.
@@ -217,8 +229,22 @@ at 193.
   than the members of the best vectors, and a shifted copy of a good vector
   is a typical vector. By that estimate it loses to `tscan` by a factor 2 to
   3 at 25 digits and scales worse (4.5 per digit against 3.8).
-- **A cost per digit below 3.8.** With the vector counts above, the cost of
-  one more digit should rise slowly as N falls (the classes needed are closer
-  to the bulk, where the count grows by less per class): an estimated 3.8 at
-  25 digits, 4.3 at 23, 5.5 at 21. The gain of this scanner is a constant
-  factor, not a better exponent.
+- **A cost per digit below 3.8.** The gain of this scanner is a constant
+  factor, not a better exponent, and the exponent gets worse as N falls: a
+  member's success probability drops by about 3.4 per digit (the rows are
+  prime more often), there are 10 times fewer members per vector, and the
+  classes that have to be added are closer to the bulk, where the count
+  grows by less per class. Measured on class 196 (best thresholds at each
+  size, one thread, enumeration time removed): 8.0·10^-6 expected successes
+  per core-second below 10^23, 2.4·10^-6 below 10^22, 4.3·10^-7 below 10^21,
+  1.3·10^-7 below 3·10^20. With the vector counts by class that is about 30
+  core-hours for one expected success below 10^23, 220 below 10^22 (classes
+  up to 201), 2,700 below 10^21 (up to 206) and 18,000 below 3·10^20 (up to
+  210): a factor 5 to 7 for the first digit, 12 for the next, and more after
+  that. An earlier version of this file said 4.3 at 23 digits and 5.5 at 21;
+  that was too optimistic.
+- **The setup per vector at small N.** Building the score tables and mask
+  rows of a vector costs about 60,000 cycles and enumerating it about 2,500.
+  That is nothing below 10^23 (7.6 million members a vector), 17% of the run
+  below 10^21 and 60% below 3·10^20. Not fixed; the tables of neighbouring
+  vectors differ in a few rows only and could be updated incrementally.

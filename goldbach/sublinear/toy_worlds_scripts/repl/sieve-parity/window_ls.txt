@@ -1,0 +1,13 @@
+K = 21378977 = 2^24.350 members; primes in (463, 4600]: 532; S^2/K = 0.990
+model: mean 464.144, variance 395.233 (sd 19.880), third cumulant 280.83, fourth cumulant 99.28; trivial ceiling sum of max f_s = 2361
+window, all 21378977 members, 4 s: mean 464.144; second moment about mu 395.248 = 1.00004 V  (large sieve: at most 1.990 V); third 280.58 (model 280.83); fourth 468664.1 (model 468726.1)
+extremes: max T = 573 at k = 18044336 (+5.48 sd), min T = 358 at k = 17711808 (-5.34 sd); sqrt(2 ln K) = 5.81
+tail: t | members of the window with T >= t | product model K*P(T >= t) | Chebyshev ceiling from the large sieve (K-1+S^2) V/(t-mu)^2
+   504 (2 sd) | 530569 | 530743.64 | 10584297
+   524 (3 sd) | 34741 | 34951.38 | 4692787
+   544 (4 sd) | 1037 | 990.00 | 2636511
+   564 (5 sd) | 12 | 12.08 | 1686147
+   574 (5.5 sd) | 0 | 0.98 | 1393143
+   584 (6 sd) | 0 | 0.06 | 1170371
+   594 (6.5 sd) | 0 | 0.00 | 997054
+   level where the model expects one member: T = 573; found max 573; large-sieve (Chebyshev) ceiling on the best member: mu + sqrt((K+S^2)V) = 130128, beyond the trivial 2361

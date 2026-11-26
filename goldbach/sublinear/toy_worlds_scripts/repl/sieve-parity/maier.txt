@@ -1,0 +1,51 @@
+odd primes below Q: 17983
+
+1. real cover, primes in ascending order: rows left | product prediction | ratio | this prime: struck, expected n/(r-1), z
+   r=  3:   8989 |    8991.5 | 0.9997 | 8994, 8991.5, +0.03
+   r=  5:   6720 |    6743.6 | 0.9965 | 2269, 2247.2, +0.46
+   r=  7:   5570 |    5619.7 | 0.9912 | 1150, 1120.0, +0.90
+   r= 11:   5008 |    5057.7 | 0.9902 | 562, 557.0, +0.21
+   r= 13:   4586 |    4636.2 | 0.9892 | 422, 417.3, +0.23
+   r= 23:   3856 |    3918.4 | 0.9841 | 184, 183.6, +0.03
+   r= 47:   3171 |    3306.4 | 0.9591 | 87, 70.8, +1.92
+   r= 97:   2633 |    2862.0 | 0.9200 | 39, 27.8, +2.12
+   r=199:   2072 |    2468.7 | 0.8393 | 16, 10.5, +1.68
+   r=293:   1819 |    2315.1 | 0.7857 | 14, 6.3, +3.08
+   r=397:   1620 |    2210.8 | 0.7328 | 13, 4.1, +4.37
+   r=463:   1502 |    2150.4 | 0.6985 | 9, 3.3, +3.17
+   final rows 1502; product prediction pi(Q)*prod(1-1/(r-1)) = 2150.4; ratio 0.6985; e^gamma/2 = 0.8905
+
+2. common-integer (Maier) covers: classes a_r = R mod r for all 89 primes
+   R in [-8e6, 8e6): mean 3196.4, sd 1242.8, min 1876 at R = -160282
+   direct recount of the minimum: 1876
+   |R| > 2e6 only: mean 3212.0, sd 1247.0, min 1945  (z of min: -1.02)
+   R in [0,200000): mean 3521.8  min 2025 at 199328
+   R in [200000,220000): mean 3350.1  min 1975 at 215368
+   R in [200000,300000): mean 3245.5  min 1885 at 289418
+   R in [300000,500000): mean 3103.7  min 1878 at 345502
+   R in [500000,1000000): mean 3094.2  min 1914 at 555886
+
+3. is the real cover a Maier cover in disguise? agreements #{r: R = a_r mod r}, R in [-8e6, 8e6)
+   real cover: mean 1.586 (sum 1/r = 1.586), max 11, histogram of the top: [868  89   8   2]
+   10 random class vectors: max agreements [10, 11, 10, 10, 10, 11, 10, 10, 10, 11]
+
+4. Buchstab curve: common-integer covers at other Q' (moduli: the 89 odd primes to 463), R in [Q', Q'+20000), R even with no prime factor <= 463 beyond 2
+   Q' | u = ln Q'/ln 463 | mean rows/product over such R | e^gamma*omega(u) | min ratio
+      20000 | 1.614 | 1.1247 | 1.1038 | 0.9875
+      50000 | 1.763 | 1.0659 | 1.0103 | 0.9533
+     100000 | 1.876 | 1.0160 | 0.9495 | 0.9304
+     150000 | 1.942 | 0.9877 | 0.9172 | 0.9228
+     200000 | 1.989 | 0.9669 | 0.8956 | 0.9184
+     300000 | 2.055 | 0.9458 | 0.9130 | 0.9033
+     500000 | 2.138 | 0.9411 | 0.9407 | 0.9084
+    1000000 | 2.251 | 0.9496 | 0.9684 | 0.9266
+    3000000 | 2.430 | 0.9732 | 0.9951 | 0.9570
+
+5. Erdos-Rankin hybrids against plain greedy (same greedy rule on the free moduli; no local search)
+   plain greedy: ascending 1587, descending 1902; real cover 1502
+   block (100,463] (65 moduli): block alone leaves 13278 at best, 13597 median (product 13512); best hybrid total 1866 (R = 223183), median of 12: 1878
+   block (200,463] (44 moduli): block alone leaves 15497 at best, 15680 median (product 15664); best hybrid total 1754 (R = 710570), median of 12: 1777
+   block (300,463] (28 moduli): block alone leaves 16617 at best, 16716 median (product 16703); best hybrid total 1684 (R = 750480), median of 12: 1699
+   block (30,463] (80 moduli): block alone leaves 10156 at best, 10621 median (product 10234); best hybrid total 1935 (R = 392382), median of 12: 2006
+   block (30,200] (36 moduli): block alone leaves 11586 at best, 11878 median (product 11749); best hybrid total 1740 (R = 537732), median of 12: 1763
+   block (100,300] (37 moduli): block alone leaves 14412 at best, 14582 median (product 14547); best hybrid total 1740 (R = 479886), median of 12: 1764

@@ -1,0 +1,4 @@
+rows: the 17983 odd primes below 200000; sieve to 100000; survivor prime probability at 10^200: 0.04454
+family | targets | survivors per target | Fermat tests | primes found | expected | found/expected | dispersion (1 = independent)
+generic | 1200 | 809 | 971021 | 43611 | 43322 | 1.0067 +- 0.0048 | 0.991 +- 0.041   (102 s)
+A^2 | 1200 | 804 | 964450 | 43091 | 43047 | 1.0010 +- 0.0048 | 0.983 +- 0.041   [J(q|N-q) = +1 on 964443 of 964450 rows]   (101 s)

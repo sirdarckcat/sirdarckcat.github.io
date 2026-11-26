@@ -1,0 +1,8 @@
+F_3: rows of degree 2..6: 193; orbits of size 3: 63, fixed rows 4; n = 81
+  g1 random monic: 1500 trials, hits 251 (0.1673), exponent 1.788 +- 0.058, mean irreducible 2.365
+  g2 random = c mod x^p-x: 1500 trials, hits 431 (0.2873), exponent 1.247 +- 0.041, mean irreducible 3.141
+  s  A(x^p-x), 2nd coeff 0: 1500 trials, hits 798 (0.5320), exponent 0.631 +- 0.024, mean irreducible 3.174
+F_5: rows of degree 2..4: 200; orbits of size 5: 40, fixed rows 0; n = 125
+  g1 random monic: 1200 trials, hits 272 (0.2267), exponent 1.484 +- 0.053, mean irreducible 1.563
+  g2 random = c mod x^p-x: 1200 trials, hits 337 (0.2808), exponent 1.270 +- 0.046, mean irreducible 1.746
+  s  A(x^p-x), 2nd coeff 0: 1200 trials, hits 865 (0.7208), exponent 0.327 +- 0.018, mean irreducible 1.854

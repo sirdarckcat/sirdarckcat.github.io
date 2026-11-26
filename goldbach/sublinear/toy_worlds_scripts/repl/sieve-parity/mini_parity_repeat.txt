@@ -1,0 +1,15 @@
+z = 1000 (u = 4.16): rough 3238564 (0.08096); mean lambda on rough -0.016312 +- 0.000556; primes among rough 0.43004; primes among rough with Omega odd 0.84628
+target lambda(n): 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.06, mean z^2 = 0.596; expected max of 102 normals about 3.04
+   largest: ln of the 1000-smooth squarefree kernel of n+4: +2.06; n-2 is prime: +2.00; n+2 has no prime factor in (2, 1000]: +1.71; n = 6 mod 7: +1.64; n-1 has no prime factor in (2, 1000]: +1.50; number of primes <= 1000 dividing n+4: +1.50
+target primality of n: 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.15, mean z^2 = 0.579; expected max of 102 normals about 3.04
+   largest: n-2 is prime: -2.15; n-2 has no prime factor in (2, 1000]: -2.15; ln of the 1000-smooth squarefree kernel of n+4: -2.04; n+2 is prime: -1.61; n-1 has no prime factor in (2, 1000]: -1.61; n = 5 mod 16: -1.59
+z = 1000 (u = 4.28): rough 3238736 (0.08097); mean lambda on rough -0.010878 +- 0.000556; primes among rough 0.41704; primes among rough with Omega odd 0.82511
+target lambda(n): 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.54, mean z^2 = 1.201; expected max of 102 normals about 3.04
+   largest: n = 10 mod 11: -2.54; ln of the 1000-smooth squarefree kernel of n-6: +2.36; lambda(n+6): -2.24; n = 1 mod 11: -2.17; n = 7 mod 8: -2.13; n = 4 mod 11: +2.11
+target primality of n: 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.58, mean z^2 = 1.009; expected max of 102 normals about 3.04
+   largest: ln of the 1000-smooth squarefree kernel of n-6: -2.58; number of primes <= 1000 dividing n-6: -2.31; n = 1 mod 11: +2.28; n+6 is prime: -2.25; n = 10 mod 11: +2.19; n = 8 mod 11: -2.11
+z = 1000 (u = 3.90): rough 3238234 (0.08096); mean lambda on rough -0.028779 +- 0.000556; primes among rough 0.45848; primes among rough with Omega odd 0.89131
+target lambda(n): 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.29, mean z^2 = 0.833; expected max of 102 normals about 3.04
+   largest: n = 8 mod 13: -2.29; n = 9 mod 16: -1.85; n+3 has no prime factor in (2, 1000]: -1.71; n+6 is prime: -1.68; lambda(n-4): -1.61; n = 2 mod 11: +1.60
+target primality of n: 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.20, mean z^2 = 0.758; expected max of 102 normals about 3.04
+   largest: n+3 has no prime factor in (2, 1000]: +2.20; n = 8 mod 13: +2.01; lambda(n-3): -1.78; n = 6 mod 7: -1.74; ln of the 1000-smooth squarefree kernel of n+3: -1.64; n = 9 mod 13: +1.63

@@ -1,0 +1,2 @@
+squarefree n = 1 mod 4 below 6000: 1214 discriminants, 47538 classes checked
+failures: (i) square class <=> represented m is a QR mod n: 0;  (ii) [Cl:Cl^2] = 2^omega(n): 0;  (iii) product relation: 0

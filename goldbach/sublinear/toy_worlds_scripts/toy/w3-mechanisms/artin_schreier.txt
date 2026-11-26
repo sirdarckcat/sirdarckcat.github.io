@@ -1,0 +1,12 @@
+F_3: rows of the form C(x^3 - x): degree 3: 2, degree 6: 2, degree 9: 6
+  A of degree 12 (deg N = 36), Tr(second coefficient) = 0: 40 random A x 10 rows: N - Q reducible 400, irreducible 0, violations of the rule 0
+  A of degree 12 (deg N = 36), Tr(second coefficient) != 0: 40 random A x 10 rows: N - Q reducible 364, irreducible 36, violations of the rule 0
+F_9: rows of the form C(x^3 - x): degree 3: 6, degree 6: 24
+  A of degree 9 (deg N = 27), Tr(second coefficient) = 0: 20 random A x 30 rows: N - Q reducible 600, irreducible 0, violations of the rule 0
+  A of degree 9 (deg N = 27), Tr(second coefficient) != 0: 20 random A x 30 rows: N - Q reducible 526, irreducible 74, violations of the rule 0
+F_4: rows of the form C(x^2 - x): degree 2: 2, degree 4: 4, degree 6: 10
+  A of degree 10 (deg N = 20), Tr(second coefficient) = 0: 20 random A x 16 rows: N - Q reducible 320, irreducible 0, violations of the rule 0
+  A of degree 10 (deg N = 20), Tr(second coefficient) != 0: 20 random A x 16 rows: N - Q reducible 293, irreducible 27, violations of the rule 0
+F_5: rows of the form C(x^5 - x): degree 5: 4, degree 10: 8
+  A of degree 8 (deg N = 40), Tr(second coefficient) = 0: 40 random A x 12 rows: N - Q reducible 480, irreducible 0, violations of the rule 0
+  A of degree 8 (deg N = 40), Tr(second coefficient) != 0: 40 random A x 12 rows: N - Q reducible 421, irreducible 59, violations of the rule 0

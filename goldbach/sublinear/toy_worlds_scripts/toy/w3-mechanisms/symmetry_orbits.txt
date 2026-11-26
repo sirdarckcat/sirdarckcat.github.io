@@ -1,0 +1,10 @@
+F_3: 193 rows of degree 2..6; under x -> x+1: 63 free orbits of size 3, 4 fixed rows (Q = C(x^3 - x))
+  orbit statement checked on 180 (N, row) pairs; fixed rows reducible for the symmetric N with zero second coefficient
+  g1 random monic N: deg N = 81, 4000 trials, all rows reducible in 659 (0.1648), exponent -ln = 1.803 +- 0.036, mean number of irreducible N - Q = 2.327
+  g2 random N = c mod (x^3-x): deg N = 81, 4000 trials, all rows reducible in 1075 (0.2687), exponent -ln = 1.314 +- 0.026, mean number of irreducible N - Q = 3.356
+  s  N = A(x^3-x), trace-zero second coefficient: deg N = 81, 4000 trials, all rows reducible in 2109 (0.5272), exponent -ln = 0.640 +- 0.015, mean number of irreducible N - Q = 3.212
+F_5: 200 rows of degree 2..4; under x -> x+1: 40 free orbits of size 5, 0 fixed rows (Q = C(x^5 - x))
+  orbit statement checked on 180 (N, row) pairs; fixed rows reducible for the symmetric N with zero second coefficient
+  g1 random monic N: deg N = 125, 3000 trials, all rows reducible in 641 (0.2137), exponent -ln = 1.543 +- 0.035, mean number of irreducible N - Q = 1.607
+  g2 random N = c mod (x^5-x): deg N = 125, 3000 trials, all rows reducible in 820 (0.2733), exponent -ln = 1.297 +- 0.030, mean number of irreducible N - Q = 1.828
+  s  N = A(x^5-x), trace-zero second coefficient: deg N = 125, 3000 trials, all rows reducible in 2123 (0.7077), exponent -ln = 0.346 +- 0.012, mean number of irreducible N - Q = 1.970

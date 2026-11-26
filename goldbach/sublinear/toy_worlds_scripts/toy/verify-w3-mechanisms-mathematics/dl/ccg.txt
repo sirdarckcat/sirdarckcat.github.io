@@ -1,0 +1,363 @@
+PRIME SPECIALIZATION IN GENUS 0
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+Abstract. For a prime polynomial f (T ) ∈ Z[T ], a classical conjecture predicts how often
+f has prime values. For a finite field κ and a prime polynomial f (T ) ∈ κ[u][T ], the
+natural analogue of this conjecture (a prediction for how often f takes prime values on
+κ[u]) is not generally true when f (T ) is a polynomial in T p (p the characteristic of κ). The
+explanation rests on a new global obstruction which can be measured by an appropriate
+average of the nonzero Möbius values µ(f (g)) as g varies. We prove the surprising fact
+that this “Möbius average,” which can be defined without reference to any conjectures,
+has a periodic behavior governed by the geometry of the plane curve f = 0.
+The periodic Möbius average behavior implies in specific examples that a polynomial
+in κ[u][T ] does not take prime values as often as analogies with Z[T ] suggest, and it leads
+to a modified conjecture for how often prime values occur.
+
+1. Introduction
+A conjecture of Bouniakowsky [5] says that a nonconstant prime polynomial f (T ) in
+Z[T ] has infinitely many prime values in Z unless there is a local obstruction: all values
+of f (T ) on Z are divisible by a nontrivial common factor. For example, 3T 2 − T + 2 is
+prime in Z[T ] but has an obstruction at 2 to taking prime values: 3n2 − n + 2 is even for
+every n ∈ Z. (We allow negative primes, so we don’t need to assume f (T ) has a positive
+leading coefficient.) When no local obstruction occurs, there is an asymptotic conjecture
+(as x → ∞) for how many 1 ≤ m ≤ x (or |m| ≤ x) give prime values f (m); this is due
+to Hardy and Littlewood [12] in special cases and Bateman and Horn [1] more generally.
+The only proved case is in degree 1: the prime number theorem is the case f (T ) = T and
+Dirichlet’s theorem is the case f (T ) = aT + b with a and b nonzero and relatively prime.
+Let κ be a finite field and pick a prime polynomial f (T ) in κ[u][T ] which is nonconstant in
+T such that the values of f (T ) on κ[u] do not all share a nontrivial common factor (we say
+f (T ) has no local obstruction). Qualitatively, it is natural to expect under these conditions
+that f (g) is prime for infinitely many g in κ[u]. Quantitatively, a conjectural asymptotic
+estimate for how often f (g) is prime as g varies is easy to write down using analogies
+between Z (which we will call the classical case) and κ[u]. The only proved instance of this
+asymptotic conjecture is the case degT f = 1, just as in the classical situation. What if
+degT f > 1?
+When κ has characteristic 2 it is shown in [15] that the values of T 8 + u3 on κ[u] are
+never prime when [κ : F2 ] is odd and are prime only finitely many times (at noncubes in κ)
+when [κ : F2 ] is even. Here are some interesting examples in odd characteristic.
+Example 1.1. Let f (T ) = T 12 +(u+1)T 6 +u4 over F3 [u]. Numerical evidence in [6, Table 3]
+suggests that the count of prime values of f (g) as g runs over F3 [u] exceeds the amount
+predicted from analogies with the classical case by a ratio ≈ 1.33.
+1991 Mathematics Subject Classification. 11N32.
+Key words and phrases. Bateman–Horn conjecture, Hardy–Littlewood conjecture, Möbius function.
+1
+
+2
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Example 1.2. Let f (T ) = T 9 +(2u2 +u)T 6 +(2u+2)T 3 +u2 +2u+1 over F3 [u]. Numerical
+data [6, Table 5] suggest f (g) is prime as often as expected (by analogies with the classical
+case) when deg g is even, it is never prime when deg g ≡ 1 mod 4, and it is prime about
+twice as often as expected when deg g ≡ 3 mod 4. In particular, the statistical behavior
+seems to depend on the mod 4 value of the degree in which we are sampling f . The absence
+of prime f (g) for deg g ≡ 1 mod 4 will be proved in Example 6.10.
+We observed three common features of prime polynomials in κ[u][T ] whose primality
+statistics do not seem to match expectations based on analogies to the classical case:
+• The polynomial f (T ) lies in κ[u][T p ], where p is the characteristic of κ; equivalently
+(since f (T ) is irreducible over κ(u)) f (T ) is inseparable over κ(u).
+• The ratio between the actual number of prime values f (g), as g runs over polynomials
+with a common degree n, and the conjectural asymptotic estimate for that number
+based on analogies to the classical case appears to have a limit as n → ∞ if we fix
+n mod 4. However, the apparent limit (which is not necessarily 1) may be different
+for different classes mod 4, and there are 1, 2, or 4 apparent limits (never 3).
+• The Möbius function for κ[u] (see Definition 2.1) has unusual statistics on the values
+f (g). Roughly speaking, the nonzero values of µ(f (g)) may fail to be equally often
+1 and −1.
+
+The main impact of the third observation is that statistics for prime values of f (g) as
+g varies can be linked to appropriate averages of the nonzero values of µ(f (g)) as g varies
+(and the averages we define are effectively computable in any example). Subtracting these
+averages from 1 enables us to predict the 1, 2, or 4 apparent limits in the second observation.
+A simple example is the polynomial f (T ) in Example 1.1. As g runs over the polynomials
+in F3 [u][T ] having a common degree ≥ 2 the value µ(f (g)) is −1 twice as often as it is 1 (by
+Example 3.2), so the average nonzero value of µ(f (g)) in each degree (at least 2) is exactly
+−1/3. Subtracting this from 1 gives 4/3 = 1.33 . . . , which matches the deviation we found
+in Example 1.1.
+The theme of this paper is the study of µ(f (g)) when f (T ) is a polynomial in κ[u][T p ]
+which is squarefree in κ[u][T ]. The intended application of this work, which we will give
+in the final section, is the formulation of a conjecture for the frequency of prime values of
+f (T ) when f (T ) is a prime polynomial. However, our work on µ(f (g)) does not require that
+f (T ) be prime. Letting f (T ) be squarefree instead provides greater technical flexibility. For
+instance, squarefreeness is preserved under finite extension of the constant field κ.
+Here is an outline of the paper. In §2 and §3 we discuss some general features of the
+Möbius function, discriminants, and resultants relative to κ[u]. This builds on ideas of
+Swan [15] and is applied in §4 where we prove that µ(f (g)), under suitable hypotheses, is
+periodic in g when κ has odd characteristic (see Theorem 4.8). In §5 we treat characteristic
+2, which is more difficult. For instance, we need to use 2-adic lifts and residues of differential
+forms (Theorem 5.10). Finally, §6 uses these ideas to define a notion of Möbius average
+that seems to work well as a new correction factor for asymptotically estimating how often
+a prime polynomial in κ[u][T ] takes prime values on κ[u] (Conjecture 6.2).
+While the classical conjectures on prime values of prime polynomials in Z[T ] involve
+only local obstructions, the Möbius average in the κ[u]-setting is a fundamentally global
+obstruction. The Möbius function could be considered as a “parity” obstruction to prime
+values once we know f (g) is squarefree (crudely put, if µ(f (g)) = 1 then f (g) is definitely
+not prime). We have not found a role for a similar type of obstruction to prime values based
+
+PRIME SPECIALIZATION IN GENUS 0
+
+3
+
+on the number of irreducible factors of the squarefree values of f (g) counted modulo 3 or
+higher, and our correction based on Möbius averages gives an excellent fit with all observed
+numerics.
+Notation and Terminology. Throughout the paper, κ denotes a finite field of characteristic p and size q. We often write χ instead of χκ to denote the quadratic character on
+the multiplicative group κ× when p )= 2.
+For a nonzero polynomial h in one variable, we write the leading coefficient as lead h.
+For a nonzero polynomial f in two variables u and T over a ring R, the T -degree of f and
+the leading coefficient of f as a polynomial in T are indicated with a subscript: degT f ≥ 0
+and leadT f ∈ R[u]. We write degu,T f to denote the total degree of such an f . An element
+in R[u] is primitive when its coefficients generate the unit ideal in R. When R is a domain,
+the discriminant of a nonzero one-variable polynomial h with coefficients in R is denoted
+disc h, or discR h for emphasis. Our definition of polynomial discriminants does not match
+the usual definition when the polynomial is not monic; see (2.3) and (2.4).
+Let R be a local ring with residue field k. A lift of a polynomial h ∈ k[u][T ] is a polynomial
+H ∈ R[u][T ] whose reduction to k[u][T ] is h. The length of an R-module M is denoted
+#(M ), and if Z is an artinian scheme then #(Z) denotes the length of the ring Γ(Z, OZ ).
+Acknowledgments. We thank C. Elsholtz, O. Gabber, A. Granville, A. J. de Jong,
+M. Larsen, B. Poonen, A. Silberstein, and H. Stark for their advice and encouragement.
+We are also very grateful to an anonymous referee who offered helpful suggestions on an
+earlier version of this work. B.C. was partially supported by Alfred P. Sloan Foundation and
+NSF grant DMS-0093542 during work on this paper. K.C. thanks the Clay Mathematics
+Institute and the Number Theory Foundation for support.
+2. The Möbius function over finite fields
+Definition 2.1. Let R be a Dedekind domain. The Möbius function on nonzero ideals of R
+is µR (p1 · · · pm ) = (−1)m for distinct nonzero prime ideals pj , µR ((1)) = 1, and µR (b) = 0
+for any nonzero ideal b ⊆ R divisible by the square of a prime. For nonzero r ∈ R, we
+define µR (r) = µR (rR). If R is understood from context, we write µ rather than µR .
+The first step in the analysis of µκ[u] (f (g)) when f ∈ κ[u][T p ] is fixed and g ∈ κ[u]
+varies is the derivation of a formula for µκ[u] (h) (for any nonzero h ∈ κ[u]) in terms of
+the discriminant of h. (This has no known analogue for the Möbius function on Z.) The
+Möbius function of h (for h )= 0) can be viewed as the Möbius function of the finite κ-algebra
+κ[u]/(h) via the following definition.
+Definition 2.2. Let κ be a finite field. For a finite κ-algebra A, let µ(A) = (−1)# Spec A if
+A is étale over κ (i.e., reduced) and let µ(A) = 0 otherwise.
+Theorem 2.3. Suppose κ is finite with odd characteristic, and let χκ be the quadratic
+character on κ× , with χκ (0) = 0. For any finite κ-algebra A,
+(2.1)
+
+µ(A) = (−1)dimκ A χκ (discκ A).
+
+Proof. We immediately reduce to the case when A is a finite extension field of κ, and this
+is settled as in the proof of [6, Lemma 4.1] by computing the sign of a Galois-theoretic
+Frobenius as a permutation.
+!
+We need an analogue of Theorem 2.3 in characteristic 2 that still involves discriminants.
+This analogue will use a lifting of A into characteristic 0. We shall now formulate a setup
+
+4
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+for finite κ with arbitrary characteristic, extending work of Swan [15]. (Swan essentially
+obtained Theorem 2.4 below and applied it to a compute µκ[u] (h) in a few examples, although
+he expressed his answer directly in terms of the parity of the number of irreducible factors
+instead of in terms of the Möbius function.)
+Let κ be a finite field of characteristic p and W = W (κ) be the ring of Witt vectors
+! such that A/p
+! A
+! is isomorphic to A as κ-algebras.
+of κ. Consider finite flat W -algebras A
+For instance, a finite flat lifting of κ[u]/(h(u)) over W is W [u]/(H(u)), where H ∈ W [u]
+!
+satisfies H mod p = h and deg H = deg h. By Hensel’s lemma, if A is étale over κ then A
+exists (and is finite étale over W ) and is unique up to unique W -isomorphism. If A is not
+étale over κ, a finite flat lifting of A over W may not exist (see [4, Example 3.2(4)]).
+! lies in W × /(W × )2 .
+Suppose κ has characteristic 2 and A is étale over κ, so discW A
+×
+×
+×
+×
+Embed κ into W by the Teichmüller lifting, so W = κ × (1 + 2W ). The 1-unit part
+! lies in 1 + 4W . (Ambiguity of discW A
+! up to a unit-square does not affect the
+of discW A
+2
+meaning of this assertion, since (1 + 2w) ∈ 1 + 4W for all w ∈ W .)
+! of A over W ,
+Theorem 2.4. For any finite κ-algebra A that admits a finite flat lifting A
+!
+(2.2)
+µ(A) = (−1)dimκ A χ
+!(discW A),
+
+where χ
+! is the unique quadratic character on W × when κ has odd characteristic and is the
+unique quadratic character on κ× × (1 + 4W ) killing (W × )2 when κ has characteristic 2.
+(An explicit formula for χ
+! in the characteristic 2 case is given in (5.24), where the formula
+is first needed.) In both cases, χ
+! is extended by 0 to pW .
+
+The proof, which we omit, goes exactly as for Theorem 2.3, except that unramified
+extensions of the fraction field of W are used instead of finite extensions of κ.
+When F is a field and h in F [u] is nonconstant of degree d with roots γ1 , . . . , γd (counted
+with multiplicity) in a splitting field, we define the discriminant of h to be
+"
+(γi − γj )2 ∈ F,
+(2.3)
+disc h :=
+i<j
+
+whether or not h is monic. (The discriminant of a nonzero constant polynomial is understood to be 1.) The usual definition of disc h has an additional square factor (lead h)2d−2 ,
+which makes the discriminant a homogeneous function of the coefficients of h. We prefer to
+use our definition since it agrees with the universally accepted definition of the discriminant
+of the finite F -algebra F [u]/(h) relative to the ordered basis {1, u, . . . , ud−1 }, whether or
+not h is monic. In terms of the derivative of h, (2.3) is the same as
+d
+
+(2.4)
+
+(−1)d(d−1)/2 " #
+(−1)d(d−1)/2
+disc h =
+N(F [u]/(h))/F (h# ).
+h
+(γ
+)
+=
+i
+(lead h)d
+(lead h)d
+i=1
+
+Theorems 2.3 and 2.4 give
+#
+(−1)deg h χ(discκ h),
+(2.5)
+µκ[u] (h) =
+(−1)deg h χ
+!(discW H),
+
+if κ has odd characteristic,
+if κ has any characteristic,
+
+where H is a lifting of h into W [u] with deg H = deg h. (Since our polynomial discriminants differ from the usual definition by a square factor, the usual definition can also be
+used in (2.5).) The formula in (2.5) for the case of characteristic 2 uses a discriminant in
+characteristic 0. There is an intrinsic variant of the discriminant in characteristic 2 (see
+[3]), but we have not found this to be useful for our purposes.
+
+PRIME SPECIALIZATION IN GENUS 0
+
+5
+
+Example 2.5. Let κ be a finite field with characteristic p )= 2. For nonconstant g =
+cun + · · · ∈ κ[u] we see via (2.4) and (2.5) that µ(g p + u) = (−1)n χ(c)n χ(−1)n(pn−1)/2 .
+When n is odd, this equals 1 and −1 equally often as g varies in degree n. When n is
+even, µ(g p + u) equals χ(−1)n/2 for all g of degree n. For instance, when n ≡ 0 mod 4,
+µ(g p + u) = 1 for all g of degree n. Thus g p + u is not prime when 4| deg g and deg g > 0.
+3. Discriminants and Resultants
+We wish to understand the behavior of µ(f (g)) when f ∈ κ[u][T p ] is fixed with degT f > 0
+and g varies in κ[u] with large degree. Formula (2.5) suggests, at least for p )= 2, that we
+should study disc(f (g)) as an algebraic function of g with a specified degree n, where n
+is large. (We need n at least large enough that deg(f (g)) depends on g only through its
+degree n.) Following Swan [15], we will find it useful to work with resultants rather than
+discriminants.
+For an integral domain C, the resultant of two nonzero polynomials h1 and h2 in C[u],
+denoted RC (h1 , h2 ) = R(h1 , h2 ), is defined to be
+"
+(3.1)
+R(h1 , h2 ) = (lead h1 )deg h2
+h2 (α)
+h1 (α)=0
+
+with the product running over the roots of h1 (counted with multiplicity) in a splitting
+field over the fraction field of C. There is a classical expression for R(h1 , h2 ) given as the
+determinant of a universal matrix in the coefficients of h1 and h2 , and the size of the matrix
+depends on the degrees of h1 and h2 . Write Rd1 ,d2 (h1 , h2 ) to indicate that hj is being treated
+as a polynomial of degree dj for the resultant calculation via a universal determinant. We
+make the convention that when a resultant R(h1 , h2 ) appears without degree subscripts then
+it is defined in terms of the actual degrees of its arguments if h1 and h2 are nonzero. When
+some hj vanishes we define R(h1 , h2 ) = 0, which is compatible with universal determinants
+that define resultants (letting the zero polynomial be assigned whatever positive degree we
+please).
+If nonzero h1 and h2 have actual degrees d1 and d2 , then for any d3 ≥ d2 ,
+(3.2)
+
+Rd1 ,d3 (h1 , h2 ) = (lead h1 )d3 −d2 Rd1 ,d2 (h1 , h2 ).
+
+Though (3.1) is valid as written when h2 is given a fake higher degree (still denoted deg h2 ),
+it is generally not valid when h1 is given a fake higher degree.
+Warning. Failure to remember that resultants are sensitive to degrees can lead to errors
+when universal formulas over Z (such as (3.3) below) are used in characteristic p > 0.
+The relation between discriminants and resultants is given by the formula
+(3.3)
+
+disc h =
+
+(−1)d(d−1)/2 Rd,d−1 (h, h# )
+,
+(lead h)2d−1
+
+where d = deg h ≥ 1. If h# )= 0 then this formula simplifies by (3.2) to
+(3.4)
+
+disc h =
+
+(−1)d(d−1)/2 R(h, h# )
+,
+(lead h)d+deg h!
+
+where R(h, h# ) is the resultant of h and h# computed with a determinant whose size is based
+on the actual degree of h# (which might be less than d − 1 in positive characteristic).
+
+6
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Example 3.1. Let f (T ) = T 9 + (2u2 + u)T 6 + (2u + 2)T 3 + u2 + 2u + 1 in κ[u][T ], where
+κ has characteristic 3. (Example 1.2 is κ = F3 .) For nonconstant g = cun + . . . in κ[u]
+with c )= 0, f (g) has degree 9n with leading coefficient c9 and f (g)# = (∂u f )(g) has degree
+6n + 1 < 9n − 1. By (3.4),
+(3.5)
+
+disc f (g) =
+
+(−1)n(n−1)/2 R(f (g), (∂u f )(g))
+.
+(c9 )15n+1
+
+Here R(f (g), (∂u f )(g)) = R9n,6n+1 (f (g), (∂u f )(g)). If instead we use (c9 )2d−1 = (c9 )18n−1
+in the denominator (see (3.3)) then an erroneous factor of (c9 )3n−2 is introduced in (3.5),
+and this extra power of c affects the quadratic character of the right side of (3.5). In view
+of (2.5), such an error would lead to incorrect calculations of µ(f (g)).
+Resultants have several useful algebraic properties. We state five of them without proof,
+as in [15]. In this list, polynomials are nonzero and have coefficients in a domain C.
+(1) R(h1 , h2 ) = (−1)(deg h1 )(deg h2 ) R(h2 , h1 ).
+(2) R(h1 , h2 ) is bimultiplicative: R(h1 h3 , h2 ) = R(h1 , h2 )R(h3 , h2 ) and R(h1 , h2 h3 ) =
+R(h1 , h2 )R(h1 , h3 ).
+(3) R(u, h) = h(0). More generally, R(u − c, h) = h(c) and R(h, u − c) = (−1)deg h h(c)
+for c ∈ C.
+(4) R(c, h) = R(h, c) = cdeg h for c ∈ C, h )= 0. Thus, R(c1 , c2 ) = 1 for c1 , c2 )= 0 in C.
+(5) For nonzero M , h1 , h2 in C[u],
+h1 ≡ h2 mod M =⇒ R(M, h1 ) = (lead M )deg h1 −deg h2 R(M, h2 ).
+
+We call property (5) the quasi-periodicity of the resultant (in its second argument). For
+monic M in C[u] and any f (T ) ∈ C[u][T ], R(M, f (h)) is genuinely periodic in h. The
+notation R(h1 , h2 ) in [15] differs by a sign factor from the definition of resultants generally
+used today; it denotes our R(h2 , h1 ), so comparisons with [15] must keep this distinction in
+mind.
+Example 3.2. Let f (T ) = T 12 + (u + 1)T 6 + u4 ∈ κ[u][T ] with char(κ) = 3, as in Example 1.1. Let q = #κ. We shall compute µ(f (g)) when n = deg g ≥ 1.
+Let h = f (g), so h# = g 6 + u3 = (g 2 + u)3 . Since deg h = 12n, deg h# = 6n, and lead h is
+a square, (2.5) and (3.4) give µ(f (g)) = χ(R(f (g), (g 2 + u)3 )) = χ(R(g 2 + u, f (g))). Since
+f (g) ≡ u6 − u3 mod g 2 + u, quasi-periodicity of the resultant gives
+R(g 2 + u, f (g)) = (lead g)2(12n−6) R(g 2 + u, u6 − u3 ).
+
+Since R(g 2 + u, u6 − u3 ) = R(g 2 + u, u)3 R(g 2 + u, u − 1)3 = g(0)6 (g(1)2 + 1)3 ,
+(3.6)
+
+µ(f (g)) = χ(g(0))2 χ(g(1)2 + 1).
+
+(Further calculation shows that disc f (g) = (lead g)−36(4n+1) g(0)18 (g(1)2 + 1)9 .) As g runs
+over all polynomials of a given degree n ≥ 2 in κ[u], g(0) and g(1) can be “independently
+assigned” (think about g mod u(u − 1)). So, for instance, if −1 is not a square in κ, we see
+that µ(f (g)) vanishes 1/q of the time (when g(0) = 0), and is −1 twice as often as it is 1.
+
+Example 3.3. Let f (T ) = T 9 + (2u2 + u)T 6 + (2u + 2)T 3 + u2 + 2u + 1 ∈ κ[u][T ], with
+char(κ) = 3, as in Example 1.2. For nonconstant g(u) = cun + · · · with degree n ≥ 1,
+deg(f (g)) = 9n and deg(f (g)# ) = 6n + 1, so µ(f (g)) = (−1)n χ(disc f (g)) by (2.5). By (3.5),
+(3.7)
+
+µ(f (g)) = (−1)n (χ(−1))n(n−1)/2 χ(c)n+1 χ(R(f (g), (∂u f )(g))).
+
+

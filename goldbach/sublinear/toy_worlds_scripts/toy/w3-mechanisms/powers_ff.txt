@@ -1,0 +1,7 @@
+(1) F_3: x^(q^D-1) - 1 = product of the monic irreducibles of degree | D other than x, and x^m = x^(m mod (q^D-1)) modulo it: checked for D = 1, 2, 3
+(2) Carlitz: C_M(a) = C_M0(a) mod C_Lam(a) for M = M0 mod Lam, deg C_Lam(a) = q^deg(Lam): 30 random cases
+(3) F_3: 508 rows of degree <= 7, 14 primes of degree <= 3; rows not struck:
+    N = x^m, m = 60..259 (x^m = 0 mod x, nonzero elsewhere): mean 62.8, sd 4.6, min 47
+    random N prime to all the primes (200): mean 31.5, sd 3.1, min 23
+    random N = 0 mod x, prime to the other primes (200): mean 62.1, sd 3.8, min 51
+    N = C_M(1), M monic of degree 4, prime to all the primes (18): mean 33.2, sd 4.2, min 27

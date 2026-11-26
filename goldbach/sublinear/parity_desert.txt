@@ -1,0 +1,66 @@
+F_3 (p = 3), N = lam * V^3 * x^0, deg V = 3, deg N = 9, lam square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 0, r odd 3, N - Q irreducible for 3, fewest factors 1, not squarefree 0
+F_3 (p = 3), N = lam * V^3 * x^0, deg V = 3, deg N = 9, lam non-square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 0, r odd 3, N - Q irreducible for 3, fewest factors 1, not squarefree 0
+F_3 (p = 3), N = lam * V^3 * x^3, deg V = 3, deg N = 12, lam square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 0, r odd 3, N - Q irreducible for 3, fewest factors 1, not squarefree 0
+F_3 (p = 3), N = lam * V^3 * x^3, deg V = 3, deg N = 12, lam non-square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 3, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 5, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam non-square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 5, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 40, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^5, deg V = 25, deg N = 130, lam square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 3, fewest factors 1, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^5, deg V = 25, deg N = 130, lam non-square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 10, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 3, fewest factors 1, not squarefree 0
+F_7 (p = 7), N = lam * V^7 * x^0, deg V = 49, deg N = 343, lam square
+  rows of degree 2: 21 monic irreducibles, 21 tested: r even 0, r odd 21, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 3: 112 monic irreducibles, 112 tested: r even 112, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_7 (p = 7), N = lam * V^7 * x^0, deg V = 49, deg N = 343, lam non-square
+  rows of degree 2: 21 monic irreducibles, 21 tested: r even 0, r odd 21, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 3: 112 monic irreducibles, 112 tested: r even 0, r odd 112, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+F_7 (p = 7), N = lam * V^7 * x^7, deg V = 49, deg N = 350, lam square
+  rows of degree 2: 21 monic irreducibles, 21 tested: r even 21, r odd 0, N - Q irreducible for 0, fewest factors 6, not squarefree 0
+  rows of degree 3: 112 monic irreducibles, 112 tested: r even 0, r odd 112, N - Q irreducible for 1, fewest factors 1, not squarefree 0
+F_7 (p = 7), N = lam * V^7 * x^7, deg V = 49, deg N = 350, lam non-square
+  rows of degree 2: 21 monic irreducibles, 21 tested: r even 0, r odd 21, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 3: 112 monic irreducibles, 112 tested: r even 0, r odd 112, N - Q irreducible for 1, fewest factors 1, not squarefree 0
+F_3 (p = 3), N = lam * V^3 * x^0, deg V = 33, deg N = 99, lam non-square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 3, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 3: 8 monic irreducibles, 8 tested: r even 0, r odd 8, N - Q irreducible for 0, fewest factors 3, not squarefree 0   [p divides d]
+  rows of degree 4: 18 monic irreducibles, 18 tested: r even 18, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_3 (p = 3), N = lam * V^3 * x^3, deg V = 33, deg N = 102, lam non-square
+  rows of degree 2: 3 monic irreducibles, 3 tested: r even 0, r odd 3, N - Q irreducible for 0, fewest factors 5, not squarefree 0
+  rows of degree 3: 8 monic irreducibles, 8 tested: r even 3, r odd 5, N - Q irreducible for 0, fewest factors 3, not squarefree 0   [p divides d]
+  rows of degree 4: 18 monic irreducibles, 18 tested: r even 18, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^0, deg V = 145, deg N = 725, lam square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 7, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 0, fewest factors 5, not squarefree 0
+  rows of degree 4: 150 monic irreducibles, 150 tested: r even 150, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^0, deg V = 145, deg N = 725, lam non-square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 7, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 40, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 4: 150 monic irreducibles, 150 tested: r even 150, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^5, deg V = 145, deg N = 730, lam square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 0, r odd 10, N - Q irreducible for 0, fewest factors 5, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 4: 150 monic irreducibles, 150 tested: r even 0, r odd 150, N - Q irreducible for 2, fewest factors 1, not squarefree 0
+F_5 (p = 5), N = lam * V^5 * x^5, deg V = 145, deg N = 730, lam non-square
+  rows of degree 2: 10 monic irreducibles, 10 tested: r even 10, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 3: 40 monic irreducibles, 40 tested: r even 0, r odd 40, N - Q irreducible for 0, fewest factors 3, not squarefree 0
+  rows of degree 4: 150 monic irreducibles, 150 tested: r even 150, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_9 (p = 3), N = lam * V^3 * x^0, deg V = 9, deg N = 27, lam square
+  rows of degree 2: 36 monic irreducibles, 36 tested: r even 36, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_9 (p = 3), N = lam * V^3 * x^0, deg V = 9, deg N = 27, lam non-square
+  rows of degree 2: 36 monic irreducibles, 36 tested: r even 36, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_9 (p = 3), N = lam * V^3 * x^3, deg V = 9, deg N = 30, lam non-square
+  rows of degree 2: 36 monic irreducibles, 36 tested: r even 36, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_25 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam non-square
+  rows of degree 2: 300 monic irreducibles, 150 tested: r even 150, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+F_25 (p = 5), N = lam * V^5 * x^0, deg V = 25, deg N = 125, lam non-square
+  rows of degree 2: 300 monic irreducibles, 300 tested: r even 300, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0

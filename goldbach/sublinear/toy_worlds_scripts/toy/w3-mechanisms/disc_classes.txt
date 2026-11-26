@@ -1,0 +1,6 @@
+F_5, irreducible of degree 2: discriminant in g^i * (4th powers), i = 0..3: [0, 5, 0, 5]
+F_5, irreducible of degree 3: discriminant in g^i * (4th powers), i = 0..3: [20, 0, 20, 0]
+F_5, irreducible of degree 4: discriminant in g^i * (4th powers), i = 0..3: [0, 95, 0, 55]
+F_5, irreducible of degree 5: discriminant in g^i * (4th powers), i = 0..3: [240, 0, 384, 0]
+F_13, irreducible of degree 2: discriminant in g^i * (4th powers), i = 0..3: [0, 39, 0, 39]
+F_13, irreducible of degree 3: discriminant in g^i * (4th powers), i = 0..3: [364, 0, 364, 0]

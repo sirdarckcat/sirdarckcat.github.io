@@ -1,0 +1,122 @@
+=== q=5 n=10: 9765625 monic N, Gmax=206; thresholds: t0=none (first 0 irreducibles; rho=0.1000, rho_odd=0.2499); t1=deg<=1 (first 5 irreducibles; rho=0.3051, rho_odd=0.6214); t2=room (first 7 irreducibles; rho=0.3310, rho_odd=0.6711); t3=deg<=2 (first 15 irreducibles; rho=0.4588, rho_odd=0.8930); t4=deg<=3 (first 55 irreducibles; rho=0.6265, rho_odd=1.0000)
+
+[1] first moment.  hits = #{N : first R rows all reducible} (exact).  model_s(t) = sum_N (1-rho_t)^s_t(N), model_o(t) = sum_N (1-rho_odd_t)^o_t(N);  shown: hits/model
+  R=  45 hits=    89048  naive q^n(1-rho)^R:    1.043 | t0: s   1.043 o   1.051 | t1: s   0.904 o   0.900 | t2: s   0.918 o   0.915 | t3: s   0.976 o   0.977 | t4: s   0.998 o   1.000 |
+  R=  69 hits=     9545  naive q^n(1-rho)^R:    1.400 | t0: s   1.400 o   1.402 | t1: s   0.849 o   0.846 | t2: s   0.872 o   0.871 | t3: s   0.954 o   0.959 | t4: s   0.993 o   1.000 |
+  R=  95 hits=      975  naive q^n(1-rho)^R:    2.212 | t0: s   2.212 o   2.152 | t1: s   0.796 o   0.791 | t2: s   0.823 o   0.820 | t3: s   0.939 o   0.945 | t4: s   0.997 o   1.000 |
+  R= 123 hits=       95  naive q^n(1-rho)^R:    4.114 | t0: s   4.114 o   3.866 | t1: s   0.791 o   0.783 | t2: s   0.825 o   0.826 | t3: s   0.985 o   0.935 | t4: s   1.085 o   1.000 |
+  R= 155 hits=        9  naive q^n(1-rho)^R:   11.338 | t0: s  11.338 o  10.071 | t1: s   1.113 o   1.094 | t2: s   1.183 o   1.179 | t3: s   1.534 o   1.146 | t4: s   1.794 o   1.000 |
+  R= 206 hits=        1  naive q^n(1-rho)^R:  271.108 | t0: s 271.108 o 212.420 | t1: s   9.883 o   9.170 | t2: s  10.977 o   9.429 | t3: s  17.657 o  30.418 | t4: s  21.255 o   1.000 |
+
+[2] parity as a selection variable (exact).  E_x(phi) = (share of the hits among the best phi of all N ranked by x)/phi, ties split pro rata.
+    s_t = rows among the first R with no factor among the first K_t irreducibles; o_t = those of them with mu = -1 (odd parity).  t0: no sieve, so o_0 is parity alone.
+    tests of a member = its listed rows up to and including its first irreducible one.  T = hits per test with (rank o_t, test odd rows) / hits per test with (rank s_t, test all rows left)
+    columns: R, hits, t | odd-only testing gain (no selection) | keep 10%: E_s, E_o, model E_o, T | keep 1%: E_s, E_o, model E_o, T
+  R=  45 hits=   89048 t0 (          none) | x 2.49 |   1.00   3.89   3.52 x  9.60 |   1.00   8.37   7.55 x 21.19 |
+  R=  45 hits=   89048 t1 (        deg<=1) | x 2.04 |   3.90   7.68   7.28 x  4.16 |   7.01  29.10  26.54 x 10.75 |
+  R=  45 hits=   89048 t2 (          room) | x 2.03 |   4.20   8.29   7.93 x  4.17 |   8.36  34.74  32.08 x 11.36 |
+  R=  45 hits=   89048 t3 (        deg<=2) | x 1.95 |   5.52   9.66   9.59 x  3.55 |  14.94  61.20  59.85 x 15.58 |
+  R=  69 hits=    9545 t0 (          none) | x 2.49 |   1.00   4.89   4.42 x 11.62 |   1.00  12.46  11.33 x 29.29 |
+  R=  69 hits=    9545 t1 (        deg<=1) | x 2.04 |   4.99   9.05   8.76 x  3.72 |  10.02  49.84  44.49 x 10.53 |
+  R=  69 hits=    9545 t2 (          room) | x 2.03 |   5.35   9.28   9.04 x  3.53 |  12.23  59.05  53.44 x 10.23 |
+  R=  69 hits=    9545 t3 (        deg<=2) | x 1.95 |   6.96   9.96   9.94 x  2.80 |  23.31  86.90  84.73 x  7.73 |
+  R=  95 hits=     975 t0 (          none) | x 2.49 |   1.00   5.76   5.26 x 13.56 |   1.00  17.31  15.86 x 39.81 |
+  R=  95 hits=     975 t1 (        deg<=1) | x 2.04 |   5.95   9.71   9.48 x  3.33 |  15.20  68.56  62.55 x  9.26 |
+  R=  95 hits=     975 t2 (          room) | x 2.03 |   6.30   9.78   9.66 x  3.15 |  18.96  75.63  70.10 x  8.15 |
+  R=  95 hits=     975 t3 (        deg<=2) | x 1.95 |   7.92  10.00   9.99 x  2.46 |  33.90  97.89  97.17 x  5.66 |
+  R= 123 hits=      95 t0 (          none) | x 2.49 |   1.00   6.74   6.05 x 15.69 |   1.00  29.27  21.32 x 66.57 |
+  R= 123 hits=      95 t1 (        deg<=1) | x 2.04 |   7.08   9.82   9.79 x  2.83 |  24.14  82.95  75.45 x  7.04 |
+  R= 123 hits=      95 t2 (          room) | x 2.03 |   7.54  10.00   9.89 x  2.69 |  30.36  90.02  81.88 x  6.03 |
+  R= 123 hits=      95 t3 (        deg<=2) | x 1.95 |   8.81  10.00  10.00 x  2.21 |  47.91  99.62  99.26 x  4.05 |
+
+[3] anatomy of the optimum at R = Gmax (population = all N): rows left s_t and odd rows left o_t of the optimum against mean and sd over all N;
+    'tilt' = the mean of o_t over hits that the model (1-rho_odd_t)^o_t predicts
+  t0 (          none): s mean  206.00 sd  0.00; o mean   82.40 sd  7.71; model tilt of o:   67.35; optimum (s,o,count): [(206, 50, 1)]  z_s=+0.00 z_o=-4.20
+  t1 (        deg<=1): s mean   67.50 sd 18.88; o mean   33.14 sd 10.15; model tilt of o:   11.99; optimum (s,o,count): [(51, 15, 1)]  z_s=-0.87 z_o=-1.79
+  t2 (          room): s mean   62.21 sd 17.49; o mean   30.68 sd  9.49; model tilt of o:    9.30; optimum (s,o,count): [(49, 14, 1)]  z_s=-0.76 z_o=-1.76
+  t3 (        deg<=2): s mean   44.88 sd 12.95; o mean   23.06 sd  7.44; model tilt of o:    3.73; optimum (s,o,count): [(41, 10, 1)]  z_s=-0.30 z_o=-1.75
+  t4 (        deg<=3): s mean   32.87 sd  9.87; o mean   20.59 sd  6.77; model tilt of o:    0.00; optimum (s,o,count): [(16, 0, 1)]  z_s=-1.71 z_o=-3.04
+
+[4] cover first.  Members ranked by s_room = rows among the first R left by the pinned prefix (t2: the first 7 irreducibles, total degree <= n), best cells first.
+  R=  45 hits=   89048: first hit in bin s=3 (bin holds 45 members, 14 hits; 0 members in better bins): expected work 3 against blind 110: gain 35.76 (+3.58 nats); last hit in bin s=25: 9690540 members (0.992 of all)
+  R=  69 hits=    9545: first hit in bin s=8 (bin holds 360 members, 15 hits; 10 members in better bins): expected work 33 against blind 1023: gain 31.42 (+3.45 nats); last hit in bin s=30: 9165195 members (0.939 of all)
+  R=  95 hits=     975: first hit in bin s=10 (bin holds 35 members, 1 hits; 0 members in better bins): expected work 18 against blind 10006: gain 555.88 (+6.32 nats); last hit in bin s=37: 8463080 members (0.867 of all)
+  R= 123 hits=      95: first hit in bin s=16 (bin holds 555 members, 1 hits; 155 members in better bins): expected work 433 against blind 101725: gain 234.93 (+5.46 nats); last hit in bin s=32: 3590410 members (0.368 of all)
+  R= 155 hits=       9: first hit in bin s=26 (bin holds 10160 members, 1 hits; 14345 members in better bins): expected work 19426 against blind 976563: gain 50.27 (+3.92 nats); last hit in bin s=38: 3024005 members (0.310 of all)
+  R= 206 hits=       1: first hit in bin s=49 (bin holds 213595 members, 1 hits; 2731230 members in better bins): expected work 2838028 against blind 4882813: gain 1.72 (+0.54 nats); last hit in bin s=49: 2944825 members (0.302 of all)
+    best G found by cover first after W members (whole bins), and the blind work for the same G (q^n / #{N: G >= that}):
+      s<= 29: W=        15 (1.54e-06)  best G= 124  #N with G>=best:       84  blind work 1.16e+05  ratio 7750.50
+      s<= 30: W=        90 (9.22e-06)  best G= 124  #N with G>=best:       84  blind work 1.16e+05  ratio 1291.75
+      s<= 31: W=       455 (4.66e-05)  best G= 124  #N with G>=best:       84  blind work 1.16e+05  ratio 255.51
+      s<= 32: W=      1585 (1.62e-04)  best G= 124  #N with G>=best:       84  blind work 1.16e+05  ratio 73.35
+      s<= 33: W=      3925 (4.02e-04)  best G= 127  #N with G>=best:       67  blind work 1.46e+05  ratio 37.14
+      s<= 34: W=      8175 (8.37e-04)  best G= 127  #N with G>=best:       67  blind work 1.46e+05  ratio 17.83
+      s<= 35: W=     13460 (1.38e-03)  best G= 127  #N with G>=best:       67  blind work 1.46e+05  ratio 10.83
+      s<= 36: W=     19210 (1.97e-03)  best G= 127  #N with G>=best:       67  blind work 1.46e+05  ratio 7.59
+      s<= 37: W=     26615 (2.73e-03)  best G= 127  #N with G>=best:       67  blind work 1.46e+05  ratio 5.48
+      s<= 38: W=     42285 (4.33e-03)  best G= 131  #N with G>=best:       48  blind work 2.03e+05  ratio 4.81
+      s<= 39: W=     76670 (7.85e-03)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 42.46
+      s<= 40: W=    143925 (1.47e-02)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 22.62
+      s<= 41: W=    270750 (2.77e-02)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 12.02
+      s<= 42: W=    483180 (4.95e-02)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 6.74
+      s<= 43: W=    795560 (8.15e-02)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 4.09
+      s<= 44: W=   1196360 (1.23e-01)  best G= 174  #N with G>=best:        3  blind work 3.26e+06  ratio 2.72
+      s<= 45: W=   1638085 (1.68e-01)  best G= 185  #N with G>=best:        2  blind work 4.88e+06  ratio 2.98
+      s<= 46: W=   2064520 (2.11e-01)  best G= 185  #N with G>=best:        2  blind work 4.88e+06  ratio 2.37
+      s<= 47: W=   2438700 (2.50e-01)  best G= 185  #N with G>=best:        2  blind work 4.88e+06  ratio 2.00
+      s<= 48: W=   2731230 (2.80e-01)  best G= 185  #N with G>=best:        2  blind work 4.88e+06  ratio 1.79
+      s<= 49: W=   2944825 (3.02e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 3.32
+      s<= 50: W=   3085445 (3.16e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 3.17
+      s<= 51: W=   3171580 (3.25e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 3.08
+      s<= 52: W=   3227100 (3.30e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 3.03
+      s<= 53: W=   3274665 (3.35e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.98
+      s<= 54: W=   3337890 (3.42e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.93
+      s<= 55: W=   3447180 (3.53e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.83
+      s<= 56: W=   3634490 (3.72e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.69
+      s<= 57: W=   3927170 (4.02e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.49
+      s<= 58: W=   4329190 (4.43e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.26
+      s<= 59: W=   4815045 (4.93e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 2.03
+      s<= 60: W=   5338345 (5.47e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 1.83
+      s<= 61: W=   5848360 (5.99e-01)  best G= 206  #N with G>=best:        1  blind work 9.77e+06  ratio 1.67
+
+[4b] expected work (members examined) to the first hit when all N are ranked by a variable, ties at random; gain over blind in nats.  Variables: s_t (rows left) and o_t (odd rows left)
+  R=  45 hits=   89048 blind        110 | o0:         6 (+2.91) s1:        10 (+2.39) o1:         1 (+4.70) s2:         3 (+3.58) o2:         1 (+4.70) s3:         1 (+4.70) o3:         1 (+4.70) s4:         1 (+4.70) o4:         1 (+4.70)
+  R=  69 hits=    9545 blind       1023 | o0:         4 (+5.43) s1:        75 (+2.61) o1:         1 (+6.93) s2:        33 (+3.45) o2:         1 (+6.93) s3:         1 (+6.93) o3:         1 (+6.93) s4:         1 (+6.93) o4:         1 (+6.93)
+  R=  95 hits=     975 blind      10006 | o0:        65 (+5.04) s1:       184 (+4.00) o1:         1 (+9.21) s2:        18 (+6.32) o2:         1 (+9.21) s3:         6 (+7.46) o3:         1 (+9.21) s4:         1 (+9.21) o4:         1 (+9.21)
+  R= 123 hits=      95 blind     101725 | o0:       156 (+6.48) s1:      1563 (+4.18) o1:         1 (+11.53) s2:       433 (+5.46) o2:         1 (+11.35) s3:        81 (+7.14) o3:         1 (+11.53) s4:         3 (+10.33) o4:         1 (+11.53)
+  R= 155 hits=       9 blind     976563 | o0:       202 (+8.48) s1:     64063 (+2.72) o1:        34 (+10.27) s2:     19426 (+3.92) o2:         4 (+12.29) s3:      4078 (+5.48) o3:         1 (+13.79) s4:        98 (+9.20) o4:         1 (+13.79)
+  R= 206 hits=       1 blind    4882813 | o0:        27 (+12.11) s1:   2343750 (+0.73) o1:     22434 (+5.38) s2:   2838028 (+0.54) o2:     33842 (+4.97) s3:   4186396 (+0.15) o3:     59399 (+4.41) s4:     30605 (+5.07) o4:         1 (+15.40)
+
+[5] the soft score.  s_deep = rows left after sieving by every irreducible of the deepest threshold (t4); cover first ranks by s_room.
+  R=206: min s_deep over all N = 6 (1 N); they sit in s_room bins [33]; 
+      s_room<= 29: W=        15 (1.54e-06)  best s_deep found 12  (true best 6)
+      s_room<= 30: W=        90 (9.22e-06)  best s_deep found 8  (true best 6)
+      s_room<= 31: W=       455 (4.66e-05)  best s_deep found 8  (true best 6)
+      s_room<= 32: W=      1585 (1.62e-04)  best s_deep found 8  (true best 6)
+      s_room<= 33: W=      3925 (4.02e-04)  best s_deep found 6  (true best 6)
+      s_room<= 34: W=      8175 (8.37e-04)  best s_deep found 6  (true best 6)
+      s_room<= 35: W=     13460 (1.38e-03)  best s_deep found 6  (true best 6)
+      s_room<= 36: W=     19210 (1.97e-03)  best s_deep found 6  (true best 6)
+      s_room<= 37: W=     26615 (2.73e-03)  best s_deep found 6  (true best 6)
+      s_room<= 38: W=     42285 (4.33e-03)  best s_deep found 6  (true best 6)
+      s_room<= 39: W=     76670 (7.85e-03)  best s_deep found 6  (true best 6)
+      s_room<= 40: W=    143925 (1.47e-02)  best s_deep found 6  (true best 6)
+      s_room<= 41: W=    270750 (2.77e-02)  best s_deep found 6  (true best 6)
+      s_room<= 42: W=    483180 (4.95e-02)  best s_deep found 6  (true best 6)
+      s_room<= 43: W=    795560 (8.15e-02)  best s_deep found 6  (true best 6)
+      s_room<= 44: W=   1196360 (1.23e-01)  best s_deep found 6  (true best 6)
+      s_room<= 45: W=   1638085 (1.68e-01)  best s_deep found 6  (true best 6)
+      s_room<= 46: W=   2064520 (2.11e-01)  best s_deep found 6  (true best 6)
+      s_room<= 47: W=   2438700 (2.50e-01)  best s_deep found 6  (true best 6)
+      s_room<= 48: W=   2731230 (2.80e-01)  best s_deep found 6  (true best 6)
+      s_room<= 49: W=   2944825 (3.02e-01)  best s_deep found 6  (true best 6)
+      s_room<= 50: W=   3085445 (3.16e-01)  best s_deep found 6  (true best 6)
+      s_room<= 51: W=   3171580 (3.25e-01)  best s_deep found 6  (true best 6)
+      s_room<= 52: W=   3227100 (3.30e-01)  best s_deep found 6  (true best 6)
+      s_room<= 53: W=   3274665 (3.35e-01)  best s_deep found 6  (true best 6)
+      s_room<= 54: W=   3337890 (3.42e-01)  best s_deep found 6  (true best 6)
+      s_room<= 55: W=   3447180 (3.53e-01)  best s_deep found 6  (true best 6)
+      s_room<= 56: W=   3634490 (3.72e-01)  best s_deep found 6  (true best 6)
+      s_room<= 57: W=   3927170 (4.02e-01)  best s_deep found 6  (true best 6)
+      s_room<= 58: W=   4329190 (4.43e-01)  best s_deep found 6  (true best 6)
+      s_room<= 59: W=   4815045 (4.93e-01)  best s_deep found 6  (true best 6)

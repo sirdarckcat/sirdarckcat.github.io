@@ -1,0 +1,34 @@
+S <= 463: |A| = 199493; Q = 1.00400; mean |f^|^2 / (|A|(1-tau)) = 1.00000; random sets (4): Q = 1.00000 +- 0.00020; excess of fourth moment +0.00400 = +20.2 sd
+   largest coefficients |f^|/|A| and their frequencies (fraction a/s with s <= 3000 when within 2/K):
+      0.01152  xi = 0.2911814  175/601
+      0.01119  xi = 0.3777403  224/593
+      0.01104  xi = 0.3594646  188/523
+      0.01060  xi = 0.2790224  137/491
+      0.01041  xi = 0.4346895  203/467
+      0.01018  xi = 0.0040733  2/491
+      0.00993  xi = 0.3027140  145/479
+      0.00982  xi = 0.4028540  367/911
+      0.00977  xi = 0.1153262  76/659
+      0.00969  xi = 0.1566618  107/683
+      0.00969  xi = 0.1739962  91/523
+      0.00966  xi = 0.2610734  no small denominator
+S <= 450: |A| = 21713; Q = 1.00019; mean |f^|^2 / (|A|(1-tau)) = 1.00000; random sets (4): Q = 1.00016 +- 0.00020; excess of fourth moment +0.00002 = +0.1 sd
+   largest coefficients |f^|/|A| and their frequencies (fraction a/s with s <= 3000 when within 2/K):
+      0.02972  xi = 0.3996300  432/1081
+      0.02886  xi = 0.0320775  86/2681
+      0.02876  xi = 0.0053838  no small denominator
+      0.02861  xi = 0.3224735  485/1504
+      0.02762  xi = 0.1304115  244/1871
+      0.02728  xi = 0.2638401  no small denominator
+      0.02683  xi = 0.4677804  196/419
+      0.02660  xi = 0.4306987  376/873
+      0.02651  xi = 0.3923939  no small denominator
+      0.02640  xi = 0.3505734  no small denominator
+      0.02626  xi = 0.1304114  no small denominator
+      0.02619  xi = 0.1724927  no small denominator
+S <= 439: |A| = 2190; E = 10300054; trivial quadruples 2|A|^2-|A| = 9590010; nontrivial 710044; random sets (200): nontrivial mean 715755 sd 7003; excess -0.82 sd; E/|A|^3 = 0.00098
+S <= 429: |A| = 201; E = 80641; trivial quadruples 2|A|^2-|A| = 80601; nontrivial 40; random sets (200): nontrivial mean 49 sd 19; excess -0.47 sd; E/|A|^3 = 0.00993
+
+real	1m19.836s
+user	0m47.316s
+sys	0m19.357s

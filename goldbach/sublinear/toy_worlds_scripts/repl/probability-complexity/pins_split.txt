@@ -1,0 +1,8 @@
+single primes: 467: class means of S range -1.61..+1.18 rows, sd 0.517; best class hit-chance factor e^0.122
+               479: -1.82..+1.22, sd 0.556; e^0.125
+PIN (best class of each, chosen from the single-prime tables): cell of 95 members, mean S -2.57 rows, hit-chance factor e^0.250
+best cell of all 223693 by its own mean hit chance (an oracle; includes luck of 95 members): e^1.630
+SPLIT from parents kept at 1.67% (S<=467): 357097 parents, mean z -2.47; children's hit-chance factor e^+0.0055 (+- 0.0004); Gaussian bound tau*rho*|z| with rho=0.0017: 0.0056
+SPLIT from parents S<=450 (1e-3): 21713 parents, mean z -3.33; children's hit-chance factor e^+0.0070 (+- 0.0015); Gaussian bound tau*rho*|z| with rho=0.0017: 0.0075
+SPLIT from parents S<=430 (1.2e-5): 251 parents, mean z -4.38; children's hit-chance factor e^+0.0103 (+- 0.0136); Gaussian bound tau*rho*|z| with rho=0.0017: 0.0099
+Gaussian splitting bound with the largest translate correlation in the window (0.0028) and the deepest parent (z=-5.2): 0.0194 nats

@@ -1,0 +1,20 @@
+(a) character sums of the 1502 rows, primes 467..5000 (noise = 1)
+    order 2: 579 primes, mean normalised power 0.889 +- 0.051   (random rows: 0.924)
+    order 3: 287 primes, mean normalised power 0.843 +- 0.050   (random rows: 0.960)
+    order 4: 285 primes, mean normalised power 0.944 +- 0.053   (random rows: 0.941)
+    order 5: 142 primes, mean normalised power 0.853 +- 0.053   (random rows: 0.892)
+    order 6: 287 primes, mean normalised power 0.894 +- 0.050   (random rows: 0.968)
+    all nontrivial characters: mean normalised power 0.8714; largest power / ln(s-2): mean 0.867, max 1.445; random rows: mean 0.980, max 1.814
+    heaviest coset of the subgroup of index e: rate (gain over a random member)/ln e, rows per nat: e=2: real 0.0233 random 0.0248 (579 primes); e=3: real 0.0256 random 0.0282 (287 primes); e=4: real 0.0291 random 0.0304 (285 primes); e=5: real 0.0292 random 0.0340 (142 primes); e=6: real 0.0336 random 0.0373 (287 primes); e=7: real 0.0381 random 0.0389 (96 primes); e=8: real 0.0370 random 0.0427 (141 primes); e=10: real 0.0403 random 0.0460 (142 primes); e=12: real 0.0439 random 0.0479 (138 primes)
+(b) index 2, sign free at every prime: gain sum_s |sum_q (q/s)|/(s-1) in rows
+    primes 467..  5000 (  579 primes): real   9.34 rows = 0.227 nats; random rows   9.73;  constraint    401.3 nats; rows per nat of constraint 0.0233;  mean |sum|/sqrt(rows) real 0.759 (noise sqrt(2/pi) = 0.798)
+    primes 467.. 20000 ( 2172 primes): real  13.91 rows = 0.338 nats; random rows  14.40;  constraint   1505.5 nats; rows per nat of constraint 0.0092;  mean |sum|/sqrt(rows) real 0.773 (noise sqrt(2/pi) = 0.798)
+    primes 467..200000 (17894 primes): real  20.22 rows = 0.491 nats; random rows  20.87;  constraint  12403.2 nats; rows per nat of constraint 0.0016;  mean |sum|/sqrt(rows) real 0.777 (noise sqrt(2/pi) = 0.798)
+    the first prime: |sum| at 467 = 4, gain 0.0086 rows for ln 2 nats
+(c) forced signs, N = c y^2, primes 467..5000: 9503 values of c <= 10^5 coprime to M: gain mean +0.019, sd 0.591 (predicted sd 0.592), best +2.114 rows at c = 76231 = 0.051 nats; c = 1 (N = y^2): -3.702
+(c) forced signs, N = c y^2, primes 467..20000: 9503 values of c <= 10^5 coprime to M: gain mean +0.029, sd 0.616 (predicted sd 0.612), best +2.387 rows at c = 8539 = 0.058 nats; c = 1 (N = y^2): -5.096
+(d) Proposition D: prescribed quadratic characters at m primes by linear algebra over F_2
+    m =  10 signs at 467..541: c = product of 5 of the primes 547..647, ln c =    31.7 nats, constraint m ln 2 =   6.9 nats, verified True;  gain if the signs were the heavy cosets: 0.629 rows
+    m =  20 signs at 467..601: c = product of 12 of the primes 607..787, ln c =    78.1 nats, constraint m ln 2 =  13.9 nats, verified True;  gain if the signs were the heavy cosets: 1.104 rows
+    m =  40 signs at 467..733: c = product of 21 of the primes 739..1061, ln c =   142.5 nats, constraint m ln 2 =  27.7 nats, verified True;  gain if the signs were the heavy cosets: 2.024 rows
+    m =  80 signs at 467..1013: c = product of 39 of the primes 1019..1627, ln c =   279.3 nats, constraint m ln 2 =  55.5 nats, verified True;  gain if the signs were the heavy cosets: 3.235 rows

@@ -1,0 +1,11 @@
+5 [1] 2 last: |G|=1 J=9 shape=(46, 55)
+5 [1] 3 last: |G|=1 J=9 shape=(97, 100)
+7 [1] 3 last: |G|=1 J=8 shape=(73, 81)
+3 [1, 2] 3 last: |G|=2 J=12 shape=(157, 169)
+3 [1, 2] 4 last: |G|=1 J=8 shape=(109, 117)
+5 [1, 2] 3 last: |G|=2 J=24 shape=(645, 650)
+2 [1, 2, 3] 4 last: |G|=1 J=10 shape=(190, 198)
+2 [1, 2, 3, 4] 5 last: |G|=1 J=12 shape=(312, 325)
+3 [1, 2, 3] 4 last: |G|=3 J=26 shape=(1116, 1134)
+7 [1] 4 last: |G|=0 J=10 shape=(174, 176)
+instances 120: Theorem 1 (kernel nonzero, every N with A>=D0 a root of whole kernel, |G|<=J) 120/120; Theorem 2 inequality 120/120 (G nonempty in 101); lhs/rhs between 1.42 and 2.61

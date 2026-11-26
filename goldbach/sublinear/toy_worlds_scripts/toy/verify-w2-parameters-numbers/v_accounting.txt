@@ -1,0 +1,90 @@
+M_n(D) formula vs brute force and bounds D^2/(2(n-1)) <= M <= (D+(n-1)/2)^2/(2(n-1)): failures 0
+Mertens mass per degree:
+2 [1.0, 0.5, 0.75, 0.75, 0.9375, 0.8438, 0.9844, 0.9375, 0.9844, 0.9668, 0.999, 0.9814]
+3 [1.0, 0.6667, 0.8889, 0.8889, 0.9877, 0.9547, 0.9986, 0.9877, 0.9986, 0.9958, 1.0, 0.9985]
+5 [1.0, 0.8, 0.96, 0.96, 0.9984, 0.9907, 0.9999, 0.9984, 0.9999, 0.9997, 1.0, 0.9999]
+13 [1.0, 0.9231, 0.9941, 0.9941, 1.0, 0.9995, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+q=5 rho=2/5 deg 1..1: m=5 T=5 mu=1.0000 mu/rho=2.5000 n<=3
+    n=2 t=1 C=10 M=15 D=5 J=4 lnE=-1.4
+    n=3 t=3 C=60 M=64 D=15 J=7 lnE=0.2
+    n=4 no guarantee t<=60 lnE=1.9
+q=5 rho=2/5 deg 1..2: m=15 T=25 mu=1.8000 mu/rho=4.5000 n<=5
+    n=3 t=1 C=350 M=529 D=45 J=22 lnE=-8.9
+    n=4 t=1 C=350 M=360 D=45 J=14 lnE=-7.3
+    n=5 t=4 C=4100 M=4140 D=180 J=44 lnE=-5.7
+    n=6 no guarantee t<=60 lnE=-4.1
+q=5 rho=2/5 deg 1..3: m=55 T=145 mu=2.7600 mu/rho=6.9000 n<=7
+    n=5 t=1 C=12250 M=15051 D=345 J=86 lnE=-42.3
+    n=6 t=2 C=41750 M=47955 D=690 J=137 lnE=-40.7
+    n=7 t=3 C=88500 M=89787 D=1035 J=172 lnE=-39.1
+    n=8 no guarantee t<=60 lnE=-37.5
+q=5 rho=2/5 deg 1..4: m=205 T=745 mu=3.7200 mu/rho=9.3000 n<=10
+    n=8 t=1 C=383750 M=387279 D=2325 J=332 lnE=-175.0
+    n=9 t=2 C=1348750 M=1353732 D=4650 J=581 lnE=-173.4
+    n=10 t=10 C=29993750 M=30042876 D=23250 J=2583 lnE=-171.7
+    n=11 no guarantee t<=60 lnE=-170.1
+q=3 rho=1/3 deg 1..3: m=14 T=33 mu=2.5556 mu/rho=7.6667 n<=8
+    n=6 t=1 C=459 M=511 D=69 J=13 lnE=-8.8
+    n=7 t=2 C=1539 M=1656 D=138 J=22 lnE=-7.7
+    n=8 t=4 C=5562 M=5580 D=276 J=39 lnE=-6.6
+    n=9 no guarantee t<=60 lnE=-5.5
+q=3 rho=1/3 deg 1..4: m=32 T=105 mu=3.4444 mu/rho=10.3333 n<=11
+    n=9 t=2 C=17901 M=19740 D=558 J=69 lnE=-25.3
+    n=10 t=3 C=38151 M=39339 D=837 J=92 lnE=-24.2
+    n=11 t=11 C=471339 M=472473 D=3069 J=306 lnE=-23.1
+    n=12 no guarantee t<=60 lnE=-22.0
+q=3 rho=1/3 deg 1..6: m=196 T=1041 mu=5.3868 mu/rho=16.1605 n<=17
+    n=15 t=2 C=2161485 M=2206974 D=7854 J=560 lnE=-198.8
+    n=16 t=4 C=8140014 M=8232564 D=15708 J=1047 lnE=-197.8
+    n=17 t=27 C=351243135 M=351370167 D=106029 J=6626 lnE=-196.7
+    n=18 no guarantee t<=60 lnE=-195.6
+q=3 rho=2/3 deg 1..6: m=196 T=1041 mu=5.3868 mu/rho=8.0802 n<=9
+    n=7 t=1 C=1207224 M=1287075 D=3927 J=654 lnE=-71.8
+    n=8 t=2 C=4322970 M=4410021 D=7854 J=1121 lnE=-70.7
+    n=9 t=27 C=702486270 M=702687318 D=106029 J=13253 lnE=-69.6
+    n=10 no guarantee t<=60 lnE=-68.5
+q=13 rho=6/13 deg 1..1: m=13 T=13 mu=1.0000 mu/rho=2.1667 n<=3
+    n=2 t=1 C=78 M=91 D=13 J=12 lnE=-4.9
+    n=3 t=11 C=5148 M=5184 D=143 J=71 lnE=-2.4
+    n=4 no guarantee t<=60 lnE=0.2
+q=13 rho=6/13 deg 1..3: m=819 T=2353 mu=2.9172 mu/rho=6.3205 n<=7
+    n=5 t=1 C=4442334 M=5137615 D=6409 J=1602 lnE=-620.4
+    n=6 t=2 C=15383394 M=16436522 D=12818 J=2563 lnE=-617.9
+    n=7 t=7 C=167569584 M=167746496 D=44863 J=7477 lnE=-615.3
+    n=8 no guarantee t<=60 lnE=-612.7
+q=2 rho=1/2 deg 1..8: m=71 T=472 mu=6.7031 mu/rho=13.4062 n<=14
+    n=12 t=2 C=499712 M=537108 D=3432 J=311 lnE=-40.9
+    n=13 t=3 C=1079040 M=1106820 D=5148 J=428 lnE=-40.2
+    n=14 t=9 C=9167616 M=9181458 D=15444 J=1187 lnE=-39.5
+    n=15 no guarantee t<=60 lnE=-38.8
+q=2 rho=1/2 deg 1..12: m=747 T=8032 mu=10.6348 mu/rho=21.2695 n<=22
+    n=20 t=2 C=194871296 M=199777625 D=87120 J=4585 lnE=-503.9
+    n=21 t=3 C=426123264 M=426996900 D=130680 J=6533 lnE=-503.2
+    n=22 t=15 C=10159595520 M=10165363845 D=653400 J=31114 lnE=-502.5
+    n=23 no guarantee t<=60 lnE=-501.8
+q=5 rho=3/5 deg 1..2: m=15 T=25 mu=1.8000 mu/rho=3.0000 n<=3
+    n=2 t=1 C=525 M=1035 D=45 J=44 lnE=-4.4
+    n=3 t=1 C=525 M=529 D=45 J=22 lnE=-2.8
+    n=4 no guarantee t<=60 lnE=-1.2
+q=3 rho=2/3 deg 1..3: m=14 T=33 mu=2.5556 mu/rho=3.8333 n<=4
+    n=2 t=1 C=918 M=2415 D=69 J=68 lnE=-3.5
+    n=3 t=1 C=918 M=1225 D=69 J=34 lnE=-2.4
+    n=4 t=2 C=3078 M=3243 D=138 J=45 lnE=-1.3
+    n=5 no guarantee t<=60 lnE=-0.2
+window form
+q=2 rho=1/2 d0=9 w=24 full: need mass>11.50: degrees 9..20, T=2.094e+06, T/q^w=0.1248, lnE=-7.688e+04
+q=2 rho=1/2 d0=9 w=24 typical: need mass>46.00: degrees 9..55, T=7.206e+16, T/q^w=4.295e+09
+q=3 rho=2/3 d0=4 w=12 full: need mass>7.33: degrees 4..11, T=2.653e+05, T/q^w=0.4992, lnE=-1.031e+04
+q=3 rho=2/3 d0=4 w=12 typical: need mass>16.50: degrees 4..20, T=5.230e+09, T/q^w=9841
+q=5 rho=4/5 d0=3 w=10 full: need mass>7.20: degrees 3..10, T=1.220e+07, T/q^w=1.25, lnE=-2.804e+05
+q=5 rho=4/5 d0=3 w=10 typical: need mass>11.25: degrees 3..14, T=7.629e+09, T/q^w=781.2
+q=3 rho=1/3 d0=4 w=12 full: need mass>3.67: degrees 4..7, T=3.192e+03, T/q^w=0.006006, lnE=-529.5
+q=3 rho=1/3 d0=4 w=12 typical: need mass>33.00: degrees 4..37, T=6.754e+17, T/q^w=1.271e+12
+q=5 rho=2/5 d0=3 w=10 full: need mass>3.60: degrees 3..6, T=1.932e+04, T/q^w=0.001978, lnE=-3094
+q=5 rho=2/5 d0=3 w=10 typical: need mass>22.50: degrees 3..25, T=3.725e+17, T/q^w=3.815e+10
+corollary (a): entries sum_e I(e) q^e needed for mass > n-1 starting at d0, vs q^(2(d0+n-2))/(d0+n)
+  q=2 d0=9 n=24: top degree 32, entries 7.771e+17, formula 1.397e+17, window^2=2.815e+14
+  q=3 d0=4 n=12: top degree 15, entries 1.558e+13, formula 1.430e+12, window^2=2.824e+11
+  q=5 d0=3 n=10: top degree 12, entries 5.193e+15, formula 1.834e+14, window^2=9.537e+13
+  q=2 d0=1 n=10: top degree 11, entries 5.218e+05, formula 2.383e+04, window^2=1.049e+06
+  q=13 d0=1 n=4: top degree 4, entries 2.043e+08, formula 9.654e+05, window^2=8.157e+08

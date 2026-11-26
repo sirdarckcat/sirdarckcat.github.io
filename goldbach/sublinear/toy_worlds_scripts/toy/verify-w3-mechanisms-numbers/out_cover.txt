@@ -1,0 +1,22 @@
+F_4: rows of degree <= 5: 294; moduli: 30 of degree < 4, plus 1 of degree 4 (from 60); total degree 80; unused room 0
+residues done 0s
+  restart 0: rows left 1; by degree [0, 0, 0, 0, 1]; 0s
+  restart 3: rows left 0; by degree [0, 0, 0, 0, 0]; 0s
+BEST rows left 0 of 294
+F_4: rows of degree <= 6: 964; moduli: 30 of degree < 4, plus 1 of degree 4 (from 60); total degree 80; unused room 0
+residues done 1s
+  restart 0: rows left 36; by degree [0, 0, 0, 2, 8, 26]; 1s
+  restart 1: rows left 33; by degree [0, 1, 3, 0, 6, 23]; 1s
+  restart 4: rows left 32; by degree [0, 0, 1, 2, 7, 22]; 1s
+BEST rows left 32 of 964
+F_16: rows of degree <= 3: 1496; moduli: 16 of degree < 2, plus 24 of degree 2 (from 120); total degree 64; unused room 0
+residues done 1s
+  restart 0: rows left 308; by degree [2, 15, 291]; 1s
+  restart 2: rows left 305; by degree [2, 17, 286]; 1s
+  restart 3: rows left 300; by degree [2, 19, 279]; 1s
+BEST rows left 300 of 1496
+F_4: rows of degree <= 7: 3304; moduli: 90 of degree < 5, plus 4 of degree 5 (from 204); total degree 336; unused room 0
+residues done 6s
+  restart 0: rows left 57; by degree [0, 0, 0, 0, 4, 8, 45]; 6s
+  restart 1: rows left 48; by degree [0, 0, 0, 0, 2, 10, 36]; 6s
+BEST rows left 48 of 3304

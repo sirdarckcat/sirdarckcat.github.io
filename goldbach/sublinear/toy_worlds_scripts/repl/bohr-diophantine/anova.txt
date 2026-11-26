@@ -1,0 +1,70 @@
+K = 21378978; S: mean 505.638 var 324.516; share of rows surviving W = 0.336643
+coordinate | values R | eta2 | chance (R-1)/(K-1) | F (1 = chance) | sd of F under chance | first-order prediction W'^2 Var(g_s)/Var(S)
+k mod 467 (a later prime) | 467 | 8.234e-04 | 2.180e-05 | 37.808 | 0.066 | 8.180e-04
+k mod 479 (a later prime) | 479 | 9.529e-04 | 2.236e-05 | 42.657 | 0.065 | 9.387e-04
+k mod 487 (a later prime) | 487 | 8.387e-04 | 2.273e-05 | 36.926 | 0.064 | 8.205e-04
+k mod 491 (a later prime) | 491 | 8.498e-04 | 2.292e-05 | 37.108 | 0.064 | 8.336e-04
+k mod 499 (a later prime) | 499 | 9.088e-04 | 2.329e-05 | 39.051 | 0.063 | 8.762e-04
+k mod 503 (a later prime) | 503 | 9.338e-04 | 2.348e-05 | 39.807 | 0.063 | 9.193e-04
+k mod 509 (a later prime) | 509 | 8.360e-04 | 2.376e-05 | 35.213 | 0.063 | 8.154e-04
+k mod 521 (a later prime) | 521 | 7.799e-04 | 2.432e-05 | 32.087 | 0.062 | 7.697e-04
+k mod 523 (a later prime) | 523 | 8.252e-04 | 2.442e-05 | 33.823 | 0.062 | 7.979e-04
+k mod 541 (a later prime) | 541 | 7.876e-04 | 2.526e-05 | 31.205 | 0.061 | 7.710e-04
+k mod 547 (a later prime) | 547 | 8.091e-04 | 2.554e-05 | 31.705 | 0.061 | 7.931e-04
+k mod 557 (a later prime) | 557 | 7.923e-04 | 2.601e-05 | 30.488 | 0.060 | 7.700e-04
+k mod 1009 (a later prime) | 1009 | 4.630e-04 | 4.715e-05 | 9.825 | 0.045 | 4.356e-04
+k mod 10007 (a later prime) | 10007 | 4.426e-04 | 4.680e-04 | 0.946 | 0.014 | 4.819e-05
+k mod 100003 (a later prime) | 100003 | 4.580e-03 | 4.678e-03 | 0.979 | 0.004 | 5.166e-06
+k mod 1000003 (a later prime) | 1000003 | 4.671e-02 | 4.678e-02 | 0.998 | 0.001 | 5.237e-07
+-- moduli that are not multiples of a later prime (the window structure offers them; the score should not see them)
+k mod 2 | 2 | 5.459e-09 | 4.677e-08 | 0.117 | 1.414 | 
+k mod 3 | 3 | 1.694e-08 | 9.355e-08 | 0.181 | 1.000 | 
+k mod 5 | 5 | 1.286e-07 | 1.871e-07 | 0.687 | 0.707 | 
+k mod 7 | 7 | 1.073e-07 | 2.806e-07 | 0.382 | 0.577 | 
+k mod 11 | 11 | 3.227e-07 | 4.677e-07 | 0.690 | 0.447 | 
+k mod 13 | 13 | 2.153e-07 | 5.613e-07 | 0.383 | 0.408 | 
+k mod 30 | 30 | 9.021e-07 | 1.356e-06 | 0.665 | 0.263 | 
+k mod 210 | 210 | 6.895e-06 | 9.776e-06 | 0.705 | 0.098 | 
+k mod 466 | 466 | 1.496e-05 | 2.175e-05 | 0.688 | 0.066 | 
+k mod 468 | 468 | 1.524e-05 | 2.184e-05 | 0.697 | 0.065 | 
+k mod 480 | 480 | 1.732e-05 | 2.241e-05 | 0.773 | 0.065 | 
+k mod 512 | 512 | 1.761e-05 | 2.390e-05 | 0.737 | 0.063 | 
+k mod 1000 | 1000 | 3.580e-05 | 4.673e-05 | 0.766 | 0.045 | 
+k mod 4096 | 4096 | 1.543e-04 | 1.915e-04 | 0.806 | 0.022 | 
+k mod 30030 | 30030 | 1.253e-03 | 1.405e-03 | 0.892 | 0.008 | 
+k mod 65536 | 65536 | 2.916e-03 | 3.065e-03 | 0.951 | 0.006 | 
+k mod 223694 | 223694 | 1.031e-02 | 1.046e-02 | 0.985 | 0.003 | 
+-- digits
+floor(k/467) mod 479 (second mixed-radix digit) | 479 | 2.295e-05 | 2.236e-05 | 1.026 | 0.065 | 
+floor(k/(467*479)) (top mixed-radix digit) | 96 | 2.491e-06 | 4.444e-06 | 0.561 | 0.145 | 
+floor(k/2^12) mod 2^9 | 512 | 2.089e-05 | 2.390e-05 | 0.874 | 0.063 | 
+floor(k/2^15) (top binary digits) | 653 | 2.250e-05 | 3.050e-05 | 0.738 | 0.055 | 
+k mod 2^9 | 512 | 1.761e-05 | 2.390e-05 | 0.737 | 0.063 | 
+-- blocks (residues modulo products of later primes)
+k mod 467*479 | 223693 | 1.204e-02 | 1.046e-02 | 1.153 | 0.003 | 
+   sum of the two primes' eta2: 1.776e-03; chance for the block 1.046e-02; block minus primes minus chance for the interaction part -1.52e-04
+-- the exact trade-off in residue coordinates: T = the first J later primes; D = max(0, ln prod s - ln K); share of Var(S) that is separable on T
+   J = 1: D = 0.00 nats; separable share 0.0802%
+   J = 2: D = 0.00 nats; separable share 0.1732%
+   J = 3: D = 1.63 nats; separable share 0.2548%
+   J = 4: D = 7.82 nats; separable share 0.3375%
+   J = 5: D = 14.04 nats; separable share 0.4261%
+   J = 6: D = 20.26 nats; separable share 0.5171%
+   J = 7: D = 26.49 nats; separable share 0.5983%
+   J = 8: D = 32.75 nats; separable share 0.6739%
+   J = 9: D = 39.01 nats; separable share 0.7540%
+   J = 10: D = 45.30 nats; separable share 0.8302%
+   J = 11: D = 51.60 nats; separable share 0.9085%
+   J = 12: D = 57.93 nats; separable share 0.9852%
+-- by the first-order formula (checked above on 16 primes): primes to z | D | share of Var(S)
+   z = 509: 7 primes; D = 26; share 0.602%
+   z = 1000: 78 primes; D = 496; share 4.821%
+   z = 2000: 213 primes; D = 1479; share 9.046%
+   z = 5000: 579 primes; D = 4451; share 14.289%
+   z = 20000: 2172 primes; D = 19345; share 21.556%
+   z = 200000: 17894 primes; D = 199058; share 32.208%
+   z = 1000000: 78408 primes; D = 998024; share 38.673%
+
+real	2m35.000s
+user	1m58.464s
+sys	0m2.454s

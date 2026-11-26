@@ -1,0 +1,76 @@
+# Cost of an ideal search at other targets (ideal_tilt.c with 62 temperatures up to beta = 1.7; ideal_tilt.py). 23 November 2026.
+
+# q245000_z20000.txt: Q=245000 z=20000 moduli=2261 betas=62 (to 1.70) sweeps=40000 WHAM iterations=2212
+# states ln=19803.464; ln prod s=19804.616; even N < 10^200 per residue vector: e^-19344.793; boost_z=17.6485 p_z=0.03832; to B=1e+08: sigma=0.5387 p_B=0.07114
+# coldest beta used 1.70: mean k 572.5, sd 20.4, lowest k seen 496, exchange acceptance to the next 0.47
+# beta   <k>     sd    S(beta)=ln(effective number of states)   ln(number of N)   acceptance of class changes by modulus size
+
+Ideal search to depth z = 20000 (N tested in increasing order of the rows left at depth z):
+  one expected success after e^32.51 tested N, down to k = 833 rows left (success per N there e^-32.55)
+  with a budget of e^30.75 N: k up to 831, expected successes e^-1.70
+
+Ideal search to depth B = 1e+08, rows beyond z = 20000 independent (N tested in increasing order of the rows left at depth B):
+  one expected success after e^16.09 tested N, down to R = 219 rows left at depth B (success per N there e^-16.16); those N have 1189 rows left at depth z on average, of which 0.184 survive to B (unselected: 0.539)
+  with a budget of e^30.75 N: R up to 228, expected successes e^13.99
+
+# low end: k, ln g(k), ln(number of N), samples
+
+# q265000_z50000.txt: Q=265000 z=50000 moduli=5132 betas=62 (to 1.70) sweeps=24000 WHAM iterations=2369
+# states ln=49730.173; ln prod s=49731.325; even N < 10^200 per residue vector: e^-49271.501; boost_z=19.2781 p_z=0.04186; to B=1e+08: sigma=0.5885 p_B=0.07114
+# coldest beta used 1.70: mean k 519.4, sd 19.7, lowest k seen 447, exchange acceptance to the next 0.47
+# beta   <k>     sd    S(beta)=ln(effective number of states)   ln(number of N)   acceptance of class changes by modulus size
+
+Ideal search to depth z = 50000 (N tested in increasing order of the rows left at depth z):
+  one expected success after e^33.71 tested N, down to k = 789 rows left (success per N there e^-33.74)
+  with a budget of e^30.75 N: k up to 787, expected successes e^-2.84
+
+Ideal search to depth B = 1e+08, rows beyond z = 50000 independent (N tested in increasing order of the rows left at depth B):
+  one expected success after e^18.96 tested N, down to R = 258 rows left at depth B (success per N there e^-19.04); those N have 1106 rows left at depth z on average, of which 0.233 survive to B (unselected: 0.588)
+  with a budget of e^30.75 N: R up to 265, expected successes e^11.22
+
+# low end: k, ln g(k), ln(number of N), samples
+
+# q300000_z20000.txt: Q=300000 z=20000 moduli=2261 betas=62 (to 1.70) sweeps=30000 WHAM iterations=2996
+# states ln=19803.464; ln prod s=19804.616; even N < 10^200 per residue vector: e^-19344.793; boost_z=17.6485 p_z=0.03832; to B=1e+08: sigma=0.5387 p_B=0.07114
+# coldest beta used 1.70: mean k 699.9, sd 22.6, lowest k seen 590, exchange acceptance to the next 0.42
+# beta   <k>     sd    S(beta)=ln(effective number of states)   ln(number of N)   acceptance of class changes by modulus size
+
+Ideal search to depth z = 20000 (N tested in increasing order of the rows left at depth z):
+  one expected success after e^42.68 tested N, down to k = 1093 rows left (success per N there e^-42.71)
+  with a budget of e^30.75 N: k up to 1082, expected successes e^-11.48
+
+Ideal search to depth B = 1e+08, rows beyond z = 20000 independent (N tested in increasing order of the rows left at depth B):
+  one expected success after e^24.07 tested N, down to R = 327 rows left at depth B (success per N there e^-24.13); those N have 1473 rows left at depth z on average, of which 0.222 survive to B (unselected: 0.539)
+  with a budget of e^30.75 N: R up to 332, expected successes e^6.33
+
+# low end: k, ln g(k), ln(number of N), samples
+
+# q350000_z20000.txt: Q=350000 z=20000 moduli=2261 betas=62 (to 1.70) sweeps=30000 WHAM iterations=2930
+# states ln=19803.464; ln prod s=19804.616; even N < 10^200 per residue vector: e^-19344.793; boost_z=17.6485 p_z=0.03832; to B=1e+08: sigma=0.5387 p_B=0.07114
+# coldest beta used 1.70: mean k 820.7, sd 23.9, lowest k seen 734, exchange acceptance to the next 0.40
+# beta   <k>     sd    S(beta)=ln(effective number of states)   ln(number of N)   acceptance of class changes by modulus size
+
+Ideal search to depth z = 20000 (N tested in increasing order of the rows left at depth z):
+  one expected success after e^52.25 tested N, down to k = 1338 rows left (success per N there e^-52.28)
+  with a budget of e^30.75 N: k up to 1316, expected successes e^-20.63
+
+Ideal search to depth B = 1e+08, rows beyond z = 20000 independent (N tested in increasing order of the rows left at depth B):
+  one expected success after e^31.90 tested N, down to R = 433 rows left at depth B (success per N there e^-31.95); those N have 1736 rows left at depth z on average, of which 0.249 survive to B (unselected: 0.539)
+  with a budget of e^30.75 N: R up to 432, expected successes e^-1.08
+
+# low end: k, ln g(k), ln(number of N), samples
+
+# q500000_z20000.txt: Q=500000 z=20000 moduli=2261 betas=62 (to 1.70) sweeps=30000 WHAM iterations=4587
+# states ln=19803.464; ln prod s=19804.616; even N < 10^200 per residue vector: e^-19344.793; boost_z=17.6485 p_z=0.03832; to B=1e+08: sigma=0.5387 p_B=0.07114
+# coldest beta used 1.70: mean k 1189.2, sd 29.0, lowest k seen 1092, exchange acceptance to the next 0.32
+# beta   <k>     sd    S(beta)=ln(effective number of states)   ln(number of N)   acceptance of class changes by modulus size
+
+Ideal search to depth z = 20000 (N tested in increasing order of the rows left at depth z):
+  one expected success after e^81.40 tested N, down to k = 2084 rows left (success per N there e^-81.44)
+  with a budget of e^30.75 N: k up to 2020, expected successes e^-48.15
+
+Ideal search to depth B = 1e+08, rows beyond z = 20000 independent (N tested in increasing order of the rows left at depth B):
+  one expected success after e^56.80 tested N, down to R = 771 rows left at depth B (success per N there e^-56.90); those N have 2523 rows left at depth z on average, of which 0.306 survive to B (unselected: 0.539)
+  with a budget of e^30.75 N: R up to 745, expected successes e^-24.12
+
+# low end: k, ln g(k), ln(number of N), samples

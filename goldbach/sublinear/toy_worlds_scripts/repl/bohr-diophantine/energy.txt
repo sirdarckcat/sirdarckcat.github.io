@@ -1,0 +1,26 @@
+exact sieve to 10^8 of the real window: K = 21378978, mean 505.638, sd 18.014, min 412
+top 1%: S <= 463: |A| = 199493 (0.9331% of K)
+  energy E(A) = 4.947070e+13; random sets of the same size (6): mean 4.946991e+13 sd 4.109e+10; ratio 1.0000159; excess +0.0 sd
+  E/|A|^3 = 0.00623 (1 for a progression of the same size x 2/3; random prediction 2|A|/(3K)+2/|A| = 0.00623); nontrivial quadruples/|A|^3 = 0.00622
+  largest Fourier coefficient of the balanced indicator / |A|: 0.01152 at xi = 0.291181; random sets: mean 0.00945 max 0.00993; 1/sqrt|A| = 0.00224
+    differences d = multiples of 467 below K/2: sum r(d) / expected = 1.00548 (sd of the ratio for a random set 0.00018)
+    differences d = multiples of 479 below K/2: sum r(d) / expected = 1.00756 (sd of the ratio for a random set 0.00018)
+    differences d = multiples of 487 below K/2: sum r(d) / expected = 1.00615 (sd of the ratio for a random set 0.00018)
+    differences d = multiples of 1009 below K/2: sum r(d) / expected = 1.00318 (sd of the ratio for a random set 0.00026)
+    differences d = multiples of 468 below K/2: sum r(d) / expected = 1.00009 (sd of the ratio for a random set 0.00018)
+    differences d = multiples of 500 below K/2: sum r(d) / expected = 0.99969 (sd of the ratio for a random set 0.00018)
+top 0.1%: S <= 450: |A| = 21713 (0.1016% of K)
+  energy E(A) = 7.869082e+09; random sets of the same size (6): mean 7.882692e+09 sd 2.686e+07; ratio 0.9982735; excess -0.5 sd
+  E/|A|^3 = 0.00077 (1 for a progression of the same size x 2/3; random prediction 2|A|/(3K)+2/|A| = 0.00077); nontrivial quadruples/|A|^3 = 0.00068
+  largest Fourier coefficient of the balanced indicator / |A|: 0.02972 at xi = 0.399630; random sets: mean 0.02821 max 0.02881; 1/sqrt|A| = 0.00679
+    differences d = multiples of 467 below K/2: sum r(d) / expected = 1.00488 (sd of the ratio for a random set 0.00163)
+    differences d = multiples of 479 below K/2: sum r(d) / expected = 1.01012 (sd of the ratio for a random set 0.00165)
+    differences d = multiples of 487 below K/2: sum r(d) / expected = 1.00460 (sd of the ratio for a random set 0.00166)
+    differences d = multiples of 1009 below K/2: sum r(d) / expected = 1.00264 (sd of the ratio for a random set 0.00239)
+    differences d = multiples of 468 below K/2: sum r(d) / expected = 0.99727 (sd of the ratio for a random set 0.00163)
+    differences d = multiples of 500 below K/2: sum r(d) / expected = 0.99865 (sd of the ratio for a random set 0.00168)
+/bin/bash: line 105: 14713 Killed                  nice -n 5 python3 energy.py
+
+real	3m45.129s
+user	2m14.953s
+sys	0m46.746s

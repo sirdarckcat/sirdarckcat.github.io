@@ -1,0 +1,13 @@
+q=13 13 points l=6 n=3: q^n=2197 E=0.095 exact var=0.093 | mine: mean 0.083 +- 0.015, sample var 0.086, max 2 (400 trials)
+q=13 13 points l=6 n=4: q^n=28561 E=1.232 exact var=1.171 | mine: mean 1.185 +- 0.051, sample var 1.043, max 5 (400 trials)
+q=13 13 points l=6 n=5: q^n=371293 E=16.011 exact var=13.867 | mine: mean 15.860 +- 0.332, sample var 11.051, max 26 (100 trials)
+q=13 8 points l=6 n=2: q^n=169 E=0.348 exact var=0.322 | mine: mean 0.340 +- 0.027, sample var 0.300, max 3 (400 trials)
+q=13 8 points l=6 n=3: q^n=2197 E=4.524 exact var=3.524 | mine: mean 4.485 +- 0.094, sample var 3.544, max 11 (400 trials)
+q=13 8 points l=6 n=4: q^n=28561 E=58.808 exact var=31.342 | mine: mean 58.112 +- 0.280, sample var 31.428, max 75 (400 trials)
+q=5 pts(3)+quadratics(15) n=5: q^n=3125 E=1.469 exact var=1.377 | mine: mean 1.490 +- 0.068, sample var 1.388, max 7 (300 trials)
+q=5 pts(3)+quadratics(15) n=6: q^n=15625 E=7.347 exact var=6.522 | mine: mean 7.383 +- 0.140, sample var 5.916, max 17 (300 trials)
+q=5 pts(3)+quadratics(15) n=7: q^n=78125 E=36.733 exact var=30.037 | mine: mean 37.007 +- 0.335, sample var 33.619, max 57 (300 trials)
+q=3 deg1-3 rho=2/3 n=6: q^n=729 E=2.497 exact var=2.164 | mine: mean 2.370 +- 0.087, sample var 2.274, max 8 (300 trials)
+q=3 deg1-3 rho=2/3 n=8: q^n=6561 E=22.475 exact var=16.676 | mine: mean 22.670 +- 0.237, sample var 16.904, max 40 (300 trials)
+q=3 deg1-3 rho=2/3 n=10: q^n=59049 E=202.272 exact var=117.174 | mine: mean 202.350 +- 0.629, sample var 118.616, max 232 (300 trials)
+time 2s

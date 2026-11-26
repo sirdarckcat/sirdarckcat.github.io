@@ -1,0 +1,42 @@
+q=5 n=6: reflection family 625 members of 15625; best G in family 50 (all N: 50)
+    D >= 2: family    175 (2.800e-01)   all       5225 (3.344e-01)   enrichment     0.84
+    D >= 3: family     90 (1.440e-01)   all        700 (4.480e-02)   enrichment     3.21
+q=7 n=6: reflection family 2401 members of 117649; best G in family 45 (all N: 57)
+    D >= 2: family    392 (1.633e-01)   all      26166 (2.224e-01)   enrichment     0.73
+    D >= 3: family     49 (2.041e-02)   all        364 (3.094e-03)   enrichment     6.60
+q=7 n=8: reflection family 16807 members of 5764801; best G in family 106 (all N: 110)
+    D >= 2: family   5880 (3.499e-01)   all    2080589 (3.609e-01)   enrichment     0.97
+    D >= 3: family   1302 (7.747e-02)   all     104741 (1.817e-02)   enrichment     4.26
+q=5 n=8: reflection family 3125 members of 390625; best G in family 54 (all N: 105)
+    D >= 2: family   1375 (4.400e-01)   all     188200 (4.818e-01)   enrichment     0.91
+    D >= 3: family    605 (1.936e-01)   all      46080 (1.180e-01)   enrichment     1.64
+    D >= 4: family      0 (0.000e+00)   all        285 (7.296e-04)   enrichment     0.00
+q=9 n=8: reflection family 59049 members of 43046721; best G in family 84 (all N: 122)
+    D >= 2: family  16848 (2.853e-01)   all   11638728 (2.704e-01)   enrichment     1.06
+    D >= 3: family   1296 (2.195e-02)   all      69138 (1.606e-03)   enrichment    13.67
+q=3 n=8: reflection family 243 members of 6561; best G in family 71 (all N: 101)
+    D >= 2: family    171 (7.037e-01)   all       4239 (6.461e-01)   enrichment     1.09
+    D >= 3: family    135 (5.556e-01)   all       2820 (4.298e-01)   enrichment     1.29
+    D >= 4: family     45 (1.852e-01)   all       1134 (1.728e-01)   enrichment     1.07
+    D >= 5: family     24 (9.877e-02)   all        309 (4.710e-02)   enrichment     2.10
+    D >= 6: family      0 (0.000e+00)   all          3 (4.572e-04)   enrichment     0.00
+q=3 n=10: reflection family 729 members of 59049; best G in family 89 (all N: 160)
+    D >= 2: family    522 (7.160e-01)   all      42057 (7.122e-01)   enrichment     1.01
+    D >= 3: family    423 (5.802e-01)   all      30243 (5.122e-01)   enrichment     1.13
+    D >= 4: family    183 (2.510e-01)   all      14211 (2.407e-01)   enrichment     1.04
+    D >= 5: family    108 (1.481e-01)   all       4311 (7.301e-02)   enrichment     2.03
+    D >= 6: family      3 (4.115e-03)   all        234 (3.963e-03)   enrichment     1.04
+q=3 n=14: reflection family 6561 members of 4782969; best G in family 270 (all N: 418)
+    D >= 2: family   5409 (8.244e-01)   all    3787047 (7.918e-01)   enrichment     1.04
+    D >= 3: family   4737 (7.220e-01)   all    3013437 (6.300e-01)   enrichment     1.15
+    D >= 4: family   2496 (3.804e-01)   all    1739289 (3.636e-01)   enrichment     1.05
+    D >= 5: family   1635 (2.492e-01)   all     681624 (1.425e-01)   enrichment     1.75
+    D >= 6: family    195 (2.972e-02)   all      81144 (1.697e-02)   enrichment     1.75
+    D >= 7: family     15 (2.286e-03)   all       1284 (2.685e-04)   enrichment     8.52
+q=5 n=9: reflection family 3125 members of 1953125; best G in family 76 (all N: 138)
+    D >= 2: family   2330 (7.456e-01)   all    1033250 (5.290e-01)   enrichment     1.41
+    D >= 3: family    510 (1.632e-01)   all     295890 (1.515e-01)   enrichment     1.08
+    D >= 4: family     30 (9.600e-03)   all       3035 (1.554e-03)   enrichment     6.18
+q=7 n=9: reflection family 16807 members of 40353607; best G in family 98 (all N: 136)
+    D >= 2: family  10689 (6.360e-01)   all   16527357 (4.096e-01)   enrichment     1.55
+    D >= 3: family    504 (2.999e-02)   all    1164394 (2.885e-02)   enrichment     1.04

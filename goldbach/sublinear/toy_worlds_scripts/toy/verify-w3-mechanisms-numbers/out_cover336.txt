@@ -1,0 +1,8 @@
+F_4: rows of degree <= 7: 3304; moduli: 90 of degree < 5, plus 4 of degree 5 (from 204); total degree 336; unused room 0
+residues done 6s
+  restart 0: rows left 62; by degree [0, 0, 0, 0, 2, 14, 46]; 6s
+  restart 1: rows left 55; by degree [0, 0, 0, 0, 2, 11, 42]; 6s
+  restart 2: rows left 49; by degree [0, 1, 0, 0, 1, 7, 40]; 6s
+  restart 7: rows left 43; by degree [0, 0, 0, 0, 1, 12, 30]; 7s
+  restart 24: rows left 41; by degree [0, 0, 0, 0, 2, 3, 36]; 9s
+BEST rows left 41 of 3304

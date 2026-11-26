@@ -1,0 +1,54 @@
+depth 100000000: mean 505.638 var 324.516
+periodogram of the first 2^24 members: 8388607 bins; mean bin power = 1 unit
+top m bins | share of variance | same for a random permutation of the same values | white-noise formula p(1-ln p)
+  1 | 0.000025 | 0.000002 | 0.000002
+  10 | 0.000203 | 0.000018 | 0.000017
+  100 | 0.001330 | 0.000148 | 0.000147
+  1000 | 0.007593 | 0.001195 | 0.001196
+  10000 | 0.032932 | 0.009214 | 0.009217
+  100000 | 0.109120 | 0.064694 | 0.064724
+  1000000 | 0.416280 | 0.372705 | 0.372753
+largest bin: 211.9 units; permuted data: 16.6; bins above the permuted maximum: 8637 carrying 0.03034 of the variance
+of the 8637 bins above the permuted maximum, 8550 lie within one bin of t/r for a prime 467 <= r < 3000; largest r among them 2999; chance rate for a random bin: 0.1369
+top 12 bins: bin, power (units), nearest later prime r with t/r within a bin: [(4306267, 211.9, 487), (6623470, 197.3, 499), (1190867, 186.9, 479), (4681219, 178.8, 491), (5288851, 175.6, 479), (2311683, 159.4, 479), (5158130, 159.2, 631), (128315, 147.8, 523), (4885213, 147.2, 601), (3933736, 142.6, 499), (1329244, 136.4, 467), (7292880, 135.0, 467)]
+in-sample reconstruction from the m largest coefficients (an upper bound: it uses the answer) | r^2 with S | share of the lowest 1.5% of S found in the lowest 1.5% of the reconstruction | same for the lowest 10^-4 in the lowest 1.5%
+  m=1000 | 0.0076 | 0.0250 | 0.0303
+  m=10000 | 0.0329 | 0.0409 | 0.0699
+  m=100000 | 0.1091 | 0.0775 | 0.1713
+  m=1000000 | 0.4163 | 0.2323 | 0.6667
+autocorrelation at lags 1..10689489: sd of z 1.7237; expected maximum of |z| for noise 5.81
+lags NOT divisible by any prime 467..10^5 (4686704 lags): max |z| 7.82, mean z^2 2.2798, mean z -0.51363
+15 largest |z|: (lag, z, corr, least later prime dividing the lag): [(963748, 11.8, 0.00261, 479), (1133229, 11.8, 0.00261, 499), (1505982, 11.6, 0.00259, 499), (266657, 11.5, 0.0025, 467), (2330330, 11.4, 0.00261, 467), (2092307, 11.4, 0.00259, 499), (4127346, 11.1, 0.00268, 467), (1786828, 11.1, 0.00251, 587), (933092, 11.1, 0.00245, 479), (3627636, 11.1, 0.00263, 503), (1937555, 11.0, 0.0025, 479), (2278087, 11.0, 0.00252, 503), (2763064, 10.9, 0.00253, 569), (1062524, 10.9, 0.00242, 491), (3150710, 10.9, 0.00255, 509)]
+  lag 1: corr -0.000011  z -0.05
+  lag 2: corr -0.000621  z -2.87
+  lag 6: corr -0.000465  z -2.15
+  lag 30: corr -0.000154  z -0.71
+  lag 210: corr +0.000110  z +0.51
+  lag 2310: corr +0.000267  z +1.24
+  lag 30030: corr -0.000173  z -0.80
+  lag 510510: corr -0.000422  z -1.93
+  lag 9699690: corr +0.000808  z +2.76
+  lag 467: corr +0.000850  z +3.93
+  lag 479: corr +0.000406  z +1.88
+  lag 487: corr +0.001377  z +6.37
+  lag 223693: corr +0.001475  z +6.78
+  lag 227429: corr +0.001102  z +5.07
+  lag 934: corr +0.001474  z +6.82
+  lag 997: corr +0.000059  z +0.27
+  lag 1999: corr +0.000679  z +3.14
+  lag 4999: corr +0.000130  z +0.60
+  lag 9973: corr -0.000333  z -1.54
+  lag 99991: corr -0.000222  z -1.02
+lags with |z| above the noise maximum + 0.5: 17704; of these divisible by a prime 467..10^5: 17543; largest least-prime among them 95929
+interval hierarchy: block length | Var(block mean) * length / Var S  (1 = no structure in the order of k)
+  2^1 | 0.9999  (10689489 blocks, se 0.0004)
+  2^2 | 0.9994  (5344744 blocks, se 0.0006)
+  2^4 | 0.9979  (1336186 blocks, se 0.0012)
+  2^6 | 0.9924  (334046 blocks, se 0.0024)
+  2^8 | 0.9705  (83511 blocks, se 0.0049)
+  2^10 | 0.9064  (20877 blocks, se 0.0098)
+  2^12 | 0.8516  (5219 blocks, se 0.0196)
+  2^14 | 0.7909  (1304 blocks, se 0.0392)
+  2^16 | 0.6060  (326 blocks, se 0.0783)
+  2^18 | 0.4889  (81 blocks, se 0.1571)
+  2^20 | 0.3918  (20 blocks, se 0.3162)

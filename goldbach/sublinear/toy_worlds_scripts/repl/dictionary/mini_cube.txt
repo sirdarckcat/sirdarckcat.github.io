@@ -1,0 +1,39 @@
+kind cube: 25 targets, 10725 integers m = N - q factored; primes 260; mean lambda +0.0012 +- 0.0097
+  with no prime factor below 1000: 1720; mean lambda +0.0419 +- 0.0241; primes 260
+  identities: n' = Omega (mod 2): 10725/10725;  n' = n*sopfr(n) (mod 8): 10725/10725;  (n'|n) = (-1)^C(k3,2) on squarefree: 8641/8641
+  feature | nonzero | z against lambda (all) | z against lambda (no factor < 1000) | z against primality (no factor < 1000)
+  J_2 = (f_b'(b) | m) | 8689 | -0.80 | -0.19 | -1.09
+  J'_2 = ((N_b - Q_b)'(b) | m) | 8689 | +0.44 | -1.23 | +2.05
+  J_3 = (f_b'(b) | m) | 8648 | -0.24 | -0.48 | +0.93
+  J'_3 = ((N_b - Q_b)'(b) | m) | 8625 | +1.97 | +1.91 | -0.21
+  J_5 = (f_b'(b) | m) | 8684 | +0.99 | -0.39 | -0.10
+  J'_5 = ((N_b - Q_b)'(b) | m) | 8691 | -0.08 | -0.68 | +1.73
+  J_10 = (f_b'(b) | m) | 8621 | +1.17 | +0.53 | -0.29
+  J'_10 = ((N_b - Q_b)'(b) | m) | 8648 | +0.54 | +0.75 | -0.04
+  J_16 = (f_b'(b) | m) | 8662 | +1.01 | +2.07 | -0.71
+  J'_16 = ((N_b - Q_b)'(b) | m) | 8651 | -0.27 | -1.45 | +1.14
+  J_100 = (f_b'(b) | m) | 8685 | +0.44 | +1.88 | -0.14
+  J'_100 = ((N_b - Q_b)'(b) | m) | 8650 | -0.65 | +0.94 | -0.34
+  K_10 = (disc f_b | m) | 7309 | +0.43 | +0.80 | -1.09
+  sign disc f_10 | 10725 | +0.26 | -2.70 | +0.69
+  (disc f_10 | 3) [Stickelberger at 3] | 6173 | -0.27 | +1.22 | -0.51
+  (disc f_10 | 7) [Stickelberger at 7] | 9002 | -0.11 | -0.50 | +1.01
+  (disc f_10 | 11) [Stickelberger at 11] | 9873 | +0.33 | +0.98 | +0.62
+  (disc f_10 | 13) [Stickelberger at 13] | 9924 | -0.16 | +0.05 | -0.14
+  K_16 = (disc f_b | m) | 7304 | -0.16 | +0.05 | -0.03
+  sign disc f_16 | 10725 | -1.09 | +0.48 | +0.31
+  (disc f_16 | 3) [Stickelberger at 3] | 6468 | +0.42 | -0.44 | +0.68
+  (disc f_16 | 5) [Stickelberger at 5] | 8409 | +0.86 | -0.27 | -1.07
+  (disc f_16 | 7) [Stickelberger at 7] | 9181 | +0.59 | -0.72 | +1.42
+  (disc f_16 | 11) [Stickelberger at 11] | 9691 | +0.29 | +0.68 | +0.37
+  (disc f_16 | 13) [Stickelberger at 13] | 9829 | +0.86 | -0.28 | -0.95
+  K_100 = (disc f_b | m) | 7368 | -1.70 | -1.54 | -0.57
+  sign disc f_100 | 10725 | -0.84 | -0.72 | +0.30
+  (disc f_100 | 3) [Stickelberger at 3] | 6106 | -0.82 | -2.08 | +0.70
+  (disc f_100 | 7) [Stickelberger at 7] | 9250 | +0.29 | +0.34 | -0.68
+  (disc f_100 | 11) [Stickelberger at 11] | 9753 | +1.14 | -1.01 | +0.12
+  (disc f_100 | 13) [Stickelberger at 13] | 9934 | +0.56 | +1.41 | +0.47
+  (-1|m) | 10725 | +0.03 | +0.39 | +0.29
+  (2|m) | 10725 | +1.65 | +0.43 | +0.06
+  (3|m) | 7156 | -1.77 | -1.35 | +1.35
+  102 z-scores: max |z| 2.70, mean z^2 0.88 (1.00 = no information)

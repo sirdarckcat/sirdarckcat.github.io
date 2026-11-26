@@ -1,0 +1,6 @@
+primorial(43)^2: N has 33 digits, 769 rows; mean lam = -0.0039 (se 0.0361); N - q prime for 87; corr(lam, q mod 4) = +0.0117, corr(lam, q mod 3) = -0.0273
+primorial(29)^3: N has 30 digits, 773 rows; mean lam = -0.0298 (se 0.0360); N - q prime for 76; corr(lam, q mod 4) = +0.0375, corr(lam, q mod 3) = +0.0323
+primorial(13)^8: N has 36 digits, 777 rows; mean lam = +0.0347 (se 0.0359); N - q prime for 51; corr(lam, q mod 4) = +0.0347, corr(lam, q mod 3) = +0.0116
+A^2, A random even 18 digits: N has 37 digits, 777 rows; mean lam = +0.0373 (se 0.0359); N - q prime for 23; corr(lam, q mod 4) = +0.0064, corr(lam, q mod 3) = -0.0270
+B^3, B random even 12 digits: N has 36 digits, 779 rows; mean lam = -0.0321 (se 0.0358); N - q prime for 32; corr(lam, q mod 4) = -0.0039, corr(lam, q mod 3) = -0.0193
+random even N, 35 digits (control): N has 36 digits, 781 rows; mean lam = -0.0294 (se 0.0358); N - q prime for 27; corr(lam, q mod 4) = +0.0013, corr(lam, q mod 3) = -0.0320

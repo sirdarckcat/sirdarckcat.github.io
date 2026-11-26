@@ -1,0 +1,34 @@
+F_2: A = L_4 * (1), deg L_4 = 30, a = 30, lam = 1, N = lam*A^4, n = 120
+  d = 2: 1 monic irreducible rows, 1 tested, N - Q reducible-by-parity (r even) for 1; formula: r even 1; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 3: 2 monic irreducible rows, 2 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 2; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 4: 3 monic irreducible rows, 3 tested, N - Q reducible-by-parity (r even) for 3; formula: r even 2; no formula (q_(d-1) = 0): r even 1; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 5: 6 monic irreducible rows, 6 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 6; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 6: 9 monic irreducible rows, 9 tested, N - Q reducible-by-parity (r even) for 7; formula: r even 3; formula: r odd 2; no formula (q_(d-1) = 0): r even 4; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 7: 18 monic irreducible rows, 18 tested, N - Q reducible-by-parity (r even) for 18; formula: r even 18; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 8: 30 monic irreducible rows, 30 tested, N - Q reducible-by-parity (r even) for 6; formula: r odd 16; no formula (q_(d-1) = 0): r even 6; no formula (q_(d-1) = 0): r odd 8; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 9: 56 monic irreducible rows, 56 tested, N - Q reducible-by-parity (r even) for 56; formula: r even 56; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 10: 99 monic irreducible rows, 99 tested, N - Q reducible-by-parity (r even) for 63; formula: r even 27; formula: r odd 24; no formula (q_(d-1) = 0): r even 36; no formula (q_(d-1) = 0): r odd 12; BAD 0; squarefree Q: 300 checked, 0 bad
+TOTAL formula checks 2857, disagreements 0; irreducible rows tested 224, with r even 154
+F_2: A = L_4 * (x), deg L_4 = 30, a = 31, lam = 1, N = lam*A^4, n = 124
+  d = 2: 1 monic irreducible rows, 1 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 1; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 3: 2 monic irreducible rows, 2 tested, N - Q reducible-by-parity (r even) for 2; formula: r even 2; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 4: 3 monic irreducible rows, 3 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 2; no formula (q_(d-1) = 0): r odd 1; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 5: 6 monic irreducible rows, 6 tested, N - Q reducible-by-parity (r even) for 6; formula: r even 6; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 6: 9 monic irreducible rows, 9 tested, N - Q reducible-by-parity (r even) for 2; formula: r even 2; formula: r odd 3; no formula (q_(d-1) = 0): r odd 4; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 7: 18 monic irreducible rows, 18 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 18; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 8: 30 monic irreducible rows, 30 tested, N - Q reducible-by-parity (r even) for 24; formula: r even 16; no formula (q_(d-1) = 0): r even 8; no formula (q_(d-1) = 0): r odd 6; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 9: 56 monic irreducible rows, 56 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 56; BAD 0; squarefree Q: 300 checked, 0 bad
+  d = 10: 99 monic irreducible rows, 99 tested, N - Q reducible-by-parity (r even) for 36; formula: r even 24; formula: r odd 27; no formula (q_(d-1) = 0): r even 12; no formula (q_(d-1) = 0): r odd 36; BAD 0; squarefree Q: 300 checked, 0 bad
+TOTAL formula checks 2857, disagreements 0; irreducible rows tested 224, with r even 70
+F_2: A = L_6 * (1), deg L_6 = 126, a = 126, lam = 1, N = lam*A^4, n = 504
+  d = 11: 186 monic irreducible rows, 186 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 186; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 12: 335 monic irreducible rows, 335 tested, N - Q reducible-by-parity (r even) for 271; formula: r even 170; no formula (q_(d-1) = 0): r even 101; no formula (q_(d-1) = 0): r odd 64; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 13: 630 monic irreducible rows, 630 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 630; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 14: 1161 monic irreducible rows, 700 tested, N - Q reducible-by-parity (r even) for 368; formula: r even 175; formula: r odd 178; no formula (q_(d-1) = 0): r even 193; no formula (q_(d-1) = 0): r odd 154; BAD 0; squarefree Q: 200 checked, 0 bad
+TOTAL formula checks 2139, disagreements 0; irreducible rows tested 1851, with r even 639
+F_2: A = L_6 * (x), deg L_6 = 126, a = 127, lam = 1, N = lam*A^4, n = 508
+  d = 11: 186 monic irreducible rows, 186 tested, N - Q reducible-by-parity (r even) for 186; formula: r even 186; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 12: 335 monic irreducible rows, 335 tested, N - Q reducible-by-parity (r even) for 64; formula: r odd 170; no formula (q_(d-1) = 0): r even 64; no formula (q_(d-1) = 0): r odd 101; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 13: 630 monic irreducible rows, 630 tested, N - Q reducible-by-parity (r even) for 630; formula: r even 630; BAD 0; squarefree Q: 200 checked, 0 bad
+  d = 14: 1161 monic irreducible rows, 700 tested, N - Q reducible-by-parity (r even) for 332; formula: r even 178; formula: r odd 175; no formula (q_(d-1) = 0): r even 154; no formula (q_(d-1) = 0): r odd 193; BAD 0; squarefree Q: 200 checked, 0 bad
+TOTAL formula checks 2139, disagreements 0; irreducible rows tested 1851, with r even 1212

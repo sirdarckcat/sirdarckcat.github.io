@@ -1,0 +1,7 @@
+F_4, J = 2: deg L_J = 20, members N = (L_J*B)^4, deg B = 5, n = 100; rows of degree <= 5: 294 (1:4, 2:6, 3:20, 4:60, 5:204)
+(1) rows with r(N - Q) even on 3 random members, by degree: 1:4/4, 2:6/6, 3:20/20, 4:12/60, 5:204/204; total 246 of 294
+(2) forced rows of degree > J: 236; random N' = 0 mod L_J of degree 100: mean number of irreducible N' - Q over them = 10.30 (10 N'); model 236 * 4.655 / 100 = 10.99 nats of luck replaced
+    (every one of the 1024 members with B monic of degree 5 is tried)
+(3) unforced rows: 48; desert members: mean number of irreducible N - Q = 4.523, hits 44 of 1024 (exponent 3.15); model 2 * 48 * 4.655 / 100 = 4.47
+(4) cover: 36 primes of total degree 100 (degrees up to 4), greedy classes: 0 rows left (1:0, 2:0, 3:0, 4:0, 5:0); estimated exponent 0 * 6.530 / 100 = 0.00 nats
+    measured on 30 random members N0 + M*T of the cover, deg T = 0 (degree 100; 3 distinct members exist): mean number of irreducible N'' - Q over the rows left = 0.00, members with none: 30

@@ -1,0 +1,29 @@
+cover pairs 89 max 463 declared rows 1502
+primes to 1e8: 5761455 t=1.6
+rows (odd primes <200000 in no class): 1502
+lnK 16.878133846634668 K 21383578.949630782
+primes 467..2e6: 148843 sum ln p/p = 8.2962  ln(2e6/463)=8.3709
+sum ln p/p 467..1e8 = 12.2075  vs ln(1e8/463)=12.2830
+typical strikes R*sum 1/p (467..1e8) = 1635.1
+max rows in one class: 9 t=6.4
+typical strikes via histograms 1635.1
+kappa theta strikes ratio X chi2_467 KL_467 need y_mertens README_old README_new
+  1.0 0.0357 1690.8 1.034 X=0.0034 0.0030 0.0015 need=16.875 y=9.867e+09 pi~4.287e+08 | old 15.571->2.680e+09 | new(M+2k ln p/p>=lnK) 16.852->9.643e+09
+  4.2 0.0723 1750.0 1.070 X=0.0146 0.0126 0.0062 need=16.864 y=9.757e+09 pi~4.242e+08 | old 14.257->7.197e+08 | new(M+2k ln p/p>=lnK) 16.768->8.864e+09
+  8.0 0.0990 1794.3 1.097 X=0.0279 0.0239 0.0117 need=16.850 y=9.628e+09 pi~4.188e+08 | old 13.318->2.816e+08 | new(M+2k ln p/p>=lnK) 16.668->8.021e+09
+ 12.0 0.1205 1830.7 1.120 X=0.0420 0.0359 0.0174 need=16.836 y=9.493e+09 pi~4.132e+08 | old 12.576->1.341e+08 | new(M+2k ln p/p>=lnK) 16.562->7.219e+09
+ 16.6 0.1409 1865.9 1.141 X=0.0584 0.0497 0.0239 need=16.820 y=9.339e+09 pi~4.068e+08 | old 11.884->6.708e+07 | new(M+2k ln p/p>=lnK) 16.441->6.396e+09
+   sparse (occupied classes only) sum ln p*pi^2: to 2e6 2.0707 ; to 1e8 2.0716 ; exp -> 7.94 members
+   check 2*KL-weighted: sum (ln p/p)*2KL = 0.0559 ; max-bound 2 kappa ln467/467 = 0.4370
+ 30.0 0.1868 1947.6 1.191 X=0.1071 0.0904 0.0425 need=16.771 y=8.895e+09 pi~3.883e+08 | old 10.366->1.471e+07 | new(M+2k ln p/p>=lnK) 16.088->4.495e+09
+K_s=2 theta=0.0298: min weighted classes 51681.0 (2.58e+04 per member); all classes to 2e6 give 8.299; sparse to 2e6 1.831
+K_s=16 theta=0.0590: min weighted classes 3567925.0 (2.23e+05 per member); all classes to 2e6 give 8.306; sparse to 2e6 1.888
+K_s=256 theta=0.0828: min weighted classes 695451455.0 (2.72e+06 per member); all classes to 2e6 give 8.315; sparse to 2e6 1.937
+K_s=1024 theta=0.0924: min weighted classes 9848204747.0 (9.62e+06 per member); all classes to 2e6 give 8.320; sparse to 2e6 1.958
+K_s=4096 theta=0.1009: min weighted classes 140877742622.0 (3.44e+07 per member); all classes to 2e6 give 8.325; sparse to 2e6 1.977
+/tmp/claude-0/-home-user-sirdarckcat-github-io/9ab28896-d478-5e7c-817b-7f69ce9b4074/scratchpad/work/toy/verify-w2-parameters-numbers/v_integer.py:97: RuntimeWarning: overflow encountered in power
+  f=lambda a: float(sum((e*np.log(a)/a**e).sum() for e in range(2,60)))
+prime powers e>=2: all p<=2e6: 1.98233 ; closed form sum ln p (2p-1)/(p(p-1)^2) over p<=1e8: 1.98234
+   p>463: 0.00416 (to 2e6), 0.00416 (to 1e8)
+ratios e/p^(e-1): [(2, 2, 1.0), (2, 3, 0.75), (3, 2, 0.6667), (5, 2, 0.4), (467, 2, 0.0043)]
+t=153.2

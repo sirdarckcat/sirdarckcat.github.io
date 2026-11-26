@@ -1,0 +1,41 @@
+K 21378978 mean 505.6381 sd 18.0143 skew +0.0167 ex.kurt +0.0000; w 0.336643; var/binomial 0.9675; binomial skew +0.0178
+lambda' 0.073908; tau = lambda' sd = 1.3314
+ln mean hit chance over the window: -36.4910; -lambda n = -36.4621; Gaussian formula -lam' mu + tau^2/2 = -36.4844
+hit mass sits at S: mean 481.93 (z = -1.316; Gaussian tilt predicts z = -tau = -1.331)
+lower tail: s | members with S <= s | K*Normal | K*Edgeworth(skew,kurt)
+  412 | 1 | 2.50 | 1.67
+  414 | 1 | 4.50 | 3.08
+  416 | 4 | 8.01 | 5.62
+  418 | 7 | 14.08 | 10.11
+  420 | 11 | 24.46 | 17.97
+  425 | 71 | 92.40 | 71.51
+  430 | 251 | 324.15 | 262.68
+  440 | 2752 | 3199.41 | 2794.59
+  450 | 21713 | 23597.62 | 21772.99
+  460 | 125173 | 130644.88 | 125191.35
+  467 | 357097 | 366134.04 | 357273.66
+upper tail: s | members with S >= s | K*Normal | K*Edgeworth
+  605 | 1 | 0.43 | 0.67
+  600 | 1 | 2.01 | 2.91
+  595 | 7 | 8.66 | 11.86
+  590 | 40 | 34.58 | 45.09
+  580 | 534 | 441.30 | 529.39
+  570 | 4784 | 4195.84 | 4719.94
+minimum over the window: 412 (z = -5.198); Normal law of the minimum: median 408.3, P(min <= 412) = 0.918; Edgeworth: P(min <= 412) = 0.811
+selection by a cut S <= t: keep fraction | t | share of hit mass | gain ln(share/keep) | Gaussian ln(Phi(z+tau)/Phi(z))
+  1.670e-02 | 467 | 0.2093 | 2.528 (vs the 1.5% keep +0.000) | 2.535
+  8.022e-03 | 462 | 0.1377 | 2.843 (vs the 1.5% keep +0.315) | 2.850
+  1.016e-03 | 450 | 0.0382 | 3.627 (vs the 1.5% keep +1.098) | 3.636
+  1.024e-04 | 439 | 0.0081 | 4.370 (vs the 1.5% keep +1.842) | 4.381
+  1.174e-05 | 430 | 0.0017 | 4.978 (vs the 1.5% keep +2.449) | 5.004
+  8.419e-07 | 421 | 0.0002 | 5.563 (vs the 1.5% keep +3.035) | 5.634
+  4.677e-08 | 412 | 0.0000 | 6.041 (vs the 1.5% keep +3.513) | 6.270
+single best member (S = 412): hit chance / window mean = e^6.041; over the 1.5% keep +3.513; with the sieve free (+0.30): +3.813
+cost per hit: best cut S <= 462 (keep 0.0080): +0.067 nats against the cut at 467
+best member of W windows: W | z of the minimum | gain of that member over the window mean | sieve work spent, nats
+  1e+00 | -5.289 (S about 410) | 6.16 | 16.9
+  1e+01 | -5.680 (S about 403) | 6.68 | 19.2
+  1e+02 | -6.048 (S about 397) | 7.17 | 21.5
+  1e+04 | -6.728 (S about 384) | 8.07 | 26.1
+  1e+06 | -7.359 (S about 373) | 8.91 | 30.7
+  1e+09 | -8.272 (S about 357) | 10.13 | 37.6

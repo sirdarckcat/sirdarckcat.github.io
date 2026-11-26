@@ -1,0 +1,17 @@
+(A) even N in [8, 200000]: N has primes q, q' not dividing N, q, q' < N - 1, with N - q prime and N - q' composite, except for N in [8, 10, 12, 18, 24, 30]
+(B) greedy covers, rows q < 200000 left: 88 primes (to 461), any classes: 1598; 51 primes (to 239), any classes: 2019; the same primes, square classes only (N = M^2): 2065
+    exponent of N = M^2 against the generic design, greedy against greedy: +11.2 nats (window of M of e^8.45 members: a further -8.45 nats of members; with the full window of e^16.9 values of M the cover has 49 primes)
+(C) ln #(integers below 10^200 with all prime factors <= 463) = 128.2 nats (saddle point, alpha = 0.137); all integers: 460.5
+(C) ln #(integers below 10^200 with all prime factors <= 2000) = 187.0 nats (saddle point, alpha = 0.260); all integers: 460.5
+(C) ln #(integers below 10^200 with all prime factors <= 10000) = 241.4 nats (saddle point, alpha = 0.394); all integers: 460.5
+(C) ln #(integers below 10^200 with all prime factors <= 100000) = 294.9 nats (saddle point, alpha = 0.534); all integers: 460.5
+(D) later prime r | rows in the best class, mean class | additive pin: nats gained, per nat of room (ln r) | |sum over rows of (q|r)| | character pin: nats gained, per nat of room (ln 2)
+    467 | 8, 3.22 | 0.115, 0.0187 | 4 | 0.0002, 0.0003
+    479 | 8, 3.14 | 0.117, 0.0189 | 36 | 0.0018, 0.0026
+    487 | 8, 3.09 | 0.118, 0.0190 | 16 | 0.0008, 0.0011
+    491 | 8, 3.07 | 0.118, 0.0191 | 56 | 0.0027, 0.0039
+    499 | 7, 3.02 | 0.096, 0.0154 | 14 | 0.0007, 0.0010
+    983 | 6, 1.53 | 0.107, 0.0156 | 12 | 0.0003, 0.0004
+    991 | 6, 1.52 | 0.108, 0.0156 | 41 | 0.0010, 0.0014
+    997 | 7, 1.51 | 0.132, 0.0191 | 33 | 0.0008, 0.0011
+    primes 467 to 997: mean rate of an additive pin 0.0176 nats per nat; of a quadratic-character pin 0.0014 nats per nat (before its fixed price: N = c M^2 halves the room)

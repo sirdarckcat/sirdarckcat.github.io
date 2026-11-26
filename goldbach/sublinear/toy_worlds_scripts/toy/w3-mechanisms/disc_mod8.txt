@@ -1,0 +1,1 @@
+congruences mod 8 for disc(A~^4 - Q~), random lifts over Z: {'odd': 1713, '2mod4': 612, '0mod4': 400} disagreements: 0

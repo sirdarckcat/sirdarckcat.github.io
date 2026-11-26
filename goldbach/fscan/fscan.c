@@ -65,6 +65,12 @@ typedef __m512i vw_t;
 #define vw_mulhi(a, b) _mm512_mulhi_epu16(a, b)
 #define vw_mullo(a, b) _mm512_mullo_epi16(a, b)
 #define vw_min(a, b) _mm512_min_epu16(a, b)
+#define VWD 16                        /* u32 lanes per vector */
+typedef __m512i vd_t;
+#define vd_loadu(p) _mm512_loadu_si512(p)
+#define vd_store(p, v) _mm512_storeu_si512(p, v)
+#define vd_row(x, h) _mm512_slli_epi32(_mm512_cvtepu16_epi32((h) ? _mm512_extracti64x4_epi64(x, 1) : _mm512_castsi512_si256(x)), 5)   /* 32 * class of the 16 lanes of half h */
+#define vd_add(a, b) _mm512_add_epi32(a, b)
 #else
 #define VB 32
 typedef __m256i vb_t;
@@ -84,13 +90,45 @@ typedef __m256i vw_t;
 #define vw_mulhi(a, b) _mm256_mulhi_epu16(a, b)
 #define vw_mullo(a, b) _mm256_mullo_epi16(a, b)
 #define vw_min(a, b) _mm256_min_epu16(a, b)
+#define VWD 8
+typedef __m256i vd_t;
+#define vd_loadu(p) _mm256_loadu_si256((const __m256i *)(p))
+#define vd_store(p, v) _mm256_storeu_si256((__m256i *)(p), v)
+#define vd_row(x, h) _mm256_slli_epi32(_mm256_cvtepu16_epi32((h) ? _mm256_extracti128_si256(x, 1) : _mm256_castsi256_si128(x)), 5)
+#define vd_add(a, b) _mm256_add_epi32(a, b)
 #endif
-#define NB 8                          /* score vectors per chunk, all kept in registers */
+#define NB 8                          /* score vectors per chunk, all kept in registers (a multiple of 4) */
 #define CK (NB * VB)                  /* members per chunk */
+_Static_assert(NB % 4 == 0, "NB must be a multiple of 4");
+/* How the NB window loads of a prime find their start in its periodic table (what is best depends on the cache and on the
+   load pipes, so all three are kept; -DSCORE_MODE=n):
+   0  the table is the period s plus an extension of CK bytes and the windows are phi + VB*b (one load a window; the 62
+      tables are 43.5 KB with AVX-512, 29.5 KB with AVX2, and the exact stage's traffic evicts part of them from L1);
+   1  tables of s + VB bytes and a u16 offset per (prime, block), advanced a chunk at a time with SIMD (tables 16 KB, two
+      loads a window);
+   2  as 1, with the NB offsets of a prime read as NB/4 words (1.25 loads a window, the rest is ALU work).
+   Measured on one Emerald Rapids core (48 KB L1, three load pipes), whole scanner, min of 5 interleaved runs: with AVX-512
+   1 is 10.7% faster than 0 and 2 is 10.2% faster (the 43.5 KB of tables do not fit beside the exact stage's traffic); with
+   AVX2 0 is the fastest, 1 and 2 are 8% slower (the 29.5 KB of tables fit, so the extra loads and ALU work are pure cost).
+   Zen 2 (32 KB L1, two load pipes) is in between and was NOT measured: a simulated 32 KB 8-way L1 gives the score loop's
+   misses 28.3% in mode 0 against 11.9% in mode 1, but mode 1 doubles the loads.  Time all three there: selftest_ab.sh does. */
+#ifndef SCORE_MODE
+#ifdef __AVX512BW__
+#define SCORE_MODE 1
+#else
+#define SCORE_MODE 0
+#endif
+#endif
+#if SCORE_MODE == 0
+#define EXT CK
+#else
+#define EXT VB
+#endif
 
 typedef uint64_t u64;
 typedef uint16_t u16;
 typedef uint8_t u8;
+typedef uint32_t u32;
 
 #define NW 24                         /* words of the alive bitset over the rows (odd primes < Q) */
 #define NR 13
@@ -105,6 +143,12 @@ static u64 cls[NR][44][NW];
 static u64 Mmod, Ebasis[NR];
 static u128 Xmin, Xmax;
 static int SP[MAXS], coff[MAXS], moff[MAXS], ckm[MAXS];
+/* the score window of prime s for block b starts at offs[s][b] = (kc + VB*b) mod s; all of them advance by CK mod s a
+   chunk, which is one SIMD add and wrap over the flat array.  The tables are then only s + VB bytes long (16 KB in all
+   instead of 44 KB with the periodic extension by CK), so the exact stage's traffic does not push them out of L1. */
+static u32 MOFB[MAXS + 64] __attribute__((aligned(64)));            /* byte offset of the mask rows of prime p in mbuf */
+#define NOFF (MAXS * NB)
+static u16 DLT[NOFF + 64] __attribute__((aligned(64))), SPB[NOFF + 64] __attribute__((aligned(64))), CKMv[MAXS + 32] __attribute__((aligned(64)));
 static u16 *qM[MAXS];                 /* qM[p][x] = qs[x] * M^-1 mod s */
 static u64 minv[MAXS];
 static double prodL;                  /* prod over primes r <= L of (1 - 1/r) */
@@ -184,8 +228,7 @@ static void fermat_drain(tls_t *T, int need) {
             if (n[i] > mx) mx = n[i];
             if (first < 0) first = i;
         }
-        int b = 0; for (u128 x = mx; x; x >>= 1) b++;
-        int t = b - 6;
+        int t = fm_bitlen(mx) - 6;
         fm_lanes_t LL[FM_GROUPS];
         for (int i = 0; i < FM_LANES; i++) {
             if (!T->act[i]) n[i] = n[first];
@@ -206,29 +249,31 @@ static void fermat_drain(tls_t *T, int need) {
 /* ---------------------------------------------------------------- one vector */
 
 static inline int exact_stage(tls_t *T, const u16 *phi, int d, u64 *mask) {
-    u16 c[MAXS + 32] __attribute__((aligned(64)));
+    u32 off[MAXS + 64] __attribute__((aligned(64)));
     extern u16 SPv[MAXS + 32], RECv[MAXS + 32];
     const vw_t dv = vw_set1(d);
-    for (int p = 0; p < ns; p += VW) {
+    for (int p = 0; p < ns; p += VW) {                    /* class c = (phi + d) mod s of every prime, then the byte offset of its row */
         vw_t x = vw_add(vw_loadu(phi + p), dv);
         vw_t s = vw_loadu(SPv + p);
         vw_t q = vw_mulhi(x, vw_loadu(RECv + p));
         x = vw_sub(x, vw_mullo(q, s));
         x = vw_min(x, vw_sub(x, s));
-        vw_store(c + p, x);
+        vd_store(off + p, vd_add(vd_row(x, 0), vd_loadu(MOFB + p)));
+        vd_store(off + p + VWD, vd_add(vd_row(x, 1), vd_loadu(MOFB + p + VWD)));
     }
-    const u64 *mb = T->mbuf;
-    __m256i a0 = _mm256_loadu_si256((const __m256i *)T->rowmask), a1 = _mm256_set1_epi64x(-1), a2 = a1, a3 = a1;
+    /* the rows that some prime kills, OR-ed (the load folds into the vpor), four accumulators */
+    const u8 *mb = (const u8 *)T->mbuf;
+    __m256i k0 = _mm256_setzero_si256(), k1 = k0, k2 = k0, k3 = k0;
     int p = 0;
     for (; p + 4 <= ns; p += 4) {
-        a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
-        a1 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 1] + 4 * c[p + 1])), a1);
-        a2 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 2] + 4 * c[p + 2])), a2);
-        a3 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p + 3] + 4 * c[p + 3])), a3);
+        k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
+        k1 = _mm256_or_si256(k1, _mm256_load_si256((const __m256i *)(mb + off[p + 1])));
+        k2 = _mm256_or_si256(k2, _mm256_load_si256((const __m256i *)(mb + off[p + 2])));
+        k3 = _mm256_or_si256(k3, _mm256_load_si256((const __m256i *)(mb + off[p + 3])));
     }
-    for (; p < ns; p++) a0 = _mm256_andnot_si256(_mm256_loadu_si256((const __m256i *)(mb + moff[p] + 4 * c[p])), a0);
-    a0 = _mm256_and_si256(_mm256_and_si256(a0, a1), _mm256_and_si256(a2, a3));
-    _mm256_storeu_si256((__m256i *)mask, a0);
+    for (; p < ns; p++) k0 = _mm256_or_si256(k0, _mm256_load_si256((const __m256i *)(mb + off[p])));
+    k0 = _mm256_or_si256(_mm256_or_si256(k0, k1), _mm256_or_si256(k2, k3));
+    _mm256_storeu_si256((__m256i *)mask, _mm256_andnot_si256(k0, _mm256_loadu_si256((const __m256i *)T->rowmask)));
     return __builtin_popcountll(mask[0]) + __builtin_popcountll(mask[1]) + __builtin_popcountll(mask[2]) + __builtin_popcountll(mask[3]);
 }
 u16 SPv[MAXS + 32] __attribute__((aligned(64))), RECv[MAXS + 32] __attribute__((aligned(64)));
@@ -257,7 +302,7 @@ static void scan_vector(tls_t *T) {
             ct[kap]++;
             mk[4 * kap + (j >> 6)] |= 1ull << (j & 63);
         }
-        for (int i = s; i < s + CK; i++) ct[i] = ct[i - s];
+        for (int i = s; i < s + EXT; i++) ct[i] = ct[i - s];
     }
     for (int w = 0; w < 4; w++) T->rowmask[w] = R >= 64 * w + 64 ? ~0ull : R > 64 * w ? (1ull << (R - 64 * w)) - 1 : 0;
     for (int j = 0; j < R; j++) T->rowq[j] = qs[T->rows[j]];
@@ -271,14 +316,31 @@ static void scan_vector(tls_t *T) {
     u16 phi[MAXS + 32] __attribute__((aligned(64)));
     memset(phi, 0, sizeof phi);
     for (int p = 0; p < ns; p++) phi[p] = (u16)(kc % SP[p]);
+#if SCORE_MODE != 0
+    u16 offs[NOFF + 64] __attribute__((aligned(64)));
+    memset(offs, 0, sizeof offs);
+    for (int p = 0; p < ns; p++) for (int b = 0; b < NB; b++) offs[p * NB + b] = (u16)((kc + (u64)VB * b) % SP[p]);
+    const int nflat = (ns * NB + VW - 1) / VW * VW;
+#endif
     const vb_t thv = vb_set1(th);
     const u64 smask = ((u64)1 << sample_bits) - 1;
     for (; kc <= kmax; kc += CK) {
         vb_t sc[NB];
         for (int b = 0; b < NB; b++) sc[b] = vb_zero();
         for (int p = 0; p < ns; p++) {
+#if SCORE_MODE == 0
             const u8 *t = T->cbuf + coff[p] + phi[p];
             for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + VB * b));
+#elif SCORE_MODE == 1
+            const u8 *t = T->cbuf + coff[p];
+            const u16 *o = offs + p * NB;
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + o[b]));
+#else
+            const u8 *t = T->cbuf + coff[p];
+            u64 ow[NB / 4];
+            memcpy(ow, offs + p * NB, sizeof ow);
+            for (int b = 0; b < NB; b++) sc[b] = vb_adds(sc[b], vb_loadu(t + (u16)(ow[b >> 2] >> (16 * (b & 3)))));
+#endif
         }
         double lnN = log((double)((u128)n0 + (u128)kc * Mmod)), eps = eps_at(lnN), l1 = log1p(-eps);
         double odds2 = (eps / (1 - eps)) * (eps / (1 - eps));
@@ -314,7 +376,16 @@ static void scan_vector(tls_t *T) {
             m->N = (u128)n0 + (u128)k * Mmod; m->k = k; memcpy(m->m, mask, 32);
         }
         if (T->qn >= 4 * FM_LANES) fermat_drain(T, FM_LANES);
-        for (int p = 0; p < ns; p++) { int f = phi[p] + ckm[p]; if (f >= SP[p]) f -= SP[p]; phi[p] = (u16)f; }
+#if SCORE_MODE != 0
+        for (int i = 0; i < nflat; i += VW) {             /* advance every window by CK, wrapping at the period (u16: min(x, x - s) picks x - s when x >= s) */
+            vw_t x = vw_add(vw_loadu(offs + i), vw_loadu(DLT + i));
+            vw_store(offs + i, vw_min(x, vw_sub(x, vw_loadu(SPB + i))));
+        }
+#endif
+        for (int p = 0; p < ns; p += VW) {
+            vw_t x = vw_add(vw_loadu(phi + p), vw_loadu(CKMv + p));
+            vw_store(phi + p, vw_min(x, vw_sub(x, vw_loadu(SPv + p))));
+        }
     }
     st->members += kmax - kmin + 1;
     fermat_drain(T, 1);                                  /* finish this vector's members */
@@ -345,6 +416,7 @@ static void dfs(tls_t *T, int i, const u64 *alive, int n, u128 n0) {
     for (int x = 0; x < r - 1; x++) {
         int a = ord[x];
         if (n - cnt[a] - later > Rhi) break;
+        if (have_one && a != (int)(one_n0 % r)) continue;     /* one=N0: the class of N0 mod this prime is the only branch */
         u64 next[NW];
         for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
         dfs(T, i + 1, next, n - cnt[a], n0 + (u128)a * Ebasis[i]);
@@ -367,6 +439,7 @@ static void collect(int i, const u64 *alive, int n, u128 n0) {
     for (int a = 1; a < r; a++) {
         int c = pcw(alive, cls[i][a]);
         if (n - c - later > Rhi) continue;
+        if (have_one && a != (int)(one_n0 % r)) continue;
         u64 next[NW];
         for (int w = 0; w < NW; w++) next[w] = alive[w] & ~cls[i][a][w];
         collect(i + 1, next, n - c, n0 + (u128)a * Ebasis[i]);
@@ -417,7 +490,7 @@ int main(int argc, char **argv) {
         prodL *= 1.0 - 1.0 / p;
         if (p <= RS[NR - 1]) continue;
         if (ns >= MAXS) { fprintf(stderr, "too many score primes\n"); return 2; }
-        SP[ns] = p; coff[ns] = ctot; ctot += p + CK; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
+        SP[ns] = p; coff[ns] = ctot; ctot += p + EXT; moff[ns] = mtot; mtot += 4 * p; ckm[ns] = CK % p;
         minv[ns] = invmod(Mmod % p, p);
         qM[ns] = malloc(nq * sizeof(u16));
         for (int x = 0; x < nq; x++) qM[ns][x] = (u16)((u64)(qs[x] % p) * minv[ns] % p);
@@ -425,6 +498,12 @@ int main(int argc, char **argv) {
         ns++;
     }
     for (int p = ns; p < MAXS + 32; p++) { SPv[p] = 1; RECv[p] = 0; }
+    for (int p = 0; p < ns; p++) MOFB[p] = (u32)moff[p] * 8;
+    for (int i = 0; i < NOFF + 64; i++) { DLT[i] = 0; SPB[i] = 1; }       /* padding lanes stay at 0 */
+    for (int p = 0; p < ns; p++) {
+        CKMv[p] = (u16)ckm[p];
+        for (int b = 0; b < NB; b++) { DLT[p * NB + b] = (u16)ckm[p]; SPB[p * NB + b] = (u16)SP[p]; }
+    }
     if (L + CK >= 65536) { fprintf(stderr, "L too large\n"); return 2; }
 
     /* work units: the subtrees given by the residues mod 3, 5, 7, 11, 13, 17, 19.  They are very unequal (the
@@ -471,11 +550,14 @@ int main(int argc, char **argv) {
             if (done[id]) continue;
             u64 al[NW]; u128 n0 = 0;
             for (int w = 0; w < NW; w++) al[w] = all[w];
+            int unit_ok = 1;
             for (int j = 0, x = id; j < 7; j++) {
                 int a = 1 + x % UM[j]; x /= UM[j];
+                if (have_one && a != (int)(one_n0 % RS[j])) { unit_ok = 0; break; }
                 for (int w = 0; w < NW; w++) al[w] &= ~cls[j][a][w];
                 n0 += (u128)a * Ebasis[j];
             }
+            if (!unit_ok) continue;
             int n = 0; for (int w = 0; w < NW; w++) n += __builtin_popcountll(al[w]);
             /* the same bound as inside dfs(): skip the unit when no vector in it can be small enough */
             int later = 0;

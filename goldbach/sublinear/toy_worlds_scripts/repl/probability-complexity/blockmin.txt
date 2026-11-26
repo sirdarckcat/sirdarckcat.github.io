@@ -1,0 +1,7 @@
+contiguous blocks: B=256, n=83511: mean of minima 428.793 (independent draws: 428.583 +- 0.279), sd 4.402 (4.458); chi2 8.4 on 15 df
+classes k mod B: B=256, n=83511: mean of minima 428.559 (independent draws: 428.583 +- 0.279), sd 4.433 (4.458); chi2 4.9 on 15 df
+contiguous blocks: B=4096, n=5219: mean of minima 439.923 (independent draws: 439.912 +- 0.086), sd 5.493 (5.498); chi2 7.5 on 30 df
+classes k mod B: B=4096, n=5219: mean of minima 439.919 (independent draws: 439.912 +- 0.086), sd 5.524 (5.498); chi2 7.3 on 30 df
+classes k mod 467 (a later prime: one shared residue): B=467, n=45779: mean of minima 430.914 (independent draws: 430.855 +- 0.217), sd 4.715 (4.699); chi2 4.3 on 18 df
+classes k mod 467*479 (two shared residues): B=223693, n=95: mean of minima 461.109 (independent draws: 461.073 +- 0.016), sd 7.689 (7.660); chi2 57.9 on 62 df
+the 2752 members with S <= 440: spacings against the exponential law: KS distance 0.0123 (5% critical value 0.0259); mean gap^2/2 = 1.001 (1 for Poisson)

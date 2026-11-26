@@ -1,0 +1,11 @@
+F_49 (p = 7), N = lam * V^7 * x^0, deg V = 49, deg N = 343, lam non-square
+  rows of degree 2: 1176 monic irreducibles, 200 tested: r even 200, r odd 0, N - Q irreducible for 0, fewest factors 2, not squarefree 0
+real	0m31.084s
+F_9 (p = 3), N = lam * V^3 * x^0, deg V = 801, deg N = 2403, lam non-square
+  rows of degree 2: 36 monic irreducibles, 12 tested: r even 12, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 4: 1620 monic irreducibles, 12 tested: r even 12, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+real	3m55.679s
+F_25 (p = 5), N = lam * V^5 * x^0, deg V = 625, deg N = 3125, lam non-square
+  rows of degree 2: 300 monic irreducibles, 12 tested: r even 12, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+  rows of degree 3: 5200 monic irreducibles, 12 tested: r even 12, r odd 0, N - Q irreducible for 0, fewest factors 4, not squarefree 0
+real	6m29.786s

@@ -1,0 +1,15 @@
+window of the cover: K = 21378978 members
+j = 1: T = 467, K/T = 45779.396; multiplicities of the 467 class vectors in the window: min 45779, max 45780
+   heap listing of the 467 best class vectors = brute force over the window: True; pushes per output 1.00; best hits 8 -> 1494 rows
+j = 2: T = 223693, K/T = 95.573; multiplicities of the 223693 class vectors in the window: min 95, max 96
+   heap listing of the 5000 best class vectors = brute force over the window: True; pushes per output 1.04; best hits 16 -> 1486 rows
+
+ j   D        unconstrained   own window: best   mean hits   members at the best
+ 1  -10.732     1494            1494            3.22      137338
+ 2   -4.560     1486            1486            6.35      1148
+ 3    1.628     1478            1478            9.44      7
+ 4    7.825     1470            1472           12.50      4
+ 5   14.037     1463            1467           15.51      1
+ 6   20.258     1454            1461           18.49      1
+ 7   26.490     1446            1456           21.44      1
+ 8   32.746     1438            1453           24.33      3

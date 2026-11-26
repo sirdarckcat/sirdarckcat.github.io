@@ -1,0 +1,5 @@
+miniature, T = 100: 200000 n; corr(S_T, (-1)^omega(n)) = -0.0007 +- 0.0022;  sd of S_T 2.62
+miniature, T = 300: 200000 n; corr(S_T, (-1)^omega(n)) = -0.0030 +- 0.0022;  sd of S_T 3.50
+miniature, T = 1000: 200000 n; corr(S_T, (-1)^omega(n)) = -0.0016 +- 0.0022;  sd of S_T 4.43
+real 200-digit rows, T = 1000: mean S_T primes +0.7342, composites +0.8586, difference -0.1244 +- 0.0765 (z = -1.63); sd of S_T 4.40
+N mod p (p near 10^8): 76 ns = 0.00039 Fermat tests (python loop included); kills per Fermat-unit for one row by trial division just above 10^8: 2.56e-05

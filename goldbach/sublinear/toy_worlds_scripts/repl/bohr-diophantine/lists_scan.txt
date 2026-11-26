@@ -1,0 +1,150 @@
+K = 21378978; later primes [467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557]
+
+rho 0.05 J 4: list sizes 24..25; D = ln(P_J/K) = 7.82; knapsack density ln prod|G| / D = 1.64; expected members in all lists 143.89
+  scan: 0.08 s, work K*J = 8.55e+07; max agreement 4; members by agreement (top 4): [(4, 152), (3, 10709), (2, 299749), (1, 3723692)]
+  wheel on 2 lists (all J agree): 152 members, identical to scan: True; work 5.84e+04; 0.006 s
+  wheel on 3 lists (all J agree): 152 members, identical to scan: True; work 1.72e+04; 0.000 s
+  arc meet-in-the-middle (all J agree): 152 members, identical: True; lists 1.20e+03; 0.001 s
+  at least 4 of 4: 152 members; Turan family of 1 pairs: identical True; work 1.12e+05 (0.0013 of the scan); 0.01 s
+  at least 4 of 4: 152 members; Turan family of 4 triples: identical True; work 7.01e+04 (0.0008 of the scan); 0.00 s
+  at least 3 of 4: 10861 members; Turan family of 2 pairs: identical True; work 2.23e+05 (0.0026 of the scan); 0.00 s
+  at least 3 of 4: 10861 members; Turan family of 4 triples: identical True; work 7.01e+04 (0.0008 of the scan); 0.00 s
+
+rho 0.05 J 6: list sizes 24..26; D = ln(P_J/K) = 20.26; knapsack density ln prod|G| / D = 0.95; expected members in all lists 0.37
+  scan: 0.05 s, work K*J = 1.28e+08; max agreement 5; members by agreement (top 4): [(6, 0), (5, 45), (4, 2008), (3, 47938)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 5.86e+04; 0.001 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.73e+04; 0.000 s
+  arc meet-in-the-middle (all J agree): 0 members, identical: True; lists 3.06e+04; 0.005 s
+  at least 5 of 6: 45 members; Turan family of 2 pairs: identical True; work 4.43e+05 (0.0035 of the scan); 0.00 s
+  at least 5 of 6: 45 members; Turan family of 2 triples: identical True; work 4.74e+04 (0.0004 of the scan); 0.00 s
+  at least 4 of 6: 2053 members; Turan family of 3 pairs: identical True; work 6.67e+05 (0.0052 of the scan); 0.00 s
+  at least 4 of 6: 2053 members; Turan family of 20 triples: identical True; work 4.75e+05 (0.0037 of the scan); 0.01 s
+
+rho 0.05 J 8: list sizes 24..27; D = ln(P_J/K) = 32.75; knapsack density ln prod|G| / D = 0.79; expected members in all lists 0.00
+  scan: 0.06 s, work K*J = 1.71e+08; max agreement 6; members by agreement (top 4): [(8, 0), (7, 0), (6, 8), (5, 364)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 5.86e+04; 0.001 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.73e+04; 0.000 s
+  arc meet-in-the-middle: half-lists of 3.60e+05 and 4.56e+05 (not run above 7 primes: more than the scan from 5e6)
+  at least 6 of 8: 8 members; Turan family of 3 pairs: identical True; work 1.01e+06 (0.0059 of the scan); 0.00 s
+  at least 6 of 8: 8 members; Turan family of 8 triples: identical True; work 2.41e+05 (0.0014 of the scan); 0.00 s
+  at least 5 of 8: 372 members; Turan family of 4 pairs: identical True; work 1.34e+06 (0.0078 of the scan); 0.01 s
+  at least 5 of 8: 372 members; Turan family of 8 triples: identical True; work 2.41e+05 (0.0014 of the scan); 0.00 s
+
+rho 0.05 J 10: list sizes 24..28; D = ln(P_J/K) = 45.30; knapsack density ln prod|G| / D = 0.72; expected members in all lists 0.00
+  scan: 0.09 s, work K*J = 2.14e+08; max agreement 7; members by agreement (top 4): [(10, 0), (9, 0), (8, 0), (7, 1)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 5.86e+04; 0.001 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.73e+04; 0.000 s
+  arc meet-in-the-middle: half-lists of 9.00e+06 and 1.38e+07 (not run above 7 primes: more than the scan from 5e6)
+  at least 7 of 10: 1 members; Turan family of 4 pairs: identical True; work 1.80e+06 (0.0084 of the scan); 0.01 s
+  at least 7 of 10: 1 members; Turan family of 6 triples: identical True; work 2.22e+05 (0.0010 of the scan); 0.00 s
+  at least 6 of 10: 64 members; Turan family of 5 pairs: identical True; work 2.24e+06 (0.0105 of the scan); 0.01 s
+  at least 6 of 10: 64 members; Turan family of 20 triples: identical True; work 7.38e+05 (0.0035 of the scan); 0.01 s
+
+rho 0.05 J 12: list sizes 24..28; D = ln(P_J/K) = 57.93; knapsack density ln prod|G| / D = 0.68; expected members in all lists 0.00
+  scan: 0.10 s, work K*J = 2.57e+08; max agreement 7; members by agreement (top 4): [(12, 0), (11, 0), (10, 0), (9, 0)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 5.86e+04; 0.001 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.73e+04; 0.000 s
+  arc meet-in-the-middle: half-lists of 2.34e+08 and 4.16e+08 (not run above 7 primes: more than the scan from 5e6)
+  at least 7 of 12: 10 members; Turan family of 6 pairs: identical True; work 3.35e+06 (0.0131 of the scan); 0.01 s
+  at least 7 of 12: 10 members; Turan family of 12 triples: identical True; work 5.21e+05 (0.0020 of the scan); 0.00 s
+  at least 6 of 12: 258 members; Turan family of 9 pairs: identical True; work 5.02e+06 (0.0196 of the scan); 0.02 s
+  at least 6 of 12: 258 members; Turan family of 40 triples: identical True; work 1.73e+06 (0.0068 of the scan); 0.01 s
+
+rho 0.10 J 4: list sizes 47..50; D = ln(P_J/K) = 7.82; knapsack density ln prod|G| / D = 1.98; expected members in all lists 2209.17
+  scan: 0.03 s, work K*J = 8.55e+07; max agreement 4; members by agreement (top 4): [(4, 2231), (3, 78991), (2, 1053511), (1, 6269261)]
+  wheel on 2 lists (all J agree): 2231 members, identical to scan: True; work 2.39e+05; 0.003 s
+  wheel on 3 lists (all J agree): 2231 members, identical to scan: True; work 1.32e+05; 0.002 s
+  arc meet-in-the-middle (all J agree): 2231 members, identical: True; lists 4.71e+03; 0.002 s
+  at least 4 of 4: 2231 members; Turan family of 1 pairs: identical True; work 4.40e+05 (0.0052 of the scan); 0.00 s
+  at least 4 of 4: 2231 members; Turan family of 4 triples: identical True; work 5.44e+05 (0.0064 of the scan); 0.01 s
+  at least 3 of 4: 81222 members; Turan family of 2 pairs: identical True; work 8.74e+05 (0.0102 of the scan); 0.02 s
+  at least 3 of 4: 81222 members; Turan family of 4 triples: identical True; work 5.44e+05 (0.0064 of the scan); 0.02 s
+
+rho 0.10 J 6: list sizes 47..51; D = ln(P_J/K) = 20.26; knapsack density ln prod|G| / D = 1.15; expected members in all lists 22.44
+  scan: 0.05 s, work K*J = 1.28e+08; max agreement 6; members by agreement (top 4): [(6, 28), (5, 1211), (4, 26790), (3, 318701)]
+  wheel on 2 lists (all J agree): 28 members, identical to scan: True; work 2.42e+05; 0.003 s
+  wheel on 3 lists (all J agree): 28 members, identical to scan: True; work 1.35e+05; 0.002 s
+  arc meet-in-the-middle (all J agree): 28 members, identical: True; lists 2.38e+05; 0.039 s
+  at least 6 of 6: 28 members; Turan family of 1 pairs: identical True; work 8.75e+05 (0.0068 of the scan); 0.00 s
+  at least 6 of 6: 28 members; Turan family of 2 triples: identical True; work 3.69e+05 (0.0029 of the scan); 0.00 s
+  at least 5 of 6: 1239 members; Turan family of 2 pairs: identical True; work 1.74e+06 (0.0135 of the scan); 0.01 s
+  at least 5 of 6: 1239 members; Turan family of 2 triples: identical True; work 3.69e+05 (0.0029 of the scan); 0.00 s
+
+rho 0.10 J 8: list sizes 47..53; D = ln(P_J/K) = 32.75; knapsack density ln prod|G| / D = 0.95; expected members in all lists 0.23
+  scan: 0.07 s, work K*J = 1.71e+08; max agreement 8; members by agreement (top 4): [(8, 1), (7, 21), (6, 521), (5, 9078)]
+  wheel on 2 lists (all J agree): 1 members, identical to scan: True; work 2.42e+05; 0.002 s
+  wheel on 3 lists (all J agree): 1 members, identical to scan: True; work 1.35e+05; 0.001 s
+  arc meet-in-the-middle: half-lists of 5.53e+06 and 6.89e+06 (not run above 7 primes: more than the scan from 5e6)
+  at least 8 of 8: 1 members; Turan family of 1 pairs: identical True; work 1.32e+06 (0.0077 of the scan); 0.01 s
+  at least 8 of 8: 1 members; Turan family of 2 triples: identical True; work 4.66e+05 (0.0027 of the scan); 0.00 s
+  at least 7 of 8: 22 members; Turan family of 2 pairs: identical True; work 2.61e+06 (0.0152 of the scan); 0.01 s
+  at least 7 of 8: 22 members; Turan family of 2 triples: identical True; work 4.66e+05 (0.0027 of the scan); 0.00 s
+
+rho 0.10 J 10: list sizes 47..55; D = ln(P_J/K) = 45.30; knapsack density ln prod|G| / D = 0.87; expected members in all lists 0.00
+  scan: 0.09 s, work K*J = 2.14e+08; max agreement 8; members by agreement (top 4): [(10, 0), (9, 0), (8, 6), (7, 191)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 2.42e+05; 0.003 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.35e+05; 0.002 s
+  arc meet-in-the-middle: half-lists of 2.76e+08 and 4.02e+08 (not run above 7 primes: more than the scan from 5e6)
+  at least 8 of 10: 6 members; Turan family of 3 pairs: identical True; work 5.24e+06 (0.0245 of the scan); 0.02 s
+  at least 8 of 10: 6 members; Turan family of 6 triples: identical True; work 1.71e+06 (0.0080 of the scan); 0.01 s
+  at least 7 of 10: 197 members; Turan family of 4 pairs: identical True; work 6.99e+06 (0.0327 of the scan); 0.03 s
+  at least 7 of 10: 197 members; Turan family of 6 triples: identical True; work 1.71e+06 (0.0080 of the scan); 0.01 s
+
+rho 0.10 J 12: list sizes 47..56; D = ln(P_J/K) = 57.93; knapsack density ln prod|G| / D = 0.82; expected members in all lists 0.00
+  scan: 0.11 s, work K*J = 2.57e+08; max agreement 9; members by agreement (top 4): [(12, 0), (11, 0), (10, 0), (9, 1)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 2.42e+05; 0.003 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.35e+05; 0.002 s
+  arc meet-in-the-middle: half-lists of 1.41e+10 and 2.43e+10 (not run above 7 primes: more than the scan from 5e6)
+  at least 9 of 12: 1 members; Turan family of 4 pairs: identical True; work 8.72e+06 (0.0340 of the scan); 0.04 s
+  at least 9 of 12: 1 members; Turan family of 4 triples: identical True; work 1.33e+06 (0.0052 of the scan); 0.01 s
+  at least 8 of 12: 77 members; Turan family of 5 pairs: identical True; work 1.09e+07 (0.0425 of the scan); 0.05 s
+  at least 8 of 12: 77 members; Turan family of 12 triples: identical True; work 4.01e+06 (0.0156 of the scan); 0.03 s
+
+rho 0.20 J 4: list sizes 94..99; D = ln(P_J/K) = 7.82; knapsack density ln prod|G| / D = 2.34; expected members in all lists 34993.26
+  scan: 0.04 s, work K*J = 8.55e+07; max agreement 4; members by agreement (top 4): [(4, 35287), (3, 555228), (2, 3312259), (1, 8769426)]
+  wheel on 2 lists (all J agree): 35287 members, identical to scan: True; work 1.05e+06; 0.012 s
+  wheel on 3 lists (all J agree): 35287 members, identical to scan: True; work 1.06e+06; 0.013 s
+  arc meet-in-the-middle (all J agree): 35287 members, identical: True; lists 1.87e+04; 0.017 s
+  at least 4 of 4: 35287 members; Turan family of 1 pairs: identical True; work 1.74e+06 (0.0204 of the scan); 0.02 s
+  at least 4 of 4: 35287 members; Turan family of 4 triples: identical True; work 4.32e+06 (0.0505 of the scan); 0.07 s
+  at least 3 of 4: 590515 members; Turan family of 2 pairs: identical True; work 3.48e+06 (0.0407 of the scan); 0.26 s
+  at least 3 of 4: 590515 members; Turan family of 4 triples: identical True; work 4.32e+06 (0.0505 of the scan); 0.24 s
+
+rho 0.20 J 6: list sizes 94..101; D = ln(P_J/K) = 20.26; knapsack density ln prod|G| / D = 1.36; expected members in all lists 1408.11
+  scan: 0.05 s, work K*J = 1.28e+08; max agreement 6; members by agreement (top 4): [(6, 1487), (5, 33477), (4, 334095), (3, 1769820)]
+  wheel on 2 lists (all J agree): 1487 members, identical to scan: True; work 1.09e+06; 0.013 s
+  wheel on 3 lists (all J agree): 1487 members, identical to scan: True; work 1.10e+06; 0.013 s
+  arc meet-in-the-middle (all J agree): 1487 members, identical: True; lists 1.88e+06; 0.351 s
+  at least 6 of 6: 1487 members; Turan family of 1 pairs: identical True; work 3.47e+06 (0.0270 of the scan); 0.02 s
+  at least 6 of 6: 1487 members; Turan family of 2 triples: identical True; work 2.92e+06 (0.0228 of the scan); 0.03 s
+  at least 5 of 6: 34964 members; Turan family of 2 pairs: identical True; work 6.91e+06 (0.0539 of the scan); 0.05 s
+  at least 5 of 6: 34964 members; Turan family of 2 triples: identical True; work 2.92e+06 (0.0228 of the scan); 0.04 s
+
+rho 0.20 J 8: list sizes 94..105; D = ln(P_J/K) = 32.75; knapsack density ln prod|G| / D = 1.12; expected members in all lists 56.87
+  scan: 0.06 s, work K*J = 1.71e+08; max agreement 8; members by agreement (top 4): [(8, 71), (7, 1811), (6, 24978), (5, 200374)]
+  wheel on 2 lists (all J agree): 71 members, identical to scan: True; work 1.09e+06; 0.010 s
+  wheel on 3 lists (all J agree): 71 members, identical to scan: True; work 1.10e+06; 0.012 s
+  arc meet-in-the-middle: half-lists of 8.76e+07 and 1.08e+08 (not run above 7 primes: more than the scan from 5e6)
+  at least 8 of 8: 71 members; Turan family of 1 pairs: identical True; work 5.21e+06 (0.0305 of the scan); 0.02 s
+  at least 8 of 8: 71 members; Turan family of 2 triples: identical True; work 3.69e+06 (0.0216 of the scan); 0.03 s
+  at least 7 of 8: 1882 members; Turan family of 2 pairs: identical True; work 1.04e+07 (0.0607 of the scan); 0.05 s
+  at least 7 of 8: 1882 members; Turan family of 2 triples: identical True; work 3.69e+06 (0.0216 of the scan); 0.03 s
+
+rho 0.20 J 10: list sizes 94..109; D = ln(P_J/K) = 45.30; knapsack density ln prod|G| / D = 1.02; expected members in all lists 2.30
+  scan: 0.06 s, work K*J = 2.14e+08; max agreement 10; members by agreement (top 4): [(10, 3), (9, 92), (8, 1689), (7, 17267)]
+  wheel on 2 lists (all J agree): 3 members, identical to scan: True; work 1.09e+06; 0.011 s
+  wheel on 3 lists (all J agree): 3 members, identical to scan: True; work 1.10e+06; 0.012 s
+  arc meet-in-the-middle: half-lists of 8.76e+09 and 1.24e+10 (not run above 7 primes: more than the scan from 5e6)
+  at least 10 of 10: 3 members; Turan family of 1 pairs: identical True; work 6.95e+06 (0.0325 of the scan); 0.03 s
+  at least 10 of 10: 3 members; Turan family of 2 triples: identical True; work 4.47e+06 (0.0209 of the scan); 0.04 s
+  at least 9 of 10: 95 members; Turan family of 2 pairs: identical True; work 1.38e+07 (0.0647 of the scan); 0.06 s
+  at least 9 of 10: 95 members; Turan family of 2 triples: identical True; work 4.47e+06 (0.0209 of the scan); 0.03 s
+
+rho 0.20 J 12: list sizes 94..112; D = ln(P_J/K) = 57.93; knapsack density ln prod|G| / D = 0.96; expected members in all lists 0.09
+  scan: 0.08 s, work K*J = 2.57e+08; max agreement 11; members by agreement (top 4): [(12, 0), (11, 9), (10, 102), (9, 1324)]
+  wheel on 2 lists (all J agree): 0 members, identical to scan: True; work 1.09e+06; 0.012 s
+  wheel on 3 lists (all J agree): 0 members, identical to scan: True; work 1.10e+06; 0.012 s
+  arc meet-in-the-middle: half-lists of 8.84e+11 and 1.51e+12 (not run above 7 primes: more than the scan from 5e6)
+  at least 11 of 12: 9 members; Turan family of 2 pairs: identical True; work 1.73e+07 (0.0674 of the scan); 0.08 s
+  at least 11 of 12: 9 members; Turan family of 2 triples: identical True; work 5.26e+06 (0.0205 of the scan); 0.05 s
+  at least 10 of 12: 111 members; Turan family of 3 pairs: identical True; work 2.60e+07 (0.1012 of the scan); 0.13 s

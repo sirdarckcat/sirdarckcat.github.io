@@ -1,0 +1,101 @@
+members 4300; rows 1502; survivors 2175934 (0.336905 of rows); probable primes 155503 (0.07146 of survivors)
+model C = prod p/(p-1) to 1e8 = 32.80870; expected primes 155358.1, found 155503: ratio 1.0009 +- 0.0025
+dispersion of primes per member / binomial: 0.9535 +- 0.0216
+survivors per member: mean 506.03, sd 18.34, min 437, max 571; binomial sd would be 18.32
+  features 0 2 s
+  features 1000 9 s
+  features 2000 15 s
+  features 3000 22 s
+  features 4000 28 s
+
+85 features on 2175934 survivors (prime rate 0.07146); z-scores: max |z| = 2.98, mean z^2 = 1.429 (1.00 = no information)
+expected max |z| of 85 independent normals: about 2.98
+   z =  +2.98 | k mod 3 | chi2 8.0 on 2 df
+   z =  -2.61 | n+3: has no odd prime factor <= 1000 | rates 0.07168 (1771632) vs 0.07051 (404302)
+   z =  -2.60 | prev row struck by a prime < 2000 | rates 0.07168 (1770699) vs 0.07051 (405235)
+   z =  -2.44 | n-2: number of primes <= 1000 dividing (odd) | corr -0.00165
+   z =  -2.36 | primes among earlier rows of the member | corr -0.00160
+   z =  -2.15 | n-2: ln of smooth part (primes <= 1000, odd) | corr -0.00145
+   z =  -2.05 | number of sieve primes dividing prev row | corr -0.00139
+   z =  -2.03 | number of sieve primes dividing next row | corr -0.00138
+   z =  -2.01 | ln lpf of next row (struck only; 0 else) | corr -0.00136
+   z =  -1.97 | n+1: has no odd prime factor <= 1000 | rates 0.07162 (1802258) vs 0.07071 (373676)
+   z =  +1.84 | n+3: ln of smooth part (primes <= 1000, odd) | corr 0.00125
+   z =  +1.83 | next row survives | rates 0.07124 (1443354) vs 0.07191 (732580)
+   z =  +1.75 | n-3: number of primes <= 1000 dividing (odd) | corr 0.00119
+   z =  +1.71 | sum over c of number of small factors of n+c | corr 0.00116
+   z =  +1.69 | n-3: ln of smooth part (primes <= 1000, odd) | corr 0.00115
+   z =  -1.68 | q (row value) | corr -0.00114
+   z =  -1.68 | next row struck only by a prime > 1e6 | rates 0.07157 (1932262) vs 0.07064 (243672)
+   z =  -1.67 | k | corr -0.00113
+   z =  -1.66 | row index | corr -0.00113
+   z =  -1.64 | rank of the survivor in its member (share) | corr -0.00111
+   z =  +1.44 | primes among the 10 nearest rows (other than itself) | corr 0.00098
+   z =  +1.41 | n+2: ln of smooth part (primes <= 1000, odd) | corr 0.00095
+   z =  -1.36 | gap to previous row | corr -0.00092
+   z =  -1.35 | n+4: has no odd prime factor <= 1000 | rates 0.07157 (1831492) vs 0.07092 (344442)
+   z =  +1.26 | n+3: number of primes <= 1000 dividing (odd) | corr 0.00086
+   z =  +1.25 | n+4: number of primes <= 1000 dividing (odd) | corr 0.00085
+   z =  -1.24 | popcount(n) mod 2 | rates 0.07168 (1089324) vs 0.07125 (1086610)
+   z =  +1.16 | n-4: number of primes <= 1000 dividing (odd) | corr 0.00079
+   z =  +1.15 | member: rows struck by two or more primes | corr 0.00078
+   z =  -1.11 | n-3: has no odd prime factor <= 1000 | rates 0.07159 (1563517) vs 0.07115 (612417)
+   z =  +1.06 | n+1: number of primes <= 1000 dividing (odd) | corr 0.00072
+   z =  +0.98 | prev row struck only by a prime > 1e6 | rates 0.07140 (1932233) vs 0.07195 (243701)
+   z =  +0.98 | next row is a (probable) prime | rates 0.07144 (2123423) vs 0.07256 (52511)
+   z =  -0.96 | n-1: ln of smooth part (primes <= 1000, odd) | corr -0.00065
+   z =  +0.94 | n+6: ln of smooth part (primes <= 1000, odd) | corr 0.00064
+   z =  -0.94 | n mod 16 | chi2 3.5 on 7 df
+   z =  +0.88 | prev row survives | rates 0.07136 (1443354) vs 0.07168 (732580)
+   z =  -0.85 | an earlier row of the member is prime | rates 0.07235 (59437) vs 0.07144 (2116497)
+   z =  +0.82 | n+1: ln of smooth part (primes <= 1000, odd) | corr 0.00056
+   z =  -0.80 | n+6: least odd prime factor in (463, 1000] | rates 0.07149 (2129394) vs 0.07052 (46540)
+   z =  +0.80 | n+4: ln of smooth part (primes <= 1000, odd) | corr 0.00054
+   z =  -0.79 | survivors among the 10 nearest rows (share) | corr -0.00053
+   z =  +0.78 | Jacobi(top half of n | n) | rates 0.07133 (1088987) vs 0.07160 (1086947)
+   z =  -0.77 | v2(n+1) | corr -0.00052
+   z =  +0.77 | prev row is a (probable) prime | rates 0.07144 (2123251) vs 0.07232 (52683)
+   z =  +0.75 | n+6: number of primes <= 1000 dividing (odd) | corr 0.00051
+   z =  -0.75 | n-3: least odd prime factor in (463, 1000] | rates 0.07149 (2103270) vs 0.07076 (72664)
+   z =  -0.75 | n+6: has no odd prime factor <= 1000 | rates 0.07153 (1784345) vs 0.07119 (391589)
+   z =  -0.72 | n-6: ln of smooth part (primes <= 1000, odd) | corr -0.00049
+   z =  +0.72 | member: rows struck first by a prime < 5000 | corr 0.00049
+   z =  -0.68 | n-1: number of primes <= 1000 dividing (odd) | corr -0.00046
+   z =  +0.66 | member: rows struck first by a prime > 1e6 | corr 0.00045
+   z =  +0.66 | n-2: has no odd prime factor <= 1000 | rates 0.07141 (1779903) vs 0.07171 (396031)
+   z =  +0.66 | n+2: number of primes <= 1000 dividing (odd) | corr 0.00045
+   z =  +0.65 | primes among the 40 nearest rows (other than itself) | corr 0.00044
+   z =  +0.64 | n-4: ln of smooth part (primes <= 1000, odd) | corr 0.00043
+   z =  +0.62 | popcount(n) | corr 0.00042
+   z =  -0.62 | k mod 5 | chi2 2.2 on 4 df
+   z =  +0.57 | ln lpf of prev row (struck only; 0 else) | corr 0.00039
+   z =  +0.54 | survivors among the 40 nearest rows (share) | corr 0.00037
+   z =  -0.53 | n-6: number of primes <= 1000 dividing (odd) | corr -0.00036
+   z =  +0.50 | member: incidences (sum of NF) | corr 0.00034
+   z =  +0.49 | v2(n-1) >= 3 | rates 0.07142 (1632843) vs 0.07161 (543091)
+   z =  +0.48 | Jacobi(q - q_prev | n) | rates 0.07138 (1041741) vs 0.07155 (1134193)
+   z =  -0.47 | q mod 7 | chi2 2.7 on 4 df
+   z =  +0.43 | q mod 4 | rates 0.07139 (1063913) vs 0.07154 (1112021)
+   z =  -0.39 | q mod 5 | chi2 1.2 on 2 df
+   z =  -0.37 | n-2: least odd prime factor in (463, 1000] | rates 0.07147 (2128970) vs 0.07103 (46964)
+   z =  +0.32 | n+3: least odd prime factor in (463, 1000] | rates 0.07146 (2128394) vs 0.07183 (47540)
+   z =  -0.30 | k mod 7 | chi2 4.9 on 6 df
+   z =  +0.30 | member survivors S | corr 0.00020
+   z =  -0.29 | q mod 8 | chi2 2.3 on 3 df
+   z =  -0.29 | n-6: has no odd prime factor <= 1000 | rates 0.07149 (1738886) vs 0.07136 (437048)
+   z =  -0.26 | n+4: least odd prime factor in (463, 1000] | rates 0.07147 (2135027) vs 0.07114 (40907)
+   z =  -0.25 | next row struck by a prime < 2000 | rates 0.07149 (1770057) vs 0.07137 (405877)
+   z =  +0.25 | n-6: least odd prime factor in (463, 1000] | rates 0.07146 (2124055) vs 0.07174 (51879)
+   z =  -0.20 | smooth part of n-1 and n+1 together (ln) | corr -0.00013
+   z =  -0.19 | Jacobi(q | n) | rates 0.07150 (1088688) vs 0.07143 (1087246)
+   z =  +0.16 | survivors among the 200 nearest rows (share) | corr 0.00011
+   z =  +0.14 | v2(n-1) | corr 0.00010
+   z =  +0.10 | q mod 11 | chi2 8.4 on 8 df
+   z =  +0.07 | q mod 13 | chi2 10.3 on 10 df
+   z =  -0.06 | n+1: least odd prime factor in (463, 1000] | rates 0.07147 (2131907) vs 0.07139 (44027)
+   z =  -0.05 | q mod 16 | chi2 6.8 on 7 df
+   z =  +0.02 | k mod 2 | rates 0.07146 (1068170) vs 0.07147 (1107764)
+
+rows as categories: chi2 1517.0 on 1501 df, z = +0.29
+logistic regression, 75 features, train even members, test odd: log-likelihood gain in sample +36.7 nats (expected about +38 from fitting noise), out of sample -23.2 nats on 1088097 rows (-2.13e-05 per row); sd over members of the predicted exponent beyond the count 0.3396 nats; correlation of that with the primes actually found beyond the count -0.2313 +- 0.0216
+logistic regression, 75 features, train odd members, test even: log-likelihood gain in sample +39.2 nats (expected about +38 from fitting noise), out of sample -25.5 nats on 1087837 rows (-2.35e-05 per row); sd over members of the predicted exponent beyond the count 0.4826 nats; correlation of that with the primes actually found beyond the count -0.4905 +- 0.0216

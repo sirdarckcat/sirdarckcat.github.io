@@ -1,0 +1,24 @@
+# cover_fold.py ../fscan/cover/starts/q200000_m89.txt 200000   (25 November 2026)
+89 moduli up to 463, rows at 200000: 1502, p = 0.02398, exponent 36.46
+window: ln(X/M) = 16.9 nats = 2^24.3 members
+prime s | rows before | mean class | best class K_max | gain, nats (sequential: each prime folded after the previous ones) | cumulative | members left per vector, log2
+467 | 1502 | 3.22 | 8 | 0.115 | 0.115 | 15.5
+479 | 1494 | 3.13 | 8 | 0.118 | 0.233 | 6.6
+487 | 1486 | 3.06 | 8 | 0.119 | 0.352 | -2.3
+491 | 1478 | 3.02 | 8 | 0.121 | 0.473 | -11.3
+499 | 1470 | 2.95 | 7 | 0.098 | 0.571 | -20.3
+503 | 1463 | 2.91 | 9 | 0.148 | 0.719 | -29.2
+509 | 1454 | 2.86 | 8 | 0.125 | 0.844 | -38.2
+521 | 1446 | 2.78 | 7 | 0.103 | 0.947 | -47.2
+523 | 1439 | 2.76 | 9 | 0.153 | 1.100 | -56.3
+541 | 1430 | 2.65 | 8 | 0.131 | 1.231 | -65.4
+547 | 1422 | 2.60 | 7 | 0.108 | 1.338 | -74.4
+557 | 1415 | 2.54 | 7 | 0.110 | 1.448 | -83.6
+
+# cover_fold.py ../fscan/cover/starts/q170000_m89.txt 170000
+89 moduli up to 463, rows at 170000: 1248, p = 0.02398, exponent 30.30
+window: ln(X/M) = 16.9 nats = 2^24.3 members
+prime s | rows before | mean class | best class K_max | gain, nats (sequential: each prime folded after the previous ones) | cumulative | members left per vector, log2
+467 | 1248 | 2.68 | 7 | 0.104 | 0.104 | 15.5
+479 | 1241 | 2.60 | 8 | 0.130 | 0.234 | 6.6
+487 | 1233 | 2.54 | 7 | 0.108 | 0.342 | -2.3
