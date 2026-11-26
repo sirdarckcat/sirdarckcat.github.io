@@ -54,29 +54,29 @@ some r for every prime q < Q, so no primality test is needed.
 - `exists_lt_ten_pow_200_complete_cover_16981` (`Records.lean`): some even N below 10^200 has N − q divisible by a
   prime at most 491 for every prime q below 16,981, the largest bound proved by divisibility alone;
   `exists_progression_complete_cover_15907` gives 21,378,978 such numbers below 10^200 for the bound 15,907.
-- `isDepth_0` to `isDepth_9` (`CoverDepthRun.lean`): the *cover depth* of the first k odd primes (the first prime
-  that no choice of remainders can reach together with all smaller ones) is exactly 3, 5, 7, 19, 31, 43, 67, 103,
-  163, 181 for k = 0 to 9; `coversBelow_10` to `coversBelow_35` (also `CoverDepthMore.lean`) are lower bounds for 10
+- `isDepth_0` to `isDepth_9` (`CoverDepthRun.lean`): the *cover depth* of the first k odd primes (the smallest prime
+  q such that no choice of their remainders covers all the odd primes up to q) is exactly 3, 5, 7, 19, 31, 43, 67,
+  103, 163, 181 for k = 0 to 9; `coversBelow_10` to `coversBelow_35` (also `CoverDepthMore.lean`) are lower bounds for 10
   to 35 primes.
 - `coversBelow_41659` (`CoverCountRun.lean`) and `coversBelow_614101` (`CoverDepthGreedy.lean`): the odd primes up to
   997 cover every odd prime below 41,659, and the odd primes below 10,000 every odd prime below 614,101.
 - `exists_isSummand_of_lt_961` (`CoverDepthRun.lean`): every even number from 6 to 960 has a summand at most 181,
-  proved from the depth without testing any N − q.
+  proved from the cover depth without testing any N − q for primality.
 - `isDepth_iff_coverCount` (`CoverCount.lean`): the number of covers has an exact inclusion–exclusion formula, and
   the depth is where it reaches zero.
 - `sat_iff_coversList` (`Cap/Hardness.lean`): if arbitrary numbers replace the primes to be covered, deciding whether
   a cover exists is as hard as the satisfiability problem of logic.
 
-**Function fields.** Polynomials whose coefficients come from a finite field (finitely many numbers, such as the
-remainders modulo 3) behave like the integers, with irreducible polynomials in the role of primes, and some
-questions can be settled there exactly.
+**Function fields.** Polynomials whose coefficients come from a finite field (a number system with finitely many
+elements, such as the remainders modulo 3) behave like the integers, with irreducible polynomials (those that do not
+factor) in the role of primes, and some questions can be settled there exactly.
 
-- `stickelbergerSwan` (`FunctionField/Stickelberger.lean`): Stickelberger's theorem, which Mathlib does not have: for
-  odd characteristic, the discriminant of a squarefree polynomial tells whether its number of irreducible factors is even
-  or odd.
-- `desert` and `desert_of_one_le` (`ParityDesert.lean`, `DesertDegree.lean`): explicit N for which N − Q is reducible
-  for every monic irreducible Q up to a given degree, proved through that parity without naming any factor;
-  `discr_sub_eq_resultant` gives the parity for every N with zero derivative.
+- `stickelbergerSwan` (`FunctionField/Stickelberger.lean`): Stickelberger's theorem, which Mathlib does not have: over
+  a finite field with an odd number of elements, one number computed from the coefficients of a polynomial without
+  repeated factors (its discriminant) tells whether its number of irreducible factors is even or odd.
+- `desert` and `desert_of_one_le` (`ParityDesert.lean`, `DesertDegree.lean`): explicit N for which N − Q factors for
+  every irreducible Q (with leading coefficient 1) up to a given degree, proved through that parity without naming any
+  factor; `discr_sub_eq_resultant` extends the parity rule to every N built from powers of t^p, p the characteristic.
 - `card_monic_cell`, `irreducible_sub_comp_X_add_C_iff`, `not_irreducible_sub_of_aligned` (`Families.lean`): the
   polynomials with prescribed remainders are counted exactly; if N is unchanged by t ↦ t + c then N − Q and
   N − Q(t + c) are irreducible together; and one polynomial R used as the remainder for every small modulus rules out
@@ -95,8 +95,9 @@ questions can be settled there exactly.
 - `fermat28r_correct` (`Gpu28/Kernel.lean`), `fermat2_correct` (`Gpu/Fermat.lean`) and the `Fscan` files: the
   arithmetic of the graphics-card and processor programs used in the searches computes the Fermat test
   2^(n−1) ≡ 1 (mod n) correctly, for a model of the code.
-- `Cap/*.lean`: exact facts about the cost of the search, for instance `Cap/Selection.lean`, `Cap/Tilt.lean` and
-  `Cap/Inspection.lean` on how much ordering or filtering the candidates can gain.
+- `searchCost_le_of_perm` (`Cap/Inspection.lean`): when looking for one good candidate among independent groups,
+  examining the groups in decreasing order of their chance is the cheapest order; the other `Cap/*.lean` files state
+  exact facts of the same kind about the cost of the search.
 - `exists_best_list_candidates` (`Worlds/NoCoupling.lean`) and `lt_iff_fract_sum_mul_div_lt` (`Worlds/Arc.lean`):
   without a constraint linking the choices of remainders, the k best choices come out at a cost proportional to k;
   and among the numbers below the product P of the moduli, those below X are exactly the remainder patterns whose one
@@ -107,8 +108,8 @@ questions can be settled there exactly.
 
 ## What "proved in the kernel" does and does not guarantee
 
-It guarantees that each statement follows from Mathlib's definitions and three standard axioms of Lean's
-mathematics: `propext` (equivalent statements are equal), `Classical.choice` (the axiom of choice) and `Quot.sound`
+It guarantees, provided Lean's kernel itself is correct, that each statement follows from Mathlib's definitions and
+three standard axioms of Lean's mathematics: `propext` (equivalent statements are equal), `Classical.choice` (the axiom of choice) and `Quot.sound`
 (about quotients). No theorem uses `sorry` (an unproved step) or `native_decide` (which trusts compiled code). This is
 checked for all 7,978 declarations of the 209 modules, 6,460 of them theorems, by `scripts/check_axioms.lean`.
 
@@ -117,7 +118,8 @@ statements are the intended ones is for a person to read: the line after `theore
 `IsSummand` and `IsLeastSummand` in `Basic.lean`. Statements with a hypothesis prove only "if the hypothesis holds,
 then …": `Effective.lean` assumes Linnik's theorem, and the hardware files assume that the machine instructions do
 what their specification says. For the 1,797-digit number, and for every number of the fixed-bound game, primality
-of N − g is not proved (it passed probable-prime tests only), so its exact least summand is not certified. The
+of N − b, b the bound, is not proved (it passed probable-prime tests only), so the exact least summand is not
+certified. The
 measurements in `scripts/` (searches, heuristics, enumerations) are not proofs unless a theorem says so.
 
 ## How to build and check it
@@ -132,8 +134,8 @@ library; for one theorem, write `import GoldbachGaps` and `#print axioms Goldbac
 
 ## Started but not finished
 
-- A search among 200-digit numbers with 3,000 covers of one family stopped after 796 covers, with no number beating
-  the record (`scripts/scan200/README.md`).
+- A search for a new 200-digit record over 3,000 covers of one family stopped after 796 covers, with no find
+  (`scripts/scan200/README.md`).
 - Exact cover depths from 10 primes on are not proved; only the lower bounds above are.
 - For the bound one million, a 1,700-digit attempt by another session was paused on 25 November; no certificate exists.
 - The 2,480-digit number with g = 1,157,341 (`slop/goldbach/records/g1`) is not checked: the kernel's elliptic-curve
