@@ -1,0 +1,108 @@
+q 3 n 4 p 3  monic N: 81  irreducible of degree n: 18  rows (deg<n): 14  fast rows: 14 (deg<=3)
+rows_below: 0 3 6 14
+check: mu=-1 count 27 (expect (q^n-q^(n-1))/2 = 27)
+threshold 0 K=0 (none): rough 81  rough&odd 27  rho=0.22222222 rho_odd=0.66666667
+threshold 1 K=3 (deg<=1=room): rough 24  rough&odd 18  rho=0.75000000 rho_odd=1.00000000
+threshold 2 K=6 (deg<=2=deg<=3): rough 18  rough&odd 18  rho=1.00000000 rho_odd=1.00000000
+Gmax 14  Dmax 4  count(D=Dmax) 3  exceptions(no row of degree<n works) 3
+GHIST class(0:N'=0, k+1: deg N'=k, 5: N'=1) G count
+GH 4 0 18
+GH 4 1 18
+GH 4 2 18
+GH 4 3 7
+GH 4 4 4
+GH 4 5 4
+GH 4 7 3
+GH 4 11 3
+GH 4 12 2
+GH 4 13 1
+GH 4 14 3
+DH 4 1 54
+DH 4 2 15
+DH 4 3 9
+DH 4 4 3
+TROOM 1 TDEEP 2
+TOP 20 14
+TOP 53 14
+TOP 77 14
+TOP 34 13
+TOP 5 12
+TOP 54 12
+TOP 3 11
+TOP 35 11
+TOP 56 11
+TOP 19 7
+TOP 52 7
+TOP 76 7
+TOP 25 5
+TOP 49 5
+TOP 55 5
+TOP 73 5
+TOP 4 4
+TOP 24 4
+TOP 48 4
+TOP 72 4
+TOP 18 3
+TOP 26 3
+TOP 33 3
+TOP 50 3
+TOP 51 3
+TOP 74 3
+TOP 75 3
+TOP 1 2
+TOP 7 2
+TOP 9 2
+TOP 13 2
+TOP 15 2
+TOP 22 2
+TOP 27 2
+TOP 31 2
+TOP 37 2
+TOP 39 2
+TOP 42 2
+TOP 46 2
+TOP 58 2
+TOP 60 2
+TOP 63 2
+TOP 66 2
+TOP 70 2
+TOP 79 2
+TOP 0 1
+TOP 6 1
+TOP 11 1
+TOP 12 1
+TOP 17 1
+TOP 21 1
+TOP 29 1
+TOP 30 1
+TOP 36 1
+TOP 41 1
+TOP 44 1
+TOP 45 1
+TOP 57 1
+TOP 62 1
+TOP 65 1
+TOP 68 1
+TOP 69 1
+TOP 78 1
+TOP 2 0
+TOP 8 0
+TOP 10 0
+TOP 14 0
+TOP 16 0
+TOP 23 0
+TOP 28 0
+TOP 32 0
+TOP 38 0
+TOP 40 0
+TOP 43 0
+TOP 47 0
+TOP 59 0
+TOP 61 0
+TOP 64 0
+TOP 67 0
+TOP 71 0
+TOP 80 0
+DTOP 20
+DTOP 53
+DTOP 77

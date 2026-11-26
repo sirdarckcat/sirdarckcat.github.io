@@ -1,0 +1,11 @@
+rows 1011687, primes 54142, features in use 213 (constant ones dropped)
+single features: mean z^2 = 1.010, largest |z| = 3.10 (low bit 4); expected largest of 213 normal draws about 3.27
+products of two features: 22578 pairs, mean z^2 = 1.005, largest |z| = 4.72 (high bit 32 x cos n mod 23); expected largest about 4.48
+   pairs with |z| > 4: 3 (expected 1.4); > 4.5: 2 (expected 0.15)
+for scale: a fair coin that doubles the prime rate of its half would have z = 239; a feature moving the rate by 1% of itself, z = 2.39
+high bit 32 x cos(n mod 23): all: z = -4.72
+high bit 32 x cos(n mod 23): even members: z = -3.23
+high bit 32 x cos(n mod 23): odd members: z = -3.53
+high bit 32 x cos(n mod 23): all: z = -0.96
+high bit 32 x cos(n mod 23): even members: z = -1.79
+high bit 32 x cos(n mod 23): odd members: z = +0.43

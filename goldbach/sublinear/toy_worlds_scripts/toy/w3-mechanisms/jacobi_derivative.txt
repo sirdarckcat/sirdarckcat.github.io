@@ -1,0 +1,2 @@
+Jacobi(n'|n) = (-1)^C(k3,2): 20000 random odd squarefree n with 1..6 prime factors, exceptions 0
+joint counts (k mod 2, Jacobi(n'|n)): [((0, -1), 4752), ((0, 1), 5318), ((1, -1), 3704), ((1, 1), 6226)]

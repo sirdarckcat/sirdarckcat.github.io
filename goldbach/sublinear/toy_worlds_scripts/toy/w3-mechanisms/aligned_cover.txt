@@ -1,0 +1,11 @@
+F_3: 14 primes of degree <= 3 (total degree 33), 1318 rows of degree <= 8
+  deg R = 4: the rows of degree 4 left are all of the form R - c: checked for 50 random R, exceptions 0
+  aligned, R monic of degree 4 (81 tried): mean rows left 196.7, best 76 (R = x^4 + 2*x^2 + 2); by degree of row: 1:0 2:0 3:0 4:0 5:4 6:6 7:20 8:46
+  aligned, R monic of degree 5 (243 tried): mean rows left 197.5, best 69 (R = x^5 + 2*x^4 + x^3 + x^2 + x + 2); by degree of row: 1:0 2:0 3:0 4:0 5:3 6:7 7:14 8:45
+  aligned, R monic of degree 6 (729 tried): mean rows left 199.6, best 60 (R = x^6 + x^4 + x^3 + x^2 + 2*x + 2); by degree of row: 1:0 2:0 3:0 4:0 5:0 6:6 7:12 8:42
+  aligned, R monic of degree 7 (2187 tried): mean rows left 201.3, best 59 (R = x^7 + 2*x^5 + 2); by degree of row: 1:0 2:0 3:1 4:0 5:2 6:5 7:18 8:33
+  aligned, R monic of degree 8 (6561 tried): mean rows left 198.2, best 58 (R = x^8 + x^5 + 2*x^4 + x^3 + x + 2); by degree of row: 1:0 2:0 3:0 4:0 5:2 6:7 7:15 8:34
+  aligned, R monic of degree 9 (19683 tried): mean rows left 204.1, best 58 (R = x^9 + 2*x^8 + x^7 + x^6 + x^4 + 2*x^2 + x + 2); by degree of row: 1:0 2:0 3:1 4:0 5:1 6:3 7:19 8:34
+  aligned, R monic of degree 10 (59049 tried): mean rows left 204.1, best 59 (R = x^10 + 2*x^9 + x^3 + 2*x^2 + 2); by degree of row: 1:0 2:0 3:1 4:0 5:3 6:4 7:20 8:31
+  random nonzero classes (2000): mean 80.7, sd 5.3, min 58
+  greedy classes with 3 improvement passes: 45 rows left; by degree: 1:0 2:0 3:0 4:0 5:1 6:3 7:17 8:24

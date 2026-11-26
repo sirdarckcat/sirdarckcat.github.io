@@ -1,0 +1,33 @@
+q=3 n=5: top 5 G values [32, 32, 32, 25, 19] recomputed with flint: agree
+q=3 n=6: top 5 G values [80, 76, 62, 56, 56] recomputed with flint: agree
+q=3 n=7: top 5 G values [76, 73, 71, 62, 62] recomputed with flint: agree
+q=3 n=8: top 5 G values [101, 101, 101, 79, 78] recomputed with flint: agree
+q=3 n=9: top 5 G values [200, 168, 167, 162, 139] recomputed with flint: agree
+q=3 n=10: top 5 G values [160, 158, 157, 153, 153] recomputed with flint: agree
+q=3 n=11: top 5 G values [219, 219, 200, 194, 189] recomputed with flint: agree
+q=3 n=12: top 5 G values [313, 274, 270, 265, 242] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=37694 agrees with pass 2
+q=3 n=13: top 5 G values [313, 304, 300, 291, 289] recomputed with flint: agree
+q=3 n=14: top 5 G values [418, 354, 346, 342, 340] recomputed with flint: agree
+q=3 n=15: top 5 G values [481, 474, 455, 438, 435] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=6010250 agrees with pass 2
+q=3 n=16: top 5 G values [476, 474, 460, 459, 456] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=12313205 agrees with pass 2
+q=3 n=17: top 5 G values [600, 593, 582, 582, 560] recomputed with flint: agree
+q=3 n=18: top 5 G values [754, 667, 653, 637, 636] recomputed with flint: agree
+q=5 n=5: top 5 G values [55, 37, 29, 29, 28] recomputed with flint: agree
+q=5 n=6: top 5 G values [50, 47, 46, 44, 42] recomputed with flint: agree
+q=5 n=7: top 5 G values [75, 70, 70, 67, 62] recomputed with flint: agree
+q=5 n=8: top 5 G values [105, 104, 101, 100, 92] recomputed with flint: agree
+q=5 n=9: top 5 G values [138, 125, 115, 114, 112] recomputed with flint: agree
+q=5 n=10: top 5 G values [206, 185, 174, 168, 163] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=53169 agrees with pass 2
+q=5 n=11: top 5 G values [201, 201, 200, 197, 195] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=24219449 agrees with pass 2; anatomy (s_t, o_t) of optimum v=45121007 agrees with pass 2
+q=5 n=12: top 5 G values [278, 278, 269, 269, 264] recomputed with flint: agree
+q=7 n=5: top 5 G values [36, 33, 33, 30, 30] recomputed with flint: agree
+q=7 n=6: top 5 G values [57, 57, 52, 51, 51] recomputed with flint: agree
+q=7 n=7: top 5 G values [78, 77, 76, 75, 74] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=178012 agrees with pass 2
+q=7 n=8: top 5 G values [110, 109, 106, 105, 104] recomputed with flint: agree
+q=7 n=9: top 5 G values [136, 134, 134, 131, 130] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=39063506 agrees with pass 2
+q=7 n=10: top 5 G values [181, 181, 180, 170, 169] recomputed with flint: agree
+q=9 n=5: top 5 G values [41, 41, 39, 38, 38] recomputed with flint: agree
+q=9 n=6: top 5 G values [120, 118, 117, 117, 116] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=5952 agrees with pass 2
+q=9 n=7: top 5 G values [94, 90, 89, 86, 84] recomputed with flint: agree
+q=9 n=8: top 5 G values [122, 122, 121, 120, 117] recomputed with flint: agree; anatomy (s_t, o_t) of optimum v=3461457 agrees with pass 2; anatomy (s_t, o_t) of optimum v=31450318 agrees with pass 2
+q=9 n=9: top 5 G values [151, 151, 151, 150, 148] recomputed with flint: agree

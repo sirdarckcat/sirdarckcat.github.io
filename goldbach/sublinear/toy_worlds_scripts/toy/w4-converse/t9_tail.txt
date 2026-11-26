@@ -1,0 +1,13 @@
+members 21378978; mean 309.5051 (product 309.5051); variance 258.433 (product 258.439), ratio 0.99998
+  S >= 331: expected   2064867.0, observed   2064722, ratio 0.9999 +- 0.0007
+  S >= 348: expected    209923.3, observed    209780, ratio 0.9993 +- 0.0022
+  S >= 361: expected     19777.1, observed     19601, ratio 0.9911 +- 0.0071
+  S >= 372: expected      1761.8, observed      1800, ratio 1.0217 +- 0.0238
+  S >= 381: expected       183.2, observed       192, ratio 1.0479 +- 0.0739
+  S >= 389: expected        19.8, observed        13, ratio 0.6569 +- 0.2248
+  S >= 397: expected         1.8, observed         0, ratio 0.0000 +- 0.7557
+  largest S: 395; expected number at or above it 3.27
+
+real	0m33.049s
+user	0m24.378s
+sys	0m8.559s

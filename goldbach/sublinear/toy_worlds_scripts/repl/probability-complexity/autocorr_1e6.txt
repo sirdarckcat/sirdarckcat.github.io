@@ -1,0 +1,41 @@
+depth 1000000: K 21378978; D in [1,10689489); pair-noise sd between 2.16e-04 and 3.06e-04
+D with no prime factor in (463,6000]: 7549891 : mean rho -1.96e-04, sd 4.871e-04 (pair noise alone would give 2.550e-04); max 0.00246 at D=10534137; min -0.00294
+   in units of pair noise: sd 1.939, max 9.60, min -11.60; expected max of 7549891 unit normals 5.63
+the 25 most correlated translates D (rho, D, later-prime factors below 6000):
+   0.00421  D=5037904  [499, 631]
+   0.00407  D=4700906  [479, 701]
+   0.00406  D=9448565  [499, 541]
+   0.00406  D=8549491  [503, 739]
+   0.00406  D=1505982  [499, 503]
+   0.00402  D=8292986  [467, 683]
+   0.00401  D=1776089  [487, 521]
+   0.00395  D=6764917  [479, 487]
+   0.00395  D=8390122  [467, 691]
+   0.00394  D=10438034  [523, 587]
+   0.00394  D=963748  [479, 503]
+   0.00390  D=1741165  [479, 727]
+   0.00390  D=7829255  [467, 479]
+   0.00388  D=8497999  [467, 587]
+   0.00388  D=2093395  [613, 683]
+   0.00387  D=3737290  [503, 743]
+   0.00385  D=8150551  [467, 563]
+   0.00384  D=4910659  [499, 757]
+   0.00382  D=10541874  [499, 503]
+   0.00382  D=7350270  [491, 499]
+   0.00382  D=8874401  [467, 613]
+   0.00381  D=7610958  [547, 773]
+   0.00381  D=1470545  [491, 599]
+   0.00380  D=5148708  [503, 853]
+   0.00380  D=3616570  [503, 719]
+D multiple of 467 and of no other prime in (463,6000]: n 15511, mean rho 0.00114, sd 0.00049, max 0.00327
+D multiple of 479 and of no other prime in (463,6000]: n 15130, mean rho 0.00134, sd 0.00048, max 0.00313
+D multiple of 487 and of no other prime in (463,6000]: n 14892, mean rho 0.00115, sd 0.00049, max 0.00306
+D multiple of 1009 and of no other prime in (463,6000]: n 7359, mean rho 0.00050, sd 0.00048, max 0.00233
+D multiple of 2003 and of no other prime in (463,6000]: n 3857, mean rho 0.00016, sd 0.00047, max 0.00166
+D multiple of 4001 and of no other prime in (463,6000]: n 2143, mean rho -0.00002, sd 0.00049, max 0.00170
+D multiple of 467*479: n 47, mean rho 0.00269 +- 0.00007, max 0.00390
+D multiple of 467*487: n 47, mean rho 0.00256 +- 0.00007, max 0.00363
+D multiple of 479*487: n 45, mean rho 0.00264 +- 0.00009, max 0.00395
+D multiple of 467*491: n 46, mean rho 0.00251 +- 0.00007, max 0.00343
+D multiple of 487*491: n 44, mean rho 0.00247 +- 0.00007, max 0.00329
+D multiple of 499*503: n 42, mean rho 0.00264 +- 0.00008, max 0.00406

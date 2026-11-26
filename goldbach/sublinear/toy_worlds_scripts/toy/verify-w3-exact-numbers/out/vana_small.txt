@@ -1,0 +1,157 @@
+
+===== q=3 n=12; thresholds t0:none(K=0), t1:lin(K=3), t2:deg2(K=6), t3:room(K=7), t4:deg3(K=14); room total degree 12 -> cell size 1
+ first moment (hits/model) per level: naive | room s-model | room o-model | deg2 o-model | deg3 o-model | deg2 s | deg3 s
+   R=  60 hits=    14900:      5.146 | 0.978 | 0.954 | 0.950 | 0.992 | 0.973 | 1.013
+   R= 100 hits=     2292:     25.566 | 0.952 | 0.903 | 0.879 | 0.963 | 0.939 | 1.024
+   R= 150 hits=      290:    249.059 | 0.919 | 0.790 | 0.772 | 0.937 | 0.904 | 1.041
+   R= 200 hits=       44:   2909.439 | 0.918 | 0.675 | 0.661 | 0.882 | 0.893 | 1.105
+   R= 250 hits=        4:  20364.296 | 0.712 | 0.535 | 0.496 | 0.987 | 0.679 | 0.917
+   R= 313 hits=        1: 1212662.765 | 2.716 | 1.409 | 1.635 | 0.924 | 2.581 | 3.794
+ parity selection: level | t | odd-only gain | 10%: E_s E_o modelE_o T | 1%: E_s E_o modelE_o T
+   R=  60 H=   14900 t0(    none) x3.15 |   1.00   4.48   4.34 T 11.23 |   1.00   8.45  10.16 T 21.75 |
+   R=  60 H=   14900 t1(     lin) x2.10 |   5.56   7.98   7.42 T  3.28 |   9.49  24.29  21.86 T 12.49 |
+   R=  60 H=   14900 t3(    room) x1.99 |   6.31   9.24   8.99 T  3.27 |  15.29  35.67  34.03 T   inf |
+   R= 100 H=    2292 t0(    none) x3.16 |   1.00   5.59   5.99 T 12.77 |   1.00  12.08  18.75 T 26.20 |
+   R= 100 H=    2292 t1(     lin) x2.10 |   6.38   9.23   8.75 T  3.09 |   7.84  46.31  39.49 T 15.08 |
+   R= 100 H=    2292 t3(    room) x1.99 |   7.17   9.97   9.82 T  2.82 |  20.25  68.55  65.45 T  9.03 |
+   R= 150 H=     290 t0(    none) x3.16 |   1.00   6.05   7.59 T 13.16 |   1.00  13.85  32.89 T 28.07 |
+   R= 150 H=     290 t1(     lin) x2.10 |   6.85   9.91   9.47 T  3.06 |  10.24  64.19  56.18 T 13.81 |
+   R= 150 H=     290 t3(    room) x1.99 |   7.67  10.00   9.97 T  2.62 |  24.47  90.15  85.11 T  7.85 |
+ anatomy at R=313:
+   t0(    none): s 313.00+-0.00  o 104.33+-17.80  model mean o for a hit 69.60  optimum (s,o,#): [(313, 60, 1)]  z_s [0] z_o [-2.49]
+   t1(     lin): s 92.74+-59.81  o 44.05+-28.84  model mean o for a hit 8.79  optimum (s,o,#): [(34, 6, 1)]  z_s [-0.98] z_o [-1.32]
+   t2(    deg2): s 65.13+-42.47  o 32.51+-21.58  model mean o for a hit 3.59  optimum (s,o,#): [(24, 2, 1)]  z_s [-0.97] z_o [-1.41]
+   t3(    room): s 62.72+-40.91  o 31.52+-20.94  model mean o for a hit 2.70  optimum (s,o,#): [(23, 2, 1)]  z_s [-0.97] z_o [-1.41]
+   t4(    deg3): s 48.12+-31.51  o 26.52+-17.69  model mean o for a hit 0.09  optimum (s,o,#): [(16, 0, 1)]  z_s [-1.02] z_o [-1.5]
+ cover first at R=Gmax: expected work by s_room 19535 (bin s=23, 14383 better, bin 10303, hits 1) blind 265721 gain 2.61 nats = 19.8% of ln q^n (13.18); by o_room 5 gain 10.88 nats
+ equal work (W members -> best G): 5->110; 39->138; 152->138; 474->186; 1403->226; 3371->270; 7422->270; 14383->270; 24686->313; 39013->313; 
+ soft score: true min s_deep 7; cover first (W -> best s_deep): 5->11; 39->8; 152->8; 474->7; (reached at W=474, 0.089% of all)
+    LIST top1 37694 G 313 D 7 R 313 so 313:60 34:6 24:2 23:2 16:0
+    LIST top2 40205 G 274 D 7 R 313 so 313:54 34:8 27:5 26:5 18:3
+
+===== q=3 n=15; thresholds t0:none(K=0), t1:lin(K=3), t2:deg2(K=6), t3:room(K=8), t4:deg3(K=14); room total degree 15 -> cell size 1
+ first moment (hits/model) per level: naive | room s-model | room o-model | deg2 o-model | deg3 o-model | deg2 s | deg3 s
+   R= 104 hits=   141711:     12.903 | 0.928 | 0.928 | 0.913 | 0.967 | 0.913 | 0.964
+   R= 173 hits=    13697:    145.661 | 0.837 | 0.839 | 0.818 | 0.928 | 0.816 | 0.909
+   R= 243 hits=     1335:   1776.583 | 0.740 | 0.741 | 0.702 | 0.843 | 0.701 | 0.828
+   R= 306 hits=      142:  14589.461 | 0.595 | 0.590 | 0.558 | 0.722 | 0.562 | 0.712
+   R= 382 hits=       14: 272295.236 | 0.637 | 0.631 | 0.583 | 0.827 | 0.591 | 0.802
+   R= 481 hits=        1: 17997574.353 | 1.107 | 1.215 | 1.037 | 1.185 | 1.012 | 1.537
+ parity selection: level | t | odd-only gain | 10%: E_s E_o modelE_o T | 1%: E_s E_o modelE_o T
+   R= 104 H=  141711 t0(    none) x3.16 |   1.00   4.69   4.77 T 10.92 |   1.00   8.49  11.55 T 19.59 |
+   R= 104 H=  141711 t1(     lin) x2.10 |   5.34   8.00   7.57 T  3.24 |   7.31  26.49  23.18 T  9.47 |
+   R= 104 H=  141711 t3(    room) x2.02 |   6.30   9.18   8.98 T  3.03 |  14.93  42.86  40.08 T  8.55 |
+   R= 173 H=   13697 t0(    none) x3.17 |   1.00   6.03   6.47 T 13.10 |   1.00  14.03  20.45 T 29.29 |
+   R= 173 H=   13697 t1(     lin) x2.10 |   6.09   9.18   8.75 T  3.18 |  10.45  44.73  37.48 T  9.27 |
+   R= 173 H=   13697 t3(    room) x2.02 |   7.38   9.83   9.69 T  2.70 |  22.01  68.36  62.24 T  6.59 |
+   R= 243 H=    1335 t0(    none) x3.17 |   1.00   6.74   7.62 T 14.33 |   1.00  17.79  28.99 T 36.64 |
+   R= 243 H=    1335 t1(     lin) x2.10 |   6.69   9.60   9.28 T  3.02 |  12.03  58.61  49.14 T 10.25 |
+   R= 243 H=    1335 t3(    room) x2.02 |   8.11   9.98   9.91 T  2.49 |  27.66  83.37  78.16 T  6.15 |
+   R= 306 H=     142 t0(    none) x3.17 |   1.00   7.56   8.31 T 15.97 |   1.00  26.42  35.85 T 54.13 |
+   R= 306 H=     142 t1(     lin) x2.10 |   6.56   9.89   9.51 T  3.16 |  10.46  69.86  57.41 T 14.01 |
+   R= 306 H=     142 t3(    room) x2.02 |   8.23   9.95   9.96 T  2.44 |  30.30  89.96  86.92 T  6.03 |
+ anatomy at R=481:
+   t0(    none): s 481.00+-0.00  o 160.33+-26.19  model mean o for a hit 116.44  optimum (s,o,#): [(481, 108, 1)]  z_s [0] z_o [-2.0]
+   t1(     lin): s 142.52+-92.19  o 67.65+-44.16  model mean o for a hit 18.73  optimum (s,o,#): [(54, 13, 1)]  z_s [-0.96] z_o [-1.24]
+   t2(    deg2): s 100.10+-65.42  o 49.37+-32.65  model mean o for a hit 9.39  optimum (s,o,#): [(37, 7, 1)]  z_s [-0.96] z_o [-1.3]
+   t3(    room): s 92.82+-60.70  o 45.99+-30.46  model mean o for a hit 7.90  optimum (s,o,#): [(34, 7, 1)]  z_s [-0.97] z_o [-1.28]
+   t4(    deg3): s 74.01+-48.50  o 37.61+-25.01  model mean o for a hit 2.45  optimum (s,o,#): [(23, 3, 1)]  z_s [-1.05] z_o [-1.38]
+ cover first at R=Gmax: expected work by s_room 346908 (bin s=34, 263238 better, bin 167339, hits 1) blind 7174454 gain 3.03 nats = 18.4% of ln q^n (16.48); by o_room 436 gain 9.71 nats
+ equal work (W members -> best G): 4->200; 21->226; 45->226; 284->226; 944->304; 3129->379; 8632->383; 20339->383; 43215->383; 83670->395; 152893->474; 263238->474; 430577->481; 673641->481; 1006873->481; 
+ soft score: true min s_deep 14; cover first (W -> best s_deep): 4->17; 21->17; 45->16; 284->15; 944->14; (reached at W=944, 0.0066% of all)
+    LIST top1 6010250 G 481 D 7 R 481 so 481:108 54:13 37:7 34:7 23:3
+    LIST top2 3367817 G 474 D 7 R 481 so 481:132 60:17 35:8 32:7 22:1
+
+===== q=5 n=10; thresholds t0:none(K=0), t1:lin(K=5), t2:room(K=7), t3:deg2(K=15), t4:deg3(K=55); room total degree 9 -> cell size 5
+ first moment (hits/model) per level: naive | room s-model | room o-model | deg2 o-model | deg3 o-model | deg2 s | deg3 s
+   R=  45 hits=    89048:      1.043 | 0.918 | 0.915 | 0.977 | 1.000 | 0.976 | 0.998
+   R=  69 hits=     9545:      1.400 | 0.872 | 0.871 | 0.959 | 1.000 | 0.954 | 0.993
+   R=  95 hits=      975:      2.212 | 0.823 | 0.820 | 0.945 | 1.000 | 0.939 | 0.997
+   R= 123 hits=       95:      4.114 | 0.825 | 0.826 | 0.935 | 1.000 | 0.985 | 1.085
+   R= 155 hits=        9:     11.338 | 1.183 | 1.179 | 1.146 | 1.000 | 1.534 | 1.794
+   R= 206 hits=        1:    271.108 | 10.977 | 9.429 | 30.418 | 1.000 | 17.657 | 21.255
+ parity selection: level | t | odd-only gain | 10%: E_s E_o modelE_o T | 1%: E_s E_o modelE_o T
+   R=  45 H=   89048 t0(    none) x2.49 |   1.00   3.89   3.52 T  9.60 |   1.00   8.37   7.55 T 21.19 |
+   R=  45 H=   89048 t1(     lin) x2.04 |   3.90   7.68   7.28 T  4.16 |   7.01  29.10  26.54 T 10.75 |
+   R=  45 H=   89048 t2(    room) x2.03 |   4.20   8.29   7.93 T  4.17 |   8.36  34.74  32.08 T 11.36 |
+   R=  69 H=    9545 t0(    none) x2.49 |   1.00   4.89   4.42 T 11.62 |   1.00  12.46  11.33 T 29.29 |
+   R=  69 H=    9545 t1(     lin) x2.04 |   4.99   9.05   8.76 T  3.72 |  10.02  49.84  44.49 T 10.53 |
+   R=  69 H=    9545 t2(    room) x2.03 |   5.35   9.28   9.04 T  3.53 |  12.23  59.05  53.44 T 10.23 |
+   R=  95 H=     975 t0(    none) x2.49 |   1.00   5.76   5.26 T 13.56 |   1.00  17.31  15.86 T 39.81 |
+   R=  95 H=     975 t1(     lin) x2.04 |   5.95   9.71   9.48 T  3.33 |  15.20  68.56  62.55 T  9.26 |
+   R=  95 H=     975 t2(    room) x2.03 |   6.30   9.78   9.66 T  3.15 |  18.96  75.63  70.10 T  8.15 |
+   R= 123 H=      95 t0(    none) x2.49 |   1.00   6.74   6.05 T 15.69 |   1.00  29.27  21.32 T 66.57 |
+   R= 123 H=      95 t1(     lin) x2.04 |   7.08   9.82   9.79 T  2.83 |  24.14  82.95  75.45 T  7.04 |
+   R= 123 H=      95 t2(    room) x2.03 |   7.54  10.00   9.89 T  2.69 |  30.36  90.02  81.88 T  6.03 |
+ anatomy at R=206:
+   t0(    none): s 206.00+-0.00  o 82.40+-7.71  model mean o for a hit 67.35  optimum (s,o,#): [(206, 50, 1)]  z_s [0] z_o [-4.2]
+   t1(     lin): s 67.50+-18.88  o 33.14+-10.15  model mean o for a hit 11.99  optimum (s,o,#): [(51, 15, 1)]  z_s [-0.87] z_o [-1.79]
+   t2(    room): s 62.21+-17.49  o 30.68+-9.49  model mean o for a hit 9.30  optimum (s,o,#): [(49, 14, 1)]  z_s [-0.76] z_o [-1.76]
+   t3(    deg2): s 44.88+-12.95  o 23.06+-7.44  model mean o for a hit 3.73  optimum (s,o,#): [(41, 10, 1)]  z_s [-0.3] z_o [-1.75]
+   t4(    deg3): s 32.87+-9.87  o 20.59+-6.77  model mean o for a hit 0.00  optimum (s,o,#): [(16, 0, 1)]  z_s [-1.71] z_o [-3.04]
+ cover first at R=Gmax: expected work by s_room 2838028 (bin s=49, 2731230 better, bin 213595, hits 1) blind 4882813 gain 0.54 nats = 3.4% of ln q^n (16.09); by o_room 33842 gain 4.97 nats
+ equal work (W members -> best G): 15->124; 90->124; 455->124; 1585->124; 3925->127; 8175->127; 13460->127; 19210->127; 26615->127; 42285->131; 76670->174; 143925->174; 270750->174; 483180->174; 
+ soft score: true min s_deep 6; cover first (W -> best s_deep): 15->12; 90->8; 455->8; 1585->8; 3925->6; (reached at W=3925, 0.04% of all)
+    LIST top1 53169 G 206 D 5 R 206 so 206:50 51:15 49:14 41:10 16:0
+    LIST top2 8231833 G 185 D 4 R 206 so 206:57 48:11 45:10 32:4 18:3
+
+===== q=7 n=7; thresholds t0:none(K=0), t1:lin=room(K=7), t2:deg2(K=28), t3:deg3(K=140); room total degree 7 -> cell size 1
+ first moment (hits/model) per level: naive | room s-model | room o-model | deg2 o-model | deg3 o-model | deg2 s | deg3 s
+   R=  20 hits=    29681:      0.787 | 0.971 | 0.970 | 1.000 | 1.000 | 1.006 | 1.000
+   R=  30 hits=     5123:      0.634 | 0.881 | 0.920 | 1.000 | 1.000 | 0.954 | 1.000
+   R=  40 hits=     1125:      0.651 | 0.834 | 0.884 | 1.000 | 1.000 | 0.924 | 1.000
+   R=  50 hits=      247:      0.667 | 0.816 | 0.885 | 1.000 | 1.000 | 0.924 | 1.000
+   R=  60 hits=       50:      0.631 | 0.742 | 0.794 | 1.000 | 1.000 | 0.878 | 1.000
+   R=  78 hits=        1:      0.202 | 0.213 | 0.261 | 1.000 | 1.000 | 0.280 | 1.000
+ parity selection: level | t | odd-only gain | 10%: E_s E_o modelE_o T | 1%: E_s E_o modelE_o T
+   R=  20 H=   29681 t0(    none) x2.32 |   1.00   3.65   3.34 T  9.47 |   1.00   8.01   6.82 T 25.17 |
+   R=  20 H=   29681 t1(lin=room) x1.99 |   3.49   8.39   8.23 T  5.99 |   7.05  27.75  26.91 T   inf |
+   R=  30 H=    5123 t0(    none) x2.32 |   1.00   4.47   4.08 T 10.73 |   1.00  11.37   9.37 T 28.86 |
+   R=  30 H=    5123 t1(lin=room) x1.99 |   4.41   9.29   9.08 T  4.33 |  11.08  50.94  48.51 T 12.85 |
+   R=  40 H=    1125 t0(    none) x2.32 |   1.00   5.12   4.67 T 12.00 |   1.00  15.37  12.48 T 36.65 |
+   R=  40 H=    1125 t1(lin=room) x1.99 |   5.49   9.73   9.60 T  3.55 |  16.23  69.70  66.21 T  9.39 |
+   R=  50 H=     247 t0(    none) x2.32 |   1.00   5.60   5.27 T 13.02 |   1.00  18.13  16.26 T 42.29 |
+   R=  50 H=     247 t1(lin=room) x1.99 |   5.87   9.97   9.85 T  3.38 |  18.68  82.71  79.39 T  9.09 |
+ anatomy at R=78:
+   t0(    none): s 78.00+-0.00  o 33.43+-4.33  model mean o for a hit 26.15  optimum (s,o,#): [(78, 29, 1)]  z_s [0] z_o [-1.02]
+   t1(lin=room): s 26.51+-5.06  o 13.37+-3.61  model mean o for a hit 3.14  optimum (s,o,#): [(21, 3, 1)]  z_s [-1.09] z_o [-2.88]
+   t2(    deg2): s 17.38+-4.01  o 11.14+-3.24  model mean o for a hit 0.00  optimum (s,o,#): [(11, 0, 1)]  z_s [-1.59] z_o [-3.43]
+   t3(    deg3): s 11.14+-3.24  o 11.14+-3.24  model mean o for a hit 0.00  optimum (s,o,#): [(0, 0, 1)]  z_s [-3.43] z_o [-3.43]
+ cover first at R=Gmax: expected work by s_room 99676 (bin s=21, 76550 better, bin 46251, hits 1) blind 411772 gain 1.42 nats = 10.4% of ln q^n (13.62); by o_room 153 gain 7.90 nats
+ equal work (W members -> best G): 1->9; 6->46; 52->46; 283->59; 1106->68; 3451->68; 9319->75; 21456->75; 43183->77; 
+ soft score: true min s_deep 0; cover first (W -> best s_deep): 1->5; 6->2; 52->1; 283->1; 1106->1; 3451->1; 9319->1; 21456->1; 43183->1; 76550->1; 122801->0; (reached at W=122801, 15% of all)
+    LIST top1 178012 G 78 D 3 R 78 so 78:29 21:3 11:0 0:0
+    LIST top2 573984 G 77 D 3 R 78 so 78:36 19:6 7:1 1:1
+
+===== q=9 n=6; thresholds t0:none(K=0), t1:room(K=6), t2:lin(K=9), t3:deg2(K=45), t4:deg3(K=285); room total degree 6 -> cell size 1
+ first moment (hits/model) per level: naive | room s-model | room o-model | deg2 o-model | deg3 o-model | deg2 s | deg3 s
+   R=  20 hits=    11152:      0.800 | 0.962 | 0.906 | 1.000 | 1.000 | 1.064 | 1.000
+   R=  30 hits=     2170:      0.961 | 1.242 | 1.035 | 1.000 | 1.000 | 1.452 | 1.000
+   R=  45 hits=      666:      4.522 | 7.267 | 2.087 | 1.000 | 1.000 | 6.180 | 1.000
+   R=  60 hits=      129:     13.432 | 20.551 | 2.184 | 1.000 | 1.000 | 27.170 | 1.000
+   R=  80 hits=       81:    321.409 | 527.294 | 2.449 | 1.000 | 1.000 | 389.347 | 1.000
+   R= 120 hits=        1:   5762.182 | 9172.845 | 5.369 | 1.000 | 1.000 | 5002.011 | 1.000
+ parity selection: level | t | odd-only gain | 10%: E_s E_o modelE_o T | 1%: E_s E_o modelE_o T
+   R=  20 H=   11152 t0(    none) x2.26 |   1.00   4.95   4.23 T 12.18 |   1.00  12.72  10.92 T 38.89 |
+   R=  20 H=   11152 t1(    room) x2.09 |   2.72   7.82   7.30 T  6.71 |   4.65  27.36  24.75 T 25.39 |
+   R=  20 H=   11152 t2(     lin) x1.94 |   3.76   9.40   9.52 T  5.48 |   8.91  47.65  49.77 T   inf |
+   R=  30 H=    2170 t0(    none) x2.27 |   1.00   6.11   5.30 T 14.12 |   1.00  29.52  17.67 T 70.00 |
+   R=  30 H=    2170 t1(    room) x2.10 |   2.88   8.59   8.55 T  6.37 |   6.53  51.31  46.48 T 19.40 |
+   R=  30 H=    2170 t2(     lin) x1.94 |   3.96   9.47   9.91 T  4.73 |  10.59  74.53  81.69 T 18.57 |
+   R=  45 H=     666 t0(    none) x2.27 |   1.00   6.87   7.76 T 15.76 |   1.00  55.86  53.06 T130.82 |
+   R=  45 H=     666 t1(    room) x2.10 |   1.64   9.12   9.78 T 11.59 |   5.20  66.96  86.71 T 29.29 |
+   R=  45 H=     666 t2(     lin) x1.95 |   1.75   9.73  10.00 T 10.71 |   9.53  73.59  99.29 T 16.80 |
+   R=  60 H=     129 t0(    none) x2.27 |   1.00   9.77   8.28 T 22.68 |   1.00  97.67  55.51 T199.29 |
+   R=  60 H=     129 t1(    room) x2.10 |   1.56  10.00   9.97 T 13.29 |   1.07  95.93  96.85 T191.28 |
+   R=  60 H=     129 t2(     lin) x1.95 |   3.61  10.00  10.00 T  5.37 |   5.98  99.79  99.97 T 35.32 |
+ anatomy at R=120:
+   t0(    none): s 120.00+-0.00  o 53.33+-5.89  model mean o for a hit 22.82  optimum (s,o,#): [(120, 24, 1)]  z_s [0] z_o [-4.98]
+   t1(    room): s 59.19+-6.52  o 28.53+-5.11  model mean o for a hit 3.41  optimum (s,o,#): [(55, 4, 1)]  z_s [-0.64] z_o [-4.8]
+   t2(     lin): s 41.57+-5.97  o 21.58+-4.56  model mean o for a hit 0.45  optimum (s,o,#): [(34, 0, 1)]  z_s [-1.27] z_o [-4.73]
+   t3(    deg2): s 26.50+-4.82  o 19.97+-4.36  model mean o for a hit 0.00  optimum (s,o,#): [(8, 0, 1)]  z_s [-3.84] z_o [-4.58]
+   t4(    deg3): s 19.97+-4.36  o 19.97+-4.36  model mean o for a hit 0.00  optimum (s,o,#): [(0, 0, 1)]  z_s [-4.58] z_o [-4.58]
+ cover first at R=Gmax: expected work by s_room 158781 (bin s=55, 139823 better, bin 37915, hits 1) blind 265721 gain 0.51 nats = 3.9% of ln q^n (13.18); by o_room 5 gain 10.88 nats
+ equal work (W members -> best G): 2->45; 22->45; 66->45; 248->46; 828->70; 2260->76; 5790->76; 12649->108; 24969->112; 
+ soft score: true min s_deep 0; cover first (W -> best s_deep): 2->13; 22->9; 66->8; 248->6; 828->6; 2260->6; 5790->4; 12649->3; 24969->3; 43662->3; 69594->2; 102705->2; 139823->2; 177738->0; (reached at W=177738, 33% of all)
+    LIST top1 5952 G 120 D 3 R 120 so 120:24 55:4 34:0 8:0 0:0
+    LIST top2 4505 G 118 D 3 R 120 so 120:26 56:6 36:2 10:2 2:2

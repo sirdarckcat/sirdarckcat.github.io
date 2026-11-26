@@ -1,0 +1,16 @@
+PARI stack size set to 1000000000 bytes, maximum size set to 1000001536
+n < 40000 coprime to 6: 13333 curves; formula with the correction at square factors of m fails 0 times
+m = 1+1728n squarefree: 12151 curves; w(E_n) = -(-1)^omega(n) fails 0 times
+counts by (omega(n), root number): [((0, -1), 1), ((1, -1), 246), ((1, 1), 4015), ((2, -1), 6376), ((2, 1), 310), ((3, -1), 88), ((3, 1), 2181), ((4, -1), 116)]
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 30 digits, omega = 2: root number -1, m squarefree: True
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 30 digits, omega = 2: root number -1, m squarefree: True
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 30 digits, omega = 2: root number -1, m squarefree: True
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 30 digits, omega = 2: root number -1, m squarefree: True
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 29 digits, omega = 2: root number -1, m squarefree: True
+   n with 15 digits, omega = 1: root number +1, m squarefree: True
+   n with 29 digits, omega = 2: root number -1, m squarefree: True

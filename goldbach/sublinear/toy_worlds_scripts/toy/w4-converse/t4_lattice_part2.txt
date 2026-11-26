@@ -1,0 +1,20 @@
+Part 2. the room a certificate needs.  n = m + 1 coordinates, primes from 467, random progressions of density 1/2,
+        K = E 2^m; least c = ln(E)/n (step 0.05) with prod(1+2tau_j)/prod(1-tau_j) <= e for the LLL-reduced basis (median of 5 draws)
+    n    c = ln E / n     ln n     Hadamard floor ln(1/geometric mean tau) at that c
+    2       2.00         0.69      1.75
+    3       2.65         1.10      2.21
+    4       3.05         1.39      2.49
+    5       3.35         1.61      2.70
+    6       3.65         1.79      2.93
+    8       4.15         2.08      3.21
+   10       4.50         2.30      3.44
+   13       4.80         2.56      3.71
+   16       5.05         2.77      3.99
+   20       5.25         3.00      4.26
+   25       5.40         3.22      4.65
+   30       5.55         3.40      5.11
+   40       5.65         3.69      5.41
+
+real	1m30.494s
+user	1m29.726s
+sys	0m0.047s

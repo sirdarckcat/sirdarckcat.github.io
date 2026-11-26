@@ -1,0 +1,12 @@
+F_2: A = L_2 * (1), deg L_2 = 6, a = 6, lam = 1, N = lam*A^4, n = 24
+  d = 1: 2 monic irreducible rows, 2 tested, N - Q reducible-by-parity (r even) for 2; formula: r even 2; BAD 0; squarefree Q: 50 checked, 0 bad
+TOTAL formula checks 52, disagreements 0; irreducible rows tested 2, with r even 2
+F_2: A = L_2 * (x), deg L_2 = 6, a = 7, lam = 1, N = lam*A^4, n = 28
+  d = 1: 2 monic irreducible rows, 2 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 2; BAD 0; squarefree Q: 50 checked, 0 bad
+TOTAL formula checks 52, disagreements 0; irreducible rows tested 2, with r even 0
+F_8: A = L_1 * (x), deg L_1 = 8, a = 9, lam = z, N = lam*A^4, n = 36
+  d = 1: 8 monic irreducible rows, 8 tested, N - Q reducible-by-parity (r even) for 0; formula: r odd 8; BAD 0; squarefree Q: 50 checked, 0 bad
+TOTAL formula checks 58, disagreements 0; irreducible rows tested 8, with r even 0
+F_4: A = L_1 * (x), deg L_1 = 4, a = 5, lam = z, N = lam*A^4, n = 20
+  d = 1: 4 monic irreducible rows, 4 tested, N - Q reducible-by-parity (r even) for 4; formula: r even 4; BAD 0; squarefree Q: 50 checked, 0 bad
+TOTAL formula checks 54, disagreements 0; irreducible rows tested 4, with r even 4

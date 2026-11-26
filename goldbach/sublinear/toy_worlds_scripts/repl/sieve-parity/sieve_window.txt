@@ -1,0 +1,3 @@
+dimension-2 sieve on [1,Q): X V(z) = Q * (1/2) prod_(3<=r<=463) (1 - 2/r) = 2165.3; s = 1.989
+Selberg upper bound, leading term: X V / sigma_2(s) = 3474 (sigma_2 = 0.6234); lower-bound sieves of dimension 2: zero for s below the sifting limit beta_2 = 4.27 (from memory), here s = 1.99
+greedy (heaviest non-zero class at each prime, ascending): 1587 rows; anti-greedy (lightest non-zero class): 2696 rows; real cover 1502; product of local densities 2150.4

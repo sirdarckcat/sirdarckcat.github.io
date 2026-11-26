@@ -1,0 +1,22 @@
+X = 1000000000000, L = 40000000: factored in 5 s; mean lambda over all n = +0.000195; primes 1447020 (expected 1447648)
+z = 100 (u = 6.00): rough 4812715 (0.12032); mean lambda on rough -0.000298 +- 0.000456; primes among rough 0.30067; primes among rough with Omega odd 0.60115
+
+target lambda(n): 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.32, mean z^2 = 1.022; expected max of 102 normals about 3.04
+   largest: lambda(n+6): -2.32; number of primes <= 1000 dividing n+6: -2.29; lambda(n+1): -2.21; ln of the 1000-smooth squarefree kernel of n+6: -2.04; n+4 has no prime factor in (2, 1000]: -1.96; n = 1 mod 7: -1.84
+   n's own factors between z and 1000 (inside the sieve range if the sieve went to 1000): own: number of primes in (z, 1000] dividing n: +7.81; own: least prime factor <= 1000 (0 if none): +78.14
+
+target primality of n: 102 features of the neighbourhood and of n modulo small numbers: max |z| = 4.07, mean z^2 = 2.219; expected max of 102 normals about 3.04
+   largest: ln of the 1000-smooth squarefree kernel of n+6: +4.07; ln of the 1000-smooth squarefree kernel of n-2: +3.89; ln of the 1000-smooth squarefree kernel of n+2: +3.56; number of primes <= 1000 dividing n+6: +3.40; ln of the 1000-smooth squarefree kernel of n-1: +3.28; ln of the 1000-smooth squarefree kernel of n+3: +3.25
+   n's own factors between z and 1000 (inside the sieve range if the sieve went to 1000): own: number of primes in (z, 1000] dividing n: -906.52; own: least prime factor <= 1000 (0 if none): -992.52
+
+======
+X = 1000000000000, L = 40000000: factored in 5 s; mean lambda over all n = +0.000195; primes 1447020 (expected 1447648)
+z = 1000 (u = 4.00): rough 3238163 (0.08095); mean lambda on rough -0.022738 +- 0.000556; primes among rough 0.44686; primes among rough with Omega odd 0.87386
+
+target lambda(n): 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.98, mean z^2 = 0.817; expected max of 102 normals about 3.04
+   largest: lambda(n+6): -2.98; lambda(n+1): -2.93; n = 9 mod 11: -2.50; ln of the 1000-smooth squarefree kernel of n+6: -1.68; n = 11 mod 13: +1.56; ln of the 1000-smooth squarefree kernel of n-2: -1.54
+   n's own factors between z and 1000 (inside the sieve range if the sieve went to 1000): 
+
+target primality of n: 102 features of the neighbourhood and of n modulo small numbers: max |z| = 2.74, mean z^2 = 0.667; expected max of 102 normals about 3.04
+   largest: lambda(n+1): +2.74; lambda(n-2): -1.97; n+6 has no prime factor in (2, 1000]: -1.91; lambda(n+6): +1.88; lambda(n+3): +1.65; n = 9 mod 11: +1.65
+   n's own factors between z and 1000 (inside the sieve range if the sieve went to 1000): 

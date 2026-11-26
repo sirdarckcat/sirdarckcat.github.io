@@ -1,0 +1,8 @@
+(a) pin: best class minus mean, per prime 4.91 rows for 6.34 nats = 0.77 rows per nat (first 8 later primes: 0.80)
+(b) mitm_j3_s0_k0.pkl: 14 points; exact - first-order: mean +0.57, sd 0.73, min +0, max +2; least exact rows 1478 (least first-order 1478)
+(b) mitm_j3_s2_k2.pkl: 1500 points; exact - first-order: mean +0.56, sd 0.93, min -2, max +5; least exact rows 1477 (least first-order 1478)
+(b) mitm_j4_s1_k1.pkl: 2 points; exact - first-order: mean +0.00, sd 0.00, min +0, max +0; least exact rows 1471 (least first-order 1471)
+(b) mitm_j4_s3_k3.pkl: 596 points; exact - first-order: mean +0.90, sd 1.23, min -2, max +6; least exact rows 1471 (least first-order 1471)
+(b) mitm_j5_s2_k2.pkl: 2 points; exact - first-order: mean +0.00, sd 0.00, min +0, max +0; least exact rows 1465 (least first-order 1465)
+(b) mitm_j5_s4_k4.pkl: 117 points; exact - first-order: mean +0.94, sd 1.34, min -1, max +6; least exact rows 1465 (least first-order 1465)
+(b) mitm_j6_s5_k5.pkl: 4 points; exact - first-order: mean -0.25, sd 0.43, min -1, max +0; least exact rows 1458 (least first-order 1459)

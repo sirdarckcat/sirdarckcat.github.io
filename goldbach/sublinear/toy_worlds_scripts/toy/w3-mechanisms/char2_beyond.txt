@@ -1,0 +1,8 @@
+F_2: A = L_4 * (1), deg L_4 = 30, a = 30, lam = 1, N = lam*A^4, n = 120
+  d = 11: 186 monic irreducible rows, 186 tested, N - Q reducible-by-parity (r even) for 30; formula: r odd 136; no formula (S does not divide A): r even 30; no formula (S does not divide A): r odd 20; BAD 0; squarefree Q: 100 checked, 0 bad
+  d = 12: 335 monic irreducible rows, 335 tested, N - Q reducible-by-parity (r even) for 253; formula: r even 128; no formula (S does not divide A): r even 24; no formula (S does not divide A): r odd 18; no formula (q_(d-1) = 0): r even 101; no formula (q_(d-1) = 0): r odd 64; BAD 0; squarefree Q: 100 checked, 0 bad
+  d = 13: 630 monic irreducible rows, 630 tested, N - Q reducible-by-parity (r even) for 134; formula: r odd 358; no formula (S does not divide A): r even 134; no formula (S does not divide A): r odd 138; BAD 0; squarefree Q: 100 checked, 0 bad
+TOTAL formula checks 922, disagreements 0; irreducible rows tested 1151, with r even 417
+F_4: A = L_2 * (1), deg L_2 = 20, a = 20, lam = 1, N = lam*A^4, n = 80
+  d = 7: 2340 monic irreducible rows, 2340 tested, N - Q reducible-by-parity (r even) for 1948; formula: r even 1440; no formula (S does not divide A): r even 508; no formula (S does not divide A): r odd 392; BAD 0; squarefree Q: 100 checked, 0 bad
+TOTAL formula checks 1540, disagreements 0; irreducible rows tested 2340, with r even 1948

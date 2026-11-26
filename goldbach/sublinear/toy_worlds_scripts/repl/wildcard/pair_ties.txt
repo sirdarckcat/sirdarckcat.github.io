@@ -1,0 +1,7 @@
+members 1500, rows 1502, pairs 1127251, prime rate of a surviving row 0.05352
+joint primes over all pairs: found 977196, independence expects 976414, ratio 1.0008
+a pair survives together in 302 members on average; independence expects 0.866 joint primes a pair, a tie 16.2
+joint primes a pair:   0:472887 1:411911 2:177723 3:51534 4:11066 5:1845 6:252 7:28 8:5
+independent (Poisson): 0:474530.9 1:410104.1 2:177677.0 3:51452.6 4:11203.9 5:1956.8 6:285.5 7:35.8 8:3.9 9:0.4 10:0.0
+largest joint count 8; variance of the count over pairs / mean: 0.9962 (1 for independent rows up to the spread of the means: 1.0023)
+primes per member: variance / binomial variance = 1.0285 +- 0.0365

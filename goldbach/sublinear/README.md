@@ -5,6 +5,14 @@ this session (experiments, number theory) and the Lean session (proofs). This
 file is the running record of what has been tried, what is proved, what is
 only measured, and what is open.
 
+**26 November, 08:37 UTC: work stopped.** At the user's decision, relayed by
+the lead, all work in every session stopped and everything goes into one
+pull request. `HANDOVER.md` in this folder is a plain-English summary of this
+file for a reader without a mathematics degree: the question, what was tried,
+what is proved, computed twice, computed once or opinion, the corrections
+and withdrawals, and the open questions with the number that would decide
+each.
+
 **Where it stands (25 November, midday).** No method was found, and the
 reason is now understood and quantified. The results of 24 November sharpen
 it; they are in "A floor under every cover" and the sections after it:
@@ -2062,7 +2070,7 @@ World 1 is in the kernel (Lean session, `GoldbachGaps/Worlds/NoCoupling.lean`,
 commit 15a3606: the coordinatewise optimum, and the k best listed with at
 most 1 + m·n candidates for the n-th).
 
-### The transfer table (first form, 26 November 01:58 UTC)
+### The transfer table (first form, 26 November 01:58 UTC; corrected as the verifiers reported, no later form)
 
 One row per tool. Status: K = in the Lean kernel; 2 = proved or computed
 twice independently; 1 = one session's proof or computation so far (the
@@ -2461,6 +2469,86 @@ least 412, the same as the lattice lens's.
   least summand above 160,000 lie in covers of about 1,750 rows. And each
   hit there costs e^13.5 times more, since work is per member: the mass is
   in the bulk and the density at the bottom.
+
+**Harmonic analysis, ergodic theory and almost periodicity** (page
+returned; its verifiers did not run). No substitute. On the exact sieve
+counts of the whole real window, computed by a third independent programme
+(same mean, spread and minimum as the other two): the spectrum of the count
+along the window is flat except at the frequencies t/s of the later primes
+(its largest single coefficient holds 2.5·10^−5 of the variance; the lines
+above noise hold 3.0%, all at those frequencies); blocks of consecutive
+members are more alike than random ones, not less, so there is no
+sub-window to select; the best predictor built from the residues at a set
+of primes is, by an identity proved in the product model, the sieve count
+on that set, so a "few dominant frequencies" predictor is a shallower
+sieve (−1.56 nats against the statistic in use for the 574,370
+frequencies to 2,999); near-periods exist only as multiples of later
+primes. On 5,000 real members with all 3.37 million surviving rows tested,
+no dependence between neighbouring rows of the kind found by Lemke Oliver
+and Soundararajan for consecutive primes (pooled ratio 1.0015 ± 0.0027),
+and no additive, quadratic or real-character phase correlates with
+primality (largest peaks at the noise maximum). The one item worth several
+nats on paper, a pin on a modulus with an exceptional (Siegel) zero, is
+worth nothing on what is known: no such modulus exists below 400,000
+(Platt's verification of the Riemann hypothesis for those characters), and
+on the real rows each prime from 467 to 5,000 splits the prime rate by
+under 0.7%. Translation ties between targets (row q + t of N + t tests the
+same integer as row q of N) exist, but N + t loses the cover: at least
+1,981 rows where N has 1,502.
+
+**Wild card** (page returned; its verifiers did not run). No substitute.
+Every even N up to 2·10^10 recomputed (the known record holders
+reproduced): among the 6.9 million with a least summand of 500 or more,
+nothing that is not a function of N modulo primes carries information
+(N modulo squares of primes inside each class, N modulo powers of 2); an
+apparent 23-standard-deviation bias in the binary digit sum of the deep N
+is N modulo 3 in disguise, and the decimal one N modulo 3 and 11, decaying
+like x^−0.21. A learned predictor (a small neural network and a logistic
+regression on 222 cheap features of a row) on a million real 200-digit
+rows: no gain out of sample, where planted signals of 0.001 and 0.006 nats
+a row were recovered. All 1,127,251 pairs of rows of the real cover: joint
+primes 1.0008 times independence, no pair prime together in more than 8 of
+1,500 members where a tie would give about 16. Obstructions recalled or
+proved: under Dickson's conjecture, two rows are tied on a progression only
+through a cover; families of N definable by addition and order, or
+automatic in two independent bases, force rows only through congruences
+(Cobham, Semenov); tame transcendental families have too few members to
+hold a cover. Quantum search, for the record only: it would halve the
+exponent (to about 18 nats of coherent iterations, each of 10^10 to 10^11
+gates), and no more without structure.
+
+**Where the round stopped.** The usage limit of the model this session ran
+on was reached at 04:08 UTC on 26 November, and every verifier of the eight
+returned lens pages, the synthesis and the critic were refused by it; the
+eight pages are therefore one programme's work each, recorded above with
+that status. The question the stopped cryptanalysis lens left open was
+answered meanwhile by the Opus session (`goldbach/bottom_up/worlds/world4.md`
+on its branch, commit b71ae73; its proofs, not checked here): deciding
+whether some k below K has k mod s_i in a given pair of classes at each of
+n distinct primes is NP-complete, by a reduction from subset sum through
+the arc identity of World 5, so an enumerator priced by its output for
+arbitrary tables would give P = NP; and, in a model where a method learns
+a prime's table only by reading it, an exact selection of the best members
+must read at least as many classes as the sieve does, to within a factor
+1.2 to 6.2. Its sharpening of the thin-set case left open by the World 2
+verifier (same commit): a decoder certifying a set C of members must name
+them at about 6 nats each, so the obstacle is naming members without their
+scores, which is the selection problem itself. And its recount of the World
+2 figures with weights on occupied classes only (commit d28ca35): places to
+1.45·10^8, 1.6·10^14 weighted classes, 7.5·10^6 a member; with no place
+allowed a larger share of the deviation than 467 has, 851 a member.
+
+The multi-list question the lead asked at 02:58 UTC (how far four-list and
+tree methods carry the arc programme, as a curve in the number of later
+primes) was started as two independent programmes at 04:05 UTC; both were
+refused by the usage limit before computing anything. What exists is a
+prediction made from the verified numbers before they ran, sent to the lead
+at 04:02 UTC and not tested: two sorted lists reach nine later primes within
+one window scan's work, for 5 to 6 rows of first-order score over the own
+window; four lists reach twelve at a slack of about 7 rows, for a net loss
+of about one row, because the slack a tree needs grows faster with the
+precision than the joint optimum pulls ahead; and any such number comes
+alone, about 14 nats short per unit of work of the window scan it replaces.
 
 ## A provable lower bound (proved in Lean on 23 November)
 

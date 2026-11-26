@@ -1,0 +1,61 @@
+checks: rho(2) = 0.306853 (1 - ln 2 = 0.306853); rho(10) = 2.7702e-11 (literature 2.7702e-11); rho(20) = 2.4618e-29 (literature 2.4618e-29); e^gamma omega(8) = 1.000000026
+
+(1) u | excess of even over odd Omega among z-rough n, rho'(u)/omega(u) | P(prime | rough) = 1/(u omega(u)) | P(prime | rough, Omega odd) = 2/(u omega(u) + rho(u-1)) | ratio
+    2.50 | -4.230e-01 | 0.71151 | 1.00000 | 1.4055   
+    3.00 | -1.812e-01 | 0.59062 | 1.00000 | 1.6931   
+    3.60 | -5.362e-02 | 0.49522 | 0.94004 | 1.8982   toy: degree 18, sieved to degree 5
+    4.50 | -6.423e-03 | 0.39577 | 0.78649 | 1.9872   toy: degree 18, sieved to degree 4
+    6.00 | -1.053e-04 | 0.29685 | 0.59363 | 1.9998   toy: degree 18, sieved to degree 3
+    9.00 | -6.396e-09 | 0.19790 | 0.39579 | 2.0000   
+   16.67 | -4.833e-22 | 0.10684 | 0.21369 | 2.0000   Z: 200 digits sieved to 1e12
+   20.00 | -1.991e-28 | 0.08905 | 0.17811 | 2.0000   Z: 200 digits sieved to 1e10
+   25.00 | -1.429e-38 | 0.07124 | 0.14249 | 2.0000   Z: 200 digits sieved to 1e8
+
+(2) exact in F_q[x]: n, d | monic of degree n with all irreducible factors of degree > d | odd number of factors | irreducible | P(irr | rough) | P(irr | rough, odd) | u = n/d
+   q=3, n=18, d=1 | 114791256 | 57408750 | 21522228 | 0.1875 | 0.3749 | 18.00
+   q=3, n=18, d=2 | 80621568 | 40341888 | 21522228 | 0.2670 | 0.5335 | 9.00
+   q=3, n=18, d=3 | 59611116 | 29941560 | 21522228 | 0.3610 | 0.7188 | 6.00
+   q=3, n=18, d=4 | 47668428 | 24478920 | 21522228 | 0.4515 | 0.8792 | 4.50
+   q=3, n=18, d=5 | 39091932 | 21789144 | 21522228 | 0.5506 | 0.9878 | 3.60
+   q=3, n=18, d=6 | 33695496 | 21522228 | 21522228 | 0.6387 | 1.0000 | 3.00
+   q=3, n=18, d=9 | 21522228 | 21522228 | 21522228 | 1.0000 | 1.0000 | 2.00
+   q=5, n=12, d=1 | 80000000 | 40030000 | 20343700 | 0.2543 | 0.5082 | 12.00
+   q=5, n=12, d=2 | 53186340 | 26777100 | 20343700 | 0.3825 | 0.7597 | 6.00
+   q=5, n=12, d=3 | 38523330 | 20917500 | 20343700 | 0.5281 | 0.9726 | 4.00
+   q=5, n=12, d=4 | 30637030 | 20343700 | 20343700 | 0.6640 | 1.0000 | 3.00
+   q=5, n=12, d=5 | 23673190 | 20343700 | 20343700 | 0.8594 | 1.0000 | 2.40
+   q=5, n=12, d=6 | 20343700 | 20343700 | 20343700 | 1.0000 | 1.0000 | 2.00
+   q=9, n=9, d=1 | 134217728 | 67240448 | 43046640 | 0.3207 | 0.6402 | 9.00
+   q=9, n=9, d=2 | 85734080 | 45379520 | 43046640 | 0.5021 | 0.9486 | 4.50
+   q=9, n=9, d=3 | 62175600 | 43046640 | 43046640 | 0.6923 | 1.0000 | 3.00
+   q=9, n=9, d=4 | 43046640 | 43046640 | 43046640 | 1.0000 | 1.0000 | 2.25
+   q=9, n=9, d=5 | 43046640 | 43046640 | 43046640 | 1.0000 | 1.0000 | 1.80
+   q=9, n=9, d=6 | 43046640 | 43046640 | 43046640 | 1.0000 | 1.0000 | 1.50
+   q=3, n=30, d=1 | 61004779879896 | 30502399505886 | 6863037256208 | 0.1125 | 0.2250 | 30.00
+   q=3, n=30, d=2 | 42845606719488 | 21422826034560 | 6863037256208 | 0.1602 | 0.3204 | 15.00
+   q=3, n=30, d=3 | 31679839129752 | 15840019114740 | 6863037256208 | 0.2166 | 0.4333 | 10.00
+   q=3, n=30, d=4 | 25332169695096 | 12666739171188 | 6863037256208 | 0.2709 | 0.5418 | 7.50
+   q=3, n=30, d=5 | 20783006850864 | 10398679025076 | 6863037256208 | 0.3302 | 0.6600 | 6.00
+   q=3, n=30, d=6 | 17724176847840 | 8906975646300 | 6863037256208 | 0.3872 | 0.7705 | 5.00
+   q=3, n=30, d=10 | 11107605508808 | 6863037256208 | 6863037256208 | 0.6179 | 1.0000 | 3.00
+   q=3, n=30, d=15 | 6863037256208 | 6863037256208 | 6863037256208 | 1.0000 | 1.0000 | 2.00
+
+(3) Z, 200 digits, sieve to 1e8: a parity oracle for surviving rows, in the selection model of the search (exact binomial thinning)
+   baseline (cut on the count S, test survivors to the first prime): best keep 0.76% (S <= 461); at the fleet's 1.5% keep the value is -0.081 nats from it
+   FREE parity: +1.38 nats (members kept on the count of odd survivors <= 217: 0.649%; tests halved); +0.39 nats if it is used only to halve the tests
+   parity at a price of c Fermat tests per surviving row (bought for the members kept on S, then a second cut on the odd survivors):
+      c = 1e-05: +1.35 nats (keep on S 48.85%, kept after the parity cut 0.638% of all)
+      c = 0.0001: +1.25 nats (keep on S 21.41%, kept after the parity cut 0.690% of all)
+      c = 0.001: +0.94 nats (keep on S 5.99%, kept after the parity cut 0.628% of all)
+      c = 0.003: +0.68 nats (keep on S 2.98%, kept after the parity cut 0.508% of all)
+      c = 0.01: +0.29 nats (keep on S 1.35%, kept after the parity cut 0.439% of all)
+      c = 0.02: +0.02 nats (keep on S 0.76%, kept after the parity cut 0.345% of all)
+      c = 0.03: -0.16 nats (keep on S 0.56%, kept after the parity cut 0.293% of all)
+      c = 0.1: -0.77 nats (keep on S 0.25%, kept after the parity cut 0.183% of all)
+      c = 0.5: -1.71 nats (keep on S 0.06%, kept after the parity cut 0.055% of all)
+   parity bought row by row as the rows are reached (selection as now; each survivor reached costs c, and half of them a test):
+      c = 0: +0.39 nats
+      c = 0.01: +0.38 nats
+      c = 0.1: +0.29 nats
+      c = 0.3: +0.13 nats
+      c = 0.5: +0.00 nats

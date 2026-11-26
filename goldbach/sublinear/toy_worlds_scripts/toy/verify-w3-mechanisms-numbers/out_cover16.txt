@@ -1,0 +1,6 @@
+F_16: rows of degree <= 3: 1496; moduli: 16 of degree < 2, plus 24 of degree 2 (from 120); total degree 64; unused room 0
+residues done 1s
+  restart 0: rows left 308; by degree [3, 15, 290]; 1s
+  restart 1: rows left 303; by degree [1, 20, 282]; 1s
+  restart 29: rows left 299; by degree [1, 13, 285]; 2s
+BEST rows left 299 of 1496

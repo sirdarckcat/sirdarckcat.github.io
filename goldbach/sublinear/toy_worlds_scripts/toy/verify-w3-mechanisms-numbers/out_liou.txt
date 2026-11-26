@@ -1,0 +1,4 @@
+odd primes below 6000: 782
+primorial(43)^2: digits 33, rows 769, mean lam -0.0039 (se 0.0361), N - q prime for 87; 4s
+primorial(29)^3: digits 30, rows 773, mean lam -0.0298 (se 0.0360), N - q prime for 76; 2s
+primorial(13)^8: digits 36, rows 777, mean lam +0.0347 (se 0.0359), N - q prime for 51; 5s

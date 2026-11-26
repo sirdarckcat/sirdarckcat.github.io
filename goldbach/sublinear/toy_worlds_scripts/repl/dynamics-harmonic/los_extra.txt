@@ -1,0 +1,12 @@
+row totals: chi2 over the 1502 rows 1531.5 (expected 1502 +- 55); largest |z| of a row 3.78 (noise maximum 3.82)
+additive characters e(jq/2^18), j=1..131071: mean power 1.0209 (1 = independent flags), largest 11.43 at j=24943 (noise maximum about 11.78 +- 1.3); share of power in the 100 largest 0.00606 (white: 0.00624)
+e(aq/m), m <= 60 (1101 characters): largest power 5.39 at a/m = (34, 47)
+quadratic phases e(alpha q^2), 2000 random alpha: mean power 1.024, largest 6.57 (noise maximum about 7.60)
+prime rate, even k 0.05340, odd k 0.05362: ratio - 1 = -0.0042 +- 0.0046
+  N-q = 1 mod 8: rate 0.05361 (842889 tests)
+  N-q = 3 mod 8: rate 0.05328 (842652 tests)
+  N-q = 5 mod 8: rate 0.05358 (843173 tests)
+  N-q = 7 mod 8: rate 0.05358 (844094 tests)
+Legendre symbols to the 300 primes after 400,000: mean z^2 0.826, largest |z| 2.71 (noise maximum 3.38)
+  D=400009: max over classes a of |sum_rows chi(a-q)| = 228 (sqrt(2 n ln D) = 197); worth 0.0243*delta*228 = 5.54*delta nats for ln D = 12.9 nats of room
+  D=1000003: max over classes a of |sum_rows chi(a-q)| = 190 (sqrt(2 n ln D) = 204); worth 0.0243*delta*190 = 4.62*delta nats for ln D = 13.8 nats of room

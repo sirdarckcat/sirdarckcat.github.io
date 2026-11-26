@@ -1,0 +1,12 @@
+rows 1502, chance a row is prime 0.02398, exponent at 200,000: 36.46 nats (a member is a hit with chance e^-36.46)
+one window: e^16.88 members, expected hits e^-19.58; windows needed classically e^19.58 = 3.2e+08
+Grover over the union of those windows: (pi/4) e^(E/2) = 6.5e+07 coherent iterations (17.99 nats); optimal for a black-box predicate (BBBV 1997, Zalka 1999)
+one coherent Fermat test of a 664-bit number: about 5.9e+07 Toffoli gates
+oracle with every row tested (compute and uncompute): 1.8e+11 Toffolis; total 1.1e+19 Toffolis in sequence
+variable-time search: root-mean-square number of rows tested per member 58.6 (of 1502); total about 4.5e+17 Toffolis, before its logarithmic overhead
+   at 10^6 Toffolis a second: 1.42e+04 years (Grover does not parallelise: P machines gain sqrt(P))
+   at 10^9 a second: 14.2 years (Grover does not parallelise: P machines gain sqrt(P))
+classical work available is e^31 member-equivalents; the same exponent 31 would let a quantum search reach an exponent of 62 nats in iterations, i.e. the level where the classical exponent is 62
+arc of precision D = 26.5 (seven later primes): classical lists e^13, quantum collision search e^9
+arc of precision D = 496 (the primes to 1,000): classical lists e^248, quantum collision search e^165
+arc of precision D = 1479 (the primes to 2,000): classical lists e^740, quantum collision search e^493

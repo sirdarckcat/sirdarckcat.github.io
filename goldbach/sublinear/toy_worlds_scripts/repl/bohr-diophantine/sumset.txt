@@ -1,0 +1,22 @@
+l | mean |G+G|/s | mean |G+G-G|/s | primes (of 12) with G+G-G = Z/s      (G = the l classes of the real table that strike most rows)
+3 | 0.012 | 0.024 | 0
+4 | 0.019 | 0.053 | 0
+5 | 0.029 | 0.101 | 0
+6 | 0.041 | 0.172 | 0
+7 | 0.054 | 0.255 | 0
+8 | 0.069 | 0.366 | 0
+10 | 0.104 | 0.587 | 0
+12 | 0.146 | 0.814 | 0
+16 | 0.240 | 0.981 | 0
+24 | 0.463 | 1.000 | 12
+48 | 0.916 | 1.000 | 12
+96 | 1.000 | 1.000 | 12
+
+planted member, J = 12, lists of l (LLL, Kannan embedding), 6 trials each
+l = 3: l^3/s = 0.05; knapsack density 0.23; recovered 6 of 6
+l = 4: l^3/s = 0.13; knapsack density 0.29; recovered 6 of 6
+l = 5: l^3/s = 0.25; knapsack density 0.33; recovered 6 of 6
+l = 6: l^3/s = 0.43; knapsack density 0.37; recovered 5 of 6
+l = 7: l^3/s = 0.69; knapsack density 0.40; recovered 0 of 6
+l = 8: l^3/s = 1.02; knapsack density 0.43; recovered 0 of 6
+l = 10: l^3/s = 2.00; knapsack density 0.48; recovered 0 of 6

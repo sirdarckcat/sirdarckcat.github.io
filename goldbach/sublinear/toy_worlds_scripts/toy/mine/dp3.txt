@@ -1,0 +1,16 @@
+j = 3 later primes [467, 479, 487]; P/X = e^1.628; arc 1.962e-01; cover rows 1502
+buckets 1876 (width arc/368.2); transitions 3.854e+07
+buckets reached 1876; in the arc 368; best first-order score 1478
+  N < 10^200: True, 199 digits; first-order 1478, exact rows left after all 92 primes 1480; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 199 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+  N < 10^200: True, 199 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 199 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+  N < 10^200: True, 199 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1479; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1479; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1478; its cover has 1502 rows, 0 classes changed []; later classes hit [8, 8, 8]
+  N < 10^200: True, 200 digits; first-order 1478, exact rows left after all 92 primes 1479; its cover has 1502 rows, 1 classes changed [(449, 240, 312)]; later classes hit [8, 8, 8]
+the cover's window: 21378978 members; most rows hit by these 3 primes (with multiplicity): 24 -> at most 1478 left to first order; mean 9.44

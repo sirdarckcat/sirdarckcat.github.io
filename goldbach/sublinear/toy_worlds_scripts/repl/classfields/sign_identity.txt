@@ -1,0 +1,2 @@
+odd squarefree n < 30000: 12160 tested (by number of prime factors: {1: 3244, 2: 5668, 3: 2831, 4: 411, 5: 6})
+failures: power-map sign formula 0 (k = 3 and k = 1 mod 4), Zolotarev for -1 0, mu(n) = sign(x -> -x^k) 0

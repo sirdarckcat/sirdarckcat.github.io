@@ -1,0 +1,13 @@
+N has 663 bits; Fermat test powmod(2,n-1,n): 101.4 us
+square 129 ns, square+reduce 298 ns, jacobi 1984 ns (0.0196 Fermat), gcd 2040 ns (0.0201 Fermat)
+Fermat test / (bits * (square+reduce)) = 0.51  (python call overhead is inside the denominator)
+batch  joint/separate   (joint = one exponentiation modulo the product + remainder tree)   exponentiation-only ratio
+    1    1.03     0.99    separate 0.10 ms  joint 0.10 ms
+    2    1.60     1.60    separate 0.19 ms  joint 0.30 ms
+    4    2.66     2.62    separate 0.39 ms  joint 1.03 ms
+    8    4.74     4.66    separate 0.79 ms  joint 3.74 ms
+   16    6.42     6.02    separate 1.53 ms  joint 9.85 ms
+   64   19.43    12.36    separate 6.37 ms  joint 123.81 ms
+  256   21.51    21.39    separate 29.20 ms  joint 628.10 ms
+  506   23.25    23.17    separate 48.53 ms  joint 1128.20 ms
+squarings shared by all rows before the first reduction: 9 of 663 (1.357%; they are on short operands, so less in time)

@@ -1,0 +1,8 @@
+K = 6, product (2, 3): 720 bijections; separable for all tables, by modulus: {2: 72, 3: 48, 4: 0, 5: 0}; residue a function of one coordinate: {2: 72, 3: 48, 4: 0, 5: 0}; disagreements 0; largest product of pairwise coprime-or-not separable moduli over all bijections: 6 (K = 6)
+K = 8, product (2, 4): 40320 bijections; separable for all tables, by modulus: {2: 4608, 3: 0, 4: 384, 5: 0, 7: 0}; residue a function of one coordinate: {2: 4608, 3: 0, 4: 384, 5: 0, 7: 0}; disagreements 0; largest product of pairwise coprime-or-not separable moduli over all bijections: 8 (K = 8)
+K = 8, product (2, 2, 2): 40320 bijections; separable for all tables, by modulus: {2: 3456, 3: 0, 4: 0, 5: 0, 7: 0}; residue a function of one coordinate: {2: 3456, 3: 0, 4: 0, 5: 0, 7: 0}; disagreements 0; largest product of pairwise coprime-or-not separable moduli over all bijections: 2 (K = 8)
+K = 9, product (3, 3): 362880 bijections; separable for all tables, by modulus: {2: 0, 3: 2592, 4: 0, 5: 0, 7: 0}; residue a function of one coordinate: {2: 0, 3: 2592, 4: 0, 5: 0, 7: 0}; disagreements 0; largest product of pairwise coprime-or-not separable moduli over all bijections: 3 (K = 9)
+
+real	0m8.838s
+user	0m8.601s
+sys	0m0.008s

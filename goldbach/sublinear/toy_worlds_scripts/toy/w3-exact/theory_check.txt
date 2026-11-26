@@ -1,0 +1,20 @@
+F_3: (P) 2876 random monic f (half of them A(x^p) + low degree): failures 0
+F_3: n=3: (F1) 540 pairs, failures 0; members with all q linear rows reducible: 120/180 | (F2) 1620 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/180
+F_3: n=6: (F1) 540 pairs, failures 0; members with all q linear rows reducible: 60/180 | (F2) 1620 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/180
+F_3: n=9: (F1) 540 pairs, failures 0; members with all q linear rows reducible: 141/180 | (F2) 1620 pairs, failures 0; members with all q^2 monic quadratics reducible: 63/180
+F_3: (O) 1120 (N, Q, b) with N in F_q[x^p - x]: type mismatches 0
+F_5: (P) 3000 random monic f (half of them A(x^p) + low degree): failures 0
+F_5: n=5: (F1) 1500 pairs, failures 0; members with all q linear rows reducible: 240/300 | (F2) 7500 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/300
+F_5: n=10: (F1) 1500 pairs, failures 0; members with all q linear rows reducible: 300/300 | (F2) 7500 pairs, failures 0; members with all q^2 monic quadratics reducible: 300/300
+F_5: n=15: (F1) 1500 pairs, failures 0; members with all q linear rows reducible: 262/300 | (F2) 7500 pairs, failures 0; members with all q^2 monic quadratics reducible: 205/300
+F_5: (O) 8800 (N, Q, b) with N in F_q[x^p - x]: type mismatches 0
+F_7: (P) 3000 random monic f (half of them A(x^p) + low degree): failures 0
+F_7: n=7: (F1) 2940 pairs, failures 0; members with all q linear rows reducible: 360/420 | (F2) 20580 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/420
+F_7: n=14: (F1) 2940 pairs, failures 0; members with all q linear rows reducible: 60/420 | (F2) 20580 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/420
+F_7: n=21: (F1) 2940 pairs, failures 0; members with all q linear rows reducible: 312/420 | (F2) 20580 pairs, failures 0; members with all q^2 monic quadratics reducible: 42/420
+F_7: (O) 33600 (N, Q, b) with N in F_q[x^p - x]: type mismatches 0
+F_9: (P) 2917 random monic f (half of them A(x^p) + low degree): failures 0
+F_9: n=3: (F1) 4860 pairs, failures 0; members with all q linear rows reducible: 300/540 | (F2) 43740 pairs, failures 0; members with all q^2 monic quadratics reducible: 0/540
+F_9: n=6: (F1) 4860 pairs, failures 0; members with all q linear rows reducible: 540/540 | (F2) 43740 pairs, failures 0; members with all q^2 monic quadratics reducible: 540/540
+F_9: n=9: (F1) 4860 pairs, failures 0; members with all q linear rows reducible: 308/540 | (F2) 43740 pairs, failures 0; members with all q^2 monic quadratics reducible: 18/540
+F_9: (O) 22800 (N, Q, b) with N in F_q[x^p - x]: type mismatches 0

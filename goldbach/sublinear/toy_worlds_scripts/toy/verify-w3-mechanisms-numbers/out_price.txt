@@ -1,0 +1,4 @@
+F_16, J = 1, n = 64: rows 1480
+  12 random N' = 0 mod L_J: mean irreducible 67.00 (se 2.62); 121s
+F_4, J = 2, n = 100: rows 236
+  30 random N' = 0 mod L_J: mean irreducible 11.37 (se 0.48); over the 224 theorem-forced rows only: 10.87; 81s

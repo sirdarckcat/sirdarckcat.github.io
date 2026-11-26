@@ -1,0 +1,6 @@
+q=7 n=21: family F_q[x^p-x]: 343 members (0s); random sample 60000 of q^n = 5.585e+17; rows to degree 5 (4088)
+  best family member: D = 5, G = 805: N = x^21 + 4*x^15 + 3*x^14 + 3*x^9 + x^8 + 6*x^3 + 3*x^2 + 1
+  D >= 2: family    343 of 343 (1.000e+00); sample   42208 of 60000 (7.035e-01); root-law prediction for the family    326.2; (family rate)^p = 1.000e+00 => expected number among all q^n: 5.59e+17
+  D >= 3: family    284 of 343 (8.280e-01); sample   14817 of 60000 (2.470e-01); root-law prediction for the family    280.9; (family rate)^p = 2.668e-01 => expected number among all q^n: 1.49e+17
+  D >= 4: family    133 of 343 (3.878e-01); sample      87 of 60000 (1.450e-03); root-law prediction for the family    134.8; (family rate)^p = 1.318e-03 => expected number among all q^n: 7.36e+14
+  D >= 5: family      4 of 343 (1.166e-02); sample       0 of 60000 (0.000e+00); root-law prediction for the family      nan; (family rate)^p = 2.933e-14 => expected number among all q^n: 1.64e+04

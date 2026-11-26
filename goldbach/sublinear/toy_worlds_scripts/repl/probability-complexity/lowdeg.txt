@@ -1,0 +1,12 @@
+miniature (primes [5, 7, 11, 13], K=300) D=1: formula 1.3562466667  brute force over 37 monomials 1.3562466667
+miniature (primes [5, 7, 11, 13], K=300) D=2: formula 1.5308163333  brute force over 539 monomials 1.5308163333
+miniature (primes [5, 7, 11, 13], K=300) D=3: formula 1.5979290778  brute force over 2707 monomials 1.5979290778
+   Monte Carlo, degree 1: (E_P f - E_Q f)^2 / Var_Q f = 0.35382 +- 0.00377; formula ||L^<=1||^2 - 1 = 0.35625
+real window: K=21378978, ln K=16.878; later primes to 1e8: 5761365; sum 1/p = 1.0886; largest v_p = 0.00197
+   overlap rho(Delta) over all 0<Delta<K: max 0.00388, mean 2.705e-04
+c = Lambda/ln K | planted member's z (= sqrt(Lambda)) vs null maximum sqrt(2 ln K) = 5.81 | off-diagonal term (full exp) | diagonal term (1/K)(exp^{<=D}(Lambda)-1) for D = 1..12 | D* = largest D with total <= 1
+  2.0 | 5.81 | 9.33e-03 | 1.6e-06 2.8e-05 3.3e-04 2.9e-03 2.0e-02 1.2e-01 5.8e-01 2.5e+00 9.9e+00 3.5e+01 1.1e+02 3.2e+02 | D* = 7  (D*/ln K = 0.41)
+  2.5 | 6.50 | 1.17e-02 | 2.0e-06 4.4e-05 6.3e-04 6.8e-03 5.9e-02 4.3e-01 2.6e+00 1.4e+01 6.9e+01 3.0e+02 1.2e+03 4.3e+03 | D* = 6  (D*/ln K = 0.36)
+  3.0 | 7.12 | 1.41e-02 | 2.4e-06 6.2e-05 1.1e-03 1.4e-02 1.4e-01 1.2e+00 9.2e+00 5.9e+01 3.4e+02 1.8e+03 8.3e+03 3.6e+04 | D* = 5  (D*/ln K = 0.30)
+  4.0 | 8.22 | 1.91e-02 | 3.2e-06 1.1e-04 2.5e-03 4.3e-02 5.9e-01 6.7e+00 6.6e+01 5.7e+02 4.3e+03 3.0e+04 1.9e+05 1.1e+06 | D* = 5  (D*/ln K = 0.30)
+  6.0 | 10.06 | 2.93e-02 | 4.7e-06 2.4e-04 8.3e-03 2.1e-01 4.4e+00 7.4e+01 1.1e+03 1.4e+04 1.6e+05 1.6e+06 1.5e+07 1.3e+08 | D* = 4  (D*/ln K = 0.24)

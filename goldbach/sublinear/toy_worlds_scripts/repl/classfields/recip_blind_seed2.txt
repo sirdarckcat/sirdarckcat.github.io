@@ -1,0 +1,68 @@
+rows 1502  M = 10^192.67  members below 10^200: 2^24.35
+sieve to 200000: 48 s; survivors per member 762.6 (0.5077)
+2669029 Fermat tests in 433 s; primes 125783  rate among survivors 0.04713
+primes per row (all rows, covered rows excluded): 0.02393   (model 0.0243)
+
+symbol | survivors with -1 | prime rate | survivors with +1 | prime rate | z of the difference
+J(200003|n) | 1333963 | 0.04708 | 1335047 | 0.04718 | +0.38
+J(200009|n) | 1333664 | 0.04692 | 1335347 | 0.04733 | +1.57
+J(200017|n) | 1333253 | 0.04708 | 1335759 | 0.04717 | +0.33
+J(200023|n) | 1335109 | 0.04697 | 1333903 | 0.04728 | +1.19
+J(200029|n) | 1335320 | 0.04721 | 1333691 | 0.04704 | -0.67
+J(200033|n) | 1334732 | 0.04694 | 1334286 | 0.04732 | +1.45
+J(200041|n) | 1333668 | 0.04725 | 1335346 | 0.04701 | -0.94
+J(200063|n) | 1335156 | 0.04719 | 1333866 | 0.04706 | -0.51
+J(200087|n) | 1333919 | 0.04714 | 1335096 | 0.04711 | -0.11
+J(200117|n) | 1334756 | 0.04724 | 1334262 | 0.04701 | -0.91
+J(200131|n) | 1335265 | 0.04714 | 1333740 | 0.04711 | -0.10
+J(200153|n) | 1333534 | 0.04696 | 1335481 | 0.04729 | +1.29
+J(467|n) in | 1334503 | 0.04714 | 1334526 | 0.04711 | -0.13
+J(479|n) in | 1333888 | 0.04724 | 1335141 | 0.04701 | -0.88
+J(487|n) in | 1333682 | 0.04719 | 1335347 | 0.04706 | -0.50
+J(491|n) in | 1334065 | 0.04700 | 1334964 | 0.04725 | +0.97
+J(499|n) in | 1333427 | 0.04709 | 1335602 | 0.04717 | +0.30
+J(503|n) in | 1333821 | 0.04689 | 1335208 | 0.04736 | +1.80
+J(509|n) in | 1332955 | 0.04708 | 1336074 | 0.04717 | +0.36
+J(521|n) in | 1334964 | 0.04723 | 1334065 | 0.04703 | -0.76
+J(523|n) in | 1335293 | 0.04714 | 1333736 | 0.04711 | -0.13
+J(q|n) | 1334838 | 0.04714 | 1334191 | 0.04711 | -0.13
+J(n_next|n) | 1187908 | 0.04713 | 1481121 | 0.04713 | +0.00
+J(R200|n) | 1334369 | 0.04719 | 1334660 | 0.04706 | -0.49
+chi4(n) | 1334928 | 0.04707 | 1334101 | 0.04719 | +0.47
+chi8(n) | 1334933 | 0.04718 | 1334096 | 0.04707 | -0.42
+
+26 non-constant symbols: max |z| = 1.80, sum z^2 = 17.0 (chi-square, 26 dof if independent)
+
+dispersion of primes per member (variance / binomial given the survivors): 0.989 +- 0.024   [125783 primes, 2669029 survivors]
+rows by cycle type of Frobenius in the splitting field of x^3-2 (S3):
+  type (1, 1, 1): 502 rows, dispersion 0.988 +- 0.024; pairs of primes inside the class 252689 against 253050 expected (+- 503)
+  type (3,): 1000 rows, dispersion 0.980 +- 0.024; pairs of primes inside the class 998258 against 998633 expected (+- 999)
+rows by cycle type of Frobenius in the splitting field of x^4-2 (D4):
+  type (1, 1, 1, 1): 190 rows, dispersion 0.992 +- 0.024; pairs of primes inside the class 35464 against 35491 expected (+- 188)
+  type (1, 1, 2): 394 rows, dispersion 0.967 +- 0.024; pairs of primes inside the class 155973 against 156393 expected (+- 395)
+  type (2, 2): 539 rows, dispersion 0.998 +- 0.024; pairs of primes inside the class 289263 against 289280 expected (+- 538)
+  type (4,): 379 rows, dispersion 1.020 +- 0.024; pairs of primes inside the class 144590 against 144105 expected (+- 380)
+rows by cycle type of Frobenius in the splitting field of x^5-x-1 (S5):
+  type (1, 1, 1, 2): 113 rows, dispersion 0.980 +- 0.024; pairs of primes inside the class 12420 against 12470 expected (+- 112)
+  type (1, 1, 3): 231 rows, dispersion 1.032 +- 0.024; pairs of primes inside the class 54477 against 54149 expected (+- 233)
+  type (1, 2, 2): 206 rows, dispersion 1.008 +- 0.024; pairs of primes inside the class 42365 against 42302 expected (+- 206)
+  type (1, 4): 368 rows, dispersion 1.016 +- 0.024; pairs of primes inside the class 135085 against 134724 expected (+- 367)
+  type (2, 3): 234 rows, dispersion 0.979 +- 0.024; pairs of primes inside the class 54390 against 54513 expected (+- 233)
+  type (5,): 339 rows, dispersion 0.997 +- 0.024; pairs of primes inside the class 114999 against 114999 expected (+- 339)
+
+largest number of members in which two given rows are both prime: 12 (rows prime in 83.7 members on average, at most 114); a tie would give about 84
+co-occurrences c | pairs of rows observed | the same after shuffling each row over the members (ties destroyed)
+0 | 151860 | 151926
+1 | 304798 | 304725
+2 | 304806 | 304831
+3 | 204680 | 204059
+4 | 101190 | 101885
+5 | 40945 | 40843
+6 | 13804 | 13694
+7 | 3931 | 3978
+8 | 979 | 1001
+9 | 208 | 255
+10 | 41 | 41
+11 | 7 | 12
+12 | 2 | 1
+largest after shuffling: 12

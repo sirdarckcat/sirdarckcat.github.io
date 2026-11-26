@@ -1,0 +1,6 @@
+q=5 n=15: family F_q[x^p-x]: 125 members (0s); random sample 100000 of q^n = 3.052e+10; rows to degree 6 (3409)
+  best family member: D = 5, G = 472: N = x^15 + 2*x^11 + 3*x^7 + x^5 + 4*x^3 + 4*x + 1
+  D >= 2: family    125 of 125 (1.000e+00); sample   69654 of 100000 (6.965e-01); root-law prediction for the family    116.3; (family rate)^p = 1.000e+00 => expected number among all q^n: 3.05e+10
+  D >= 3: family    104 of 125 (8.320e-01); sample   34278 of 100000 (3.428e-01); root-law prediction for the family    100.9; (family rate)^p = 3.987e-01 => expected number among all q^n: 1.22e+10
+  D >= 4: family     71 of 125 (5.680e-01); sample    2413 of 100000 (2.413e-02); root-law prediction for the family     59.4; (family rate)^p = 5.912e-02 => expected number among all q^n: 1.8e+09
+  D >= 5: family     21 of 125 (1.680e-01); sample       1 of 100000 (1.000e-05); root-law prediction for the family     12.5; (family rate)^p = 1.338e-04 => expected number among all q^n: 4.08e+06

@@ -1,0 +1,17 @@
+2175934 surviving rows of 4,300 real members, prime rate 0.07146; 79 features of the sieve pattern, of N and of q; 6 features that use the primality of other rows
+pattern features: max |z| = 2.61, mean z^2 = 1.387
+   -2.61  n+3: has no odd prime factor <= 1000
+   -2.61  prev row struck by a prime < 2000
+   -2.44  n-2: number of primes <= 1000 dividing (odd)
+   -2.36  primes among earlier rows of the member   [uses labels of other rows]
+   +2.35  k mod 3
+   -2.15  n-2: ln of smooth part (primes <= 1000, odd)
+   -2.05  number of sieve primes dividing prev row
+   -2.03  number of sieve primes dividing next row
+   -2.01  ln lpf of next row (struck only; 0 else)
+   -1.97  n+1: has no odd prime factor <= 1000
+   +1.85  n+3: ln of smooth part (primes <= 1000, odd)
+   +1.83  next row survives
+features using the primality of other rows: primes among earlier rows of the member: -2.36; primes among the 10 nearest rows (other than itself): +1.44; primes among the 40 nearest rows (other than itself): +0.65; prev row is a (probable) prime: +0.77; next row is a (probable) prime: +0.98; an earlier row of the member is prime: -0.82
+permutation null, 400 shuffles: max |z| median 2.56, 5% to 95%: 2.00 to 3.33; share with max |z| >= the real one: 0.440
+                                mean z^2: mean 1.034, sd 0.239, 5% to 95%: 0.661 to 1.470; share with mean z^2 >= the real one: 0.075

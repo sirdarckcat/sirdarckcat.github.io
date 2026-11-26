@@ -1,0 +1,14 @@
+rows 1035384 members 1500 prime rate 0.05229171012880245 ctrl-divisible 0.02288716070559329
+features 222
+MAIN (MLP 64-32): train rows 607090, test rows 252894, epochs run 5; validation gain +0.000001; TEST gain -0.000000 +- 0.000002 nats/row; prime rate bottom/top decile by score 0.0552 / 0.0541 (all 0.0534)
+     per epoch (validation gain, test gain), units of 1e-6 nats/row: (-4,+0) (+1,-0) (+0,+0) (+2,-1) (-3,-0)
+MAIN logistic (no hidden layer): train rows 607090, test rows 252894, epochs run 4; validation gain -0.000329; TEST gain -0.000348 +- 0.000053 nats/row; prime rate bottom/top decile by score 0.0539 / 0.0531 (all 0.0534)
+     per epoch (validation gain, test gain), units of 1e-6 nats/row: (-329,-348) (-363,-293) (-412,-287) (-397,-336)
+CONTROL1 (one indicator: a control prime divides n): train rows 621318, test rows 258873, epochs run 4; validation gain +0.001079; TEST gain +0.001121 +- 0.000020 nats/row; prime rate bottom/top decile by score 0.0406 / 0.0529 (all 0.0521)
+     per epoch (validation gain, test gain), units of 1e-6 nats/row: (+1079,+1121) (+1062,+1162) (+984,+1078) (+856,+1028)
+   the information available in CONTROL1: 0.001244 nats/row
+   the information planted in CONTROL2: 0.006509 nats/row
+CONTROL2 (planted XOR of two bits): train rows 607090, test rows 252894, epochs run 5; validation gain +0.005768; TEST gain +0.005823 +- 0.000174 nats/row; prime rate bottom/top decile by score 0.0275 / 0.0802 (all 0.0534)
+     per epoch (validation gain, test gain), units of 1e-6 nats/row: (+3,+2) (+5768,+5823) (+5685,+6085) (+5745,+6146) (+5301,+5789)
+CONTROL2 logistic (cannot see an XOR): train rows 607090, test rows 252894, epochs run 5; validation gain -0.000326; TEST gain -0.000267 +- 0.000050 nats/row; prime rate bottom/top decile by score 0.0524 / 0.0539 (all 0.0534)
+     per epoch (validation gain, test gain), units of 1e-6 nats/row: (-346,-342) (-326,-267) (-416,-284) (-428,-332) (-500,-372)

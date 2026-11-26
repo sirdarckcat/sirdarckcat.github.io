@@ -1,0 +1,4 @@
+irreducible quartics 1620 with 2-smooth derivative 1188
+lam = 1, B = x^2 + (2*z + 1)*x + 1, n = 249: rows 1188, r odd 0, r = 1: 0, histogram [(2, 198), (4, 542), (6, 358), (8, 80), (10, 10)], mean r 4.589; 158s
+lam = nonsquare, B = x^2 + 2*z*x + 2, n = 249: rows 297, r odd 0, r = 1: 0, histogram [(2, 57), (4, 126), (6, 95), (8, 17), (10, 2)], mean r 4.525; 22s
+rows with non-smooth derivative (every 3rd): {0: 55, 1: 89}

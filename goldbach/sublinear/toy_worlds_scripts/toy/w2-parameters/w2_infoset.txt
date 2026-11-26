@@ -1,0 +1,28 @@
+q=13 n=5 ell=6 (rho=0.462) m=13 j=1: consistent N = 13 (E = 16.0); all three methods agree
+   brute force: 371293 candidates (0.3s) -> 2.86e+04 per output; predicted rho^-m = 2.32e+04
+   information set: 7776 candidates (0.0s) -> 598 per output; predicted rho^-(m-n) = 486
+   meet in the middle: 36 + 1296 lookups + 3568 matches = 4900 (0.0s) -> 377 per output; predicted matches ell^n rho^j = 3589
+q=17 n=6 ell=8 (rho=0.471) m=17 j=2: consistent N = 78 (E = 65.7); all three methods agree
+   brute force: 24137569 candidates (17.0s) -> 3.09e+05 per output; predicted rho^-m = 3.67e+05
+   information set: 262144 candidates (0.1s) -> 3.36e+03 per output; predicted rho^-(m-n) = 3.99e+03
+   meet in the middle: 512 + 32768 lookups + 58059 matches = 91339 (0.0s) -> 1.17e+03 per output; predicted matches ell^n rho^j = 58053
+q=17 n=6 ell=8 (rho=0.471) m=12 j=2: consistent N = 2912 (E = 2847.0); all three methods agree
+   brute force: 24137569 candidates (10.9s) -> 8.29e+03 per output; predicted rho^-m = 8.48e+03
+   information set: 262144 candidates (0.1s) -> 90 per output; predicted rho^-(m-n) = 92.1
+   meet in the middle: 512 + 32768 lookups + 58029 matches = 91309 (0.0s) -> 31.4 per output; predicted matches ell^n rho^j = 58053
+q=17 n=6 ell=8 (rho=0.471) m=8 j=2: consistent N = 58030 (E = 58052.7); all three methods agree
+   brute force: 24137569 candidates (6.6s) -> 416 per output; predicted rho^-m = 416
+   information set: 262144 candidates (0.2s) -> 4.52 per output; predicted rho^-(m-n) = 4.52
+   meet in the middle: 512 + 32768 lookups + 58030 matches = 91310 (0.1s) -> 1.57 per output; predicted matches ell^n rho^j = 58053
+q=19 n=6 ell=9 (rho=0.474) m=19 j=2: consistent N = 27 (E = 32.1); all three methods agree
+   brute force: 47045881 candidates (29.3s) -> 1.74e+06 per output; predicted rho^-m = 1.46e+06
+   information set: 531441 candidates (0.3s) -> 1.97e+04 per output; predicted rho^-(m-n) = 1.65e+04
+   meet in the middle: 729 + 59049 lookups + 119206 matches = 178984 (0.1s) -> 6.63e+03 per output; predicted matches ell^n rho^j = 119243
+q=23 n=6 ell=11 (rho=0.478) m=23 j=2: consistent N = 3 (E = 6.3); all three methods agree
+   brute force: 148035889 candidates (114.2s) -> 4.93e+07 per output; predicted rho^-m = 2.33e+07
+   information set: 1771561 candidates (1.3s) -> 5.91e+05 per output; predicted rho^-(m-n) = 2.79e+05
+   meet in the middle: 1331 + 161051 lookups + 405348 matches = 567730 (0.2s) -> 1.89e+05 per output; predicted matches ell^n rho^j = 405215
+
+cost per output member, as a function of the number m of scoring places (n and rho fixed): rho^-(m - n) for the
+information set and about rho^-(m - n - j), j <= (n/2) log_q(ell), for the merge: exponential in m - n in both.
+exit 0

@@ -1,0 +1,13 @@
+t=0: rows 1502 tied 1502 (must be 1502, 1502)
+even t in [2,200000): rows of N+t: mean 3240.8 sd 1257.4 min 1981 ; tied to a row of N: mean 135.7 max 754 ; free rows: mean 3105.1 sd 1214.6 min 1417 at t=2310
+  t=2: rows 3494, tied 0, free 3494
+  t=6: rows 2120, tied 287, free 1833
+  t=30: rows 2696, tied 610, free 2086
+  t=210: rows 2024, tied 547, free 1477
+  t=2310: rows 2046, tied 629, free 1417
+  t=30030: rows 2040, tied 564, free 1476
+  t=60060: rows 2052, tied 480, free 1572
+  t=90090: rows 2078, tied 362, free 1716
+  t=110510: rows 2150, tied 0, free 2150
+given a hit N at level Q, expected number of further hits among N+t: sum_t exp(-lam*free(t)) = 1.861e-14  (a fresh member of the cover: exp(-36.5) = 1.407e-16); best single t: exp(-34.4)
+  best t below 2000: t=1470: rows 2035, tied 571, free 1464

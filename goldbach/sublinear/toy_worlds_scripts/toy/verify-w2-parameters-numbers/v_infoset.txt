@@ -1,0 +1,23 @@
+q=13 n=5 ell=6 m=13: consistent=13 (E=16.0); brute q^n=371293 -> 2.86e+04/out; infoset 7776 -> 598/out (rho^-(m-n)=486)
+     merge j=1: 36+1296+3568=4900 -> 377/out <- page
+     merge j=2: 36+7776+1639=9451 -> 727/out 
+q=17 n=6 ell=8 m=17: consistent=78 (E=65.7); brute q^n=24137569 -> 3.09e+05/out; infoset 262144 -> 3.36e+03/out (rho^-(m-n)=3.99e+03)
+     merge j=1: 512+4096+123387=127995 -> 1.64e+03/out 
+     merge j=2: 512+32768+58059=91339 -> 1.17e+03/out <- page
+     merge j=3: 512+262144+27356=290012 -> 3.72e+03/out 
+q=17 n=6 ell=8 m=12: consistent=2912 (E=2847.0); brute q^n=24137569 -> 8.29e+03/out; infoset 262144 -> 90/out (rho^-(m-n)=92.1)
+     merge j=1: 512+4096+123364=127972 -> 43.9/out 
+     merge j=2: 512+32768+58029=91309 -> 31.4/out <- page
+     merge j=3: 512+262144+27292=289948 -> 99.6/out 
+q=17 n=6 ell=8 m=8: consistent=58030 (E=58052.7); brute q^n=24137569 -> 416/out; infoset 262144 -> 4.52/out (rho^-(m-n)=4.52)
+     merge j=1: 512+4096+123286=127894 -> 2.2/out 
+     merge j=2: 512+32768+58030=91310 -> 1.57/out <- page
+q=19 n=6 ell=9 m=19: consistent=27 (E=32.1); brute q^n=47045881 -> 1.74e+06/out; infoset 531441 -> 1.97e+04/out (rho^-(m-n)=1.65e+04)
+     merge j=1: 729+6561+251758=259048 -> 9.59e+03/out 
+     merge j=2: 729+59049+119206=178984 -> 6.63e+03/out <- page
+     merge j=3: 729+531441+56352=588522 -> 2.18e+04/out 
+q=23 n=6 ell=11 m=23: consistent=3 (E=6.3); brute q^n=148035889 -> 4.93e+07/out; infoset 1771561 -> 5.91e+05/out (rho^-(m-n)=2.79e+05)
+     merge j=1: 1331+14641+847385=863357 -> 2.88e+05/out 
+     merge j=2: 1331+161051+405348=567730 -> 1.89e+05/out <- page
+     merge j=3: 1331+1771561+193691=1966583 -> 6.56e+05/out 
+j bound (n/2) log_q(ell): q=17: 2.20 ; q=13 n=5: 1.75 ; q=23: 2.29

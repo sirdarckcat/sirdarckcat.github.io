@@ -1,0 +1,40 @@
+q 3 n 3 total 27 irr_n 8 odd 9 squarefree 18 nrows 6
+rows_below 0 3 6
+NT 2 troom 1 tlin 1 tdeg2 1 tdeg3 1 room_totdeg 3
+GH 0 8 2
+GH 1 7 1
+GH 2 6 0
+GH 3 2 0
+GH 4 1 0
+GH 5 1 0
+GH 6 2 0
+DH 1 21 3
+DH 2 4 0
+DH 3 2 0
+TOP 7 6
+TOP 8 6
+TOP 4 5
+TOP 3 4
+TOP 5 3
+TOP 6 3
+TOP 9 2
+TOP 13 2
+TOP 16 2
+TOP 19 2
+TOP 21 2
+TOP 24 2
+TOP 0 1
+TOP 11 1
+TOP 12 1
+TOP 15 1
+TOP 18 1
+TOP 23 1
+TOP 26 1
+TOP 1 0
+TOP 2 0
+TOP 10 0
+TOP 14 0
+TOP 17 0
+TOP 20 0
+TOP 22 0
+TOP 25 0

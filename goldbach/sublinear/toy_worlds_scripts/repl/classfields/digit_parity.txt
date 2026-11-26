@@ -1,0 +1,10 @@
+base 2, 44-bit odd n, 1500000 samples (standard error of a correlation 0.0008)
+  corr(lambda(n), (-1)^Omega(f_n))          = +0.0008
+  corr(n prime, f_n irreducible)             = +0.0011   [primes 99699, irreducible 70082, both 4747, expected if independent 4658.1]
+  corr(n prime, (-1)^Omega(f_n))             = -0.0011
+  n with no prime factor below 100: 361114 samples (se 0.0017): corr(lambda, parity of f) = -0.0011, corr(prime, parity of f) = -0.0013, corr(prime, irreducible) = +0.0001
+base 3, 44-bit odd n, 1000594 samples (standard error of a correlation 0.0010)
+  corr(lambda(n), (-1)^Omega(f_n))          = -0.0004
+  corr(n prime, f_n irreducible)             = -0.0010   [primes 99098, irreducible 55321, both 5414, expected if independent 5478.9]
+  corr(n prime, (-1)^Omega(f_n))             = -0.0010
+  n with no prime factor below 100: 360920 samples (se 0.0017): corr(lambda, parity of f) = -0.0006, corr(prime, parity of f) = -0.0022, corr(prime, irreducible) = +0.0002

@@ -1,0 +1,6 @@
+s = 487: step 160, 95 points, gap lengths [1, 6, 7] (count 3); best-10% list: 49 classes in 39 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 7 (L*rho = 9.6)
+s = 491: step 288, 95 points, gap lengths [4, 5, 9] (count 3); best-10% list: 50 classes in 43 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 6 (L*rho = 9.7)
+s = 499: step 141, 95 points, gap lengths [1, 9, 10] (count 3); best-10% list: 50 classes in 48 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 13 (L*rho = 9.5)
+s = 503: step 361, 95 points, gap lengths [2, 5, 7] (count 3); best-10% list: 51 classes in 46 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 11 (L*rho = 9.6)
+s = 509: step 242, 95 points, gap lengths [1, 7, 8] (count 3); best-10% list: 51 classes in 46 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 12 (L*rho = 9.5)
+s = 521: step 184, 95 points, gap lengths [2, 21, 23] (count 3); best-10% list: 53 classes in 43 runs of consecutive classes (an interval would be 1 run); points of the progression in the list 11 (L*rho = 9.7)

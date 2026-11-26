@@ -1,0 +1,18 @@
+lag 1: measured -0.000011  tables +0.000017
+lag 2: measured -0.000621  tables -0.000561
+lag 6: measured -0.000465  tables -0.000439
+lag 30: measured -0.000154  tables -0.000266
+lag 210: measured +0.000110  tables +0.000016
+lag 2310: measured +0.000267  tables +0.000228
+lag 30030: measured -0.000173  tables +0.000002
+lag 510510: measured -0.000422  tables -0.000558
+lag 9699690: measured +0.000808  tables +0.000326
+lag 467: measured +0.000850  tables +0.000788
+lag 479: measured +0.000406  tables +0.000664
+lag 487: measured +0.001377  tables +0.001097
+lag 934: measured +0.001474  tables +0.001214
+lag 223693: measured +0.001475  tables +0.001632
+lag 963748: measured +0.002606  tables +0.002209
+lag 1133229: measured +0.002612  tables +0.001631
+384 random lags: sd measured 0.000438, sd predicted 0.000359, correlation 0.8226, sd of residual 0.000249 (sampling noise 1/sqrt(K) = 0.000216), mean measured +0.000013, mean predicted +0.000015
+largest |measured| over the random lags 0.001573

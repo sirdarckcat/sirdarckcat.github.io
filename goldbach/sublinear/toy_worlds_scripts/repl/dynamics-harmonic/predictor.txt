@@ -1,0 +1,31 @@
+truth: depth 1e8 mean 505.638 var 324.516; weight of a member exp(-0.0740 S)
+predictor | r^2 with S | share of the total weight held by its lowest 1.5% (nats gained over random) | lowest 0.1% | lowest 0.01% | share of the true lowest 10^-4 members inside its lowest 1.5%
+  S itself (depth 1e8) | 1.0000 | 0.1973 (+2.58) | 0.0379 (+3.63) | 0.0080 (+4.38) | 1.0000
+  (lowest 1e-4: 2190 members, mean S - mean = -70.38 = -3.91 sd)
+  L_R, R=509 (3428 frequencies, tables only) | 0.0060 | 0.0194 (+0.26) | 0.0014 (+0.34) | 0.0002 (+0.41) | 0.0370
+  L_R, R=997 (56936 frequencies, tables only) | 0.0482 | 0.0299 (+0.69) | 0.0025 (+0.93) | 0.0003 (+1.08) | 0.0877
+  L_R, R=1999 (257724 frequencies, tables only) | 0.0904 | 0.0377 (+0.92) | 0.0035 (+1.24) | 0.0005 (+1.54) | 0.1352
+  L_R, R=2999 (574370 frequencies, tables only) | 0.1142 | 0.0418 (+1.02) | 0.0039 (+1.37) | 0.0005 (+1.70) | 0.1694
+  S_R, R=1e+03 | 0.0515 | 0.0306 (+0.71) | 0.0026 (+0.96) | 0.0003 (+1.10) | 0.0872 | model r^2 = (W_z/W_R)^2 Var S_R / Var S_z = 0.0516
+  S_R, R=1e+04 | 0.2272 | 0.0612 (+1.41) | 0.0069 (+1.93) | 0.0010 (+2.33) | 0.3461 | model r^2 = (W_z/W_R)^2 Var S_R / Var S_z = 0.2274
+  S_R, R=1e+05 | 0.4165 | 0.0931 (+1.83) | 0.0124 (+2.52) | 0.0021 (+3.02) | 0.6548 | model r^2 = (W_z/W_R)^2 Var S_R / Var S_z = 0.4166
+  S_R, R=1e+06 | 0.6106 | 0.1267 (+2.13) | 0.0196 (+2.97) | 0.0035 (+3.56) | 0.9023 | model r^2 = (W_z/W_R)^2 Var S_R / Var S_z = 0.6104
+  S_R, R=1e+07 | 0.8052 | 0.1616 (+2.38) | 0.0280 (+3.33) | 0.0054 (+3.99) | 0.9954 | model r^2 = (W_z/W_R)^2 Var S_R / Var S_z = 0.8054
+anatomy of the lowest 10^-4 members: prime r | Var of its component | mean of its component over those members | Gaussian-conditioning prediction (S-mean)*Var_r/Var | share of those members in the best class of r (1/r = chance)
+  467 | 0.2654 | -0.0535 | -0.0576 | nan (chance 0.00214)
+  479 | 0.3046 | -0.0693 | -0.0661 | nan (chance 0.00209)
+  487 | 0.2663 | -0.0625 | -0.0577 | nan (chance 0.00205)
+  491 | 0.2705 | -0.0619 | -0.0587 | 0.00274 (chance 0.00204)
+  499 | 0.2843 | -0.0772 | -0.0617 | nan (chance 0.00200)
+  503 | 0.2983 | -0.0683 | -0.0647 | 0.00320 (chance 0.00199)
+  509 | 0.2646 | -0.0649 | -0.0574 | 0.00320 (chance 0.00196)
+  521 | 0.2498 | -0.0418 | -0.0542 | nan (chance 0.00192)
+  1019 | 0.1395 | -0.0265 | -0.0303 | 0.00137 (chance 0.00098)
+  1021 | 0.1448 | -0.0439 | -0.0314 | nan (chance 0.00098)
+  1031 | 0.1328 | -0.0309 | -0.0288 | nan (chance 0.00097)
+  all 340 primes to 2999: Var 37.07 (0.1142 of Var S); mean total component -7.790; prediction -8.039; so 0.1107 of the excursion of an extreme member comes from these 574370 frequencies
+  mean over primes of (share in best class)*r: 1.326 (1 = chance)
+nested best sub-windows inside the window: classes fixed | members | mean S - window mean | ln(mean weight / window mean weight) nats | room spent, nats
+  +467 (class of k 171, 8 rows struck) | 45780 | -1.575 | +0.1216 | 6.15
+  +479 (class of k 1, 8 rows struck) | 96 | -5.888 | +0.2302 | 12.32
+  +487: empty

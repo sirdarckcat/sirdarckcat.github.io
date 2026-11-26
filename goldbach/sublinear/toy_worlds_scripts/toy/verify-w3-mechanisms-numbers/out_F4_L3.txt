@@ -1,0 +1,2 @@
+F_4: A = L3, a = 84, n = 336, lam = 1
+  d = 6: rows 670 ; r even 382; irreducible N-Q 0; [even,odd] by category {'formula': [270, 240], 'q_{d-1}=0': [112, 48]}; formula disagreements 0; 75s

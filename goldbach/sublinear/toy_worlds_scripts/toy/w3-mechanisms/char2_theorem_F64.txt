@@ -1,0 +1,4 @@
+F_64: A = L_1 * (1), deg L_1 = 64, a = 64, lam = 1, N = lam*A^4, n = 256
+  d = 2: 2016 monic irreducible rows, 600 tested, N - Q reducible-by-parity (r even) for 600; formula: r even 600; BAD 0; squarefree Q: 50 checked, 0 bad
+  d = 3: 600 monic irreducible rows, 600 tested, N - Q reducible-by-parity (r even) for 600; formula: r even 600; BAD 0; squarefree Q: 50 checked, 0 bad
+TOTAL formula checks 1300, disagreements 0; irreducible rows tested 1200, with r even 1200

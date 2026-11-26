@@ -1,0 +1,23 @@
+# R = 7000: targets generic 19233748, real axis 3500, diagonal 4949; rows to norm 600: 432
+# norm m | rows of that norm | generic alive after m | real axis alive | diagonal alive | ln P(real)/ln P(generic) | ln P(diag)/ln P(generic)
+2 | 4 | 19233748 | 3499 | 4948 | nan | nan
+5 | 8 | 5091276 | 1639 | 2600 | 0.571 | 0.484
+9 | 4 | 2398662 | 1049 | 1926 | 0.579 | 0.453
+13 | 8 | 521856 | 490 | 694 | 0.545 | 0.545
+17 | 8 | 116956 | 206 | 295 | 0.555 | 0.553
+29 | 8 | 29006 | 82 | 149 | 0.578 | 0.539
+37 | 8 | 7208 | 42 | 66 | 0.561 | 0.547
+41 | 8 | 1752 | 16 | 35 | 0.579 | 0.532
+49 | 4 | 886 | 8 | 29 | 0.609 | 0.515
+53 | 8 | 252 | 6 | 12 | 0.566 | 0.536
+61 | 8 | 64 | 2 | 5 | 0.592 | 0.547
+73 | 8 | 18 | 2 | 4 | 0.538 | 0.513
+89 | 8 | 4 | 1 | 4 | 0.530 | 0.463
+97 | 8 | 0 | 1 | 2 | nan | nan
+101 | 8 | 0 | 0 | 2 | nan | nan
+109 | 8 | 0 | 0 | 2 | nan | nan
+113 | 8 | 0 | 0 | 1 | nan | nan
+121 | 4 | 0 | 0 | 0 | nan | nan
+# deepest generic: g = 97 at N = 978 + 5282i (of 19233748 targets; sqrt of the generic count = 4386)
+# deepest real axis: g = 101 at N = 5466 + 0i (of 3500 targets; sqrt of the generic count = 4386)
+# deepest diagonal: g = 121 at N = 4237 + 4237i (of 4949 targets; sqrt of the generic count = 4386)
