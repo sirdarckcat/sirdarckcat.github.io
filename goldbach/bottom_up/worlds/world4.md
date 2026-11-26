@@ -71,6 +71,90 @@ listed at cost O(σ Σ s_i + O·Σ s_i).
 **World 5.** World 5's precision DP is an approximate DP of width about m e^D. For the places 467–1,999, ln P = 1,496.2 and
 D = ln(P/K) = 1,479.6 nats.
 
+## W4.4: when the sieve reaches past the window, its tables must be read [P in the model; M]
+
+**The setting.** The fleet sieves to y = 10^8, and a window holds K = 1.6–2.1·10^7 members. At a prime s > K each occupied class
+holds one member, so the table of s is a list of members, not a progression.
+
+**The model.** An algorithm learns the class c_{q,s} = (q − N0)·M^−1 mod s of a row q at a prime s only by computing it, at unit
+cost. That is one modular product, and it is what the sieve computes. Everything else is free.
+
+**The theorem.** In the worst case, an algorithm that returns exactly the members with at least t rows struck by the primes
+467..y computes at least |U|·(π(y) − π(K)) classes.
+
+**Proof.**
+- In this model the classes are free values. Take an input with many members at t − 1 struck rows, and every row unstruck at one
+  of them.
+- Suppose that the algorithm never computes c_{q,s} for some row q and some prime s ∈ (K, y].
+- Change that class to the index of a member at t − 1 at which q is unstruck. The index is below K < s, so it is a class of s.
+- The algorithm sees the same values and returns the same output, but that member now has t struck rows. ∎
+
+**At the fleet's parameters [M]** (`table_reads.py`, `table_reads.out`). The counts are per member of the window, for the 1,502 rows
+of the 200,000 cover, at depth 10^8; all of them scale with |U|.
+
+| window K | classes the sieve computes | of which above K (the bound) | strikes above K | rows newly struck above K | marks at the primes up to K |
+|---|---|---|---|---|---|
+| 1.61·10^7 (a 613-family window) | 537 | 440 | 157 | 55.6 | 1,478 |
+| 2^24 = 1.68·10^7 (the fleet's block) | 516 | 419 | 153 | 54.3 | 1,482 |
+| 2.14·10^7 (research's window) | 405 | 310 | 131 | 46.2 | 1,504 |
+
+The model's mean of rows left at 10^8, 505.6, is research's exact mean over the 21,378,978 members of its window (505.64).
+
+**What follows.**
+- **[P]** In this model no exact method beats the sieve by more than (classes + c·marks)/bound, where c is the cost of a mark against
+  that of a class. That is ×1.22 (marks free) to ×4.6 (marks as dear as classes) at K = 1.61·10^7, and ×1.31 to ×6.2 at
+  2.14·10^7.
+- **[P]** So no selection exact to 10^8 is output-priced here, whatever its idea. The bound is 310–440 classes for every member of
+  the window, however few members it returns.
+- **[M]** A larger saving must give up exactness for most members, as the two-stage design does, and its price is measured
+  (`../costcheck/`, item 1): exact to 10^7 only keeps 0.82 of the hits at a 1.5% keep; 10^6 for every member and then 10^8 for the
+  top 10% keeps 0.96.
+- **[O]** A method that uses the formula for c_{q,s} could do better only by finding the rows whose class lands below K without
+  computing the others.
+  - That is a range query for an affine map modulo s over a fixed set of 1,502 integers, asked for 4.7 million primes.
+  - The lattice route lists every integer q < Q whose class lands below K, then keeps the rows. It costs about QK/s, which is more
+    than |U| for every s below QK/|U| = 2.2·10^9.
+  - Even then the strikes themselves would remain to be listed: 131–157 a member, of which 46–56 change a member's count.
+- **[M]** In the CPU scans (depth 10^7, below K) the bound is only the size of the tables, 47–62 classes a member, against 1,435
+  marks. There the gap is real, and W4.1–W4.3 are what bound it.
+
+## W4.5: for arbitrary tables, whether the window holds a member at all is NP-complete [P]
+
+**The statement.** Given distinct primes s_1, …, s_n, two classes A_i ⊂ Z/s_i at each, and K, it is NP-complete to decide whether
+some k ∈ [0, K) has k mod s_i ∈ A_i for every i. This is the case of 0/1 tables at t = n.
+
+**The proof** is a reduction from subset sum (weights w_i ≥ 1, target 1 ≤ T ≤ W = Σ w_i; Karp 1972).
+- Put D = W + 1. Take n distinct primes p_i > 2nD, and let P = ∏ p_i.
+- Let v_i be the integer nearest to p_i w_i/D, and A_i = {0, v_i·(P/p_i) mod p_i}.
+- By World 5's identity, a point x < P with x_i = ε_i v_i (P/p_i) mod p_i (ε_i ∈ {0, 1}) has x/P ≡ Σ ε_i v_i/p_i (mod 1).
+- That sum is Σ ε_i w_i/D + δ, with |δ| ≤ Σ 1/(2p_i) < 1/(4D).
+- So x/P lies in the arc [(T − ½)/D, (T + ½)/D) exactly when Σ ε_i w_i = T. The values lie in (−1/(4D), 1), and the arc lies inside
+  [1/(2D), 1 − 1/(2D)).
+- The arc is the window [x0, x0 + K), with x0 = ⌈P(T − ½)/D⌉ and K = ⌊P/D⌋. Every point is at least P/(4D) from its ends, so the
+  rounding does not matter. Translate by x0, which shifts the classes to A_i − x0.
+- All the numbers have O(n log(nW)) bits, and k is a certificate for membership in NP. ∎
+- **[M]** Checked on 400 random instances (n = 3 to 10, weights up to 60), each over all 2^n class vectors: in every instance the
+  points in the window are exactly the subsets summing to T (`reduction_check.py`, `reduction_check.out`).
+
+**The same statement, earlier.** Manders and Adleman (1978) proved it with prime-power moduli and A_i the two square roots of a
+quadratic residue: is there an x ≤ c with x² ≡ a (mod b)? It stays NP-complete when the factorisation of b is given. Their
+reduction passes through the knapsack Σ c_j α_j = τ, α_j = ±1.
+
+**What it answers.** Research's replacement round left one question open, because its coding-theory and cryptanalysis lens was
+stopped by a filter: which hardness assumption would an enumerator for arbitrary tables contradict?
+- **[P]** Output-priced listing for arbitrary 0/1 tables, at cost poly(input)·(output + 1), decides this problem: run it with t = n
+  for twice its bound at an empty output. So it would give P = NP.
+- **[P]** The reduction uses one place per item. The standard reduction from 3-SAT gives subset sum with linearly many items, so
+  under the exponential time hypothesis nothing runs in 2^o(n) over n places. Meet in the middle (W4.2 (M)) takes about 2^(n/2).
+- **[O]** Random tables are the average case. That is noisy Chinese remaindering, which the literature uses as a hardness
+  assumption (World 2's literature: Naor–Pinkas; Bleichenbacher–Nguyen).
+
+**Where it sits.**
+- In the reduction ln(P/K) = ln D ≈ ln W, which is about n ln 2 for hard instances, and K is exponential in the input.
+- At our parameters the window is e^16.6, and the input is larger than the window (W4.4: 310–440 classes a member above K alone). So
+  the scan is polynomial and close to the cost of reading the input.
+- The hardness therefore constrains general-purpose enumerators, not our instance. For our instance W4.4 is the bound that binds.
+
 ## The converse: what single structure, added to the random box, makes output-priced enumeration possible
 
 | added structure | algorithm | cost | on the integers |
@@ -122,6 +206,10 @@ The setting is the rows U of the 300 covers at 200,000, modulo the 213 primes 46
   - sub-progressions beyond P_I ≤ K (B);
   - DP states over places (W4.3);
   - merges that split the places over more than 48 nats of them (M).
+- **[P]** If it is exact to the fleet's depth, it reads the tables of the primes above K: 310–440 classes for every member of the
+  window, within ×1.2–6.2 of the sieve (W4.4). Otherwise it is approximate there, at the measured price of the two-stage designs.
+- **[P]** It uses something particular to these tables or this window. For arbitrary tables even deciding whether the window holds
+  a member is NP-complete (W4.5).
 - **[M]** Any structure of the tables it relies on has to exist. Neither multiplicative cosets (research's measurement) nor additive
   progressions (here) do.
 - **[O]** What is left is an operation whose intermediate objects are none of these: not members, not sub-progressions, not DP

@@ -17,7 +17,7 @@ This page answers the research session's request of 26 Nov, 00:15 UTC, for World
 **What the members we want look like.** They agree with the lists at a rate ρ(1 + δ), with
 δ ≈ √(2(1 − ρ)κ / (ρ m_eff)). For example, δ = 0.39 at ρ = 1/2, κ = 16.6, with the 213 places below 2,000.
 
-## W2.1: Johnson-type decoding is never cheaper than scanning [P, given the decoding radius]
+## W2.1: Johnson-type decoding is never cheaper than scanning [P, given the decoding radius, in the CRT model with a Gaussian tail]
 
 **The decoders.** These are Guruswami–Sudan, Koetter–Vardy, and Guruswami–Sahai–Sudan (GSS) for CRT codes.
 
@@ -49,6 +49,11 @@ For K ≥ 467, a = ln 467/467 = 0.0132, unless some place above K exceeds e^(0.0
 
 The split into mean and deviation is the research session's (26 Nov, 01:12 UTC). The first version of this page bounded the two
 parts separately, which gave the looser (√(ln K) − √(2κa))².
+
+**The hypothesis.** The tail is Gaussian when the deviation is spread over many places and over the classes at each. It fails for
+weightings concentrated on a few classes, pins being the extreme case. A decoder could then certify a thin set of members deep in its
+own weighting. Research's verifier flagged that case as open for its second page (26 Nov, 03:52 UTC). W2.1b treats it without the
+tail.
 
 **What the theorem says.**
 - **[P] The deviation enters only at second order.** It is the only informative part, and it contributes 2κa ≤ 0.026·ln K.
@@ -107,6 +112,63 @@ parts separately, which gave the looser (√(ln K) − √(2κa))².
   agreement at every ρ, and above 1 (unreachable) for ρ > 0.12.
   - Places above K lower it, to √(ρ K ln K/y) for y ≫ K. But each listed class there is one member.
   - It reaches the random agreement ρ only at y ≈ K ln K/ρ, which is about K² weighted classes.
+
+## W2.1b: which sets a Johnson-type decoder can certify, without the Gaussian tail [P, given the radius]
+
+**The statement.**
+- A set C of members of the window is certified by some choice of weights if and only if, for every probability distribution μ on
+  C,
+
+      Σ_π ln Q_π · Σ_a μ(N mod π = a)²  ≥  ln K.
+
+- For given weights with support W, every set C that they certify satisfies
+
+      Σ_{(π,a) ∈ W} ln Q_π · c_{π,a}²  ≥  |C|² · ln K,      where c_{π,a} is the number of members of C in class a at π.
+
+**The proof.**
+- A member N is returned when ⟨g, x_N⟩ ≥ √(ln K)·‖g‖. Here x_N is the indicator of N's classes, and ‖g‖² = Σ g²/ln Q.
+- Average over μ, then apply Cauchy–Schwarz: ⟨g, Σ_N μ_N x_N⟩ ≤ ‖g‖·(Σ_W ln Q·(Σ_N μ_N x_N)²)^½. Both inequalities follow, as
+  necessary conditions.
+- For sufficiency, the normalised weights and μ range over compact convex sets and the form is bilinear, so the minimax theorem
+  applies. The optimal weights, g = ln Q·Σ_N μ_N x_N, are nonnegative, as the decoders require. ∎
+
+**What it gives.**
+- **Pairs.** Expand the second form: Σ_{N∈C} Λ_W(N) + Σ_{N≠N′} λ_W(N, N′) ≥ |C|² ln K.
+  - Λ_W(N) sums ln Q over the places where N's class is weighted.
+  - λ_W(N, N′) sums ln Q over the weighted places where N and N′ share a class.
+  - Two members share a class at π exactly when Q_π divides k − k′. So λ_W < ln K always.
+  - For pairs that look like random members of the window, the mean λ̄ is at most Σ_{467≤Q≤K} ln Q/Q = ln(K/467) − 0.07 = 10.38
+    at K = e^16.6. The class tilt of the deepest members adds about 0.25.
+- **[P] Capacity.** |C| ≤ (Λ − λ̄)/(ln K − λ̄), where Λ is the sum of ln Q over the places used. For deep members that is at most
+  (Λ − 10.6)/6.0. With places only up to y < K the pair term is about ln(y/467), and the bound is tighter.
+- **[P] Naming.** On average the certified members must be named at weighted places of total norm at least (ln K − λ̄)·|C|, at
+  least 6.0·|C| nats. At a place above K a weighted class names a single member.
+- **[M] Thin sets are cheap once named** (`johnson_named.py`, `johnson_named.out`: exact prime sums, with weights on the members'
+  own classes at the primes from 467):
+
+  | given members | places needed | Λ | pair term | weighted classes a member | the scan, per member of the top \|C\| |
+  |---|---|---|---|---|---|
+  | 10 | to 641 (26) | 164 | 0.30 | 26 | 1.6·10^6 |
+  | 100 | to 2,027 (217) | 1,527 | 1.43 | 217 | 1.6·10^5 |
+  | 1,000 | to 13,841 (1,546) | 13,271 | 3.33 | 1,546 | 1.6·10^4 |
+  | 10,000 | to 112,663 (10,587) | 111,799 | 5.42 | 10,587 | 1,620 |
+
+  - So for thin, strongly tilted sets the radius is not the obstacle.
+  - The obstacle is naming them without their scores. Weights computed from the tables alone make G a separable score of its own,
+    and the decoder lists the top of G above the Johnson threshold.
+  - Whether some such G has a top that is thin, deep in S and cheaper to reach than by scanning is World 4's selection problem
+    (W4.4, W4.5), not a decoding question.
+
+**[M] Concentrated weightings on the integers reduce to a try** (`johnson_capacity.py`, `johnson_capacity.out`).
+- Put weight ln Q on the j heaviest classes at each of the first n primes from 467. A member is returned when the places where it
+  lies in a weighted class have total norm at least √(ln K·j·Λ_n).
+- In the CRT model, the expected number returned from a window of e^16.6 is:
+  - j = 1: at most 0.149, at n = 3. That is the member, if there is one, in the heaviest class at 467, 479 and 487: a try of
+    Theorem B. It is 3.0·10^−4 at n = 4, 1.5·10^−3 at n = 5, and smaller beyond.
+  - j = 2: at most 7.7·10^−8 (n = 6). j = 3: 1.6·10^−12. j = 5 and 10: below 10^−20.
+- Members deep in the score lie in the heaviest classes more often. Give every place the tilt of a member 5 standard deviations deep
+  toward the heaviest class at 467, a factor of about 4.5 (an exponential-tilt estimate). Even then the window's five or so members
+  at that depth are returned with probability under 4·10^−6 a window.
 
 ## The Johnson barrier on generic lists: the research session's claim of 26 Nov, 00:41 UTC, checked
 
@@ -219,7 +281,9 @@ anywhere else.
 - **Interpolation through places of total norm at most the room.** This is pinning (Theorem B): n places of degree 1 in F_q[t], two
   primes ≥ 467 in Z. It is the only one.
 - **Johnson-type decoders.** The guarantee needs places above the window's size, and there the input names the members one by one.
-  That is at least one weighted class per member, and about 850 under the Gaussian model's own condition (W2.1).
+  That is at least one weighted class per member, and about 850 under the Gaussian model's own condition (W2.1). Without that
+  condition, certified sets must be named at about 6|C| nats of places, and weightings concentrated on heavy classes return at most a
+  try (W2.1b).
 - **Folded RS, multiplicity and subspace-design codes.** They need sparse lists (ℓ ≤ |Σ|^O(ε)) that correlate coordinates. Our lists
   are dense and product (W2.2).
 - **Bleichenbacher–Nguyen noisy polynomial interpolation and noisy Chinese remaindering [O].** These have full agreement and a single
