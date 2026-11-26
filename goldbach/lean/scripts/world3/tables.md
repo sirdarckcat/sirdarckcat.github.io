@@ -17,6 +17,8 @@
 | 3 | 14 | non-square | 4,782,969 | 403 | 7 | 1,296 | 1.3 | generic | 4 | 0.056% | 0.036% | 0.0078% |
 | 3 | 15 | non-square | 14,348,907 | 459 | 7 | 6,483 | 1.9 | generic | 8 | 2.3% | 1.8% | 0.00022% |
 | 3 | 16 | non-square | 43,046,721 | 488 | 7 | 31,368 | 5.8 | generic | 14 | 8.3% | 6.9% | 2.6e-05% |
+| 3 | 17 | non-square | 129,140,163 | 560 | 8 | 3 | 8.9 | generic | 11 | 1.8% | 1.5% | 0.00032% |
+| 3 | 18 | non-square | 387,420,489 | 717 | 8 | 123 | 1.4 | generic | 13 | 3.3% | 2.9% | 0.01% |
 | 5 | 7 | 1 | 78,125 | 75 | 4 | 20 | 1.6 | generic | 2 | 0.96% | 0.66% | 0.12% |
 | 5 | 8 | 1 | 390,625 | 105 | 4 | 285 | 1.5 | generic | 10 | 13% | 11% | 0.0086% |
 | 5 | 9 | 1 | 1,953,125 | 138 | 4 | 3,035 | 1.5 | generic | 10 | 15% | 13% | 0.0051% |
@@ -48,7 +50,7 @@
 | 9 | 8 | non-square | 43,046,721 | 121 | 3 | 66,528 | 3.6 | generic | 10 | 3.2% | 2.4% | 0.12% |
 | 9 | 9 | non-square | 387,420,489 | 161 | 3 | 1,330,398 | 2.5 | translation-invariant | 13 | 4.5% | 3.6% | 0.0018% |
 
-45 instances. Record member generic in 37. Cell model at the record between 0.2 and 10 in 36. Rows more than the best cell: median 8, range 0 to 20. Members in cells at least as good: median 4.1%. Cover first reaches the record after a median 3.2% of the members, the parity order after 0.0063%.
+47 instances. Record member generic in 39. Cell model at the record between 0.2 and 10 in 38. Rows more than the best cell: median 8, range 0 to 20. Members in cells at least as good: median 3.8%. Cover first reaches the record after a median 3.1% of the members, the parity order after 0.0063%.
 
 ### What cover first finds with a share of the work
 
@@ -67,6 +69,8 @@ success comes within the given share of the members, in cover-first order at the
 | 3 | 14 | non-square | 403 | 242 | 403 | 403 | 403 | 403 | 403 | 403 |
 | 3 | 15 | non-square | 459 | 364 | 364 | 400 | 459 | 459 | 459 | 459 |
 | 3 | 16 | non-square | 488 | 383 | 383 | 465 | 488 | 488 | 488 | 488 |
+| 3 | 17 | non-square | 560 | 502 | 502 | 502 | 560 | 560 | 560 | 560 |
+| 3 | 18 | non-square | 717 | 570 | 619 | 619 | 717 | 619 | 717 | 717 |
 | 5 | 9 | 1 | 138 | 109 | 109 | 109 | 109 | 138 | 138 | 138 |
 | 5 | 10 | 1 | 206 | 122 | 136 | 152 | 152 | 152 | 152 | 206 |
 | 5 | 11 | 1 | 201 | 170 | 185 | 185 | 201 | 201 | 201 | 201 |

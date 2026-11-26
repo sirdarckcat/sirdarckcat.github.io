@@ -27,8 +27,8 @@ All tables are in `tables.md` (written by `tables.py`); the numbers quoted below
 
 *The record is where the count over class vectors puts it.* Take the cells at a line and let the rows left be
 independent with their exact average chance. The number of members this model expects at the record target is
-between 0.2 and 10 in 36 of the first 45 instances; the others are the structured cases of (b) and two generic ones at
-0.18 and 0.19. At lower targets it is biased high: over the 28 instances with at least 10^6 members, predicted over
+between 0.2 and 10 in 38 of the 47 instances; the others are seven of the structured cases of (b) and two generic
+ones at 0.18 and 0.19. At lower targets it is biased high: over the 28 instances with at least 10^6 members, predicted over
 true has median 1.21 at 3,000 successes or more (range 1.06 to 1.46), 1.31 at 300 to 3,000, 1.46 at 30 to 300 and
 1.54 at 10 to 30 (range 0.26 to 2.4). At q = 3, n = 18: 12,700 predicted for 10,026; 1,510 for 1,025; 161 for 101;
 19.9 for 10; 0.56 for 1; and the level at which it expects one member is 738 rows, the record 754. Without cells
@@ -49,7 +49,7 @@ members, 607 within 0.1% and within 1%, the record within 10% (`tables.md`, seco
 
 ### (b) Where do the true optima sit?
 
-Never at N′ = 0. In the enumerable range the record member is generic in 37 of the first 45 instances (no symmetry,
+Never at N′ = 0. In the enumerable range the record member is generic in 39 of the 47 instances (no symmetry,
 derivative of high degree) and uses parity by luck: the record at q = 3, n = 12 has 24 rows left at the line, where the
 best cell has 17, and only 2 of them are squarefree with an odd number of factors, where 12 are expected. The eight
 structured records are all at n divisible by p (the monic record at 9^9 is shared by three translation-invariant
