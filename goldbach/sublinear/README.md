@@ -124,7 +124,9 @@ it; they are in "A floor under every cover" and the sections after it:
 - In the polynomial toy setting a mechanism that is neither a small factor
   nor luck does exist (Result 1), now proved in Lean without hypotheses,
   including a formal proof of Stickelberger–Swan; over the integers it has no
-  counterpart.
+  counterpart. (Corrected on 26 November: congruences with aligned classes
+  match its reach in the toy setting at a p-th of the degree; the mechanism
+  is real, its advantage over congruences was overstated.)
 - Two by-products about the integers, both proved in Lean: for all large X
   some even N ≤ X has no Goldbach summand below c·ln X·ln ln X, for every
   c < 1.349 (the one earlier bound we found has 1/2); and an explicit even
@@ -271,12 +273,31 @@ product of all monic irreducibles of degree ≤ J, λ a non-square, and
 N = λ·V_J^p. Then N − Q is reducible for every monic irreducible Q of degree
 ≤ J + 1 (p ∤ J+1): those of degree ≤ J divide N, and for degree J + 1 the
 formula gives r even. deg N = p·deg V_J, a little above p·q^J (2,403 against
-2,187 for F_9 and J = 3). Forcing the same by congruences needs a degree of order
-q^(J+1)/J (primes of degree ≤ J always leave a fraction of order 1/J of the
-rows of degree J + 1, and each of those then needs a prime of its own), and
-a cover of degree p·q^J followed by luck succeeds with probability about
-exp(−0.7 q / (p (J+1))). Over a prime field the same N with a suitable
+2,187 for F_9 and J = 3). Over a prime field the same N with a suitable
 (n mod 4, λ) handles the single top degree, at no saving.
+
+*Correction of 26 November.* The comparison that stood here was wrong. It
+said that forcing the same by congruences needs a degree of order
+q^(J+1)/J, because primes of degree ≤ J always leave a fraction of order
+1/J of the rows of degree J + 1. That holds for classes chosen prime by
+prime; it fails for aligned classes. With one common residue R of degree
+J + 1 for every prime of degree ≤ J (N ≡ R modulo V_J, room deg V_J, a
+p-th of the desert's), a row Q is struck exactly when R − Q has a factor of
+degree ≤ J, so every row of degree J + 1 is struck except the at most
+q − 1 of the form R − c, and every row of degree ≤ J except those with
+R − Q irreducible (the catalogue of "Toy worlds first", C0′, proved there;
+its verifier pointed out that it refutes the old sentence for every q).
+Best R found by that page and its verifier: over F_3 with J = 3 every row
+of degree ≤ 4 struck at room 33, against the desert's 99; 7 of the 45 rows
+of degree ≤ 2 left over F_9 (J = 1), 3 of 55 over F_5 (J = 2), 7 of 136
+over F_16 (J = 1). What makes this possible is the ultrametric: all monic
+polynomials of degree J + 1 lie within degree J of R, where on the
+integers only the q within z of R do (the common-integer cover there
+leaves 1,876 rows against 1,502 for chosen classes). The estimate
+exp(−0.7 q / (p (J+1))) that also stood here was for a cover with chosen
+classes followed by luck, and is not a bound on what congruences can do.
+The parity mechanism stands as proved; what does not stand is that it
+reaches rows at a price congruences cannot match.
 
 **Checked** (`parity_desert.py`, python-flint; `parity_desert.txt`): the
 parity is constant over all rows of each degree, and equal to the formula, in
@@ -302,7 +323,10 @@ found it stated. K. Conrad's survey of the phenomenon is titled "Irreducible
 values of polynomials: a non-analogy": it is the standard example of
 something true over F_q[T] with no counterpart over the integers. It
 is not a search algorithm. In the toy setting it buys (i) one more degree at
-the deterministic frontier, a factor q/p in the number of rows; (ii) in the
+the deterministic frontier, a factor q/p in the number of rows, against
+covers whose classes are chosen prime by prime (against aligned classes it
+buys nothing at that degree: see the correction of 26 November above);
+(ii) in the
 regime where luck dominates, a cheap exact filter: half of the rows of any
 member are certified reducible for the cost of a Jacobi symbol, which by the
 selection identity is worth a factor of about 4 (1.4 nats; an estimate, to
@@ -321,7 +345,9 @@ the factor p in degree and the divisibility kills. At equal degree over F_9
 at degree 7; an ordinary cover (nonzero classes on the 285 primes of degree
 ≤ 3, plus 400 quartic moduli) leaves 13.8% of the rows of every degree before
 any optimisation, mops up the 223 quartics left with the quartic moduli, and
-so equals the desert at degree J + 1 and beats it above. The desert wins only
+so equals the desert at degree J + 1 and beats it above. (An aligned cover,
+not considered when this was written, reaches degree J + 1 at a p-th of the
+desert's degree.) Against covers with chosen classes the desert wins only
 on the deterministic objective at degree exactly J + 1, and only when q/p is
 large (the ratio (1 + 0.56(q − 1)/J)/p of the corollary: 1.5 for F_25 and
 J = 2, 2.1 for F_49). Turning single zero classes of a desert into nonzero
@@ -1729,6 +1755,28 @@ characteristic p; and the symmetry needs a group acting on the ring and
 moving the rows, where the integers have no automorphism and every rational
 prime is fixed by every Galois group. Had the parity been available, the
 agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
+
+*Verification of the catalogue* (the first of its two verifiers, on the
+mathematics; the second is recomputing numbers). The page is sound: the
+characteristic-2 theorem was re-derived line by line and checked on a
+further 11,314 instances, and it is, as its author expected, the case of
+residue zero, with an explicit sign, of the theorem of Conrad, Conrad and
+Gross on polynomials in T^4 in characteristic 2 (their Theorem 5.12; their
+Example 5.13 is its case of linear rows), so it is not new as a phenomenon.
+The hypotheses are sharp (without S | A about half the instances fail;
+for rows of degree 2 mod 4 the condition n − d ≥ 4 is needed), and the
+verifier adds the case the theorem left out for quartic rows without a
+cubic term: there the number of factors of N − Q has parity k·a whatever
+the row (computed, no exception). Corrections of detail: the product of
+the small primes equals x^(q^J) − x only for J ≤ 2; the Carlitz degree
+formula fails for constant argument; the symbol of the arithmetic
+derivative is not independent of the parity, it only fails to determine
+it; "exponent divided by the group order" in C3 was measured as factors
+2.05 and 3.75 for groups of order 3 and 5 (what is exact is the count of
+independent rows on free orbits). And one correction that reaches back
+into Result 1 of this file, made there: aligned classes (C0′) do at room
+deg V_J what that section said congruences could not do below order
+q^(J+1)/J. The verifier found no integer analogue that the page missed.
 
 *Verification of this session's enumeration page* (the first of its two
 verifiers; the other is recomputing numbers). An independent C program
