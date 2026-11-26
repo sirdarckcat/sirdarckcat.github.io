@@ -1603,6 +1603,31 @@ on its branch (195e7bd); statements theirs, marked as they mark them.
   known beyond the Johnson radius except for random errors with interleaved
   codes, and no paper states the obstruction.
 
+- *A second, independent page* (an agent of this session, which could not
+  see the Opus session's page; verifiers pending). It reaches the same
+  necessary condition a third way, through the marginals of any population
+  the decoder is to capture: the sum over the weighted classes of
+  d_i π_i(c)² must exceed the dimension (ln K on the integers), so a
+  population whose luck is spread thinly over many places is captured only
+  when the weighted classes fill about ln K nats of Mertens mass. Its
+  integer figures, with ln K = 16.88: mass 16.82 needed, places to
+  9.3·10^9, 1.9·10^18 table entries; weights confined to the classes that
+  hold rows supply at most 2.07 nats, enough for a window of 8 members. And
+  it states what IS priced by the output in this world: (O1) product lists
+  on an information set (places of total degree at most n): the consistent
+  N are q^(n−T) ∏ l_i exactly, one Chinese-remainder combination each,
+  and each further place costs a factor 1/ρ a member; (O2) lists that are
+  affine subspaces over F_q, at any number of places: the consistent N are
+  an affine subspace found by Gaussian elimination, for every size of
+  output (checked: hyperplane lists against random lists of equal density
+  give the same counts on average, and subfield lists give q^(2^m)
+  polynomials where random lists of the same density give 10^−6). On the
+  linear-algebraic folded decoder it proves that product lists with two
+  values or more a coordinate leave the interpolation space zero at every
+  degree at which the decoder could conclude. The integer counterpart of
+  (O2) is lists that are progressions or intervals of classes, which a
+  lattice imposes; the tables have none (above).
+
 So the barrier that folding breaks is not the one this problem is behind:
 list recovery is by definition the regime of few consistent codewords, and
 here there are e^31 and more, wanted at unit cost each.
@@ -1857,7 +1882,12 @@ sieved to 10^8, 50,636 surviving rows, 3,591 of them prime (7.09%).
 - *Where the parity lives.* (i) For odd squarefree n and k ≡ 3 (mod 4)
   prime to every p − 1, p | n, the map x ↦ x^k is a permutation of Z/n and
   μ(n) = (−1)^((n−1)/2) · sgn(x ↦ x^k) (17,403 cases by explicit cycles, no
-  failure). This is the integer counterpart of Stickelberger–Swan, where
+  failure; 9,654 again here with a separate program). In plain terms the
+  sign of the power map is the parity of the number of prime factors
+  ≡ 1 (mod 4), and the Jacobi symbol (−1/n) is the parity of the others:
+  a quadratic character gives, free, the parity of the prime factors
+  outside its kernel and never of those inside, and the primes inside the
+  kernel of every character one tests are a positive share of all. This is the integer counterpart of Stickelberger–Swan, where
   the parity is the sign of Frobenius. (ii) For the curve
   E_n: y² + xy = x³ − 36nx − n and n prime to 6 with 1 + 1728n squarefree,
   the root number is −(−1)^ω(n) (12,151 curves against PARI, no failure).
