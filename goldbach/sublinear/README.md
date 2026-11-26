@@ -1945,7 +1945,7 @@ and what the nearest thing costs.
 | chosen classes | 3 | N ≡ R_π strikes a class of rows | K | yes | the cover | had |
 | aligned classes | 3 | one residue for all small moduli strikes whole degrees but q − 1 rows | 1 | yes: one common integer | 1,878 rows against 1,502 | −9 |
 | parity by the discriminant, forcing rows | 3 | N′ = 0 (or N = λA⁴ in characteristic 2): the parity of the number of factors of N − Q is fixed for whole families of rows | K (p odd); 2 (p = 2, odd degrees over F_2) | no | none: every additive Leibniz map on Z is zero; the arithmetic derivative needs the factorisation | up to the whole exponent |
-| parity as a selection statistic | 3 | the rows that can still succeed are counted for every member; reaches the record after 0.008% of the members | 1 (Lean session, measured) | no | the count of rows surviving the sieve: the emptiest 1.5% of members hold 20% of the hits | 1.4 to 2.3 (model) |
+| parity as a selection statistic | 3 | the rows that can still succeed are counted for every member; reaches the record after 0.008% of the members (because the toy's sieve depth u = ln n/ln z is 3 to 6, where an odd number of factors nearly is irreducibility) | 2 (Lean session and this session's page with its verifiers) | no | the count of rows surviving the sieve: the emptiest 1.5% of members hold 20% of the hits | 1.4 to 2.3 by three models (1.38 by the sieve lens: at u = 25 a parity is a fair coin), and nothing unless it costs under 0.02 Fermat tests a row |
 | ties by an additive symmetry | 3, 6 | σ(N) = N ties the rows π and σ(π); on orbit-closed sets of rows the trials are divided by the order h; the invariant family reaches the depth of the best of all | K (identity); 1 (law on complete degrees); 2 (Z[i] at radius 3,000) | no: the additive bijections of Z are ±1, and the rational primes are the rows every Galois group fixes | the cover (rows tied through a common factor): 96% of the room to divide the exponent by 1.43, where a symmetry of order h spends 1 − 1/h to divide it by h | 18.2 for an involution pairing the rows |
 | Artin–Schreier forcing | 3 | N = A(x^p − x) with one linear condition forces every row C(x^p − x) | 2 | no: Q has no extension unramified at every prime, and its abelian extensions are cyclotomic, whose splitting laws are congruences | identically reducible families: at most about √Q rows, −6 net | small |
 | powers, cyclotomic, Carlitz | 3 | a congruence on the exponent pins all primes of a degree | 1 | yes, exactly (2^m modulo 2^L − 1) | at par with a congruence; the powers of two leave 2,088 rows at best | −14 |
@@ -2201,6 +2201,67 @@ two new theorems on coordinates.
   sieve count that is a sum of functions of single residues is
   W ln(1/W)/(1 − W), 55% at depth 10^8 (measured within 3% on 12 primes):
   the rest is rows struck more than once.
+
+**Sieve theory and the parity problem** (page returned; verifiers pending).
+No substitute; a price for the parity, which changes how the toy result
+should be read, and six obstruction statements. Its sample: 4,300 members
+of the real cover, every row sieved to 10^8, all 2,175,934 surviving rows
+Fermat-tested (155,503 primes; found over expected 1.0009 ± 0.0025;
+dispersion of the primes per member 0.954 ± 0.022 of binomial).
+
+- *What a parity is worth depends on the depth of the sieve.* Among the
+  numbers below x with no prime factor up to z = x^(1/u), the mean of the
+  Liouville function is ρ′(u)/ω(u) (Dickman's and Buchstab's functions;
+  checked on four intervals at 10^12 within two standard deviations, and
+  exactly in F_q[x] by generating functions). For u ≤ 3 a rough number
+  with an odd number of factors is prime; at u = 4 the bias is −0.02; at
+  the search's working point, u = 25, it is 10^−38. So over Z a free parity
+  of a surviving row would be a fair coin that doubles the prime rate of
+  the half it keeps, and nothing more: worth +1.38 nats in all if free
+  (+0.39 if it only halves the tests), and nothing unless it costs under
+  0.02 Fermat tests a row. In the toy worlds u is 3 to 6, where an odd
+  number of factors nearly is irreducibility: that, not the discriminant
+  itself, is why the parity statistic was so strong there. A cheap parity
+  would not have closed the gap.
+- *Sieve weights are blind to the parity* (proved in two lines from the
+  prime number theorem for the Liouville function: any Σ_{d | n, d ≤ D} w_d
+  has correlation at most X e^(−c√ln(X/D)) Σ|w_d|/d with it). For
+  polynomials of bounded degree in the indicators "N ≡ a mod d" the same
+  is a theorem on average over all N (Siegel–Walfisz; under the Riemann
+  hypothesis for every modulus), and only a conjecture on one window.
+  Outside that model and computable at 200 digits there is nothing known:
+  Jacobi symbols of any top are residue statistics; digit functions are
+  proved not to correlate with primes or the Möbius function (Mauduit and
+  Rivat; Green); the bilinear sums that break parity elsewhere need the
+  factorisation of the number at hand.
+- *The count is sufficient.* Under the prime-tuples conjecture with
+  uniformity, conditional on N modulo every prime up to z, the chance that
+  no surviving row is prime is (1 − C_z/ln N)^S (1 + O(S²/z)): among all
+  functions of the residues the count S of surviving rows is a sufficient
+  statistic, and rows are tied only through common small factors. Measured:
+  79 features of the sieve pattern beyond the count (small factors of the
+  neighbours n ± c, the neighbouring rows, member-level pattern counts),
+  largest |z| 2.6 where label shuffles give 2.6; a logistic regression on
+  69 of them, fitted on half the members and scored on the other half,
+  loses 24 to 26 nats where pure noise loses 34.
+- *Aligned (Maier) covers.* With all classes taken from one integer R the
+  surviving rows are the q with R − q rough, fewer than the product of
+  local densities by Buchstab's factor, and u = ln Q/ln 463 = 1.99 sits at
+  the trough of that oscillation: the best of all 16 million R in
+  ±8·10^6 leaves 1,876 rows (0.872 of the product, against e^γ/2 = 0.89),
+  the real cover 1,502 (0.698). The real cover agrees with any single R on
+  at most 11 of its 89 classes, as random class vectors do. Hybrids, a
+  block of moduli aligned and the rest greedy: 1,684 to 1,935 rows against
+  1,587 for plain greedy. The cover is Maier's matrix with free classes
+  instead of equal ones, and free classes win.
+- *The large sieve as a ceiling* is Chebyshev's inequality and no more: on
+  the whole real window and the 532 primes to 4,600 it allows 1.4 million
+  members beyond the level where the product model expects one and one is
+  found (second moment 1.00004 of the model, third and fourth within
+  0.1%); Gallagher's larger sieve is void for the best member even with
+  hindsight lists (15.69 against 16.88). Sieve theory of dimension 2 at
+  s = 1.99 can neither exclude a complete cover nor bound the rows below
+  3,474.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
