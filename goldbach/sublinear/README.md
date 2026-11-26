@@ -2026,6 +2026,58 @@ Frobenius on deg f roots, which a discriminant computes because Frobenius
 is linear; over Z the permutation acts on n points and is linear over
 nothing.
 
+**The function field / number field dictionary** (page returned; verifiers
+pending). The image over Z of each tool of F_q[x] under the known
+dictionaries, tested on 3 million Fermat tests of real rows and on 68,640
+fully factored integers N − q of 32 digits. No substitute; every image is
+one of four things.
+
+- *A residue, hence the cover or a pin.* Frobenius lifts and p-derivations
+  ((n − n^p)/p modulo p^k depends on n modulo p^(k+1)), Fermat quotients,
+  Witt components, Jacobi symbols with fixed or polynomial tops
+  ((P(m) | m) = (P(0) | m)), Stickelberger's theorem over any fixed number
+  field (the product over p | m of its signs is (d | m)): all functions of
+  N modulo a fixed modulus. The function-field parity escapes because the
+  extension F_q[x]/(m) moves with m and Frobenius is linear on it; on Z/m
+  the image of Frobenius is the identity.
+- *The factorisation in disguise.* The arithmetic derivative (p′ = 1 and
+  the Leibniz rule) satisfies n′ ≡ Ω(n) (mod 2) for odd n, so the Liouville
+  function is (−1)^(n′), and n′ ≡ n·(sum of the prime factors) (mod 8)
+  (68,640 checks); on n = pq it is p + q, which gives the factors. The
+  literal image of Stickelberger–Swan, the Jacobi symbol of the derivative
+  of the base-b digit polynomial over m, is not a residue and carries
+  nothing: 34 such features on the factored integers, largest |z| 2.9 with
+  mean z² 0.97; 15 on 80,000 real 200-digit rows, largest 1.5.
+- *True for polynomials and lost on evaluation.* The automorphisms x ↦ −x,
+  x ↦ 1/x, x ↦ x + 1 of Z[x] do tie digit polynomials, but the two rows
+  then test F(b) and F(−b), different integers: pairs of rows tied this way
+  are prime together 27 times where independence gives 24 and a tie 895
+  (and likewise in seven other pairings). The converse of Cohn's criterion
+  (a reducible digit polynomial factors the number): 0 reducible in 17,900
+  digit polynomials of real rows in seven bases; in random integers it
+  fires only through the divisors b ± 1, b² + 1, b² ± b + 1.
+- *Room at a worse rate than a pin.* Perfect powers, the image of N′ = 0:
+  the Liouville function of N − q is unbiased (±0.01 on 10,725 integers a
+  family), x^n − q is irreducible (Eisenstein at q), and N = M² leaves room
+  for 51 cover primes with classes restricted to squares: 2,065 rows
+  against 1,598 for the same greedy on free classes, 11 nats worse. The
+  Carlitz swap as "pin the quadratic character of N at a later prime for
+  ln 2 instead of its class for ln r": 0.0014 nats per nat against 0.0176
+  for a pin.
+
+And one vacuity worth keeping: the multiplicative monoid of Z has every
+permutation of the primes as an automorphism, but σ(N) = N constrains σ
+only on the primes dividing N, so the stabiliser of N moves all the rows as
+one orbit; a multiplicative tie would say that all rows succeed or fail
+together, which is false for every N with a least summand. The additive
+side is rigid for the matching reason: Z/m and Z/m′ are isomorphic only
+for m′ = ±m, where F_q[x]/(f) and F_q[x]/(g) are isomorphic for all
+irreducible f, g of one degree.
+
+(The page on other fields of the first workflow was stopped by a safety
+filter a few minutes into its work and was not retried; this round covers
+its question.)
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
