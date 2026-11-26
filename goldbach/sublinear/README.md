@@ -1345,7 +1345,7 @@ figures already in this file wherever the two overlap.
 |---|---|---|---|
 | algebraic families of N | a quadratic with free coefficients, x pinned modulo the 49 primes to 229 (re-optimized cover 1,991 rows) and the best shifted list of quadratic residues at the 40 primes from 233 to 463: exponent 42.52 | −6.06 | with fixed coefficients and the identity N − P(z) = (x − z)(…): −7.7 to −7.8, only 5 to 12 rows actually saved (at most 208 prime values on 294 to 365 admissible points); N − q is reducible only for q a value of a polynomial of degree 2 or more, so the forced rows are of order √Q for half the room |
 | constructions of covers | the set of moduli searched together with the classes: at 200,000 drop 431 and 463, add 479 and 503: 1,499 rows, exponent 36.374 against 36.438 for the same walk on the first 89 primes (1,501 rows; the file's cover has 1,502) | +0.06 | at 213,070 +0.044; at 170,000 +0.064 where the fleet's 491 set already has +0.077; common-integer (Maier) covers: best of 367,333 has 1,878 rows; greedy without search 1,581 to 1,630 |
-| finding the best members of a window without scanning | none: sums over buckets of members, certified branch and bound, the Fourier lines of S, group testing | 0 | a solver that cost nothing would be worth +0.31 nats at the present keep, +1.37 for the emptiest 10^−3, +2.14 for 10^−4, +2.87 for 10^−5 and +4.10 for the single best member of a window: less than the gap, so the gap cannot be closed inside a window; with tables only to 4,096 a free solver loses |
+| finding the best members of a window without scanning | none: sums over buckets of members, certified branch and bound, the Fourier lines of S, group testing | 0 | a solver that cost nothing would be worth +0.31 nats at the present keep, +1.37 for the emptiest 10^−3, +2.14 for 10^−4, +2.87 for 10^−5 and +4.10 for the single best member of a window (extrapolated; the exact sieve counts of the whole window, computed on the 26th by two programmes, give +1.40, +2.14, +2.75 and +3.81: "The replacement round"): less than the gap, so the gap cannot be closed inside a window; with tables only to 4,096 a free solver loses |
 | cost of rejecting a member | sieve the rows that are tested first deeper than the others (84 rows, the first to 6·10^8) | +0.02 | order and stopping rule 0 (a hard cut on S and test to the first prime is the optimal policy); a shared start of the exponentiation +0.004; joint tests 1.2 to 1.3 times the separate ones; trial division by remainder trees 5 to 8 times short of break-even; tests at no cost at all would be worth 2.9 |
 | statistics of the scan | the cut itself: keep 0.80% (S ≤ 462) | +0.06 (the keep, already counted) | one threshold for the window instead of one per block +0.001; a cut that knows ln N +0.003; covers chosen by the variance of S +0.0003; windows chosen from summaries 0; an exact count to 10^9 at no extra cost +0.26, to 10^12 +0.84; the present count at half its cost +0.35 |
 | audit of the assumptions on real numbers | none: 56,191 members of the cover, every surviving row tested (31.7 million tests) | 0 ± 0.11 | primes found against expected 1.0011 ± 0.0007; dispersion of primes per member 0.996 ± 0.006 of binomial; no dependence on S, on k, on the row, between neighbouring members or between rows; the run of composites after a level is geometric |
@@ -2323,6 +2323,66 @@ dispersion of the primes per member 0.954 ± 0.022 of binomial).
   hindsight lists (15.69 against 16.88). Sieve theory of dimension 2 at
   s = 1.99 can neither exclude a complete cover nor bound the rows below
   3,474.
+
+**Probability, statistical physics and complexity** (page returned;
+verifiers pending). No substitute; the landscape measured whole. Its base
+is the exact sieve count of all 21,378,978 members of the real window at
+four depths, by a programme of its own: at 10^8 mean 505.638, sd 18.014,
+least 412, the same as the lattice lens's.
+
+- *The window is a random-energy model.* The correlation of the sieve
+  count between a member and its translate, for every one of the 10.7
+  million translates: largest 0.0028 (0.0042 at depth 10^6); the 25 largest
+  are all multiples of two later primes; every value checked follows from
+  the tables by a first-order formula (common residues plus coincidences
+  of row differences). So two members overlap either completely or by at
+  most 0.003: the gap is empty at every level, and there is no level below
+  which the landscape is easy. Minima over blocks of members and the
+  spacings of the extreme members follow the law of independent draws
+  (classes modulo 467 × 479, 95 members with two residues in common, move
+  the minimum by 0.035 rows).
+- *Every move is a translation, and a translation carries only N modulo
+  itself* (transport lemma, proved: a common prime factor of N − q and
+  N′ − q′ divides (N′ − N) − (q′ − q); so inside a window a row known
+  composite only by its Fermat test shares that knowledge with no other
+  member; checked on 85,570 real triples). Splitting, sequential Monte
+  Carlo and their kin are therefore adaptively chosen pins, and are bounded
+  by the pin: children of the members kept on the count inherit
+  e^(0.0055 ± 0.0004) in hit chance, as the formula says, where the pin on
+  the same two primes gives e^0.25; at best 0.019 nats with the best
+  translate and the deepest parent. Moving across covers to keep three
+  later primes instead of two: correlation 0.0042, predicted 0.0042, for a
+  neighbouring cover two rows worse. Multiplications and reflections of
+  the index carry nothing (0.0002 ± 0.0003).
+- *The ceiling of selection, exact.* The lower tail of the count is the
+  binomial's skewed tail, 28% thinner than normal at the minimum (members
+  with at most 425 survivors: 71 found, 71.5 by the Edgeworth form, 92 by
+  the normal). With the hit chance (1 − p/w)^S, the share of the hits in
+  the lowest fraction of the window gives, for a solver that cost nothing:
+  +1.40, +2.14, +2.75 nats for the emptiest 10^−3, 10^−4, 10^−5 and +3.81
+  for the single best member, where the sweep's extrapolation had +4.10.
+  Across windows the best member of n gains 0.52 nats a decade of n: 0.23
+  nats per nat of sieve work, falling. Under independence of the surviving
+  rows the count is sufficient and a cut on it is the best selection from
+  sieve data (Neyman–Pearson).
+- *A low-degree lower bound for the planted version* (proved; the identity
+  checked by enumeration in a miniature). Tables independent Gaussian; one
+  member has its classes raised by μ_p with Σ μ_p² = Λ. For every
+  polynomial f of degree at most D in the table entries the squared
+  advantage is at most (1/K) Σ_{d ≤ D} Λ^d/d! plus a term from the overlaps
+  of translates, which on the real window is 0.009. With the planted
+  member at the natural maximum (Λ = 2 ln K) no polynomial of degree up to
+  7 = 0.41 ln K separates planted from null by one standard deviation; the
+  statistic that does is a Hermite polynomial of each member's score
+  summed over the members, which is the scan. A degree bound is not a time
+  bound, and the real tables are not independent; it is the strongest
+  statement of this kind that could be proved here.
+- *Where the hits are among covers.* From the tempering tables, the covers
+  at the temperature of the hit chance (0.0243 a row) hold e^422 times the
+  hit mass of the best covers; all but e^−422 of the N below 10^200 with a
+  least summand above 160,000 lie in covers of about 1,750 rows. And each
+  hit there costs e^13.5 times more, since work is per member: the mass is
+  in the bulk and the density at the bottom.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
