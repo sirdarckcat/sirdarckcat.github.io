@@ -1795,7 +1795,7 @@ World 1 is in the kernel (Lean session, `GoldbachGaps/Worlds/NoCoupling.lean`,
 commit 15a3606: the coordinatewise optimum, and the k best listed with at
 most 1 + m·n candidates for the n-th).
 
-### The transfer table (first form, 26 November 02:00 UTC)
+### The transfer table (first form, 26 November 01:58 UTC)
 
 One row per tool. Status: K = in the Lean kernel; 2 = proved or computed
 twice independently; 1 = one session's proof or computation so far (the
@@ -1829,9 +1829,10 @@ Read down the "over Z" column: what the integers keep is what is built on
 congruences and on order (the cover, the arc, counting, meet in the
 middle); what they lose is what is built on an automorphism (ties, folding)
 or on a derivation (parity, inseparability) or on an unramified extension
-(Artin–Schreier). The three losses are three faces of one fact, that Z is
-the initial ring: no proper subring to be invariant over, no derivation,
-no unramified cover. The replacement round (nine lenses, running) asks
+(Artin–Schreier). Each loss has a one-line reason: the additive bijections
+of Z are ±1 and it has no proper subring to be invariant over; every
+derivation of Z is zero; and Q has no extension unramified at every prime
+(Minkowski). The replacement round (nine lenses, running) asks
 whether any other field, ring or group attached to the numbers N − q can
 stand in for one of them.
 
