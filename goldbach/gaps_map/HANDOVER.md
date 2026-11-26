@@ -10,7 +10,7 @@ The method chooses N so that, for many primes q, N − q is divisible by a small
 
 ## The notes
 
-**`GAPS_MAP.md` and `viz/goldbach_map.html`.** A picture of how the 196 results of the project depend on each other; interactive, also published at https://claude.ai/artifact/61W1713byd63vzpSgCL69p. Built from the other sessions' documents and tested in a browser; only as reliable as they are.
+**`GAPS_MAP.md` and `viz/goldbach_map.html`.** A picture of how the 196 results of the project depend on each other; interactive; open it in any browser. Built from the other sessions' documents and tested in a browser; only as reliable as they are.
 
 **`COHERENT_BLOCK.md` (the stronger lower bound).** Proves on paper that for infinitely many even N the smallest summand is at least a constant times ln N · (ln₂N)² · ln₄N / (ln₃N)², where ln is the natural logarithm and ln₂, ln₃, ln₄ apply it two, three and four times. The idea, giving all primes in a long range the remainder of one common number, came from the Lean session's careful reading and borrows a device of Erdős and Rankin; I replaced a heavy step by an average. I am the only reader of this write-up; the Lean session has machine-checked a weaker version missing the very slowly growing factor ln₄N.
 

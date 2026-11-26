@@ -5,8 +5,8 @@ near 10^12, 10^15 and 10^18 and compares the truth with the model behind every c
 search: a row N − q with a prime factor up to the sieve depth z is composite, and every other row is prime with
 one fixed probability c_z, independently (hypothesis H1).
 
-Charts: the Goldbach Archipelagos page, https://claude.ai/artifact/PjRwM5XGzjkMwWTsPMw3YR. On the Goldbach Gaps Map
-(`../gaps_map/`, https://claude.ai/artifact/61W1713byd63vzpSgCL69p) the results are the eight boxes tagged
+Charts: the Goldbach Archipelagos page, goldbach-archipelagos.html. On the Goldbach Gaps Map
+(`../gaps_map/`, ../gaps_map/viz/goldbach_map.html) the results are the eight boxes tagged
 'exhaustive test'.
 
 A number is **big** when g(N) is in the top 1% of its window (g ≥ 368, 480, 614 at the three scales) and **huge** in

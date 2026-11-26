@@ -166,7 +166,7 @@ python3 -I viz/make_gb.py                                                       
 ## 9. The evidence layer: archipelagos and tests of the model
 
 Added on 2026-11-23 from a separate statistical study, `goldbach/archipelagos/` on `ccr-c6e00296-3g7fp9`, with charts on the
-Goldbach Archipelagos page (https://claude.ai/artifact/PjRwM5XGzjkMwWTsPMw3YR). It computes g(N) exactly for 20 million consecutive even N near 10^12, 10^15 and
+Goldbach Archipelagos page (../archipelagos/goldbach-archipelagos.html). It computes g(N) exactly for 20 million consecutive even N near 10^12, 10^15 and
 10^18 and compares the truth with the model behind every forecast: rows with a prime factor up to the sieve depth are composite,
 every other row is prime with one fixed probability, independently.
 

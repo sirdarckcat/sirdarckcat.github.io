@@ -1,7 +1,7 @@
 # Evidence layer: an exhaustive statistical test of the model, from the archipelago study
 # (goldbach/archipelagos/, branch ccr-c6e00296-3g7fp9; charts on the Goldbach Archipelagos page).
 # RT: research boxes, RT_EDGES: their links ("A>B": A relies on B), RT_PATCH: sentences appended to existing boxes.
-PAGE = "https://claude.ai/artifact/PjRwM5XGzjkMwWTsPMw3YR"
+PAGE = "../../archipelagos/goldbach-archipelagos.html"
 def D(short, why, src): return (short, why, "doc", src)
 TAG = "exhaustive test"
 RT = {
