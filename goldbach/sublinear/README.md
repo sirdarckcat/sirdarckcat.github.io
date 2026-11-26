@@ -1472,19 +1472,32 @@ the other reading, over all class vectors of the cover's moduli at once,
 where listing is impossible, and there the score is the first-order part
 of the rows left, not the rows left.
 
-*A second, independent page* (an agent of this session, scripts under its
-scratch directory; its two verifiers have not reported, so the statements
-are its own): the same identity and programme with a certificate (a relaxed
-set listed in order of score and filtered exactly; states ⌈m e^D/ε⌉), a
-list form of meet in the middle whose cost lies between e^(D/2) and e^D,
-and lower bounds: an exact trellis of the integer interval in residue
-coordinates has at least min(P_I, P_Ic, X) states at every cut (the same
-bound as the Opus session's, by a fooling set); an ε-approximate one at
-least e^D/(18ε), so the programme's state count is optimal up to the factor
-18m among all methods that carry a state across a cut; and in a model where
-the two halves are used only through their positions, q queries find a
+*A second, independent page* (an agent of this session; both its verifiers
+have reported: every number reproduced with separate programmes, the
+theorems stand except as corrected here). The same identity and programme
+with a certificate (a relaxed set that contains every N below X, listed in
+order of score and filtered exactly; ⌈E e^D/ε⌉ states for a relaxation of
+width εX, E the number of coordinates off a base point), a list form of
+meet in the middle whose cost lies between e^(D/2) and e^D, and lower
+bounds: an exact trellis of the integer interval in residue coordinates
+has at least min(P_I, P_Ic, X) states at every cut (the same bound as the
+Opus session's, by a fooling set); a set sandwiched within εX of the
+interval, chosen without regard to the score, needs at least
+e^D/(4(1 + ε)) rectangles at a cut (and e^D/(18ε) for ε ≤ 1; the page's
+form without that hypothesis was false, and the verifier gave the
+counterexample and the bound valid for every ε); and in a model where the
+two halves are used only through their positions, q queries find a
 feasible pair with probability at most (q²/4 + 1)e^(−D), so e^(D/2) is
-optimal there. On the real cover, first-order score, best N below 10^200
+optimal there. The verifier's main correction is to the reading: these
+bounds do not make e^D the price of the arc. A relaxation with ε large
+costs e^D/ε states and 1 + ε listed points per point wanted, so the
+programme itself reaches the exponent D/2, and it ran so (six later
+primes: 1.9·10^6 states; seven: 2.4·10^7 states, 233 s, a complete
+certified list); methods that look at the score (the list form) or use the
+additivity of positions over more than two blocks (four lists with memory
+e^(D/4), trees, representations) are not bounded by anything proved here
+except the two-list model. None of this changes the verdict where D is in
+the hundreds. On the real cover, first-order score, best N below 10^200
 over all class vectors against the best member of the cover's own window:
 
 | later primes | D | best over all N < 10^200 | best of the own window | work |
@@ -1496,8 +1509,11 @@ over all class vectors against the best member of the cover's own window:
 | 7 (to 509) | 26.49 | 1,453 | 1,456 | lists of 6.2·10^7 and two windows, 17 s |
 
 (The first two rows reproduce the table above.) The gain of the joint
-optimum over the own window is 0, 1, 2, 2, 3 rows: 0.07 nats at seven
-primes, for a handful of numbers that each come alone. The number of N
+optimum over the own window is 0, 1, 2, 2, 3 rows in the first-order score
+and at least 1, 1, 2, 3, 4 in exact rows (points found with 1,477, 1,471,
+1,465, 1,458, 1,452 rows): 0.02 to 0.10 nats, for a handful of numbers
+that each come alone. The first-order score also degrades as coordinates
+move: at seven primes its optimum (1,453) has 1,460 exact rows. The number of N
 below X within a slack σ of the unconstrained optimum is the unconstrained
 count times e^(−D) to sampling error (12,000 predicted, 11,983 found; 589
 and 596; 122 and 117; 3.98 and 4): counting is free, finding is not. And
@@ -1924,8 +1940,7 @@ and what the nearest thing costs.
 | tool | world | what it does there | status | over Z | nearest integer form and its price | worth if it could be had |
 |---|---|---|---|---|---|---|
 | free coordinates | 1 | best class at every prime; the k best in O(k log k) | K | yes, for moduli of product at most X | the cover: it is the 15.7 nats between random classes (52.2) and the best cover (36.5) | had |
-| one character in an arc, and the programme over partial sums | 5 | N < X is one linear condition of precision e^(−D); extreme members at cost m e^D Σ r; optimal up to 18m among methods that carry a state across a cut | K (identity); 1 (bounds) | yes: it is a statement about Z | itself; but D grows by ln r a prime: 26.5 at seven later primes, 496 for the primes to 1,000, and those to 509 carry 1.1% of the score | 0.07 nats at seven primes (measured), for single numbers |
-| meet in the middle on the arc | 5 | e^(D/2), optimal when the halves are used through their positions only | 1 | yes | itself: reaches D near 40 | as the last row |
+| one character in an arc, and the programme over partial sums | 5 | N < X is one linear condition of precision e^(−D); extreme members at a cost between e^(D/2) and e^D (the programme with a wide relaxation, or sorted lists, reach the exponent D/2; e^(D/2) is optimal when two halves are used through their positions only) | K (identity); 2 (programme and lists, verified) | yes: it is a statement about Z | itself; but D grows by ln r a prime: 26.5 at seven later primes, 496 for the primes to 1,000, and those to 509 carry 1.1% of the score | 0.02 to 0.10 nats at seven primes (measured, exact rows), for single numbers |
 | the counting rule | 5 | the N below X at each level are the unconstrained count times e^(−D) | 2 (two exhaustive lists against the prediction) | yes | itself | 0: counting is free, finding is not |
 | chosen classes | 3 | N ≡ R_π strikes a class of rows | K | yes | the cover | had |
 | aligned classes | 3 | one residue for all small moduli strikes whole degrees but q − 1 rows | 1 | yes: one common integer | 1,878 rows against 1,502 | −9 |
