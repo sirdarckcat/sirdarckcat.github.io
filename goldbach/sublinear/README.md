@@ -1928,6 +1928,65 @@ sieved to 10^8, 50,636 surviving rows, 3,591 of them prime (7.09%).
   is a class condition. Isogenies and twists tie nothing: objects with bad
   primes at two coprime rows have different conductors.
 
+**Algebraic number theory and class field theory** (page returned;
+verifiers pending). No substitute; six candidates tested, seven
+obstructions, of which the first is the sharpest form yet of why the tie
+does not reach Z.
+
+- *Rational rows are fixed in every torsion-free ring* (proved, two lines).
+  Let R be any associative ring with 1 whose additive group has no torsion
+  (orders in number fields, quaternion and matrix orders, group rings,
+  S-integers, adeles), σ any additive bijection of R, N a non-zero rational
+  integer with σ(N) = N. Then σ(m) = m for every rational integer m:
+  σ(N) = N·σ(1), so N(σ(1) − 1) = 0, so σ(1) = 1. Rows can move only if
+  the ring has torsion (characteristic p) or the rows moved are not
+  rational (Z[i]).
+- *Every tie of the toy worlds is two rows testing the same integer*: if σ
+  preserves the norm and fixes T, then the norms of T − σ(π) and T − π are
+  equal. Real targets in Z[i]: 2 rows an integer; translation-invariant
+  targets in F_q[x]: p; a central target in the Hurwitz quaternions:
+  24(p + 1) rows of norm p on about 4√p integers (computed). In Z the map
+  q ↦ N − q is injective, and the sieved rows of a member are pairwise
+  coprime, so they satisfy no multiplicative relation at all.
+- *On a window, two rows are tied if and only if both are covered* (prime
+  number theorem in progressions against the upper-bound sieve); for
+  polynomial families the same under Bateman–Horn with "covered or
+  reducible". And forcing by prescribed factors is a cover: if divisors
+  1 < d_q < N − q are prescribed for a set of rows, N lies in one class
+  modulo their lcm, whose primes with the classes of N cover those rows.
+- *Abelian reciprocity is blind* (Kronecker–Weber): every symbol of N − q
+  with a fixed second argument is a function of N modulo its conductor,
+  and every class holds primes and products of two primes. *No family
+  forces a parity through a symbol*: (a | n) = (−1)^Ω(n) needs every prime
+  factor of n inert in Q(√a), and every polynomial family has values
+  divisible by primes that split (Schur); only splitting can be forced
+  (N = A² makes (q | N − q) = +1 for every row, verified on 964,443 rows),
+  which is the case where the symbol says nothing. *Genus theory*: the
+  index of the squares in the class group of −4n is 2^ω(n), and deciding
+  whether a class is a square is equivalent to quadratic residuosity
+  modulo n; the first genus-theoretic fact that sees compositeness is the
+  Euler test, one exponentiation.
+- *Measured on real 200-digit numbers.* 3,500 members of the real cover,
+  rows sieved to 200,000 and all survivors Fermat-tested, twice (5.3
+  million tests): 26 reciprocity symbols of the row integers (tops inside
+  and beyond the sieve, the row itself, the neighbouring row, a fixed
+  664-bit number): none splits the prime rate by 1% in both runs. Rows
+  grouped by their Frobenius class in three non-abelian fields: dispersion
+  of the primes per member 0.96 to 1.03 of binomial in each of 12 classes;
+  no two rows are prime together in more than 12 of the 3,500 members,
+  where a tie would give 84. Targets of the form A², A³, A⁴, 2^a 3^b,
+  A² + A, x² + y² at 200 digits: primes found over expected 0.985 to
+  1.016, dispersion 0.999 ± 0.027 over the seven families. The digit map
+  to F_2[x] or F_3[x]: the parity of the digit polynomial against the
+  Liouville function of n on 2.5 million n: correlation 0.0008 ± 0.0010.
+
+Both of the first two lenses arrived independently at the same identity
+for what is missing: μ(n) is the sign of the permutation x ↦ −x^k of Z/n
+(k ≡ 3 mod 4 prime to every p − 1). In F_q[x] the parity is the sign of
+Frobenius on deg f roots, which a discriminant computes because Frobenius
+is linear; over Z the permutation acts on n points and is linear over
+nothing.
+
 ## A provable lower bound (proved in Lean on 23 November)
 
 The game is an instance of a question with almost no literature: how large
