@@ -1,10 +1,15 @@
 # campaign3 on the GPUs: expected against found
 
-Updated 2026-11-25 10:25 UTC. Regenerated from the cards' own logs (`gpu3_stats.log`, `search.log`, `found.jsonl` of each
-campaign directory):
-- the replaced cards: their final snapshots (`runlogs/snap.py`);
-- the five running cards: `runlogs/t3.py` on each card;
-- the inputs and the script that writes the tables: `runlogs/2026-11-25/tally_1025/`.
+Final, 2026-11-26 08:41 UTC. All work stopped at 08:39:40 UTC on 26 Nov, on the user's decision (relayed by the lead). Both
+RTX PRO 6000 runtimes were stopped at a batch end, snapshotted and released; no Colab runtime is left running.
+
+The tables are regenerated from the cards' own logs (`gpu3_stats.log`, `search.log`, `found.jsonl`, `near_events.jsonl` of
+each campaign directory), read from every card's final snapshot:
+- `runlogs/t3.py` on each share's last snapshot: `runlogs/2026-11-26/tally_final/`;
+- the round-1 and round-2 snapshots, unchanged since 23-25 Nov: `runlogs/2026-11-25/tally_1025/`.
+
+The snapshots themselves are listed in `runlogs/2026-11-26/snapshots.txt` (sizes, hashes and slice counts). They are not in
+the repository.
 
 Columns:
 - **members**: members scanned (sieved).
@@ -13,86 +18,85 @@ Columns:
   - *logged*: from `gpu3_stats.log`, Σ (1 − p^)^count over the tested members, p^ the batch's measured PRP rate;
   - *model*: for slices from before that accounting (20:22-20:50 UTC), members × hit% × exp(−1.0275·E^ + 0.33) from each slice's own line. On the slices where both exist, this formula is within ~16% of the logged figure.
 - **found**: successes, each re-checked by `search.verify_success`; certified records are in `goldbach/records/`.
-- **near-misses** (Q = 170,000): a member whose first probable-prime row lies at or above the record of the time (but
+- **near-misses** (Q = 170,000): a member whose first probable-prime row lies at or above the threshold of the time (but
   below Q). Each one is re-checked on the CPU by `verify_near_miss` before it is written. In vector mode the RTX cards
   log the expected number per batch: Σ (1 − p^)^c over the tested members, c = the member's alive rows below the
   threshold.
 
-## Q = 170,000, 1,245-1,263 rows (88/89 moduli, 491 family, family-B covers), N < 10^200, since 23 Nov 03:55Z
+## Q = 170,000, 1,245-1,263 rows (88/89 moduli, 491 family, family-B covers), N < 10^200, 23 Nov 03:55Z to 26 Nov 08:39:40Z
 
-Design hits (no probable prime below 170,000). A replaced card's row is from its final snapshot; a share that moved to a
-new card carries its campaign directory, so its row covers both cards.
+Design hits (no probable prime below 170,000). A share that moved to a new card carries its campaign directory, so its
+row covers all its cards; the row is that share's last snapshot.
 
 | GPU (cards) | slices | members | hit mass | mean E^ | expected design hits (logged) | found | |
 |---|---|---|---|---|---|---|---|
 | **c170**: 88-moduli covers, campaign mode, 23 Nov 03:55Z to 10:57Z (RTX) / 16:51Z (L4, T4) | | | | | | | |
-| RTX PRO 6000 (gold-g4) | 29,940 | 1004.62e9 | 253.309e9 | 30.21 | 0.0130 | 0 | |
-| RTX PRO 6000 (gold-g4b) | 25,998 | 872.35e9 | 219.963e9 | 30.21 | 0.0113 | 0 | |
-| RTX PRO 6000 (gold-g4c) | 29,438 | 987.78e9 | 249.064e9 | 30.21 | 0.0128 | 0 | |
-| L4 (gold-l4b) | 9,134 | 306.49e9 | 77.279e9 | 30.21 | 0.0040 | 0 | |
-| L4 (gold-l4c) | 9,458 | 317.36e9 | 80.022e9 | 30.21 | 0.0041 | 0 | |
-| T4 (gold-xt4) | 4,678 | 156.97e9 | 39.580e9 | 30.21 | 0.0020 | 0 | |
+| RTX PRO 6000 (gold-g4) | 29,940 | 1004.62e9 | 253.309e9 | 30.21 | 0.0130 | 0 |  |
+| RTX PRO 6000 (gold-g4b) | 25,998 | 872.35e9 | 219.963e9 | 30.21 | 0.0113 | 0 |  |
+| RTX PRO 6000 (gold-g4c) | 29,438 | 987.78e9 | 249.064e9 | 30.21 | 0.0128 | 0 |  |
+| L4 (gold-l4b) | 9,134 | 306.49e9 | 77.279e9 | 30.21 | 0.0040 | 0 |  |
+| L4 (gold-l4c) | 9,458 | 317.36e9 | 80.022e9 | 30.21 | 0.0041 | 0 |  |
+| T4 (gold-xt4) | 4,678 | 156.97e9 | 39.580e9 | 30.21 | 0.0020 | 0 |  |
 | **c170v**: 89-moduli vectors, RTX vector mode, 23 Nov 10:26Z to 20:52Z | | | | | | | |
-| RTX PRO 6000 (gold-g4) | 152,400 | 2556.85e9 | 442.861e9 | 30.05 | 0.0268 | 0 | |
-| RTX PRO 6000 (gold-g4b) | 162,136 | 2720.19e9 | 477.902e9 | 30.05 | 0.0289 | 0 | |
+| RTX PRO 6000 (gold-g4) | 152,400 | 2556.85e9 | 442.861e9 | 30.05 | 0.0268 | 0 |  |
+| RTX PRO 6000 (gold-g4b) | 162,136 | 2720.19e9 | 477.902e9 | 30.05 | 0.0289 | 0 |  |
 | RTX PRO 6000 (gold-g4c) | 164,980 | 2767.91e9 | 477.567e9 | 30.04 | 0.0289 | 0 | near-miss 158,209 |
 | **c170f**: m88f family-B covers, campaign mode, 23 Nov 16:51Z to 24 Nov 00:44Z | | | | | | | |
-| L4 (gold-l4b) | 5,638 | 189.18e9 | 47.660e9 | 30.16 | 0.0026 | 0 | |
-| L4 (gold-l4c) | 6,210 | 208.37e9 | 49.093e9 | 30.16 | 0.0027 | 0 | |
-| T4 (gold-xt4) | 3,145 | 105.53e9 | 26.588e9 | 30.16 | 0.0014 | 0 | |
-| **c170r**: 491-family vectors, RTX vector mode, top windows, since 23 Nov 20:18Z | | | | | | | |
-| RTX PRO 6000 (partition 0: gold-g4d → gold-g4g) | 749,356 | 12572.11e9 | 2111.636e9 | 30.01 | 0.1318 | 0 | running; near-miss 160,357 on gold-g4d |
-| RTX PRO 6000 (partition 1: gold-g4e → gold-g4h) | 744,212 | 12485.81e9 | 2097.136e9 | 30.01 | 0.1309 | 0 | running |
-| RTX PRO 6000 (partition 2: gold-g4f) | 452,792 | 7596.59e9 | 1275.857e9 | 30.01 | 0.0799 | 0 | waits for a G4 since 24 Nov 19:59Z |
-| **c170g**: top32-shifted m88f family-B (top3 first on gold-l4d), L4/T4 top levels, since 23 Nov 20:20Z | | | | | | | |
-| L4 (gold-l4d → gold-l4g) | 34,028 | 1141.79e9 | 287.706e9 | 30.11 | 0.0163 | 0 | running |
-| L4 (gold-l4e) | 20,612 | 691.62e9 | 174.275e9 | 30.11 | 0.0099 | 0 | waits for an L4 since 24 Nov 22:39Z |
-| L4 (gold-l4f → gold-l4i) | 30,956 | 1038.71e9 | 261.734e9 | 30.11 | 0.0148 | 0 | running |
-| T4 (gold-xt4b → gold-xt4c) | 13,626 | 457.21e9 | 115.208e9 | 30.11 | 0.0065 | 0 | running |
-| **all logged** | | 48.18e12 | 8.764e12 | | **0.528** | **0** | |
+| L4 (gold-l4b) | 5,638 | 189.18e9 | 47.660e9 | 30.16 | 0.0026 | 0 |  |
+| L4 (gold-l4c) | 6,210 | 208.37e9 | 49.093e9 | 30.16 | 0.0027 | 0 |  |
+| T4 (gold-xt4) | 3,145 | 105.53e9 | 26.588e9 | 30.16 | 0.0014 | 0 |  |
+| **c170r**: 491-family vectors, RTX vector mode, top windows, 23 Nov 20:18Z to the stop (26 Nov 08:39:40Z) | | | | | | | |
+| RTX PRO 6000 (partition 0: gold-g4d → g4g → g4j) | 1,313,477 | 22036.49e9 | 3351.119e9 | 30.01 | 0.2088 | 0 | near-miss 160,357 on gold-g4d; 2 calibration events |
+| RTX PRO 6000 (partition 1: gold-g4e → g4h → g4k) | 1,294,004 | 21709.78e9 | 3337.256e9 | 30.01 | 0.2080 | 0 | 3 calibration events |
+| RTX PRO 6000 (partition 2: gold-g4f) | 452,792 | 7596.59e9 | 1275.857e9 | 30.01 | 0.0799 | 0 | waited for a G4 from 24 Nov 19:59Z |
+| **c170g**: top32-shifted m88f family-B, L4/T4 top levels, 23 Nov 20:20Z to 25 Nov 19:44Z | | | | | | | |
+| L4 (gold-l4d → l4g → l4j) | 41,964 | 1408.08e9 | 354.806e9 | 30.11 | 0.0201 | 0 | stopped 25 Nov 19:43Z (G4s only) |
+| L4 (gold-l4e) | 20,612 | 691.62e9 | 174.275e9 | 30.11 | 0.0099 | 0 | waited for an L4 from 24 Nov 22:39Z |
+| L4 (gold-l4f → l4i) | 39,336 | 1319.90e9 | 332.586e9 | 30.11 | 0.0188 | 0 | stopped 25 Nov 19:44Z |
+| T4 (gold-xt4b → xt4c) | 17,447 | 585.42e9 | 147.515e9 | 30.11 | 0.0084 | 0 | stopped 25 Nov 19:42Z |
+| **all logged** | 3,782,787 | 67.54e12 | 11.414e12 | | **0.692** | **0** | |
 
 - gold-gpu (L4) also ran c170 and c170f from 03:55Z until its runtime ended at 19:13Z on 23 Nov, before snapshots existed.
   Its records were lost; at the other L4s' rates it adds ~0.006.
-- So expected ~0.53, found 0. P(none) = e^−0.53 = 0.59.
+- So expected ~0.70 design hits, found 0. The chance of none at that expectation is e^−0.70 = 0.50.
 
 Near-misses, where logged (the RTX cards in vector mode; one card's campaign-mode stretch, 0.005, is in the first line):
 
 | threshold | in force | expected | found |
 |---|---|---|---|
-| ≥ 157,837 | 23 Nov, from vector mode (10:26Z) to 12:57Z | 0.128 | 1: g = 158,209 (gold-g4c, 12:48Z) |
-| ≥ 158,209 | 23 Nov 12:57Z to 24 Nov 17:14-17:20Z | 1.601 | 1: g = 160,357 (gold-g4d, 17:11Z) |
-| ≥ 160,357 | since 24 Nov 17:14-17:20Z | 0.476 | 0 |
-| **all** | | **2.205** | **2** |
+| ≥ 157,837 | 23 Nov, from vector mode (10:26Z) to 12:57Z | 0.128 | 1: g = 158,209 (gold-g4c, 12:48Z), a record |
+| ≥ 158,209 | 23 Nov 12:57Z to 24 Nov 17:14-17:20Z | 1.601 | 1: g = 160,357 (gold-g4d, 17:11Z), a record |
+| ≥ 160,357 | 24 Nov 17:14-17:20Z to 25 Nov 19:54Z (gold-g4j) / 21:06Z (gold-g4k) | 0.726 | 0 |
+| ≥ 140,000, the calibration (records still g > 160,357) | 25 Nov 19:54Z / 21:06Z to the stop, 26 Nov 08:39:40Z | 7.154 | 5 sub-record events (below) |
+| **all** | | **9.609** | **7** |
 
-The L4s and the T4 also report the near-misses they find (none so far) but do not log their expectation.
+The L4s and the T4 report the near-misses they find (none) but do not log their expectation.
 
-The 140,000 calibration (the lead, 25 Nov 18:52Z), on the two G4s since 19:55Z:
-- Each card runs at `--near-miss 140000 --record 160357`. A verified event with g ≤ 160,357 is a sub-record event:
+The 140,000 calibration (the lead, 25 Nov 18:52Z), on the two G4s from 19:54-21:06Z on 25 Nov to the stop:
+- Each card ran at `--near-miss 140000 --record 160357`. A verified event with g ≤ 160,357 is a sub-record event:
   - it is written to `near_events.jsonl` with `"sub_record": true`, and `found.jsonl` keeps the records and design hits;
-  - records (g > 160,357) and their certification path are unchanged.
-- The per-hour log is `runlogs/2026-11-25/calib_hourly.jsonl`, made by `runlogs/calib_peek.py` (v2) through
+  - records (g > 160,357) and their certification path were unchanged. No record came.
+- The per-hour log is `runlogs/2026-11-25/calib_hourly.jsonl` (final), made by `runlogs/calib_peek.py` (v2) through
   `runlogs/collect.sh`.
-  - It holds one object per card, hour and threshold: the expected events at the threshold, the found events and
-    restart gaps.
-- First event: g = 159,631 on gold-g4j at 23:07:10Z.
-  - Vector `q170000_m89r491_p0c01147_v866@3382593`, k = 6,806,439, row 1,189 of its 1,250 residual rows.
-  - N = 3.38·10^199, 200 digits.
-  - It was checked on the CPU again from N and g alone (`runlogs/check_event.py`,
-    `runlogs/2026-11-25/near_events_gold-g4j*`).
-  - It is not a record, so it is calibration data only (the lead, 23:13Z). Sub-record events are not certified or
-    published; they stay in the cards' `near_events.jsonl` and `runlogs/` with N and g, for the count and the overshoot.
-- To 23:10Z, at 140,000: 1.57 expected, 1 found (in the 4 full hours: 1.17 expected, 0 found).
+  - It holds one object per card, hour and threshold: the expected events at the threshold, the found events (each with
+    its vector's alive rows), and the restart gaps.
+- At the stop: in the 22 whole hours, 6.48 expected and 5 found; over every hour at 140,000, 7.15 expected and 5 found.
+  The chance of 5 or fewer at those expectations is 0.37 and 0.28, so the count agrees with the model.
+- The five events. Each was checked on the CPU again from N and g alone (`runlogs/check_event.py`,
+  `runlogs/2026-11-25/near_events_*`). Sub-record events are calibration data only (the lead, 23:13Z): they are not
+  certified or published.
 
-The smaller fleet since 24 Nov 19:59Z, when partition 2 lost its G4 (14.4 h to 10:24Z on 25 Nov):
-- 6 cards until gold-l4e's share lost its L4 at 22:39Z, 5 since 22:42Z. The T4 was down 11 min at 21:16Z.
-- Expected design hits 0.116 and near-misses ≥ 160,357 0.373; none found. By card:
-  - gold-g4g 0.0498 / 0.1865, gold-g4h 0.0497 / 0.1864;
-  - gold-l4g 0.0061, gold-l4i (with gold-l4f to 22:42Z) 0.0062, gold-l4e (to 22:39Z) 0.0011;
-  - gold-xt4c (with gold-xt4b to 21:16Z) 0.0028.
-- That is 0.19 design hits a day, against ~0.29 with seven cards (the 24 Nov day-one report), and 0.62 near-misses a day
-  at the 160,357 threshold.
-- The running cards' own shares since they took over: gold-g4g 0.0522 / 0.1955, gold-g4h 0.0511 / 0.1916, gold-l4g
-  0.0064, gold-l4i 0.0050, gold-xt4c 0.0026.
+| g | card | time (UTC) | vector | rows above 140,000 before g |
+|---|---|---|---|---|
+| 159,631 | gold-g4j | 25 Nov 23:07:10 | `q170000_m89r491_p0c01147_v866@3382593` | 130 |
+| 147,331 | gold-g4k | 25 Nov 23:34:05 | `q170000_m89r491_p1c01141_v728@3382594` | 50 |
+| 151,057 | gold-g4k | 26 Nov 00:33:55 | `q170000_m89r491_p1c01172_v933@3382593` | 77 |
+| 141,241 | gold-g4j | 26 Nov 01:22:05 | `q170000_m89r491_p0c01219_v744@3382594` | 12 |
+| 146,701 | gold-g4k | 26 Nov 05:04:16 | `q170000_m89r491_p1c01323_v419@3382594` | 46 |
+
+The last column is the number of the vector's alive rows (primes not excluded by the cover) in [140,000, g): the rows the
+member passed beyond the threshold. Their mean, 63, compares with the model's ~41; with five events, a difference of
+that size is within chance (the standard error is ~18).
 
 ## Q = 150,000, 1,092-1,097 rows (research covers, minted variants, generator batches; deep sieve B = 10^8 since 01:14-01:26Z on 23 Nov), N < 10^200
 
