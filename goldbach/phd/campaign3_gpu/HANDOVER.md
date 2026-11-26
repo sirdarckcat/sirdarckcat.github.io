@@ -8,7 +8,7 @@ runtime was released by 08:41 UTC.
 Goldbach's conjecture says that every even number larger than 2 is the sum of two primes. For an even number N, write
 g(N) for the smallest prime p such that N − p is also prime. For almost every number g(N) is small: a typical 200-digit
 number has g(N) of about 1,600. The question here was how large g(N) can be for an even N below 10^200 (a 1 followed by
-200 zeros). Before this project the largest known value was 119,419. The search raised it to 160,357, for a 200-digit
+200 zeros). Before this project the best value in this repository was 119,419. The search raised it to 160,357, for a 200-digit
 N found on 24 November.
 
 ## How it worked, and why it was organised that way
@@ -35,7 +35,7 @@ applied to each remaining N − q in increasing order of q, and stopped at the f
 Any candidate whose g(N) beat the standing record was re-checked on an ordinary processor. It was then certified with a
 complete proof: a certificate that N − g is prime, and for every smaller prime p, a reason why N − p is not prime.
 
-The design target was g(N) of at least 170,000. Falling short of 170,000 still breaks the record if the result beats the
+The design target was g(N) of at least 170,000; call such a find a design result. Falling short of 170,000 still breaks the record if the result beats the
 standing record, and that is how the last three records came.
 
 ## What it found
@@ -51,7 +51,7 @@ value.
 
 The final campaign aimed at 170,000. It ran from 23 November 03:55 UTC to the stop and examined 67.5 million million
 candidates. The model behind the search measures how often the tested numbers turned out prime and from that computes
-how many successes to expect. It expected 0.69 results of 170,000 or more. None came, which happens about half the time
+how many successes to expect. It expected 0.69 design results. None came, which happens about half the time
 at that expectation.
 
 The same model predicted records below the target well: 2.5 expected above the record thresholds of the time, and 2
@@ -75,19 +75,22 @@ L4 about 0.0004 for 1.9 units, so the RTX card returned about one and a half tim
 
 ## What was tried and dropped
 
-Each change was tried against an unchanged card running at the same time, and kept only if it measurably helped. Dropped:
+Most changes were tried on one card against an unchanged card running at the same time, and kept only if they measurably
+helped. Dropped:
 - **Carry-over.** Passing half-tested candidates on to the next batch keeps the GPU's test programs full. It gave the same
-  results but 1.1% fewer expected results per second in production, where a 2-5% gain had been predicted.
+  results but 1.1% fewer expected design results per second in production, where a 2-5% gain had been predicted.
 - **Clusters.** Letting groups of GPU threads share fast memory for the sieve would take at best 298 milliseconds per
   block of 16.8 million candidates, against 34 milliseconds for the existing method.
-- **Overlap.** Running the next block's sieve while the current tests run gave no gain: 2.50 seconds a batch either way.
+- **Overlap.** Running the next block's sieve while the current tests run gave no gain: 2.50 seconds for each round of work
+  either way.
 - **Kernel variants.** Two alternative arrangements of the big-number multiplication in the Fermat test were 3.5% and
   7.9% slower.
-- **Other tweaks.** Some smaller settings of the sieve programs changed a batch's time by less than 1%, and were not
-  adopted.
+- **Other tweaks.** Some smaller settings of the sieve programs changed the time of a round of work by less than 1%,
+  and were not adopted.
 
 Kept:
-- **Lower keep.** Keeping 0.75% of the candidates instead of 1.5% gave 5.6% more expected results per second.
+- **Lower keep.** Keeping 0.75% of the candidates instead of 1.5% gave 5.6% more expected design results per
+  second.
 - **Better covers.** Covers using 491 in place of 463 gave 6% more.
 
 ## State at the stop
@@ -105,6 +108,7 @@ Kept:
   - `runlogs/2026-11-26/` holds the stop, including `snapshots.txt`, the list of the cards' final snapshot archives with
     their sizes and checksums.
   - `runlogs/2026-11-25/calib_hourly.jsonl` is the hour-by-hour log of the 140,000 check.
-- **The snapshots:** the archives themselves (5 to 65 MB each) exist only in the operating session's temporary storage,
+- **The snapshots:** the archives themselves (5 to 65 MB each) exist only in the temporary storage of the session that ran the
+  fleet,
   and will be lost with it. A restart from this repository would regenerate the covers and skip the candidates listed as
   done in `runlogs/`.
