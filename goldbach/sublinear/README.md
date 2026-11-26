@@ -1484,8 +1484,147 @@ independent balls) and no coset of any subgroup is heavy. In the additive
 labelling (class index as an integer) the largest coefficient is 1.08 ln r
 on average, with one prime at 3.4 ln r.
 
-Worlds 2, 3 and 4 and the transfer table across worlds follow as the pages
-return.
+**World 2 (linear coupling: list recovery over F_q[x]).** Opus session,
+`goldbach/bottom_up/worlds/world2.md` on its branch (commit 476df3d), and
+the consultant's literature page, `goldbach/gaps_map/TOY_WORLDS_LITERATURE.md`
+on its branch (195e7bd); statements theirs, marked as they mark them.
+
+- *Proved, given the published decoding radius:* decoding up to the Johnson
+  radius (Guruswami–Sudan, Koetter–Vardy; on the integers
+  Goldreich–Ron–Sudan, Boneh, Guruswami–Sahai–Sudan) returns a member at
+  depth κ of a window of K only if Σ ln Q/Q over the places used is at least
+  (√ln K − √(2κ ln Q_min/Q_min))². With the full window that needs places to
+  5.7·10^7 and an input of 9.5·10^13 table entries at κ = 16.6, and more at
+  smaller κ: 6·10^6 to 6·10^8 times the scan; for any window of two members
+  or more, at least 1.5·10^4 times. With lists of density ρ at every place
+  and full agreement it recovers only N of degree below 1/ρ; at the
+  agreement that deep members really have it recovers nothing of degree 1 or
+  more. (My own form of the same fact, checked by it: with lists of two or
+  more classes the region the radius guarantees and the region where a
+  consistent N exists by the first-moment count are disjoint, so on generic
+  lists the guarantee is empty beyond pins inside the room.)
+- *Proved:* folding and multiplicities, which carry list decoding beyond
+  that radius to capacity, buy nothing for a separable score, on average or
+  in the worst case: a separable score gives product lists on folded
+  symbols and cylinder lists for multiplicities, and the counting condition
+  of those decoders then reduces to the unfolded one. Every decoder beyond
+  the Johnson radius needs lists that correlate coordinates.
+- *What folding uses:* an automorphism permuting places with isomorphic
+  residue fields, the identity f(γX) ≡ f(X)^q modulo X^(q−1) − γ, and
+  correlated lists. The integers have no automorphism and residue fields of
+  pairwise different sizes; but since the third ingredient is missing in
+  both worlds for our scores, the missing automorphism costs nothing here.
+  Prime-power moduli (the counterpart of multiplicities) never help: the
+  further digits of N are redundancy that a score of N mod s cannot
+  constrain.
+- *Literature (consultant; theorem statements read, proofs not):* the
+  capacity of list recovery is known for every list size up to the
+  alphabet, but only random non-linear codes are known to reach it; every
+  explicit or linear construction needs input lists of size
+  |alphabet|^o(1); full-length Reed–Solomon codes need rate at most 1/ℓ at
+  zero error. For random lists on a fixed algebraic code nothing is proved;
+  that problem is noisy polynomial interpolation (Naor–Pinkas;
+  Bleichenbacher–Nguyen, with noisy Chinese remaindering as its integer
+  twin) and is used as a hardness assumption. On the integers nothing is
+  known beyond the Johnson radius except for random errors with interleaved
+  codes, and no paper states the obstruction.
+
+So the barrier that folding breaks is not the one this problem is behind:
+list recovery is by definition the regime of few consistent codewords, and
+here there are e^31 and more, wanted at unit cost each.
+
+**World 3 (the Goldbach problem in F_q[x]).** Two exact enumerations made
+independently and agreeing on every record compared: an agent of this
+session (41 instances: q = 3 to n = 18, q = 5 to 12, q = 7 to 10, q = 9 to
+9; up to 3.9·10^8 candidates; verification of its page pending) and the
+Lean session (35 instances so far, checked against FLINT factorisations).
+Rows are the monic irreducibles by degree and then index; G is the number
+of rows before the first with N − Q irreducible. Records: q = 3: 200 at
+n = 9, 313 at 12, 481 at 15, 476 at 16, 754 at 18; q = 5: 206 at n = 10;
+q = 7: 110 at 8, 181 at 10; q = 9: 120 at 6, 122 at 8, 151 at 9.
+
+- *Same shape as the integers for a generic optimum.* The record sits
+  where the count over class vectors puts it; cover first reaches it after
+  a median 3.1% of the members (the optimum's cell has a median 7 rows more
+  than the best cell), and saves 2 to 4 of the 13 to 17 nats of a blind
+  search. In 29 of 35 instances the record member is generic.
+- *Parity is a selection statistic there, and a strong one.* The parity of
+  the number of irreducible factors of N − Q is the quadratic character of
+  a discriminant, so the rows that can still succeed can be counted for
+  every member. Ordering members by that count reaches the record after a
+  median 0.008% of the members, where cover first needs 3.1%: a factor 10
+  to 20 at ten thousand successes and 10² to 10⁴ near the record (Result 1
+  had guessed 4), because at these sizes an odd squarefree polynomial with
+  no small factor is irreducible more often than not.
+- *Forcing through the derivative.* disc(N − Q) = ± Res(N′ − Q′, N − Q), so
+  the parity of a row depends on N only through N′ − Q′ and N modulo it.
+  When N′ − Q′ is a nonzero constant the parity is the same for all such
+  rows: for N = G(x^p) + x² + cx + d and n even that is every quadratic row
+  at once, with no congruence and no luck (the record at q = 9, n = 6).
+  Result 1 is the case N′ = 0.
+- *Symmetry: the one mechanism that changes the exponent.* If N is
+  invariant under a group H of translations (N = g(x^p − x) for H = F_p),
+  then N − Q(x + b) = (N − Q)(x + b): a row and its translates succeed or
+  fail together, so the member has a |H|-th of the trials, and the
+  invariant members are the |H|-th root of all. Measured: the number of
+  successes in the invariant family is close to S^(1/p) when S succeed
+  among all (q = 5, n = 10, 25 invariant members: 7, 1, 1, … against 6.4,
+  5.0, 4.1, …), and in all eleven instances with p | n an invariant N
+  attains the greatest depth. The work to reach a level is about the p-th
+  root of the generic work. All six structured records use one of these two
+  mechanisms.
+
+Transfer of World 3, as it stands: none of the three. Parity of the number
+of prime factors of an integer is not a cheap invariant (the function-field
+parity is the sign of Frobenius on the roots, read off a discriminant; an
+integer has neither); the derivative mechanism is inseparability, which is
+characteristic p; and the symmetry needs a group acting on the ring and
+moving the rows, where the integers have no automorphism and every rational
+prime is fixed by every Galois group. Had the parity been available, the
+agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
+
+**World 4 (the random box).** Opus session, `worlds/world4.md` (476df3d).
+
+- *Proved:* if the window is a uniformly random K-subset of the product
+  and the tables are known and arbitrary, any adaptive randomized algorithm
+  with unbounded computation that may draw members or test membership
+  succeeds in Q operations with probability at most
+  Q·max(e^−κ, K/(P − Q)) + K/(P − Q): cost at least ½ min(e^κ, P/K), for
+  every table. So no structure of the tables alone can help; a method must
+  use the structure of the window, which for the integers is the rank-one
+  Bohr set of World 5.
+- *Proved, and measured on four brute-force toys:* at every cut of the
+  places the integer window has between min(P_A, P_B, K) and twice that
+  many distinct residual sets, so every exact read-once dynamic programme
+  over the places has width K at our parameters; conversely a window of
+  width σ lists the top members of any separable score at cost
+  O(σ Σ s + output · Σ s). (The programme of World 5 is the approximate one,
+  of width about m e^D.)
+- *Proved:* merges that split the places (meet in the middle and its
+  relatives) cost at least 2√(P/K²) e^(κ/2) per output and beat scanning
+  only when ln P < 48.4 nats, seven primes.
+- *The converse table,* what single structure added to the random box
+  makes output-priced enumeration possible: a window that is a product set
+  on the scoring places (pins: two primes on Z); a window of small width
+  (Z: width K); an arc of low precision (Z: D = 1,480 for the primes to
+  2,000); an interval window with lists that are intervals or progressions
+  of classes (measured absent: the largest additive coefficients of the
+  real tables are aliases of the cover's own structure modulo 210, worth
+  under one row); a subspace window with subspace lists (Z/p has no
+  subfields); polynomial families with lists that are cosets (no heavy
+  coset: the character sums above). Only structure in the window works
+  with arbitrary tables, and structure in the tables needs matching
+  structure in the window. Its opinion on what is left: "an operation whose
+  intermediate objects are none of these: not members, not sub-progressions,
+  not DP states, not lists of partial residue vectors on a split of the
+  places."
+
+World 1 is in the kernel (Lean session, `GoldbachGaps/Worlds/NoCoupling.lean`,
+commit 15a3606: the coordinatewise optimum, and the k best listed with at
+most 1 + m·n candidates for the n-th). The verified pages of this session's
+agents (the catalogue of forcing mechanisms, groups, the second opinions,
+and the replacement through other fields) and the transfer table across
+worlds follow.
 
 ## A provable lower bound (proved in Lean on 23 November)
 
