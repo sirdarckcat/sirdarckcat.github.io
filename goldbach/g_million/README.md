@@ -1,0 +1,142 @@
+# T5: an even N with g(N) ≥ 1,000,000 in as few digits as possible (1,797 digits found; stopped there at the research session's request)
+
+This task comes from the research session (25 November). g(N) is the least prime p with N − p prime. Every odd prime
+q < Q = 1,000,003 is a row; the moduli are odd primes r, and each gets a nonzero class a_r. When N ≡ a_r (mod r) for every
+modulus, every row q ≡ a_r (mod r) has r | N − q, so N − q is composite. The rows in no class are left to luck. If every such
+N − q is composite too, then g(N) ≥ Q. The record held before this work is g = 1,157,341 at 2,480 digits.
+
+## Pipeline
+
+1. **Cover** (`cover.py`, `heatbath.c`, `heatbath_pt.c`).
+   - Greedy in increasing order of the moduli, then 1-flip descent, then iterated local search (`cover.py`).
+   - Then heat-bath annealing (`heatbath.c`). Every visit to a modulus samples its new class from all r − 1 classes with
+     weight e^(−β·dk), using the gains of all classes from one pass over the uncovered rows. A sweep takes about 17 ms at
+     Q = 10⁶.
+   - `heatbath_pt.c` is the same move inside replica exchange.
+   - ptcover's random-class proposals almost never reach the few good classes of a large modulus, so tempering with them
+     (`ptcover_big`, MAXM 1024) does not move at this size.
+2. **Members** (`members.py`). N0 comes from the Chinese remainder theorem (N0 ≡ a_r mod r for every r, and N0 even),
+   with D = 2M and M the product of the moduli. The members are N0 + k·D.
+3. **Sieve** (`sieve.c`). For each row left and each prime s in (X, B], the members with s | N_k − q are
+   k ≡ (q − N0)·D⁻¹ (mod s). Pass 1 counts the surviving rows of every member; pass 2 lists them for the chosen members.
+   It was checked against a direct count.
+4. **Selection and tests** (`run_scan.py`, `test_members.py`). The members with the fewest survivors are taken, about
+   3.3 sd below the mean. The spread of the survivor count is binomial: sd² = mean·(1 − ln X/ln B). Each member is tested
+   with base-2 Fermat on N − q, in increasing order of survivors, until the first hit.
+5. **Check** (`verify.py`). From N alone, every N − q for q < Q is shown composite, by a factor up to 10⁶ or a failed
+   Fermat test. Then g = the least prime p ≥ Q with N − p a BPSW probable prime.
+
+## Covers at Q = 1,000,003 (rows left)
+
+| moduli (odd primes up to) | greedy | + descent | + local search | heat-bath, 3k sweeps | heat-bath, 20k more | research's estimate (revised) |
+|---|---|---|---|---|---|---|
+| 491 (3,527) | | 3,810 | | 3,611 | | 3,130 |
+| 629 (4,657) | 3,112 | 3,091 | 3,028 | 2,864 | 2,829 | 2,440–2,460 |
+| 683 (5,113) | | 2,852 | | 2,595 | 2,563 | 2,150–2,200 |
+
+Four more anneals at 629 moduli (`heatbath2`, `anneal4657.sh`) all end between 2,825 and 2,839:
+- the 5,113 recipe from greedy plus descent ends at 2,850 and 2,861 after 3k sweeps, then 2,838 and 2,839 after 20k more;
+- 20k sweeps from the 5,113 cover restricted to the moduli up to 4,657 (2,860 rows at the start) end at 2,825 and 2,827.
+
+`hb4657_rs1.txt` (2,825) is the cover of the 2,000-digit run.
+
+## Is the 629-moduli cover near its floor?
+
+**A two-sided test with `heatbath_pt2`.** The ladder had 81 values of β from 0 to 4 (step 0.05), 600 rounds with 300 of
+burn-in, and two starts: `hb_b1` (2,829) and random classes.
+- The mean k agrees at β = 0 (6,875.8 and 6,875.6, against 6,876.8 exact) and at β = 0.15.
+- Above that, the random start stays higher: by 66 rows at β = 0.3, 131 at 0.6, 172 at 0.9, 214 at 1.5, 238 at 2.1, 256 at 2.7,
+  250 at 3.0 and 232 at 3.6. The sd within a chain is 50 at the hot end and falls to 10.
+- So at this size neither start reaches equilibrium above β ≈ 0.3 in 600 sweeps.
+- The cause is the small and middle moduli. Their classes are frozen at any β where the large moduli still move, so each start
+  keeps the arrangement it began with.
+
+**The small moduli of a greedy cover are close to the best.**
+- For the moduli 3 to 13, `hb_b1`'s classes leave 20,141 rows uncovered. Over all 5,760 combinations of nonzero classes, the
+  minimum is 20,135, the mean 20,238 and the sd 28. Greedy is 3.4 sd below the mean: it picks up the bias in how primes fall into
+  residue classes.
+- The cover's lead over random classes keeps growing as moduli are added. Rows uncovered by the moduli up to y, for `hb_b1`
+  against the expectation with random classes:
+
+| y | 31 | 100 | 200 | 500 | 1,000 | 2,000 | 4,657 |
+|---|---|---|---|---|---|---|---|
+| `hb_b1` | 15,717 | 12,036 | 10,050 | 8,118 | 6,679 | 5,119 | 2,829 |
+| random classes | 15,944 | 12,493 | 10,776 | 9,290 | 8,393 | 7,636 | 6,877 |
+
+**The floor of the cover's basin, by thermodynamic integration** (`ti_floor.py`).
+- In the cover-start ladder, −d⟨k⟩/dβ matches var(k) at every β, for example 185 against 192 at β = 3. So within its basin
+  the ladder is in local equilibrium.
+- The entropy of the covers is S(β) = ln Z(0) − ∫⟨k⟩dβ + β⟨k⟩, with ln Z(0) = Σ ln(r − 1) = 4,578.1 nats. This ladder gives
+  S = 317 nats at ⟨k⟩ = 2,860 (β = 4).
+- Below that point, every cover has dS/dk ≥ 4. So this basin's floor is at least 2,780, and about 2,785 if β(k) is extrapolated
+  linearly. `hb4657_rs1` (2,825) is about 1.5% above it.
+- A floor near 2,450 would need a separate, more ordered family of covers that these local moves do not reach.
+
+Calibration at the research session's campaign point (89 moduli, Q = 170,000), in plain rows:
+- greedy plus descent leaves 1,309, with no local search, against the best cover known there, 1,248 (+4.9%);
+- the campaign's weighted measure (1,308.67 for the fleet's family) is a different quantity.
+
+At 89 moduli and Q = 48,000:
+- greedy plus descent leaves 258;
+- the heat-bath reaches 229 and 233 with two seeds, the same as the research session's tempering (229) against its
+  predicted floor of 217.
+
+## Cost
+
+A Fermat test takes 49 ms at 2,000 digits and 26 ms at 1,500 here, with the machine loaded. A hit needs about e^(p·rows)
+members, with p = 2·∏ r/(r − 1)/ln N. The cut on the emptiest members gains about 2×.
+
+## Runs
+
+- **About 2,196 digits** (683 moduli, cover `hb5113_b1.txt`, 2,563 rows):
+  - D has 2,189 digits.
+  - Sieve: 2·10⁷ members against the primes in (5,113, 10⁹]. Survivors: mean 1,058.2, sd 24.8 (binomial), minimum 927.
+  - The 10,000 members with S ≤ 977 (3.27 sd below the mean) were tested, lowest S first.
+  - **Hit at the 3,615th member** (k = 8,179,130, S = 970): **N has 2,196 digits, and g(N) = 1,001,491 if N − 1,001,491 is prime**
+    (it is a BPSW probable prime). Every N − q for an odd prime q < 1,001,491 is proved composite, so g(N) ≥ 1,001,491 holds
+    regardless.
+  - Cost: 501,670 Fermat tests, 9.1 CPU-hours; about 10.4 CPU-hours with the sieve and the cover.
+  - Everything is in `record_2196digit/`: N, the cover, the check from N alone, and a certificate with one reason per row.
+  - The Lean session certified g(N) ≥ 1,001,491 in the kernel (`exists_2196_digit_no_summand_below_1001491`, branch
+    `ccr-36ca7b46-8twf14`, commit `9d4555f`). The research session and the Lean session both checked the record from N alone.
+- **About 1,997 digits** (629 moduli, odd primes up to 4,657; cover `hb4657_rs1.txt`, 2,825 rows; tag `d1996`):
+  - D has 1,990 digits.
+  - Sieve: 4·10⁷ members against the primes in (4,657, 10⁹]. Survivors: mean 1,153.6, sd 26.0, minimum 1,019.
+  - The 15,000 members with S ≤ 1,066 (3.37 sd below the mean) were tested, lowest S first. From the 2,239th on they used the
+    uarch session's IFMA kernel (`test_members_fmw.py`), at 16.2 ms a test against 54 for gmpy2.
+  - **Hit at the 4,606th member** (k = 26,758,760, S = 1,058): **N has 1,997 digits, and g(N) = 1,008,589 if N − 1,008,589 is
+    prime** (it is a BPSW probable prime). Every N − q for an odd prime q < 1,008,589 is proved composite.
+  - Cost: 565,572 Fermat tests, 5.5 CPU-hours; about 6.6 CPU-hours with the sieve and the cover.
+  - Everything is in `record_1997digit/`.
+  - The Lean session certified g(N) ≥ 1,008,589 in the kernel (`exists_1997_digit_no_summand_below_1008589`, branch
+    `ccr-36ca7b46-8twf14`, commit `25b9abb`).
+
+## The next sizes: what they cost
+
+`cost_model.py` gives the expected CPU-hours to a hit. It checks against both runs: it predicts 4,700–5,400 members to the
+first hit at 1,997 digits, and the hit came at 4,606.
+
+The covers come from 20k-sweep anneals (`anneal_next.sh`). The kernel's per-core time with all 4 cores busy is about 1.5 times
+its single-process time: 5.6 ms at 1,500 digits, about 10 at 1,800, and 10.9 at 2,000 digits.
+
+| digits | moduli (up to) | rows | expected CPU-hours | on 4 cores |
+|---|---|---|---|---|
+| 1,800 | 574 (4,201) | 3,103 (`hb4201_b2.txt`) | 14 | 3.4 h |
+| 1,700 | 547 (3,947) | about 3,290 (interpolated) | 35 | 9 h |
+| 1,600 | 519 (3,727) | about 3,450 (interpolated) | 100 | 25 h |
+| 1,500 | 491 (3,527) | 3,591 (`hb3527_b1.txt`) | 330 | 3.4 days |
+
+The cost grows by a factor of about 3 for each 100 digits fewer. At 491 moduli, each 100 rows fewer would divide it by about
+1.5. The 1,800-digit run (tag `d1797`, `chain_d1797.sh`, K = 6·10⁷, 100,000 candidates) started at 14:22 UTC.
+
+**The 1,797-digit result.**
+- The hit was the 21,920th member (k = 30,561,546, S = 1,160). **N has 1,797 digits, and g(N) = 1,021,897 if N − 1,021,897 is
+  prime.** Every N − q for an odd prime q below that is proved composite.
+- About 14 CPU-hours in all. Everything is in `record_1797digit/`.
+- The Lean session certified g(N) ≥ 1,021,897 in the kernel: `exists_1797_digit_no_summand_below_1021897`, branch
+  `ccr-36ca7b46-8twf14`, commit `90c3778`.
+- The 1,700-digit step (`chain_d1700.sh`, 547 moduli, cover `hb3947.txt` with 3,256 rows) is paused, at the research session's
+  request, for the 200-digit CPU scan.
+  - Sieve and selection are done: survivors mean 1,304.5 and sd 27.8; the 300,000 candidates have S ≤ 1,228.
+  - 1,184 candidates were tested, with no hit.
+  - Rerunning the script resumes it.

@@ -1,0 +1,37 @@
+cover 0: |U| = 1502; score variance over the 213 primes (sum of per-prime class-count variances) 258.4 (sd 16.08 rows); share in each prime's top frequency 1.69%, top 5: 6.44%
+   s = 1889, h = 9: power 25.9 = 3.44 ln s; h/s within 0.50/G of 1/210, where |T|^2/|U| = 64
+   s = 1931, h = 377: power 23.5 = 3.11 ln s; h/s within 0.49/G of 41/210, where |T|^2/|U| = 63
+   s = 1861, h = 257: power 21.7 = 2.88 ln s; h/s within 0.51/G of 29/210, where |T|^2/|U| = 63
+   s = 1747, h = 90: power 21.0 = 2.81 ln s; h/s within 3029.96/G of 1/15, where |T|^2/|U| = 441
+   s = 1637, h = 630: power 19.9 = 2.69 ln s; h/s within 3029.93/G of 2/5, where |T|^2/|U| = 441
+   s = 1709, h = 236: power 19.9 = 2.68 ln s; h/s within 0.56/G of 29/210, where |T|^2/|U| = 63
+cover 1: |U| = 1502; score variance over the 213 primes (sum of per-prime class-count variances) 258.4 (sd 16.07 rows); share in each prime's top frequency 1.69%, top 5: 6.43%
+   s = 1889, h = 9: power 26.4 = 3.50 ln s; h/s within 0.50/G of 1/210, where |T|^2/|U| = 65
+   s = 1931, h = 377: power 23.2 = 3.07 ln s; h/s within 0.49/G of 41/210, where |T|^2/|U| = 63
+   s = 1861, h = 257: power 21.4 = 2.84 ln s; h/s within 0.51/G of 29/210, where |T|^2/|U| = 63
+   s = 1747, h = 90: power 20.8 = 2.79 ln s; h/s within 3029.96/G of 1/15, where |T|^2/|U| = 440
+   s = 1709, h = 236: power 20.2 = 2.71 ln s; h/s within 0.56/G of 29/210, where |T|^2/|U| = 63
+   s = 1637, h = 630: power 19.7 = 2.67 ln s; h/s within 3029.93/G of 2/5, where |T|^2/|U| = 440
+cover 2: |U| = 1502; score variance over the 213 primes (sum of per-prime class-count variances) 258.7 (sd 16.09 rows); share in each prime's top frequency 1.67%, top 5: 6.40%
+   s = 1889, h = 9: power 32.1 = 4.26 ln s; h/s within 0.50/G of 1/210, where |T|^2/|U| = 72
+   s = 1709, h = 236: power 24.8 = 3.34 ln s; h/s within 0.56/G of 29/210, where |T|^2/|U| = 65
+   s = 1609, h = 544: power 22.1 = 3.00 ln s; h/s within 0.59/G of 71/210, where |T|^2/|U| = 72
+   s = 1931, h = 377: power 22.6 = 2.99 ln s; h/s within 0.49/G of 41/210, where |T|^2/|U| = 65
+   s = 1861, h = 257: power 20.8 = 2.76 ln s; h/s within 0.51/G of 29/210, where |T|^2/|U| = 65
+   s = 1993, h = 767: power 18.7 = 2.46 ln s; h/s within 3030.61/G of 2/5, where |T|^2/|U| = 442
+
+over 3 covers: share of the score variance in the top frequency of each prime 1.68%, top 5 6.42%
+
+U's transform at rationals c/d (cover 0), the largest |T|^2/|U| for each small d:
+   d = 3: max over c of |T(c/d)|^2/|U| = 1502 (c = 2)
+   d = 5: max over c of |T(c/d)|^2/|U| = 441 (c = 2)
+   d = 7: max over c of |T(c/d)|^2/|U| = 204 (c = 3)
+   d = 15: max over c of |T(c/d)|^2/|U| = 441 (c = 11)
+   d = 21: max over c of |T(c/d)|^2/|U| = 204 (c = 16)
+   d = 35: max over c of |T(c/d)|^2/|U| = 64 (c = 29)
+   d = 105: max over c of |T(c/d)|^2/|U| = 64 (c = 52)
+   d = 1155: max over c of |T(c/d)|^2/|U| = 5 (c = 1048)
+   d = 15015: max over c of |T(c/d)|^2/|U| = 15 (c = 5927)
+
+baseline (20 random subsets of the odd primes, same size): share in each prime's top frequency 1.50%
+cover 0: sum over the 213 primes of each top wave's amplitude 2|F_s(h)|/s = 41.00 rows (the score's sd is about 16 rows)

@@ -1,0 +1,11 @@
+N: 2196 digits; 78,497 odd primes q < 1,000,003; 75,934 covered by the 683 moduli (up to 5113); 2,563 left (0 s)
+50,846,850 primes in (5113, 1,000,000,000] (8 s)
+  primes 0..4,194,304 of 50,846,850: 1,431 rows with a factor (14 s)
+  primes 12,582,912..16,777,216 of 50,846,850: 1,522 rows with a factor (33 s)
+  primes 25,165,824..29,360,128 of 50,846,850: 1,564 rows with a factor (51 s)
+  primes 37,748,736..41,943,040 of 50,846,850: 1,587 rows with a factor (69 s)
+  primes 50,331,648..50,846,850 of 50,846,850: 1,593 rows with a factor (82 s)
+1,593 rows left have a prime factor in (5113, 1,000,000,000]; 970 have none (82 s)
+Fermat: 970 of 970 fail base 2 (composite); 0 pass (98 s)
+sieve survivors for k = 8179130: 970; same set as the rows with no factor <= B: True
+wrote record_2196digit/certificate.txt (98 s)

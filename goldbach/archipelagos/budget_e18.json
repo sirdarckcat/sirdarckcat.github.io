@@ -1,0 +1,43 @@
+{
+ "name": "e18",
+ "G": 614,
+ "H": 0.05494250054241203,
+ "rows": [
+  {
+   "info": "N mod 30030 (residues of 2..13, cover-like)",
+   "explained": 0.04446704998191531,
+   "top1": 0.03724368096149712,
+   "top3": 0.09468576284026577
+  },
+  {
+   "info": "sieve to 97 (count of surviving rows)",
+   "explained": 0.11688311583304556,
+   "top1": 0.06739283995864088,
+   "top3": 0.15856717273574186
+  },
+  {
+   "info": "sieve to 997 (count of surviving rows)",
+   "explained": 0.16250650566638447,
+   "top1": 0.11387066061977252,
+   "top3": 0.24061997727295995
+  },
+  {
+   "info": "sieve to 9973 (count of surviving rows)",
+   "explained": 0.21706820444237396,
+   "top1": 0.17116941882249362,
+   "top3": 0.323614623109919
+  },
+  {
+   "info": "sieve to 65521 (count of surviving rows)",
+   "explained": 0.26706904477823445,
+   "top1": 0.21285613374146456,
+   "top3": 0.39089485160880827
+  },
+  {
+   "info": "sieve to 997 + outcomes of N+-6, +-30, +-60",
+   "explained": 0.25724007130441084,
+   "top1": 0.24460232798599524,
+   "top3": 0.4046334496985084
+  }
+ ]
+}

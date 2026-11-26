@@ -1,0 +1,38 @@
+places [5, 7, 11, 13, 17, 19, 23], K = 2000, P = 37,182,145 (P >= K^2: True)
+   cut 0: P_A =         1  P_B = 37,182,145  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   cut 1: P_A =         5  P_B = 7,436,429  distinct residual sets      5  min(P_A,P_B,K)      5  ok
+   cut 2: P_A =        35  P_B = 1,062,347  distinct residual sets     35  min(P_A,P_B,K)     35  ok
+   cut 3: P_A =       385  P_B =    96,577  distinct residual sets    385  min(P_A,P_B,K)    385  ok
+   cut 4: P_A =     5,005  P_B =     7,429  distinct residual sets  2,000  min(P_A,P_B,K)  2,000  ok
+   cut 5: P_A =    85,085  P_B =       437  distinct residual sets    437  min(P_A,P_B,K)    437  ok
+   cut 6: P_A = 1,616,615  P_B =        23  distinct residual sets     23  min(P_A,P_B,K)     23  ok
+   cut 7: P_A = 37,182,145  P_B =         1  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   max width 2,000 (K = 2,000); claim min(P_A, P_B, K) <= width <= 2 min(...) at every cut: True
+places [23, 19, 17, 13, 11, 7, 5], K = 2000, P = 37,182,145 (P >= K^2: True)
+   cut 0: P_A =         1  P_B = 37,182,145  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   cut 1: P_A =        23  P_B = 1,616,615  distinct residual sets     23  min(P_A,P_B,K)     23  ok
+   cut 2: P_A =       437  P_B =    85,085  distinct residual sets    437  min(P_A,P_B,K)    437  ok
+   cut 3: P_A =     7,429  P_B =     5,005  distinct residual sets  2,000  min(P_A,P_B,K)  2,000  ok
+   cut 4: P_A =    96,577  P_B =       385  distinct residual sets    385  min(P_A,P_B,K)    385  ok
+   cut 5: P_A = 1,062,347  P_B =        35  distinct residual sets     35  min(P_A,P_B,K)     35  ok
+   cut 6: P_A = 7,436,429  P_B =         5  distinct residual sets      5  min(P_A,P_B,K)      5  ok
+   cut 7: P_A = 37,182,145  P_B =         1  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   max width 2,000 (K = 2,000); claim min(P_A, P_B, K) <= width <= 2 min(...) at every cut: True
+places [7, 23, 5, 19, 11, 17, 13], K = 5000, P = 37,182,145 (P >= K^2: True)
+   cut 0: P_A =         1  P_B = 37,182,145  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   cut 1: P_A =         7  P_B = 5,311,735  distinct residual sets      7  min(P_A,P_B,K)      7  ok
+   cut 2: P_A =       161  P_B =   230,945  distinct residual sets    161  min(P_A,P_B,K)    161  ok
+   cut 3: P_A =       805  P_B =    46,189  distinct residual sets    805  min(P_A,P_B,K)    805  ok
+   cut 4: P_A =    15,295  P_B =     2,431  distinct residual sets  2,431  min(P_A,P_B,K)  2,431  ok
+   cut 5: P_A =   168,245  P_B =       221  distinct residual sets    221  min(P_A,P_B,K)    221  ok
+   cut 6: P_A = 2,860,165  P_B =        13  distinct residual sets     13  min(P_A,P_B,K)     13  ok
+   cut 7: P_A = 37,182,145  P_B =         1  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   max width 2,431 (K = 5,000); claim min(P_A, P_B, K) <= width <= 2 min(...) at every cut: True
+places [29, 31, 37, 41, 43], K = 3000, P = 58,642,669 (P >= K^2: True)
+   cut 0: P_A =         1  P_B = 58,642,669  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   cut 1: P_A =        29  P_B = 2,022,161  distinct residual sets     29  min(P_A,P_B,K)     29  ok
+   cut 2: P_A =       899  P_B =    65,231  distinct residual sets    899  min(P_A,P_B,K)    899  ok
+   cut 3: P_A =    33,263  P_B =     1,763  distinct residual sets  1,763  min(P_A,P_B,K)  1,763  ok
+   cut 4: P_A = 1,363,783  P_B =        43  distinct residual sets     43  min(P_A,P_B,K)     43  ok
+   cut 5: P_A = 58,642,669  P_B =         1  distinct residual sets      1  min(P_A,P_B,K)      1  ok
+   max width 1,763 (K = 3,000); claim min(P_A, P_B, K) <= width <= 2 min(...) at every cut: True

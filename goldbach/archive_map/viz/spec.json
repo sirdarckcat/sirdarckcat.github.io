@@ -1,0 +1,240 @@
+{
+"nodes": [
+{
+"id": "c_rh",
+"decl": "riemannHypothesis"
+},
+{
+"id": "c_zeta",
+"decl": "riemannZeta_eq_zero_re"
+},
+{
+"id": "c_nonvan",
+"decl": "LFunction_ne_zero_of_half_lt_re"
+},
+{
+"id": "c_zeros",
+"decl": "LFunction_eq_zero_re"
+},
+{
+"id": "c_prim",
+"decl": "LFunction_eq_zero_re_of_isPrimitive"
+},
+{
+"id": "k_rhOfAll",
+"decl": "rhOfAll"
+},
+{
+"id": "k_allChi",
+"decl": "allChi"
+},
+{
+"id": "k_critAll",
+"decl": "critAll"
+},
+{
+"id": "k_claimAll",
+"decl": "claimAll"
+},
+{
+"id": "b_rh_of_every",
+"decl": "Formalism.VW.rh_of_every"
+},
+{
+"id": "b_rh_of_right",
+"decl": "Formalism.VW.rh_of_right"
+},
+{
+"id": "b_critLine",
+"decl": "Formalism.VW.critLine"
+},
+{
+"id": "b_gamma",
+"decl": "Formalism.VW.gammaFactor_ne_zero"
+},
+{
+"id": "b_claim_strip",
+"decl": "Claim.strip"
+},
+{
+"id": "b_claim_zeta",
+"decl": "Claim.zeta"
+},
+{
+"id": "m_every",
+"decl": "UpperTheory.FinalTheorems.everyCharacter"
+},
+{
+"id": "m_row",
+"decl": "UpperTheory.FinalTheorems.everyCharacter_of_row"
+},
+{
+"id": "m_lit",
+"decl": "UpperTheory.LiteratureTheorems.every_character_of_literature_of_vWin"
+},
+{
+"id": "m_theta",
+"decl": "UpperTheory.Lit.every_character_of_theta_integrals_local_matching"
+},
+{
+"id": "m_green",
+"decl": "UpperTheory.Top.every_character_of_green_v_win"
+},
+{
+"id": "m_zerofree",
+"decl": "UpperTheory.Top.zero_free_all_of_green_v_win"
+},
+{
+"id": "m_imprim",
+"decl": "UpperTheory.Top.imprimitive"
+},
+{
+"id": "i_vwin",
+"decl": "UpperTheory.One.vwin_of_row"
+},
+{
+"id": "i_window",
+"decl": "UpperTheory.One.Join.automorphic_window_of_inputs"
+},
+{
+"id": "i_depth",
+"decl": "UpperTheory.One.Join.v_window_of_depth_zero_residual_bc_cm"
+},
+{
+"id": "i_literal",
+"decl": "UpperTheory.V.v_window_of_literal_automorphy_n"
+},
+{
+"id": "i_gal",
+"decl": "UpperTheory.Gal.Int.galoisLocalGlobalStrong_recParameter"
+},
+{
+"id": "i_galtheta",
+"decl": "UpperTheory.Gal.Int.galoisRepresentations_of_thetaLift"
+},
+{
+"id": "i_tlift",
+"decl": "UpperTheory.TP.K.tLiftK"
+},
+{
+"id": "i_geo",
+"decl": "UpperTheory.Gal.Int.Geo.geoOne_holds"
+},
+{
+"id": "i_rect",
+"decl": "UpperTheory.Zero.LLC.recTExists"
+},
+{
+"id": "i_bc",
+"decl": "UpperTheory.BaseChangeIdentities.baseChangeN"
+},
+{
+"id": "i_cm",
+"decl": "UpperTheory.One.Join.cm_abelian_inputs_from_literature"
+},
+{
+"id": "i_pub_first",
+"decl": "UpperTheory.LiteratureTheorems.published_results_first"
+},
+{
+"id": "i_pub_eigen",
+"decl": "UpperTheory.LiteratureTheorems.published_results_eigen"
+},
+{
+"id": "i_theta_lit",
+"decl": "UpperTheory.LiteratureTheorems.theta_integrals_agree_and_local_matching_of_literature"
+},
+{
+"id": "i_covol",
+"decl": "SelfIntersectionVolumeEstimates.topCovolSlim2_use_alt_alt"
+},
+{
+"id": "l_resolution",
+"decl": "UpperTheory.LiteratureTheorems.resolution_char_zero_of_literature"
+},
+{
+"id": "l_princ",
+"decl": "UpperTheory.LiteratureTheorems.principalisation_char_zero_of_literature"
+},
+{
+"id": "l_fargues",
+"decl": "UpperTheory.LiteratureTheorems.fargues_exact_of_literature"
+},
+{
+"id": "l_nefrr",
+"decl": "UpperTheory.LiteratureTheorems.nef_rr_of_literature"
+},
+{
+"id": "l_zarhin",
+"decl": "UpperTheory.LiteratureTheorems.zarhin_statement"
+},
+{
+"id": "l_cmmain",
+"decl": "UpperTheory.LiteratureTheorems.elliptic_main_theorem_cm_of_open"
+},
+{
+"id": "l_hcfj",
+"decl": "UpperTheory.LiteratureTheorems.hilbert_class_field_j_of_open"
+},
+{
+"id": "l_linnik",
+"decl": "UpperTheory.Lit.linnik"
+},
+{
+"id": "l_green_series",
+"decl": "UpperTheory.LiteratureTheorems.green_series_st_of_literature"
+},
+{
+"id": "t_pnt",
+"decl": "pnt_progressions_relative_weak_holds"
+},
+{
+"id": "t_zd",
+"decl": "zero_density_of_hypothesis"
+},
+{
+"id": "t_sw",
+"decl": "siegelWalfisz"
+},
+{
+"id": "t_ls",
+"decl": "GlobalTheory.T.arithmeticLargeSieve_one_residue_class_per_prime"
+},
+{
+"id": "t_bt",
+"decl": "GlobalTheory.T.brunTitchmarsh_exists_const"
+},
+{
+"id": "t_mertens",
+"decl": "GlobalTheory.T.sum_prime_log_div_le"
+},
+{
+"id": "i_supplyChi",
+"decl": "UpperTheory.Top.supplyChi"
+},
+{
+"id": "t_pair",
+"decl": "QH.pair_exists"
+},
+{
+"id": "t_relerr",
+"decl": "GlobalTheory.T.primesInProgressions_relativeError"
+},
+{
+"id": "t_psi_ap",
+"decl": "GlobalTheory.T.chebyshevPsiProgression_relative_error"
+},
+{
+"id": "t_logfree",
+"decl": "GlobalTheory.T.logFree_zeroDensity_dirichlet_one_modulus"
+},
+{
+"id": "t_primemean",
+"decl": "GlobalTheory.T.primeMeanValue_characters_twist_integral_le"
+},
+{
+"id": "t_goodtower",
+"decl": "GlobalTheory.T.good_tower_volume_theorem"
+}
+]
+}

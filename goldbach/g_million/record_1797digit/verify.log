@@ -1,0 +1,2 @@
+N has 1797 digits; 78,497 odd primes q < 1,000,003: 76,739 with a factor <= 1,000,000 of N - q, 1,758 by a failed Fermat test; 0 not shown composite (103 s)
+g(N) = 1,021,897: N - 1021897 is a probable prime (BPSW + 25 rounds); every q below it fails (111 s)

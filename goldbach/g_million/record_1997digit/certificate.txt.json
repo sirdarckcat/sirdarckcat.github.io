@@ -1,0 +1,13 @@
+{
+ "digits": 1997,
+ "Q": 1000003,
+ "B": 1000000000,
+ "rows": 78497,
+ "by_modulus": 75672,
+ "by_factor": 1767,
+ "by_fermat": 1058,
+ "fermat_tested": true,
+ "not_shown": [],
+ "sieve_survivors_match": true,
+ "seconds": 91
+}

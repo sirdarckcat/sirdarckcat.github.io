@@ -1,0 +1,16 @@
+asset	module	status	closure_files	closure_Mlines	core_hours_at_9.6s_per_file
+Linnik: least prime p<=C*q^L in every coprime class (existential C,L)	Development.AutomorphicArithmetic.ThetaCorrespondence.Linnik	proven (Lean session built this closure: 517 files)	517	0.091	1.38
+Arithmetic large sieve, one residue class per prime (explicit 2*pi)	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.ArithmeticLargeSieveOneResidueClassPerPrimeStatement	proven; Mathlib-only statement	106	0.024	0.28
+Multiplicative large sieve over primitive characters (Q^2+2*pi*N)	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.MultiplicativeLargeSieveStatement	proven; Mathlib-only statement	105	0.024	0.28
+Brun-Titchmarsh with explicit existential constant	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.BrunTitchmarshExistsConstStatement	proven; Mathlib-only statement	112	0.025	0.30
+Siegel-Walfisz (via Siegel lower bound)	Formalism.LandauZeroFreeBounds.SiegelWalfiszAPOfSiegelLower	proven	114	0.012	0.30
+PNT in progressions with exceptional-zero structure (PNTAPRelW)	Formalism.GL3MeanSquares.GenusMeanAsymptotics.JacobiCharacterSums.PNTFinal	proven (pnt_progressions_relative_weak_holds)	209	0.027	0.56
+Chebyshev psi in progressions, relative error	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.ChebyshevPsiProgressionRelativeErrorStatement	proven; Mathlib-only statement	482	0.083	1.29
+Log-free zero-density estimate (Dirichlet, one modulus)	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.LogFreeZeroDensityDirichletOneModulusStatement	proven	426	0.076	1.14
+Deuring-Heilbronn repulsion	Development.AbelianVarietyTheory.Proofs.GlobalInterpolation.RepulsionStatement	proven	16	0.002	0.04
+Mertens: sum_{p<=x} log p/p <= log x + log 4	Development.AutomorphicSpectrum.Proofs.DivisibilityProofs.SumPrimeLogDivLeStatement	proven; Mathlib-only statement	8	0.002	0.02
+Mertens: sum_{p<=N} log p/(p-1) <= log N + 2.2	Development.AbelianVarietyTheory.Proofs.JetHarmonics.SumPrimeLogDivPredLeLogAddStatement	proven; closure large	909	0.154	2.42
+sum 1/(p-1) <= 7 loglog y + 6	Development.AbelianVarietyTheory.Proofs.DivisorProofs.SumPrimesInvPredLeLoglogStatement	proven	3	0.000	0.01
+sum_{N/2<p<=N-3} 1/p >= 1/(5 log N)	Development.AbelianVarietyTheory.Proofs.DivisorProofs.InvFiveLogLeSumInvPrimesStatement	proven	2	0.000	0.01
+Numerical zero-density bound => ExistsSplitGoodPrimePair (zero_density_of_hypothesis)	Formalism.GL3MeanSquares.HookFormulaTorsion.NumericalZeroDensityBound	proven	19	0.003	0.05
+Behrend-type random-subset toolkit (Select, TopsBad, BadOrbit, BadMean, BehrendBound)	Formalism.BehrendSets.FinalE	proven	13	0.001	0.03

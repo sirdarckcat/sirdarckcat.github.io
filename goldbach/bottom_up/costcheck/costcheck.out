@@ -1,0 +1,90 @@
+from the innovations: Var S6 = 352.1, Var S8 = 324.8 (measured 325.27), corr(S6, S8) = 0.7809 (uarch: 0.78)
+after rescaling: sd S6 18.78, sd S8 18.04, rho 0.7809; tilt: S8 -1.340 sd, S6 -1.046 sd
+full count (exact to 1e8 for all), keep 1.5%: captured 0.2032
+exact to 1e6 only, keep 1.5%: captured 0.1306 (0.642 of the full count)
+exact to 1e7 only, keep 1.5%: captured 0.1666 (0.820); corr(S7, S8) 0.8974 (uarch 0.90)
+keep 0.50%: full count 0.1082; top 5% 0.1035 (0.956); top 10% 0.1067 (0.986); top 15% 0.1076 (0.994); top 20% 0.1080 (0.997); top 30% 0.1082 (0.999)
+keep 0.75%: full count 0.1373; top 5% 0.1291 (0.940); top 10% 0.1346 (0.980); top 15% 0.1362 (0.992); top 20% 0.1368 (0.996); top 30% 0.1372 (0.999)
+keep 1.50%: full count 0.2032; top 5% 0.1825 (0.898); top 10% 0.1957 (0.963); top 15% 0.1998 (0.983); top 20% 0.2015 (0.992); top 30% 0.2027 (0.998)
+
+check of the recursion against a Monte Carlo of the same rule (P = 503,808, T = 2^18, p = 0.0715):
+  recursion  : computed 7.269M, useful 7.046M, waste 3.06%, launches 44, time 0.453 s
+  Monte Carlo: computed 7.251M, useful 7.029M, waste 3.06%, launches 52, time 0.502 s
+
+gain in tests that count per second from carry-over, by pool size P (kept members a pool) and mean tests a member (1/p);
+target T = 2^18 a launch; columns: waste without carry-over | launches without / with | gain with gaps 2.2 ms and t_min 4 ms | gaps hidden, t_min 4 ms | gaps hidden, t_min 0 (waste only)
+  mean 10, P =   125,952 (P/T = 0.48): waste 14.73% | launches  18 /  3.7 | +139.9% | +100.9% | + 17.3%
+  mean 10, P =   251,904 (P/T = 0.96): waste  7.63% | launches  25 /  6.4 | + 79.4% | + 50.3% | +  8.3%
+  mean 10, P =   503,808 (P/T = 1.92): waste  4.21% | launches  31 / 10.2 | + 42.9% | + 25.3% | +  4.4%
+  mean 10, P = 1,007,616 (P/T = 3.84): waste  2.06% | launches  38 / 15.0 | + 23.1% | + 12.6% | +  2.1%
+  mean 10, P = 2,015,232 (P/T = 7.69): waste  1.10% | launches  44 / 20.5 | + 12.0% | +  6.3% | +  1.1%
+  mean 14, P =   125,952 (P/T = 0.48): waste 11.08% | launches  25 /  5.3 | +134.8% | + 96.3% | + 12.5%
+  mean 14, P =   251,904 (P/T = 0.96): waste  5.72% | launches  35 /  9.1 | + 78.4% | + 49.6% | +  6.1%
+  mean 14, P =   503,808 (P/T = 1.92): waste  3.06% | launches  44 / 14.5 | + 42.3% | + 24.4% | +  3.2%
+  mean 14, P = 1,007,616 (P/T = 3.84): waste  1.54% | launches  53 / 21.3 | + 22.4% | + 12.0% | +  1.6%
+  mean 14, P = 2,015,232 (P/T = 7.69): waste  0.76% | launches  63 / 29.2 | + 12.0% | +  6.2% | +  0.8%
+  mean 20, P =   125,952 (P/T = 0.48): waste  8.05% | launches  36 /  7.6 | +133.6% | + 94.7% | +  8.8%
+  mean 20, P =   251,904 (P/T = 0.96): waste  4.30% | launches  49 / 13.1 | + 75.3% | + 47.3% | +  4.5%
+  mean 20, P =   503,808 (P/T = 1.92): waste  2.15% | launches  63 / 20.9 | + 41.6% | + 23.7% | +  2.2%
+  mean 20, P = 1,007,616 (P/T = 3.84): waste  1.11% | launches  76 / 30.8 | + 22.2% | + 11.8% | +  1.1%
+  mean 20, P = 2,015,232 (P/T = 7.69): waste  0.55% | launches  90 / 42.1 | + 11.7% | +  5.9% | +  0.5%
+
+the full pool of uarch's first model (P = 2,015,232, T = 2^20, p = 0.0715):
+  without: computed 29.07M, waste 3.06%, 47 launches, 1.349 s (20.9M counted tests/s); with: 14.5 launches, 1.178 s (23.9M/s): +14.5%
+
+waste without carry-over (item 2's recursion): 0.50% keep: 8.48%, 0.75% keep: 5.72%, 1.50% keep: 3.06%, 3.00% keep: 1.54%
+
+(A) additive 0.26 + 0.74 kappa/1.5%: cost of a member against today
+keep | cost | design hits at 170k | E[final record] | P(>= 180k) | P(>= 190k) | P(>= 200k)
+0.25% | 0.383 | 1.626 | 174,501 | 14.49% | 1.203% | 0.114%
+0.40% | 0.457 | 1.844 | 175,104 | 16.27% | 1.363% | 0.129%
+0.50% | 0.507 | 1.917 | 175,288 | 16.85% | 1.417% | 0.134%
+0.60% | 0.556 | 1.958 | 175,389 | 17.18% | 1.447% | 0.137%
+0.75% | 0.630 | 1.985 | 175,452 | 17.39% | 1.467% | 0.139%
+1.00% | 0.753 | 1.979 | 175,440 | 17.35% | 1.462% | 0.138%
+1.25% | 0.877 | 1.945 | 175,360 | 17.08% | 1.437% | 0.136%
+1.50% | 1.000 | 1.900 | 175,252 | 16.72% | 1.404% | 0.133%
+2.00% | 1.247 | 1.803 | 175,007 | 15.93% | 1.333% | 0.126%
+2.50% | 1.493 | 1.710 | 174,759 | 15.18% | 1.265% | 0.120%
+3.00% | 1.740 | 1.626 | 174,520 | 14.49% | 1.203% | 0.114%
+  optimum for E[final record]: keep 0.84% (E 175,460; at 1.5%: 175,252, -208); within 100 of it: 0.57%-1.24%
+  optimum for design hits:     keep 0.84% (1.988 against 1.900 at 1.5%: +0.045 nats)
+
+(B) G4 pipeline, rounds as now: cost of a member against today
+keep | cost | design hits at 170k | E[final record] | P(>= 180k) | P(>= 190k) | P(>= 200k)
+0.25% | 0.464 | 1.342 | 173,560 | 12.12% | 0.994% | 0.094%
+0.40% | 0.521 | 1.620 | 174,486 | 14.44% | 1.198% | 0.113%
+0.50% | 0.557 | 1.744 | 174,843 | 15.46% | 1.290% | 0.122%
+0.60% | 0.593 | 1.837 | 175,090 | 16.22% | 1.358% | 0.128%
+0.75% | 0.650 | 1.925 | 175,309 | 16.91% | 1.422% | 0.135%
+1.00% | 0.766 | 1.946 | 175,362 | 17.09% | 1.438% | 0.136%
+1.25% | 0.882 | 1.932 | 175,330 | 16.98% | 1.428% | 0.135%
+1.50% | 1.000 | 1.900 | 175,252 | 16.72% | 1.404% | 0.133%
+2.00% | 1.233 | 1.823 | 175,060 | 16.10% | 1.348% | 0.127%
+2.50% | 1.466 | 1.742 | 174,847 | 15.44% | 1.288% | 0.122%
+3.00% | 1.699 | 1.666 | 174,635 | 14.82% | 1.232% | 0.116%
+  optimum for E[final record]: keep 1.00% (E 175,362; at 1.5%: 175,252, -110); within 100 of it: 0.71%-1.46%
+  optimum for design hits:     keep 1.00% (1.946 against 1.900 at 1.5%: +0.024 nats)
+
+(C) G4 pipeline, carry-over: cost of a member against today
+keep | cost | design hits at 170k | E[final record] | P(>= 180k) | P(>= 190k) | P(>= 200k)
+0.25% | 0.364 | 1.712 | 174,748 | 15.19% | 1.266% | 0.120%
+0.40% | 0.418 | 2.016 | 175,522 | 17.64% | 1.489% | 0.141%
+0.50% | 0.454 | 2.137 | 175,794 | 18.60% | 1.578% | 0.149%
+0.60% | 0.491 | 2.220 | 175,968 | 19.24% | 1.639% | 0.155%
+0.75% | 0.545 | 2.295 | 176,123 | 19.83% | 1.694% | 0.160%
+1.00% | 0.635 | 2.348 | 176,226 | 20.23% | 1.732% | 0.164%
+1.25% | 0.751 | 2.270 | 176,074 | 19.63% | 1.676% | 0.159%
+1.50% | 0.868 | 2.190 | 175,910 | 19.01% | 1.617% | 0.153%
+2.00% | 1.101 | 2.042 | 175,589 | 17.85% | 1.509% | 0.143%
+2.50% | 1.333 | 1.915 | 175,291 | 16.84% | 1.415% | 0.134%
+3.00% | 1.566 | 1.806 | 175,018 | 15.96% | 1.335% | 0.126%
+  optimum for E[final record]: keep 1.00% (E 176,226; at 1.5%: 175,910, -316); within 100 of it: 0.76%-1.16%
+  optimum for design hits:     keep 1.00% (2.348 against 2.190 at 1.5%: +0.070 nats)
+
+configuration | keep | design hits at 170k | package (nats) | E[final record] | P(>= 180k) | P(>= 190k) | P(>= 200k)
+today (keep 1.5%, rounds as now) | 1.50% | 1.900 | +0.000 | 175,252 | 16.72% | 1.40% | 0.133%
+keep re-optimised, rounds as now | 1.02% | 1.945 | +0.024 | 175,360 | 17.08% | 1.44% | 0.136%
+carry-over (waste only) + keep re-optimised | 0.94% | 2.002 | +0.053 | 175,495 | 17.54% | 1.48% | 0.140%
+carry-over (waste and tail) + keep re-optimised | 1.00% | 2.347 | +0.211 | 176,225 | 20.23% | 1.73% | 0.164%
+sensitivity: the last, with the sieve 20% faster | 0.80% | 2.561 | +0.298 | 176,619 | 21.85% | 1.89% | 0.179%

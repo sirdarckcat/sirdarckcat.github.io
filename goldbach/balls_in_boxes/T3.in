@@ -1,0 +1,94 @@
+# T3: where the all-greedy reach comes from
+
+This is a follow-up to T1 (`README.md`), requested by the research session. T1 found that when the small primes get random
+classes, each large prime can strike only a handful of survivors. So where does the all-greedy reach of about 0.72·x·ln²x
+come from? All three parts are in `t3.py`.
+
+- **T3a.** The odd primes up to w = x^θ get random nonzero classes. Every prime above w, in increasing order, takes the
+  fullest nonzero class of the remaining targets. We measure C*(x, θ) for θ ∈ {0, 0.2, 0.4, 0.6, 0.8, 0.9} at x = 10⁴ and
+  10⁵, with 10 draws each. θ = 0 is the all-greedy rule.
+- **T3b.** One all-greedy run whose targets are the odd primes below y = 0.72·x·ln²x. It was run at x = 10⁵ as asked, and
+  also at 10⁴ and 10⁶ to see how it moves with x (at 10⁴ this y is 1% past the greedy limit, and 13 targets are
+  left). For each prime r we record T (the targets left before r),
+  λ = T/(r − 1), the size m of the class r takes, and m_max = E[fullest of r − 1 independent Poisson(λ) cells].
+- **T3c.** The same profile for the tempered cover of the primes below 40,111 (167 moduli, taken in increasing order),
+  against greedy on the same moduli.
+
+The useful split is not strikes but **excess**. A prime that takes a class of size m strikes m − λ more targets than an
+average class would. Over a run the strikes add up to Σλ + Σ(m − λ). The first sum is what classes chosen without looking
+would strike along the same path. To finish, the excess must make up for what random classes leave, which is about
+0.74·T/ln x. Since T ≈ y/ln y, a reach of order x·ln²x needs a total excess of order x. With about x/ln x primes, that
+means an excess of order ln x per prime.
+
+## Reading
+
+1. **Small primes make the strikes, large primes make the difference.** At x = 10⁵ the primes up to 113 make 85% of all
+   strikes, with m/λ between 1.00 and 1.05, just like random classes. They make only 3.5% of the excess. The excess is
+   7.9% of the targets at x = 10⁵ (6.4% at 10⁶). That is a little more than the 6.4% (5.4%) that random classes at every
+   prime would leave. The primes above x^0.8 make 5.2% to 6.4% of the strikes but 55%, 63% and 71% of the excess at
+   x = 10⁴, 10⁵ and 10⁶.
+2. **The factor ln x is the excess per prime.** It averages 0.454·ln x, 0.458·ln x and 0.458·ln x per prime at x = 10⁴,
+   10⁵ and 10⁶. The share carried by the top of the range grows with x. The primes above x^0.9 carry 31%, 37% and 44% of
+   the excess. Each of them takes 2.3, 3.0 and 3.9 targets more than λ, which is 0.25, 0.26 and 0.28 times ln x.
+3. **Of the three regimes you expected, the first two are there; the top is not capped.**
+   - For r up to about 100, m/λ ≈ 1.
+   - **The middle** runs from λ ≈ 1,000 down to λ ≈ 1, which is r from about 100 to 2·10⁴ at x = 10⁵.
+     - (m − λ)/√λ rises slowly from 1.5 to 5.
+     - The excess is smaller than for independent cells: the excess ratio (m − λ)/(m_max − λ) goes from 0.58 to 0.89. So
+       the class counts of the remaining targets fluctuate less than independent Poisson counts.
+     - For comparison: for all primes below y, the Montgomery–Hooley variance of about λ·ln r/ln y per class would give
+       a ratio near √(ln r/ln y), which is 0.54 to 0.78 over this range. The measured ratio is 0.04 to 0.17 above it.
+     - So an argument that takes "the fullest class ≈ the fullest of independent cells" overstates this range by about
+       that factor.
+   - **The top** is where λ < 1, which is r above about 2.5·10⁴ at x = 10⁵.
+     - m falls from 5.5 to 1.9 and stays at 0.92 to 0.97 of m_max, at both 10⁵ and 10⁶. The cap does not bind.
+     - At y = 0.72·x·ln²x, a class of a prime near x holds about 0.72·ln²x/(ln y − 1) targets: about 6 at x = 10⁵ and 8
+       at 10⁶. A class of a smaller r holds more.
+     - The handful in T1 is the cap at y = C·x·ln x with C fixed, where a class holds about C targets.
+4. **T3a: the reach lost is the excess share of the random range.**
+   - Write s(θ) for the share of the all-greedy excess that comes from the primes up to x^θ. Then 1 − s(θ) matches
+     C*(θ)/C*(0) within 0.05 in all 13 cases. The measured value is the higher one in 12 of them, so the greedy part
+     recovers slightly more than the rule says. See the table "T3a against T3b".
+   - C*(θ)/C*(0) for θ = 0.2, 0.4, 0.6, 0.8, 0.9 is 0.99, 0.98, 0.88, 0.58, 0.29 at x = 10⁴ and 1.00, 0.99, 0.92, 0.67,
+     0.38 at x = 10⁵.
+   - The 10 draws spread by at most 7% at x = 10⁴ and 3% at 10⁵.
+   - So a proof that chooses classes only above x^θ keeps about 1 − s(θ) of the reach.
+   - s(θ) falls with x at every θ (x = 10⁴, 10⁵, 10⁶): s(0.6) = 0.168, 0.115, 0.077; s(0.8) = 0.446, 0.368, 0.291;
+     s(0.9) = 0.694, 0.631, 0.559.
+   - At x = 10⁶ the rule predicted C*(θ)/C*(0) ≈ 0.923, 0.709 and 0.441 for θ = 0.6, 0.8 and 0.9. We wrote these
+     down from the T3b run before running T3a there. The runs give 0.949, 0.741 and 0.449: again slightly above the
+     rule, by 0.026, 0.032 and 0.008. These used 2 draws each, which agree within 0.2%. The all-greedy C*(0) at 10⁶ is
+     9.973, which is 0.722·x·ln²x, so this ratio is flat near 0.72 from 10⁴ to 10⁶ (0.712, 0.729, 0.722).
+   - The same effect shows in the targets left. When the primes above x^0.9 start, the greedy run has left 0.38, 0.43
+     and 0.50 times what random classes would have left (x = 10⁴, 10⁵, 10⁶). Above x^0.8 the ratios are 0.65, 0.71 and
+     0.77.
+5. **T3c: tempering plans the top.**
+   - On the same 167 moduli with targets below 40,111, tempering leaves 0 and greedy leaves 33.
+   - Up to r = 233 the two behave alike: m/λ agrees within 3% up to 53 and within 11% up to 233.
+   - The tempered vector takes the fullest class at 80% of the moduli. For r between 149 and 997 its classes hold 0.91
+     to 0.94 of the fullest. In total it gives up 44 strikes (1%) against taking the fullest class at every step of its
+     own path.
+   - What it buys is the top. Its 56 largest moduli (617 to 997) take 2.41 targets each, 1.38 times the fullest of
+     independent cells at λ = 0.09. Greedy's take 2.02 each (0.96).
+   - With the targets below 32,971 the picture is the same: 0 left against 9, and a top bin of 1.26 against 0.95.
+   - So the independent-cell maximum, which greedy nearly reaches, is not a ceiling. A planned assignment arranges the
+     leftovers so that the last moduli collect more than chance allows.
+   - On the greedy figure: the 32,971 you quoted for greedy comes from a greedy that breaks ties at random. Ours breaks
+     ties toward the smallest class and leaves 9 targets there. `greedy_cover.txt` has G(1000) = 30,184.
+
+## Tables
+
+TABLES
+
+## Files
+
+| file | what it does |
+|---|---|
+| `t3.py` | `a [procs]`: T3a at x = 10⁴, 10⁵. `e [procs]`: the x = 10⁶ check, which uses fewer draws and a known bracket. `b [x]`: the T3b profile. `c`: T3c. `s`: the T3b summary across x. All use the kernels of `t1lib.c` through `t1.py`. |
+| `make_t3.py` | builds the tables above from the JSON files |
+| `t3a.json`, `t3a.txt`, `t3a_x1000000.json`, `t3a_x1000000.txt` | T3a: per-draw thresholds (x = 10⁴, 10⁵; and the x = 10⁶ check) |
+| `t3b_x*.json`, `t3b_x*.txt` | T3b: binned profiles, bands in u = ln r/ln x, excess shares below x^θ |
+| `t3c.json`, `t3c.txt` | T3c: binned profiles, and the tempered and greedy strikes and the fullest class for each modulus |
+
+Run times: T3a takes 5 minutes on 2 cores (the x = 10⁶ check took 60 minutes on 2 shared cores). T3b takes 1 s at x = 10⁵ and
+80 s at 10⁶. T3c takes 1 s.

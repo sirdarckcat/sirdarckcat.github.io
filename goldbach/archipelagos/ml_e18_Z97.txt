@@ -1,0 +1,13 @@
+e18 Z=97 G=614 (0.98% big), rows 111, features 132, train 2,500,000 test 2,500,000, c_Z=0.2008  [64s]
+  trained LightGBM, counts at all depths: 114 rounds [82s]
+  trained LightGBM, all features: 96 rounds [130s]
+
+  model                               log-loss  gain vs count    +-2se     AUC   top1%   top3%
+  base rate                            0.05506      -0.006381 0.000150  0.5000   0.011   0.033
+  theory (1-c)^u, no fit               0.04867       0.000005 0.000006  0.8017   0.066   0.158
+  count, calibrated                    0.04868       0.000000 0.000000  0.8017   0.066   0.158
+  LightGBM, counts at all depths       0.04875      -0.000077 0.000014  0.8006   0.065   0.155
+  LightGBM, all features               0.04877      -0.000098 0.000020  0.8002   0.064   0.154
+
+  gain is in nats per N; per big N multiply by 102
+  top features (share of gain): u_Z 0.713, u_31 0.067, Nmod23 0.033, u_13 0.029, Nmod19 0.025, Nmod17 0.023, Nmod13 0.017, Nmod11 0.013, pairs_same_class 0.012, pair_w 0.009

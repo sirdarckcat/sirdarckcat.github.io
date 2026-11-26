@@ -1,0 +1,6 @@
+N: 47 digits; 2,365 odd primes q < 21,031; 2,093 covered by the 25 moduli (up to 101); 272 left (0 s)
+664,553 primes in (101, 10,000,000] (0 s)
+  primes 0..664,553 of 664,553: 209 rows with a factor (0 s)
+209 rows left have a prime factor in (101, 10,000,000]; 63 have none (0 s)
+Fermat: 63 of 63 fail base 2 (composite); 0 pass (0 s)
+wrote records/c25_47digit_g21031/certificate.txt (0 s)

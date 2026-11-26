@@ -1,0 +1,9 @@
+single cover (greedy + descent): 1581 rows (the tempered best is 1,502); E = 38.38
+pair cover for d = 6: N has 1730 rows, N + d has 1742, 384 shared (22.2% of N's)
+hits per test against the single cover: -3.63 nats (pair hit mass -3.06, cost 1.78 tests per pair)
+single cover (greedy + descent): 1581 rows (the tempered best is 1,502); E = 38.38
+pair cover for d = 30: N has 1778 rows, N + d has 1776, 593 shared (33.4% of N's)
+hits per test against the single cover: -4.58 nats (pair hit mass -4.06, cost 1.67 tests per pair)
+single cover (greedy + descent): 1581 rows (the tempered best is 1,502); E = 38.38
+pair cover for d = 210: N has 1804 rows, N + d has 1778, 727 shared (40.3% of N's)
+hits per test against the single cover: -4.82 nats (pair hit mass -4.36, cost 1.60 tests per pair)

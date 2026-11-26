@@ -1,0 +1,267 @@
+## Development.AbelianVarietyTheory | 99187 files | 8.24M lines | 456777 decls | 22268 statements
+   hubs: CTSmallCone, SiegelWeilAnisotropicHermitian, DiscreteSeriesHermitianUnique, ExistsNormLeHeightPow
+   stmts: AbOfTrivSt, ActGradeAt, ActGradeSt, ActionLaws, ActionTieV, ActionTieX, ActsFreely, ActsOnFlag, AdLawOfTie
+## Development.AutomorphicArithmetic | 18431 files | 1.79M lines | 91481 decls | 9224 statements
+   hubs: CohomologicalCsdTempered, IsRecTOfIsRec, SplitStab, IsLatRepL
+   stmts: AAcrossAlt, AUpDownAlt, AbConverse, AbsCompact, AdDecomp_k, AdmResNAlt, AffFinProj, AlgInfChar, AllPairs_k
+## Development.AutomorphicSpectrum | 15147 files | 1.21M lines | 69213 decls | 1707 statements
+   hubs: BdryChart, GlueApplyOfNotInFibre, IsFlatAnIffIsConstMul, ClopenCondOnto
+   stmts: ActFormula, Admissible, AlmostIsom, ArchBounds, BaseCompat, BlockSplit, ClassParam, Conclusion, ConjDomain
+## Formalism.LocalToGlobal | 5501 files | 0.96M lines | 73238 decls | 9370 statements
+   hubs: LinksStage, AllTest, NGData, FWExist
+   stmts: ActMatSpec, ActUnitary, AdBridgeGF, AdaptedEnt, AdaptedPEx, AdaptedTie, AddValPres, AdjClosedL, AdjClosedR
+## Development.WeilBound | 7051 files | 0.86M lines | 55387 decls | 5578 statements
+   hubs: Imports, HeckeEta, WeakApproximationFinitePlace, PlaneSupp
+   stmts: AccumRigid, AdelContOf, AlmostGood, ArchSmooth, ArchUnimod, BaseUnifEx, BetaSmooth, BetaWeight, BlockBound
+## Formalism.SharpRestriction | 3093 files | 0.71M lines | 54618 decls | 11287 statements
+   hubs: ThExprUniqOfChartIndep2, LocCoh, LocalSituation, FractionFieldToGenericStalkAlgebraMapE
+   stmts: APlusShape, Adm4Closed, AdmKillLev, Admissible, AllLargeAt, ArithLevel, BeOnIsNorm, BetaUniqSt, BinomDecay
+## GroundTheory.HeightsAndTheta | 6410 files | 0.65M lines | 37826 decls | 4852 statements
+   hubs: StatementsFlagIndependence, KernelsLattice, StatementsArith, Statements
+   stmts: Admissible, ConeAvoids, FormNonneg, GeneralTAt, H1GenAmple, HasCoverBy, HodgeAlong, HtBoundary, HtInterior
+## Formalism.HermitianCurvature | 1922 files | 0.46M lines | 35950 decls | 3856 statements
+   hubs: StatementQ, WeylElementCommutesLevelOne, RegularisedPairingViaPhase, BetaSesquilinearity
+   stmts: AZeroBound, ActualSHyp, AdjLastCol, AdjLeibniz, AfterOfOld, AssembleEq, BddClassOp, BesselLine, BetaFinite
+## Formalism.PeriodIntegrals | 4350 files | 0.46M lines | 32692 decls | 4162 statements
+   hubs: DSInfCharCap, InVolumesAtOfSWS, QuotInv, VolumeLieE
+   stmts: AdaptInAll, AdelBounds, AdelFinVol, AdjOfParts, AlgValsFin, AprimeInfS, AscendStep, BeConjNorm, BesselLevi
+## ReciprocityTheory.ReductiveGroups | 2799 files | 0.41M lines | 26305 decls | 1760 statements
+   hubs: UniformisationConclusion, UnifUniqSt, HeckeKer, SecBaseChangeAnySt
+   stmts: AffineBCSt, AlgInjAtSt, BallVolume, BcLieAnySt, BetaSesqSt, Birational, CharPairSt, ChartLawSt, CoefLocFin
+## GroundTheory.AutomorphicForms | 542 files | 0.15M lines | 10954 decls | 127 statements
+   hubs: Injective, CuspFormsHeight, GeometricLemma, TraceNormComp
+   stmts: BlockSmall, EntryBound, HasContRep, Irrelevant, IsCuspidal, IsDominant, IsZKFinite, IsGKFStable, IsInvariant
+## Development.ResolutionOfSingularities | 499 files | 0.14M lines | 8050 decls | 203 statements
+   hubs: BlowupUniversalProperty, ResolutionOfSingularities, StrictNormalCrossings, IdealBlowupSequence
+   stmts: IsBalanced, Isomorphic, CentersOver, IsMonomialIn, IsResolution, ChartsAgreeAt, VanishesAlong, BlowupIsProper, CentersLieOver
+## CompanionTheory.SpectralGeometry | 1254 files | 0.11M lines | 5864 decls | 64 statements
+   hubs: IsEulerProd, TensorLocallyCompactRingStatement, VorFunEvalEqFineMean, CountData
+   stmts: BumpFamily, IsLowerUni, IsUnitProd, IsEulerProd, NefPsEffUpTo
+## Development.EtaleCohomology | 1398 files | 0.11M lines | 10302 decls | 2012 statements
+   hubs: H0TwistOverClosedField, InjSlice, CycleCount, EtaleBaseChangeFractionFieldIndEtaleOv
+   stmts: AdicProper, AtInfinity, BaseChange, BaseLocLoc, CechLevels, CechYoneda, ChartGenOn, ChartOverK, ChartsGeom
+## GroundTheory.ProfiniteCohomology | 450 files | 0.09M lines | 6262 decls | 28 statements
+   hubs: IsUnramifiedOutsideIffLeMaxUnramifiedO, ContinuousCochains, Kummer, PoitouTateNineTermGs
+   stmts: InOutCoset, IsOrdAbove, IsProSylow, IsProPGroup, FreeOnCosets, IsCocycleOne, IsSInvariant, ConstOnCosets, GsPairingInput
+## Formalism.GL3MeanSquares | 440 files | 0.08M lines | 4149 decls | 717 statements
+   hubs: PrimeCountAsymptoticInProgressions, LocalDensityRatio, SecondEstimateOfIntervalHypothesis, IsUnimodularAtIffVd
+   stmts: AdjointAdd, AxisVanish, BlockCount, BoxTailAll, BoxTailHyp, CayleySkew, ClassConst, ClassSplit, DHFinishOf
+## GroundTheory.GlobalFields | 384 files | 0.07M lines | 5815 decls | 15 statements
+   hubs: IdeleNorms, AdeleScaling, LocalFieldAtPlace, RootNumberLocalFinite
+   stmts: IsPeriodic, PermutesFactors, IsIntegralUnitAt, NoSmallSubgroups, SplitsCompletely, HasCyclicHerbrand, IsEllipticFunction, IsComplexConjugation, IsUnramifiedEverywhere
+## GroundTheory.PAdicHodge | 226 files | 0.06M lines | 5354 decls | 39 statements
+   hubs: FieldOfNormsCyclBase, NormalizedTrace, AInfGalois, PerfectoidField
+   stmts: IsUnitTerm, RootExists, ConvergesAt, IsPhiModule, IsAdmissible, IsSemistable, IsCrystalline, IsEquivariant, IsPureSubquot
+## PositivityTheory.AutomorphicForms | 445 files | 0.06M lines | 4741 decls | 954 statements
+   hubs: RationalPrimesBelowPlaces, UnramifiedEulerProductIntegral, SSmooth, FinrankAdjoinSqrtNegOne
+   stmts: Need_CMain, IsTwSphProd, Need_CProps, SConjSpaceC, SConjSpaceR, JacquetOneProp, TorusPowerProp, LambdaBasicProp, NonIntegralProp
+## Formalism.ThetaLogCoordinates | 292 files | 0.05M lines | 4209 decls | 534 statements
+   hubs: FinalS, TopsChoicePartA, FirstDeriv, LeIffLtColHeight
+   stmts: BackMargin, ChainModel, ClassSubst, DeIntegral, DischargeE, DischargeP, DischargeW, EdgeNonneg, EntryChain
+## CompanionTheory.AutomorphicTheory | 457 files | 0.05M lines | 2806 decls | 351 statements
+   hubs: Imports, IsDSOfIsDG, H1StructureDimLe, BesselMapUniqGap
+   stmts: CoefSmooth, DecOfTrace, DecayOfInf, HypOutside, IsGaugeQQB, KTrivModel, LeftFinite, LetterStep, PolIsogeny
+## GroundTheory.ArithmeticGeometry | 218 files | 0.05M lines | 3770 decls | 37 statements
+   hubs: RingKrullDimLeRingKrullDimQuotientAddO, RegularSmooth, ProjSpaceHom, CechSeparated
+   stmts: HAcyclicOn, IsCoherent, IsFraction, IsOrdinary, IsWeilData, LowerBound, AffineUnder, CechAcyclic, GoodAcyclic
+## GroundTheory.LocalFields | 159 files | 0.04M lines | 3250 decls | 20 statements
+   hubs: WeilRepQuadratic, ConductorReciprocity, KroneckerWeber, Uniqueness
+   stmts: IsClassFun, IsCharacter, IsTrivialOn, IsElementary, IsUnramified, IsTwistedLift, IsElementaryAt, IsIrrCharacter, ClassFieldAxiom
+## Formalism.WachLatticeTwists | 262 files | 0.04M lines | 1582 decls | 596 statements
+   hubs: FibreDualStable, Statement, Statement, Statement
+   stmts: ExtInputNA, ExtInputNL, IsClassMap, LemmaAProp, StatACount, StatASuper, StatActLaw, StatBcRank, StatBcSpan
+## ReciprocityTheory.AnalyticForms | 192 files | 0.04M lines | 2328 decls | 214 statements
+   hubs: FinalTheorems, ProjectiveLineFubiniStudyFacts, IsPshLocallyIntegrableStatement, PshShiftA
+   stmts: Compatible, EffCartier, GFLog2StBR, GeomRegFib, IsPshSubOn, IsRelevant, ReesCharts, DIChartDens, IsDegreeOff
+## Formalism.LocalRingCardinality | 173 files | 0.04M lines | 3321 decls | 253 statements
+   hubs: RhoDetPrimeEqMuTildeMulChiPow, LocTied, RankBoundMonotoneInDimension, DataTies
+   stmts: BuRational, DelPNonneg, DelpNonneg, FactAjConj, FactHCMono, FactJwConj, FactPlaces, FactSShift, FactStepBz
+## ReciprocityTheory.L2DbarEstimates | 227 files | 0.03M lines | 1875 decls | 204 statements
+   hubs: Imports, FourSignHolds, Imports, IsLocalHomeomorph
+   stmts: AStatement, BStatement, FlatApprox, HStatement, HasCutoffs, IsTestForm, LeviNonneg, SStatement, SmoothForm
+## Formalism.FlagUnipotentLattices | 77 files | 0.03M lines | 2449 decls | 981 statements
+   hubs: CardSubgroupsOfIndexLe, CardSubmodulesAndLinearEquivBounds, MemOfOrthogonalAnisotropic, LatticeSumBounds
+   stmts: AllSumRate, AssemblyNG, BaseExists, BetweenGen, BpAssembly, CCountWAsm, CentreHalf, ChainLabel, CoeffBound
+## Formalism.PieriBlockIdeals | 98 files | 0.03M lines | 2560 decls | 783 statements
+   hubs: StatementLA, Statement, TailInequalityEventually, StatementLP
+   stmts: AMFKDecomp, ActLattice, BinFormInj, BlockMinor, BoundAReal, BoundWReal, CPrimeMono, CasCentral, CharOfType
+## Formalism.SizeWindowBrackets | 64 files | 0.03M lines | 2268 decls | 849 statements
+   hubs: GaloisMapComplexConjugation, ExistsNsmulMem, TruncatedLatticeHolds, SlopesHypothesisFinitePlaces
+   stmts: ArtFormula, BoundedBy', BridgeFLat, BridgePrim, CErrValues, Chain2Core, Chain3Core, Chain4Core, Chain5Core
+## ReciprocityTheory.DualLattices | 183 files | 0.02M lines | 1489 decls | 127 statements
+   hubs: TowerZeroSurjective, LinPairStatement, CotangentSurjective, LengthDegreeAbelianVariety
+   stmts: IsGLStable, IsLaStable, IsPTypical, BadStatement, CarriesFibre, IsTateSeries, LimStatement, CharStatement, EvBtStatement
+## Development.DiscreteGroups | 215 files | 0.02M lines | 1381 decls | 106 statements
+   hubs: PiVecExHolds, PiInvTop, PiSeenA, DzMatchCut
+   stmts: HasCellVec, IsWhitTest, LabParamLe, SerParamLe, UnifOfComm, UnitOfUnif, AltIdentity, FiniteOfAlt, TameParamLe
+## CompanionTheory.HarishChandraModules | 130 files | 0.02M lines | 1481 decls | 189 statements
+   hubs: SmoothCyc, LowKMultOneP, DiscreteSeriesInfinitesimalCharacter, PhMeas
+   stmts: AlgCoreSub, GardingFin, KModExists, ZeroCaseDD, JFDDOfSteps, MoreOfSteps, AtFormAdmOne, LowKMultOneP, ReproOfSteps
+## Formalism.AdmissibleDesigns | 93 files | 0.02M lines | 1478 decls | 110 statements
+   hubs: FiniteClassesContinuousLattice, RestrictedSevenEightOfFull, EKSymmCont, NonemptyPl
+   stmts: ClauseLoc1, CoefChange, CoverClause, SelfGoodAll, NoFixedVectorOffZ, MainBoundForDesign, TrivialBoundAtRows, AdmittedChangedForm, AllDesignConditions
+## Formalism.MahlerMeasure | 54 files | 0.02M lines | 1318 decls | 99 statements
+   hubs: StatementTM, TheoremM, StatementD, MeanGam
+   stmts: Admissible, BinomRatio, FockBlocks, FrameCount, FreezeInto, FreezeStep, IsTypeProj, LevelConst, MahlerDisc
+## CompanionTheory.RealGroups | 155 files | 0.02M lines | 1217 decls | 290 statements
+   hubs: LKTExists, StSandwich, InhabitedFinite, BackStable
+   stmts: BackStable, BetaWeight, CoefSmooth, HaarExists, HlamStable, LabelTrack, PathEndNat, PathExists, SimplePath
+## Formalism.PadicSubsetSums | 82 files | 0.02M lines | 1160 decls | 614 statements
+   hubs: GaloisConjCentralIdempotent, GaloisIrreducibility, HCDisjointO, EigenbasisOfDistinctRoots
+   stmts: BCBetaZero, BesselCard, BinomIdeal, BlockIsRun, ConvExists, CuspCentre, CuspParamO, CutPassage, DecompCard
+## Formalism.PolynomialDimension | 41 files | 0.02M lines | 1048 decls | 132 statements
+   hubs: WeylDim, PartnerM, DigitClassSize, StatementNum
+   stmts: BinomRatio, CleanArith, CloudShare, FockStable, GraphMinor, KeptWeight, Lemma4Geom, LevelCount, MeanShareA
+## Formalism.QuotientMetricDivisors | 63 files | 0.02M lines | 845 decls | 199 statements
+   hubs: ProdFormula, ReductionLemmaZero, ValBasic, FinalW
+   stmts: BoundsIVal, CompNormAt, CutDualLat, EigenTwist, FinsumConj, GramChange, IdxChangeP, IsClassSum, IsLocBasis
+## Formalism.SatakeDualWeyl | 85 files | 0.01M lines | 1079 decls | 132 statements
+   hubs: KpqSubgroupCompact, Statement, CsGlob, Afsplit
+   stmts: AMFKFinite, AfSplitOff, DefiniteEx, GlobLatOne, HeckeAssoc, HeckeBasis, HeckeCommU, HermBridge, InertLocal
+## ReciprocityTheory.SemistableReduction | 119 files | 0.01M lines | 892 decls | 67 statements
+   hubs: TorusL2CauchyInequality, AlgAll, SphereLogIntegrableStatement, TorsionNonvanishStatement
+   stmts: IsKBasisIn, IsSelfDual, SJStatement, TRStatement, IsIntegralOn, GramStatement, IsIntegralElt, NoContraction, RankStatement
+## Formalism.DistinguishedUnitIdeals | 44 files | 0.01M lines | 1046 decls | 228 statements
+   hubs: CoprimeProd, Statement, GroundTheory, UnivPart
+   stmts: AprimeCuts, BaseGoodOf, CompleteOf, ConstLiftD, CoprimeRat, FactVvalOf, LemmaCFull, LemmaCValR, PhiBasisOf
+## Formalism.GaussJetBounds | 90 files | 0.01M lines | 747 decls | 111 statements
+   hubs: GenLogInverse, StatementN, ConstantCoeffAevalLinP, NormNatCastEqPowPadicValNat
+   stmts: JetPairLin, LabFinite7, LogBridges, MatchBound, OneLetterR, OrbitsAddA, SizesRows7, SizesSign7, ThmAEntry7
+## ReciprocityTheory.ClassFieldTheory | 91 files | 0.01M lines | 1062 decls | 15 statements
+   hubs: ExistsDvdQKPowSubOne, GalBasic, ExistsIntEKMulVbar, RecPairDefs
+   stmts: IsPairClass, IsTwoCocycle
+## Formalism.RealPlaceAnalysis | 54 files | 0.01M lines | 1058 decls | 146 statements
+   hubs: ThirdArithmeticHolds, StatementE, FinalF, StatementKT
+   stmts: BallFinite, CasCentral, Complexify, EtrCentral, FockPairGl, GrowthIter, OmSymSlice, RdBracketV, SmoothOnGV
+## Formalism.HarderNarasimhan | 43 files | 0.01M lines | 474 decls | 42 statements
+   hubs: ShiftInvariance, StatementPl, DiscreteSpanOfLinIndep, SatBasic
+   stmts: CutLattice, IdealScale, LcvFormula, PlaceSplit, DegSupermod, QuotRealize, DegSupermodZ, RescaleCovol, SlopeIneqMean
+## Formalism.EllipticTorsion | 48 files | 0.01M lines | 647 decls | 51 statements
+   hubs: Statement, FormalGroupPointsNoTorsion, WChordSeries, FormalGroupPointsTorsionFree
+   stmts: DeuringInv, FrobExpand, UnitCancel, IntValuedZp, LegendreInv, VeluUSeries, WChordSubst, WSeriesLead, ModelDeuring
+## GroundTheory.TateCohomology | 56 files | 0.01M lines | 807 decls | 4 statements
+   hubs: TateLow, HerbrandAbstract, DimensionShift, InfRes
+   stmts: CohTrivial, TateAcyclic, HasHerbrandQuotient, RepHasHerbrandQuotient
+## ReciprocityTheory.GroupCohomology | 56 files | 0.01M lines | 672 decls | 77 statements
+   hubs: DEqZeroOfMemB, CupConnRightStatement, ImportsAlt, InfRes
+   stmts: AdmStatement, ChiStatement, CorStatement, CupStatement, LESStatement, LowStatement, SelStatement, DivTStatement, ModTStatement
+## Formalism.GradedWeylDivisibility | 103 files | 0.01M lines | 636 decls | 105 statements
+   hubs: DualWeylDominanceOf, FinalD, StatementE, StatementA
+   stmts: FockQBilin, FockRowAdj, FockSubAdj, HWInClosed, HWLineTall, Interlaced, LhwinShift, MinorExpLt, NablaLDiag
+## Formalism.BranchSandwichDivisors | 22 files | 0.01M lines | 531 decls | 75 statements
+   hubs: DivFromPassageAndNorm, StatementR, StatementL, Numeric
+   stmts: BoundsIVal, GainRecord, PassageLat, BranchNormT, BranchScale, GoodDualDed, TransferDeg, WeightScale, CentralLevel
+## Formalism.FrobeniusOrbits | 32 files | 0.01M lines | 442 decls | 48 statements
+   hubs: HostCorollaries, RealSubfieldLeCompositum, MuCardLeTwo, Statement
+   stmts: HostCMType, HostDecomp, HostEFGTwo, HostGalois, HostOrbits, HostOrderD, HostOrders, HostSplitK, HostCharSum
+## Formalism.CharacterColumnKernels | 54 files | 0.01M lines | 428 decls | 105 statements
+   hubs: StatementRho, Statement, LengthKerOfDetEqZero, StatementN
+   stmts: IsEquivMap, StatColKer, StatColumn, StatDetTri, StatEpsAdj, StatGlobal, StatLenEps, StatLenKer, StatMatlis
+## Formalism.HermitianLattices | 43 files | 0.01M lines | 404 decls | 49 statements
+   hubs: StatementMass, StatementLat, DualLattice, LocDual
+   stmts: FrameBasic, GenusBasic, GenusCovol, GenusScale, IndexBasic, MajLattice, ThetaBasic, ThetaLSLaw, WeilFinite
+## Formalism.SubspaceCounting | 32 files | 0.01M lines | 447 decls | 43 statements
+   hubs: StatementB, GoodOrbitIntervalTileCondition, Statement, TopsChoiceSecondBound
+   stmts: DetDivides, DetQuotVal, ManyOrbits, ShrinkStep, TypeIIDown, ChoiceOfTops, LengthLayers, QVandermonde, AllButLESmith
+## Formalism.LandauZeroFreeBounds | 58 files | 0.01M lines | 300 decls | 56 statements
+   hubs: LogDerivRegionChiOf, NoZeroComplexOf, SiegelWalfiszAPOfSiegelLower, Statement
+   stmts: ExcBoundOf, IsProdChar, LocalZeros, Positivity, RealLargeT, RealSmallT, PsiChiBound, SiegelLower, SmoothChiOf
+## Formalism.FormalDegreeBessel | 31 files | 0.01M lines | 562 decls | 93 statements
+   hubs: FinalG, GBasic, UnitaryWeylNormalHolds, StatementG
+   stmts: BigCellMem, CapCentral, DimLowKNat, DimLowKPos, GapAtLeast, HolDimLowK, QMinorLeft, BigCellZhat, CapCentralH
+## ReciprocityTheory.GeometryOfNumbers | 39 files | 0.01M lines | 330 decls | 2 statements
+   hubs: PosSemidefOfForallCombination, ArakelovDegreeEqDegreeOfFamily, InhabSt, WeakMatSt
+   stmts: IsFrame, IsConjInv
+## GroundTheory.Brauer | 20 files | 0.00M lines | 455 decls | 0 statements
+   hubs: TensorSimple, BaseChangeCSA, IsBrauerEquivalentIffNonemptyAlgEquiv, SkolemNoether
+   stmts: 
+## ReciprocityTheory.NeutralLocalFields | 20 files | 0.00M lines | 448 decls | 61 statements
+   hubs: TransportA, Duality, Reciprocity, HilbertClassField
+   stmts: ContAction, DualityFor, IsAlgHecke, IsLTSeries, PTExactOdd, IsInvFamily, IsPlaceOver, IsSupportedAt, IsUniformiser
+## Formalism.MirabolicMackeyTheory | 26 files | 0.00M lines | 297 decls | 82 statements
+   hubs: RamBasic, StatementT, StatementL, MirabolicIsMackey
+   stmts: DepthCases, ErrSumGood, IdxPsiGood, IdxScaleIn, LevelPlace, MackeyProd, OnLocalJAt, OnSumExact, PrimeSumsC
+## Formalism.UnipotentAdelicQuotients | 44 files | 0.00M lines | 396 decls | 107 statements
+   hubs: SiegelWeilUnitaryConvergent, SWXSDefs, WeylLatDual, ThmBInHecke
+   stmts: IsCosetRep, IsCuspChar, IsSmoothCc, RapidDecay, RootUnique, SmComplete, TransferTR, WeightDiff, grIsGenSys
+## ReciprocityTheory.Chebotarev | 47 files | 0.00M lines | 272 decls | 11 statements
+   hubs: EulerSum, NZIdeal, CyclotomicIrreducibleOfForallIsUnramif, CasimirPowerSurjectiveSymmetric
+   stmts: CycStatement, SmoothMapSeminormBound, faceMap_castSucc_comp_eq_succ, CasimirPowerSurjectiveSymmetric
+## CompanionTheory.ThickeningEstimates | 22 files | 0.00M lines | 399 decls | 59 statements
+   hubs: ContinuousOm, SiegelCore, RealMetaplecticRepresentationHolds, MpFOne
+   stmts: FourierInj, FrameBasis, SiegelCore, TriplePair, SiegelCover, GoodPosition, ConeIntegralsFinite, SquareIntegrableSiegelSet, SquareIntegrableWeilRange
+## Formalism.FilteredPoleLength | 36 files | 0.00M lines | 231 decls | 137 statements
+   hubs: ReductionQuotient, BetaSesquilinearity, MemSpanBasisFun, LocalStepLevelsExt
+   stmts: BallVolume, CBConstant, GNormBound, LastEntryL, MarkovIneq, MarkovStep, MinimaTies, OrderChain, OrderSharp
+## Formalism.LogVandermondeBounds | 26 files | 0.00M lines | 252 decls | 44 statements
+   hubs: GammaIntegralPolynomialBound, LogVandermondeVariationUnbounded, HookGammaAmgmMultinomialBounds, LogRatioUpperBound
+   stmts: UpperPlace, UnitsSumZero, CardBilinearLevel, CardGeneralLinear, CardUnitriangular, HookProductBounds, PrimeOrderFinrank, CardHermitianLevel, EulerProductBounds
+## Formalism.IncomingBounds | 21 files | 0.00M lines | 299 decls | 56 statements
+   hubs: IncomingBound, LevelTail, StatementThmP, WeightIdentities
+   stmts: NewtonPick, WeightCond, CHRecursion, CorFromThmA, LamIdentity, LogCoeffVal, ContentShift, FlowAttained, FrobOrbitSum
+## Formalism.TruncatedSeriesCounting | 39 files | 0.00M lines | 182 decls | 64 statements
+   hubs: RamifiedValuationInequality, StatementX, LengthQuotientLeOfPowSMul, EtaDeterminantPolynomialIdentities
+   stmts: BinomSplit, ColTwoStep, CorAWordDU, CorAWordUD, DepthSteps, AprimeArith, ColAssembly, LemmaDetSub, LemmaGIdeal
+## Formalism.CyclotomicNorms | 21 files | 0.00M lines | 229 decls | 43 statements
+   hubs: StatementI, StatementT, NonsquarefreeMonicBoundHolds, StatementA
+   stmts: Evaluation, FewFactors, BlocksCycle, ChoiceCount, LengthBound, Restriction, DiscardRatio, GTPigeonhole, PermFixedSet
+## Formalism.DoubleCosetMeasures | 15 files | 0.00M lines | 281 decls | 26 statements
+   hubs: LatticeCoset, Statement, StatementV, RelIndexMulMeasure
+   stmts: HaarExists, SectionBij, IntRightInv, IntTwoSided, LemmaUSplit, SuppCompact, LatticeCoset, PhaseWellDef
+## Formalism.ThetaSupremumBounds | 19 files | 0.00M lines | 180 decls | 57 statements
+   hubs: StatementE, LiftOperatorBoundOfFockJet, StatementA, StatementC
+   stmts: BlockBound, ClassSchur, GaussCoord, RowsOffTop, StepDiProd, SupNumeric, CoupledNorm, DiCondition, LiftStepDi6
+## Formalism.ZeroFreeRegion | 34 files | 0.00M lines | 143 decls | 21 statements
+   hubs: SmallHeightLogDeriv, ZetaGrowth, NormIntegralComplLe, ZeroFactor
+   stmts: ZeroFactor, ZeroFreeOf, ZetaGrowth, LandauLocal, RectShiftOf, SmallHeight, LaurentAtOne, ThreeFourOne, ZetaInvBound
+## Formalism.TameInertiaTowers | 15 files | 0.00M lines | 265 decls | 31 statements
+   hubs: FinalGroup, ConjEqInvOfPowEqOne, TowerFieldFoundations, Galois
+   stmts: GenusModel, QuotCyclic, TwoAdicVal, CoinvLength, DecompModel, LayerEFGTwo, LayerExists, LayerGalois, UnitsTwoPow
+## ReciprocityTheory.CommutativeAlgebra | 26 files | 0.00M lines | 172 decls | 30 statements
+   hubs: ModDepthGE, IsSaturatedChain, HeightAddRingKrullDimQuotientMvPolynom, ChainConnInDim
+   stmts: DimFormula, IsCatenary, ModDepthGE, CMStatement, DimStatement, EvalStatement, SurjStatement, CIGorStatement, ChainConnInDim
+## Formalism.MeanHeightDescent | 24 files | 0.00M lines | 120 decls | 50 statements
+   hubs: DivisionInequalityWithCovolume, CovolumeFullAssemblyWeighted, MuMaxMinkowski, SpanMuMin
+   stmts: DescentCut, FlatDefect, GoodBadCut, TwistLower, DepthRadius, MeanHeights, PeriodBound, SpreadBound, SumRamified
+## Formalism.FormalGroupWitt | 21 files | 0.00M lines | 240 decls | 50 statements
+   hubs: SolveV, EqSingleOfDegreeEqOne, SubstInjectiveV, Statement
+   stmts: ShiftFunEq, ShiftGroup, ShiftTeich, BridgeLTIso, CoeffBoundV, FunEqCongrV, FunEqGroupV, FunEqSubstV, IntegralMat
+## Formalism.TorsionNormIteration | 15 files | 0.00M lines | 218 decls | 25 statements
+   hubs: InvIntegralOfClass, SigmaNormLeOne, MemSpanOfNormLe, LubinTateExample
+   stmts: CoeffBound, IsLTSeries, ExpIntegral, SolveExists, TorsionNorm, LubinTateIso, FunEqLowCoeff, IntegralSubst, QuasiLogShift
+## Formalism.WeaklyAdmissibleFiltrations | 20 files | 0.00M lines | 225 decls | 43 statements
+   hubs: Statement, StatementTor, CocyclesFunctorial, StatementPC
+   stmts: FontaineLe, FontaineWA, FrobStable, GoodCoeffs, NewtonAbove, WindowCount, BlochKatoDim, DpcrisStable, IsDcrisFilPhi
+## Formalism.ZetaNonvanishing | 15 files | 0.00M lines | 141 decls | 1 statements
+   hubs: ZetaLandau, MellinSgen, ZetaRealNonvanish, MellinDeriv
+   stmts: Good
+## Formalism.CoboundaryTransfers | 16 files | 0.00M lines | 214 decls | 51 statements
+   hubs: Statement, StatementAPI, StatementBridge, MemCoboundariesOfIsOneCoboundary
+   stmts: CLTransfer, GradedStep, TorsKilled, CokerKilled, HeightLower, LIFTGammaQN, LIFTTransfer, DiagramChase₂, WachMorphismIsHom
+## Formalism.LatticeSlopes | 18 files | 0.00M lines | 98 decls | 18 statements
+   hubs: ExistsSaturatedSlopeEqMuMax, Statement, DiscreteTopologyOfLe, CovolAntiSameRank
+   stmts: CovolBasic, MuMaxLeMin, SaturProps, CovolEqGram, IsSaturated, ShortVector, SlopeLeMuMax, MuMaxAttained, CovolEqCovolume
+## Formalism.RankGapBounds | 17 files | 0.00M lines | 219 decls | 86 statements
+   hubs: RandomSubsetCounterexample, TheoremALocOfLemmaA, MeanBoundSecondForm, CloudMinFalse
+   stmts: CloudBound, DegreeEven, GammaLarge, GridParity, OrbitCoord, OrdersSumY, SlopesWith, SquareRank, TensorStep
+## Formalism.GaussValuationBounds | 16 files | 0.00M lines | 99 decls | 32 statements
+   hubs: Statement, NokLemmaCVal, GaussUnit, TruncationExponentBounds
+   stmts: ExpNonzero, PowContent, ExponentSumIdentity
+## Formalism.LogSumExpBounds | 16 files | 0.00M lines | 120 decls | 19 statements
+   hubs: NuclearBound, StatementZ, StatementC, NuclearNormBoundHolds
+   stmts: CharSumIso, TauLattice, IsoTransfer, WeightedOff, NuclearBound
+## Formalism.JumpKernelCokernel | 27 files | 0.00M lines | 104 decls | 24 statements
+   hubs: Statement, LengthTheoremsWithEarlier, ThickB, RowDegreeBound
+   stmts: KerCokerEq, TorsKerSum, LemmaDJoint
+## Formalism.SuccessiveMinima | 15 files | 0.00M lines | 82 decls | 18 statements
+   hubs: DefsMink, NewtonSlope, SuccMin, StatementNP
+   stmts: Strassmann, NewtonSlope, ZeroFormula, AdaptedBasis, SuccMinFacts, MinkowskiIIBall, WeierstrassPrep, MinkowskiIILower, MinkowskiIIUpper
+## Formalism.GaloisIrreducibility | 17 files | 0.00M lines | 113 decls | 36 statements
+   hubs: Statement, NoSolvableTransitive, NoSolvableOf, RestrictRoots
+   stmts: LPartBound, OneNonUnit, ResiduesLe, ShareBound, AltFormRank, BlockPCycle, JordanPrime, OrbitSubSum, PowerPCycle
+## GroundTheory.PowerSubgroups | 20 files | 0.00M lines | 66 decls | 0 statements
+   hubs: UnramifiedClosureCountableNeighbourhoo, UnitMulPowAdic, TiltCountableNeighbourhoods, SpanEqTopSmul
+   stmts: 
+## Formalism.YangianSpanCharacter | 17 files | 0.00M lines | 121 decls | 38 statements
+   hubs: YangianRelationFirst, StatementT, StatementY, RttRelation
+   stmts: MinusFrame, PlusLetter, DualityCore, ExchangeGen, FlipCommute, GaussDecomp, MinusLetter, ModHypModel, ExchangeTReal
