@@ -33,8 +33,10 @@ These need computing time and nothing else. The tools are written, tested and do
 
 ### 1.2 Side scans of the 200-digit covers on ordinary processors
 
-- **Where it stands.** Spare processor cores in six sessions scanned about 5,960 covers that the GPUs never used, at the
-  record target. Nothing was found, and about 0.004 finds were expected.
+- **Where it stands.** Spare processor cores in six sessions scanned about 6,900 covers that the GPUs never used, at the
+  record target. Nothing was found, and about 0.004 finds were expected. The combined ledger lists 6,466 covers; the
+  second analysis session's final count for its set (2,589 covers, not the 2,174 listed) arrived after the ledger was
+  closed.
 - **What is unscanned.** 411 of the first 3,000 covers of the 613 family and its covers 3,000 to 5,999; the 2,727 free
   covers of the 479 family; the 523 family after cover 1,616 (of 8,572); the 467 family after cover 795 (of 3,000); and
   the 557 family after its first 959 covers.
