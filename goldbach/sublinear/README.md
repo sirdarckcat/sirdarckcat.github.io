@@ -1689,11 +1689,21 @@ q = 7: 110 at 8, 181 at 10; q = 9: 120 at 6, 122 at 8, 151 at 9.
   like a generic member's (the Lean session's correction of its own first
   report and of the first form of this paragraph; its test: the q(q − 1)
   polynomials λ(x^q − x + c) have best counts 96 and 145 at q = 11 and 13,
-  where one member of all is expected near 277 and 417). Exhaustive records
-  since: q = 3, n = 17: 600 (generic); q = 9, n = 9: 151, three members,
-  all translation-invariant (x^9 − x + 1 among them), best generic 148. All
-  six structured records among the first 35 instances use one of these two
-  mechanisms.
+  where one member of all is expected near 277 and 417). Its final tables
+  (45 instances, its commit cd1b751, `goldbach/lean/scripts/world3/`):
+  q = 3, n = 17: 600 and n = 18: 754, both generic (at 3^18 every one of the
+  387,420,489 members: the cell model expected one member at 738 rows; the
+  optimum's cell has 54 rows left at the line where the best cell has 40;
+  cover first reaches the record after 2.7% of the members, the parity
+  order after 0.009%); q = 5, n = 12: 278 and q = 7, n = 10: 181, generic;
+  q = 9, n = 9: 151, three members, all translation-invariant (x^9 − x + 1
+  among them), best generic 148. The family attains the degree-depth of the
+  best of all in 16 cases of 16, and exceeds it in 3. Eight of the 45
+  records are structured, all at n divisible by p: six translation-
+  invariant, one with a derivative of degree 1; everything else is generic.
+  Its cell model for the counts is biased high (predicted over true: median
+  1.21 at 3,000 successes or more, 1.54 at 10 to 30, within a factor 2.4
+  everywhere), which moves the predicted record level by a few rows.
 
 Transfer of World 3, as it stands: none of the three. Parity of the number
 of prime factors of an integer is not a cheap invariant (the function-field
