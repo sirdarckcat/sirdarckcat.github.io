@@ -1759,8 +1759,14 @@ moving the rows, where the integers have no automorphism and every rational
 prime is fixed by every Galois group. Had the parity been available, the
 agent's model puts its worth at 1.6 to 2.3 nats at 200 digits.
 
-*Verification of the catalogue* (the first of its two verifiers, on the
-mathematics; the second is recomputing numbers). The page is sound: the
+*Verification of the catalogue* (both verifiers: sound). The second
+recomputed with its own programmes: the characteristic-2 theorem on 10,581
+adversarial instances and the discriminant congruences modulo 8 on 3,000
+integer lifts without a disagreement, every exact row count of the page,
+Artin–Schreier and aligned classes; its corrections are to peripheral
+counts (the theorem forces more rows than the page counted in one
+instance; greedy covers used as comparisons vary by a tenth between
+constructions). The first, on the mathematics: the
 characteristic-2 theorem was re-derived line by line and checked on a
 further 11,314 instances, and it is, as its author expected, the case of
 residue zero, with an explicit sign, of the theorem of Conrad, Conrad and
