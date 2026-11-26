@@ -106,6 +106,7 @@ import GoldbachGaps.Gpu28.Kernel
 import GoldbachGaps.FunctionField.Stickelberger
 import GoldbachGaps.FunctionField.ParityDesert
 import GoldbachGaps.FunctionField.DesertDegree
+import GoldbachGaps.Worlds.NoCoupling
 
 /-!
 # Least Goldbach summands in Lean
@@ -591,6 +592,16 @@ This library formalises the theorem-shaped parts of `goldbach/` and `slop/goldba
                false. `scripts/parity_check/` compares the general formula
                with full factorisations over `F_3`, `F_5`, `F_7` (`gen_parity.py`) and checks
                the rows of higher degree with a smooth derivative (`smooth_rows.py`).
+* `Worlds.*` – the toy worlds of the research programme of 26 November 2026: a score
+               `S(N) = ∑ r, f r (N mod r)` and a constraint that couples the coordinates; in
+               each world, can the points with extreme score be produced at a cost
+               proportional to the output? `NoCoupling` (World 1, a full product of finite
+               sets): the optimum is the coordinatewise optimum (`sum_le_sum_of_forall_le`),
+               and after sorting each coordinate the `k` best points come out in order, each
+               among at most `1 + |ι| · n` candidates, the zero vector and the successors of
+               the `n` points before it (`exists_next_best`, `eq_zero_or_succ_of_lower`,
+               `card_candidates_le`, `exists_best_list_candidates`). The cost is proportional
+               to the output; whatever is hard elsewhere is the coupling.
 
 ## Building
 
