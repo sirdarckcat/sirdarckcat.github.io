@@ -1,0 +1,9 @@
+N = 8223574663857043817842483455238569126110624927813137471170822278151226773853347935411335888798540538
+digits = 100; N even: True
+primes q < g tested: 4934 (q = 2 by parity: N - 2 even; 4933 by a base-2 Fermat failure; 0 base-2 pseudoprimes refuted by a strong test)
+g(N) = 47881  (N - g passes the strong test to the bases (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37): a probable prime, not a proven prime)
+gmpy2 2.3.2: is_strong_bpsw_prp(N - g) = True, is_prime(N - g, 25) = True
+gmpy2 cross-check: primes q < g with gmpy2.is_prime(N - q, 25) true: 0 []
+ln N = 230.0629; (ln N)^2 = 52929.0; g / (ln N)^2 = 0.9046
+claimed g = 47881: MATCH
+check time 0.8s; RESULT OK g=47881 digits=100
