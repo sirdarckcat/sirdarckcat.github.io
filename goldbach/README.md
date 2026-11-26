@@ -75,7 +75,7 @@ Each of the sessions that worked here wrote a handover note in plain English:
 | `archipelagos/` | g(N) computed exactly for 20 million consecutive even numbers near 10^12, 10^15 and 10^18 |
 | `gaps_map/` | a map of how the results depend on each other; open `viz/goldbach_map.html` in a browser |
 | `archive_map/` | a map of the Lean archive that came with the note `remark.pdf`, which started this round of work |
-| `lean/` | the Lean proofs; build with `lake build` in that folder |
+| `lean/` | the Lean proofs; its `HANDOVER.md` lists every theorem and says how to rebuild them |
 | `review/` | the outside review and its rechecks |
 | `SOK_GOLDBACH_GAPS.md` | the state of knowledge from the earlier work, updated with errata |
 

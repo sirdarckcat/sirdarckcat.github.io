@@ -88,8 +88,8 @@ once. By the Chinese remainder theorem, the numbers that leave all the chosen re
 N0 + k·M for k = 0, 1, 2, and so on, where M is twice the product of the small primes used (the factor 2 keeps N even)
 and N0 is one particular solution. The research session spent much of its time on choosing the remainders well.
 
-Each small prime we use multiplies M by itself, and that has a price. Our covers use the 89 smallest odd primes, from 3
-up to 461 together with either 463 or 491. Their product M already has 193 digits, which leaves room for only about 20
+Each small prime we use multiplies M by itself, and that has a price. Our covers use 89 small primes: the 88 odd
+primes from 3 to 461, and one more, either 463 or 491. Their product M already has 193 digits, which leaves room for only about 20
 million numbers N0 + k·M below 10^200. That set is the *window* of one cover, and its numbers are the candidates. Using
 more small primes would leave almost no room at all.
 
@@ -180,7 +180,7 @@ second-session check yet.
 ### How good is 160,357?
 
 Among all even numbers below 10^200, some must have a much larger g(N) than ours. A standard model of how primes are
-spread out (the Hardy–Littlewood conjectures, which have held up in every test anyone has made) predicts how large the
+spread out (the Hardy–Littlewood conjectures, which agree with every numerical test made so far) predicts how large the
 very largest one is: about 2.13 million. We call this the *ceiling* for 200 digits, and we score a number by its
 *closeness*, its g divided by the ceiling for its size. 160,357 is 7.5% of the ceiling. A typical 200-digit even number
 has g(N) of about 1,600, so ours is about 99 times larger than typical.
@@ -190,10 +190,10 @@ ways: against g(N) computed exactly for 900 million random numbers of various si
 found by the computer check of Goldbach's conjecture below 4·10^18. Both agree with it. Before this work the repository
 used a single constant fitted to the computer-check data instead.
 
-The owner's dream of two million is the ceiling itself. Numbers like that exist below 10^200: the same model says that
-about 10^175 even numbers below 10^200 have g(N) of at least 213,070, which is 10% of the ceiling. But that is only one
-in 10^25 of all even numbers below 10^200, and they do not sit in the small, structured corner that a cover lets us
-search.
+The owner's dream of two million is about the ceiling itself: probably only a handful of numbers below 10^200 come
+close to it. More modest targets are far more common. The same model says that about 10^175 even numbers below 10^200
+have g(N) of at least 213,070, which is 10% of the ceiling. Even so, that is only one in 10^25 of all even numbers below
+10^200, and such numbers do not sit in the small, structured corner that a cover lets us search.
 
 ### Records in related problems
 
@@ -201,7 +201,8 @@ search.
 small primes that every prime below the target is dealt with, and nothing is left to luck except one thing: N − g must
 be prime, and that has to be proved. Proving that a number with tens of thousands of digits is prime is normally the
 hard part. ECPP becomes impractically slow beyond a few thousand digits, and that had kept this game below about 4,000
-digits. The new idea was to choose N so that N − g has a special shape, an odd number times a large power of 2, plus 1.
+digits. The way around it was to choose N so that N − g has a special shape, an odd number times a large power of 2,
+plus 1.
 For numbers of that shape there are classical proofs of primality that need a single large calculation (Proth's
 theorem and the Brillhart–Lehmer–Selfridge test). That removed the limit. The record went from 1,157,341, for a
 2,480-digit N, to 16,046,137, for a 91,752-digit N, by way of 1,200,109, 2,000,269, 5,000,251 and 10,000,141. The
@@ -234,14 +235,15 @@ At the stop it stood at 50% up to 27 digits, 25% up to 48 digits, and 10% up to 
 ## How close we came to 200,000
 
 Everything in the plan rests on a model that predicts how often a candidate succeeds, and we tested that model many
-times. Before the campaign aimed at 170,000, the GPU search had found 9 successes where the model expected 10.3. On
-ordinary processors at 100 and 150 digits it found 173 against 175 expected, and on the 10% frontier 17 against 19.9. In
+times. Before the campaign aimed at 170,000, the GPU search had found 9 successes where the model expected 10.3.
+Searches on ordinary processors at 100 and 150 digits found 173 against 175 expected, and on the 10% frontier 17
+against 19.9. In
 a direct audit of 56,191 real 200-digit candidates, the number of primes among their rows came within 0.1% of the
 prediction. So we trust the model's forecasts, including the unwelcome ones.
 
 The unwelcome forecast was this. At 200,000 the best covers leave about 1,500 rows instead of 1,250, and each candidate
 then succeeds about once in 7·10^15 tries instead of once in 10^13. With the computing we had left on 25 November, a
-search designed for 200,000 had a chance of about 1 in 240 of succeeding. That is where the factor of 250 comes from.
+search designed for 200,000 had a chance of about 1 in 240 of succeeding. That is the factor of 250.
 
 So the GPU search was designed for 170,000 instead, a choice made to give the best expected final record. It had a good
 chance of beating 170,000 outright and, through near-misses, of setting records on the way there. From 23 November to
@@ -278,7 +280,7 @@ searched for, were 100 to 200 rows worse. Better covers cannot close the gap.
 **Picking the best candidates without sieving them all.** Within each window, a few candidates have unusually few
 surviving rows. If we could jump straight to them without sieving all 20 million, the search would go much faster. We
 computed the sieve result for every one of the 21 million candidates of one window, with three programs that agree: on
-average 506 rows survive, with a spread of 18, and the best candidate has 412. From those exact counts, even a perfect
+average 506 rows survive, with a typical spread of 18 either way, and the best candidate has 412. From those exact counts, even a perfect
 oracle that handed us the best candidate of every window for free would make the search only about 45 times more
 productive, not 250 times. We also tested 79 other properties of candidates to see if anything beyond the count of
 surviving rows predicts success. Nothing does.
@@ -311,7 +313,7 @@ conjecture, which predicts how often the values of a polynomial are prime, says 
 by a factor of about 700. Neighbours that share rows, numbers next to a highly divisible number, and covers shared by
 pairs of numbers all lose against a plain cover too.
 
-**Tools from other fields.** The research session sent nine independent lines of attack, each from a different field:
+**Tools from other fields.** The research session ran nine independent lines of attack, each from a different field:
 class field theory, algebraic groups and primality testing, the function-field dictionary, sieve theory, lattices and
 additive combinatorics, coding theory and cryptanalysis, probability and complexity, harmonic analysis, and a wild card.
 Each tested its proposals on real 200-digit numbers. Eight reported back; the coding-theory line was stopped by a safety
@@ -373,7 +375,9 @@ Decades of work there have found nothing better than sieving. That is a family r
 ## Theorems
 
 These are the results we consider proved. Unless marked otherwise, they are checked in Lean, in
-`goldbach/lean/GoldbachGaps/`.
+`goldbach/lean/GoldbachGaps/`, and `goldbach/lean/HANDOVER.md` gives the name of each theorem. Lean guarantees that
+every proof is correct. It cannot guarantee that a statement means what we say it means; that takes a person reading
+the statement itself, which is usually a few lines.
 
 **The records.** For the numbers below 10^200 with g = 119,419, 125,269, 133,981, 146,191, 157,837, 158,209 and 160,357,
 Lean checks that g is prime, that N − g is prime, and that no smaller prime p has N − p prime. The same holds for
@@ -386,27 +390,31 @@ X = 10^200, ln X is about 460 and ln ln X about 6.1. In words: the largest g(N) 
 multiple of ln X·ln ln X. Lean checks this with no unproved assumptions (`CoverEveryConstant.lean`). The idea, borrowed
 from Erdős and Rankin's work on gaps between primes, is to give a whole block of small primes the remainders of one
 common number. A first version, for every multiple below 1.349, needed Mertens' third theorem, which is not in Lean's
-library; the Lean session proved it from scratch (`Mertens.lean`). A stronger growth rate, with roughly one more factor
-of ln ln X, has a written proof by the consultant session (`goldbach/gaps_map/COHERENT_BLOCK.md`); Lean has checked a
-version of it without its slowest-growing factor.
+library; the Lean session proved that first (`Mertens.lean`). A faster growth rate is also checked in Lean: some even
+N up to X has no summand below ln X·(ln ln X)²/(150,000·(ln ln ln X)²), which is roughly one more factor of ln ln X,
+with a very small constant. The consultant session has a written proof of a slightly stronger version, with one more
+very slowly growing factor (`goldbach/gaps_map/COHERENT_BLOCK.md`); that one is not in Lean.
 
-These growth results hold for every size and use no luck, so at 200 digits they give numbers in the low thousands, far
-below what the search finds. Their interest is that they assume nothing about primes beyond what has been proved.
+These growth results hold for every size and use no luck, so they are far weaker than what the search finds: at 200
+digits, A·ln X·ln ln X is only about 2,800 times A. Their interest is that they assume nothing about primes beyond what
+has been proved.
 
 They may not be new as statements. A 2026 preprint by Radomskii (arXiv 2610.14127) proves a general theorem that would
 imply both, if one of its lemmas holds. That lemma sits in a section of about 24 pages that none of us has read in full,
 and the preprint has not been refereed. What is ours either way is the elementary proofs and their machine check. An
 expert should read Section 3 of that preprint before anyone claims novelty.
 
-**Covers with no luck at all.** There is an explicit even N below 10^200 for which N − p has a small prime factor for
-every prime p below 16,981. With 167 small primes the reach is 41,659 (Lean); with 238 it is 70,111 and with 302 it is
+**Covers with no luck at all.** There is an explicit even N below 10^200 for which N − p has a prime factor of at most
+491 for every prime p below 16,981. The odd primes up to 997 can deal with every prime below 41,659, and the odd primes
+below 10,000 with every prime below 614,101 (both in Lean). With 238 and 302 small primes the reach is 70,111 and
 98,731 (computed, and each can be checked from its list of remainders). How far the first n odd primes alone can reach
 is known exactly for n up to 35: in Lean up to 9, computed twice up to 15, and once beyond that.
 
 **Hardness.** For arbitrary tables of rows, deciding whether a window contains a candidate with no surviving rows is
-NP-complete. That proof is on paper, by the second analysis session, and a related reduction from the satisfiability
-problem is in Lean. This does not make our particular problem hard, but it means that a fast method would have to use
-something special about the primes.
+NP-complete. That proof is on paper, by the second analysis session. Lean has a related result: if arbitrary numbers
+replace the primes to be covered, deciding whether a cover exists at all is as hard as the satisfiability problem of
+logic. Neither makes our particular problem hard, but they mean that a fast method would have to use something special
+about the primes.
 
 **Limits of search methods.** Lean proofs that certain kinds of method (lattice decoding, black-box search, lists of
 remainders modulo one prime) cannot beat the plain search; that treating rows as independent can only overstate the
@@ -452,8 +460,8 @@ cases by Lean.
 The remaining work is organised in `goldbach/REMAINING_WORK.md`, with what each item needs and roughly what it would
 cost. The main items:
 
-1. **Restart the 200-digit search.** The saved state and the forecast above say what to expect: probably about 175,000,
-   with a small chance of more.
+1. **Restart the 200-digit search.** The programs can restart from this repository, and the forecast above says what
+   to expect: probably about 175,000, with a small chance of more.
 2. **The prize.** Find a way to produce numbers below 10^200 with unusually few surviving rows without scanning. This is
    the only route we found that could reach 200,000, and nobody knows how to do it.
 3. **Two predictions that were never measured.** Combining two or four sorted lists on the one-condition problem was
@@ -462,7 +470,7 @@ cost. The main items:
 4. **Records that are easy to extend.** The fixed-gap 200,000 record below 319 digits, the million-gap record below
    1,797 digits, and the closeness frontier at 10% beyond 110 digits all have their tools ready.
 5. **Proofs owed.** A Lean proof and a second-session check for 132,103; a proof that N − g is prime for the
-   million-gap numbers; and the stronger growth bound in full in Lean.
+   fixed-gap and million-gap numbers; and the stronger growth bound in full in Lean.
 6. **Checks owed.** Several of the newest toy-world results have not been read by a second session, and the
    calibration of near-misses at 140,000 and of waiting times in the fixed-gap game was left inconclusive.
 7. **The literature.** Read Radomskii's Section 3; search MathSciNet and zbMATH; read the classical papers our notes
@@ -490,8 +498,10 @@ python3 fscan/check.py $(python3 -c "import json; print(json.load(open('$R/recor
 gp -q $R/crosscheck.gp < /dev/null
 ```
 
-The Lean proofs build with `lake build` in `goldbach/lean/` (Lean 4 with Mathlib; the exact versions are pinned in
-`lean-toolchain` and `lake-manifest.json`). The Lean session's handover note says which modules are slow to build.
+To rebuild the Lean proofs, install `elan` (Lean's version manager), then run `lake exe cache get` and `lake build` in
+`goldbach/lean/`. Most files take seconds; the record files take minutes each and up to about 7 GB of memory.
+`lake env lean scripts/check_axioms.lean` then lists the axioms used by all 7,978 declarations of the library; only the
+three standard ones appear. `goldbach/lean/HANDOVER.md` has the details.
 
 ## Who did what
 

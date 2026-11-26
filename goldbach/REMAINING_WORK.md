@@ -117,8 +117,15 @@ not answered beyond the NP-completeness result for arbitrary tables.
 - **N − g prime for the fixed-gap and million-gap numbers.** For the numbers at 319, 347 and 400 digits and at 1,797,
   1,997 and 2,196 digits, Lean proves that no prime below g works, which is all those games ask. That N − g itself is
   prime rests on strong probable-prime tests. ECPP proofs at these sizes are possible but slow.
-- **The stronger growth bound in Lean.** The written proof (`gaps_map/COHERENT_BLOCK.md`) has one reader; Lean has a
-  weaker form. `lean/HANDOVER.md` says exactly what is missing.
+- **The stronger growth bound in Lean.** Lean has the bound ln X·(ln ln X)²/(150,000·(ln ln ln X)²)
+  (`eventually_exists_even_le_log`). The consultant's written version adds one more very slowly growing factor,
+  ln ln ln ln X, and has had only one reader (`gaps_map/COHERENT_BLOCK.md`).
+- **Other gaps in the Lean library** (`lean/HANDOVER.md`, "Started but not finished"). Exact cover depths are proved
+  only up to 9 primes; from 10 to 35 Lean has lower bounds. The old 2,480-digit height record (g = 1,157,341) is not
+  checked, because the kernel's primality check is far too slow at that size. Of the toy worlds, Worlds 1, 3 and 5 are
+  formalised, and the World 5 lower bound rests on a published result whose statement was not checked. Several laws
+  were measured but not proved: the size of the number of covers, the steps of its derivation that rest on the
+  Hardy–Littlewood conjecture, and the regularities found in World 3.
 - **Results nobody else has read.** The second analysis session's newest toy-world results (W4.4, W4.5 and W2.1b in
   `bottom_up/worlds/`) and its NP-completeness proof; the consultant's stronger bound; and the replacement round of the
   research session, whose verifiers, synthesis and critic were all refused by a usage limit, so its eight reports are
