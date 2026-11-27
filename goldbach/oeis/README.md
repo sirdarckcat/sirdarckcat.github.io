@@ -284,7 +284,7 @@ From this folder:
 
 ```sh
 python3 cover_depth.py check witness_vectors.txt   # the 36 lower bounds, under a second
-python3 cover_depth.py search 12                   # D(0) to D(12) from scratch; a few minutes in Python
+python3 cover_depth.py search 12                   # D(0) to D(12) from scratch (D(0) to D(10) take two seconds)
 ```
 
 The larger terms, with the performance session's program:
