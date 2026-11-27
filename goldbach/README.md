@@ -78,6 +78,7 @@ Each of the sessions that worked here wrote a handover note in plain English:
 | `lean/` | the Lean proofs; its `HANDOVER.md` lists every theorem and says how to rebuild them |
 | `review/` | the outside review and its rechecks |
 | `SOK_GOLDBACH_GAPS.md` | the state of knowledge from the earlier work, updated with errata |
+| `oeis/` | notes for a possible OEIS entry on the cover depth D(n): the terms, their proofs, why the sequence is interesting, and the OEIS's rule against AI-written submissions |
 
 **Earlier work (July 2026)**
 

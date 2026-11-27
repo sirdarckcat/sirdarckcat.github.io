@@ -153,6 +153,8 @@ not answered beyond the NP-completeness result for arbitrary tables.
 
 - Whether to restart the 200-digit search, and on which design (section 1.1).
 - Whether to submit the cover-depth sequence (how far the first n odd primes reach, exact to n = 35) to the OEIS.
+  `oeis/README.md` has the terms, their proofs and why the sequence is interesting. The OEIS forbids submissions
+  written by AI, so the entry itself has to be written by a person.
 
 ## 6. Housekeeping
 
