@@ -217,7 +217,7 @@ capacities suggest. Each cut is stated and justified in the header of the progra
 | n | upper bound (nothing goes further) | lower bound (a vector reaches it) |
 |---|---|---|
 | 0 to 9 | proved in Lean: the search of 3.3 is proved correct and run inside the proof checker (`isDepth_0` to `isDepth_9`, `CoverDepthRun.lean`) | Lean |
-| 10 to 15 | two independent programs agree: the research session's `desert_fast.c` and the Lean session's `depth.c` (`../lean/scripts/cover_depth/`); `cover_depth.py` in this folder, written separately again, agrees up to n = 12 | Lean, and `witness_vectors.txt` |
+| 10 to 15 | two independent programs agree: the research session's `desert_fast.c` and the Lean session's `depth.c` (`../lean/scripts/cover_depth/`); `cover_depth.py` in this folder, written separately again, agrees up to n = 13 (15 minutes in Python) | Lean, and `witness_vectors.txt` |
 | 16 to 28 | the performance session's `desert_fast3.c` to `desert_fast5.c`, with internal checks: two branching orders give the same values up to n = 20, every cut can be switched off without changing the answers, and the counts of best vectors agree with a second program, `cover_ub.c`, for every n from 2 to 28 | Lean, and `witness_vectors.txt` |
 | 29 to 35 | `cover_ub.c`, driven by `findD.py`; the proof for n = 35 took 9.0·10^9 search steps, about an hour | Lean, and `witness_vectors.txt` |
 
