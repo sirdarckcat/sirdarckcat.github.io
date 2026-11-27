@@ -266,7 +266,7 @@ RD_EDGES = {
 "d_recursion>m_h1": D("rests on Hardy–Littlewood", "The second-order term of the dispersion is the average of singular series, which is Hardy–Littlewood and not proved.", "sublinear/README.md; CoverPairs.lean header"),
 "d_limit>d_recursion": D("limit of the recursion as first written", "The price equation as first written has the limit Λ(1) = 1.19639 and the constant 1.1275; that is the claim withdrawn on 25 Nov.", "sublinear/README.md, “Where the constant ends up”"),
 "d_limit>d_limitcheck": D("referee's verdict", "The Lean session's check says the limit is the recursion's, with an unquantified model error.", "cover_limit_check/README.md"),
-"d_limit>d_bounds": D("Goldbach implication", "Depth below the next prime squared for every n would be Goldbach, so an upper bound on g0 of the law's shape would prove Goldbach for large N.", "CoverDepth.lean; sublinear/README.md"),
+"d_limit>d_bounds": D("Goldbach implication", "Depth below the square of the largest modulus, for every n, would give Goldbach, so an upper bound on g0 of the law's shape would prove Goldbach for large N.", "CoverDepth.lean; sublinear/README.md"),
 "d_limit>m_thm2": D("the proved window", "The proved bounds are r ln r ≪ D(n) ≪ r^(4+ε); the conjecture sits between them.", "sublinear/README.md"),
 "d_limit>m_thm1": D("beyond 1.349", "The proved bound is 1.349·x ln x; the conjecture first put 1.1275·r ln² r above it (withdrawn) and now has the order r ln² r/ln ln r.", "sublinear/README.md"),
 "d_nibble>m_thm1": D("improves the paper theorem", "The sketch would raise the constant 1.349 by pairing survivors struck by one large prime.", "sublinear/README.md"),

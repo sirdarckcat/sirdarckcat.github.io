@@ -68,8 +68,10 @@ here.
 * `exists_isSummand_le_depth`, `exists_isSummand_of_lt_841`: **Goldbach by covering.** If that
   depth is at most `N − 3`, `N` is a sum of two primes, one of them at most the depth. With
   `D(0..9)`: every even number from 6 to 960 is a sum of two primes, one at most 181
-  (`exists_isSummand_of_lt_961`), and no `N − q` is tested for primality. In the table, compare `D(n)` with the next prime squared:
-  "`D(n) < (next prime)² − 2` for all `n`" would be Goldbach's conjecture, with much room.
+  (`exists_isSummand_of_lt_961`), and no `N − q` is tested for primality. "`D(n) < r_n²` for all `n ≥ 1`", with `r_n` the largest of the `n` moduli, would imply
+  Goldbach's conjecture, with much room: the windows `D(n) + 3 ≤ N < (next prime)²` of
+  `exists_isSummand_of_lt_sq` then join up. (This line first compared `D(n)` with the next prime
+  squared, which is not enough; corrected on 27 November by the coordinating session.)
 * `exists_isLeastSummand_ge_depth`: conversely (Dirichlet), arbitrarily large even numbers have
   least summand at least the depth.
 * `isRecord_and_isDepth`: **the terms 6, 12, 30, 98 of A025018 attain the depth of their own

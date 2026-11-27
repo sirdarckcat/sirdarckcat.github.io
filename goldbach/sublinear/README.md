@@ -154,8 +154,8 @@ it; they are in "A floor under every cover" and the sections after it:
   like r·ln² r at every size computed, by the law above (its order in the
   limit is open; it is at least r·ln² r·ln₃ r/(ln₂ r)², on paper).
   The Lean session proved that it also bounds the least summand from above
-  (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < (next prime)² − 2
-  for every n" implies Goldbach's conjecture.
+  (g(N) ≤ D(number of odd primes up to √N)) and that "D(n) < r_n² for every
+  n ≥ 1", with r_n the largest of the n moduli, implies Goldbach's conjecture.
 - For the campaign itself the gains are in `../fscan/cover/`: the
   89-prime covers on which the fleet found 158,209 on the 23rd and 160,357
   on the 24th (7.53% of the ceiling; the second on a family-B cover of the
@@ -2817,9 +2817,12 @@ session proved three things that make D more than a lower bound:
   residues of N itself strike every odd prime below its least summand. So D
   bounds the least Goldbach summand from above as well.
 - If D(n) ≤ N − 3 for that n, then N is a sum of two primes, one of them at
-  most D(n). So "D(n) < (next prime)² − 2 for every n" implies Goldbach's
-  conjecture, and there is room where D is known: 163 against 841 at n = 8,
-  499 against 2,809 at n = 14, 3,079 against 24,647 at n = 35. (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
+  most D(n). So "D(n) < r_n² for every n ≥ 1", with r_n the largest of the n
+  moduli, implies Goldbach's conjecture, and there is room where D is known:
+  163 against 529 at n = 8, 499 against 2,209 at n = 14, 3,079 against 22,801
+  at n = 35. (This note first compared D(n) with the square of the next prime;
+  that is not enough, because the even N just above r_n² already needs
+  D(n) ≤ N − 3. Corrected on 27 November by the coordinating session.) (With D(9) = 181 in the kernel, every even N from 6 to 960 is a sum of two primes, one of them at most 181, with no primality test of any N − q.)
 - D is strictly increasing, and the first record holders of the least
   summand, N = 6, 12, 30 and 98, attain D(0) to D(3) = 3, 5, 7, 19 exactly;
   from 220 on the records fall short, because there are more residue vectors
@@ -3097,7 +3100,7 @@ N − q free of prime factors up to y^(1/4 − ε), by the linear sieve with the
 Bombieri–Vinogradov theorem, uniformly in N; that is D(n) ≤ r_n^(4 + ε) for
 large n. With level of distribution 1 (Elliott–Halberstam) the same argument
 gives r_n^(2 + ε), and r_n² itself is the Goldbach barrier: the Lean session's
-implication above says that D(n) < (next prime)² − 2 for all n is enough for
+implication above says that D(n) < r_n² for all n ≥ 1 is enough for
 Goldbach's conjecture. So the proven window is r·ln r ≪ D(n) ≪ r^(4 + ε),
 and the computed values (0.7 to 0.9 times r·ln² r for every n from 8 to 167
 moduli) sit near its lower end.
