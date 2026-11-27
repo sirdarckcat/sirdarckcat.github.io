@@ -221,10 +221,10 @@ capacities suggest. Each cut is stated and justified in the header of the progra
 | 16 to 28 | the performance session's `desert_fast3.c` to `desert_fast5.c`, with internal checks: two branching orders give the same values up to n = 20, every cut can be switched off without changing the answers, and the counts of best vectors agree with a second program, `cover_ub.c`, for every n from 2 to 28 | Lean, and `witness_vectors.txt` |
 | 29 to 35 | `cover_ub.c`, driven by `findD.py`; the proof for n = 35 took 9.0·10^9 search steps, about an hour | Lean, and `witness_vectors.txt` |
 
-On 27 November `cover_ub.c` was compiled afresh from this repository and run again for every n from 2 to 32 (the runs
-for 33 to 35 were still going when this was written). For each n it found a vector striking every odd prime below D(n)
-and reported that none strikes every odd prime up to D(n). This
-repeats the original computation; it is not an independent check. Terms from n = 16 on rest on one session's programs,
+On 27 November `cover_ub.c` was compiled afresh from this repository and run again for every n from 2 to 35. For each n
+it found a vector striking every odd prime below D(n) and reported that none strikes every odd prime up to D(n). The
+values agree with the terms listed in section 1 for every n; the last proof, for n = 35, took 9.0·10^9 search steps and 50
+minutes on three processor threads. This repeats the original computation; it is not an independent check. Terms from n = 16 on rest on one session's programs,
 and a second, independently written program for that range would be the most useful addition before submitting them.
 
 ### 3.5 The Goldbach statements, with proofs
@@ -295,8 +295,9 @@ gcc -O3 -march=native -fopenmp -o cover_ub ../sublinear/cover_ub.c
 ./cover_ub 35 3083 proof     # prints NO COVER: no vector strikes every odd prime below 3,083
 ```
 
-`../sublinear/cover_ub_validate.sh` runs the same pair of checks for a range of n. On 27 November, on four cores, every
-n up to 31 took under half a minute each; n = 35 takes about an hour.
+`../sublinear/cover_ub_validate.sh` runs the same pair of checks for a range of n. In the re-run of 27 November, on three
+processor threads, the second command of the pair (the one that proves nothing goes further) took under half a minute
+for each n up to 31, then 3 minutes for n = 32, 7 for n = 33, 15 for n = 34 and 50 for n = 35.
 
 The Lean proofs: in `../lean/`, run `lake exe cache get`, then
 `lake build GoldbachGaps.CoverDepthRun GoldbachGaps.CoverDepthMore`. `../lean/HANDOVER.md` explains the setup.
