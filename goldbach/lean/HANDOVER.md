@@ -46,6 +46,19 @@ some point on.
   largest least summand up to X outgrows every fixed multiple of log X · log log X.
 - `eventually_exists_even_le_log` (same file): for all large X some even N ≤ X has no summand below
   log X · (log log X)² / (150000 · (log log log X)²).
+- `eventually_exists_even_le_rankin` and `exists_pos_eventually_exists_even_le_rankin` (`RankinSmooth.lean`):
+  unconditionally, for all large X some even N in [X/2, X] has no summand below
+  log X · (log log X)² · log log log log X / (65000 · (log log log X)²), proved from the elementary Rankin smooth-number
+  estimate `exists_rankin_smooth_bound` (`exists_rankin_smooth_general`) and the unified two-layer pre-sieve
+  `eventually_exists_two_layer_classes`.
+- `eventually_exists_goldbach_iterated_log` and `eventually_exists_isLeastSummand_iterated_log`
+  (`IteratedLogBound.lean`): conditional on the explicit hypothesis parameters `SimultaneousRootsStatement`, matching
+  `eventually_simultaneous_roots` in `openai/LongGapsBetweenPrimes` at lines 3480 to 3485, and
+  `MontgomeryVaughanStatement`, matching the Montgomery–Vaughan 1975 exceptional-set bound `E(X) ≤ C · X^(1 − δ)`,
+  there is a positive constant c such that for all large X some even N in [X/2, X] possesses a Goldbach representation
+  whose least Goldbach summand is at least c · log X · (log log X)³ · log log log log X / (log log log X)², proved
+  through the conditional bridge theorems `iterated_log_linear_roots_sub`, `iterated_log_translate_kill_survivors`,
+  `iterated_log_presieve_small_survivors`, and `iterated_log_goldbach_of_disjoint_blocks`.
 
 **Complete covers and cover depths.** A *cover* picks one remainder for each of a list of small primes r so that
 every prime q below a bound Q leaves one of the picked remainders. Any N with those remainders has N − q divisible by
@@ -122,6 +135,11 @@ of N − b, b the bound, is not proved (it passed probable-prime tests only), so
 certified. The
 measurements in `scripts/` (searches, heuristics, enumerations) are not proofs unless a theorem says so.
 
+Likewise, `IteratedLogBound.lean` (`eventually_exists_goldbach_iterated_log` and
+`eventually_exists_isLeastSummand_iterated_log`) is conditional on the explicit hypothesis parameters
+`SimultaneousRootsStatement` and `MontgomeryVaughanStatement`, following the same `Prop`-parameter convention as
+`LinnikStatement` in `Effective.lean` and relying solely on Lean's three standard logical axioms.
+
 ## How to build and check it
 
 Install `elan` (Lean's version manager). In `goldbach/lean`, run `lake exe cache get` (it downloads the compiled
@@ -140,6 +158,12 @@ they do not concern the proofs.
 Then `lake env lean scripts/check_axioms.lean` (about 5 seconds, 4.6 GB) prints the axioms used by the whole
 library; for one theorem, write `import GoldbachGaps` and `#print axioms GoldbachGaps.<name>` in a file and run
 `lake env lean` on it.
+
+On machines with 8 GB of memory, build the targeted five-module set sequentially on one thread with
+`LEAN_NUM_THREADS=1 taskset -c 0 lake build GoldbachGaps.RankinSmooth GoldbachGaps.IteratedLogBound GoldbachGaps.CoverEveryConstant GoldbachGaps.Cap.Thinning GoldbachGaps.ECPP`
+and run `LEAN_NUM_THREADS=1 taskset -c 0 lake env lean scripts/check_new_axioms.lean` in about 8 seconds, where
+`GoldbachGaps.IteratedLogBound` is conditional on the explicit hypothesis parameters `SimultaneousRootsStatement` and
+`MontgomeryVaughanStatement` and all five modules rely solely on `propext`, `Classical.choice`, and `Quot.sound`.
 
 ## Started but not finished
 

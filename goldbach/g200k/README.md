@@ -31,6 +31,10 @@ Digits of a hit = log10 M + log10 k, and with the cut the first found hit comes 
 | (350) | none | | 142 moduli to 823, 1,113 rows (`cover350_k1113.txt`) | 10^7, emptiest 2%, K = 2^19 | 487.6M (its whole 350-digit range) | 273.7M | 0 | 7.5 |
 | 319 | 207,307 | `../records/g200k_319digit_g207307/N.txt` (k = 1,430,868,604) | 131 moduli to 743, 1,183 rows (`cover319_131_k1183.txt`) | 10^7, emptiest 0.8%, K = 2^21 | 1.443G | 295.5M | 1 | 6.4 (4 cores, 96 min) |
 | (300) | none (parked, then stopped) | | 125 moduli, 1,216 rows (`covers125_le1217.txt.xz`, 24 of its covers) | 10^7, emptiest 0.8% | 1.23G (24 covers of 51.3M members below 10^300) | 238M | 0 | 3.6 |
+| 280 | 210,631 | `../records/g200k_280digit_g210631/N.txt` (k = 10,255,023) | 118 moduli to 653, 1,283 rows (`c0060_r1283`) | 10^8, GPU DeepSieve | GCP Spot A100 | — | 1 | GPU (27 Nov) |
+| 266 | 203,659 | `../records/g200k_266digit_g203659/N.txt` (k = 18,834,171) | 113 moduli to 619, 1,311 rows (`c0089_r1311`) | 10^8, GPU DeepSieve | GCP Spot A100 | — | 1 | GPU (27 Nov) |
+| 255 | 201,307 | `../records/g200k_255digit_g201307/N.txt` (k = 21,388,016) | 109 moduli to 601, 1,340 rows (`c0463_r1340`) | 10^8, GPU DeepSieve | GCP Spot A100 | — | 1 | GPU (27 Nov) |
+| 250 | 201,667 | `../records/g200k_250digit_g201667/N.txt` (k = 128,743,795) | 107 moduli to 593, 1,354 rows (`c0382_r1354`) | 10^8, GPU DeepSieve | GCP Spot A100 | — | 1 | GPU (27 Nov) |
 
 The 300-digit attempt (25 Nov 13:21-14:50 UTC, logs in `scan300/`): 24 covers of the 125-moduli dump, every member below 10^300, no hit against 0.056 expected (the sum over covers of K e^-E^ hit% from the summary lines). The lead parked it before it could matter, and it stopped there at the wind-down of 26 Nov; by that formula, which runs about 1.5 times high, one hit at 300 digits costs some 65 to 100 CPU-hours on these covers.
 
@@ -39,7 +43,10 @@ The 350-digit phase: the 142-moduli cover's range below 10^350 ends at k = 4.82e
 k = 4e11) with the larger window and the tighter cut found one after 3.03e8 members (8.1e8 expected per found hit).
 
 Each record has `verify_record.py`'s evidence (a reason N - q is composite for every prime q < g: the cover congruence, a trial
-divisor, or a strong base-2 witness; g prime; N - g BPSW) and `fscan/check.py` run on N alone (g recomputed by testing every N - q).
+divisor, or a strong base-2 witness; g prime; N - g prime) and `fscan/check.py` run on N alone (g recomputed by testing every N - q).
+All eight `g200k` records (250 to 400 digits) also carry PARI/GP ECPP primality certificates (`complement_cert.gp`), independent
+`ecpp_check.py` logs, and standalone exact PARI `crosscheck.gp` checks (`isprime(N - g) = 1` and `primecertisvalid(cert) = 1`), with
+the four 250–280-digit records additionally passing the patched stdlib verifier `slop/goldbach/records/verify_record.py`.
 The 400-digit scan had no hit in its first 69.2M members, where the survivor counts predict 1 found hit per 10.7M; the checks made
 during the drought (sieve against brute force with rows above 2^16, fmw against gmpy2 on the scanned range, the same cover at
 Q = 30,000 / 100,000 / 130,000 with 329 / 6 / 10 hits found against 355 / 6.0 / 9.0 predicted, the first-prime positions of 52,480

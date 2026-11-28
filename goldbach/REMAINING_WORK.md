@@ -45,14 +45,16 @@ These need computing time and nothing else. The tools are written, tested and do
 - **Is it worth it?** Barely. About 2,700 more covers would give a 0.27% chance of any find. It is a use for idle
   cores, not a route to 200,000.
 
-### 1.3 Fixed gap 200,000 with fewer than 319 digits
+### 1.3 Fixed gap 200,000 with fewer than 250 digits
 
-- **Where it stands.** The record is a 319-digit N with g(N) = 207,307 (`records/g200k_319digit_g207307/`). An attempt
-  at 300 digits scanned 24 covers with no find, against about 0.06 expected. The helper session scanned a further 136
-  and 55 covers at 300 digits, also with no find.
+- **Where it stands.** The record is now a 250-digit N with g(N) = 201,667 (`records/g200k_250digit_g201667/`), reached
+  on 27 November via GPU runs at 280 digits (210,631), 266 digits (203,659), and 255 digits (201,307), beating the
+  earlier 319-digit CPU record (g(N) = 207,307, `records/g200k_319digit_g207307/`) by 69 digits. (Earlier CPU attempts
+  at 300 digits scanned 24, 136, and 55 covers with no find.)
 - **How to pick it up.** `g200k/README.md` and `g200k/scan300/`; covers for 290 to 400 digits are in
   `sublinear/dual_covers/` and `g200k/`.
-- **Cost.** One find at 300 digits should take some 65 to 100 CPU-hours on these covers.
+- **Cost.** Pushing below 250 digits (e.g., 249 digits and below on 106-modulus covers) requires GPU-scale sieving
+  rather than CPU-hours.
 
 ### 1.4 The million gap with fewer than 1,797 digits
 
@@ -78,9 +80,10 @@ At the 10% target (213,070), the numbers that could supply the missing factor ha
 by the primes up to 2,000, where members of the best cover have 1,309 give or take 14. A method that produced such
 numbers below 10^200 for less than the cost of about 550 primality tests each would break even with the GPU search; an
 ideal one would be worth a factor of 20 to 60,000. Nobody on the team found a way, and the second analysis session's
-NP-completeness argument says a method would have to use something special about the primes. Background:
-`sublinear/HANDOVER.md` (open question 1), `sublinear/README.md` (sections "Result 3" and "Why nothing known collects the
-prize") and `bottom_up/query_bound.md`.
+randomized NP-completeness reduction (W4.5: expected-polynomial-time for distinct prime moduli, implying NP ⊆ ZPP / RP;
+deterministic for prime-power/composite moduli) says a method would have to use something special about the primes.
+Background: `sublinear/HANDOVER.md` (open question 1), `sublinear/README.md` (sections "Result 3" and "Why nothing known
+collects the prize") and `bottom_up/query_bound.md`.
 
 ### 2.2 Several sorted lists on the one-condition problem
 
@@ -110,15 +113,20 @@ cover-search run on 1,228 small primes (2,000,000 sweeps) was stopped before it 
 ### 2.6 What a fast method would contradict
 
 The question of which standard hardness assumptions a fast generator of good candidates would contradict was asked and
-not answered beyond the NP-completeness result for arbitrary tables.
+not answered beyond the hardness result for arbitrary tables (NP-complete under an expected-polynomial-time randomized
+reduction for distinct prime moduli, giving NP ⊆ ZPP / RP, and deterministically NP-complete for prime-power/composite
+moduli or supplied primes).
 
 ## 3. Proofs and checks owed
 
-- **132,103.** The only 200-digit-range record without a Lean proof and without a check by a second session. Its folder
-  has the other proofs (`records/budget_1e200_199digit_g132103/`).
-- **N − g prime for the fixed-gap and million-gap numbers.** For the numbers at 319, 347 and 400 digits and at 1,797,
-  1,997 and 2,196 digits, Lean proves that no prime below g works, which is all those games ask. That N − g itself is
-  prime rests on strong probable-prime tests. ECPP proofs at these sizes are possible but slow.
+- **132,103.** The only 200-digit-range record without a Lean proof yet (an independent PR review check with PARI/GP
+  ECPP confirmed g(N) = 132,103 exactly). Its folder has the other proofs (`records/budget_1e200_199digit_g132103/`).
+- **N − g prime for the fixed-gap and million-gap numbers.** All eight fixed-gap 200,000 endpoints (250 to 400 digits)
+  now carry verified PARI/GP ECPP certificates re-checked by `ecpp_check.py` (with the 319–400-digit endpoints also
+  independently confirmed in PARI/GP during PR review; Lean formalization of the four 250–280-digit records remains
+  owed). For the three million-gap records (1,797, 1,997 and 2,196 digits), Lean proves that no prime below g works,
+  which is all those games ask, while primality of N − g itself still rests on strong probable-prime tests (PARI ECPP
+  timed out at those sizes).
 - **The stronger growth bound in Lean.** Lean has the bound ln X·(ln ln X)²/(150,000·(ln ln ln X)²)
   (`eventually_exists_even_le_log`). The consultant's written version adds one more very slowly growing factor,
   ln ln ln ln X, and has had only one reader (`gaps_map/COHERENT_BLOCK.md`).
@@ -128,9 +136,10 @@ not answered beyond the NP-completeness result for arbitrary tables.
   formalised, and the World 5 lower bound rests on a published result whose statement was not checked. Several laws
   were measured but not proved: the size of the number of covers, the steps of its derivation that rest on the
   Hardy–Littlewood conjecture, and the regularities found in World 3.
-- **Results nobody else has read.** The second analysis session's newest toy-world results (W4.4, W4.5 and W2.1b in
-  `bottom_up/worlds/`) and its NP-completeness proof; the consultant's stronger bound; and the replacement round of the
-  research session, whose verifiers, synthesis and critic were all refused by a usage limit, so its eight reports are
+- **Results nobody else has read.** The second analysis session's newest toy-world results (W4.4, W2.1b, and the
+  randomized NP-completeness reduction W4.5 — qualified after PR #34 review — in `bottom_up/worlds/`); the consultant's
+  stronger bound; and the replacement round of the research session, whose verifiers, synthesis and critic were all
+  refused by a usage limit, so its eight reports are
   computed once and unrefereed. The coding-theory report of that round was stopped by a safety filter and not retried.
 - **Calibration left inconclusive.** Near-misses at 140,000 in the last day: 5 found against 7.15 expected, running
   1.55 ± 0.45 times as far past the threshold as the model predicts (data: `phd/campaign3_gpu/runlogs/2026-11-25/calib_hourly.jsonl`;

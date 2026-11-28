@@ -109,6 +109,8 @@ import GoldbachGaps.FunctionField.DesertDegree
 import GoldbachGaps.FunctionField.Families
 import GoldbachGaps.Worlds.NoCoupling
 import GoldbachGaps.Worlds.Arc
+import GoldbachGaps.RankinSmooth
+import GoldbachGaps.IteratedLogBound
 
 /-!
 # Least Goldbach summands in Lean

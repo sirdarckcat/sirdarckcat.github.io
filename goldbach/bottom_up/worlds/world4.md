@@ -118,36 +118,69 @@ The model's mean of rows left at 10^8, 505.6, is research's exact mean over the 
 - **[M]** In the CPU scans (depth 10^7, below K) the bound is only the size of the tables, 47–62 classes a member, against 1,435
   marks. There the gap is real, and W4.1–W4.3 are what bound it.
 
-## W4.5: for arbitrary tables, whether the window holds a member at all is NP-complete [P]
+## W4.5: for arbitrary tables, whether the window holds a member at all is NP-complete under a randomized reduction [P]
 
-**The statement.** Given distinct primes s_1, …, s_n, two classes A_i ⊂ Z/s_i at each, and K, it is NP-complete to decide whether
-some k ∈ [0, K) has k mod s_i ∈ A_i for every i. This is the case of 0/1 tables at t = n.
+**The statement.** Given distinct primes s_1, …, s_n in binary, two allowed classes A_i ⊂ Z/s_i at each (each 0/1 table encoded
+succinctly by its two allowed residues rather than as a length-s_i array), and K in binary, the decision problem "does some
+k ∈ [0, K) satisfy k mod s_i ∈ A_i for every i?" lies in NP and is NP-hard under an expected-polynomial-time randomized
+(Las Vegas / ZPP) reduction. This is the case of 0/1 tables at t = n. (If pairwise-coprime prime-power or composite moduli are
+allowed, or if the primes are supplied, or under Cramér-type prime-gap bounds, the reduction becomes deterministic polynomial time
+and the problem is unconditionally NP-complete.)
 
-**The proof** is a reduction from subset sum (weights w_i ≥ 1, target 1 ≤ T ≤ W = Σ w_i; Karp 1972).
-- Put D = W + 1. Take n distinct primes p_i > 2nD, and let P = ∏ p_i.
-- Let v_i be the integer nearest to p_i w_i/D, and A_i = {0, v_i·(P/p_i) mod p_i}.
+**The proof** is a reduction from subset sum (weights w_i ≥ 1, target 1 ≤ T ≤ W = Σ w_i; Karp 1972; assume n ≥ 2 since n = 1 is
+trivial).
+- Put D = W + 1 ≥ n + 1, so X = 2nD ≥ 2n(n + 1). Choose n distinct primes p_i ∈ (2nD, 4nD], and let P = ∏ p_i.
+- **Constructing the primes (randomized Las Vegas / ZPP step).** Because subset-sum weights are encoded in binary, 2nD can be
+  exponential in the input bit-length. Showing that n primes exist in (2nD, 4nD] guarantees polynomial bit-length, but finding
+  even one prime above an arbitrary binary integer X deterministically in poly(log X) time is unproved unconditionally (the best
+  proved prime-gap bound is O(X^0.525), and even RH gives only O(X^(1/2) log X)). However, by Chebyshev's theorem / PNT the
+  interval (2nD, 4nD] contains Θ(X / log X) ≥ 2n primes (density Θ(1 / log(nD))). Sampling integers uniformly from (2nD, 4nD]
+  hits an unused prime with probability Ω(1 / log(nD)) per draw, and testing each candidate deterministically in poly(log(nD))
+  time via AKS (or with zero-error certified ECPP) produces n certified distinct primes p_i ∈ (2nD, 4nD] in expected time
+  poly(n, log D) with zero error.
+- Let v_i be the integer nearest to p_i w_i/D, and A_i = {0, v_i·(P/p_i) mod p_i}. Since 1 ≤ w_i ≤ D − 1 and p_i > 2nD ≥ 2D,
+  we have 2 ≤ v_i ≤ p_i − 2, so p_i ∤ v_i·(P/p_i) and |A_i| = 2.
 - By World 5's identity, a point x < P with x_i = ε_i v_i (P/p_i) mod p_i (ε_i ∈ {0, 1}) has x/P ≡ Σ ε_i v_i/p_i (mod 1).
 - That sum is Σ ε_i w_i/D + δ, with |δ| ≤ Σ 1/(2p_i) < 1/(4D).
 - So x/P lies in the arc [(T − ½)/D, (T + ½)/D) exactly when Σ ε_i w_i = T. The values lie in (−1/(4D), 1), and the arc lies inside
   [1/(2D), 1 − 1/(2D)).
-- The arc is the window [x0, x0 + K), with x0 = ⌈P(T − ½)/D⌉ and K = ⌊P/D⌋. Every point is at least P/(4D) from its ends, so the
-  rounding does not matter. Translate by x0, which shifts the classes to A_i − x0.
-- All the numbers have O(n log(nW)) bits, and k is a certificate for membership in NP. ∎
+- The arc is the window [x0, x0 + K), with x0 = ⌈P(T − ½)/D⌉ and K = ⌊P/D⌋. For n ≥ 2, P/(4D) > 1, so every point is strictly
+  more than 1 from the arc's ends and integer rounding does not change membership. Translate by x0, which shifts the allowed
+  classes to A_i − x0 (mod p_i).
+- With each table encoded by its two allowed residues A_i − x0, every p_i and residue has O(log(nW)) bits and P, x0, K have
+  O(n log(nW)) bits, so the instance size is O(n log(nW)) — polynomial in the binary input length — and k is a polynomial-size
+  NP certificate (with primality of the s_i verifiable deterministically by AKS). Because every certified p_i > 2nD gives an
+  exact equivalence, the reduction is zero-error (Las Vegas) in expected polynomial time. ∎
+- **When a deterministic polynomial-time reduction holds:**
+  1. *Supplied primes / advice:* if n distinct primes p_i > 2nD are given as input (or as polynomial-size non-uniform advice per
+     input bit-length L, since one fixed list of L primes in (2L·2^L, 4L·2^L] serves every length-≤ L instance, yielding NP ⊆ P/poly);
+  2. *Cramér-type prime-gap bounds:* if prime gaps satisfy p_{k+1} − p_k = O((log p_k)^c), sequential search above 2nD with AKS
+     primality testing runs in deterministic poly(n, log D) time;
+  3. *Prime-power or composite moduli:* World 5's CRT identity (`Worlds/Arc.lean`) holds for any pairwise coprime moduli, so taking
+     the first n primes q_1, …, q_n = O(n log n) deterministically by sieving and setting s_i = q_i^{e_i} with
+     e_i = ⌊log_{q_i}(2nD)⌋ + 1 (so 2nD < s_i ≤ 2nD·q_i, still O(log(nD)) bits) makes the reduction unconditionally deterministic
+     polynomial time (matching Manders–Adleman 1978 below).
 - **[M]** Checked on 400 random instances (n = 3 to 10, weights up to 60), each over all 2^n class vectors: in every instance the
   points in the window are exactly the subsets summing to T (`reduction_check.py`, `reduction_check.out`).
 
-**The same statement, earlier.** Manders and Adleman (1978) proved it with prime-power moduli and A_i the two square roots of a
-quadratic residue: is there an x ≤ c with x² ≡ a (mod b)? It stays NP-complete when the factorisation of b is given. Their
-reduction passes through the knapsack Σ c_j α_j = τ, α_j = ±1. Research's README cites it in this form (two classes a modulus,
-Garey–Johnson AN1), and the Lean session proved in the kernel that the cover question itself, with arbitrary rows, contains SAT
-(`Cap/Hardness.lean`, its commit 84040ae). The proof above is a third route, through World 5's identity.
+**The same statement, earlier.** Manders and Adleman (1978) proved deterministic NP-completeness with prime-power moduli and A_i
+the two square roots of a quadratic residue: is there an x ≤ c with x² ≡ a (mod b)? It stays NP-complete when the factorisation
+of b is given. Their reduction passes through the knapsack Σ c_j α_j = τ, α_j = ±1. Research's README cites it in this form (two
+classes a modulus, Garey–Johnson AN1), and the Lean session proved in the kernel that the cover question itself, with arbitrary
+rows, contains SAT (`Cap/Hardness.lean`, its commit 84040ae — where the prime bound 2 + m(n + 1) is polynomial in magnitude, so
+primes are found deterministically). The proof above is a third route, through World 5's identity.
 
 **What it answers.** Research's replacement round left one question open, because its coding-theory and cryptanalysis lens was
 stopped by a filter: which hardness assumption would an enumerator for arbitrary tables contradict?
-- **[P]** Output-priced listing for arbitrary 0/1 tables, at cost poly(input)·(output + 1), decides this problem: run it with t = n
-  for twice its bound at an empty output. So it would give P = NP.
-- **[P]** The reduction uses one place per item. The standard reduction from 3-SAT gives subset sum with linearly many items, so
-  under the exponential time hypothesis nothing runs in 2^o(n) over n places. Meet in the middle (W4.2 (M)) takes about 2^(n/2).
+- **[P]** Output-priced listing for arbitrary 0/1 tables (encoded by their two allowed residues), at cost poly(input)·(output + 1),
+  decides this problem: run it with t = n for twice its bound at an empty output. Combined with the Las Vegas reduction above, a
+  polynomial-time solver for distinct prime moduli implies **NP ⊆ ZPP** (and hence **NP ⊆ RP** and NP ⊆ BPP), rather than
+  unconditional P = NP; it gives P = NP under any of the three deterministic conditions above (in particular when prime-power or
+  composite moduli are allowed).
+- **[P]** The reduction uses one place per item. The standard reduction from 3-SAT (with sparsification) gives subset sum with
+  linearly many items, so under the **randomized exponential time hypothesis (rETH)** nothing runs in 2^o(n) over n prime places
+  (and under deterministic ETH when prime-power/composite moduli are allowed, primes are supplied, or Cramér-type gap bounds hold).
+  Meet in the middle (W4.2 (M)) takes about 2^(n/2).
 - **[O]** Random tables are the average case. That is noisy Chinese remaindering, which the literature uses as a hardness
   assumption (World 2's literature: Naor–Pinkas; Bleichenbacher–Nguyen).
 
@@ -210,8 +243,10 @@ The setting is the rows U of the 300 covers at 200,000, modulo the 213 primes 46
   - merges that split the places over more than 48 nats of them (M).
 - **[P]** If it is exact to the fleet's depth, it reads the tables of the primes above K: 310–440 classes for every member of the
   window, within ×1.2–6.2 of the sieve (W4.4). Otherwise it is approximate there, at the measured price of the two-stage designs.
-- **[P]** It uses something particular to these tables or this window. For arbitrary tables even deciding whether the window holds
-  a member is NP-complete (W4.5).
+- **[P]** It uses something particular to these tables or this window. For arbitrary tables (encoded by their two allowed residues)
+  even deciding whether the window holds a member is NP-complete under an expected-polynomial-time randomized reduction for distinct
+  prime moduli — so a polynomial-time solver implies NP ⊆ ZPP / RP — and deterministically NP-complete for prime-power/composite
+  moduli (W4.5).
 - **[M]** Any structure of the tables it relies on has to exist. Neither multiplicative cosets (research's measurement) nor additive
   progressions (here) do.
 - **[O]** What is left is an operation whose intermediate objects are none of these: not members, not sub-progressions, not DP

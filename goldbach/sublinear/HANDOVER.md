@@ -60,9 +60,12 @@ primes beyond the cover, the best number below 10^200 beats the best member of t
 rows (computed twice), less than a tenth of a nat, and it comes as a single number, where a scan of the same cost
 keeps hundreds of thousands of good members. Even an oracle that handed over, free, the single best member of each
 window would gain 3.81 nats, still short of 5.5 (the exact sieve counts of all 21 million members were computed by
-three programs that agree; the 3.81 was computed once). The Opus session showed that for arbitrary score tables an
-algorithm whose cost is proportional to its output would solve an NP-complete problem (proof on paper by that
-session, checked by its own computation, not yet read by another), so any shortcut has to use something special
+three programs that agree; the 3.81 was computed once). The Opus session showed that for arbitrary score tables
+(encoded by their two allowed residues at each distinct prime modulus) an algorithm whose cost is proportional to its
+output would solve an NP-complete problem via an expected-polynomial-time randomized reduction, implying NP ⊆ ZPP / RP
+— and deterministically NP-complete if prime-power/composite moduli are allowed or the primes are supplied (proof on
+paper by that session, checked by its own computation, and qualified after PR #34 review) — so any shortcut has to use
+something special
 about these particular tables. Every test of their structure (additive, multiplicative, lattice, spectral,
 statistical) found nothing usable; the one real regularity, that every row is one more than a multiple of 6, is worth
 almost nothing (computed, mostly twice).

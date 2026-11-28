@@ -2523,11 +2523,15 @@ returned lens pages, the synthesis and the critic were refused by it; the
 eight pages are therefore one programme's work each, recorded above with
 that status. The question the stopped cryptanalysis lens left open was
 answered meanwhile by the Opus session (`goldbach/bottom_up/worlds/world4.md`
-on its branch, commit b71ae73; its proofs, not checked here): deciding
-whether some k below K has k mod s_i in a given pair of classes at each of
-n distinct primes is NP-complete, by a reduction from subset sum through
-the arc identity of World 5, so an enumerator priced by its output for
-arbitrary tables would give P = NP; and, in a model where a method learns
+on its branch, commit b71ae73; W4.5 subsequently qualified after PR #34 review):
+deciding whether some k below K has k mod s_i in a given pair of classes at
+each of n distinct primes (each table encoded by its two allowed residues) is
+NP-complete under an expected-polynomial-time randomized (Las Vegas) reduction
+from subset sum through the arc identity of World 5 (deterministic if the
+primes are supplied, under Cramér-type gap bounds, or with pairwise-coprime
+prime-power/composite moduli), so a polynomial-time enumerator priced by its
+output for arbitrary tables would give NP ⊆ ZPP (and hence NP ⊆ RP), rather
+than unconditionally P = NP; and, in a model where a method learns
 a prime's table only by reading it, an exact selection of the best members
 must read at least as many classes as the sieve does, to within a factor
 1.2 to 6.2. Its sharpening of the thin-set case left open by the World 2
