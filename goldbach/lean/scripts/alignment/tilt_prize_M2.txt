@@ -1,0 +1,21 @@
+# M2: X = 1e10, target 1000, line 29: members 1,528,521,322, successes 12,283
+# k1: mean 35.50, sd 2.888; k2: mean 23.33, sd 3.137; regression of k2 on k1: slope 0.656; correlation r = 0.604, r^2 = 0.365
+# chance that a row left at full depth is prime, fitted: p = 0.4350; theta = 0.571; lambda = theta sd(k2) = 1.791; r lambda = 1.082
+# mean k1 of the successes: 32.44 (model: 32.37); mean k2 of the successes: 17.86 (model: 17.71)
+successes wanted | share f | N examined, cover first: exact | model | ideal: exact | model | prize: exact | model
+1 | 0.00008 | 464 | 932 | 50 | 20 | 2.23 | 3.82
+3 | 0.00024 | 10,962 | 3,748 | 174 | 100 | 4.15 | 3.63
+10 | 0.00081 | 46,374 | 17,650 | 985 | 592 | 3.85 | 3.40
+30 | 0.00244 | 155,903 | 74,616 | 5,683 | 3,144 | 3.31 | 3.17
+100 | 0.00814 | 593,059 | 376,982 | 35,088 | 20,991 | 2.83 | 2.89
+300 | 0.02442 | 2,411,621 | 1,738,568 | 189,649 | 129,383 | 2.54 | 2.60
+1000 | 0.08141 | 11,562,272 | 10,111,706 | 1,398,562 | 1,100,088 | 2.11 | 2.22
+3000 | 0.24424 | 63,715,870 | 58,056,375 | 12,100,306 | 9,936,497 | 1.66 | 1.77
+tier (k2 at most) | members | rarity | cover nats: exact | model r^2 z^2/2 with z from the tier's mean k2 | luck nats: exact
+7 | 90 | 16.65 | 4.50 | 5.02 | 12.15
+8 | 592 | 14.76 | 3.86 | 4.45 | 10.90
+9 | 3,739 | 12.92 | 3.37 | 3.91 | 9.55
+10 | 18,965 | 11.30 | 3.00 | 3.41 | 8.30
+11 | 84,014 | 9.81 | 2.65 | 2.95 | 7.16
+12 | 324,523 | 8.46 | 2.32 | 2.52 | 6.14
+13 | 1,104,253 | 7.23 | 2.00 | 2.13 | 5.23

@@ -1,0 +1,9 @@
+{
+ "N": "5826514888096346710424101028998025020075881503887142804363529668935257470431091522030267318246838585230530561188277028297971745097373095670026256472852062861864834445540663306089431682760572685412638",
+ "g": 110917,
+ "digits": 199,
+ "note": "earlier 199-digit record of the same collection; superseded by g = 119,419 for the budget game and by the 150-digit N for the threshold game",
+ "source": "slop/goldbach/records/g23/record_g23.json",
+ "source_sha256": "1b1113895290810334fbd5e7e190d2352c980ddc4dd6852582a3900d7b92ad65",
+ "proof": "the source package holds the congruence classes, the progression index and a PARI ECPP certificate for N - g; slop/goldbach/records/verify_record.py re-derives every witness and re-verifies the certificate"
+}

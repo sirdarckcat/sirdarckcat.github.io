@@ -1,0 +1,8 @@
+rows 1502; primes r in (463, 2000): 213
+multiplicative characters: mean normalised power over nontrivial characters 0.8417 (noise: 1.000 - small); largest power / ln(number of characters): mean 0.842, max 1.348; the same for random rows: mean 0.997, max 1.942
+  characters of order 2: mean normalised power 0.841 +- 0.075 over 213 primes (noise 1)
+  characters of order 3: mean normalised power 0.738 +- 0.075 over 105 primes (noise 1)
+  characters of order 4: mean normalised power 0.982 +- 0.091 over 103 primes (noise 1)
+  characters of order 5: mean normalised power 0.905 +- 0.099 over 52 primes (noise 1)
+  characters of order 6: mean normalised power 0.737 +- 0.069 over 105 primes (noise 1)
+additive characters (class index as an integer): largest power / ln r: mean 1.077, max 3.437

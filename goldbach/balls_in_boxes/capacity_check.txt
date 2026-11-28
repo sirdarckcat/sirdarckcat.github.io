@@ -1,0 +1,4 @@
+w=x/2    C=1.35: classes with >= 2 / 3 / 4 survivors, measured 1065442 / 8638 / 1; thinned targets 1536491 / 37556 / 550; balls 1882387 / 72597 / 2191
+w=x/2    C=4.0 : classes with >= 2 / 3 / 4 survivors, measured 10239287 / 635080 / 22726; thinned targets 11597033 / 1021773 / 65267; balls 12310114 / 1266899 / 102675
+w=x^0.9  C=1.35: classes with >= 2 / 3 / 4 survivors, measured 2121636 / 38307 / 342; thinned targets 2876221 / 107618 / 2957; balls 3371266 / 175249 / 7600
+w=x^0.9  C=4.0 : classes with >= 2 / 3 / 4 survivors, measured 18480058 / 1746080 / 117802; thinned targets 20277189 / 2466237 / 241409; balls 21198977 / 2885038 / 330089

@@ -1,0 +1,6 @@
+16 classes: classes of Z/s represented by three distinct list classes: mean 0.9672; all of Z/s at 0 of 12 primes
+20 classes: classes of Z/s represented by three distinct list classes: mean 1.0000; all of Z/s at 12 of 12 primes
+24 classes: classes of Z/s represented by three distinct list classes: mean 1.0000; all of Z/s at 12 of 12 primes
+rho = 5%: classes of Z/s represented by three distinct list classes: mean 1.0000; all of Z/s at 12 of 12 primes
+rho = 10%: classes of Z/s represented by three distinct list classes: mean 1.0000; all of Z/s at 12 of 12 primes
+rho = 20%: classes of Z/s represented by three distinct list classes: mean 1.0000; all of Z/s at 12 of 12 primes

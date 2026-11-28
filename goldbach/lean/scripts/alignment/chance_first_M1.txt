@@ -1,0 +1,13 @@
+# Q = 1000, line 23, depth 200, X = 1e+09; tier: at most 10 rows left, 1,965 members; controls: 2,000,000 random members
+# controls: rows left by the cover 36.80 +- 2.86; mean of the later count given the cover 23.35 +- 1.82; its sd given the cover 2.560 +- 0.077
+# at a fixed number of rows left by the cover, the sd of the later count varies by 0.025 from cover to cover
+# tier:     rows left by the cover 29.93 +- 2.42; mean given the cover 18.98; sd given the cover 2.372
+share of the tier collected | share of the members examined: cover first | by the mean alone | chance first (mean and spread) | gain of chance first over cover first, nats
+0.10 | 0.00036 | 0.00035 | 0.00037 | -0.011
+0.25 | 0.00182 | 0.00183 | 0.00181 | +0.007
+0.50 | 0.01005 | 0.00979 | 0.00941 | +0.066
+0.75 | 0.03741 | 0.03739 | 0.03739 | +0.001
+0.90 | 0.10869 | 0.10729 | 0.10637 | +0.022
+# mean over the tier of ln(share of the members examined before it): cover first -4.943 +- 0.053; by the mean alone -4.942 +- 0.053; chance first -4.973 +- 0.053
+# gain of chance first over cover first, member by member: +0.031 +- 0.009 nats
+# the tier sits 3.56 sd below the mean of its covers; one sd of the cover-to-cover variation of the spread (0.97%) moves the log chance by about z^2 x that = 0.123 nats

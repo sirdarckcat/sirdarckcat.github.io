@@ -1,0 +1,54 @@
+# q=9 n=5 mu=4 (mu a square: 0) b=5 members=59049
+IRRED deg1:9 deg2:36 deg3:240 deg4:1620
+CUTOFFS (index:rank:total degree) 0:2:2 1:3:3 2:4:4 3:9:9 4:45:81
+CHECK irreducible=11808 squarefree=52488 (q^n-q^(n-1)=52488) sum_mobius=0
+ROWS 1905 (degree < 5); members with no success among them: 0
+HISTL (L:members) 0:11808 1:9846 2:8154 3:6768 4:5517 5:4482 6:3744 7:2943 8:2304 9:718 10:576 11:512 12:391 13:278 14:201 15:195 16:149 17:98 18:79 19:68 20:47 21:39 22:34 23:17 24:17 25:11 26:14 27:8 28:8 29:5 30:3 31:4 32:2 33:3 34:2 36:1 38:1 39:1 44:1
+TARGETS 6:12474 9:3483 14:1008 18:365 22:132 28:31 32:11 44:1
+TOP L=44 D=2 idx=373 insep=0 M=100454 values=425287185 dM=4 trans=- scal=- odd=15 k=35,30,25,11,0 o=10,8,6,0,0
+TOP L=39 D=2 idx=25777 insep=0 M=138321 values=132318873 dM=4 trans=- scal=- odd=9 k=29,25,22,5,0 o=6,5,5,0,0
+TOP L=38 D=2 idx=14258 insep=0 M=121502 values=254872851 dM=4 trans=- scal=- odd=12 k=29,25,21,9,0 o=8,6,3,0,0
+TOP L=36 D=2 idx=7610 insep=0 M=111385 values=542728518 dM=4 trans=- scal=- odd=12 k=27,24,22,9,0 o=7,6,5,0,0
+TOP L=34 D=2 idx=44992 insep=0 M=167641 values=144522687 dM=4 trans=- scal=- odd=8 k=26,22,18,6,0 o=5,4,2,0,0
+TOP L=34 D=2 idx=56731 insep=0 M=185734 values=441225876 dM=4 trans=- scal=- odd=8 k=26,22,17,6,0 o=6,4,2,0,0
+TOP L=33 D=2 idx=28847 insep=0 M=143512 values=213831387 dM=4 trans=- scal=- odd=8 k=25,20,18,5,0 o=5,4,4,0,0
+TOP L=33 D=2 idx=33141 insep=0 M=150413 values=321183738 dM=4 trans=- scal=- odd=8 k=23,20,17,5,0 o=5,4,1,0,0
+TOP L=33 D=2 idx=48064 insep=0 M=172834 values=414252768 dM=4 trans=- scal=- odd=8 k=27,22,19,6,0 o=5,4,4,0,0
+TOP L=32 D=2 idx=4376 insep=0 M=106002 values=264432627 dM=4 trans=- scal=- odd=7 k=25,21,18,6,0 o=6,4,3,0,0
+TOP L=32 D=2 idx=40927 insep=0 M=162124 values=410317647 dM=4 trans=- scal=- odd=11 k=29,24,20,9,0 o=10,6,5,0,0
+TOP L=31 D=2 idx=9711 insep=0 M=114280 values=012738384 dM=4 trans=- scal=- odd=7 k=26,22,19,9,0 o=6,4,4,0,0
+TOP L=31 D=2 idx=12615 insep=0 M=118266 values=603531267 dM=4 trans=- scal=- odd=10 k=22,21,16,7,0 o=7,7,5,0,0
+TOP L=31 D=2 idx=40923 insep=0 M=162120 values=068263503 dM=4 trans=- scal=- odd=9 k=28,24,21,11,0 o=8,6,5,0,0
+TOP L=31 D=2 idx=40931 insep=0 M=162128 values=854752182 dM=4 trans=- scal=- odd=12 k=26,22,20,10,0 o=10,7,6,0,0
+TOP L=30 D=2 idx=40925 insep=0 M=162122 values=287185425 dM=4 trans=- scal=- odd=12 k=24,23,19,9,0 o=8,7,5,0,0
+TOP L=30 D=2 idx=40929 insep=0 M=162126 values=635830260 dM=4 trans=- scal=- odd=12 k=24,20,15,8,0 o=8,4,2,0,0
+TOP L=30 D=2 idx=57441 insep=0 M=186713 values=351024867 dM=4 trans=- scal=- odd=11 k=21,18,15,6,0 o=5,4,3,0,0
+TOP L=29 D=2 idx=22902 insep=0 M=134366 values=654867702 dM=4 trans=- scal=- odd=11 k=23,19,16,8,0 o=8,5,3,0,0
+TOP L=29 D=2 idx=40924 insep=0 M=162121 values=176074314 dM=4 trans=- scal=- odd=13 k=23,19,16,9,0 o=9,6,4,0,0
+TOP L=29 D=2 idx=40926 insep=0 M=162123 values=302506836 dM=4 trans=- scal=- odd=10 k=24,23,19,11,0 o=7,6,4,0,0
+TOP L=29 D=2 idx=40928 insep=0 M=162125 values=521428758 dM=4 trans=- scal=- odd=13 k=22,19,16,7,0 o=7,5,4,0,0
+TOP L=29 D=2 idx=40930 insep=0 M=162127 values=743641071 dM=4 trans=- scal=- odd=12 k=22,21,20,10,0 o=7,6,5,0,0
+TOP L=28 D=2 idx=2961 insep=0 M=104050 values=075684384 dM=4 trans=- scal=2 odd=6 k=24,20,17,5,0 o=5,4,3,0,0
+TOP L=28 D=2 idx=14772 insep=0 M=122233 values=371218734 dM=4 trans=- scal=- odd=10 k=19,17,14,5,0 o=5,5,5,0,0
+TOP L=28 D=2 idx=16196 insep=0 M=124185 values=534216762 dM=4 trans=- scal=- odd=7 k=22,17,15,7,0 o=6,4,3,0,0
+TOP L=28 D=2 idx=39919 insep=0 M=160674 values=432240642 dM=4 trans=- scal=- odd=8 k=24,20,18,7,0 o=7,5,5,0,0
+TOP L=28 D=2 idx=40144 insep=0 M=161054 values=456624513 dM=4 trans=- scal=- odd=9 k=23,21,18,5,0 o=6,5,3,0,0
+TOP L=28 D=2 idx=47336 insep=0 M=171835 values=513384534 dM=4 trans=- scal=- odd=6 k=19,16,16,6,0 o=2,2,2,0,0
+TOP L=28 D=2 idx=48776 insep=0 M=173815 values=513240678 dM=4 trans=- scal=- odd=11 k=19,16,13,5,0 o=7,4,1,0,0
+TOP L=28 D=2 idx=57086 insep=0 M=186268 values=872851254 dM=4 trans=- scal=- odd=11 k=23,20,17,7,0 o=8,6,5,0,0
+TOP L=27 D=2 idx=12601 insep=0 M=118251 values=102414828 dM=4 trans=- scal=- odd=7 k=20,19,17,5,0 o=4,3,2,0,0
+TOP L=27 D=2 idx=37568 insep=0 M=156472 values=213678351 dM=4 trans=- scal=- odd=8 k=20,16,14,5,0 o=5,3,2,0,0
+TOP L=27 D=2 idx=38262 insep=0 M=157433 values=321507324 dM=4 trans=- scal=- odd=6 k=18,16,14,8,0 o=3,2,2,0,0
+TOP L=27 D=2 idx=42078 insep=0 M=163643 values=351051642 dM=4 trans=- scal=- odd=6 k=18,15,13,5,0 o=3,2,0,0,0
+TOP L=27 D=2 idx=44960 insep=0 M=167605 values=540465318 dM=4 trans=- scal=- odd=9 k=22,20,18,8,0 o=6,5,5,0,0
+TOP L=27 D=2 idx=54702 insep=0 M=183030 values=031265532 dM=4 trans=- scal=- odd=11 k=21,16,14,3,0 o=8,5,4,0,0
+TOP L=27 D=2 idx=57078 insep=0 M=186260 values=023065368 dM=4 trans=- scal=- odd=11 k=21,20,18,7,0 o=6,6,5,0,0
+TOP L=27 D=2 idx=57082 insep=0 M=186264 values=437416710 dM=4 trans=- scal=- odd=10 k=22,19,17,8,0 o=7,5,5,0,0
+TOP L=26 D=2 idx=2864 insep=0 M=103832 values=250667082 dM=4 trans=- scal=- odd=13 k=22,18,17,7,0 o=9,7,7,0,0
+FAMILY derivdeg<=0 size=729 HISTL 0:160 1:114 2:68 3:61 4:41 5:21 6:14 7:7 9:49 10:36 11:39 12:28 13:21 14:20 15:13 16:12 17:6 18:5 19:2 20:3 22:1 23:1 25:3 26:2 28:1 32:1
+FAMILY derivdeg<=1 size=6561 HISTL 0:1312 1:1094 2:906 3:752 4:613 5:498 6:416 7:327 8:256 9:76 10:60 11:60 12:43 13:37 14:34 15:17 16:16 17:12 18:7 19:6 20:3 21:2 22:2 23:2 24:1 25:3 26:3 28:1 32:1 44:1
+FAMILY derivdeg<=2 size=6561 HISTL 0:1312 1:1094 2:906 3:752 4:613 5:498 6:416 7:327 8:256 9:76 10:60 11:60 12:43 13:37 14:34 15:17 16:16 17:12 18:7 19:6 20:3 21:2 22:2 23:2 24:1 25:3 26:3 28:1 32:1 44:1
+FAMILY scal-1 size=81 HISTL 1:20 3:15 4:12 5:7 9:4 10:3 11:7 12:2 14:4 15:3 16:1 23:1 25:1 28:1
+FAMILY scalall size=1 HISTL 11:1
+FAMILY scal4 size=9 HISTL 1:1 4:1 9:1 11:2 14:1 15:2 16:1
+TIME sieve 0.0 pass1 3.5 pass2 0.1

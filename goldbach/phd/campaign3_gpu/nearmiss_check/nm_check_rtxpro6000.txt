@@ -1,0 +1,14 @@
+o_a.txt | SUCCESS-NEARMISS nmtest_q150k_c_v77@3100639232 k=3101585871 digits=200 g=146191 (first PRP row, design Q=150000) || [nmtest_q150k_c_v77@3100639232] k=[3100639232,3101687808) 2s (453691 k/s) tests=19583987 prp=1048576 p^=0.0535 alive/k=501.0 E^=26.83 hit%=100.0 found=0
+o_b.txt | [nmtest_q150k_c_v77@3100639232] k=[3100639232,3101687808) 2s (478366 k/s) tests=19583987 prp=1048576 p^=0.0535 alive/k=501.0 E^=26.83 hit%=100.0 found=0
+o_c.txt | SUCCESS-NEARMISS nmtest_q150k_c_v77@3087007744 k=3101585871 digits=200 g=146191 (first PRP row, design Q=150000) || [nmtest_q150k_c_v77@3087007744] k=[3087007744,3120562176) 5s (6363343 k/s) tests=14109800 prp=1007616 p^=0.0714 alive/k=375.8 E^=26.84 hit%=23.0 found=0
+o_d1.txt | [pt_q150k_b_v64@1040187392] k=[1040187392,1073741824) 3s (9938632 k/s) tests=14084152 prp=1007616 p^=0.0715 alive/k=366.4 E^=26.21 hit%=22.6 found=0 || [pt_q150k_b_v65@1040187392] k=[1040187392,1073741824) 3s (9938632 k/s) tests=14113520 prp=1007616 p^=0.0714 alive/k=366.4 E^=26.16 hit%=22.6 found=0
+o_d0.txt | [pt_q150k_b_v64@1040187392] k=[1040187392,1073741824) 3s (10306307 k/s) tests=14084152 prp=1007616 p^=0.0715 alive/k=366.4 E^=26.21 hit%=22.6 found=0 || [pt_q150k_b_v65@1040187392] k=[1040187392,1073741824) 3s (10306307 k/s) tests=14113520 prp=1007616 p^=0.0714 alive/k=366.4 E^=26.16 hit%=22.6 found=0
+f_a.jsonl [('nmtest_q150k_c_v77@3100639232', 3101585871, 146191, True, 150000)]
+f_c.jsonl [('nmtest_q150k_c_v77@3087007744', 3101585871, 146191, True, 150000)]
+f_d1.jsonl []
+a) normal path, all members, near-miss >= 140,000: 146,191's member reported: True
+b) normal path, slice lines with and without near-miss reporting identical: True
+c) deep path: 146,191's member reported (f_c.jsonl): True
+d) deep production slices, slice lines with and without near-miss reporting identical: True
+NMCHECK PASSED
+NMCHECK-DONE

@@ -1,0 +1,18 @@
+# The lead's L4 keep-fraction A/B (23 Nov 16:41Z): gold-l4c at f = 0.985 from 17:29:43Z (set_skipf.py), gold-gpu and gold-l4b at 0.97; m88f vectors, campaign mode.
+# ab_rate.py on each card, the same clock windows: pre [16:53:00, 17:29:30), post [17:31:30, 18:30:00) (stats lines' own timestamps); expected design hits a second.
+== gold-l4c
+[ab] 753e2a638e8c ['SKIPF=0.985'] | pre {'n': 234, 'span': 2183, 'members_s': '7.1935e+06', 'hits_s': '9.6010e-08', 'tests_s': '3.0267e+06', 'hits_per_slice': '4.4784e-07'}
+[ab] post {'n': 557, 'span': 3508, 'members_s': '1.0656e+07', 'hits_s': '9.5243e-08', 'tests_s': '2.2415e+06', 'hits_per_slice': '2.9992e-07'}
+[ab] post/pre: hits/s x0.9920 | members/s x1.4813 | hits a slice x0.6697
+== gold-gpu
+[ab] e9b5dd8fa41d ['SKIPF=0.97'] | pre {'n': 235, 'span': 2179, 'members_s': '7.2375e+06', 'hits_s': '9.6453e-08', 'tests_s': '3.0451e+06', 'hits_per_slice': '4.4717e-07'}
+[ab] post {'n': 378, 'span': 3505, 'members_s': '7.2374e+06', 'hits_s': '9.6913e-08', 'tests_s': '3.0452e+06', 'hits_per_slice': '4.4931e-07'}
+[ab] post/pre: hits/s x1.0048 | members/s x1.0000 | hits a slice x1.0048
+== gold-l4b
+[ab] bbd604eeb732 ['SKIPF=0.97'] | pre {'n': 230, 'span': 2183, 'members_s': '7.0706e+06', 'hits_s': '9.4180e-08', 'tests_s': '2.9748e+06', 'hits_per_slice': '4.4694e-07'}
+[ab] post {'n': 369, 'span': 3501, 'members_s': '7.0732e+06', 'hits_s': '9.4770e-08', 'tests_s': '2.9760e+06', 'hits_per_slice': '4.4958e-07'}
+[ab] post/pre: hits/s x1.0063 | members/s x1.0004 | hits a slice x1.0059
+
+# Difference in differences: gold-l4c x0.9920 / mean(x1.0048, x1.0063) = x0.9865. The bar was +5%: not met. gold-l4c went back to f = 0.97 at 18:34:30Z (with the top2 vector swap).
+# Why: the L4 is serial (sieve, then Fermat) and power-capped; S + F = 9.33 s at 0.97 and S + F/2 = 6.30 s at 0.985 give F = 6.06 s, S = 3.27 s, so halving the tests removes only
+# the Fermat part. uarch's refit with these two points puts the L4 optimum at x1.015 near f = 0.979, inside an A/B's noise. The T4 stays at 0.97.

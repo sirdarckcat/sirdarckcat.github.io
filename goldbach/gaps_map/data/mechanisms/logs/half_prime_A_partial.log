@@ -1,0 +1,4 @@
+A density of N/2 prime among allowed: 0.1669 ; successes with N/2 prime: 48 of 256 (expected 42.7 at same k1 mix)
+  order (k1, N/2 prime first): k=1: -0.11 (boot -0.02±0.29)  k=3: +0.71 (boot +0.32±0.45)  k=10: -0.03 (boot -0.01±0.14)  k=30: +0.05 (boot +0.04±0.07)  k=100: +0.01 (boot +0.01±0.03)
+  family-only (N/2 prime) cover-first E: {1: 10651, 3: 58858, 10: 435939, 30: 4302099, 100: None} vs all: {1: 2982, 3: 63350, 10: 253380, 30: 1205425, 100: 12004497}
+B density of N/2 prime among allowed: 0.1610 ; successes with N/2 prime: 142 of 826 (expected 133.0 at same k1 mix)

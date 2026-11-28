@@ -1,0 +1,27 @@
+(a) tests (77.6 us each on this machine, GMP) to find the rows struck by primes up to B, per member (1,502 rows)
+    one Fermat test = 2.72e+05 cycles
+    B=1e+06: per-N root lookups 1.2 to 7.2 tests; Bernstein batch on the rows 1021 to 3063 tests; z mod F(N) once per member 56 tests; window sieve 0.005-0.012 tests
+    B=1e+07: per-N root lookups 9.8 to 61.2 tests; Bernstein batch on the rows 1726 to 5177 tests; z mod F(N) once per member 558 tests; window sieve 0.005-0.012 tests
+    B=1e+08: per-N root lookups 84.9 to 530.8 tests; Bernstein batch on the rows 2886 to 8657 tests; z mod F(N) once per member 5577 tests; window sieve 0.005-0.012 tests
+
+(b) the stake of a cheaper sieve: tests per unit of hit mass at the best keep fraction (n = 1,502 alive at 463, B = 1e8 and 1e9)
+    B=1e+08 sieve 0.0118 test per member: best f = 0.0014 -> 0.646 tests per unit of mass (gain 0.00 nats over the first line; share kept 5.0%)
+    B=1e+08 sieve 0.0054 test per member: best f = 0.0007 -> 0.489 tests per unit of mass (gain 0.28 nats over the first line; share kept 3.1%)
+    B=1e+08 sieve 0.0027 test per member: best f = 0.0004 -> 0.386 tests per unit of mass (gain 0.51 nats over the first line; share kept 2.1%)
+    B=1e+08 sieve 0.0010 test per member: best f = 0.0002 -> 0.280 tests per unit of mass (gain 0.84 nats over the first line; share kept 1.2%)
+    B=1e+08 sieve 0.0003 test per member: best f = 0.0001 -> 0.193 tests per unit of mass (gain 1.21 nats over the first line; share kept 0.5%)
+    B=1e+08 sieve 0.0000 test per member: best f = 0.0000 -> 0.091 tests per unit of mass (gain 1.96 nats over the first line; share kept 0.2%)
+    B=1e+09 sieve 0.0118 test per member: best f = 0.0014 -> 0.471 tests per unit of mass (gain 0.00 nats over the first line; share kept 6.2%)
+    B=1e+09 sieve 0.0054 test per member: best f = 0.0008 -> 0.349 tests per unit of mass (gain 0.30 nats over the first line; share kept 4.3%)
+    B=1e+09 sieve 0.0027 test per member: best f = 0.0004 -> 0.270 tests per unit of mass (gain 0.56 nats over the first line; share kept 2.9%)
+    B=1e+09 sieve 0.0010 test per member: best f = 0.0001 -> 0.190 tests per unit of mass (gain 0.91 nats over the first line; share kept 1.5%)
+    B=1e+09 sieve 0.0003 test per member: best f = 0.0001 -> 0.128 tests per unit of mass (gain 1.31 nats over the first line; share kept 0.8%)
+    B=1e+09 sieve 0.0000 test per member: best f = 0.0000 -> 0.056 tests per unit of mass (gain 2.13 nats over the first line; share kept 0.3%)
+
+(c) the lone ideal N (1,116 rows alive at depth 2,000, own sieve to 1e6, keep 3%) against the sieve cost per N in Fermat tests
+    sieve 0.25 test per N: 4.88 tests per unit of mass -> 1.18 nats against 1.5
+    sieve 0.65 test per N: 7.11 tests per unit of mass -> 1.56 nats against 1.5
+    sieve 1.20 test per N: 10.18 tests per unit of mass -> 1.91 nats against 1.5
+    sieve 2.50 test per N: 17.43 tests per unit of mass -> 2.45 nats against 1.5
+    sieve 5.00 test per N: 31.36 tests per unit of mass -> 3.04 nats against 1.5
+    sieve 7.30 test per N: 44.19 tests per unit of mass -> 3.38 nats against 1.5

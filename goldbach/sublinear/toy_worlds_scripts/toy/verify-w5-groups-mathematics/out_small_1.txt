@@ -1,0 +1,12 @@
+T1 tree of Theorem 1(b): 400 instances (ties allowed): parent-uniqueness failures 0, monotonicity failures 0, listing-order failures 0, pushes per output <= 1.00
+T3(i) general base, E <= m, arbitrary B >= 1: 241 instances, inclusion failures 0, sandwich failures 0 (97913 points of R checked)
+T4(a) fooling set {0..n-1}, n = min(P_I,P_Ic,X): 528 (cut, X) pairs with 2X <= P, violations 0; with 2X > P: 264 pairs, fooling property fails in 170 (the hypothesis X <= P/2 is used)
+T4(c) hypothesis: P_I=1009, P_Ic=1013, X=10, E0=30 (eps=3), 2X+3E0=110 <= P=1022117: stated lower bound 24.66 > X = 10 >= w([0,X)) -> the statement needs E0 <= X (the strip must lie inside [0,X))
+T5(a) linear codes: 200 random parity-check maps over Z/2, Z/3: width = |im_I meet im_Ic| = |im_I||im_Ic|/|im psi| in 200 of 200
+T4(d) q=20, delta=1/4000: P(feasible pair among queried) = 0.0295 <= q^2 delta/4 = 0.0250
+T4(d) q=60, delta=1/4000: P(feasible pair among queried) = 0.2037 <= q^2 delta/4 = 0.2250
+T4(d) q=120, delta=1/4000: P(feasible pair among queried) = 0.5837 <= q^2 delta/4 = 0.9000
+
+real	0m1.892s
+user	0m1.048s
+sys	0m0.004s

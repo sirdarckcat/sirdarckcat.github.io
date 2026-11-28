@@ -1,0 +1,8 @@
+F_9/F_3: degree<=4: count p^dim = 3^4 = 81; coset count q^4 = 81; q^(2^m) = 81; random lists same density E = 3
+F_27/F_3: degree<=13: count p^dim = 3^8 = 6561; coset count q^8 = 6561; q^(2^m) = 6561; random lists same density E = 1.88e-06
+F_25/F_5: degree<=6: count p^dim = 5^4 = 625; coset count q^4 = 625; q^(2^m) = 625; random lists same density E = 2.05e-08
+F_16/F_4: degree<=5: count p^dim = 2^8 = 256; coset count q^4 = 256; q^(2^m) = 256; random lists same density E = 0.00391
+brute force F_9, degree<=4, all 59049 polynomials: count with all values in F_3 = 81 (0s)
+q=3 places deg [2, 3] (m=11) hyperplane lists n=13: affine counts {9: 57, 0: 3}, ranks {11: 57, 10: 3}; random lists mean 8.75 range 2..16; E=9.00
+q=3 places deg [2, 3] (m=11) hyperplane lists n=12: affine counts {3: 46, 9: 5, 0: 9}, ranks {11: 46, 10: 14}; random lists mean 2.57 range 0..7; E=3.00
+q=3 places deg [3] (m=8) hyperplane lists n=10: affine counts {9: 55, 0: 4, 27: 1}, ranks {8: 55, 7: 5}; random lists mean 8.65 range 3..18; E=9.00

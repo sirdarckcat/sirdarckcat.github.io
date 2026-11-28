@@ -1,0 +1,8 @@
+cover: mean 674.1599080648289 sd 18.765338772270358 | cover with 463:235 (1504 rows): K 21378977 mean 675.0540707817778 sd 18.779826236583173 min 573.0
+move: class of 463 changed -> 235 with residues mod 467*479*487 kept (k' = k + Delta, Delta = -7764515): corr 0.00417 +- 0.00027
+   control, k' = k + Delta + 1: corr -0.00096 +- 0.00027
+   control, k' = k + Delta + -1: corr -0.00037 +- 0.00027
+   control, k' = k + Delta + 2: corr 0.00063 +- 0.00027
+   control, k' = k + Delta + 467: corr 0.00109 +- 0.00027
+   control, k' = k + Delta + 1000: corr 0.00017 +- 0.00027
+   control, k' = k + Delta + 223693: corr 0.00327 +- 0.00027

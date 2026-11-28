@@ -1,0 +1,123 @@
+{
+ "rows": [
+  {
+   "name": "r200b_q122k_v367@532676608",
+   "gpu": "gold-g4",
+   "Q": 122000,
+   "g": 125269,
+   "digits": 199,
+   "rows_survived": 44,
+   "expected": 40.62,
+   "p_row": 0.02403,
+   "tail": 0.343
+  },
+  {
+   "name": "r200b_q122k_w175@540016640",
+   "gpu": "gold-g4b",
+   "Q": 122000,
+   "g": 133981,
+   "digits": 199,
+   "rows_survived": 140,
+   "expected": 40.62,
+   "p_row": 0.02402,
+   "tail": 0.0332
+  },
+  {
+   "name": "r200b_q122k_v851@537919488",
+   "gpu": "gold-g4b",
+   "Q": 122000,
+   "g": 132103,
+   "digits": 199,
+   "rows_survived": 116,
+   "expected": 40.62,
+   "p_row": 0.02402,
+   "tail": 0.0596
+  },
+  {
+   "name": "r200_q122k_k850_v1760@4292870144",
+   "gpu": "gold-g4b",
+   "Q": 122000,
+   "g": 126397,
+   "digits": 200,
+   "rows_survived": 57,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.2516
+  },
+  {
+   "name": "r200_q122k_k850_v2028@4291821568",
+   "gpu": "gold-gpu",
+   "Q": 122000,
+   "g": 123259,
+   "digits": 200,
+   "rows_survived": 16,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.6789
+  },
+  {
+   "name": "r200_q122k_k850_v440@4282384384",
+   "gpu": "gold-g4",
+   "Q": 122000,
+   "g": 122827,
+   "digits": 200,
+   "rows_survived": 9,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.8042
+  },
+  {
+   "name": "r200_q122k_k850_v1039@4281335808",
+   "gpu": "gold-g4b",
+   "Q": 122000,
+   "g": 125221,
+   "digits": 200,
+   "rows_survived": 43,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.3531
+  },
+  {
+   "name": "r200_q140k_c_v77@3100639232",
+   "gpu": "gold-g4b",
+   "Q": 140000,
+   "g": 146191,
+   "digits": 200,
+   "rows_survived": 63,
+   "expected": 40.78,
+   "p_row": 0.02393,
+   "tail": 0.2174
+  },
+  {
+   "name": "pt_q150k_t528@4194304000",
+   "gpu": "gold-g4c",
+   "Q": 150000,
+   "g": 157837,
+   "digits": 200,
+   "rows_survived": 91,
+   "expected": 40.81,
+   "p_row": 0.02392,
+   "tail": 0.1105
+  }
+ ],
+ "by_Q": {
+  "122000": {
+   "hits": 7,
+   "rows_survived": 425,
+   "expected": 285.1,
+   "tail": 0.1079
+  },
+  "140000": {
+   "hits": 1,
+   "rows_survived": 63,
+   "expected": 40.8,
+   "tail": 0.2174
+  },
+  "150000": {
+   "hits": 1,
+   "rows_survived": 91,
+   "expected": 40.8,
+   "tail": 0.1105
+  }
+ }
+}

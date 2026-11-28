@@ -1,0 +1,54 @@
+[ps32] 2026-11-23T20:50:32Z stopping the campaign in /content/c170f
+2026-11-23T20:50:33Z stopped
+2026-11-23T20:55:59Z campaign restarted in /content/c170f (unchanged)
+kc (shifted vector, f = 0): 40 near-misses | []
+GPU k=4294455960 q=51229
+GPU k=4294455989 q=61687
+GPU k=4294456389 q=65701
+GPU k=4294456609 q=50707
+GPU k=4294456644 q=49279
+GPU k=4294476155 q=50929
+GPU k=4294499422 q=50527
+GPU k=4294522939 q=56527
+GPU k=4294523649 q=49921
+GPU k=4294575974 q=67021
+GPU k=4294577280 q=51151
+GPU k=4294582511 q=59167
+GPU k=4294605644 q=52387
+GPU k=4294616039 q=59167
+GPU k=4294624759 q=48661
+GPU k=4294639684 q=51001
+GPU k=4294644616 q=51829
+GPU k=4294654441 q=60139
+GPU k=4294678051 q=51817
+GPU k=4294680168 q=52747
+GPU k=4294712551 q=57457
+GPU k=4294720533 q=53089
+GPU k=4294728437 q=56179
+GPU k=4294731011 q=50929
+GPU k=4294731776 q=53089
+GPU k=4294738526 q=55609
+GPU k=4294757698 q=53089
+GPU k=4294774233 q=51991
+GPU k=4294814337 q=74071
+GPU k=4294864750 q=49279
+GPU k=4294867585 q=59377
+GPU k=4294886617 q=49921
+GPU k=4294891579 q=53731
+GPU k=4294893104 q=49549
+GPU k=4294906767 q=51001
+GPU k=4294911219 q=51001
+GPU k=4294919372 q=49531
+GPU k=4294937596 q=59509
+GPU k=4294961364 q=51307
+GPU k=4294962701 q=52567
+u   : 8 batches, 16 slices, expected design hits 7.2835e-06, batch 7.926 s | []
+s   : 8 batches, 16 slices, expected design hits 7.7131e-06, batch 7.976 s | []
+u_b : 8 batches, 16 slices, expected design hits 7.2835e-06, batch 7.929 s | []
+s_b : 8 batches, 16 slices, expected design hits 7.7131e-06, batch 7.980 s | []
+shifted / unshifted, same 8 covers, top two levels: expected design hits a batch x1.0590, batch time x1.0063, a second x1.0523
+S32-RATE PASSED x1.0590 (>= 1.03; research's prediction x1.056)
+S32G-DONE
+20:58:02
+
+[exited with code 0]

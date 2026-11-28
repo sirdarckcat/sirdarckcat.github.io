@@ -1,0 +1,74 @@
+e15: N0 = 1e+15, 20,000,000 even N; big := g >= 480 (0.990%); top 0.1%: g >= 824; top 0.01%: g >= 1202
+
+(1) P(big | u_z) against the model (1 - c_z)^u_z
+  z =    13: c_z = 0.1509, u mean 34.91 sd 13.12; big N observed 197,964, model 214,781 (ratio 0.922)
+      u in [13, 20]:    410,256 N   P(big) observed 0.03811  model 0.04018  ratio 0.949
+      u in [21, 40]: 12,885,781 N   P(big) observed 0.01401  model 0.01521  ratio 0.920
+      u in [41,999]:  6,703,963 N   P(big) observed 0.00028  model 0.00033  ratio 0.830
+  z =    97: c_z = 0.2406, u mean 21.90 sd 8.55; big N observed 197,964, model 201,506 (ratio 0.982)
+      u in [ 4,  5]:        112 N   P(big) observed 0.22321  model 0.26328  ratio 0.848
+      u in [ 6,  8]:     21,077 N   P(big) observed 0.11724  model 0.11993  ratio 0.978
+      u in [ 9, 12]:  1,199,190 N   P(big) observed 0.04517  model 0.04568  ratio 0.989
+      u in [13, 20]: 10,425,744 N   P(big) observed 0.01304  model 0.01330  ratio 0.981
+      u in [21, 40]:  7,748,661 N   P(big) observed 0.00069  model 0.00072  ratio 0.963
+      u in [41,999]:    605,216 N   P(big) observed 0.00001  model 0.00001  ratio 1.158
+  z =   997: c_z = 0.3575, u mean 14.74 sd 6.13; big N observed 197,964, model 198,275 (ratio 0.998)
+      u in [ 1,  1]:        189 N   P(big) observed 0.70370  model 0.64247  ratio 1.095
+      u in [ 2,  2]:      1,834 N   P(big) observed 0.39368  model 0.41277  ratio 0.954
+      u in [ 3,  3]:     11,138 N   P(big) observed 0.26791  model 0.26520  ratio 1.010
+      u in [ 4,  5]:    186,353 N   P(big) observed 0.12323  model 0.12417  ratio 0.992
+      u in [ 6,  8]:  2,163,580 N   P(big) observed 0.04067  model 0.04078  ratio 0.997
+      u in [ 9, 12]:  6,951,790 N   P(big) observed 0.01060  model 0.01060  ratio 1.000
+      u in [13, 20]:  6,738,188 N   P(big) observed 0.00139  model 0.00137  ratio 1.011
+      u in [21, 40]:  3,945,135 N   P(big) observed 0.00003  model 0.00004  ratio 0.915
+      u in [41,999]:      1,788 N   P(big) observed 0.00000  model 0.00000  ratio 0.000
+  z =  9973: c_z = 0.4757, u mean 11.07 sd 4.89; big N observed 197,964, model 197,810 (ratio 1.001)
+      u in [ 0,  0]:        747 N   P(big) observed 1.00000  model 1.00000  ratio 1.000
+      u in [ 1,  1]:      9,338 N   P(big) observed 0.53159  model 0.52427  ratio 1.014
+      u in [ 2,  2]:     52,986 N   P(big) observed 0.27451  model 0.27486  ratio 0.999
+      u in [ 3,  3]:    190,609 N   P(big) observed 0.14399  model 0.14410  ratio 0.999
+      u in [ 4,  5]:  1,452,400 N   P(big) observed 0.05155  model 0.05172  ratio 0.997
+      u in [ 6,  8]:  5,546,556 N   P(big) observed 0.01167  model 0.01160  ratio 1.005
+      u in [ 9, 12]:  6,189,759 N   P(big) observed 0.00166  model 0.00165  ratio 1.005
+      u in [13, 20]:  5,587,334 N   P(big) observed 0.00007  model 0.00008  ratio 0.929
+      u in [21, 40]:    970,271 N   P(big) observed 0.00000  model 0.00000  ratio 0.000
+  z = 65521: c_z = 0.5710, u mean 9.23 sd 4.26; big N observed 197,964, model 197,891 (ratio 1.000)
+      u in [ 0,  0]:      5,248 N   P(big) observed 1.00000  model 1.00000  ratio 1.000
+      u in [ 1,  1]:     47,441 N   P(big) observed 0.43300  model 0.42903  ratio 1.009
+      u in [ 2,  2]:    208,323 N   P(big) observed 0.18388  model 0.18407  ratio 0.999
+      u in [ 3,  3]:    577,281 N   P(big) observed 0.07840  model 0.07897  ratio 0.993
+      u in [ 4,  5]:  2,925,624 N   P(big) observed 0.02216  model 0.02216  ratio 1.000
+      u in [ 6,  8]:  6,562,969 N   P(big) observed 0.00342  model 0.00338  ratio 1.012
+      u in [ 9, 12]:  5,364,632 N   P(big) observed 0.00024  model 0.00024  ratio 0.990
+      u in [13, 20]:  4,048,056 N   P(big) observed 0.00000  model 0.00001  ratio 0.663
+      u in [21, 40]:    260,426 N   P(big) observed 0.00000  model 0.00000  ratio 0.000
+
+(2) atoll enrichment R(d), measured vs model M_z
+       d shared rows   measured   model z=97     model z=9973   model z=65521
+       2    24 of 91        0.88          0.88         0.86         0.85
+       4    25 of 91        0.93          0.96         0.93         0.92
+       6    46 of 91        9.71          9.63         9.60         9.64
+       8    22 of 91        0.81          0.85         0.82         0.82
+      10    32 of 91        1.21          1.27         1.24         1.25
+      12    44 of 91        8.36          8.34         8.28         8.33
+      18    43 of 91        7.97          7.96         7.89         7.95
+      24    43 of 91        8.72          8.69         8.68         8.73
+      30    56 of 91       18.64         18.54        18.56        18.59
+      36    45 of 91        9.39          9.37         9.34         9.37
+      42    48 of 91       10.77         10.83        10.82        10.88
+      48    40 of 91        7.07          7.09         7.04         7.08
+      60    50 of 91       13.90         13.91        13.88        13.88
+      90    47 of 91       12.27         12.16        12.12        12.10
+     120    43 of 91       10.10         10.04         9.98         9.98
+     150    39 of 91        8.47          8.52         8.46         8.46
+     180    36 of 91        7.39          7.41         7.35         7.35
+     210    37 of 91        8.10          8.10         8.04         8.03
+     240    28 of 91        5.39          5.48         5.44         5.44
+     270    28 of 91        5.71          5.77         5.73         5.76
+     300    24 of 91        4.69          4.71         4.66         4.67
+     330    21 of 91        3.92          4.01         3.96         3.98
+     420    10 of 91        2.58          2.62         2.59         2.59
+     630     0 of 91        1.74          1.79         1.78         1.78
+     840     0 of 91        1.79          1.81         1.79         1.78
+    2310     0 of 91        1.92          1.90         1.89         1.88
+   30030     0 of 91        1.98          1.94         1.96         1.96

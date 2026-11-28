@@ -1,0 +1,13 @@
+cover | rows | same-class pair sum T | T for rows placed at random | ratio | pair sum | pair sum / rows^2 | binomial variance | Var S | sd ratio | variance/mean of class counts, 467..997
+best cover of the file | 1502 | 569.3 | 665.5 | 0.8556 | -96.3 | -4.268e-05 | 335.4 | 324.5 | 0.9836 | 0.820
+greedy cover | 1587 | 635.9 | 742.9 | 0.8560 | -107.2 | -4.256e-05 | 354.4 | 342.3 | 0.9827 | 0.810
+random classes 1 | 2179 | 1200.2 | 1400.8 | 0.8568 | -201.0 | -4.233e-05 | 486.6 | 463.8 | 0.9763 | 0.744
+random classes 2 | 2176 | 1195.6 | 1397.0 | 0.8559 | -201.7 | -4.260e-05 | 485.9 | 463.1 | 0.9762 | 0.737
+random classes 3 | 2144 | 1162.5 | 1356.2 | 0.8572 | -194.1 | -4.222e-05 | 478.8 | 456.8 | 0.9768 | 0.746
+random classes 4 | 2157 | 1177.5 | 1372.7 | 0.8578 | -195.5 | -4.202e-05 | 481.7 | 459.5 | 0.9767 | 0.748
+random classes 5 | 2153 | 1171.1 | 1367.6 | 0.8564 | -196.8 | -4.246e-05 | 480.8 | 458.5 | 0.9765 | 0.743
+no classes (all odd primes below Q) | 17983 | 90336.6 | 95448.1 | 0.9464 | -5139.5 | -1.589e-05 | 4015.9 | 3433.4 | 0.9246 | 0.368
+
+real	0m6.532s
+user	0m4.771s
+sys	0m2.044s

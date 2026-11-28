@@ -1,0 +1,4 @@
+F_16: A = L1, a = 16, n = 64, lam = 1
+  d = 1: rows 16 ; r even 16; irreducible N-Q 0; [even,odd] by category {'formula': [16, 0]}; formula disagreements 0; 0s
+  d = 2: rows 120 ; r even 120; irreducible N-Q 0; [even,odd] by category {'formula': [120, 0]}; formula disagreements 0; 0s
+  d = 3: rows 1360 ; r even 1360; irreducible N-Q 0; [even,odd] by category {'formula': [1360, 0]}; formula disagreements 0; 3s

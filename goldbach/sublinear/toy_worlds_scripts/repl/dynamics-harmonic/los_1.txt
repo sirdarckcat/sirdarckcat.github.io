@@ -1,0 +1,29 @@
+members 5000, tests 3372808, primes 180482; survivors per member agree with the C sieve at depth 1e6 for every member: True
+primes found / expected (1/(ln N prod(1-1/p))): 0.9993 +- 0.0024
+dispersion of primes per member / binomial: 1.0224 +- 0.0200
+both prime, rows l apart among a member's survivors: lag | observed | null mean | ratio | z
+  1 | 9554 | 9651.0 | 0.9900 | -1.06
+  2 | 9796 | 9635.6 | 1.0166 | +1.69
+  3 | 9622 | 9616.7 | 1.0005 | +0.06
+  4 | 9769 | 9615.0 | 1.0160 | +1.84
+  5 | 9597 | 9587.1 | 1.0010 | +0.11
+  6 | 9643 | 9580.5 | 1.0065 | +0.68
+  7 | 9517 | 9562.6 | 0.9952 | -0.48
+  8 | 9584 | 9554.2 | 1.0031 | +0.34
+  9 | 9425 | 9538.7 | 0.9881 | -1.23
+  10 | 9494 | 9518.2 | 0.9975 | -0.27
+  lags 1..10 pooled | 96001 | 95859.6 | 1.0015 +- 0.0027 | +0.54
+both prime, by distance q' - q: range | observed | null mean | ratio | z
+  [0,100) | 2849 | 2852.5 | 0.9988 | -0.06
+  [100,300) | 6319 | 6402.0 | 0.9870 | -1.05
+  [300,1000) | 23013 | 22770.2 | 1.0107 | +1.56
+  [1000,3000) | 64780 | 64647.5 | 1.0021 | +0.54
+consecutive successes of a member (175482 pairs): residues (q mod m, q' mod m) against the shuffled null: m | chi2 over cells | null chi2 mean, 95% | share of pairs with q = q' mod m: observed, null, z
+  4 | 4.3 (4 cells) | 4.0, 10.8 | 0.4958, 0.4974, -1.30
+  5 | 4.0 (9 cells) | 9.0, 19.4 | 0.3313, 0.3311, +0.17
+  7 | 26.6 (25 cells) | 25.0, 37.7 | 0.1956, 0.1970, -1.61
+  8 | 9.0 (16 cells) | 16.0, 30.7 | 0.2480, 0.2480, +0.05
+  11 | 53.9 (81 cells) | 81.0, 105.6 | 0.1084, 0.1086, -0.29
+  13 | 114.4 (121 cells) | 121.0, 151.3 | 0.0881, 0.0878, +0.37
+Legendre symbol ((N-q)/D) for the 579 primes D in [467,5000): prime rate at +1 against -1: mean z^2 1.029, largest |z| 3.46 at D=701 (rate ratio 0.9843); expected largest for noise 3.57
+  so for each of these D a split (1-delta):(1+delta) of the prime rate is bounded by |delta| < 0.0071 (3 sd)

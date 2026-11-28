@@ -1,0 +1,12 @@
+rows: 17983 odd primes below 200,000; sieve primes: 89 odd primes up to 463; cover on file leaves 1502 rows below 200,000
+(c) random even N: mean 3230.7, sd 1256.1, min 2073, max 8029 over 3000
+(c') random nonzero class at every r (an even N prime to every r <= 463): mean 2150.4, sd 24.2, min 2071, max 2240 over 3000
+(a) N = 2^m, m = 100..664 (565 numbers): mean 2145.6, sd 24.0, min 2088 at m = 380
+(b) N = c*2^m, c odd <= 99, 401 values of m each (20050 numbers): mean 3254.8, sd 1184.6, min 2088 at c = 1, m = 380
+    quantile 1/565 of (c'): about 2077 (the expected best of 565 independent draws); best of the 565 powers of two: 2088
+    exponents at p = 0.024287: cover 36.5, mean of 2^m 52.1, best 2^m 50.7, mean of (c') 52.2
+    L = 12: m mod L pins 2^m modulo the 4 cover primes r with ord_r(2) | L, product = e^7.2; the congruence is N = 2^m0 mod (2^L - 1), price ln(2^L - 1) = 8.3 nats; choices of m0: 12 (ln = 2.5)
+    L = 60: m mod L pins 2^m modulo the 10 cover primes r with ord_r(2) | L, product = e^31.7; the congruence is N = 2^m0 mod (2^L - 1), price ln(2^L - 1) = 41.6 nats; choices of m0: 60 (ln = 4.1)
+    L = 180: m mod L pins 2^m modulo the 15 cover primes r with ord_r(2) | L, product = e^52.4; the congruence is N = 2^m0 mod (2^L - 1), price ln(2^L - 1) = 124.8 nats; choices of m0: 180 (ln = 5.2)
+    L = 360: m mod L pins 2^m modulo the 18 cover primes r with ord_r(2) | L, product = e^66.8; the congruence is N = 2^m0 mod (2^L - 1), price ln(2^L - 1) = 249.5 nats; choices of m0: 360 (ln = 5.9)
+    L = 660: m mod L pins 2^m modulo the 14 cover primes r with ord_r(2) | L, product = e^49.5; the congruence is N = 2^m0 mod (2^L - 1), price ln(2^L - 1) = 457.5 nats; choices of m0: 660 (ln = 6.5)

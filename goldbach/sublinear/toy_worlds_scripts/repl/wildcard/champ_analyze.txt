@@ -1,0 +1,84 @@
+hits g>=500: 6904869  max g 2029 at 12703943222
+
+level g >= 500: 6904869 hits; relative sd of a class share with 1/3 of the hits: 0.0007
+  control N mod 3: shares 0.0007 0.3770 0.6223
+  control N mod 5: shares 0.0267 0.2011 0.2739 0.2793 0.2190
+  control N mod 7: shares 0.0456 0.1465 0.1565 0.1918 0.1313 0.1749 0.1534
+  N mod 3^2 inside N mod 3: chi2 6.1 on 6 dof, p = 0.415, largest relative deviation 0.0193
+  N mod 5^2 inside N mod 5: chi2 9.7 on 20 dof, p = 0.974, largest relative deviation 0.0047
+  N mod 7^2 inside N mod 7: chi2 53.7 on 42 dof, p = 0.106, largest relative deviation 0.0088
+  N mod 11^2 inside N mod 11: chi2 108.1 on 110 dof, p = 0.534, largest relative deviation 0.0130
+  N mod 13^2 inside N mod 13: chi2 142.9 on 156 dof, p = 0.767, largest relative deviation 0.0128
+  N mod 27 inside N mod 3: chi2 15.0 on 24 dof, p = 0.920, largest relative deviation 0.0549
+  N mod 2^2: chi2 0.1 on 1 dof, p = 0.713, largest relative deviation 0.0001
+  N mod 2^3: chi2 2.0 on 3 dof, p = 0.580, largest relative deviation 0.0007
+  N mod 2^4: chi2 4.6 on 7 dof, p = 0.717, largest relative deviation 0.0015
+  N mod 2^6: chi2 34.3 on 31 dof, p = 0.311, largest relative deviation 0.0043
+  binary digit sum mod 2 (Thue-Morse): counts [np.int64(3423809), np.int64(3481060)], chi2 474.7 on 1 dof, p = 0.000, largest relative deviation 0.0083
+  decimal digit sum mod 2: counts [np.int64(3437373), np.int64(3467496)], chi2 131.4 on 1 dof, p = 0.000, largest relative deviation 0.0044
+  base-7 digit sum mod 4: counts [np.int64(3451001), np.int64(0), np.int64(3453868)], chi2 1.2 on 1 dof, p = 0.275, largest relative deviation 0.0004
+  base-3 digit sum mod 4: counts [np.int64(3449966), np.int64(0), np.int64(3454903)], chi2 3.5 on 1 dof, p = 0.057, largest relative deviation 0.0007
+
+level g >= 700: 874408 hits; relative sd of a class share with 1/3 of the hits: 0.0019
+  control N mod 3: shares 0.0001 0.3071 0.6928
+  control N mod 5: shares 0.0136 0.2196 0.2782 0.3275 0.1611
+  control N mod 7: shares 0.0310 0.1532 0.1289 0.2147 0.1340 0.1888 0.1494
+  N mod 3^2 inside N mod 3: chi2 1.5 on 4 dof, p = 0.830, largest relative deviation 0.0019
+  N mod 5^2 inside N mod 5: chi2 25.9 on 20 dof, p = 0.168, largest relative deviation 0.0345
+  N mod 7^2 inside N mod 7: chi2 41.7 on 42 dof, p = 0.485, largest relative deviation 0.0179
+  N mod 11^2 inside N mod 11: chi2 103.2 on 110 dof, p = 0.665, largest relative deviation 0.0411
+  N mod 13^2 inside N mod 13: chi2 143.5 on 156 dof, p = 0.756, largest relative deviation 0.0369
+  N mod 27 inside N mod 3: chi2 10.0 on 16 dof, p = 0.869, largest relative deviation 0.0076
+  N mod 2^2: chi2 0.2 on 1 dof, p = 0.626, largest relative deviation 0.0005
+  N mod 2^3: chi2 1.6 on 3 dof, p = 0.673, largest relative deviation 0.0022
+  N mod 2^4: chi2 10.2 on 7 dof, p = 0.174, largest relative deviation 0.0060
+  N mod 2^6: chi2 46.7 on 31 dof, p = 0.035, largest relative deviation 0.0143
+  binary digit sum mod 2 (Thue-Morse): counts [np.int64(433288), np.int64(441120)], chi2 70.2 on 1 dof, p = 0.000, largest relative deviation 0.0090
+  decimal digit sum mod 2: counts [np.int64(435669), np.int64(438739)], chi2 10.8 on 1 dof, p = 0.001, largest relative deviation 0.0035
+  base-7 digit sum mod 4: counts [np.int64(436684), np.int64(0), np.int64(437724)], chi2 1.2 on 1 dof, p = 0.265, largest relative deviation 0.0012
+  base-3 digit sum mod 4: counts [np.int64(436294), np.int64(0), np.int64(438114)], chi2 3.8 on 1 dof, p = 0.049, largest relative deviation 0.0021
+
+level g >= 1000: 45389 hits; relative sd of a class share with 1/3 of the hits: 0.0081
+  control N mod 3: shares 0.0000 0.2764 0.7236
+  control N mod 5: shares 0.0041 0.1765 0.4084 0.2598 0.1511
+  control N mod 7: shares 0.0171 0.1504 0.1356 0.1991 0.1269 0.1855 0.1854
+  N mod 3^2 inside N mod 3: chi2 1.7 on 4 dof, p = 0.800, largest relative deviation 0.0099
+  N mod 5^2 inside N mod 5: chi2 12.4 on 16 dof, p = 0.716, largest relative deviation 0.0525
+  N mod 7^2 inside N mod 7: chi2 44.2 on 42 dof, p = 0.377, largest relative deviation 0.1471
+  N mod 11^2 inside N mod 11: chi2 116.3 on 110 dof, p = 0.322, largest relative deviation 0.1522
+  N mod 13^2 inside N mod 13: chi2 127.0 on 156 dof, p = 0.957, largest relative deviation 0.1536
+  N mod 27 inside N mod 3: chi2 11.7 on 16 dof, p = 0.764, largest relative deviation 0.0359
+  N mod 2^2: chi2 0.3 on 1 dof, p = 0.615, largest relative deviation 0.0024
+  N mod 2^3: chi2 2.5 on 3 dof, p = 0.477, largest relative deviation 0.0114
+  N mod 2^4: chi2 9.6 on 7 dof, p = 0.214, largest relative deviation 0.0285
+  N mod 2^6: chi2 37.2 on 31 dof, p = 0.206, largest relative deviation 0.0660
+  binary digit sum mod 2 (Thue-Morse): counts [np.int64(22368), np.int64(23021)], chi2 9.4 on 1 dof, p = 0.002, largest relative deviation 0.0144
+  decimal digit sum mod 2: counts [np.int64(22406), np.int64(22983)], chi2 7.3 on 1 dof, p = 0.007, largest relative deviation 0.0127
+  base-7 digit sum mod 4: counts [np.int64(22746), np.int64(0), np.int64(22643)], chi2 0.2 on 1 dof, p = 0.634, largest relative deviation 0.0023
+  base-3 digit sum mod 4: counts [np.int64(22571), np.int64(0), np.int64(22818)], chi2 1.3 on 1 dof, p = 0.245, largest relative deviation 0.0054
+
+level g >= 1300: 2128 hits; relative sd of a class share with 1/3 of the hits: 0.0375
+  control N mod 3: shares 0.0000 0.3059 0.6941
+  control N mod 5: shares 0.0019 0.1931 0.3111 0.3069 0.1870
+  control N mod 7: shares 0.0108 0.1325 0.1485 0.1992 0.1424 0.2049 0.1617
+  N mod 3^2 inside N mod 3: chi2 6.4 on 4 dof, p = 0.167, largest relative deviation 0.0799
+  N mod 5^2 inside N mod 5: chi2 18.2 on 16 dof, p = 0.311, largest relative deviation 0.1935
+  N mod 7^2 inside N mod 7: chi2 11.9 on 12 dof, p = 0.453, largest relative deviation 0.2736
+  N mod 11^2 inside N mod 11: chi2 0.0 on 0 dof, p = 1.000, largest relative deviation 0.0000
+  N mod 13^2 inside N mod 13: chi2 0.0 on 0 dof, p = 1.000, largest relative deviation 0.0000
+  N mod 27 inside N mod 3: chi2 28.8 on 16 dof, p = 0.025, largest relative deviation 0.3410
+  N mod 2^2: chi2 0.4 on 1 dof, p = 0.523, largest relative deviation 0.0141
+  N mod 2^3: chi2 3.1 on 3 dof, p = 0.379, largest relative deviation 0.0639
+  N mod 2^4: chi2 17.1 on 7 dof, p = 0.017, largest relative deviation 0.1842
+  N mod 2^6: chi2 33.9 on 31 dof, p = 0.328, largest relative deviation 0.2782
+  binary digit sum mod 2 (Thue-Morse): counts [np.int64(1063), np.int64(1065)], chi2 0.0 on 1 dof, p = 0.917, largest relative deviation 0.0009
+  decimal digit sum mod 2: counts [np.int64(1035), np.int64(1093)], chi2 1.6 on 1 dof, p = 0.206, largest relative deviation 0.0273
+  base-7 digit sum mod 4: counts [np.int64(1101), np.int64(0), np.int64(1027)], chi2 2.6 on 1 dof, p = 0.104, largest relative deviation 0.0348
+  base-3 digit sum mod 4: counts [np.int64(1051), np.int64(0), np.int64(1077)], chi2 0.3 on 1 dof, p = 0.580, largest relative deviation 0.0122
+
+g >= 1000 (45389 hits): share in the most popular class, prime by prime, and in all of them together:
+   3:2 0.72 (all so far 0.724); 5:2 0.41 (all so far 0.332); 7:3 0.20 (all so far 0.056); 11:2 0.12 (all so far 0.007); 13:8 0.09 (all so far 0.001); 17:3 0.07 (all so far 0.000); 19:3 0.08 (all so far 0.000); 23:15 0.05 (all so far 0.000); 29:19 0.04 (all so far 0.000)
+g >= 1300 (2128 hits): share in the most popular class, prime by prime, and in all of them together:
+   3:2 0.69 (all so far 0.694); 5:2 0.31 (all so far 0.250); 7:5 0.20 (all so far 0.053); 11:2 0.12 (all so far 0.007); 13:5 0.11 (all so far 0.001); 17:7 0.08 (all so far 0.000); 19:3 0.07 (all so far 0.000); 23:18 0.06 (all so far 0.000); 29:3 0.05 (all so far 0.000)
+g >= 1600 (149 hits): share in the most popular class, prime by prime, and in all of them together:
+   3:2 0.72 (all so far 0.725); 5:2 0.29 (all so far 0.248); 7:6 0.19 (all so far 0.047); 11:2 0.21 (all so far 0.000); 13:7 0.12 (all so far 0.000); 17:8 0.09 (all so far 0.000); 19:10 0.10 (all so far 0.000); 23:8 0.07 (all so far 0.000); 29:10 0.07 (all so far 0.000)

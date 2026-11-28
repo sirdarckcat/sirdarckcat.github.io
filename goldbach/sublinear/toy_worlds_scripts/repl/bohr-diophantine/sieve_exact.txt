@@ -1,0 +1,8 @@
+z = 509: mean rows left 1480.688  sd 4.109  min 1457
+z = 10000: mean rows left 1010.032  sd 17.161  min 909
+z = 1000000: mean rows left 674.160  sd 18.765  min 573
+z = 100000000: mean rows left 505.638  sd 18.014  min 412
+
+real	3m47.455s
+user	3m24.304s
+sys	0m0.342s

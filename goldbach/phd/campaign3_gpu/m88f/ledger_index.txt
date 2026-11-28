@@ -1,0 +1,10 @@
+# ledger_q170000_m88f.txt: one key a vector handed out, sha256(str(N0))[:20], in the order the batches were made. No N0 is handed out twice.
+lines      1-26,040   the earlier m88f batches, all unshifted (names q170000_m88f_t1_*, _top2_*, _top3_*)
+lines 26,041-38,040   top4: family-B covers (B ∩ present, 258 start covers), UNSHIFTED, specs_q170000_m88f_top4.json (12,000). Not deployed: the shifted twin replaced it.
+lines 38,041-50,040   top4s: the same 12,000 covers in the same order, SHIFTED by research's top32 shift (4de3423): N0 += k_shift * M, k_shift = 5,603,499,370 or
+                      5,603,499,371, so k = 2^32 - 1 is the last member below 10^200. Names q170000_m88f_top4s_v0 .. v11999, each spec with its k_shift.
+                      Gate: ../s32/. Shares: gold-l4d (since 21:26Z), gold-l4b / gold-l4c replacements 3,476 each, gold-xt4 replacement 1,572.
+A shifted vector's members k in [KLO, 2^32) are its unshifted twin's members k + k_shift, which lie above the twin's kmax = 2^32: no N is in both.
+lines 50,041-53,516   top5s: 3,476 new family-B covers (B ∩ present), top32-SHIFTED as top4s (k_shift 5,603,499,370-371), research's gen_vectors.sh with GEN_KMAX=top32, seed 5005,
+                      24 Nov 20:28-20:32Z; residual sizes 1,255-1,258 (mean 1,257.5); check_specs OK; ../s32/top5s/assert_top5s.py PASSED (N at KLO32 >= 8.915e199).
+                      For the lead's stopgap L4 (24 Nov 20:21Z) while partition 2 waits for a G4.

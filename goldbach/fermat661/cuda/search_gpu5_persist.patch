@@ -1,0 +1,65 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 10:08:21.282243728 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 10:13:11.696008684 +0000
+@@ -54,6 +54,17 @@
+ ap.add_argument("--profile-pool", type=int, default=0, choices=(0, 1),
+                 help="1: time the Fermat kernels of every round of every pool with CUDA events and print, per pool, the rounds, the kernels' GPU seconds, the wall seconds of run_pool and the gap "
+                      "between them (the GPU idle between rounds: the host's syncs and cupy calls), and the wall of the whole flush; no change to the results")
++ap.add_argument("--persist", type=int, default=0, choices=(0, 1),
++                help="1: a pool is tested by the PERSISTENT kernel (fermat661/cuda/fermat28_persist_kernel.cuh): every thread takes a member from a queue and tests its rows in order until the first PRP, then takes the "
++                     "next: no host round trip, no kernel a round, no test past the first PRP (the rounds compute ~3% of them); when the queue is empty the members in flight (a few % of the work) are finished by "
++                     "run_pool / run_pool_split.  The same per-member results.  Needs --kernel 28")
++ap.add_argument("--tail-target", type=int, default=0,
++                help="run_pool, the TAIL: when few members are left a round costs the latency of one test (~5 ms) and a host round trip whatever its size, so test more rows of each in parallel: "
++                     "D = max(D, min(--dtail, tail_target // active members)) (0: off, the old rule min(dmax, target // active)); tests computed past a member's first PRP in the tail are free (the GPU is idle), "
++                     "the per-member results are the same.  65536 with --dtail 256: the ~25 tail rounds of a half-pool become ~6-10")
++ap.add_argument("--dtail", type=int, default=256, help="--tail-target: the most rows a member is tested on in one round in the tail")
++ap.add_argument("--persist-cta-sm", type=int, default=0, help="--persist: CTAs of 128 threads an SM (0: as many as the kernel's registers allow)")
++ap.add_argument("--persist-maxreg", type=int, default=0, help="--persist: --maxrregcount of the persistent kernel (0: the compiler's choice; 96 keeps 5 CTAs an SM on an L4 / T4, where the compiler takes 128)")
+ ap.add_argument("--pool-threads", type=int, default=1, choices=(1, 2),
+                 help="2: a pool's members are tested as two halves in two threads, each on its own CUDA stream (run_pool_split): while one half's host code runs between its Fermat rounds (syncs, ~40 small "
+                      "cupy launches) the other half's kernel keeps the GPU busy; the same per-member results as 1 (counted tests, PRP flags, successes, first-PRP rows)")
+@@ -81,6 +92,8 @@
+                 help="kernel 28's step file: fermat28_step_s1.cuh or _s1r.cuh with --k28-asm 1 (sm_120), _s1rw.cuh or _s1w.cuh with --k28-asm 0 (sm_80/89)")
+ ap.add_argument("--k28-asm", type=int, default=int(os.environ.get("K28_ASM", "1")), choices=(0, 1), help="kernel 28: PTX mad.wide (1) or plain C (0)")
+ args = ap.parse_args()
++if args.persist and args.kernel != 28:
++    ap.error("--persist needs --kernel 28")
+ sys.path.insert(0, args.goldbach)
+ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ import search                      # noqa: E402  (init_spec, verify_success)
+@@ -180,6 +193,9 @@
+                 hi = int(sp["N0"]) + (int(sp.get("kmax", 1 << 32)) - 1) * M
+                 assert lo >= 1 << 642 and hi < 1 << 668, f"kernel 28 needs 2^642 <= n < 2^668 ({sp['name']})"
+             self.k = gpu_fermat28.kernel(limbs, step_file=args.k28_step, asm_mad=bool(args.k28_asm))
++            if args.persist:
++                self.kp = gpu_fermat28.persist_kernel(limbs, step_file=args.k28_step, asm_mad=bool(args.k28_asm), maxreg=args.persist_maxreg or None)
++                self.kp_regs = self.kp.attributes["num_regs"]
+         else:
+             self.k = (kernel3 if args.kernel == 3 else kernel2)(limbs)
+ 
+@@ -229,7 +245,11 @@
+     gtests = launches = 0
+     while act.size:
+         rem = cnt[act] - pos[act]
+-        D = int(max(1, min(args.dmax, int(rem.max()), (args.target if target is None else target) // int(act.size))))
++        tg = args.target if target is None else target
++        D = max(1, min(args.dmax, tg // int(act.size)))
++        if args.tail_target:                                    # the tail (see --tail-target): the round's size is scaled with the half-pool's share of the target
++            D = max(D, min(args.dtail, (args.tail_target * tg // args.target) // int(act.size)))
++        D = int(max(1, min(D, int(rem.max()))))
+         take = cp.minimum(rem, D)
+         csum = cp.cumsum(take)
+         total = int(csum[-1])
+@@ -369,7 +389,11 @@
+         if args.overlap or args.pipeline:
+             cp.cuda.get_current_stream().synchronize()               # the concatenations are done before the pool entries go back to the sieve thread's allocator
+         pool.clear(); npool[0] = 0
+-        tests_m, prp_m, succ_m, frow, g, nl = (run_pool_split if args.pool_threads > 1 else run_pool)(tester, kv, cnt, cols)
++        rest = run_pool_split if args.pool_threads > 1 else run_pool
++        if args.persist:
++            tests_m, prp_m, succ_m, frow, g, nl = gpu_fermat28.persist_pool(tester, kv, cnt, cols, rest, cta_sm=args.persist_cta_sm or None)
++        else:
++            tests_m, prp_m, succ_m, frow, g, nl = rest(tester, kv, cnt, cols)
+         gt[0] += g; gt[1] += nl
+         tt, pp = int(tests_m.sum()), int(prp_m.sum())
+         if tt:                                                   # expected successes of the tested members: sum (1 - p^)^count

@@ -1,0 +1,27 @@
+# uarch run_experiments.sh section H (ab64ed3), run by hand on the deployed uarch tree (b344e85) on gold-g4b, 2026-11-23 04:32-04:33Z,
+# campaign paused (SIGSTOP) meanwhile. bench_batch.py SPEC --B 100000000 --ks 25 --f 0.97 --staged 1 --reps 3 {--rcta 2 | --rcta 4 | --rcta 8 --gen-threads 512 | --rcta 2}
+# SPEC: the first of six Q = 170,000 vectors (1,262 rows). Times in ms a 2^25-member window.
+
+2026-11-23T04:32:38Z paused pid 810587; spec /content/probe/s25.json
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 2422 MHz, 32505 MiB, 97887 MiB
+--- --rcta 2
+1262 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.93 GB of 62.7 GB free (tables 4.1 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 217.3 ms = 6.475 ns a member (154.4 M members/s); kept 1,007,616 members, 389,150,170 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.18  sieve (gen + tiles) 193.2  count 3.70  select 0.39  finalize 4.71  wait1 0.21  rows 14.86  wait2 14.86  host 0.03   (ms a batch)
+--- --rcta 4
+1262 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.93 GB of 62.7 GB free (tables 4.3 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 225.8 ms = 6.728 ns a member (148.6 M members/s); kept 1,007,616 members, 389,150,170 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.18  sieve (gen + tiles) 201.9  count 3.70  select 0.39  finalize 4.70  wait1 0.20  rows 14.68  wait2 14.68  host 0.02   (ms a batch)
+--- --rcta 8 --gen-threads 512
+1262 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.93 GB of 62.7 GB free (tables 4.3 s)
+  rg=16 tile threads=256 gen threads=512 ppt=4: wall 210.5 ms = 6.274 ns a member (159.4 M members/s); kept 1,007,616 members, 389,150,170 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.17  sieve (gen + tiles) 186.6  count 3.70  select 0.39  finalize 4.69  wait1 0.19  rows 14.77  wait2 14.77  host 0.02   (ms a batch)
+--- --rcta 2
+1262 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.93 GB of 62.7 GB free (tables 4.2 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 217.1 ms = 6.471 ns a member (154.5 M members/s); kept 1,007,616 members, 389,150,170 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.18  sieve (gen + tiles) 193.2  count 3.69  select 0.39  finalize 4.71  wait1 0.22  rows 14.73  wait2 14.73  host 0.02   (ms a batch)
+2026-11-23T04:33:02Z resumed pid 810587
+SECTH-DONE
+
+# sieve (gen + tiles): rcta 2 193.2 / rcta 4 201.9 / rcta 8 186.6 / rcta 2 193.2 ms. rcta 8 saves 6.6 ms a window (13 ms of a 1.76 s batch, 0.75%),
+# under the 20 ms bar for a production change: DEEP_RCTA stays 2 (default), gen threads 256.

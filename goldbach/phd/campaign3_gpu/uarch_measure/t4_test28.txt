@@ -1,0 +1,13 @@
+name, memory.total [MiB], power.limit [W], clocks.max.sm [MHz]
+Tesla T4, 15360 MiB, 70.00 W, 1590 MHz
+spec q150000_g8ffe1_v0 Q=150000: 20000 candidates k in [2^30, 2^32), 473 base-2 PRPs
+fermat2           regs 126 local  168 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: - | tests/s 64/128/256: 1,155,085 / 1,151,034 / 1,133,976
+fermat3           regs 128 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,118,826 / 2,094,413 / 2,111,064
+fermat28 s1 asm   regs  92 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 1,991,514 / 1,995,618 / 1,986,807
+fermat28 s1 plain regs 110 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,146,746 / 2,143,068 / 2,171,178
+fermat28 s1 plain+w regs  96 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,508,814 / 2,513,276 / 2,505,727
+fermat28 s2 plain+w regs  90 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,460,927 / 2,462,821 / 2,455,691
+fermat28 s1r plain+w regs  94 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,524,427 / 2,510,230 / 2,511,450
+fermat28 s1r asm  regs  96 local   88 B | vs gmpy2 mismatches 0 | flags = fermat2's on 1048576: True | tests/s 64/128/256: 2,030,162 / 2,034,466 / 2,018,321
+ALL MATCH
+T4BENCH-DONE

@@ -1,0 +1,24 @@
+F_9, J = 2: 1428 rows (monic irreducible of degree 3, 4 with 2-smooth derivative)
+  B = x^2 + (2*z + 2)*x + (z + 2): n = 249 done
+  B = x^2 + (z + 1)*x + 2*z: n = 249 done
+  B = x^2 + x + z: n = 249 done
+r : desert count | control count
+   1:     16 |     90
+   2:    602 |    348
+   3:    216 |    761
+   4:   1656 |    967
+   5:    300 |    889
+   6:   1100 |    639
+   7:    100 |    369
+   8:    240 |    146
+   9:     16 |     54
+  10:     36 |     15
+  11:      0 |      5
+  12:      2 |      1
+desert: 4284 values, r odd 648, r = 1 (irreducible) 16
+control: 4284 values, r odd 2168 (0.5061), r = 1 90
+number of factors, desert vs control|r even: chi2 = 1.39 on 4 degrees of freedom
+least factor degree (buckets 3,4,5,6-8,9-16,17+): desert [1212, 658, 482, 646, 647, 639] control|even [595, 344, 217, 359, 316, 285]
+least factor degree, desert vs control|r even: chi2 = 7.32 on 5 degrees of freedom
+p-values: 0.847, 0.198
+mean r: desert 4.6078, control|even 4.5974

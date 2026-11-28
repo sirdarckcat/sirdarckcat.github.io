@@ -1,0 +1,2 @@
+45 primes from 3: 20000000 members in 2.193 s, 109.6 ns per member (check 467075284)
+37 primes from 29: 20000000 members in 1.813 s, 90.6 ns per member (check 2118670124)

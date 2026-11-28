@@ -1,0 +1,13 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 37d01525a559c285dc1f03263f37c4df923f980fb40bb5cb906c62376fa77526
+[A] N reconstructed: 200 digits, t=4224399187, 88 congruences OK
+[B] primes below q: 14508; residual (uncovered): 1185
+    ... 500/1185 residual complements proven composite
+    ... 1000/1185 residual complements proven composite
+[B] all 1185 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 157837 prime (trial division); N - q proven prime by ECPP (24 steps, independently re-verified)
+[D] q = 157837 > 146191 OK
+[D] N < N_bound OK (200 vs 201 digits)
+[D] N has 200 <= 200 digits OK
+[PASS] g(N) = 157837 for the 200-digit N in /home/user/sirdarckcat.github.io/goldbach/records/budget_1e200_200digit_g157837/package_stdlib.json
+rc=0

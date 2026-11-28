@@ -1,0 +1,6 @@
+rows 1524 window K = 2.0e+07 (ln K = 16.81), primes (463, 4000]: 460
+simulated in 184 s
+hard (agreement ln-weight, e = 1): predicted mean 1964.0 sd 75.1 ; simulated mean 1964.0 sd 75.1 ; max 2369.9 = mean + 5.41 sd ; top five: [2345.0, 2346.0, 2355.0, 2362.0, 2370.0]
+   Gaussian expectation for the maximum of 2e+07 draws: +5.34 sd; members above mean + 4 sd: 576 (Gaussian 634); above + 5 sd: 6 (Gaussian 5.7)
+soft (row counts as weights): predicted mean 3195.3 sd 140.4 ; simulated mean 3195.3 sd 140.4 ; max 3984.3 = mean + 5.62 sd ; top five: [3940.0, 3951.0, 3954.0, 3968.0, 3984.0]
+   Gaussian expectation for the maximum of 2e+07 draws: +5.34 sd; members above mean + 4 sd: 905 (Gaussian 634); above + 5 sd: 16 (Gaussian 5.7)

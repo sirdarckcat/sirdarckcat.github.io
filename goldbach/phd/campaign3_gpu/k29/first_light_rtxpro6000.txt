@@ -1,0 +1,17 @@
+# 29-bit Fermat kernel (uarch 710585f), first light: time_fermat28.py --check (2,000 candidates against gmpy2) and tests/s, the production step against the 29-bit
+# steps (t29.sh), on an 88-moduli spec (/content/probe/s25.json) and on an 89-moduli vector window; campaign paused meanwhile. gold-g4c, 2026-11-23.
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 2422 MHz
+--- 88 moduli: /content/probe/s25.json
+device: NVIDIA RTX PRO 6000 Blackwell Server Edition  batch 1048576  threads 128  20 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (36 base-2 PRPs)
+  s1r_asm  regs  92 local  88 B: median   23,293,627 tests/s  best   23,298,810  (445 loops)
+  s29_asm: 0 mismatches against gmpy2 in 2000 candidates (45 base-2 PRPs)
+  s29_asm  regs  91 local  88 B: median   24,624,569 tests/s  best   24,630,775  (470 loops)
+--- 89-moduli vector window: k in [2137898, 18915114)
+device: NVIDIA RTX PRO 6000 Blackwell Server Edition  batch 1048576  threads 128  20 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (50 base-2 PRPs)
+  s1r_asm  regs  92 local  88 B: median   23,288,200 tests/s  best   23,293,257  (445 loops)
+  s29_asm: 0 mismatches against gmpy2 in 2000 candidates (61 base-2 PRPs)
+  s29_asm  regs  91 local  88 B: median   24,619,055 tests/s  best   24,624,155  (470 loops)
+2026-11-23T11:25:52Z resumed pid 1891394
+T29-DONE

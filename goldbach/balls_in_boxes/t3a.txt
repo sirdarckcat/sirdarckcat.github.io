@@ -1,0 +1,15 @@
+x = 10000: all-greedy G(x)/(x ln x) from greedy_cover.txt = 6.53
+  theta = 0.0: w = 1; C* = 6.556 (draws 6.56 .. 6.56); C*/ln x = reach/(x ln^2 x) = 0.712
+  theta = 0.2: w = 6; C* = 6.515 (draws 6.47 .. 6.57); C*/ln x = reach/(x ln^2 x) = 0.707
+  theta = 0.4: w = 40; C* = 6.400 (draws 6.36 .. 6.47); C*/ln x = reach/(x ln^2 x) = 0.695
+  theta = 0.6: w = 251; C* = 5.755 (draws 5.66 .. 5.80); C*/ln x = reach/(x ln^2 x) = 0.625
+  theta = 0.8: w = 1,585; C* = 3.797 (draws 3.72 .. 3.93); C*/ln x = reach/(x ln^2 x) = 0.412
+  theta = 0.9: w = 3,981; C* = 1.921 (draws 1.84 .. 1.97); C*/ln x = reach/(x ln^2 x) = 0.209
+x = 100000: all-greedy G(x)/(x ln x) from greedy_cover.txt = 8.38
+  theta = 0.0: w = 1; C* = 8.393 (draws 8.39 .. 8.39); C*/ln x = reach/(x ln^2 x) = 0.729
+  theta = 0.2: w = 10; C* = 8.385 (draws 8.37 .. 8.41); C*/ln x = reach/(x ln^2 x) = 0.728
+  theta = 0.4: w = 100; C* = 8.280 (draws 8.26 .. 8.31); C*/ln x = reach/(x ln^2 x) = 0.719
+  theta = 0.6: w = 1,000; C* = 7.736 (draws 7.72 .. 7.78); C*/ln x = reach/(x ln^2 x) = 0.672
+  theta = 0.8: w = 10,000; C* = 5.623 (draws 5.59 .. 5.67); C*/ln x = reach/(x ln^2 x) = 0.488
+  theta = 0.9: w = 31,623; C* = 3.148 (draws 3.12 .. 3.20); C*/ln x = reach/(x ln^2 x) = 0.273
+[319 s]

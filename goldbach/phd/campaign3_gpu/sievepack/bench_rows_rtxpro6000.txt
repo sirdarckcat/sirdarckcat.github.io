@@ -1,0 +1,25 @@
+# uarch bench_rows.py (df715e1) on gold-g4c, brows.sh, 2026-11-23 16:25:44-16:25:46Z (campaign paused): the window's rows kernel and its variants on a synthetic window at f = 0.985.
+# Index order helps (rows 3.88 -> 2.96 / 2.61 ms), but with finalize (0.90 ms at f = 0.985) the pair is ~2.2 ms a window, ~0.6% of a batch: under the bar.
+
+2026-11-23T16:25:44Z paused pid 2564036
+synthetic window: 2^24 members, 1248 rows (2.62 GB of bits), 251,904 kept members (f = 0.985), 97,464,502 alive rows of them
+production tail (ms): count 1.93  select 0.18  finalize 0.90  rows 3.85
+variant                                    ms   GB/s of the matrix
+count (reference)                        1.85                 1417
+rows (production, serial)                3.88                  675
+rows2 (16 loads in flight)               3.72                  704
+rows, no stores (reads only)             2.94                  891
+rows, no loads (writes only)             1.36                 1926
+order (the permutation, once)            0.01               194736
+rows_ord (by index, serial)              2.96                  885
+rows_ord2 (by index, 8 in flight)        2.61                 1002
+rows_ord, no stores (reads only)         1.75                 1497
+rowmask (reads, coalesced masks)         1.99                 1314
+rowlist (writes from masks)              1.62                 1614
+rowmask + rowlist                        3.68                  711
+rowmask + rowlist lists identical to rows: True
+s200g_rows_ord lists identical to rows: True
+s200g_rows_ord2 lists identical to rows: True
+ROWS-DONE
+2026-11-23T16:25:46Z resumed pid 2564036
+BROWS-DONE

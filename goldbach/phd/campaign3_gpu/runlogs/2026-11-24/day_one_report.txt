@@ -1,0 +1,33 @@
+# Sent to the lead session at ~04:05Z on 24 Nov 2026 (the day-one report at Q = 170,000). Data: rates_0400.txt and tally_0400.jsonl.txt
+# (rate_card.py and tally_rt2.py on each card), the replaced cards' summaries in ../2026-11-23/, the 463 windows from their final snapshots (rate_win.py).
+
+GPU session -> lead. Day-one report at Q = 170,000 (04:05Z on 24 Nov; window from ~03:54Z on 23 Nov).
+
+1. Counts against expected.
+- Design hits (g >= 170,000): 0 found. Expected 0.23: 0.138 on the replaced cards (final snapshots), 0.086 on the current cards' own dirs, and ~0.006 for gold-gpu, whose records were lost when its runtime ended without a snapshot.
+- Near-misses: 1 found (g = 158,209, gold-g4c, certified). Expected ~0.98 where logged: 0.553 on the replaced cards and 0.427 on the current ones. The threshold was 157,837 before 12:57Z and 158,209 after. Only the RTX vector mode logs this; the L4/T4 do not.
+
+2. Today's changes on long windows (expected per card a second, from the cards' own stats).
+- RTX, 491 family B against the 463 production after one-pass (18:15-20:00Z: 9.07e-7 design hits/s and 5.40e-6 near-misses/s; gold-g4 alone 9.36e-7 / 5.59e-6):
+  - cap 1,248-1,249 (20:30-02:39Z, ~30,000 batches a card): 9.84e-7 / 5.36e-6, i.e. design hits x1.085 (x1.051 against gold-g4 alone) and near-misses x0.99 (x0.96). The gate predicted x1.061 / x0.9995.
+  - cap 1,250 (03:30-04:00Z): 9.68e-7 / 5.28e-6, i.e. x1.067 / x0.98.
+- L4/T4, top32 family B: gold-l4d was at 1.143e-7/s on top3 (20:40-21:25Z). On top4s the three L4s run at 1.19-1.20e-7/s (x1.045-1.05). The T4 runs at 5.4e-8/s.
+- Fleet now: ~0.29 expected design hits a day (RTX 0.25, L4 0.031, T4 0.005). On the RTX alone, ~1.4 expected near-misses a day at the 158,209 threshold.
+- Top-16 levels done on the shifted vectors:
+  - gold-l4d: 2,500 of 3,476 vectors at 2 levels (plus 1,000 top3 vectors at 1);
+  - gold-l4e: 420 at 2 levels; gold-l4f: 360 at 2 levels;
+  - gold-xt4b: 1,327 of 1,572 at level 1.
+
+3. Supply.
+- RTX, the 1,249 tail. Every step came from your rule (a walk under 100 new vectors): gold-g4d at 02:43Z (82), gold-g4e at 02:56Z (99), gold-g4f at 03:25Z (98).
+  - At 1,249 they made 129,233 / 128,757 / 129,185 vectors, ~387,000 in all (research estimated ~290,000).
+  - Yield per walk fell from 1,000 to ~500 by 01:10Z, ~180 by 02:25Z, and 100-150 in the last ~10 min, with walks of 6-8 s at the end.
+  - Each card had ~12,000 vectors ahead at its step, so no GPU waited. The first chunks at 1,250 are full, with the 1,249 leftovers taken best-first. The row guards' base is now 1,250.000.
+- RTX ahead: research puts ~3.7 M covers at <= 1,250, so at ~1.4 M a day that cap lasts ~2.5 days. The same rule takes it to 1,251, with CAPMAX 1,252 on the replacements.
+- L4/T4: ~62 h of top-16 levels per share from their starts, i.e. to ~26 Nov midday.
+
+4. Status.
+- 7 GPUs running. Seven replacements since 20:13Z, all the same card types.
+- The watcher copies found lines off every card each poll (~3 min).
+- This container restarted at ~00:56Z. No card was affected, and the watcher and the local CPU share were back within 2 min.
+- CU: 7,967.7 at 37.12/h, so the 1,800 CU mark comes in ~6.9 days, around 1 Dec ~02Z.

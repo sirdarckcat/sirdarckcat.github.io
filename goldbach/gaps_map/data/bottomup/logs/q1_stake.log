@@ -1,0 +1,17 @@
+v = 14.04 tests to a prime
+rho    best keep   tests per unit of mass   gain over the 1.5%% keep at the same rho (nats)   [Opus table: 0.001: 0.47, 0.003: 0.17, 0.01: 0.003, 0.02: 0.03, 0.05: 0.21, 0.1: 0.42]
+0.0003  0.06%     0.451                    0.87
+0.0010  0.16%     0.693                    0.48
+0.0030  0.45%     1.057                    0.18
+0.0054  0.72%     1.344                    0.06
+0.0118  1.51%     1.882                    0.00
+0.0200  2.27%     2.392                    0.03
+0.0500  4.77%     3.735                    0.20
+0.1000  8.23%     5.382                    0.40
+
+stake of a cheaper sieve, all against the G4 as it is (rho = 0.0054, best keep 0.85%):
+   rho 0.0054: 1.344 tests per unit of mass, gain 0.00 nats
+   rho 0.0027: 1.015 tests per unit of mass, gain 0.28 nats
+   rho 0.0010: 0.693 tests per unit of mass, gain 0.66 nats
+   rho 0.0003: 0.451 tests per unit of mass, gain 1.09 nats
+   rho 0.0000: 0.089 tests per unit of mass, gain 2.72 nats

@@ -1,0 +1,4976 @@
+{
+ "N": "301232067011489734233412892",
+ "digits": 27,
+ "g": 10111,
+ "offsets_checked": 1241,
+ "by_congruence": 1049,
+ "by_trial_division": 137,
+ "by_strong_base2": 54,
+ "complement_status": "BPSW probable prime (see ECPP certificate)",
+ "witnesses": {
+  "2": [
+   "parity",
+   2
+  ],
+  "3": [
+   "congruence",
+   41
+  ],
+  "5": [
+   "congruence",
+   3
+  ],
+  "7": [
+   "congruence",
+   5
+  ],
+  "11": [
+   "congruence",
+   3
+  ],
+  "13": [
+   "strong_base2",
+   2
+  ],
+  "17": [
+   "congruence",
+   3
+  ],
+  "19": [
+   "congruence",
+   7
+  ],
+  "23": [
+   "congruence",
+   3
+  ],
+  "29": [
+   "congruence",
+   3
+  ],
+  "31": [
+   "trial",
+   1237
+  ],
+  "37": [
+   "congruence",
+   5
+  ],
+  "41": [
+   "congruence",
+   3
+  ],
+  "43": [
+   "congruence",
+   11
+  ],
+  "47": [
+   "congruence",
+   3
+  ],
+  "53": [
+   "congruence",
+   3
+  ],
+  "59": [
+   "congruence",
+   3
+  ],
+  "61": [
+   "congruence",
+   7
+  ],
+  "67": [
+   "congruence",
+   5
+  ],
+  "71": [
+   "congruence",
+   3
+  ],
+  "73": [
+   "congruence",
+   13
+  ],
+  "79": [
+   "congruence",
+   29
+  ],
+  "83": [
+   "congruence",
+   3
+  ],
+  "89": [
+   "congruence",
+   3
+  ],
+  "97": [
+   "congruence",
+   5
+  ],
+  "101": [
+   "congruence",
+   3
+  ],
+  "103": [
+   "congruence",
+   7
+  ],
+  "107": [
+   "congruence",
+   3
+  ],
+  "109": [
+   "congruence",
+   11
+  ],
+  "113": [
+   "congruence",
+   3
+  ],
+  "127": [
+   "congruence",
+   5
+  ],
+  "131": [
+   "congruence",
+   3
+  ],
+  "137": [
+   "congruence",
+   3
+  ],
+  "139": [
+   "trial",
+   53503
+  ],
+  "149": [
+   "congruence",
+   3
+  ],
+  "151": [
+   "congruence",
+   13
+  ],
+  "157": [
+   "congruence",
+   5
+  ],
+  "163": [
+   "trial",
+   1481
+  ],
+  "167": [
+   "congruence",
+   3
+  ],
+  "173": [
+   "congruence",
+   3
+  ],
+  "179": [
+   "congruence",
+   3
+  ],
+  "181": [
+   "congruence",
+   19
+  ],
+  "191": [
+   "congruence",
+   3
+  ],
+  "193": [
+   "congruence",
+   17
+  ],
+  "197": [
+   "congruence",
+   3
+  ],
+  "199": [
+   "strong_base2",
+   2
+  ],
+  "211": [
+   "congruence",
+   23
+  ],
+  "223": [
+   "congruence",
+   43
+  ],
+  "227": [
+   "congruence",
+   3
+  ],
+  "229": [
+   "congruence",
+   7
+  ],
+  "233": [
+   "congruence",
+   3
+  ],
+  "239": [
+   "congruence",
+   3
+  ],
+  "241": [
+   "congruence",
+   11
+  ],
+  "251": [
+   "congruence",
+   3
+  ],
+  "257": [
+   "congruence",
+   3
+  ],
+  "263": [
+   "congruence",
+   3
+  ],
+  "269": [
+   "congruence",
+   3
+  ],
+  "271": [
+   "congruence",
+   7
+  ],
+  "277": [
+   "congruence",
+   5
+  ],
+  "281": [
+   "congruence",
+   3
+  ],
+  "283": [
+   "trial",
+   49033
+  ],
+  "293": [
+   "congruence",
+   3
+  ],
+  "307": [
+   "congruence",
+   5
+  ],
+  "311": [
+   "congruence",
+   3
+  ],
+  "313": [
+   "congruence",
+   7
+  ],
+  "317": [
+   "congruence",
+   3
+  ],
+  "331": [
+   "congruence",
+   41
+  ],
+  "337": [
+   "congruence",
+   5
+  ],
+  "347": [
+   "congruence",
+   3
+  ],
+  "349": [
+   "congruence",
+   23
+  ],
+  "353": [
+   "congruence",
+   3
+  ],
+  "359": [
+   "congruence",
+   3
+  ],
+  "367": [
+   "congruence",
+   5
+  ],
+  "373": [
+   "congruence",
+   11
+  ],
+  "379": [
+   "trial",
+   4201
+  ],
+  "383": [
+   "congruence",
+   3
+  ],
+  "389": [
+   "congruence",
+   3
+  ],
+  "397": [
+   "congruence",
+   5
+  ],
+  "401": [
+   "congruence",
+   3
+  ],
+  "409": [
+   "congruence",
+   19
+  ],
+  "419": [
+   "congruence",
+   3
+  ],
+  "421": [
+   "trial",
+   353
+  ],
+  "431": [
+   "congruence",
+   3
+  ],
+  "433": [
+   "trial",
+   139
+  ],
+  "439": [
+   "congruence",
+   7
+  ],
+  "443": [
+   "congruence",
+   3
+  ],
+  "449": [
+   "congruence",
+   3
+  ],
+  "457": [
+   "congruence",
+   5
+  ],
+  "461": [
+   "congruence",
+   3
+  ],
+  "463": [
+   "congruence",
+   13
+  ],
+  "467": [
+   "congruence",
+   3
+  ],
+  "479": [
+   "congruence",
+   3
+  ],
+  "487": [
+   "congruence",
+   5
+  ],
+  "491": [
+   "congruence",
+   3
+  ],
+  "499": [
+   "congruence",
+   17
+  ],
+  "503": [
+   "congruence",
+   3
+  ],
+  "509": [
+   "congruence",
+   3
+  ],
+  "521": [
+   "congruence",
+   3
+  ],
+  "523": [
+   "congruence",
+   7
+  ],
+  "541": [
+   "congruence",
+   13
+  ],
+  "547": [
+   "congruence",
+   5
+  ],
+  "557": [
+   "congruence",
+   3
+  ],
+  "563": [
+   "congruence",
+   3
+  ],
+  "569": [
+   "congruence",
+   3
+  ],
+  "571": [
+   "congruence",
+   11
+  ],
+  "577": [
+   "congruence",
+   5
+  ],
+  "587": [
+   "congruence",
+   3
+  ],
+  "593": [
+   "congruence",
+   3
+  ],
+  "599": [
+   "congruence",
+   3
+  ],
+  "601": [
+   "congruence",
+   17
+  ],
+  "607": [
+   "congruence",
+   5
+  ],
+  "613": [
+   "strong_base2",
+   2
+  ],
+  "617": [
+   "congruence",
+   3
+  ],
+  "619": [
+   "congruence",
+   13
+  ],
+  "631": [
+   "trial",
+   181
+  ],
+  "641": [
+   "congruence",
+   3
+  ],
+  "643": [
+   "trial",
+   419
+  ],
+  "647": [
+   "congruence",
+   3
+  ],
+  "653": [
+   "congruence",
+   3
+  ],
+  "659": [
+   "congruence",
+   3
+  ],
+  "661": [
+   "trial",
+   103
+  ],
+  "673": [
+   "trial",
+   151
+  ],
+  "677": [
+   "congruence",
+   3
+  ],
+  "683": [
+   "congruence",
+   3
+  ],
+  "691": [
+   "congruence",
+   7
+  ],
+  "701": [
+   "congruence",
+   3
+  ],
+  "709": [
+   "strong_base2",
+   2
+  ],
+  "719": [
+   "congruence",
+   3
+  ],
+  "727": [
+   "congruence",
+   5
+  ],
+  "733": [
+   "congruence",
+   7
+  ],
+  "739": [
+   "congruence",
+   43
+  ],
+  "743": [
+   "congruence",
+   3
+  ],
+  "751": [
+   "congruence",
+   19
+  ],
+  "757": [
+   "congruence",
+   5
+  ],
+  "761": [
+   "congruence",
+   3
+  ],
+  "769": [
+   "congruence",
+   11
+  ],
+  "773": [
+   "congruence",
+   3
+  ],
+  "787": [
+   "congruence",
+   5
+  ],
+  "797": [
+   "congruence",
+   3
+  ],
+  "809": [
+   "congruence",
+   3
+  ],
+  "811": [
+   "strong_base2",
+   2
+  ],
+  "821": [
+   "congruence",
+   3
+  ],
+  "823": [
+   "congruence",
+   41
+  ],
+  "827": [
+   "congruence",
+   3
+  ],
+  "829": [
+   "strong_base2",
+   2
+  ],
+  "839": [
+   "congruence",
+   3
+  ],
+  "853": [
+   "congruence",
+   13
+  ],
+  "857": [
+   "congruence",
+   3
+  ],
+  "859": [
+   "congruence",
+   7
+  ],
+  "863": [
+   "congruence",
+   3
+  ],
+  "877": [
+   "congruence",
+   5
+  ],
+  "881": [
+   "congruence",
+   3
+  ],
+  "883": [
+   "trial",
+   97
+  ],
+  "887": [
+   "congruence",
+   3
+  ],
+  "907": [
+   "congruence",
+   5
+  ],
+  "911": [
+   "congruence",
+   3
+  ],
+  "919": [
+   "strong_base2",
+   2
+  ],
+  "929": [
+   "congruence",
+   3
+  ],
+  "937": [
+   "congruence",
+   5
+  ],
+  "941": [
+   "congruence",
+   3
+  ],
+  "947": [
+   "congruence",
+   3
+  ],
+  "953": [
+   "congruence",
+   3
+  ],
+  "967": [
+   "congruence",
+   5
+  ],
+  "971": [
+   "congruence",
+   3
+  ],
+  "977": [
+   "congruence",
+   3
+  ],
+  "983": [
+   "congruence",
+   3
+  ],
+  "991": [
+   "strong_base2",
+   2
+  ],
+  "997": [
+   "congruence",
+   5
+  ],
+  "1009": [
+   "congruence",
+   13
+  ],
+  "1013": [
+   "congruence",
+   3
+  ],
+  "1019": [
+   "congruence",
+   3
+  ],
+  "1021": [
+   "trial",
+   2347
+  ],
+  "1031": [
+   "congruence",
+   3
+  ],
+  "1033": [
+   "congruence",
+   11
+  ],
+  "1039": [
+   "congruence",
+   23
+  ],
+  "1049": [
+   "congruence",
+   3
+  ],
+  "1051": [
+   "trial",
+   2459
+  ],
+  "1061": [
+   "congruence",
+   3
+  ],
+  "1063": [
+   "trial",
+   523
+  ],
+  "1069": [
+   "congruence",
+   7
+  ],
+  "1087": [
+   "congruence",
+   5
+  ],
+  "1091": [
+   "congruence",
+   3
+  ],
+  "1093": [
+   "congruence",
+   19
+  ],
+  "1097": [
+   "congruence",
+   3
+  ],
+  "1103": [
+   "congruence",
+   3
+  ],
+  "1109": [
+   "congruence",
+   3
+  ],
+  "1117": [
+   "congruence",
+   5
+  ],
+  "1123": [
+   "congruence",
+   29
+  ],
+  "1129": [
+   "strong_base2",
+   2
+  ],
+  "1151": [
+   "congruence",
+   3
+  ],
+  "1153": [
+   "congruence",
+   7
+  ],
+  "1163": [
+   "congruence",
+   3
+  ],
+  "1171": [
+   "trial",
+   131
+  ],
+  "1181": [
+   "congruence",
+   3
+  ],
+  "1187": [
+   "congruence",
+   3
+  ],
+  "1193": [
+   "congruence",
+   3
+  ],
+  "1201": [
+   "trial",
+   1063
+  ],
+  "1213": [
+   "congruence",
+   17
+  ],
+  "1217": [
+   "congruence",
+   3
+  ],
+  "1223": [
+   "congruence",
+   3
+  ],
+  "1229": [
+   "congruence",
+   3
+  ],
+  "1231": [
+   "congruence",
+   11
+  ],
+  "1237": [
+   "congruence",
+   5
+  ],
+  "1249": [
+   "trial",
+   397
+  ],
+  "1259": [
+   "congruence",
+   3
+  ],
+  "1277": [
+   "congruence",
+   3
+  ],
+  "1279": [
+   "congruence",
+   7
+  ],
+  "1283": [
+   "congruence",
+   3
+  ],
+  "1289": [
+   "congruence",
+   3
+  ],
+  "1291": [
+   "strong_base2",
+   2
+  ],
+  "1297": [
+   "congruence",
+   5
+  ],
+  "1301": [
+   "congruence",
+   3
+  ],
+  "1303": [
+   "congruence",
+   31
+  ],
+  "1307": [
+   "congruence",
+   3
+  ],
+  "1319": [
+   "congruence",
+   3
+  ],
+  "1321": [
+   "congruence",
+   7
+  ],
+  "1327": [
+   "congruence",
+   5
+  ],
+  "1361": [
+   "congruence",
+   3
+  ],
+  "1367": [
+   "congruence",
+   3
+  ],
+  "1373": [
+   "congruence",
+   3
+  ],
+  "1381": [
+   "trial",
+   47
+  ],
+  "1399": [
+   "congruence",
+   13
+  ],
+  "1409": [
+   "congruence",
+   3
+  ],
+  "1423": [
+   "trial",
+   49523
+  ],
+  "1427": [
+   "congruence",
+   3
+  ],
+  "1429": [
+   "congruence",
+   11
+  ],
+  "1433": [
+   "congruence",
+   3
+  ],
+  "1439": [
+   "congruence",
+   3
+  ],
+  "1447": [
+   "congruence",
+   5
+  ],
+  "1451": [
+   "congruence",
+   3
+  ],
+  "1453": [
+   "congruence",
+   23
+  ],
+  "1459": [
+   "trial",
+   101
+  ],
+  "1471": [
+   "congruence",
+   29
+  ],
+  "1481": [
+   "congruence",
+   3
+  ],
+  "1483": [
+   "trial",
+   25849
+  ],
+  "1487": [
+   "congruence",
+   3
+  ],
+  "1489": [
+   "congruence",
+   7
+  ],
+  "1493": [
+   "congruence",
+   3
+  ],
+  "1499": [
+   "congruence",
+   3
+  ],
+  "1511": [
+   "congruence",
+   3
+  ],
+  "1523": [
+   "congruence",
+   3
+  ],
+  "1531": [
+   "congruence",
+   7
+  ],
+  "1543": [
+   "strong_base2",
+   2
+  ],
+  "1549": [
+   "congruence",
+   19
+  ],
+  "1553": [
+   "congruence",
+   3
+  ],
+  "1559": [
+   "congruence",
+   3
+  ],
+  "1567": [
+   "congruence",
+   5
+  ],
+  "1571": [
+   "congruence",
+   3
+  ],
+  "1579": [
+   "trial",
+   151
+  ],
+  "1583": [
+   "congruence",
+   3
+  ],
+  "1597": [
+   "congruence",
+   5
+  ],
+  "1601": [
+   "congruence",
+   3
+  ],
+  "1607": [
+   "congruence",
+   3
+  ],
+  "1609": [
+   "trial",
+   19889
+  ],
+  "1613": [
+   "congruence",
+   3
+  ],
+  "1619": [
+   "congruence",
+   3
+  ],
+  "1621": [
+   "congruence",
+   17
+  ],
+  "1627": [
+   "congruence",
+   5
+  ],
+  "1637": [
+   "congruence",
+   3
+  ],
+  "1657": [
+   "congruence",
+   5
+  ],
+  "1663": [
+   "congruence",
+   19
+  ],
+  "1667": [
+   "congruence",
+   3
+  ],
+  "1669": [
+   "congruence",
+   37
+  ],
+  "1693": [
+   "congruence",
+   11
+  ],
+  "1697": [
+   "congruence",
+   3
+  ],
+  "1699": [
+   "congruence",
+   7
+  ],
+  "1709": [
+   "congruence",
+   3
+  ],
+  "1721": [
+   "congruence",
+   3
+  ],
+  "1723": [
+   "congruence",
+   17
+  ],
+  "1733": [
+   "congruence",
+   3
+  ],
+  "1741": [
+   "congruence",
+   7
+  ],
+  "1747": [
+   "congruence",
+   5
+  ],
+  "1753": [
+   "trial",
+   769
+  ],
+  "1759": [
+   "congruence",
+   11
+  ],
+  "1777": [
+   "congruence",
+   5
+  ],
+  "1783": [
+   "congruence",
+   7
+  ],
+  "1787": [
+   "congruence",
+   3
+  ],
+  "1789": [
+   "congruence",
+   13
+  ],
+  "1801": [
+   "strong_base2",
+   2
+  ],
+  "1811": [
+   "congruence",
+   3
+  ],
+  "1823": [
+   "congruence",
+   3
+  ],
+  "1831": [
+   "trial",
+   12457
+  ],
+  "1847": [
+   "congruence",
+   3
+  ],
+  "1861": [
+   "congruence",
+   31
+  ],
+  "1867": [
+   "congruence",
+   5
+  ],
+  "1871": [
+   "congruence",
+   3
+  ],
+  "1873": [
+   "trial",
+   389
+  ],
+  "1877": [
+   "congruence",
+   3
+  ],
+  "1879": [
+   "trial",
+   701
+  ],
+  "1889": [
+   "congruence",
+   3
+  ],
+  "1901": [
+   "congruence",
+   3
+  ],
+  "1907": [
+   "congruence",
+   3
+  ],
+  "1913": [
+   "congruence",
+   3
+  ],
+  "1931": [
+   "congruence",
+   3
+  ],
+  "1933": [
+   "trial",
+   241
+  ],
+  "1949": [
+   "congruence",
+   3
+  ],
+  "1951": [
+   "congruence",
+   7
+  ],
+  "1973": [
+   "congruence",
+   3
+  ],
+  "1979": [
+   "congruence",
+   3
+  ],
+  "1987": [
+   "congruence",
+   5
+  ],
+  "1993": [
+   "congruence",
+   7
+  ],
+  "1997": [
+   "congruence",
+   3
+  ],
+  "1999": [
+   "trial",
+   683
+  ],
+  "2003": [
+   "congruence",
+   3
+  ],
+  "2011": [
+   "trial",
+   89
+  ],
+  "2017": [
+   "congruence",
+   5
+  ],
+  "2027": [
+   "congruence",
+   3
+  ],
+  "2029": [
+   "congruence",
+   17
+  ],
+  "2039": [
+   "congruence",
+   3
+  ],
+  "2053": [
+   "congruence",
+   41
+  ],
+  "2063": [
+   "congruence",
+   3
+  ],
+  "2069": [
+   "congruence",
+   3
+  ],
+  "2081": [
+   "congruence",
+   3
+  ],
+  "2083": [
+   "trial",
+   331
+  ],
+  "2087": [
+   "congruence",
+   3
+  ],
+  "2089": [
+   "congruence",
+   11
+  ],
+  "2099": [
+   "congruence",
+   3
+  ],
+  "2111": [
+   "congruence",
+   3
+  ],
+  "2113": [
+   "congruence",
+   37
+  ],
+  "2129": [
+   "congruence",
+   3
+  ],
+  "2131": [
+   "congruence",
+   17
+  ],
+  "2137": [
+   "congruence",
+   5
+  ],
+  "2141": [
+   "congruence",
+   3
+  ],
+  "2143": [
+   "congruence",
+   23
+  ],
+  "2153": [
+   "congruence",
+   3
+  ],
+  "2161": [
+   "congruence",
+   7
+  ],
+  "2179": [
+   "congruence",
+   13
+  ],
+  "2203": [
+   "congruence",
+   7
+  ],
+  "2207": [
+   "congruence",
+   3
+  ],
+  "2213": [
+   "congruence",
+   3
+  ],
+  "2221": [
+   "congruence",
+   11
+  ],
+  "2237": [
+   "congruence",
+   3
+  ],
+  "2239": [
+   "strong_base2",
+   2
+  ],
+  "2243": [
+   "congruence",
+   3
+  ],
+  "2251": [
+   "trial",
+   349
+  ],
+  "2267": [
+   "congruence",
+   3
+  ],
+  "2269": [
+   "strong_base2",
+   2
+  ],
+  "2273": [
+   "congruence",
+   3
+  ],
+  "2281": [
+   "congruence",
+   23
+  ],
+  "2287": [
+   "congruence",
+   5
+  ],
+  "2293": [
+   "trial",
+   2971
+  ],
+  "2297": [
+   "congruence",
+   3
+  ],
+  "2309": [
+   "congruence",
+   3
+  ],
+  "2311": [
+   "trial",
+   167
+  ],
+  "2333": [
+   "congruence",
+   3
+  ],
+  "2339": [
+   "congruence",
+   3
+  ],
+  "2341": [
+   "congruence",
+   29
+  ],
+  "2347": [
+   "congruence",
+   5
+  ],
+  "2351": [
+   "congruence",
+   3
+  ],
+  "2357": [
+   "congruence",
+   3
+  ],
+  "2371": [
+   "congruence",
+   7
+  ],
+  "2377": [
+   "congruence",
+   5
+  ],
+  "2381": [
+   "congruence",
+   3
+  ],
+  "2383": [
+   "trial",
+   21001
+  ],
+  "2389": [
+   "trial",
+   5711
+  ],
+  "2393": [
+   "congruence",
+   3
+  ],
+  "2399": [
+   "congruence",
+   3
+  ],
+  "2411": [
+   "congruence",
+   3
+  ],
+  "2417": [
+   "congruence",
+   3
+  ],
+  "2423": [
+   "congruence",
+   3
+  ],
+  "2437": [
+   "congruence",
+   5
+  ],
+  "2441": [
+   "congruence",
+   3
+  ],
+  "2447": [
+   "congruence",
+   3
+  ],
+  "2459": [
+   "congruence",
+   3
+  ],
+  "2467": [
+   "congruence",
+   5
+  ],
+  "2473": [
+   "trial",
+   83
+  ],
+  "2477": [
+   "congruence",
+   3
+  ],
+  "2503": [
+   "trial",
+   23021
+  ],
+  "2521": [
+   "trial",
+   87421
+  ],
+  "2531": [
+   "congruence",
+   3
+  ],
+  "2539": [
+   "congruence",
+   7
+  ],
+  "2543": [
+   "congruence",
+   3
+  ],
+  "2549": [
+   "congruence",
+   3
+  ],
+  "2551": [
+   "congruence",
+   11
+  ],
+  "2557": [
+   "congruence",
+   5
+  ],
+  "2579": [
+   "congruence",
+   3
+  ],
+  "2591": [
+   "congruence",
+   3
+  ],
+  "2593": [
+   "strong_base2",
+   2
+  ],
+  "2609": [
+   "congruence",
+   3
+  ],
+  "2617": [
+   "congruence",
+   5
+  ],
+  "2621": [
+   "congruence",
+   3
+  ],
+  "2633": [
+   "congruence",
+   3
+  ],
+  "2647": [
+   "congruence",
+   5
+  ],
+  "2657": [
+   "congruence",
+   3
+  ],
+  "2659": [
+   "strong_base2",
+   2
+  ],
+  "2663": [
+   "congruence",
+   3
+  ],
+  "2671": [
+   "trial",
+   101
+  ],
+  "2677": [
+   "congruence",
+   5
+  ],
+  "2683": [
+   "congruence",
+   11
+  ],
+  "2687": [
+   "congruence",
+   3
+  ],
+  "2689": [
+   "congruence",
+   19
+  ],
+  "2693": [
+   "congruence",
+   3
+  ],
+  "2699": [
+   "congruence",
+   3
+  ],
+  "2707": [
+   "congruence",
+   5
+  ],
+  "2711": [
+   "congruence",
+   3
+  ],
+  "2713": [
+   "trial",
+   73
+  ],
+  "2719": [
+   "trial",
+   337
+  ],
+  "2729": [
+   "congruence",
+   3
+  ],
+  "2731": [
+   "trial",
+   79
+  ],
+  "2741": [
+   "congruence",
+   3
+  ],
+  "2749": [
+   "congruence",
+   7
+  ],
+  "2753": [
+   "congruence",
+   3
+  ],
+  "2767": [
+   "congruence",
+   5
+  ],
+  "2777": [
+   "congruence",
+   3
+  ],
+  "2789": [
+   "congruence",
+   3
+  ],
+  "2791": [
+   "congruence",
+   7
+  ],
+  "2797": [
+   "congruence",
+   5
+  ],
+  "2801": [
+   "congruence",
+   3
+  ],
+  "2803": [
+   "congruence",
+   13
+  ],
+  "2819": [
+   "congruence",
+   3
+  ],
+  "2833": [
+   "congruence",
+   7
+  ],
+  "2837": [
+   "congruence",
+   3
+  ],
+  "2843": [
+   "congruence",
+   3
+  ],
+  "2851": [
+   "trial",
+   421
+  ],
+  "2857": [
+   "congruence",
+   5
+  ],
+  "2861": [
+   "congruence",
+   3
+  ],
+  "2879": [
+   "congruence",
+   3
+  ],
+  "2887": [
+   "congruence",
+   5
+  ],
+  "2897": [
+   "congruence",
+   3
+  ],
+  "2903": [
+   "congruence",
+   3
+  ],
+  "2909": [
+   "congruence",
+   3
+  ],
+  "2917": [
+   "congruence",
+   5
+  ],
+  "2927": [
+   "congruence",
+   3
+  ],
+  "2939": [
+   "congruence",
+   3
+  ],
+  "2953": [
+   "trial",
+   311
+  ],
+  "2957": [
+   "congruence",
+   3
+  ],
+  "2963": [
+   "congruence",
+   3
+  ],
+  "2969": [
+   "congruence",
+   3
+  ],
+  "2971": [
+   "congruence",
+   23
+  ],
+  "2999": [
+   "congruence",
+   3
+  ],
+  "3001": [
+   "congruence",
+   7
+  ],
+  "3011": [
+   "congruence",
+   3
+  ],
+  "3019": [
+   "trial",
+   347
+  ],
+  "3023": [
+   "congruence",
+   3
+  ],
+  "3037": [
+   "congruence",
+   5
+  ],
+  "3041": [
+   "congruence",
+   3
+  ],
+  "3049": [
+   "congruence",
+   17
+  ],
+  "3061": [
+   "congruence",
+   43
+  ],
+  "3067": [
+   "congruence",
+   5
+  ],
+  "3079": [
+   "congruence",
+   11
+  ],
+  "3083": [
+   "congruence",
+   3
+  ],
+  "3089": [
+   "congruence",
+   3
+  ],
+  "3109": [
+   "congruence",
+   23
+  ],
+  "3119": [
+   "congruence",
+   3
+  ],
+  "3121": [
+   "trial",
+   9341
+  ],
+  "3137": [
+   "congruence",
+   3
+  ],
+  "3163": [
+   "congruence",
+   31
+  ],
+  "3167": [
+   "congruence",
+   3
+  ],
+  "3169": [
+   "congruence",
+   7
+  ],
+  "3181": [
+   "trial",
+   53
+  ],
+  "3187": [
+   "congruence",
+   5
+  ],
+  "3191": [
+   "congruence",
+   3
+  ],
+  "3203": [
+   "congruence",
+   3
+  ],
+  "3209": [
+   "congruence",
+   3
+  ],
+  "3217": [
+   "congruence",
+   5
+  ],
+  "3221": [
+   "congruence",
+   3
+  ],
+  "3229": [
+   "trial",
+   61
+  ],
+  "3251": [
+   "congruence",
+   3
+  ],
+  "3253": [
+   "congruence",
+   7
+  ],
+  "3257": [
+   "congruence",
+   3
+  ],
+  "3259": [
+   "congruence",
+   19
+  ],
+  "3271": [
+   "congruence",
+   13
+  ],
+  "3299": [
+   "congruence",
+   3
+  ],
+  "3301": [
+   "trial",
+   263
+  ],
+  "3307": [
+   "congruence",
+   5
+  ],
+  "3313": [
+   "trial",
+   167
+  ],
+  "3319": [
+   "congruence",
+   43
+  ],
+  "3323": [
+   "congruence",
+   3
+  ],
+  "3329": [
+   "congruence",
+   3
+  ],
+  "3331": [
+   "strong_base2",
+   2
+  ],
+  "3343": [
+   "congruence",
+   11
+  ],
+  "3347": [
+   "congruence",
+   3
+  ],
+  "3359": [
+   "congruence",
+   3
+  ],
+  "3361": [
+   "trial",
+   233
+  ],
+  "3371": [
+   "congruence",
+   3
+  ],
+  "3373": [
+   "congruence",
+   19
+  ],
+  "3389": [
+   "congruence",
+   3
+  ],
+  "3391": [
+   "trial",
+   67
+  ],
+  "3407": [
+   "congruence",
+   3
+  ],
+  "3413": [
+   "congruence",
+   3
+  ],
+  "3433": [
+   "trial",
+   59
+  ],
+  "3449": [
+   "congruence",
+   3
+  ],
+  "3457": [
+   "congruence",
+   5
+  ],
+  "3461": [
+   "congruence",
+   3
+  ],
+  "3463": [
+   "congruence",
+   7
+  ],
+  "3467": [
+   "congruence",
+   3
+  ],
+  "3469": [
+   "trial",
+   83
+  ],
+  "3491": [
+   "congruence",
+   3
+  ],
+  "3499": [
+   "trial",
+   53
+  ],
+  "3511": [
+   "trial",
+   40253
+  ],
+  "3517": [
+   "congruence",
+   5
+  ],
+  "3527": [
+   "congruence",
+   3
+  ],
+  "3529": [
+   "congruence",
+   41
+  ],
+  "3533": [
+   "congruence",
+   3
+  ],
+  "3539": [
+   "congruence",
+   3
+  ],
+  "3541": [
+   "congruence",
+   11
+  ],
+  "3547": [
+   "congruence",
+   5
+  ],
+  "3557": [
+   "congruence",
+   3
+  ],
+  "3559": [
+   "congruence",
+   17
+  ],
+  "3571": [
+   "trial",
+   3259
+  ],
+  "3581": [
+   "congruence",
+   3
+  ],
+  "3583": [
+   "congruence",
+   13
+  ],
+  "3593": [
+   "congruence",
+   3
+  ],
+  "3607": [
+   "congruence",
+   5
+  ],
+  "3613": [
+   "trial",
+   89
+  ],
+  "3617": [
+   "congruence",
+   3
+  ],
+  "3623": [
+   "congruence",
+   3
+  ],
+  "3631": [
+   "congruence",
+   7
+  ],
+  "3637": [
+   "congruence",
+   5
+  ],
+  "3643": [
+   "trial",
+   577
+  ],
+  "3659": [
+   "congruence",
+   3
+  ],
+  "3671": [
+   "congruence",
+   3
+  ],
+  "3673": [
+   "congruence",
+   7
+  ],
+  "3677": [
+   "congruence",
+   3
+  ],
+  "3691": [
+   "trial",
+   367
+  ],
+  "3697": [
+   "congruence",
+   5
+  ],
+  "3701": [
+   "congruence",
+   3
+  ],
+  "3709": [
+   "strong_base2",
+   2
+  ],
+  "3719": [
+   "congruence",
+   3
+  ],
+  "3727": [
+   "congruence",
+   5
+  ],
+  "3733": [
+   "congruence",
+   29
+  ],
+  "3739": [
+   "congruence",
+   11
+  ],
+  "3761": [
+   "congruence",
+   3
+  ],
+  "3767": [
+   "congruence",
+   3
+  ],
+  "3769": [
+   "trial",
+   139
+  ],
+  "3779": [
+   "congruence",
+   3
+  ],
+  "3793": [
+   "trial",
+   67
+  ],
+  "3797": [
+   "congruence",
+   3
+  ],
+  "3803": [
+   "congruence",
+   3
+  ],
+  "3821": [
+   "congruence",
+   3
+  ],
+  "3823": [
+   "strong_base2",
+   2
+  ],
+  "3833": [
+   "congruence",
+   3
+  ],
+  "3847": [
+   "congruence",
+   5
+  ],
+  "3851": [
+   "congruence",
+   3
+  ],
+  "3853": [
+   "trial",
+   307
+  ],
+  "3863": [
+   "congruence",
+   3
+  ],
+  "3877": [
+   "congruence",
+   5
+  ],
+  "3881": [
+   "congruence",
+   3
+  ],
+  "3889": [
+   "congruence",
+   37
+  ],
+  "3907": [
+   "congruence",
+   5
+  ],
+  "3911": [
+   "congruence",
+   3
+  ],
+  "3917": [
+   "congruence",
+   3
+  ],
+  "3919": [
+   "trial",
+   47
+  ],
+  "3923": [
+   "congruence",
+   3
+  ],
+  "3929": [
+   "congruence",
+   3
+  ],
+  "3931": [
+   "trial",
+   4391
+  ],
+  "3943": [
+   "congruence",
+   19
+  ],
+  "3947": [
+   "congruence",
+   3
+  ],
+  "3967": [
+   "congruence",
+   5
+  ],
+  "3989": [
+   "congruence",
+   3
+  ],
+  "4001": [
+   "congruence",
+   3
+  ],
+  "4003": [
+   "congruence",
+   11
+  ],
+  "4007": [
+   "congruence",
+   3
+  ],
+  "4013": [
+   "congruence",
+   3
+  ],
+  "4019": [
+   "congruence",
+   3
+  ],
+  "4021": [
+   "congruence",
+   41
+  ],
+  "4027": [
+   "congruence",
+   5
+  ],
+  "4049": [
+   "congruence",
+   3
+  ],
+  "4051": [
+   "congruence",
+   7
+  ],
+  "4057": [
+   "congruence",
+   5
+  ],
+  "4073": [
+   "congruence",
+   3
+  ],
+  "4079": [
+   "congruence",
+   3
+  ],
+  "4091": [
+   "congruence",
+   3
+  ],
+  "4093": [
+   "congruence",
+   7
+  ],
+  "4099": [
+   "strong_base2",
+   2
+  ],
+  "4111": [
+   "congruence",
+   37
+  ],
+  "4127": [
+   "congruence",
+   3
+  ],
+  "4129": [
+   "congruence",
+   13
+  ],
+  "4133": [
+   "congruence",
+   3
+  ],
+  "4139": [
+   "congruence",
+   3
+  ],
+  "4153": [
+   "trial",
+   79
+  ],
+  "4157": [
+   "congruence",
+   3
+  ],
+  "4159": [
+   "strong_base2",
+   2
+  ],
+  "4177": [
+   "congruence",
+   5
+  ],
+  "4201": [
+   "congruence",
+   11
+  ],
+  "4211": [
+   "congruence",
+   3
+  ],
+  "4217": [
+   "congruence",
+   3
+  ],
+  "4219": [
+   "congruence",
+   7
+  ],
+  "4229": [
+   "congruence",
+   3
+  ],
+  "4231": [
+   "trial",
+   6379
+  ],
+  "4241": [
+   "congruence",
+   3
+  ],
+  "4243": [
+   "trial",
+   71
+  ],
+  "4253": [
+   "congruence",
+   3
+  ],
+  "4259": [
+   "congruence",
+   3
+  ],
+  "4261": [
+   "congruence",
+   7
+  ],
+  "4271": [
+   "congruence",
+   3
+  ],
+  "4273": [
+   "congruence",
+   17
+  ],
+  "4283": [
+   "congruence",
+   3
+  ],
+  "4289": [
+   "congruence",
+   3
+  ],
+  "4297": [
+   "congruence",
+   5
+  ],
+  "4327": [
+   "congruence",
+   5
+  ],
+  "4337": [
+   "congruence",
+   3
+  ],
+  "4339": [
+   "trial",
+   1453
+  ],
+  "4349": [
+   "congruence",
+   3
+  ],
+  "4357": [
+   "congruence",
+   5
+  ],
+  "4363": [
+   "congruence",
+   13
+  ],
+  "4373": [
+   "congruence",
+   3
+  ],
+  "4391": [
+   "congruence",
+   3
+  ],
+  "4397": [
+   "congruence",
+   3
+  ],
+  "4409": [
+   "congruence",
+   3
+  ],
+  "4421": [
+   "congruence",
+   3
+  ],
+  "4423": [
+   "strong_base2",
+   2
+  ],
+  "4441": [
+   "congruence",
+   13
+  ],
+  "4447": [
+   "congruence",
+   5
+  ],
+  "4451": [
+   "congruence",
+   3
+  ],
+  "4457": [
+   "congruence",
+   3
+  ],
+  "4463": [
+   "congruence",
+   3
+  ],
+  "4481": [
+   "congruence",
+   3
+  ],
+  "4483": [
+   "trial",
+   47
+  ],
+  "4493": [
+   "congruence",
+   3
+  ],
+  "4507": [
+   "congruence",
+   5
+  ],
+  "4513": [
+   "congruence",
+   7
+  ],
+  "4517": [
+   "congruence",
+   3
+  ],
+  "4519": [
+   "congruence",
+   13
+  ],
+  "4523": [
+   "congruence",
+   3
+  ],
+  "4547": [
+   "congruence",
+   3
+  ],
+  "4549": [
+   "trial",
+   1249
+  ],
+  "4561": [
+   "strong_base2",
+   2
+  ],
+  "4567": [
+   "congruence",
+   5
+  ],
+  "4583": [
+   "congruence",
+   3
+  ],
+  "4591": [
+   "strong_base2",
+   2
+  ],
+  "4597": [
+   "congruence",
+   5
+  ],
+  "4603": [
+   "congruence",
+   29
+  ],
+  "4621": [
+   "trial",
+   3881
+  ],
+  "4637": [
+   "congruence",
+   3
+  ],
+  "4639": [
+   "congruence",
+   7
+  ],
+  "4643": [
+   "congruence",
+   3
+  ],
+  "4649": [
+   "congruence",
+   3
+  ],
+  "4651": [
+   "congruence",
+   31
+  ],
+  "4657": [
+   "congruence",
+   5
+  ],
+  "4663": [
+   "congruence",
+   11
+  ],
+  "4673": [
+   "congruence",
+   3
+  ],
+  "4679": [
+   "congruence",
+   3
+  ],
+  "4691": [
+   "congruence",
+   3
+  ],
+  "4703": [
+   "congruence",
+   3
+  ],
+  "4721": [
+   "congruence",
+   3
+  ],
+  "4723": [
+   "congruence",
+   7
+  ],
+  "4729": [
+   "congruence",
+   11
+  ],
+  "4733": [
+   "congruence",
+   3
+  ],
+  "4751": [
+   "congruence",
+   3
+  ],
+  "4759": [
+   "congruence",
+   41
+  ],
+  "4783": [
+   "congruence",
+   17
+  ],
+  "4787": [
+   "congruence",
+   3
+  ],
+  "4789": [
+   "trial",
+   1187
+  ],
+  "4793": [
+   "congruence",
+   3
+  ],
+  "4799": [
+   "congruence",
+   3
+  ],
+  "4801": [
+   "trial",
+   179
+  ],
+  "4813": [
+   "strong_base2",
+   2
+  ],
+  "4817": [
+   "congruence",
+   3
+  ],
+  "4831": [
+   "congruence",
+   13
+  ],
+  "4861": [
+   "congruence",
+   11
+  ],
+  "4871": [
+   "congruence",
+   3
+  ],
+  "4877": [
+   "congruence",
+   3
+  ],
+  "4889": [
+   "congruence",
+   3
+  ],
+  "4903": [
+   "congruence",
+   23
+  ],
+  "4909": [
+   "congruence",
+   13
+  ],
+  "4919": [
+   "congruence",
+   3
+  ],
+  "4931": [
+   "congruence",
+   3
+  ],
+  "4933": [
+   "congruence",
+   7
+  ],
+  "4937": [
+   "congruence",
+   3
+  ],
+  "4943": [
+   "congruence",
+   3
+  ],
+  "4951": [
+   "congruence",
+   29
+  ],
+  "4957": [
+   "congruence",
+   5
+  ],
+  "4967": [
+   "congruence",
+   3
+  ],
+  "4969": [
+   "congruence",
+   19
+  ],
+  "4973": [
+   "congruence",
+   3
+  ],
+  "4987": [
+   "congruence",
+   5
+  ],
+  "4993": [
+   "congruence",
+   11
+  ],
+  "4999": [
+   "congruence",
+   37
+  ],
+  "5003": [
+   "congruence",
+   3
+  ],
+  "5009": [
+   "congruence",
+   3
+  ],
+  "5011": [
+   "strong_base2",
+   2
+  ],
+  "5021": [
+   "congruence",
+   3
+  ],
+  "5023": [
+   "congruence",
+   31
+  ],
+  "5039": [
+   "congruence",
+   3
+  ],
+  "5051": [
+   "congruence",
+   3
+  ],
+  "5059": [
+   "congruence",
+   7
+  ],
+  "5077": [
+   "congruence",
+   5
+  ],
+  "5081": [
+   "congruence",
+   3
+  ],
+  "5087": [
+   "congruence",
+   3
+  ],
+  "5099": [
+   "congruence",
+   3
+  ],
+  "5101": [
+   "congruence",
+   7
+  ],
+  "5107": [
+   "congruence",
+   5
+  ],
+  "5113": [
+   "trial",
+   37409
+  ],
+  "5119": [
+   "strong_base2",
+   2
+  ],
+  "5147": [
+   "congruence",
+   3
+  ],
+  "5153": [
+   "congruence",
+   3
+  ],
+  "5167": [
+   "congruence",
+   5
+  ],
+  "5171": [
+   "congruence",
+   3
+  ],
+  "5179": [
+   "congruence",
+   23
+  ],
+  "5189": [
+   "congruence",
+   3
+  ],
+  "5197": [
+   "congruence",
+   5
+  ],
+  "5209": [
+   "congruence",
+   31
+  ],
+  "5227": [
+   "congruence",
+   5
+  ],
+  "5231": [
+   "congruence",
+   3
+  ],
+  "5233": [
+   "strong_base2",
+   2
+  ],
+  "5237": [
+   "congruence",
+   3
+  ],
+  "5261": [
+   "congruence",
+   3
+  ],
+  "5273": [
+   "congruence",
+   3
+  ],
+  "5279": [
+   "congruence",
+   3
+  ],
+  "5281": [
+   "trial",
+   761
+  ],
+  "5297": [
+   "congruence",
+   3
+  ],
+  "5303": [
+   "congruence",
+   3
+  ],
+  "5309": [
+   "congruence",
+   3
+  ],
+  "5323": [
+   "congruence",
+   11
+  ],
+  "5333": [
+   "congruence",
+   3
+  ],
+  "5347": [
+   "congruence",
+   5
+  ],
+  "5351": [
+   "congruence",
+   3
+  ],
+  "5381": [
+   "congruence",
+   3
+  ],
+  "5387": [
+   "congruence",
+   3
+  ],
+  "5393": [
+   "congruence",
+   3
+  ],
+  "5399": [
+   "congruence",
+   3
+  ],
+  "5407": [
+   "congruence",
+   5
+  ],
+  "5413": [
+   "trial",
+   509
+  ],
+  "5417": [
+   "congruence",
+   3
+  ],
+  "5419": [
+   "trial",
+   2069
+  ],
+  "5431": [
+   "strong_base2",
+   2
+  ],
+  "5437": [
+   "congruence",
+   5
+  ],
+  "5441": [
+   "congruence",
+   3
+  ],
+  "5443": [
+   "congruence",
+   37
+  ],
+  "5449": [
+   "trial",
+   72953
+  ],
+  "5471": [
+   "congruence",
+   3
+  ],
+  "5477": [
+   "congruence",
+   3
+  ],
+  "5479": [
+   "congruence",
+   7
+  ],
+  "5483": [
+   "congruence",
+   3
+  ],
+  "5501": [
+   "congruence",
+   3
+  ],
+  "5503": [
+   "trial",
+   641
+  ],
+  "5507": [
+   "congruence",
+   3
+  ],
+  "5519": [
+   "congruence",
+   3
+  ],
+  "5521": [
+   "congruence",
+   7
+  ],
+  "5527": [
+   "congruence",
+   5
+  ],
+  "5531": [
+   "congruence",
+   3
+  ],
+  "5557": [
+   "congruence",
+   5
+  ],
+  "5563": [
+   "congruence",
+   7
+  ],
+  "5569": [
+   "strong_base2",
+   2
+  ],
+  "5573": [
+   "congruence",
+   3
+  ],
+  "5581": [
+   "congruence",
+   31
+  ],
+  "5591": [
+   "congruence",
+   3
+  ],
+  "5623": [
+   "trial",
+   727
+  ],
+  "5639": [
+   "congruence",
+   3
+  ],
+  "5641": [
+   "congruence",
+   43
+  ],
+  "5647": [
+   "congruence",
+   5
+  ],
+  "5651": [
+   "congruence",
+   3
+  ],
+  "5653": [
+   "congruence",
+   11
+  ],
+  "5657": [
+   "congruence",
+   3
+  ],
+  "5659": [
+   "strong_base2",
+   2
+  ],
+  "5669": [
+   "congruence",
+   3
+  ],
+  "5683": [
+   "trial",
+   19403
+  ],
+  "5689": [
+   "congruence",
+   7
+  ],
+  "5693": [
+   "congruence",
+   3
+  ],
+  "5701": [
+   "congruence",
+   17
+  ],
+  "5711": [
+   "congruence",
+   3
+  ],
+  "5717": [
+   "congruence",
+   3
+  ],
+  "5737": [
+   "congruence",
+   5
+  ],
+  "5741": [
+   "congruence",
+   3
+  ],
+  "5743": [
+   "congruence",
+   41
+  ],
+  "5749": [
+   "trial",
+   89
+  ],
+  "5779": [
+   "trial",
+   73
+  ],
+  "5783": [
+   "congruence",
+   3
+  ],
+  "5791": [
+   "trial",
+   61
+  ],
+  "5801": [
+   "congruence",
+   3
+  ],
+  "5807": [
+   "congruence",
+   3
+  ],
+  "5813": [
+   "congruence",
+   3
+  ],
+  "5821": [
+   "congruence",
+   29
+  ],
+  "5827": [
+   "congruence",
+   5
+  ],
+  "5839": [
+   "trial",
+   137
+  ],
+  "5843": [
+   "congruence",
+   3
+  ],
+  "5849": [
+   "congruence",
+   3
+  ],
+  "5851": [
+   "congruence",
+   11
+  ],
+  "5857": [
+   "congruence",
+   5
+  ],
+  "5861": [
+   "congruence",
+   3
+  ],
+  "5867": [
+   "congruence",
+   3
+  ],
+  "5869": [
+   "congruence",
+   23
+  ],
+  "5879": [
+   "congruence",
+   3
+  ],
+  "5881": [
+   "congruence",
+   19
+  ],
+  "5897": [
+   "congruence",
+   3
+  ],
+  "5903": [
+   "congruence",
+   3
+  ],
+  "5923": [
+   "congruence",
+   13
+  ],
+  "5927": [
+   "congruence",
+   3
+  ],
+  "5939": [
+   "congruence",
+   3
+  ],
+  "5953": [
+   "congruence",
+   31
+  ],
+  "5981": [
+   "congruence",
+   3
+  ],
+  "5987": [
+   "congruence",
+   3
+  ],
+  "6007": [
+   "congruence",
+   5
+  ],
+  "6011": [
+   "congruence",
+   3
+  ],
+  "6029": [
+   "congruence",
+   3
+  ],
+  "6037": [
+   "congruence",
+   5
+  ],
+  "6043": [
+   "trial",
+   53
+  ],
+  "6047": [
+   "congruence",
+   3
+  ],
+  "6053": [
+   "congruence",
+   3
+  ],
+  "6067": [
+   "congruence",
+   5
+  ],
+  "6073": [
+   "strong_base2",
+   2
+  ],
+  "6079": [
+   "congruence",
+   13
+  ],
+  "6089": [
+   "congruence",
+   3
+  ],
+  "6091": [
+   "trial",
+   9883
+  ],
+  "6101": [
+   "congruence",
+   3
+  ],
+  "6113": [
+   "congruence",
+   3
+  ],
+  "6121": [
+   "trial",
+   97
+  ],
+  "6131": [
+   "congruence",
+   3
+  ],
+  "6133": [
+   "trial",
+   21101
+  ],
+  "6143": [
+   "congruence",
+   3
+  ],
+  "6151": [
+   "congruence",
+   7
+  ],
+  "6163": [
+   "strong_base2",
+   2
+  ],
+  "6173": [
+   "congruence",
+   3
+  ],
+  "6197": [
+   "congruence",
+   3
+  ],
+  "6199": [
+   "trial",
+   5231
+  ],
+  "6203": [
+   "congruence",
+   3
+  ],
+  "6211": [
+   "congruence",
+   17
+  ],
+  "6217": [
+   "congruence",
+   5
+  ],
+  "6221": [
+   "congruence",
+   3
+  ],
+  "6229": [
+   "strong_base2",
+   2
+  ],
+  "6247": [
+   "congruence",
+   5
+  ],
+  "6257": [
+   "congruence",
+   3
+  ],
+  "6263": [
+   "congruence",
+   3
+  ],
+  "6269": [
+   "congruence",
+   3
+  ],
+  "6271": [
+   "trial",
+   139
+  ],
+  "6277": [
+   "congruence",
+   5
+  ],
+  "6287": [
+   "congruence",
+   3
+  ],
+  "6299": [
+   "congruence",
+   3
+  ],
+  "6301": [
+   "trial",
+   2251
+  ],
+  "6311": [
+   "congruence",
+   3
+  ],
+  "6317": [
+   "congruence",
+   3
+  ],
+  "6323": [
+   "congruence",
+   3
+  ],
+  "6329": [
+   "congruence",
+   3
+  ],
+  "6337": [
+   "congruence",
+   5
+  ],
+  "6343": [
+   "congruence",
+   29
+  ],
+  "6353": [
+   "congruence",
+   3
+  ],
+  "6359": [
+   "congruence",
+   3
+  ],
+  "6361": [
+   "congruence",
+   7
+  ],
+  "6367": [
+   "congruence",
+   5
+  ],
+  "6373": [
+   "trial",
+   71
+  ],
+  "6379": [
+   "congruence",
+   11
+  ],
+  "6389": [
+   "congruence",
+   3
+  ],
+  "6397": [
+   "congruence",
+   5
+  ],
+  "6421": [
+   "congruence",
+   23
+  ],
+  "6427": [
+   "congruence",
+   5
+  ],
+  "6449": [
+   "congruence",
+   3
+  ],
+  "6451": [
+   "congruence",
+   19
+  ],
+  "6469": [
+   "congruence",
+   13
+  ],
+  "6473": [
+   "congruence",
+   3
+  ],
+  "6481": [
+   "congruence",
+   41
+  ],
+  "6491": [
+   "congruence",
+   3
+  ],
+  "6521": [
+   "congruence",
+   3
+  ],
+  "6529": [
+   "congruence",
+   7
+  ],
+  "6547": [
+   "congruence",
+   5
+  ],
+  "6551": [
+   "congruence",
+   3
+  ],
+  "6553": [
+   "congruence",
+   37
+  ],
+  "6563": [
+   "congruence",
+   3
+  ],
+  "6569": [
+   "congruence",
+   3
+  ],
+  "6571": [
+   "congruence",
+   7
+  ],
+  "6577": [
+   "congruence",
+   5
+  ],
+  "6581": [
+   "congruence",
+   3
+  ],
+  "6599": [
+   "congruence",
+   3
+  ],
+  "6607": [
+   "congruence",
+   5
+  ],
+  "6619": [
+   "congruence",
+   17
+  ],
+  "6637": [
+   "congruence",
+   5
+  ],
+  "6653": [
+   "congruence",
+   3
+  ],
+  "6659": [
+   "congruence",
+   3
+  ],
+  "6661": [
+   "trial",
+   137
+  ],
+  "6673": [
+   "congruence",
+   43
+  ],
+  "6679": [
+   "congruence",
+   19
+  ],
+  "6689": [
+   "congruence",
+   3
+  ],
+  "6691": [
+   "congruence",
+   29
+  ],
+  "6701": [
+   "congruence",
+   3
+  ],
+  "6703": [
+   "congruence",
+   13
+  ],
+  "6709": [
+   "congruence",
+   11
+  ],
+  "6719": [
+   "congruence",
+   3
+  ],
+  "6733": [
+   "trial",
+   127
+  ],
+  "6737": [
+   "congruence",
+   3
+  ],
+  "6761": [
+   "congruence",
+   3
+  ],
+  "6763": [
+   "trial",
+   337
+  ],
+  "6779": [
+   "congruence",
+   3
+  ],
+  "6781": [
+   "congruence",
+   7
+  ],
+  "6791": [
+   "congruence",
+   3
+  ],
+  "6793": [
+   "congruence",
+   19
+  ],
+  "6803": [
+   "congruence",
+   3
+  ],
+  "6823": [
+   "congruence",
+   7
+  ],
+  "6827": [
+   "congruence",
+   3
+  ],
+  "6829": [
+   "trial",
+   149
+  ],
+  "6833": [
+   "congruence",
+   3
+  ],
+  "6841": [
+   "congruence",
+   11
+  ],
+  "6857": [
+   "congruence",
+   3
+  ],
+  "6863": [
+   "congruence",
+   3
+  ],
+  "6869": [
+   "congruence",
+   3
+  ],
+  "6871": [
+   "strong_base2",
+   2
+  ],
+  "6883": [
+   "congruence",
+   31
+  ],
+  "6899": [
+   "congruence",
+   3
+  ],
+  "6907": [
+   "congruence",
+   5
+  ],
+  "6911": [
+   "congruence",
+   3
+  ],
+  "6917": [
+   "congruence",
+   3
+  ],
+  "6947": [
+   "congruence",
+   3
+  ],
+  "6949": [
+   "congruence",
+   7
+  ],
+  "6959": [
+   "congruence",
+   3
+  ],
+  "6961": [
+   "trial",
+   7121
+  ],
+  "6967": [
+   "congruence",
+   5
+  ],
+  "6971": [
+   "congruence",
+   3
+  ],
+  "6977": [
+   "congruence",
+   3
+  ],
+  "6983": [
+   "congruence",
+   3
+  ],
+  "6991": [
+   "congruence",
+   7
+  ],
+  "6997": [
+   "congruence",
+   5
+  ],
+  "7001": [
+   "congruence",
+   3
+  ],
+  "7013": [
+   "congruence",
+   3
+  ],
+  "7019": [
+   "congruence",
+   3
+  ],
+  "7027": [
+   "congruence",
+   5
+  ],
+  "7039": [
+   "congruence",
+   11
+  ],
+  "7043": [
+   "congruence",
+   3
+  ],
+  "7057": [
+   "congruence",
+   5
+  ],
+  "7069": [
+   "congruence",
+   31
+  ],
+  "7079": [
+   "congruence",
+   3
+  ],
+  "7103": [
+   "congruence",
+   3
+  ],
+  "7109": [
+   "congruence",
+   3
+  ],
+  "7121": [
+   "congruence",
+   3
+  ],
+  "7127": [
+   "congruence",
+   3
+  ],
+  "7129": [
+   "congruence",
+   17
+  ],
+  "7151": [
+   "congruence",
+   3
+  ],
+  "7159": [
+   "congruence",
+   7
+  ],
+  "7177": [
+   "congruence",
+   5
+  ],
+  "7187": [
+   "congruence",
+   3
+  ],
+  "7193": [
+   "congruence",
+   3
+  ],
+  "7207": [
+   "congruence",
+   5
+  ],
+  "7211": [
+   "congruence",
+   3
+  ],
+  "7213": [
+   "congruence",
+   29
+  ],
+  "7219": [
+   "congruence",
+   37
+  ],
+  "7229": [
+   "congruence",
+   3
+  ],
+  "7237": [
+   "congruence",
+   5
+  ],
+  "7243": [
+   "congruence",
+   7
+  ],
+  "7247": [
+   "congruence",
+   3
+  ],
+  "7253": [
+   "congruence",
+   3
+  ],
+  "7283": [
+   "congruence",
+   3
+  ],
+  "7297": [
+   "congruence",
+   5
+  ],
+  "7307": [
+   "congruence",
+   3
+  ],
+  "7309": [
+   "trial",
+   14699
+  ],
+  "7321": [
+   "trial",
+   167
+  ],
+  "7331": [
+   "congruence",
+   3
+  ],
+  "7333": [
+   "congruence",
+   17
+  ],
+  "7349": [
+   "congruence",
+   3
+  ],
+  "7351": [
+   "trial",
+   89
+  ],
+  "7369": [
+   "congruence",
+   7
+  ],
+  "7393": [
+   "trial",
+   751
+  ],
+  "7411": [
+   "congruence",
+   7
+  ],
+  "7417": [
+   "congruence",
+   5
+  ],
+  "7433": [
+   "congruence",
+   3
+  ],
+  "7451": [
+   "congruence",
+   3
+  ],
+  "7457": [
+   "congruence",
+   3
+  ],
+  "7459": [
+   "trial",
+   103
+  ],
+  "7477": [
+   "congruence",
+   5
+  ],
+  "7481": [
+   "congruence",
+   3
+  ],
+  "7487": [
+   "congruence",
+   3
+  ],
+  "7489": [
+   "trial",
+   199
+  ],
+  "7499": [
+   "congruence",
+   3
+  ],
+  "7507": [
+   "congruence",
+   5
+  ],
+  "7517": [
+   "congruence",
+   3
+  ],
+  "7523": [
+   "congruence",
+   3
+  ],
+  "7529": [
+   "congruence",
+   3
+  ],
+  "7537": [
+   "congruence",
+   5
+  ],
+  "7541": [
+   "congruence",
+   3
+  ],
+  "7547": [
+   "congruence",
+   3
+  ],
+  "7549": [
+   "strong_base2",
+   2
+  ],
+  "7559": [
+   "congruence",
+   3
+  ],
+  "7561": [
+   "congruence",
+   13
+  ],
+  "7573": [
+   "trial",
+   6949
+  ],
+  "7577": [
+   "congruence",
+   3
+  ],
+  "7583": [
+   "congruence",
+   3
+  ],
+  "7589": [
+   "congruence",
+   3
+  ],
+  "7591": [
+   "congruence",
+   19
+  ],
+  "7603": [
+   "strong_base2",
+   2
+  ],
+  "7607": [
+   "congruence",
+   3
+  ],
+  "7621": [
+   "congruence",
+   7
+  ],
+  "7639": [
+   "congruence",
+   13
+  ],
+  "7643": [
+   "congruence",
+   3
+  ],
+  "7649": [
+   "congruence",
+   3
+  ],
+  "7669": [
+   "strong_base2",
+   2
+  ],
+  "7673": [
+   "congruence",
+   3
+  ],
+  "7681": [
+   "trial",
+   59
+  ],
+  "7687": [
+   "congruence",
+   5
+  ],
+  "7691": [
+   "congruence",
+   3
+  ],
+  "7699": [
+   "congruence",
+   11
+  ],
+  "7703": [
+   "congruence",
+   3
+  ],
+  "7717": [
+   "congruence",
+   5
+  ],
+  "7723": [
+   "trial",
+   149
+  ],
+  "7727": [
+   "congruence",
+   3
+  ],
+  "7741": [
+   "congruence",
+   17
+  ],
+  "7753": [
+   "trial",
+   99013
+  ],
+  "7757": [
+   "congruence",
+   3
+  ],
+  "7759": [
+   "trial",
+   8387
+  ],
+  "7789": [
+   "congruence",
+   7
+  ],
+  "7793": [
+   "congruence",
+   3
+  ],
+  "7817": [
+   "congruence",
+   3
+  ],
+  "7823": [
+   "congruence",
+   3
+  ],
+  "7829": [
+   "congruence",
+   3
+  ],
+  "7841": [
+   "congruence",
+   3
+  ],
+  "7853": [
+   "congruence",
+   3
+  ],
+  "7867": [
+   "congruence",
+   5
+  ],
+  "7873": [
+   "congruence",
+   7
+  ],
+  "7877": [
+   "congruence",
+   3
+  ],
+  "7879": [
+   "trial",
+   43607
+  ],
+  "7883": [
+   "congruence",
+   3
+  ],
+  "7901": [
+   "congruence",
+   3
+  ],
+  "7907": [
+   "congruence",
+   3
+  ],
+  "7919": [
+   "congruence",
+   3
+  ],
+  "7927": [
+   "congruence",
+   5
+  ],
+  "7933": [
+   "congruence",
+   19
+  ],
+  "7937": [
+   "congruence",
+   3
+  ],
+  "7949": [
+   "congruence",
+   3
+  ],
+  "7951": [
+   "congruence",
+   13
+  ],
+  "7963": [
+   "congruence",
+   11
+  ],
+  "7993": [
+   "trial",
+   2731
+  ],
+  "8009": [
+   "congruence",
+   3
+  ],
+  "8011": [
+   "strong_base2",
+   2
+  ],
+  "8017": [
+   "congruence",
+   5
+  ],
+  "8039": [
+   "congruence",
+   3
+  ],
+  "8053": [
+   "trial",
+   10267
+  ],
+  "8059": [
+   "trial",
+   251
+  ],
+  "8069": [
+   "congruence",
+   3
+  ],
+  "8081": [
+   "congruence",
+   3
+  ],
+  "8087": [
+   "congruence",
+   3
+  ],
+  "8089": [
+   "trial",
+   21317
+  ],
+  "8093": [
+   "congruence",
+   3
+  ],
+  "8101": [
+   "strong_base2",
+   2
+  ],
+  "8111": [
+   "congruence",
+   3
+  ],
+  "8117": [
+   "congruence",
+   3
+  ],
+  "8123": [
+   "congruence",
+   3
+  ],
+  "8147": [
+   "congruence",
+   3
+  ],
+  "8161": [
+   "congruence",
+   11
+  ],
+  "8167": [
+   "congruence",
+   5
+  ],
+  "8171": [
+   "congruence",
+   3
+  ],
+  "8179": [
+   "trial",
+   569
+  ],
+  "8191": [
+   "strong_base2",
+   2
+  ],
+  "8209": [
+   "congruence",
+   7
+  ],
+  "8219": [
+   "congruence",
+   3
+  ],
+  "8221": [
+   "congruence",
+   43
+  ],
+  "8231": [
+   "congruence",
+   3
+  ],
+  "8233": [
+   "trial",
+   181
+  ],
+  "8237": [
+   "congruence",
+   3
+  ],
+  "8243": [
+   "congruence",
+   3
+  ],
+  "8263": [
+   "congruence",
+   13
+  ],
+  "8269": [
+   "trial",
+   53
+  ],
+  "8273": [
+   "congruence",
+   3
+  ],
+  "8287": [
+   "congruence",
+   5
+  ],
+  "8291": [
+   "congruence",
+   3
+  ],
+  "8293": [
+   "congruence",
+   7
+  ],
+  "8297": [
+   "congruence",
+   3
+  ],
+  "8311": [
+   "strong_base2",
+   2
+  ],
+  "8317": [
+   "congruence",
+   5
+  ],
+  "8329": [
+   "congruence",
+   37
+  ],
+  "8353": [
+   "congruence",
+   17
+  ],
+  "8363": [
+   "congruence",
+   3
+  ],
+  "8369": [
+   "congruence",
+   3
+  ],
+  "8377": [
+   "congruence",
+   5
+  ],
+  "8387": [
+   "congruence",
+   3
+  ],
+  "8389": [
+   "congruence",
+   19
+  ],
+  "8419": [
+   "congruence",
+   7
+  ],
+  "8423": [
+   "congruence",
+   3
+  ],
+  "8429": [
+   "congruence",
+   3
+  ],
+  "8431": [
+   "congruence",
+   29
+  ],
+  "8443": [
+   "strong_base2",
+   2
+  ],
+  "8447": [
+   "congruence",
+   3
+  ],
+  "8461": [
+   "congruence",
+   7
+  ],
+  "8467": [
+   "congruence",
+   5
+  ],
+  "8501": [
+   "congruence",
+   3
+  ],
+  "8513": [
+   "congruence",
+   3
+  ],
+  "8521": [
+   "strong_base2",
+   2
+  ],
+  "8527": [
+   "congruence",
+   5
+  ],
+  "8537": [
+   "congruence",
+   3
+  ],
+  "8539": [
+   "trial",
+   32993
+  ],
+  "8543": [
+   "congruence",
+   3
+  ],
+  "8563": [
+   "trial",
+   461
+  ],
+  "8573": [
+   "congruence",
+   3
+  ],
+  "8581": [
+   "trial",
+   8831
+  ],
+  "8597": [
+   "congruence",
+   3
+  ],
+  "8599": [
+   "strong_base2",
+   2
+  ],
+  "8609": [
+   "congruence",
+   3
+  ],
+  "8623": [
+   "congruence",
+   11
+  ],
+  "8627": [
+   "congruence",
+   3
+  ],
+  "8629": [
+   "congruence",
+   7
+  ],
+  "8641": [
+   "strong_base2",
+   2
+  ],
+  "8647": [
+   "congruence",
+   5
+  ],
+  "8663": [
+   "congruence",
+   3
+  ],
+  "8669": [
+   "congruence",
+   3
+  ],
+  "8677": [
+   "congruence",
+   5
+  ],
+  "8681": [
+   "congruence",
+   3
+  ],
+  "8689": [
+   "congruence",
+   11
+  ],
+  "8693": [
+   "congruence",
+   3
+  ],
+  "8699": [
+   "congruence",
+   3
+  ],
+  "8707": [
+   "congruence",
+   5
+  ],
+  "8713": [
+   "congruence",
+   7
+  ],
+  "8719": [
+   "trial",
+   61
+  ],
+  "8731": [
+   "congruence",
+   13
+  ],
+  "8737": [
+   "congruence",
+   5
+  ],
+  "8741": [
+   "congruence",
+   3
+  ],
+  "8747": [
+   "congruence",
+   3
+  ],
+  "8753": [
+   "congruence",
+   3
+  ],
+  "8761": [
+   "congruence",
+   17
+  ],
+  "8779": [
+   "congruence",
+   29
+  ],
+  "8783": [
+   "congruence",
+   3
+  ],
+  "8803": [
+   "strong_base2",
+   2
+  ],
+  "8807": [
+   "congruence",
+   3
+  ],
+  "8819": [
+   "congruence",
+   3
+  ],
+  "8821": [
+   "congruence",
+   11
+  ],
+  "8831": [
+   "congruence",
+   3
+  ],
+  "8837": [
+   "congruence",
+   3
+  ],
+  "8839": [
+   "congruence",
+   7
+  ],
+  "8849": [
+   "congruence",
+   3
+  ],
+  "8861": [
+   "congruence",
+   3
+  ],
+  "8863": [
+   "congruence",
+   17
+  ],
+  "8867": [
+   "congruence",
+   3
+  ],
+  "8887": [
+   "congruence",
+   5
+  ],
+  "8893": [
+   "trial",
+   79
+  ],
+  "8923": [
+   "congruence",
+   7
+  ],
+  "8929": [
+   "congruence",
+   31
+  ],
+  "8933": [
+   "congruence",
+   3
+  ],
+  "8941": [
+   "congruence",
+   41
+  ],
+  "8951": [
+   "congruence",
+   3
+  ],
+  "8963": [
+   "congruence",
+   3
+  ],
+  "8969": [
+   "congruence",
+   3
+  ],
+  "8971": [
+   "trial",
+   28517
+  ],
+  "8999": [
+   "congruence",
+   3
+  ],
+  "9001": [
+   "trial",
+   521
+  ],
+  "9007": [
+   "congruence",
+   5
+  ],
+  "9011": [
+   "congruence",
+   3
+  ],
+  "9013": [
+   "trial",
+   43933
+  ],
+  "9029": [
+   "congruence",
+   3
+  ],
+  "9041": [
+   "congruence",
+   3
+  ],
+  "9043": [
+   "congruence",
+   13
+  ],
+  "9049": [
+   "congruence",
+   7
+  ],
+  "9059": [
+   "congruence",
+   3
+  ],
+  "9067": [
+   "congruence",
+   5
+  ],
+  "9091": [
+   "congruence",
+   7
+  ],
+  "9103": [
+   "strong_base2",
+   2
+  ],
+  "9109": [
+   "strong_base2",
+   2
+  ],
+  "9127": [
+   "congruence",
+   5
+  ],
+  "9133": [
+   "congruence",
+   7
+  ],
+  "9137": [
+   "congruence",
+   3
+  ],
+  "9151": [
+   "congruence",
+   11
+  ],
+  "9157": [
+   "congruence",
+   5
+  ],
+  "9161": [
+   "congruence",
+   3
+  ],
+  "9173": [
+   "congruence",
+   3
+  ],
+  "9181": [
+   "congruence",
+   23
+  ],
+  "9187": [
+   "congruence",
+   5
+  ],
+  "9199": [
+   "congruence",
+   13
+  ],
+  "9203": [
+   "congruence",
+   3
+  ],
+  "9209": [
+   "congruence",
+   3
+  ],
+  "9221": [
+   "congruence",
+   3
+  ],
+  "9227": [
+   "congruence",
+   3
+  ],
+  "9239": [
+   "congruence",
+   3
+  ],
+  "9241": [
+   "trial",
+   157
+  ],
+  "9257": [
+   "congruence",
+   3
+  ],
+  "9277": [
+   "congruence",
+   5
+  ],
+  "9281": [
+   "congruence",
+   3
+  ],
+  "9283": [
+   "congruence",
+   11
+  ],
+  "9293": [
+   "congruence",
+   3
+  ],
+  "9311": [
+   "congruence",
+   3
+  ],
+  "9319": [
+   "congruence",
+   23
+  ],
+  "9323": [
+   "congruence",
+   3
+  ],
+  "9337": [
+   "congruence",
+   5
+  ],
+  "9341": [
+   "congruence",
+   3
+  ],
+  "9343": [
+   "congruence",
+   7
+  ],
+  "9349": [
+   "congruence",
+   11
+  ],
+  "9371": [
+   "congruence",
+   3
+  ],
+  "9377": [
+   "congruence",
+   3
+  ],
+  "9391": [
+   "strong_base2",
+   2
+  ],
+  "9397": [
+   "congruence",
+   5
+  ],
+  "9403": [
+   "trial",
+   8929
+  ],
+  "9413": [
+   "congruence",
+   3
+  ],
+  "9419": [
+   "congruence",
+   3
+  ],
+  "9421": [
+   "trial",
+   67
+  ],
+  "9431": [
+   "congruence",
+   3
+  ],
+  "9433": [
+   "congruence",
+   13
+  ],
+  "9437": [
+   "congruence",
+   3
+  ],
+  "9439": [
+   "congruence",
+   37
+  ],
+  "9461": [
+   "congruence",
+   3
+  ],
+  "9463": [
+   "trial",
+   941
+  ],
+  "9467": [
+   "congruence",
+   3
+  ],
+  "9473": [
+   "congruence",
+   3
+  ],
+  "9479": [
+   "congruence",
+   3
+  ],
+  "9491": [
+   "congruence",
+   3
+  ],
+  "9497": [
+   "congruence",
+   3
+  ],
+  "9511": [
+   "congruence",
+   7
+  ],
+  "9521": [
+   "congruence",
+   3
+  ],
+  "9533": [
+   "congruence",
+   3
+  ],
+  "9539": [
+   "congruence",
+   3
+  ],
+  "9547": [
+   "congruence",
+   5
+  ],
+  "9551": [
+   "congruence",
+   3
+  ],
+  "9587": [
+   "congruence",
+   3
+  ],
+  "9601": [
+   "strong_base2",
+   2
+  ],
+  "9613": [
+   "congruence",
+   11
+  ],
+  "9619": [
+   "strong_base2",
+   2
+  ],
+  "9623": [
+   "congruence",
+   3
+  ],
+  "9629": [
+   "congruence",
+   3
+  ],
+  "9631": [
+   "trial",
+   283
+  ],
+  "9643": [
+   "congruence",
+   19
+  ],
+  "9649": [
+   "congruence",
+   29
+  ],
+  "9661": [
+   "congruence",
+   37
+  ],
+  "9677": [
+   "congruence",
+   3
+  ],
+  "9679": [
+   "congruence",
+   7
+  ],
+  "9689": [
+   "congruence",
+   3
+  ],
+  "9697": [
+   "congruence",
+   5
+  ],
+  "9719": [
+   "congruence",
+   3
+  ],
+  "9721": [
+   "congruence",
+   7
+  ],
+  "9733": [
+   "congruence",
+   23
+  ],
+  "9739": [
+   "strong_base2",
+   2
+  ],
+  "9743": [
+   "congruence",
+   3
+  ],
+  "9749": [
+   "congruence",
+   3
+  ],
+  "9767": [
+   "congruence",
+   3
+  ],
+  "9769": [
+   "congruence",
+   43
+  ],
+  "9781": [
+   "congruence",
+   17
+  ],
+  "9787": [
+   "congruence",
+   5
+  ],
+  "9791": [
+   "congruence",
+   3
+  ],
+  "9803": [
+   "congruence",
+   3
+  ],
+  "9811": [
+   "congruence",
+   11
+  ],
+  "9817": [
+   "congruence",
+   5
+  ],
+  "9829": [
+   "strong_base2",
+   2
+  ],
+  "9833": [
+   "congruence",
+   3
+  ],
+  "9839": [
+   "congruence",
+   3
+  ],
+  "9851": [
+   "congruence",
+   3
+  ],
+  "9857": [
+   "congruence",
+   3
+  ],
+  "9859": [
+   "congruence",
+   31
+  ],
+  "9871": [
+   "congruence",
+   19
+  ],
+  "9883": [
+   "congruence",
+   17
+  ],
+  "9887": [
+   "congruence",
+   3
+  ],
+  "9901": [
+   "congruence",
+   13
+  ],
+  "9907": [
+   "congruence",
+   5
+  ],
+  "9923": [
+   "congruence",
+   3
+  ],
+  "9929": [
+   "congruence",
+   3
+  ],
+  "9931": [
+   "congruence",
+   7
+  ],
+  "9941": [
+   "congruence",
+   3
+  ],
+  "9949": [
+   "trial",
+   137
+  ],
+  "9967": [
+   "congruence",
+   5
+  ],
+  "9973": [
+   "congruence",
+   7
+  ],
+  "10007": [
+   "congruence",
+   3
+  ],
+  "10009": [
+   "congruence",
+   11
+  ],
+  "10037": [
+   "congruence",
+   3
+  ],
+  "10039": [
+   "trial",
+   653
+  ],
+  "10061": [
+   "congruence",
+   3
+  ],
+  "10067": [
+   "congruence",
+   3
+  ],
+  "10069": [
+   "trial",
+   661
+  ],
+  "10079": [
+   "congruence",
+   3
+  ],
+  "10091": [
+   "congruence",
+   3
+  ],
+  "10093": [
+   "trial",
+   1279
+  ],
+  "10099": [
+   "congruence",
+   7
+  ],
+  "10103": [
+   "congruence",
+   3
+  ]
+ }
+}

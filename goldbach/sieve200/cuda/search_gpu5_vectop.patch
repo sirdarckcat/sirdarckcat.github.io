@@ -1,0 +1,23 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -79,6 +79,10 @@
+                      "appear), and every vector is ONE slice of 2^klog members from k_lo, the first k with --vector-digits digits (N0 + k M >= 10^(digits - 1)); a vector whose window "
+                      "does not fit below its kmax is skipped.  --klo / --kmax / --slice / --desc are not used then")
+ ap.add_argument("--vector-digits", type=int, default=200, help="--vector-dir: the digits every N must have (the window starts at the first such k)")
++ap.add_argument("--vector-top", type=int, default=int(os.environ.get("VECTOR_TOP", "0")), choices=(0, 1),
++                help="--vector-dir: 1 = every vector's window is the TOP 2^klog k of its valid range, [kmax - 2^klog, kmax) (N from ~2.2e199 to 10^200: still --vector-digits digits at both ends, N < 10^ceiling_digits), "
++                     "instead of the one from its first 200-digit k.  A larger N has a lower prime density (p ~ e^gamma ln B / ln N): on the production vector the kept members' design-hit yield is x1.016 for the same sieve "
++                     "and the same tests (uarch 17:05Z, HEADROOM.md); the Fermat kernel takes ~0.1% more squarings.  0: off (the default)")
+ ap.add_argument("--vector-wait", type=int, default=900, help="--vector-dir: seconds to wait for a new chunk file before the campaign ends as exhausted")
+ ap.add_argument("--log-near-exp", type=int, default=0, choices=(0, 1),
+                 help="1: also log, per batch, the expected number of tested members whose first probable-prime row is at or above --near-miss (design hits included): "
+@@ -526,6 +530,9 @@
+                 if k_lo + self.K > int(s["kmax"]):             # the window must lie below the vector's kmax (N < 10^200)
+                     self.skipped += 1
+                     continue
++                if args.vector_top:                            # the window at the TOP of the valid range: still >= 10^(digits - 1) (k_lo + K <= kmax was just checked) and < 10^ceiling_digits (kmax is the first k above it)
++                    k_lo = int(s["kmax"]) - self.K
++                    assert N0 + k_lo * M >= self.lo and N0 + (k_lo + self.K - 1) * M < mpz(10) ** int(s.get("ceiling_digits", 200)), f"{s['name']}: the top window leaves the {s.get('ceiling_digits', 200)}-digit range"
+                 name = f"{s['name']}@{k_lo}"
+                 if name not in excluded:
+                     self.queue.append(dict(s, name=name, kstart=k_lo, kmax=k_lo + self.K))

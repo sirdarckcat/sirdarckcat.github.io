@@ -1,0 +1,27 @@
+# members 157,947,020, successes 256
+# cover first, N examined for 1, 3, 10, 30 successes: 2,982, 63,350, 253,380, 1,205,425  (toy_compare: 2,982, 63,350, 253,380, 1,205,425)
+# ideal order, N examined: 13, 401, 10,811, 73,849  (toy_compare: 13, 401, 10,811, 73,849); gain in nats: 5.44, 5.06, 3.15, 2.79
+
+work W (members scored at depth 200) | method | members | successes in them | N examined for 1 | 3 | 10 | 30 | gain in nats over cover first at 1 | 3 | 10 | 30
+      1,000 | cover-first prefix, then depth 200 (largest k1 25) | 1,000 | 0 | - | - | - | - | - | - | - | -
+      1,000 | random sample, then depth 200 (median of 20) | 1,000 | 0.0 | - | - | - | - | - | - | - | -
+      3,000 | cover-first prefix, then depth 200 (largest k1 25) | 3,000 | 0 | - | - | - | - | - | - | - | -
+      3,000 | random sample, then depth 200 (median of 20) | 3,000 | 0.0 | - | - | - | - | - | - | - | -
+     10,000 | cover-first prefix, then depth 200 (largest k1 26) | 10,000 | 2 | 203 | - | - | - | +2.69 | - | - | -
+     10,000 | random sample, then depth 200 (median of 20) | 10,000 | 0.0 | - | - | - | - | - | - | - | -
+     30,000 | cover-first prefix, then depth 200 (largest k1 27) | 30,000 | 2 | 466 | - | - | - | +1.86 | - | - | -
+     30,000 | random sample, then depth 200 (median of 20) | 30,000 | 0.1 | - | - | - | - | - | - | - | -
+    100,000 | cover-first prefix, then depth 200 (largest k1 27) | 100,000 | 4 | 290 | 4,859 | - | - | +2.33 | +2.57 | - | -
+    100,000 | random sample, then depth 200 (median of 20) | 100,000 | 0.2 | - | - | - | - | - | - | - | -
+    300,000 | cover-first prefix, then depth 200 (largest k1 28) | 300,000 | 12 | 507 | 2,923 | 30,723 | - | +1.77 | +3.08 | +2.11 | -
+    300,000 | random sample, then depth 200 (median of 20) | 300,000 | 0.5 | - | - | - | - | - | - | - | -
+  1,000,000 | cover-first prefix, then depth 200 (largest k1 29) | 1,000,000 | 28 | 11 | 216 | 10,299 | - | +5.60 | +5.68 | +3.20 | -
+  1,000,000 | random sample, then depth 200 (median of 20) | 1,000,000 | 1.2 | 45,944 | - | - | - | -2.73 | - | - | -
+  3,000,000 | cover-first prefix, then depth 200 (largest k1 31) | 3,000,000 | 49 | 13 | 281 | 12,682 | 325,256 | +5.44 | +5.42 | +2.99 | +1.31
+  3,000,000 | random sample, then depth 200 (median of 20) | 3,000,000 | 4.3 | 6,616 | 161,068 | - | - | -0.80 | -0.93 | - | -
+ 10,000,000 | cover-first prefix, then depth 200 (largest k1 32) | 10,000,000 | 92 | 13 | 354 | 11,263 | 152,010 | +5.44 | +5.19 | +3.11 | +2.07
+ 10,000,000 | random sample, then depth 200 (median of 20) | 10,000,000 | 15.9 | 556 | 5,165 | 246,292 | - | +1.68 | +2.51 | +0.03 | -
+ 30,000,000 | cover-first prefix, then depth 200 (largest k1 34) | 30,000,000 | 160 | 13 | 394 | 12,682 | 86,718 | +5.44 | +5.08 | +2.99 | +2.63
+ 30,000,000 | random sample, then depth 200 (median of 20) | 30,000,000 | 50.8 | 1,004 | 4,790 | 65,102 | 1,230,211 | +1.09 | +2.58 | +1.36 | -0.02
+157,947,020 | cover-first prefix, then depth 200 (largest k1 49) | 157,947,020 | 256 | 13 | 401 | 10,811 | 73,849 | +5.44 | +5.06 | +3.15 | +2.79
+157,947,020 | random sample, then depth 200 (median of 20) | 157,947,020 | 256.0 | 13 | 401 | 10,811 | 73,849 | +5.44 | +5.06 | +3.15 | +2.79

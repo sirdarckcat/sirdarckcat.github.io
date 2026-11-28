@@ -1,0 +1,4 @@
+tA = 18, tB = 18: |L_A| = 284,619, |L_B| = 197,145; matches 62 (all < K: True); window members with S_A >= tA and S_B >= tB: 62; identical: True; scores of the matches >= 36: True; 0.3 s
+convolution counts: |L_A| 284,619, |L_B| 197,145
+tA = 20, tB = 17: |L_A| = 28,811, |L_B| = 572,818; matches 22 (all < K: True); window members with S_A >= tA and S_B >= tB: 22; identical: True; scores of the matches >= 37: True; 0.2 s
+convolution counts: |L_A| 28,811, |L_B| 572,818

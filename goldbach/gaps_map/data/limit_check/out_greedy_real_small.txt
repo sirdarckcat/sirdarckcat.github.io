@@ -1,0 +1,4 @@
+inc x=151 D=2,082 D/(x ln^2 x)=0.548 lnln=1.613 t=0.0s
+inc x=500 D=11,995 D/(x ln^2 x)=0.621 lnln=1.827 t=0.0s
+inc x=1000 D=30,179 D/(x ln^2 x)=0.632 lnln=1.933 t=0.0s
+inc x=2000 D=75,756 D/(x ln^2 x)=0.656 lnln=2.028 t=0.0s

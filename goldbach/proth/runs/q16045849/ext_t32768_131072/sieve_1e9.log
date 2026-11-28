@@ -1,0 +1,7 @@
+  sieve 0/250 chunks, alive 130481/131072, 31s
+  sieve 50/250 chunks, alive 80956/131072, 118s
+  sieve 100/250 chunks, alive 78177/131072, 202s
+  sieve 150/250 chunks, alive 76644/131072, 284s
+  sieve 200/250 chunks, alive 75555/131072, 367s
+check: 18562 survivors below 32768 here, 18562 in the main pool, identical=True
+DONE: 56187 survivors in [32768, 131072) after primes < 1e+09, 446s

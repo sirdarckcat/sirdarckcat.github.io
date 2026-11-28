@@ -1,0 +1,7 @@
+F_2: A = V_3 * x^0 * (x+1)^0, a = deg A = 10, N = A^4, n = 40
+  degree 9: 56 monic irreducibles, 56 tested
+    deg Q' = 8, S|A False, rad(S)|A False, N-Q squarefree False: r even 2, r odd 0
+    deg Q' = 8, S|A False, rad(S)|A False, N-Q squarefree True: r even 8, r odd 0
+    deg Q' = 8, S|A False, rad(S)|A True, N-Q squarefree True: r even 20, r odd 10
+    deg Q' = 8, S|A True, rad(S)|A True, N-Q squarefree True: r even 16, r odd 0   [formula: r even]
+odd-degree rows with S | A: 16 checked, 0 disagreements with the formula

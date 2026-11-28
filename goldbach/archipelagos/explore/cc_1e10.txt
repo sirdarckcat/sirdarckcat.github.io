@@ -1,0 +1,47 @@
+N in [1e+10, 1.004e+10): 20,000,000 even N; mean g = 44.2; max g = 1549 at N = 10037775296
+big  := g >= 278  (0.960% of N)
+huge := g >= 692  (0.0096% of N, 1924 numbers)
+
+     lag d   R(d) measured   R(d) if only N mod 30030 mattered
+         2         0.91            0.65
+         4         0.89            0.71
+         6        11.84            1.61
+         8         0.88            0.67
+        12         9.27            1.46
+        18         8.32            1.41
+        24         8.03            1.49
+        30        19.35            1.78
+        36         8.72            1.59
+        42         9.33            1.53
+        60        12.45            1.71
+        90         9.70            1.76
+       210         3.72            1.87
+       420         1.73            1.87
+      2310         1.94            2.00
+     30030         2.04            2.08
+     60060         2.08            2.08
+     90090         2.08            2.08
+    210210         2.11            2.08
+    330330         1.97            2.08
+    390390         2.01            2.08
+    510510         2.21            2.08
+    210216         1.63            1.61
+    330336         1.64            1.61
+    210240         1.77            1.78
+    330360         1.76            1.78
+
+neighbours N +- d, d in {6,...,60,90,...,210} (30 numbers):
+  P(some neighbour is huge | N big)  = 0.02737   vs  | N random: 0.00274  (10.0x)
+  P(some neighbour is big | N huge)  = 0.759     vs  | N random: 0.166
+  huge N with no big neighbour: 463 of 1924
+
+score u_z(N) = how many of the 58 rows q < 278 have N - q free of primes <= z
+       z   share of the big N in the 1% / 5% of N with the lowest u_z (random: 1% / 5%)
+      13     4.8% /  18.7%   (huge N in the lowest 1%:   6.3%)
+     100    10.4% /  31.3%   (huge N in the lowest 1%:  11.9%)
+    1000    21.6% /  49.6%   (huge N in the lowest 1%:  21.5%)
+   10000    39.1% /  71.0%   (huge N in the lowest 1%:  38.5%)
+
+real	0m32.348s
+user	0m26.322s
+sys	0m6.064s

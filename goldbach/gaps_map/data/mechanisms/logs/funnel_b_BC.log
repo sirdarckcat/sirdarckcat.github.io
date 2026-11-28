@@ -1,0 +1,4 @@
+B thr (30, 27, 25, 23, 19) retained 285 of 714 mean cost 20.8 units
+  gain ln(base/funnel) under (V): {1: 0.03, 3: 0.04, 10: 0.14, 30: 0.23, 100: 0.39}
+C thr (27, 25, 23, 21, 17) retained 195 of 638 mean cost 8.8 units
+  gain ln(base/funnel) under (V): {1: 0.07, 3: 0.17, 10: 0.23, 30: 0.39, 100: 0.66}

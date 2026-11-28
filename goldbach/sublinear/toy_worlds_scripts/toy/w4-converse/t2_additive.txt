@@ -1,0 +1,31 @@
+s in [467, 5000]: 579 primes
+   (a) largest additive power / ln s: real 2.402 (max 7.54 at s = 4759), shuffled 0.983
+   (c) additive energy of the heavy list (density 0.40): z against random sets of that size: mean +7.07, sd 10.73, sd of the mean 0.45
+   (b) D =     6: corr(table, candidates) +0.0279 (R^2 0.0013);  best class mod D: gain real 0.0675 rows, predicted 0.0184, shuffled 0.0617;  rate real 0.0377, predicted 0.0103, shuffled 0.0345 rows/nat
+   (b) D =    30: corr(table, candidates) +0.0615 (R^2 0.0048);  best class mod D: gain real 0.2457 rows, predicted 0.0581, shuffled 0.2263;  rate real 0.0722, predicted 0.0171, shuffled 0.0665 rows/nat
+   (b) D =   210: corr(table, candidates) +0.1220 (R^2 0.0174);  best class mod D: gain real 0.9367 rows, predicted 0.1654, shuffled 0.8773;  rate real 0.1740, predicted 0.0311, shuffled 0.1632 rows/nat
+   (b) D =  2310: corr(table, candidates) +0.2005 (R^2 0.0410);  best class mod D: gain real 2.6398 rows, predicted 0.2978, shuffled 2.6197;  rate real 0.3305, predicted 0.0398, shuffled 0.3283 rows/nat
+s in [5000, 20000), every 20th prime: 80 primes
+   (a) largest additive power / ln s: real 11.016 (max 30.66 at s = 18233), shuffled 0.990
+   (b) D =     6: corr(table, candidates) +0.0534 (R^2 0.0031);  best class mod D: gain real 0.0273 rows, predicted 0.0176, shuffled 0.0105;  rate real 0.0152, predicted 0.0098, shuffled 0.0058 rows/nat
+   (b) D =    30: corr(table, candidates) +0.1270 (R^2 0.0180);  best class mod D: gain real 0.0933 rows, predicted 0.0622, shuffled 0.0394;  rate real 0.0274, predicted 0.0183, shuffled 0.0116 rows/nat
+   (b) D =   210: corr(table, candidates) +0.2071 (R^2 0.0441);  best class mod D: gain real 0.2590 rows, predicted 0.1394, shuffled 0.1572;  rate real 0.0484, predicted 0.0261, shuffled 0.0294 rows/nat
+   (b) D =  2310: corr(table, candidates) +0.2568 (R^2 0.0667);  best class mod D: gain real 1.0134 rows, predicted 0.2031, shuffled 0.8460;  rate real 0.1303, predicted 0.0266, shuffled 0.1087 rows/nat
+s in [20000, 60000), every 60th prime: 64 primes
+   (a) largest additive power / ln s: real 34.374 (max 42.70 at s = 59779), shuffled 1.012
+   (b) D =     6: corr(table, candidates) +0.0979 (R^2 0.0105);  best class mod D: gain real 0.0230 rows, predicted 0.0161, shuffled 0.0035;  rate real 0.0128, predicted 0.0090, shuffled 0.0019 rows/nat
+   (b) D =    30: corr(table, candidates) +0.2002 (R^2 0.0405);  best class mod D: gain real 0.0689 rows, predicted 0.0547, shuffled 0.0127;  rate real 0.0203, predicted 0.0161, shuffled 0.0037 rows/nat
+   (b) D =   210: corr(table, candidates) +0.2673 (R^2 0.0716);  best class mod D: gain real 0.1428 rows, predicted 0.0933, shuffled 0.0472;  rate real 0.0267, predicted 0.0175, shuffled 0.0088 rows/nat
+   (b) D =  2310: corr(table, candidates) +0.3089 (R^2 0.0956);  best class mod D: gain real 0.4168 rows, predicted 0.1238, shuffled 0.2547;  rate real 0.0536, predicted 0.0160, shuffled 0.0328 rows/nat
+s in [60000, 200000), every 200th prime: 60 primes
+   (a) largest additive power / ln s: real 94.617 (max 112.72 at s = 198437), shuffled 0.977
+   (b) D =     6: corr(table, candidates) +0.1792 (R^2 0.0323);  best class mod D: gain real 0.0344 rows, predicted 0.0319, shuffled 0.0011;  rate real 0.0192, predicted 0.0178, shuffled 0.0006 rows/nat
+   (b) D =    30: corr(table, candidates) +0.2503 (R^2 0.0628);  best class mod D: gain real 0.0694 rows, predicted 0.0619, shuffled 0.0041;  rate real 0.0204, predicted 0.0182, shuffled 0.0012 rows/nat
+   (b) D =   210: corr(table, candidates) +0.3052 (R^2 0.0932);  best class mod D: gain real 0.1173 rows, predicted 0.0920, shuffled 0.0151;  rate real 0.0219, predicted 0.0172, shuffled 0.0028 rows/nat
+   (b) D =  2310: corr(table, candidates) +0.3418 (R^2 0.1169);  best class mod D: gain real 0.2442 rows, predicted 0.1153, shuffled 0.0844;  rate real 0.0315, predicted 0.0149, shuffled 0.0109 rows/nat
+s in [200000, 600000), every 400th prime: 78 primes
+   (a) largest additive power / ln s: real 113.767 (max 114.80 at s = 299857), shuffled 1.004
+   (b) D =     6: corr(table, candidates) +0.2026 (R^2 0.0410);  best class mod D: gain real 0.0209 rows, predicted 0.0209, shuffled 0.0003;  rate real 0.0117, predicted 0.0117, shuffled 0.0002 rows/nat
+   (b) D =    30: corr(table, candidates) +0.2668 (R^2 0.0712);  best class mod D: gain real 0.0381 rows, predicted 0.0377, shuffled 0.0012;  rate real 0.0112, predicted 0.0111, shuffled 0.0004 rows/nat
+   (b) D =   210: corr(table, candidates) +0.3184 (R^2 0.1014);  best class mod D: gain real 0.0613 rows, predicted 0.0544, shuffled 0.0048;  rate real 0.0115, predicted 0.0102, shuffled 0.0009 rows/nat
+   (b) D =  2310: corr(table, candidates) +0.3533 (R^2 0.1248);  best class mod D: gain real 0.1246 rows, predicted 0.0678, shuffled 0.0271;  rate real 0.0161, predicted 0.0088, shuffled 0.0035 rows/nat

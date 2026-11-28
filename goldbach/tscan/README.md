@@ -1,0 +1,134 @@
+# tscan: the small-N threshold scanner
+
+The threshold game asks for the smallest N with g(N) > Q. For Q = 10,000 the
+answer lies just above the exhaustive range (g ≤ 9,781 for N ≤ 4·10^18), and
+how small an N we can exhibit is limited only by how many candidates we can
+scan. This directory is the scan step of `search.py`, rewritten in C for
+numbers of 20 to 80 digits.
+
+| file | what it is |
+|---|---|
+| `tscan.c` | the scanner: one progression N = N0 + k·M, one range of k |
+| `scan.py` | resumable driver for a list of progressions, one after the other |
+| `variants.py` | every near-optimal residue vector on a cover's primes |
+| `vscan.py` | driver that scans many such progressions in lockstep, smallest N first |
+| `selftest.py` | tests against gmpy2 and a brute-force reference (`selftest_q3001.json`) |
+| `pack.py` | turns the smallest success in a state file into a record directory (witnesses, ECPP certificate, direct PARI check, manifest) |
+| `q10007_e23.json` | the cover behind the 27-digit record (`cover.py 10007 23`, 13 primes r ≤ 43), the base of the list `variants.py` builds; the 25-digit record is in one of the list's progressions |
+| `seed_25digit.json` | `vscan.py` state to start from: how far each of that list's progressions had been scanned when the 25-digit record was found, and the record itself as the N to beat |
+
+A record never rests on this code. Each success is re-checked by
+`search.verify_success`, then proved by `package_record.py` (a witness per
+prime below g, ECPP certificate for N − g) and by a direct PARI check.
+
+## Method
+
+A cover (`cover.py`) fixes N mod r for a few small primes r. A prime q < Q is
+*covered* when r | N − q for one of them; the others are the residual primes
+U. A member k of the progression succeeds when N − q is composite for every
+q in U.
+
+1. **Bit sieve.** For a block of 2^18 consecutive k, a bit table (one row per
+   q in U) is cleared wherever N − q has a prime factor s ≤ B = 131,072. Primes
+   s < 384 are applied 512 bits at a time from a periodic pattern (AVX-512);
+   larger ones one bit at a time, with a fixed number of marks per prime so
+   the loop has no unpredictable branch.
+2. **Count.** a(k) = number of rows still set in column k.
+3. **Select.** A survivor is prime with some probability p (about 0.35 here),
+   so k succeeds with probability about (1 − p)^a(k). Most k have far too many
+   survivors to matter. Only the k with a(k) ≤ T are tested. The scanner prints
+   the histogram of a(k), from which the driver computes which share of the
+   expected successes the tested k hold, and picks the T that maximises
+   share ÷ time.
+4. **Test.** Base-2 Fermat tests on the survivors of a selected k, stopping at
+   the first probable prime (which kills that k). A k whose survivors all fail
+   is reported: each failure proves a complement composite. The test is a
+   Montgomery ladder on 2 to 4 limbs of 64 bits that keeps the residue as a
+   plain power of 2, so nothing is converted to or from Montgomery form.
+
+## Measured (4 cores, Xeon 2.1 GHz, Q = 10,007, 188 residual primes, 27-digit N)
+
+| | k per second |
+|---|---|
+| `search.py` (numpy sieve, gmpy2, tests every k; 30-digit job) | 0.3 million |
+| `tscan`, testing every k | 1.0 million |
+| `tscan`, T = 49: tests 1.26% of the k, which hold 61–66% of the successes | 16–19 million |
+
+In successes per second that is about 35 times `search.py`.
+
+On the 46-digit job (Q = 20,011, 268 residual primes, 3 limbs) the same
+scanner does 10.8 million k per second at T = 88: it tests 1.09% of the k,
+which hold 27–28% of the successes.
+On the 63-digit job (Q = 30,011, 348 residual primes, 4 limbs) it does
+6.3 million k per second at T = 126: 0.86% of the k, 16–17% of the
+successes.
+
+## Many progressions instead of one
+
+`cover.py` picks the residues greedily. For the 13 primes r ≤ 43 and
+Q = 10,007 the greedy vector leaves 188 residual primes. An exhaustive
+search (`variants.py`) finds 6 vectors with 186, 28 with 187, 157 with 188,
+818 with 189, 3,523 with 190 and 13,676 with 191. They all share M, and a
+vector's success rate depends on little but its residual count. Scanning V
+of them to the same height reaches a V times smaller N for the same number
+of candidates. `vscan.py` does this: it always advances the progression
+that is lowest. Several machines can share one list: each takes every n-th
+progression (last argument `i/n`) and keeps its own state file.
+
+The 25-digit record (g = 10,357) was found this way: the 1,009 vectors with
+at most 189 residual primes, 4.9·10^11 members, 6.5 hours on 4 cores.
+
+Why 13 primes and not 14: fixing the residue mod 47 as well gives 47 times
+as many progressions, each 47 times shorter, and lets the search keep only
+the best classes mod 47 instead of sieving all of them. There are 7 vectors
+on the 14 primes with 178 residual primes, 85 with 179, 462 with 180, 2,498
+with 181, 10,936 with 182 and 42,906 with 183. For the same number of
+candidates that is an estimated 1.3 times more successes, which did not
+justify a scanner that handles tens of thousands of short progressions.
+
+## Use
+
+```
+python3 selftest.py                                   # about 10 s
+python3 ../cover.py 10007 23 spec.json                # then add a "name" field
+python3 scan.py plan.json 3600                        # plan.json: see scan.py
+python3 variants.py q10007_e23.json 3 variants.json   # 18,208 vectors with <= 191 residual primes, about 10 s
+python3 vscan.py variants.json state.json 3600 188    # only vectors with <= 188 residual primes
+python3 vscan.py variants.json mine.json 3600 190 24 0/3   # one of three machines sharing the list
+python3 pack.py mine.json variants.json                # record directory for the smallest success in mine.json
+```
+
+To look for an N below the 25-digit record without repeating what was
+scanned, start each machine from a copy of the seed. The 1,009 progressions
+with at most 189 residual primes are already past the record, so the work
+goes to the ones with more:
+
+```
+python3 variants.py q10007_e23.json 4 variants4.json   # 65,692 vectors with <= 192 residual primes, about 20 s
+cp seed_25digit.json mine.json
+python3 vscan.py variants4.json mine.json 3600 192 24 0/6   # machine 0 of 6; repeat until it prints "done"
+```
+
+Which order finds the best N first. A success scores by how small its N
+is, and the lockstep order tests every progression at one height before
+any at the next, so the first success is the smallest N the whole list can
+give: nothing found later can beat it, and the run can stop there. Going
+class by class, or densest first, finds something sooner but the first
+find is then usually not the best (simulated on the measured densities,
+with 24 machine-hours: the first success is the final best in 100% of runs
+for lockstep, 18% class by class, 1% densest first). How many classes to
+include is the remaining choice: each extra class costs about 1.6 times
+the compute for an N about 2.4 times smaller at the same chance of a
+success. With 24 machine-hours, 190 to 192 is the best set (expected
+closeness of the result 61.5%, against 60.2% for 190 and 191 alone); with
+four times that, add 193 (`variants.py ... 5`). Progressions of one class
+need no ranking among themselves: their success densities agree within 3%.
+
+Each machine stops by itself once all its progressions are past the
+smallest success in its own state file. A success on one machine is the
+smallest of the whole list only when every machine's lowest position is
+past it; adding it to the `found` list of the other state files makes them
+stop there too.
+
+`scan.py` compiles `tscan.c` on first use (`gcc -O3 -march=native -fopenmp`).
+Without AVX-512 the scanner still works, with a slower sieve and count.

@@ -1,0 +1,9 @@
+members 66371453 successes 526 k1 range 22 34
+observed-success gain of the Bayes-optimal shallow ordering (any function of N mod 3..23), MC noise makes this a lower bound:
+  k=1: +0.23 (boot +0.17±0.32)  k=3: +0.13 (boot +0.23±0.31)  k=10: +0.16 (boot +0.03±0.21)  k=30: +0.00 (boot +0.06±0.09)
+  baseline E: {1: 3888, 3: 8058, 10: 204319, 30: 624238}  Bayes-ordered E: {1: 3098, 3: 7109, 10: 174773, 30: 624237}
+model-predicted gain (upper estimate, includes winner-curse from MC noise): {1: 0.12, 3: 0.13, 10: 0.11, 30: 0.08}
+ k1=27: members 155133, L mean -10.60 sd 0.202 (includes MC noise)
+ k1=29: members 1371211, L mean -11.41 sd 0.214 (includes MC noise)
+ k1=31: members 6257915, L mean -12.23 sd 0.227 (includes MC noise)
+ k1=33: members 17858814, L mean -13.04 sd 0.239 (includes MC noise)

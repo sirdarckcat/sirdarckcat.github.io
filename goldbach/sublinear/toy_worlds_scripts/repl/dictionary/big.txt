@@ -1,0 +1,34 @@
+2000 members of the 200,000 cover, 1502 rows, 3004000 base-2 Fermat tests, 72109 probable primes (0.02400 a row)
+members with at least one prime row and one composite row: 2000 of 2000
+sample: 40000 probable primes; 40000 composites with no prime factor below 10^6 (kept 40000 of 94178 drawn; 25 s)
+features computed in 16 s
+feature | primes: n, share +1 | sieved composites: n, share +1 | z of the difference
+J_10 = (f_b'(b) | m) | 40000, 0.4972 | 40000, 0.5026 | -1.53
+J_100 = (f_b'(b) | m) | 40000, 0.4970 | 40000, 0.5009 | -1.08
+J_65536 = (f_b'(b) | m) | 40000, 0.5004 | 40000, 0.4995 | +0.25
+J_2 = (f_b'(b) | m) | 8000, 0.4960 | 8000, 0.4999 | -0.49
+K = (disc f_65536 | m) | 8000, 0.4999 | 8000, 0.4949 | +0.63
+sign disc f_65536 | 8000, 0.4086 | 8000, 0.4108 | -0.27
+(disc f_65536 | 3) [parity of the factors of f mod 3] | 5272, 0.4975 | 5239, 0.4934 | +0.42
+(disc f_65536 | 7) [parity of the factors of f mod 7] | 6904, 0.4986 | 6879, 0.4995 | -0.11
+(disc f_65536 | 11) [parity of the factors of f mod 11] | 7258, 0.5000 | 7266, 0.4891 | +1.31
+(disc f_65536 | 13) [parity of the factors of f mod 13] | 7379, 0.5044 | 7362, 0.4963 | +0.98
+f_10 mod 7 has a root [Hensel pattern] | 8000, 0.6895 | 8000, 0.6930 | -0.48
+f_10 mod 13 has a root [Hensel pattern] | 8000, 0.5813 | 8000, 0.5824 | -0.14
+(-1 | m) | 40000, 0.4965 | 40000, 0.4986 | -0.62
+(2 | m) | 40000, 0.5019 | 40000, 0.4995 | +0.69
+(467 | m) | 40000, 0.5008 | 40000, 0.4993 | +0.40
+15 features: max |z| 1.53, mean z^2 0.56 (1.00 = no information)
+pairing | pairs of rows | joint primes
+multiplicative involution swapping consecutive primes (3 5)(7 11)... | pairs 47 | both prime: observed 61, independent rows 55.7 (z +0.71), tied rows about 2109
+multiplicative involution (5 7)(11 13)... | pairs 52 | both prime: observed 62, independent rows 58.1 (z +0.51), tied rows about 2260
+x -> -x on base-10 digit polynomials: q* = |Q(-10)| | pairs 20 | both prime: observed 27, independent rows 24.0 (z +0.62), tied rows about 895
+x -> -x on base-3 digit polynomials: q* = |Q(-3)| | pairs 40 | both prime: observed 47, independent rows 45.9 (z +0.17), tied rows about 1787
+x -> -x on base-7 digit polynomials: q* = |Q(-7)| | pairs 29 | both prime: observed 29, independent rows 32.9 (z -0.68), tied rows about 1281
+x -> -x on base-100 digit polynomials: q* = |Q(-100)| | pairs 35 | both prime: observed 38, independent rows 42.9 (z -0.75), tied rows about 1591
+x -> 1/x (digit reversal) in base 10 | pairs 24 | both prime: observed 21, independent rows 27.0 (z -1.15), tied rows about 1028
+x -> 1/x (digit reversal) in base 2 | pairs 11 | both prime: observed 8, independent rows 11.5 (z -1.04), tied rows about 463
+x -> 1/x (digit reversal) in base 3 | pairs 11 | both prime: observed 14, independent rows 13.5 (z +0.14), tied rows about 501
+x -> 10 - x... translation: q* = Q(b+1) with base-10 digits read in base 11 | pairs 8 | both prime: observed 10, independent rows 8.7 (z +0.45), tied rows about 329
+control: random pairing | pairs 751 | both prime: observed 912, independent rows 864.9 (z +1.60), tied rows about 33065
+control: neighbouring rows | pairs 751 | both prime: observed 819, independent rows 864.8 (z -1.56), tied rows about 32994

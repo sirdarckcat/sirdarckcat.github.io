@@ -1,0 +1,6 @@
+window K = e^16.6; given members |C|; places the primes from 467
+|C| | places needed | Lambda (nats) | pair term | weighted classes a member | the scan of the window, per member of the top |C|
+10 | to 641 (26) | 164 | 0.30 | 26 | 1.62e+06
+100 | to 2,027 (217) | 1527 | 1.43 | 217 | 1.62e+05
+1000 | to 13,841 (1546) | 13271 | 3.33 | 1546 | 1.62e+04
+10000 | to 112,663 (10587) | 111799 | 5.42 | 10587 | 1.62e+03

@@ -1,0 +1,56 @@
+q 3 n 3 rows 6 Gmax 6 cnt 2 second 5 Dmax 3 cnt 2 exceptions 2 meanG 1.7037
+  I_d: 3 3 8
+  #D>=d: 2:6 3:2
+  top: (G=6 v=7) (G=6 v=8) (G=5 v=4) (G=4 v=3) (G=3 v=5) (G=3 v=6) (G=2 v=9) (G=2 v=13)
+q 3 n 4 rows 14 Gmax 14 cnt 3 second 13 Dmax 4 cnt 3 exceptions 3 meanG 3.0123
+  I_d: 3 3 8 18
+  #D>=d: 2:27 3:12 4:3
+  top: (G=14 v=20) (G=14 v=53) (G=14 v=77) (G=13 v=34) (G=12 v=5) (G=12 v=54) (G=11 v=3) (G=11 v=35)
+q 3 n 5 rows 32 Gmax 32 cnt 3 second 25 Dmax 5 cnt 3 exceptions 3 meanG 3.8189
+  I_d: 3 3 8 18 48
+  #D>=d: 2:117 3:51 4:6 5:3
+  top: (G=32 v=8) (G=32 v=131) (G=32 v=203) (G=25 v=7) (G=19 v=130) (G=19 v=202) (G=13 v=28) (G=13 v=112)
+q 3 n 6 rows 80 Gmax 80 cnt 1 second 76 Dmax 6 cnt 1 exceptions 1 meanG 5.5254
+  I_d: 3 3 8 18 48 116
+  #D>=d: 2:399 3:223 4:58 5:19 6:1
+  top: (G=80 v=125) (G=76 v=677) (G=62 v=533) (G=56 v=341) (G=56 v=365) (G=37 v=19) (G=37 v=124) (G=36 v=92)
+q 3 n 7 rows 196 Gmax 76 cnt 1 second 73 Dmax 5 cnt 60 exceptions 0 meanG 6.4893
+  I_d: 3 3 8 18 48 116 312
+  #D>=d: 2:1296 3:786 4:273 5:60
+  top: (G=76 v=995) (G=73 v=190) (G=71 v=1364) (G=62 v=347) (G=62 v=1844) (G=57 v=418) (G=56 v=107) (G=56 v=248)
+q 3 n 8 rows 508 Gmax 101 cnt 3 second 79 Dmax 6 cnt 3 exceptions 0 meanG 8.0940
+  I_d: 3 3 8 18 48 116 312 810
+  #D>=d: 2:4239 3:2820 4:1134 5:309 6:3
+  top: (G=101 v=604) (G=101 v=3004) (G=101 v=5356) (G=79 v=5692) (G=78 v=2039) (G=76 v=437) (G=76 v=605) (G=76 v=3302)
+q 3 n 9 rows 1318 Gmax 200 cnt 1 second 168 Dmax 7 cnt 1 exceptions 0 meanG 9.1189
+  I_d: 3 3 8 18 48 116 312 810 2184
+  #D>=d: 2:13446 3:9300 4:3949 5:1095 6:58 7:1
+  top: (G=200 v=827) (G=168 v=16108) (G=167 v=18578) (G=162 v=15095) (G=139 v=304) (G=130 v=418) (G=125 v=346) (G=114 v=6755)
+q 5 n 3 rows 15 Gmax 12 cnt 1 second 11 Dmax 2 cnt 25 exceptions 0 meanG 2.1600
+  I_d: 5 10 40
+  #D>=d: 2:25
+  top: (G=12 v=98) (G=11 v=117) (G=10 v=116) (G=9 v=7) (G=8 v=6) (G=8 v=43) (G=8 v=115) (G=7 v=42)
+q 5 n 4 rows 55 Gmax 14 cnt 1 second 13 Dmax 2 cnt 100 exceptions 0 meanG 2.5136
+  I_d: 5 10 40 150
+  #D>=d: 2:100
+  top: (G=14 v=248) (G=13 v=223) (G=13 v=403) (G=13 v=624) (G=12 v=240) (G=12 v=621) (G=11 v=212) (G=11 v=241)
+q 5 n 5 rows 205 Gmax 55 cnt 1 second 37 Dmax 4 cnt 1 exceptions 0 meanG 3.5994
+  I_d: 5 10 40 150 624
+  #D>=d: 2:870 3:58 4:1
+  top: (G=55 v=21) (G=37 v=190) (G=29 v=167) (G=29 v=1468) (G=28 v=243) (G=28 v=526) (G=27 v=162) (G=27 v=1687)
+q 7 n 3 rows 28 Gmax 4 cnt 21 second 3 Dmax 1 cnt 343 exceptions 0 meanG 1.3469
+  I_d: 7 21 112
+  #D>=d:
+  top: (G=4 v=19) (G=4 v=26) (G=4 v=40) (G=4 v=51) (G=4 v=56) (G=4 v=73) (G=4 v=105) (G=4 v=115)
+q 7 n 4 rows 140 Gmax 21 cnt 1 second 19 Dmax 2 cnt 147 exceptions 0 meanG 2.4860
+  I_d: 7 21 112 588
+  #D>=d: 2:147
+  top: (G=21 v=505) (G=19 v=503) (G=18 v=2214) (G=16 v=968) (G=16 v=1962) (G=16 v=2209) (G=15 v=8) (G=15 v=1327)
+q 9 n 3 rows 45 Gmax 16 cnt 1 second 15 Dmax 2 cnt 45 exceptions 0 meanG 2.0041
+  I_d: 9 36 240
+  #D>=d: 2:45
+  top: (G=16 v=34) (G=15 v=80) (G=14 v=58) (G=13 v=9) (G=13 v=50) (G=12 v=15) (G=12 v=31) (G=12 v=47)
+q 9 n 4 rows 285 Gmax 8 cnt 144 second 7 Dmax 1 cnt 6561 exceptions 0 meanG 2.2112
+  I_d: 9 36 240 1620
+  #D>=d:
+  top: (G=8 v=324) (G=8 v=342) (G=8 v=370) (G=8 v=379) (G=8 v=444) (G=8 v=454) (G=8 v=463) (G=8 v=471)

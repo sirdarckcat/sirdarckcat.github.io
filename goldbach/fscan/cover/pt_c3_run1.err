@@ -1,0 +1,11 @@
+Q=122000 rows=11474 moduli=88 ln(#covers)=435.70 replicas=56; k of the given cover: -1
+sweep 3000: best k so far 867; k now at the coldest replicas: 878 877 867
+sweep 6000: best k so far 865; k now at the coldest replicas: 867 869 865
+sweep 9000: best k so far 863; k now at the coldest replicas: 867 863 863
+sweep 12000: best k so far 862; k now at the coldest replicas: 862 863 863
+sweep 15000: best k so far 856; k now at the coldest replicas: 862 863 856
+sweep 18000: best k so far 856; k now at the coldest replicas: 862 856 857
+sweep 21000: best k so far 856; k now at the coldest replicas: 856 858 856
+sweep 24000: best k so far 856; k now at the coldest replicas: 860 856 856
+sweep 27000: best k so far 856; k now at the coldest replicas: 856 856 858
+sweep 30000: best k so far 856; k now at the coldest replicas: 856 857 857

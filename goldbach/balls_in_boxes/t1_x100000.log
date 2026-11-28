@@ -1,0 +1,24 @@
+x=100000 w=x/2 C=1.0: |S| 6138 (pred 6123); E 5.491e+05 exact 5.458e+05 balls 1.168e+06; 2nd 1.053; confl 3.983; good max 0.0887 at 0.2  [10s]
+x=100000 w=x/2 C=1.35: |S| 8099 (pred 8079); E 1.083e+06 exact 1.075e+06 balls 2.034e+06; 2nd 1.015; confl 3.993; good max 0.1107 at 0.35  [17s]
+x=100000 w=x/2 C=2.0: |S| 11633 (pred 11622); E 2.597e+06 exact 2.591e+06 balls 4.196e+06; 2nd 1.004; confl 4.011; good max 0.1421 at 0.35  [26s]
+x=100000 w=x/2 C=3.0: |S| 16943 (pred 16927); E 6.339e+06 exact 6.341e+06 balls 8.902e+06; 2nd 1.002; confl 4.007; good max 0.1779 at 0.5  [36s]
+x=100000 w=x/2 C=4.0: |S| 22126 (pred 22107); E 1.158e+07 exact 1.157e+07 balls 1.518e+07; 2nd 1.001; confl 4.002; good max 0.2007 at 0.5  [48s]
+x=100000 w=x/2 C=6.0: |S| 32241 (pred 32242); E 2.646e+07 exact 2.644e+07 balls 3.224e+07; 2nd 1.000; confl 4.000; good max 0.2378 at 0.7  [77s]
+x=100000 w=x/2 C=8.0: |S| 42146 (pred 42158); E 4.701e+07 exact 4.711e+07 balls 5.508e+07; 2nd 1.000; confl 4.000; good max 0.2575 at 0.7  [122s]
+x=100000 w=x/2 order=increasing: C* = 1.779 (per-draw 1.71..1.79); nothing-left fraction on the grid [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]  [196s]
+x=100000 w=x/2 order=decreasing: C* = 1.662 (per-draw 1.58..1.70); nothing-left fraction on the grid [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]  [245s]
+x=100000 w=x/2 order=random: C* = 1.748 (per-draw 1.69..1.76); nothing-left fraction on the grid [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]  [291s]
+x=100000 w=x^0.9 C=1.0: |S| 6398 (pred 6394); E 1.117e+06 exact 1.114e+06 balls 2.155e+06; 2nd 1.042; confl 4.012; good max 0.0748 at 0.2  [303s]
+x=100000 w=x^0.9 C=1.35: |S| 8435 (pred 8436); E 2.199e+06 exact 2.195e+06 balls 3.745e+06; 2nd 1.012; confl 4.005; good max 0.0917 at 0.2  [312s]
+x=100000 w=x^0.9 C=2.0: |S| 12160 (pred 12137); E 5.221e+06 exact 5.21e+06 balls 7.785e+06; 2nd 1.003; confl 4.002; good max 0.1203 at 0.35  [322s]
+x=100000 w=x^0.9 C=3.0: |S| 17699 (pred 17676); E 1.238e+07 exact 1.235e+07 balls 1.649e+07; 2nd 1.001; confl 4.001; good max 0.1506 at 0.35  [334s]
+x=100000 w=x^0.9 C=4.0: |S| 23105 (pred 23084); E 2.235e+07 exact 2.235e+07 balls 2.811e+07; 2nd 1.001; confl 4.002; good max 0.1774 at 0.5  [349s]
+x=100000 w=x^0.9 C=6.0: |S| 33718 (pred 33669); E 5.058e+07 exact 5.029e+07 balls 5.986e+07; 2nd 1.000; confl 4.000; good max 0.2096 at 0.7  [371s]
+x=100000 w=x^0.9 C=8.0: |S| 44068 (pred 44023); E 8.929e+07 exact 8.901e+07 balls 1.022e+08; 2nd 1.000; confl 4.000; good max 0.2351 at 0.7  [399s]
+x=100000 w=x^0.9 order=increasing: C* = 3.141 (per-draw 3.10..3.19); nothing-left fraction on the grid [1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0]  [453s]
+x=100000 w=x^0.9 order=decreasing: C* = 2.917 (per-draw 2.88..2.96); nothing-left fraction on the grid [1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0]  [512s]
+x=100000 w=x^0.9 order=random: C* = 3.028 (per-draw 2.99..3.08); nothing-left fraction on the grid [1.0, 1.0, 1.0, 0.9, 0.0, 0.0, 0.0]  [566s]
+
+real	9m26.577s
+user	29m44.322s
+sys	0m0.983s

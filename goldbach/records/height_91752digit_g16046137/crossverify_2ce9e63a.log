@@ -1,0 +1,74 @@
+Cross-verification by the second session (branch ccr-2ce9e63a-hn0fuw), 2026-11-22 11:05 to 15:25 UTC.
+N was rebuilt here from proth/runs/q16045849/spec.json (commit 64c1dcd) and t = 127534 alone, before the record was packaged;
+the packaged record.json (871c57a and later) has the same N, g, cover and base. Verifier code from commit c40bf99.
+sha256(N decimal, no newline) = 125984855b38569958c274454d33769c4cbb0130eda49266beed49bbefacd84f
+
+== proth/verify.py record.json ==
+[1] N has 91752 digits and lies in all 13094 classes (prime moduli up to 459089)
+[2] all 1033885 primes q < g = 16046137 have a proper divisor r | N - q (complete cover, no residuals)
+[3] P = N - g is prime: 7^((P-1)/2) = -1 (mod P), F = 2^101604 (101604/304793 bits), BLS: F^3 > P and c1^2 - 4*c2 is not a square  [632.1s, gmpy2]
+ALL CHECKS PASSED: g(N) = 16046137 for this 91752-digit N
+verify exit 0
+
+== gp -q range.gp crosscheck.gp, nine ranges of primes q (PARI/GP 2.15.4, parforprime on 4 threads shared with the other legs) ==
+primes q in [2, 400000) scanned: 33860   (primepi difference = 33860)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [2, 400000), 33860 primes, g = 16046137
+real	4m55.560s
+pari exit 0
+primes q in [400000, 2000000) scanned: 115073   (primepi difference = 115073)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [400000, 2000000), 115073 primes, g = 16046137
+real	12m24.127s
+pari exit 0
+primes q in [2000000, 4000000) scanned: 134213   (primepi difference = 134213)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [2000000, 4000000), 134213 primes, g = 16046137
+real	12m2.247s
+pari exit 0
+primes q in [4000000, 6000000) scanned: 129703   (primepi difference = 129703)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [4000000, 6000000), 129703 primes, g = 16046137
+real	11m23.391s
+pari exit 0
+primes q in [6000000, 8000000) scanned: 126928   (primepi difference = 126928)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [6000000, 8000000), 126928 primes, g = 16046137
+real	11m21.630s
+pari exit 0
+primes q in [8000000, 10000000) scanned: 124802   (primepi difference = 124802)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [8000000, 10000000), 124802 primes, g = 16046137
+real	11m21.983s
+pari exit 0
+primes q in [10000000, 12000000) scanned: 123481   (primepi difference = 123481)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [10000000, 12000000), 123481 primes, g = 16046137
+real	11m8.314s
+pari exit 0
+primes q in [12000000, 14000000) scanned: 122017   (primepi difference = 122017)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [12000000, 14000000), 122017 primes, g = 16046137
+real	11m0.591s
+pari exit 0
+primes q in [14000000, 16046137) scanned: 123808   (primepi difference = 123808)
+complements N - q with no prime factor <= 459089: 0
+RANGE PASSED: [14000000, 16046137), 123808 primes, g = 16046137
+real	11m55.135s
+pari exit 0
+sum of the nine counts: 1033885 = pi(g - 1) (verify.py counted the same number)
+PARI's own certificate for P = N - g, in a run with cert = 1:
+  PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid      (printed twice, in two runs)
+  isprime(P) was NOT completed here: both runs were stopped inside it (2-hour task limit; the call needs about 3 h on one core).
+  The first session's full crosscheck.gp run printed 'PARI isprime(P) = 1'.
+
+== proth/interop.py to-bls + bls/xverify.py ==
+(bls/xverify.py unchanged; its one modular exponentiation was answered by records/height_61329digit_g10000141/crossverify_2ce9e63a_runner.py:
+ square-and-multiply on Python ints with divmod reduction, checkpointed; two runs, paused once at bit 253120 of 304792.)
+PAUSED at bit 253120 of 304792, 6899s spent
+xverify exit 3
+resuming at bit 253120 of 304792 (6899s spent so far)
+modexp done: 304792 squarings, 8313s in all (python int, square-and-multiply, divmod reduction)
+PASS g(N) = 16,046,137: 91,752 digits, 1,033,885 primes < g covered by 13,093 odd congruences, F = 2^101604, base 7; modexp 1414s (python int)
+xverify exit 0
+

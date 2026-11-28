@@ -1,0 +1,53 @@
+TEST 1: planted member, J = 12 later primes (D = 57.93), lists of l classes = best l - 1 classes + the class of k*; 5 trials each
+  l = 2 trial 0: dimension 14; density 0.14; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.45 median 105.40 max 140.11; a member has norm <= 3.74
+  l = 2 trial 1: dimension 14; density 0.14; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.83 median 107.68 max 128.00; a member has norm <= 3.74
+  l = 2 trial 2: dimension 14; density 0.14; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.29 median 107.79 max 123.64; a member has norm <= 3.74
+  l = 2 trial 3: dimension 14; density 0.14; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 3.29 median 102.89 max 132.17; a member has norm <= 3.74
+  l = 2 trial 4: dimension 14; density 0.14; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.62 median 104.98 max 121.97; a member has norm <= 3.74
+l = 2: density 0.14; planted member recovered in 5 of 5 trials
+  l = 4 trial 0: dimension 38; density 0.29; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.45 median 8.68 max 10.34; a member has norm <= 3.74
+  l = 4 trial 1: dimension 38; density 0.29; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 2.45 median 8.91 max 11.45; a member has norm <= 3.74
+  l = 4 trial 2: dimension 38; density 0.29; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 3.44 median 8.89 max 11.17; a member has norm <= 3.74
+  l = 4 trial 3: dimension 38; density 0.29; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 3.64 median 8.31 max 9.92; a member has norm <= 3.74
+  l = 4 trial 4: dimension 38; density 0.29; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 1 (correct: True); basis norms/lam min 1.41 median 8.61 max 10.77; a member has norm <= 3.74
+l = 4: density 0.29; planted member recovered in 5 of 5 trials
+  l = 8 trial 0: dimension 86; density 0.43; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.83 max 6.20; a member has norm <= 3.74
+  l = 8 trial 1: dimension 86; density 0.43; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.65 max 6.18; a member has norm <= 3.74
+  l = 8 trial 2: dimension 86; density 0.43; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.83 max 6.25; a member has norm <= 3.74
+  l = 8 trial 3: dimension 86; density 0.43; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.83 max 6.08; a member has norm <= 3.74
+  l = 8 trial 4: dimension 86; density 0.43; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.83 max 6.19; a member has norm <= 3.74
+l = 8: density 0.43; planted member recovered in 0 of 5 trials
+  l = 12 trial 0: dimension 134; density 0.51; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 6.01; a member has norm <= 3.74
+  l = 12 trial 1: dimension 134; density 0.51; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 6.08; a member has norm <= 3.74
+  l = 12 trial 2: dimension 134; density 0.51; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 5.77; a member has norm <= 3.74
+  l = 12 trial 3: dimension 134; density 0.51; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 5.88; a member has norm <= 3.74
+  l = 12 trial 4: dimension 134; density 0.51; members in all lists (scan) 1; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.73 median 2.24 max 5.83; a member has norm <= 3.74
+l = 12: density 0.51; planted member recovered in 0 of 5 trials
+  l = 16 trial 0: dimension 182; density 0.57; members in all lists (scan) 1; LLL 0.1 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.76; a member has norm <= 3.74
+  l = 16 trial 1: dimension 182; density 0.57; members in all lists (scan) 1; LLL 0.1 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.74; a member has norm <= 3.74
+  l = 16 trial 2: dimension 182; density 0.57; members in all lists (scan) 1; LLL 0.1 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.67; a member has norm <= 3.74
+  l = 16 trial 3: dimension 182; density 0.57; members in all lists (scan) 1; LLL 0.1 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.75; a member has norm <= 3.74
+  l = 16 trial 4: dimension 182; density 0.57; members in all lists (scan) 1; LLL 0.1 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.74; a member has norm <= 3.74
+l = 16: density 0.57; planted member recovered in 0 of 5 trials
+  l = 24 trial 0: dimension 278; density 0.66; members in all lists (scan) 1; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.83; a member has norm <= 3.74
+  l = 24 trial 1: dimension 278; density 0.66; members in all lists (scan) 1; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.73; a member has norm <= 3.74
+  l = 24 trial 2: dimension 278; density 0.66; members in all lists (scan) 1; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.72; a member has norm <= 3.74
+  l = 24 trial 3: dimension 278; density 0.66; members in all lists (scan) 1; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.72; a member has norm <= 3.74
+  l = 24 trial 4: dimension 278; density 0.66; members in all lists (scan) 1; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.73; a member has norm <= 3.74
+l = 24: density 0.66; planted member recovered in 0 of 5 trials
+  l = 32 trial 0: dimension 374; density 0.72; members in all lists (scan) 1; LLL 0.6 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.75; a member has norm <= 3.74
+  l = 32 trial 1: dimension 374; density 0.72; members in all lists (scan) 1; LLL 0.6 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.66; a member has norm <= 3.74
+l = 32: density 0.72; planted member recovered in 0 of 2 trials
+  l = 48 trial 0: dimension 566; density 0.80; members in all lists (scan) 1; LLL 2.3 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 6.02; a member has norm <= 3.74
+  l = 48 trial 1: dimension 566; density 0.80; members in all lists (scan) 1; LLL 2.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.00 max 5.85; a member has norm <= 3.74
+l = 48: density 0.80; planted member recovered in 0 of 2 trials
+
+TEST 2: real lists, nothing planted
+J = 4 rho = 0.05: dimension 96; density 1.64; members in all lists (scan) 152; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 2.79; a member has norm <= 2.45
+J = 6 rho = 0.05: dimension 145; density 0.95; members in all lists (scan) 0; LLL 0.0 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.65 max 3.88; a member has norm <= 2.83
+J = 6 rho = 0.1: dimension 291; density 1.15; members in all lists (scan) 28; LLL 0.2 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.89 max 3.92; a member has norm <= 2.83
+J = 8 rho = 0.1: dimension 393; density 0.95; members in all lists (scan) 1; LLL 0.6 s; basis vectors that are such members: 0 (correct: True); basis norms/lam min 1.41 median 2.24 max 4.75; a member has norm <= 3.16
+
+real	0m9.239s
+user	0m8.757s
+sys	0m0.211s

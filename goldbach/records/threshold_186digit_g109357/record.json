@@ -1,0 +1,9 @@
+{
+ "N": "128688664577780899827331700743106940915017179674767893328099014794482585615109830678070423026388033929275980720084814036651874896368585384956472274508605143385145773449672098541511208018",
+ "g": 109357,
+ "digits": 186,
+ "note": "threshold game at 100,000, round 2; superseded by the 150-digit N",
+ "source": "slop/goldbach/records/t100k/record_t100k_r2.json",
+ "source_sha256": "8cd3a3cadf9a454e53d434fbc712590f68057a64912d490a5e1267e3ac5242d4",
+ "proof": "the source package holds the congruence classes, the progression index and a PARI ECPP certificate for N - g; slop/goldbach/records/verify_record.py re-derives every witness and re-verifies the certificate"
+}

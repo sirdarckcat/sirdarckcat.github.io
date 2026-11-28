@@ -1,0 +1,50 @@
+# uarch's opt-in sieve variants (3209f0d) on the three RTX PRO 6000s (packab.sh, then deploy_pack.py), 2026-11-23 13:15-13:17Z: per card, the 24 test windows at the production
+# vector config, base (ua_v3) / v5 (ua_v5, no options) / phu (PACK + HOIST + TILE_UNROLL=4) / phup (+ TILE_PREFETCH=256), alternating; the known case with phup's settings.
+
+=== gold-g4
+/content/packab/result.txt base  : gaps [0.778, 0.918, 0.838, 0.85, 0.633] | mean of batches 2-5 0.846 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.832, 0.798, 0.83, 0.867, 0.673] | mean of batches 2-5 0.832 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.837, 0.837, 0.832, 0.82, 0.626] | mean of batches 2-5 0.831 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.861, 0.832, 0.75, 0.869, 0.629] | mean of batches 2-5 0.828 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.892, 0.847, 0.811, 0.855, 0.655] | mean of batches 2-5 0.851 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.834, 0.8, 0.829, 0.799, 0.628] | mean of batches 2-5 0.815 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.806, 0.796, 0.872, 0.807, 0.628] | mean of batches 2-5 0.820 s | slice lines vs base: IDENTICAL (24) | []
+phu 0.823 s (x0.9703) | phup 0.824 s (x0.9710) | base 0.849 s | v5 (no options) 0.832 s
+known case with phup's settings: 23 near-misses, identical to the CPU brute force's 23: True
+PACK-CHOICE phu x0.9703
+PACK-GATE PASSED
+PACKAB-DONE
+/content/packd.log [dp] 13:17:39Z | procs 1 | phu | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v5/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4']
+PACKD-DONE
+
+=== gold-g4b
+/content/packab/result.txt base  : gaps [0.791, 0.888, 0.844, 0.869, 0.609] | mean of batches 2-5 0.848 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.775, 0.88, 0.836, 0.871, 0.673] | mean of batches 2-5 0.841 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.842, 0.845, 0.824, 0.808, 0.623] | mean of batches 2-5 0.830 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.817, 0.789, 0.814, 0.824, 0.64] | mean of batches 2-5 0.811 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.811, 0.801, 0.832, 0.914, 0.649] | mean of batches 2-5 0.839 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.867, 0.806, 0.815, 0.825, 0.636] | mean of batches 2-5 0.828 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.856, 0.822, 0.795, 0.826, 0.619] | mean of batches 2-5 0.825 s | slice lines vs base: IDENTICAL (24) | []
+phu 0.829 s (x0.9827) | phup 0.818 s (x0.9693) | base 0.844 s | v5 (no options) 0.841 s
+known case with phup's settings: 23 near-misses, identical to the CPU brute force's 23: True
+PACK-CHOICE phup x0.9693
+PACK-GATE PASSED
+PACKAB-DONE
+/content/packd.log [dp] 13:17:47Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v5/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256']
+PACKD-DONE
+
+=== gold-g4c
+/content/packab/result.txt base  : gaps [0.886, 0.792, 0.867, 0.885, 0.626] | mean of batches 2-5 0.858 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.826, 0.825, 0.865, 0.848, 0.63] | mean of batches 2-5 0.841 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.898, 0.808, 0.803, 0.819, 0.634] | mean of batches 2-5 0.832 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.803, 0.81, 0.83, 0.795, 0.627] | mean of batches 2-5 0.809 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.836, 0.816, 0.794, 0.905, 0.658] | mean of batches 2-5 0.838 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.813, 0.835, 0.817, 0.807, 0.624] | mean of batches 2-5 0.818 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.824, 0.82, 0.819, 0.8, 0.635] | mean of batches 2-5 0.816 s | slice lines vs base: IDENTICAL (24) | []
+phu 0.825 s (x0.9734) | phup 0.813 s (x0.9588) | base 0.848 s | v5 (no options) 0.841 s
+known case with phup's settings: 23 near-misses, identical to the CPU brute force's 23: True
+PACK-CHOICE phup x0.9588
+PACK-GATE PASSED
+PACKAB-DONE
+/content/packd.log [dp] 13:17:51Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v5/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256']
+PACKD-DONE

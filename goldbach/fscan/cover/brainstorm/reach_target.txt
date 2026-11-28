@@ -1,0 +1,9 @@
+target 213070 (10.00% of the ceiling); 9 fleet-days at 29M effective full-weight members/s; record in hand 157837
+cover designed for | uncovered rows below the target | expected members reaching it | chance | fleet-days for one expected | expected final record
+150000 | 1738 | 1.10e-05 | 0.0011% | 819,964 | 168486
+160000 | 1718 | 1.78e-05 | 0.0018% | 505,410 | 170800
+170000 | 1718 | 1.78e-05 | 0.0018% | 505,410 | 171783
+180000 | 1674 | 5.16e-05 | 0.0052% | 174,306 | 169295
+190000 | 1680 | 4.47e-05 | 0.0045% | 201,538 | 166713
+200000 | 1657 | 7.79e-05 | 0.0078% | 115,527 | 166199
+213070 | 1623 | 1.77e-04 | 0.0177% | 50,749 | 164488

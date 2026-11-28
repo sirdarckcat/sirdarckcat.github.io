@@ -1,0 +1,27 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 08:59:09.600872931 +0000
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py	2026-11-23 08:59:09.619721323 +0000
+@@ -280,6 +280,15 @@
+ _SPLIT_STREAMS = []             # two long-lived streams: cupy's pool keeps a free list per stream, so a stream made for every pool would strand its blocks
+ 
+ 
++def _fermat_stream():
++    """FERMAT_STREAM_PRIORITY=high: the Fermat halves' streams get the highest stream priority (with OVERLAP_SIEVE_PRIORITY=0 the sieve thread's stream is then below them: the sieve only gets what the Fermat
++    CTAs leave free, which needs sieve CTAs that fit in the leftover registers: DEEP_TILE_MAXREG=32 with --deep-tile-threads 128 --deep-gen-threads 128).  Default: a plain non-blocking stream as before."""
++    if os.environ.get("FERMAT_STREAM_PRIORITY", "") == "high":
++        from overlap import new_stream                      # noqa: E402  (sieve200/cuda)
++        return new_stream(cp, -100, "Fermat")
++    return cp.cuda.Stream(non_blocking=True)
++
++
+ def run_pool_split(tester, kv, cnt, cols):
+     """run_pool on two halves of the members (split at a member boundary) in two threads, each on its own non-blocking stream.  Same results per member as run_pool; the numbers of computed tests and launches
+     differ a little (a half's rounds are sized by its own active members)."""
+@@ -287,7 +296,7 @@
+     if n < 4096:
+         return run_pool(tester, kv, cnt, cols)
+     if not _SPLIT_STREAMS:
+-        _SPLIT_STREAMS.extend(cp.cuda.Stream(non_blocking=True) for _ in range(2))
++        _SPLIT_STREAMS.extend(_fermat_stream() for _ in range(2))
+     offs = cp.concatenate([cp.zeros(1, cp.int64), cp.cumsum(cnt)])          # (also waits for the caller's stream: kv, cnt and cols are complete before the threads read them)
+     mid = n // 2
+     cut, end = int(offs[mid]), int(offs[n])

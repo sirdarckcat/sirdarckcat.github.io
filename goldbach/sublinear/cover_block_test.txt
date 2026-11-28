@@ -1,0 +1,20 @@
+# cover_block_test.py: block-type covers on the 89 moduli (the moduli of a block on the residues of one common integer, the rest tempered) against the same block with random classes. 25 November 2026.
+# python3 cover_block_test.py Q sweeps tries z-w ...   (needs ../fscan/cover/ptcover_wfast). Best covers known: 1,248 rows at 170,000 and 1,609 at 213,070.
+Q=170000 block (23, 113]: 21 moduli. Rows left by the block alone: common integer mean 10866 sd 147 best 10662; random classes mean 10792 sd 27 best 10689
+   common integer 333360: block leaves 10662; whole cover after tempering the other 68 moduli: 1366 rows left
+   best random classes: block leaves 10689; whole cover after tempering the other 68 moduli: 1377 rows left
+Q=170000 block (41, 113]: 17 moduli. Rows left by the block alone: common integer mean 12257 sd 99 best 12117; random classes mean 12213 sd 24 best 12139
+   common integer 489120: block leaves 12117; whole cover after tempering the other 72 moduli: 1342 rows left
+   best random classes: block leaves 12139; whole cover after tempering the other 72 moduli: 1348 rows left
+Q=170000 block (17, 113]: 23 moduli. Rows left by the block alone: common integer mean 9843 sd 206 best 9607; random classes mean 9728 sd 28 best 9623
+   common integer 545865: block leaves 9607; whole cover after tempering the other 66 moduli: 1385 rows left
+   best random classes: block leaves 9623; whole cover after tempering the other 66 moduli: 1391 rows left
+Q=170000 block (41, 199]: 33 moduli. Rows left by the block alone: common integer mean 11095 sd 97 best 10929; random classes mean 11049 sd 29 best 10939
+   common integer 700980: block leaves 10929; whole cover after tempering the other 56 moduli: 1449 rows left
+   best random classes: block leaves 10939; whole cover after tempering the other 56 moduli: 1441 rows left
+Q=213070 block (41, 113]: 17 moduli. Rows left by the block alone: common integer mean 15071 sd 126 best 14922; random classes mean 15014 sd 26 best 14924
+   common integer 3720107: block leaves 14922; whole cover after tempering the other 72 moduli: 1723 rows left
+   best random classes: block leaves 14924; whole cover after tempering the other 72 moduli: 1723 rows left
+Q=213070 block (23, 113]: 21 moduli. Rows left by the block alone: common integer mean 13357 sd 175 best 13136; random classes mean 13267 sd 30 best 13159
+   common integer 343458: block leaves 13136; whole cover after tempering the other 68 moduli: 1742 rows left
+   best random classes: block leaves 13159; whole cover after tempering the other 68 moduli: 1749 rows left

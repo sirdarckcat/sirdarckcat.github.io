@@ -1,0 +1,20 @@
+# data/q170000_m89.txt: 224 cover lines, Q = 170,000
+0 | 1248 (1248) | 531,620 | 386.862 | 386.862 | 420.13 | 278.70 | -8.23 | 270.47 | 0.9851 | 277.28 | 259.42 | 0.9673
+# sd ratio over the first 12 lines: exact w and R: min 0.9851 max 0.9852 mean 0.9851; approximate w and R: min 0.9672 max 0.9673 mean 0.9673
+# over those lines: rows 1248 to 1249; Var S (exact constants) 270.47 to 270.72; binomial 278.70 to 278.92; sd S 16.446 to 16.453; mean variance/mean of the class counts modulo 467..997: 0.833 to 0.836
+# data/q170000_m89r491.txt: 3924 cover lines, Q = 170,000
+0 | 1245 (1245) | 529,196 | 385.187 | 385.187 | 419.12 | 278.03 | -8.17 | 269.86 | 0.9852 | 276.61 | 258.86 | 0.9674
+# sd ratio over the first 12 lines: exact w and R: min 0.9851 max 0.9852 mean 0.9852; approximate w and R: min 0.9673 max 0.9674 mean 0.9674
+# over those lines: rows 1245 to 1246; Var S (exact constants) 269.86 to 270.10; binomial 278.03 to 278.25; sd S 16.427 to 16.435; mean variance/mean of the class counts modulo 467..997: 0.834 to 0.837
+# data/q213070_m89.txt: 1269 cover lines, Q = 213,070
+0 | 1609 (1609) | 945,236 | 657.886 | 657.886 | 541.66 | 359.31 | -12.01 | 347.30 | 0.9831 | 357.48 | 329.44 | 0.9600
+# sd ratio over the first 12 lines: exact w and R: min 0.9831 max 0.9832 mean 0.9831; approximate w and R: min 0.9599 max 0.9600 mean 0.9600
+# over those lines: rows 1609 to 1610; Var S (exact constants) 347.29 to 347.49; binomial 359.31 to 359.54; sd S 18.636 to 18.641; mean variance/mean of the class counts modulo 467..997: 0.810 to 0.815
+# data/q180000_m89.txt: 1128 cover lines, Q = 180,000
+0 | 1334 (1334) | 617,706 | 445.288 | 445.288 | 449.08 | 297.90 | -9.03 | 288.87 | 0.9847 | 296.38 | 276.34 | 0.9656
+# sd ratio over the first 12 lines: exact w and R: min 0.9847 max 0.9848 mean 0.9847; approximate w and R: min 0.9656 max 0.9657 mean 0.9656
+# over those lines: rows 1334 to 1334; Var S (exact constants) 288.85 to 288.91; binomial 297.90 to 297.90; sd S 16.996 to 16.997; mean variance/mean of the class counts modulo 467..997: 0.831 to 0.835
+# data/q190000_m89.txt: 300 cover lines, Q = 190,000
+0 | 1420 (1420) | 711,530 | 506.987 | 506.987 | 478.03 | 317.11 | -9.96 | 307.14 | 0.9842 | 315.49 | 293.05 | 0.9638
+# sd ratio over the first 12 lines: exact w and R: min 0.9841 max 0.9844 mean 0.9842; approximate w and R: min 0.9638 max 0.9640 mean 0.9639
+# over those lines: rows 1420 to 1420; Var S (exact constants) 307.13 to 307.30; binomial 317.11 to 317.11; sd S 17.525 to 17.530; mean variance/mean of the class counts modulo 467..997: 0.828 to 0.830

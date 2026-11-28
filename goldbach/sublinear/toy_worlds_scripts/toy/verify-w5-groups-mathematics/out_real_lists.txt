@@ -1,0 +1,15 @@
+j=3, sigma=2: D=1.628, e^D=5.096; my lists: covers 1189, later 1593 (sum 2782); candidates in position windows 371882; N < X within slack: 11983 by score {1478: 14, 1479: 520, 1480: 11449}; unconstrained optimum 1478; 0.8 s
+      n(sigma) = 61140, n(sigma) e^-D = 11998.61
+j=4, sigma=1: D=7.825, e^D=2502; my lists: covers 61, later 510 (sum 571); candidates in position windows 12; N < X within slack: 2 by score {1471: 2}; unconstrained optimum 1470; 0.5 s
+      n(sigma) = 3144, n(sigma) e^-D = 1.26
+j=4, sigma=3: D=7.825, e^D=2502; my lists: covers 17696, later 26393 (sum 44089); candidates in position windows 186851; N < X within slack: 596 by score {1471: 2, 1472: 30, 1473: 564}; unconstrained optimum 1470; 0.6 s
+      n(sigma) = 1473481, n(sigma) e^-D = 588.94
+j=5, sigma=2: D=14.037, e^D=1.248e+06; my lists: covers 1189, later 35793 (sum 36982); candidates in position windows 27; N < X within slack: 2 by score {1465: 2}; unconstrained optimum 1463; 0.6 s
+      n(sigma) = 476052, n(sigma) e^-D = 0.38
+j=5, sigma=4: D=14.037, e^D=1.248e+06; my lists: covers 219939, later 1622269 (sum 1842208); candidates in position windows 285925; N < X within slack: 117 by score {1465: 2, 1466: 5, 1467: 110}; unconstrained optimum 1463; 3.7 s
+      n(sigma) = 152295349, n(sigma) e^-D = 121.99
+/bin/bash: line 1: 15335 Killed                  python3 v_real.py list 6 5
+
+real	0m11.208s
+user	0m3.398s
+sys	0m4.708s

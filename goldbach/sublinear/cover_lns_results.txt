@@ -1,0 +1,22 @@
+cover_lns.c (uarch, 24 Nov 2026): a large-neighbourhood search with desert_fast5's exact search as the step, on research's 89-modulus cover
+(complete_cover_15907.txt on research's branch: every odd prime below 15,907 struck).  Result: NO improvement found.
+
+Step: Q = the first odd prime left unstruck; free k moduli, keep the others; U = the primes up to Q that no kept modulus strikes (Q among
+them); the exact search (LOOK, ARGM, MATCH, QSKIP, EOPT, FORCE, modulus branching; the freed moduli's classes re-indexed to the <= 255
+classes holding a prime of U) looks for classes of the freed moduli striking all of U.  POOL = p frees only among the p moduli that strike
+the fewest primes alone; SIDE = 1 makes every other step a sideways move (target: the primes below Q, random child order, the cover found
+replaces the current one).
+
+Checks (-DSANITY: target = the primes below Q, which the cover's own classes strike, so every step must find a cover): for k = 12..32 and
+several seeds, every step with |U| <= 255 found one (e.g. k = 28: 216 found + 184 with |U| > 255 = 400 steps), and so did 400 of 400
+randomized steps (SIDE, POOL 40).  The check found a bug in desert_fast5.c (fixed in commit 6caad7d): ord[MAXN] overflowed at modulus
+branchings with more than 32 qualifying classes; the D(n) runs are rerun with the fixed program, and a run with no such node (the fixed
+program counts them) is the same search as before.
+
+Runs on complete_cover_15907.txt (no improvement in any):
+   k = 24, all moduli, 3000 steps: every step proved infeasible within ~10 nodes (1074 had |U| > 255)
+   k = 32, POOL 89 / 60 / 45 / 36, 2000 steps each: 0 (up to 27M nodes in all, k = 32 of the 36 loosest moduli)
+   k = 28, POOL 40, 2000 steps: 0
+   SIDE = 1: k = 24 all moduli, k = 28 POOL 50, k = 32 POOL 40, 20,000 steps each: 0
+So no rearrangement of up to 32 moduli (the loose ones, or random sets with |U| <= 255) also strikes 15,907: the cover is locally rigid.
+Striking 15,907 seems to need the tight small moduli to move (3 alone strikes 241 primes below 15,913 that nothing else strikes).

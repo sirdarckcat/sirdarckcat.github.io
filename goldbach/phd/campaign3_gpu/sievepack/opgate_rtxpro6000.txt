@@ -1,0 +1,51 @@
+# uarch's one-pass generate kernel (f1b904a, DEEP_GEN_ONEPASS=1) in the driver on each RTX PRO 6000 (opgate.sh, 2026-11-23 18:05-18:07Z, campaigns paused): base = the card's production
+# tree and options, op = ua_v10 + the same options + ONEPASS, opl = op + DEEP_GEN_LB=512,3, alternating on the 24 test vectors (production's deep_env_v89: vector mode, f = 0.985,
+# --target, top placement); slice lines against base; then the vector known case (bottom, 2^19 from k_lo, f = 0) with the faster variant.
+
+=== gold-g4
+2026-11-23T18:05:28Z paused pid 2947575 | base tree /content/ua_v9/goldbach/sieve200
+2026-11-23T18:07:03Z resumed pid 2947575 | kc with opl
+base  : gaps [0.778, 0.738, 0.762, 0.752, 0.622] | mean of batches 2-5 0.757 s | slice lines vs base: IDENTICAL (24) | []
+op    : gaps [0.759, 0.737, 0.734, 0.735, 0.618] | mean of batches 2-5 0.741 s | slice lines vs base: IDENTICAL (24) | []
+opl   : gaps [0.699, 0.753, 0.736, 0.735, 0.641] | mean of batches 2-5 0.731 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.744, 0.783, 0.764, 0.735, 0.631] | mean of batches 2-5 0.757 s | slice lines vs base: IDENTICAL (24) | []
+op_b  : gaps [0.742, 0.749, 0.729, 0.71, 0.629] | mean of batches 2-5 0.732 s | slice lines vs base: IDENTICAL (24) | []
+opl_b : gaps [0.752, 0.748, 0.718, 0.748, 0.613] | mean of batches 2-5 0.742 s | slice lines vs base: IDENTICAL (24) | []
+op (ONEPASS) 0.737 s (x0.9735) | opl (ONEPASS + LB 512,3) 0.736 s (x0.9728) | base 0.757 s
+known case with opl's settings: 23 near-misses, identical to the CPU brute force's 23: True
+OP-CHOICE opl x0.9728
+OP-GATE PASSED
+OPGATE-DONE
+
+=== gold-g4b
+2026-11-23T18:05:31Z paused pid 2987127 | base tree /content/ua_v7/goldbach/sieve200
+2026-11-23T18:07:03Z resumed pid 2987127 | kc with opl
+base  : gaps [0.774, 0.75, 0.762, 0.759, 0.63] | mean of batches 2-5 0.761 s | slice lines vs base: IDENTICAL (24) | []
+op    : gaps [0.724, 0.751, 0.748, 0.729, 0.622] | mean of batches 2-5 0.738 s | slice lines vs base: IDENTICAL (24) | []
+opl   : gaps [0.72, 0.747, 0.732, 0.73, 0.636] | mean of batches 2-5 0.732 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.76, 0.797, 0.764, 0.752, 0.619] | mean of batches 2-5 0.768 s | slice lines vs base: IDENTICAL (24) | []
+op_b  : gaps [0.741, 0.739, 0.737, 0.728, 0.628] | mean of batches 2-5 0.736 s | slice lines vs base: IDENTICAL (24) | []
+opl_b : gaps [0.737, 0.731, 0.746, 0.709, 0.628] | mean of batches 2-5 0.731 s | slice lines vs base: IDENTICAL (24) | []
+op (ONEPASS) 0.737 s (x0.9638) | opl (ONEPASS + LB 512,3) 0.732 s (x0.9566) | base 0.765 s
+known case with opl's settings: 23 near-misses, identical to the CPU brute force's 23: True
+OP-CHOICE opl x0.9566
+OP-GATE PASSED
+OPGATE-DONE
+
+=== gold-g4c
+2026-11-23T18:05:45Z paused pid 2921943 | base tree /content/ua_v9/goldbach/sieve200
+2026-11-23T18:07:20Z resumed pid 2921943 | kc with op
+base  : gaps [0.764, 0.754, 0.749, 0.754, 0.631] | mean of batches 2-5 0.755 s | slice lines vs base: IDENTICAL (24) | []
+op    : gaps [0.751, 0.728, 0.742, 0.734, 0.639] | mean of batches 2-5 0.739 s | slice lines vs base: IDENTICAL (24) | []
+opl   : gaps [0.714, 0.773, 0.708, 0.735, 0.65] | mean of batches 2-5 0.733 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.744, 0.799, 0.743, 0.747, 0.632] | mean of batches 2-5 0.758 s | slice lines vs base: IDENTICAL (24) | []
+op_b  : gaps [0.753, 0.727, 0.73, 0.721, 0.631] | mean of batches 2-5 0.733 s | slice lines vs base: IDENTICAL (24) | []
+opl_b : gaps [0.766, 0.721, 0.739, 0.734, 0.623] | mean of batches 2-5 0.740 s | slice lines vs base: IDENTICAL (24) | []
+op (ONEPASS) 0.736 s (x0.9725) | opl (ONEPASS + LB 512,3) 0.736 s (x0.9733) | base 0.757 s
+known case with op's settings: 23 near-misses, identical to the CPU brute force's 23: True
+OP-CHOICE op x0.9725
+OP-GATE PASSED
+OPGATE-DONE
+
+# Deployed (deploy_onepass.py, at a batch end): gold-g4b 18:09:59Z (opl), gold-g4c 18:10:01Z (op), gold-g4 18:11:05Z (opl). SIEVE200=/content/ua_v10/goldbach/sieve200 plus the flags
+# in next_campaign_env (old file kept as next_campaign_env_pre_onepass); no errors after the restart.

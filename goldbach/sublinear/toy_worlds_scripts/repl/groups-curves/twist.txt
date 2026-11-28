@@ -1,0 +1,3 @@
+11a1: conductor 11; 7429 twists d < 20000; classes of d mod 44 with both signs: 0 of 20; mean of w*mu(d) = -0.0069 +- 0.0116
+37a1: conductor 37; 7892 twists d < 20000; classes of d mod 148 with both signs: 0 of 72; mean of w*mu(d) = +0.0291 +- 0.0113
+389a1: conductor 389; 8083 twists d < 20000; classes of d mod 1556 with both signs: 0 of 776; mean of w*mu(d) = +0.0043 +- 0.0111

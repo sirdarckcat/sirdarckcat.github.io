@@ -1,0 +1,126 @@
+j = 3, later primes [467, 479, 487], T = 108938491, D = ln(P/X) = 1.6284, e^D = 5.096, e^(D/2) = 2.257; window 21378978 members; Gmax = 24; unconstrained optimum 1478
+later list (deficit <= 0): 36 vectors   [0.4 s]
+cover list (cost <= 0): 2 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 14; lists product * X/P = 14.13   [0.4 s]
+verified below X: 14 (dropped at the window's edge: 0)
+feasible points by first-order score: {1478: 14}
+COST: list entries 38 (+ 0 members scanned) = 7.457 e^D = 16.83 e^(D/2);  outputs 14
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1478  = unconstrained + 0
+BRUTE FORCE over 2 windows (42757956 members): points with excess <= 0: 14; meet in the middle restricted to the same covers: 14; identical sets: True   [0.6 s]
+   the cover's own window: most hits 24 -> best first-order 1478; members by deficit 0..0: [7]
+total time 1.1 s
+
+j = 3, later primes [467, 479, 487], T = 108938491, D = ln(P/X) = 1.6284, e^D = 5.096, e^(D/2) = 2.257; window 21378978 members; Gmax = 24; unconstrained optimum 1478
+later list (deficit <= 2): 1593 vectors   [0.4 s]
+cover list (cost <= 2): 1189 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 11983; lists product * X/P = 3.717e+05   [0.4 s]
+verified below X: 11983 (dropped at the window's edge: 0)
+feasible points by first-order score: {1478: 14, 1479: 520, 1480: 11449}
+COST: list entries 2782 (+ 0 members scanned) = 546 e^D = 1232 e^(D/2);  outputs 11983
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1478  = unconstrained + 0
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 2: 4022; meet in the middle restricted to the same covers: 4022; identical sets: True   [4.9 s]
+   the cover's own window: most hits 24 -> best first-order 1478; members by deficit 0..2: [7, 59, 240]
+total time 5.7 s
+
+j = 4, later primes [467, 479, 487, 491], T = 53488799081, D = ln(P/X) = 7.8248, e^D = 2502, e^(D/2) = 50.02; window 21378978 members; Gmax = 32; unconstrained optimum 1470
+later list (deficit <= 1): 510 vectors   [0.4 s]
+cover list (cost <= 1): 61 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 2; lists product * X/P = 12.43   [0.4 s]
+verified below X: 2 (dropped at the window's edge: 0)
+feasible points by first-order score: {1471: 2}
+COST: list entries 571 (+ 0 members scanned) = 0.2282 e^D = 11.42 e^(D/2);  outputs 2
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1471  = unconstrained + 1
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 1: 2; meet in the middle restricted to the same covers: 2; identical sets: True   [5.3 s]
+   the cover's own window: most hits 30 -> best first-order 1472; members by deficit 0..1: [0, 0]
+total time 5.7 s
+
+j = 4, later primes [467, 479, 487, 491], T = 53488799081, D = ln(P/X) = 7.8248, e^D = 2502, e^(D/2) = 50.02; window 21378978 members; Gmax = 32; unconstrained optimum 1470
+later list (deficit <= 3): 26393 vectors   [0.4 s]
+cover list (cost <= 3): 17696 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 596; lists product * X/P = 1.867e+05   [0.4 s]
+verified below X: 596 (dropped at the window's edge: 0)
+feasible points by first-order score: {1471: 2, 1472: 30, 1473: 564}
+COST: list entries 44089 (+ 0 members scanned) = 17.62 e^D = 881.4 e^(D/2);  outputs 596
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1471  = unconstrained + 1
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 3: 131; meet in the middle restricted to the same covers: 131; identical sets: True   [6.8 s]
+   the cover's own window: most hits 30 -> best first-order 1472; members by deficit 0..3: [0, 0, 4, 9]
+total time 7.3 s
+
+j = 5, later primes [467, 479, 487, 491, 499], T = 26690910741419, D = ln(P/X) = 14.0374, e^D = 1.248e+06, e^(D/2) = 1117; window 21378978 members; Gmax = 39; unconstrained optimum 1463
+later list (deficit <= 2): 35793 vectors   [0.5 s]
+cover list (cost <= 2): 1189 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.5 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 2; lists product * X/P = 34.09   [0.5 s]
+verified below X: 2 (dropped at the window's edge: 0)
+feasible points by first-order score: {1465: 2}
+COST: list entries 36982 (+ 0 members scanned) = 0.02962 e^D = 33.1 e^(D/2);  outputs 2
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1465  = unconstrained + 2
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 2: 1; meet in the middle restricted to the same covers: 1; identical sets: True   [7.0 s]
+   the cover's own window: most hits 35 -> best first-order 1467; members by deficit 0..2: [0, 0, 0]
+total time 7.5 s
+
+j = 5, later primes [467, 479, 487, 491, 499], T = 26690910741419, D = ln(P/X) = 14.0374, e^D = 1.248e+06, e^(D/2) = 1117; window 21378978 members; Gmax = 39; unconstrained optimum 1463
+later list (deficit <= 4): 1622269 vectors   [0.7 s]
+cover list (cost <= 4): 219939 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.7 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 117; lists product * X/P = 2.858e+05   [0.7 s]
+verified below X: 117 (dropped at the window's edge: 0)
+feasible points by first-order score: {1465: 2, 1466: 5, 1467: 110}
+COST: list entries 1842208 (+ 0 members scanned) = 1.476 e^D = 1649 e^(D/2);  outputs 117
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1465  = unconstrained + 2
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 4: 18; meet in the middle restricted to the same covers: 18; identical sets: True   [6.8 s]
+   the cover's own window: most hits 35 -> best first-order 1467; members by deficit 0..4: [0, 0, 0, 0, 1]
+total time 7.6 s
+
+j = 6, later primes [467, 479, 487, 491, 499, 503], T = 13425528102933757, D = ln(P/X) = 20.2580, e^D = 6.28e+08, e^(D/2) = 2.506e+04; window 21378978 members; Gmax = 48; unconstrained optimum 1454
+later list (deficit <= 5): 15394507 vectors   [3.7 s]
+cover list (cost <= 5): 2385324 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [3.9 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 4; lists product * X/P = 5.847e+04   [4.4 s]
+verified below X: 4 (dropped at the window's edge: 0)
+feasible points by first-order score: {1459: 4}
+COST: list entries 17779831 (+ 0 members scanned) = 0.02831 e^D = 709.5 e^(D/2);  outputs 4
+OPTIMUM of the first-order score over all N < X (certified: every point within sigma is listed): 1459  = unconstrained + 5
+BRUTE FORCE over 61 windows (1304117634 members): points with excess <= 5: 0; meet in the middle restricted to the same covers: 0; identical sets: True   [7.4 s]
+   the cover's own window: most hits 41 -> best first-order 1461; members by deficit 0..5: [0, 0, 0, 0, 0, 0]
+total time 11.8 s
+
+j = 7, later primes [467, 479, 487, 491, 499, 503, 509], T = 6833593804393282313, D = ln(P/X) = 26.4905, e^D = 3.196e+11, e^(D/2) = 5.654e+05; window 21378978 members; Gmax = 56; unconstrained optimum 1446
+later list (deficit <= 5): 38803661 vectors   [9.5 s]
+cover list (cost <= 6): 23215441 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [13.8 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 0; lists product * X/P = 2818   [17.5 s]
+covers of cost < 1 scanned window by window: 42757956 members
+verified below X: 0 (dropped at the window's edge: 0)
+feasible points by first-order score: {}
+COST: list entries 62019102 (+ 42757956 members scanned) = 0.000194 e^D = 109.7 e^(D/2);  outputs 0
+CERTIFIED: no N < X has first-order score <= 1452 (unconstrained optimum + 6)
+total time 17.9 s
+
+---- uncertified, balanced lists (prod)
+j = 5, later primes [467, 479, 487, 491, 499], T = 26690910741419, D = ln(P/X) = 14.0374, e^D = 1.248e+06, e^(D/2) = 1117; window 21378978 members; Gmax = 39; unconstrained optimum 1463
+later list (deficit <= 1): 3414 vectors   [0.6 s]
+cover list (cost <= 2): 1189 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.6 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 2; lists product * X/P = 3.251   [0.6 s]
+verified below X: 2 (dropped at the window's edge: 0)
+feasible points by first-order score: {1465: 2}
+COST: list entries 4603 (+ 0 members scanned) = 0.003687 e^D = 4.12 e^(D/2);  outputs 2
+BEST FOUND (not certified: product of two short lists): 1465  = unconstrained + 2
+total time 0.6 s
+
+j = 6, later primes [467, 479, 487, 491, 499, 503], T = 13425528102933757, D = ln(P/X) = 20.2580, e^D = 6.28e+08, e^(D/2) = 2.506e+04; window 21378978 members; Gmax = 48; unconstrained optimum 1454
+later list (deficit <= 2): 44421 vectors   [0.4 s]
+cover list (cost <= 3): 17696 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [0.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 2; lists product * X/P = 1.252   [0.4 s]
+verified below X: 2 (dropped at the window's edge: 0)
+feasible points by first-order score: {1459: 2}
+COST: list entries 62117 (+ 0 members scanned) = 9.892e-05 e^D = 2.479 e^(D/2);  outputs 2
+BEST FOUND (not certified: product of two short lists): 1459  = unconstrained + 5
+total time 0.4 s
+
+j = 7, later primes [467, 479, 487, 491, 499, 503, 509], T = 6833593804393282313, D = ln(P/X) = 26.4905, e^D = 3.196e+11, e^(D/2) = 5.654e+05; window 21378978 members; Gmax = 56; unconstrained optimum 1446
+later list (deficit <= 4): 5620445 vectors   [1.4 s]
+cover list (cost <= 4): 219939 class vectors; ambiguous wrap counts (recomputed exactly if matched): 0   [1.4 s]
+pairs in the arc examined (stratified by cost level, all are outputs up to the window's edge): 5; lists product * X/P = 3.867   [1.6 s]
+verified below X: 5 (dropped at the window's edge: 0)
+feasible points by first-order score: {1453: 1, 1454: 4}
+COST: list entries 5840384 (+ 0 members scanned) = 1.827e-05 e^D = 10.33 e^(D/2);  outputs 5
+BEST FOUND (not certified: product of two short lists): 1453  = unconstrained + 7
+total time 1.6 s
+

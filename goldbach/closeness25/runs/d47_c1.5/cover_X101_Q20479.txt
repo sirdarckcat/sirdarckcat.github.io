@@ -1,0 +1,2 @@
+# Q = 20,479 (odd primes below it are the rows); 25 moduli = the odd primes up to 101; rows in no class: 269. start 272, descent 269, local search (0 rounds, seed 1) 269
+3:2 5:3 7:5 11:2 13:2 17:4 19:18 23:12 29:8 31:23 37:14 41:15 43:25 47:7 53:29 59:21 61:12 67:20 71:23 73:13 79:24 83:4 89:11 97:62 101:3

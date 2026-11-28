@@ -1,0 +1,7 @@
+members 9828167 observed successes in family 10
+k1-matched mean-P ratio: no forcing credit 1.014 ; with forced-row credit 1.088
+forced rows alive at depth 23: 0.22, at depth 199: 0.095 per member
+population cover-first (predicted mass): {1: 12073, 3: 52502, 10: 274282, 30: 1405111, 100: 10757304}
+squares family, forced credit            : {1: 31228, 3: 159083, 10: 1548909, 30: None, 100: None}
+gain (neg = worse): {1: -0.95, 3: -1.11, 10: -1.73, 30: None, 100: None}
+density 0.0622, cost 2.78 nats, nats per kill 29.3

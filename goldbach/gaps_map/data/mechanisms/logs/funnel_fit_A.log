@@ -1,0 +1,11 @@
+A subset 70388805 succ 225 1.8 s
+baseline (cover first, 1 unit/member): {1: 2982, 3: 63350, 10: 253380, 30: 1205425, 100: 12004497}
+median k at depths 31..97 [np.float64(32.0), np.float64(30.0), np.float64(28.0), np.float64(25.0)]
+round 0 [30, 27, 25, 23] 42.173 173 s
+round 1 [30, 27, 25, 23] 42.173 335 s
+round 2 [30, 27, 25, 23] 42.173 501 s
+funnel thr [30, 27, 25, 23] cost-to-k (units): {1: 2980, 3: 62397, 10: 242375, 30: 1052806, 100: 8106158}
+gain ln(base/funnel): {1: 0.0, 3: 0.02, 10: 0.04, 30: 0.14, 100: 0.39}
+mean cost per member (units): 0.136630601653545  successes retained 103 of 225
+
+[exited with code 0]

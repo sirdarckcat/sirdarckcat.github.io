@@ -1,0 +1,5 @@
+Q = 213070, 19050 rows; sampler optimum on all 88 moduli: 1634 rows; random classes: about 2286
+z =  13 (5 free moduli, 83 crystal moduli): best 2118 rows at c = -97; next [(2122, -149), (2122, 79), (2125, 139)]; median over c 2259
+z =  31 (10 free moduli, 78 crystal moduli): best 2021 rows at c = -149; next [(2027, -17), (2028, 31), (2029, -11)]; median over c 2193
+z =  61 (17 free moduli, 71 crystal moduli): best 1986 rows at c = -11; next [(1986, 31), (1986, 121), (1987, 23)]; median over c 2088
+z = 101 (25 free moduli, 63 crystal moduli): best 1943 rows at c = -5; next [(1944, 79), (1960, -11), (1963, 115)]; median over c 2033

@@ -1,0 +1,15 @@
+# block_check.py capacity: the largest Q for which the rows left by the moduli up to x/4 fit the write-up's count for the top moduli
+# (0.75 x/ln ln x rows), with random classes below x/4 and with the block (z, x/4] on a common integer (the best z); pi(Q) = Q/ln Q
+ln x | random classes below the top: Q/(x ln^2 x) | block with a common integer: Q/(x ln^2 x) | best u = ln Q/ln z | ratio
+9.21 | 0.548 | 0.572 | 2.38 | 1.04
+13.8 | 0.459 | 0.526 | 2.66 | 1.14
+20.7 | 0.389 | 0.507 | 2.89 | 1.31
+34.5 | 0.322 | 0.517 | 3.13 | 1.61
+50 | 0.284 | 0.545 | 3.29 | 1.91
+69 | 0.258 | 0.585 | 3.43 | 2.26
+100 | 0.233 | 0.651 | 3.58 | 2.79
+230 | 0.192 | 0.900 | 3.91 | 4.68
+350 | 0.177 | 1.099 | 4.08 | 6.21
+500 | 0.166 | 1.321 | 4.22 | 7.97
+1000 | 0.148 | 1.955 | 4.48 | 13.21
+10000 | 0.110 | 8.858 | 5.29 | 80.52

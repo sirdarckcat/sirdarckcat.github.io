@@ -1,0 +1,6 @@
+# Terms 68 and 69 of A025018: the numbers N are from the OEIS b-file b025018.txt (T. Oliveira e Silva), read
+# on 2026-11-23; the values were computed here (least prime q with N - q prime, by a deterministic
+# Miller-Rabin test). That nothing in between is a term rests on the b-file. Not used in model.txt or
+# simulate.txt; forecast.py reads them as two further points.
+2795935116574469638 9629
+3325581707333960528 9781

@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+"""Generate a Lean certificate that an even N has NO Goldbach summand below a bound Q:
+for every prime q < Q, N - q is composite.
+
+Usage:
+    gen_desert.py [--witness] RECORD NAMESPACE OUTPUT.lean [LABEL] [Q] [PART]
+
+RECORD is a directory with `record.json` (fields N, cover as [modulus, class] pairs, optionally g,
+the claimed least summand, and for --witness optionally factors, [q, s] pairs with s a divisor of
+N - q for rows that no modulus strikes) in the `goldbach/records/` layout. Q defaults to g:
+then the theorem says that no prime below the least summand is a summand, which is all of
+"g(N) >= g" that does not need a primality proof.
+
+This is the negative side of `gen_record.py` alone. The rows are settled in two ways, both
+re-evaluated by Lean's kernel (`GoldbachGaps.desertBlockCheck`, one theorem per block of
+BLOCK offsets):
+
+  * a covering modulus divides N - q, or
+  * q is in the list of rows the cover leaves, and N - q fails the base-2 Fermat test.
+
+With --witness the file carries one witness for every q below Q instead (a prime factor of q, a
+covering modulus dividing N - q, or 0 for the Fermat test) and the kernel does one division per
+row (`GoldbachGaps.witnessCheck` in `GoldbachGaps/DesertWitness.lean`). The file is larger, about
+five bytes per row, and is checked many times faster; it is the form for large bounds. With more
+than PART blocks the certificate is written as several modules (OUTPUT_Base.lean with N,
+OUTPUT_0.lean, OUTPUT_1.lean, ... with PART blocks each, and OUTPUT.lean joining them), so that no
+single module needs more than a few gigabytes; build the parts one after the other. PART is 32
+unless given (with "-" for Q to keep its default); rows left to the Fermat test cost memory in
+the kernel in proportion to the size of N, so a large N needs a smaller PART.
+
+Nothing computed here is trusted by Lean. The script replays the tests first, so that a failure
+shows here and not as a kernel error.
+"""
+import json
+import math
+import sys
+
+BLOCK = 8192
+# Witness form: at most this many blocks per module (the optional last argument changes it). The
+# kernel keeps about 80 MB for every base-2 Fermat test of a 2,200-digit number until the module
+# is done, so a large N with many rows left to that test needs small parts: 4 blocks per module
+# for the 2,196-digit number with 977 such rows (about 4 GB per module).
+PART = 32
+
+try:                                   # only to make the replay faster; never needed
+    from gmpy2 import powmod as _powmod
+except ImportError:
+    _powmod = pow
+
+
+def primes_below(n):
+    sieve = bytearray([1]) * n
+    sieve[0:2] = b"\0\0"
+    for i in range(2, math.isqrt(n) + 1):
+        if sieve[i]:
+            sieve[i * i :: i] = bytearray(len(sieve[i * i :: i]))
+    return [i for i in range(n) if sieve[i]]
+
+
+def lean_list(xs, indent="  ", width=96):
+    lines, cur = [], indent + "["
+    for i, x in enumerate(xs):
+        tok = str(x) + ("," if i + 1 < len(xs) else "]")
+        if len(cur) + len(tok) + 1 > width:
+            lines.append(cur)
+            cur = indent + " " + tok
+        else:
+            cur += ("" if cur.endswith("[") else " ") + tok
+    if not xs:
+        cur += "]"
+    lines.append(cur)
+    return "\n".join(lines)
+
+
+def row_check(N, q, d):
+    """the reference semantics of GoldbachGaps.rowCheck"""
+    if q < 2:
+        return True
+    if d <= 1:
+        m = N - q
+        return q + 2 < N and _powmod(2, m - 1, m) != 1
+    return (d < q and q % d == 0) or (d + q < N and (N - q) % d == 0)
+
+
+def main_witness(argv):
+    record_dir, namespace, out_path = argv[0:3]
+    label = argv[3] if len(argv) > 3 else record_dir
+    label = label.replace("/-", "/ -").replace("-/", "- /")
+    rec = json.load(open(f"{record_dir}/record.json"))
+    N = int(rec["N"])
+    cover_mods = sorted(set(int(c[0]) for c in rec["cover"]))
+    Q = int(argv[4]) if len(argv) > 4 and argv[4] != "-" else int(rec["g"])
+    PART = int(argv[5]) if len(argv) > 5 else globals()["PART"]
+    digits = len(str(N))
+    assert N % 2 == 0 and Q + 2 < N
+    # smallest prime factor of every q < Q
+    spf = list(range(Q + 1))
+    for i in range(2, math.isqrt(Q) + 1):
+        if spf[i] == i:
+            for j in range(i * i, Q + 1, i):
+                if spf[j] == j:
+                    spf[j] = i
+    res = {r: N % r for r in cover_mods}
+    # optional: divisors of N - q for rows that no modulus strikes (field "factors": [[q, s], ...])
+    factors = {int(q): int(f) for q, f in rec.get("factors", [])}
+    ws, n_cov, n_fac, n_fermat, nprimes = [], 0, 0, 0, 0
+    for q in range(Q):
+        if q < 2:
+            d = 0
+        elif spf[q] != q:
+            d = spf[q]
+        else:
+            nprimes += 1
+            d = 2 if N % 2 == q % 2 else next((r for r in cover_mods if res[r] == q % r), 0)
+            if d: n_cov += 1
+            elif q in factors and factors[q] > 1 and (N - q) % factors[q] == 0 and factors[q] + q < N:
+                d = factors[q]; n_fac += 1
+            else: n_fermat += 1
+        assert row_check(N, q, d), f"row {q}: the witness {d} fails (N - q may be prime)"
+        ws.append(d)
+
+    header = [
+        f"# Kernel-checked: a {digits}-digit even `N` with no Goldbach summand below `{Q}`",
+        "",
+        f"Generated by `scripts/gen_desert.py --witness` from `{label}`; do not edit by hand.",
+        f"For each of the {nprimes} primes `q < {Q}` the number `N - q` is composite: for",
+        f"{n_cov} of them a covering modulus (one of {len(cover_mods)}, or `2`) divides it, "
+        + (f"for {n_fac} a larger" if n_fac else "and for the other"),
+        (f"divisor given with the record divides it, and for the other {n_fermat} it fails the base-2 Fermat test."
+         if n_fac else f"{n_fermat} it fails the base-2 Fermat test.")
+        + " No primality proof is involved, so the file does",
+        "not say what the least Goldbach summand of `N` is, only that it is at least the bound.",
+        "The lists `ws k` give one witness for every `q` (a prime factor of `q` when `q` is composite,",
+        "a divisor of `N - q`, or `0` for the Fermat test). They are not trusted: Lean's kernel",
+        "re-evaluates `witnessCheck` on every block.",
+    ]
+    base = [
+        "/-- The integer. -/",
+        f"def N : ℕ :=\n  {N}",
+        "",
+        "/-- The bound: no prime below `Q` is a Goldbach summand of `N`. -/",
+        f"def Q : ℕ := {Q}",
+        "",
+        f"/-- `N` has {digits} digits. -/",
+        f"theorem N_lt : N < 10 ^ {digits} := by decide +kernel",
+        "",
+        f"theorem le_N : 10 ^ {digits - 1} ≤ N := by decide +kernel",
+        "",
+        "theorem N_even : Even N := Nat.even_iff.mpr (by decide +kernel)",
+        "",
+    ]
+    los = list(range(0, Q, BLOCK))
+
+    def block_lines(k):
+        lo = los[k]; hi = min(lo + BLOCK, Q)
+        return [
+            "set_option maxRecDepth 1000000 in",
+            f"/-- Witnesses for the rows `[{lo}, {hi})`. -/",
+            f"def ws{k} : List ℕ :=\n" + lean_list(ws[lo:hi]),
+            "",
+            "set_option maxRecDepth 1000000 in",
+            f"theorem block{k} : NoSummandIn N {lo} {hi} :=",
+            f"  noSummandIn_of_witnessCheck' ws{k} (by decide +kernel) (by decide +kernel)",
+            "",
+        ]
+
+    def chain(names):
+        return "  " + " <|\n  ".join(f"{n}.append" for n in names[:-1]) + (" <|\n  " if len(names) > 1 else "") + names[-1]
+
+    tail = [
+        f"/-- **For every prime `q < {Q}` the number `N - q` is composite** (not prime; it exceeds `1`).",
+        "So the least Goldbach summand of `N`, if `N` has one, is at least the bound. -/",
+        "theorem not_prime_sub (q : ℕ) (hq : q.Prime) (hlt : q < Q) : ¬ (N - q).Prime :=",
+        "  fun h => noSummand q (Nat.zero_le q) hlt ⟨hq, h⟩",
+        "",
+        "/-- Every Goldbach summand of `N` is at least `Q`. -/",
+        "theorem le_of_isSummand {p : ℕ} (hp : IsSummand N p) : Q ≤ p :=",
+        "  not_lt.mp fun hlt => noSummand p (Nat.zero_le p) hlt hp",
+        "",
+        f"end GoldbachGaps.{namespace}",
+        "",
+    ]
+    nb = len(los)
+    if nb <= PART:
+        L = ["import GoldbachGaps.DesertWitness", "", "/-!"] + header + ["-/", "", f"namespace GoldbachGaps.{namespace}", ""] + base
+        for k in range(nb):
+            L += block_lines(k)
+        L += ["/-- No `q < Q` is a Goldbach summand of `N`. -/", "theorem noSummand : NoSummandIn N 0 Q :=", chain([f"block{k}" for k in range(nb)]), ""] + tail
+        open(out_path, "w").write("\n".join(L))
+        files = 1
+    else:
+        assert out_path.endswith(".lean")
+        stem = out_path[:-5]; mod = "GoldbachGaps." + stem.split("/")[-1]
+        open(stem + "_Base.lean", "w").write("\n".join(
+            ["import GoldbachGaps.DesertWitness", "", "/-!"] + header[:1]
+            + ["", f"The integer and the bound; generated by `scripts/gen_desert.py --witness` with `{mod}`.", "-/", "",
+               f"namespace GoldbachGaps.{namespace}", ""] + base + [f"end GoldbachGaps.{namespace}", ""]))
+        parts = [list(range(i, min(i + PART, nb))) for i in range(0, nb, PART)]
+        for i, ks in enumerate(parts):
+            lo = los[ks[0]]; hi = min(los[ks[-1]] + BLOCK, Q)
+            L = [f"import {mod}_Base", "", "/-!", f"Part {i} of `{mod}`: the rows `[{lo}, {hi})`. Generated; do not edit by hand.", "-/", "",
+                 f"namespace GoldbachGaps.{namespace}", ""]
+            for k in ks:
+                L += block_lines(k)
+            L += [f"theorem part{i} : NoSummandIn N {lo} {hi} :=", chain([f"block{k}" for k in ks]), "", f"end GoldbachGaps.{namespace}", ""]
+            open(f"{stem}_{i}.lean", "w").write("\n".join(L))
+        L = [f"import {mod}_{i}" for i in range(len(parts))] + ["", "/-!"] + header \
+            + [f"The certificate is in {len(parts)} parts, `{mod}_0` to `{mod}_{len(parts) - 1}`; the integer is in `{mod}_Base`.", "-/", "",
+               f"namespace GoldbachGaps.{namespace}", "",
+               "/-- No `q < Q` is a Goldbach summand of `N`. -/", "theorem noSummand : NoSummandIn N 0 Q :=",
+               chain([f"part{i}" for i in range(len(parts))]), ""] + tail
+        open(out_path, "w").write("\n".join(L))
+        files = len(parts) + 2
+    print(f"wrote {out_path} (witness form, {files} file(s)): N has {digits} digits, Q = {Q}, {nprimes} primes below Q, "
+          f"{n_cov} covered, {n_fac} by a divisor from the record, {n_fermat} rows left to the Fermat test, {nb} blocks")
+
+
+def main():
+    if sys.argv[1] == "--witness":
+        return main_witness(sys.argv[2:])
+    record_dir, namespace, out_path = sys.argv[1:4]
+    label = sys.argv[4] if len(sys.argv) > 4 else record_dir
+    label = label.replace("/-", "/ -").replace("-/", "- /")
+    rec = json.load(open(f"{record_dir}/record.json"))
+    N = int(rec["N"])
+    cover_mods = sorted(set(int(c[0]) for c in rec["cover"]))
+    Q = int(sys.argv[5]) if len(sys.argv) > 5 else int(rec["g"])
+    digits = len(str(N))
+    assert N % 2 == 0, "N is odd"
+
+    small_primes = primes_below(math.isqrt(Q) + 1)
+    assert Q + 2 < N and all(r >= 2 and r + Q < N for r in cover_mods)
+    residuals = []
+    for q in range(2, Q):
+        if any(d < q and q % d == 0 for d in small_primes):
+            continue
+        if any((N - q) % r == 0 for r in cover_mods):
+            continue
+        residuals.append(q)
+    for q in residuals:
+        m = N - q
+        assert pow(2, m - 1, m) != 1, f"N - {q} passes the base-2 Fermat test: it may be prime"
+    nprimes = len(primes_below(Q))
+
+    L = []
+    L.append("import GoldbachGaps.Desert")
+    L.append("")
+    L.append("/-!")
+    L.append(f"# Kernel-checked: a {digits}-digit even `N` with no Goldbach summand below `{Q}`")
+    L.append("")
+    L.append(f"Generated by `scripts/gen_desert.py` from `{label}`; do not edit by hand.")
+    L.append(f"For each of the {nprimes} primes `q < {Q}` the number `N - q` is composite: for")
+    L.append(f"{nprimes - len(residuals)} of them one of the {len(cover_mods)} covering moduli divides it, and for the other")
+    L.append(f"{len(residuals)} it fails the base-2 Fermat test. No primality proof is involved, so the file does")
+    L.append("not say what the least Goldbach summand of `N` is, only that it is at least the bound.")
+    L.append("The data below is not trusted: Lean's kernel re-evaluates every `desertBlockCheck`.")
+    L.append("-/")
+    L.append("")
+    L.append(f"namespace GoldbachGaps.{namespace}")
+    L.append("")
+    L.append("/-- The integer. -/")
+    L.append(f"def N : ℕ :=\n  {N}")
+    L.append("")
+    L.append("/-- The bound: no prime below `Q` is a Goldbach summand of `N`. -/")
+    L.append(f"def Q : ℕ := {Q}")
+    L.append("")
+    L.append(f"/-- `N` has {digits} digits. -/")
+    L.append(f"theorem N_lt : N < 10 ^ {digits} := by decide +kernel")
+    L.append("")
+    L.append(f"theorem le_N : 10 ^ {digits - 1} ≤ N := by decide +kernel")
+    L.append("")
+    L.append("theorem N_even : Even N := Nat.even_iff.mpr (by decide +kernel)")
+    L.append("")
+    L.append(f"/-- The {len(cover_mods)} moduli of the cover. -/")
+    L.append("def coverMods : List ℕ :=\n" + lean_list(cover_mods))
+    L.append("")
+    L.append("/-- Trial divisors, enough to discard every composite `q < Q`. -/")
+    L.append("def smallPrimes : List ℕ :=\n" + lean_list(small_primes))
+    L.append("")
+    L.append("theorem lists : desertListsCheck N Q coverMods smallPrimes = true := by")
+    L.append("  decide +kernel")
+    L.append("")
+    L.append(f"/-! ### The {len(residuals)} rows the cover leaves, block by block -/")
+    L.append("")
+    blocks = []
+    for k, lo in enumerate(range(0, Q, BLOCK)):
+        hi = min(lo + BLOCK, Q)
+        res = [q for q in residuals if lo <= q < hi]
+        blocks.append(k)
+        L.append(f"/-- The primes `q` in `[{lo}, {hi})` not handled by the covering moduli. -/")
+        L.append(f"def res{k} : List ℕ :=\n" + lean_list(res))
+        L.append("")
+        L.append("set_option maxRecDepth 1000000 in")
+        L.append(f"theorem block{k} : NoSummandIn N {lo} {hi} :=")
+        L.append(f"  noSummandIn_of_desertBlockCheck (g := Q) (lo := {lo}) (len := {hi - lo})")
+        L.append(f"    (residuals := res{k}) lists (by decide +kernel) (by decide)")
+        L.append("")
+    L.append("/-- No `q < Q` is a Goldbach summand of `N`. -/")
+    L.append("theorem noSummand : NoSummandIn N 0 Q :=")
+    if len(blocks) == 1:
+        L.append("  block0")
+    else:
+        L.append("  " + " <|\n  ".join(f"block{k}.append" for k in blocks[:-1]) + f" <|\n  block{blocks[-1]}")
+    L.append("")
+    L.append(f"/-- **For every prime `q < {Q}` the number `N - q` is composite** (not prime; it exceeds `1`).")
+    L.append("So the least Goldbach summand of `N`, if `N` has one, is at least the bound. -/")
+    L.append("theorem not_prime_sub (q : ℕ) (hq : q.Prime) (hlt : q < Q) : ¬ (N - q).Prime :=")
+    L.append("  fun h => noSummand q (Nat.zero_le q) hlt ⟨hq, h⟩")
+    L.append("")
+    L.append("/-- Every Goldbach summand of `N` is at least `Q`. -/")
+    L.append("theorem le_of_isSummand {p : ℕ} (hp : IsSummand N p) : Q ≤ p :=")
+    L.append("  not_lt.mp fun hlt => noSummand p (Nat.zero_le p) hlt hp")
+    L.append("")
+    L.append(f"end GoldbachGaps.{namespace}")
+    L.append("")
+    open(out_path, "w").write("\n".join(L))
+    print(f"wrote {out_path}: N has {digits} digits, Q = {Q}, {nprimes} primes below Q, {len(cover_mods)} moduli, "
+          f"{len(residuals)} rows left to the Fermat test, {len(blocks)} blocks")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,61 @@
+# uarch bench_pipes.py (38abbd2) parts 1-3 on gold-g4b (RTX PRO 6000), bp.sh, 2026-11-23 12:26:24-12:26:28Z, campaign paused. Part 2: a random-address ATOMS.AND costs what a random
+# STS.32 / LDS.32 does (~2.6 cycles a warp-op an SM), so a race-free marking scheme for the tile kernel would gain nothing (uarch's criterion: the idea is dead).
+
+2026-11-23T12:26:24Z paused pid 2057675
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 2422 MHz, 14231 MiB
+NVIDIA RTX PRO 6000 Blackwell Server Edition  (sm_120)  188 SMs   cycles per warp instruction per scheduler (lower is faster; 1.0 = full issue rate)
+part 1: pipes, 4 CTAs of 256 threads an SM
+chain-op (see --check for its SASS)    sched cycles/op
+IMAD.WIDE+acc, 1 bump                           4.35
+IMAD.WIDE no acc, 1 bump                        6.31
+IMAD.U32 (lo) +acc                              2.01
+IADD3 (2 adds fused)                            1.81
+IADD3 + IADD3.X (64-bit add)                    2.82
+LOP3                                            2.05
+SHF                                             1.83
+IMAD.WIDE+acc, 1 bump + 1 IADD3                 6.60
+IMAD.WIDE+acc, 1 bump + 2 IADD3                 8.52
+IMAD.WIDE+acc, 1 bump + 3 IADD3                10.43
+IMAD.WIDE+acc, 1 bump + 4 IADD3                12.24
+IMAD.WIDE no acc + carry pair                   7.08
+(a chain-op is one warp-level operation of the row; the '+ k IADD3' rows add k adds per IMAD.WIDE: if the cycles stay flat as k grows, the adds are free)
+part 2: shared memory, 256 threads a CTA, as many CTAs an SM as fit; cycles per warp-level operation per SM
+  bitmap of 64 KB a CTA (1 CTAs an SM)
+  operation                           cycles/warp-op/SM
+  address generation only                          0.78
+  ATOMS.AND random word                            2.70   (minus address generation: 1.92)
+  STS.32 random word                               2.63   (minus address generation: 1.85)
+  STS.U8 random byte                               2.63   (minus address generation: 1.85)
+  LDS.32 random word                               2.65   (minus address generation: 1.87)
+  plain RMW random word                            6.74   (minus address generation: 5.96)
+  ATOMS.AND conflict-free                          3.34   (minus address generation: 2.56)
+  STS.U8 conflict-free                             2.00   (minus address generation: 1.22)
+  bitmap of 32 KB a CTA (3 CTAs an SM)
+  operation                           cycles/warp-op/SM
+  address generation only                          0.67
+  ATOMS.AND random word                            2.64   (minus address generation: 1.97)
+  STS.32 random word                               2.59   (minus address generation: 1.92)
+  STS.U8 random byte                               2.56   (minus address generation: 1.89)
+  LDS.32 random word                               2.61   (minus address generation: 1.94)
+  plain RMW random word                            5.33   (minus address generation: 4.66)
+  ATOMS.AND conflict-free                          3.19   (minus address generation: 2.52)
+  STS.U8 conflict-free                             1.97   (minus address generation: 1.30)
+  bitmap of 16 KB a CTA (5 CTAs an SM)
+  operation                           cycles/warp-op/SM
+  address generation only                          0.56
+  ATOMS.AND random word                            2.63   (minus address generation: 2.07)
+  STS.32 random word                               2.34   (minus address generation: 1.78)
+  STS.U8 random byte                               2.30   (minus address generation: 1.75)
+  LDS.32 random word                               2.55   (minus address generation: 1.99)
+  plain RMW random word                            5.27   (minus address generation: 4.72)
+  ATOMS.AND conflict-free                          2.99   (minus address generation: 2.43)
+  STS.U8 conflict-free                             1.80   (minus address generation: 1.24)
+part 3: global memory, scattered marks.  G ops/s over the whole GPU (1 / that = ns an operation); 8 chains x 256 threads x 8 CTAs an SM
+  operation                                         64 MB       512 MB         4 GB
+  scattered atomicAnd (random word)               69.0 G/s       6.6 G/s       6.0 G/s
+  scattered plain store (random word)            135.6 G/s       4.9 G/s       4.4 G/s
+  scattered load (random word)                   138.6 G/s      16.9 G/s      15.4 G/s
+  128 B runs at random places (bin writes)      1053.9 G/s     367.0 G/s     324.6 G/s
+  reference: device copy of 1 GB (read + write): 1460 GB/s; a 32-byte sector of it is 0.022 ns
+2026-11-23T12:26:28Z resumed pid 2057675
+BP-DONE

@@ -1,0 +1,3 @@
+contiguous 4096: real mean of minima 439.9231, shuffled 439.9130 +- 0.0410 (z = +0.25); real sd 5.4928, shuffled 5.4944 +- 0.0238 (z = -0.07)
+k mod 467: real mean of minima 430.9143, shuffled 430.8421 +- 0.0900 (z = +0.80); real sd 4.7151, shuffled 4.7039 +- 0.0634 (z = +0.18)
+k mod 467*479: real mean of minima 461.1090, shuffled 461.0737 +- 0.0079 (z = +4.48); real sd 7.6895, shuffled 7.6610 +- 0.0047 (z = +6.09)

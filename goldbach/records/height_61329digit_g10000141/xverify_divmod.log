@@ -1,0 +1,13 @@
+# python3 proth/divmod_pow_run.py xverify records/height_61329digit_g10000141/record.json  (bls/xverify.py unchanged except that its pow is proth/divmod_pow_run.py's pure-Python square-and-multiply with divmod reduction, checkpointed; restarted 02:27Z after the container was replaced)
+# proth/divmod_pow_run.py as of commit f5f63ad. Ran 02:27-03:28 UTC 2026-11-22 on this session's 4-core container, beside the verify_bls_record leg; it ran in full (no "[dpow] resumed" line).
+[dpow] bit 33464/203729, 600s
+[dpow] bit 66972/203729, 1200s
+[dpow] bit 100396/203729, 1800s
+[dpow] bit 133304/203729, 2400s
+[dpow] bit 166398/203729, 3000s
+[dpow] bit 199502/203729, 3600s
+PASS g(N) = 10,000,141: 61,329 digits, 664,584 primes < g covered by 9,094 odd congruences, F = 2^67914, base 11; modexp 3676s (python int)
+
+real	61m16.884s
+user	60m49.816s
+sys	0m0.795s

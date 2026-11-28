@@ -1,0 +1,7 @@
+x = 4^ 4: E_0, E_1, E_2 = [54, -27, -27],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.65820 0.65820,  x^-0.2075 = 0.31641
+x = 4^ 6: E_0, E_1, E_2 = [486, -243, -243],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.58899 0.58899,  x^-0.2075 = 0.17798
+x = 4^ 8: E_0, E_1, E_2 = [4374, -2187, -2187],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.55006 0.55006,  x^-0.2075 = 0.10011
+x = 4^10: E_0, E_1, E_2 = [39366, -19683, -19683],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.52816 0.52816,  x^-0.2075 = 0.05631
+x = 4^12: E_0, E_1, E_2 = [354294, -177147, -177147],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.51584 0.51584,  x^-0.2075 = 0.03168
+x = 4^13: E_0, E_1, E_2 = [1062882, -531441, -531441],  E_0 / 3^j = 0.6667,  share of odd digit sums in classes 1 and 2: 0.51188 0.51188,  x^-0.2075 = 0.02376
+at m ~ 10^10 the bias scale is x^-0.2075 = 0.00841; at 10^200: 3.1e-42

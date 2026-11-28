@@ -1,0 +1,5 @@
+deep, final driver vs earlier: IDENTICAL
+normal f=0, final driver vs earlier: IDENTICAL
+near-miss of the known case: [(3101585871, 146191, True)]
+FINALCHECK PASSED
+FINALCHECK-DONE

@@ -1,0 +1,49 @@
+window K = 200; K^2 = 40000
+
+T = [7, 11]: prod = 77 (< K^2); fewest edges over 21 coordinate systems: 79; theorem demands >= K = 200: NOT REQUIRED (prod < K^2)
+   edges     79  width    9  residues, decreasing
+   edges     82  width    2  blocks (products of two)
+   edges     89  width    7  residues, increasing
+   edges    111  width   22  tree of moduli laid out (s1, s1 s2, s2, s2 s3, ...)
+   edges    538  width  128  residues then binary digits (redundant)
+
+T = [7, 11, 13]: prod = 1001 (< K^2); fewest edges over 21 coordinate systems: 142; theorem demands >= K = 200: NOT REQUIRED (prod < K^2)
+   edges    142  width   26  blocks (products of two)
+   edges    149  width   26  residues, increasing
+   edges    177  width   14  residues, decreasing
+   edges    207  width    7  mixed radix (k mod 7, quotient)
+   edges    757  width  200  binary digits then residues (redundant)
+
+T = [7, 11, 13, 17]: prod = 17017 (< K^2); fewest edges over 21 coordinate systems: 207; theorem demands >= K = 200: holds
+   edges    207  width    7  mixed radix (k mod 7, quotient)
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #0
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #1
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #2
+   edges   1710  width   93  one-hot residues
+
+T = [7, 11, 13, 17, 19]: prod = 323323 (>= K^2); fewest edges over 21 coordinate systems: 207; theorem demands >= K = 200: holds
+   edges    207  width    7  mixed radix (k mod 7, quotient)
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #0
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #1
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #2
+   edges   4837  width  200  one-hot residues
+
+T = [11, 13, 17, 19, 23]: prod = 1062347 (>= K^2); fewest edges over 21 coordinate systems: 211; theorem demands >= K = 200: holds
+   edges    211  width   11  mixed radix (k mod 11, quotient)
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #0
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #1
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #2
+   edges   7045  width  200  one-hot residues
+
+T = [3, 5, 7, 11, 13, 17]: prod = 255255 (>= K^2); fewest edges over 21 coordinate systems: 203; theorem demands >= K = 200: holds
+   edges    203  width    3  mixed radix (k mod 3, quotient)
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #0
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #1
+   edges    230  width   25  random relabelling of the members, then base-5/8 digits #2
+   edges   4316  width  200  one-hot residues
+
+K = 331, T = [7, 11, 13, 17, 19]: prod = 323323 (>= K^2 = 109561); fewest edges 338 (mixed radix (k mod 7, quotient)); holds
+
+K = 331, T = [5, 7, 9, 11, 13, 16]: prod = 720720 (>= K^2 = 109561); fewest edges 336 (mixed radix (k mod 5, quotient)); holds
+
+K = 331, T = [13, 17, 19]: prod = 4199 (< K^2 = 109561); fewest edges 278 (blocks (products of two)); not required

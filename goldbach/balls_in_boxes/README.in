@@ -1,0 +1,105 @@
+# Balls in boxes: measuring the mechanism behind "why 1.349 is not the truth" (task T1)
+
+Task from the research session (`goldbach/sublinear/README.md` on `ccr-d4a17dd0-7uu03r`, sections "The same question
+exactly, for few primes" and "Why 1.349 is not the truth"). Targets T are the odd primes up to y = C·x·ln x. The small
+primes A (odd primes up to w) each get one nonzero class, drawn uniformly and independently. The survivors S are the
+targets in none of these classes. The large primes B (primes in (w, x]) can then strike survivors: r′ strikes q when q is
+in its class. Report A measures how S sits in the classes of the large primes, which is what the proof outline needs.
+Report B lets each large prime take the class with the most remaining survivors. Settings: x ∈ {3,000; 10,000; 30,000;
+100,000}, w ∈ {x/2, x^0.9}, C ∈ {1, 1.35, 2, 3, 4, 6, 8}, 20 draws each. The 10⁶ point is a reduced run, reported in its own section at the end.
+
+Follow-up T3, on where the all-greedy reach comes from, is in [`T3.md`](T3.md).
+
+## Findings
+
+1. **The survivors are not independent balls modulo the large primes; they are thinned targets.** Pairs of survivors
+   in a common class (E) are 0.38 to 0.87 of the count for |S| independent uniform balls, and classes holding three or
+   more survivors are 2% to 81% of the Poisson count (four or more: 0% to 62%). The shortfall is largest at small C and
+   shrinks slowly with C and x. The reason is capacity. A class of a large prime r′ near x is a progression with about
+   C·ln x terms below y, and it holds only about C targets. Each target survives with probability about 0.07 to 0.10,
+   so a class can never hold more survivors than it has targets. Independent balls ignore that cap, so the picture
+   "fullest classes hold about ln x / ln ln x survivors" overstates what the large primes can collect at C near 1.35.
+   Capacity explains only part of the shortfall (`capacity_check.py`, `capacity_check.txt`). At x = 10⁵, w = x/2,
+   C = 1.35, classes with three or more survivors number 8,638 measured, 37,556 if each class's targets were thinned
+   independently with the survival probability, and 72,597 for balls. The rest comes from the small primes. The
+   targets of a class of r′ form a progression with difference r′, which is not divisible by 3, so they cycle through
+   all three residues mod 3. Every survivor lies in the one unstruck class mod 3, so only the targets with one residue
+   mod 3 can survive together, and likewise, more weakly, mod 5, 7, and so on. For four or more survivors the measured
+   count is 1, against 550 thinned and 2,191 for balls.
+2. **The pair formula of the outline is zero as written; with r = 3 treated exactly it is good.** N·∏_{3≤r≤w}(1 − 2/(r − 1))
+   is 0 because of r = 3. A nonzero class mod 3 strikes every prime in one of the two classes, so all survivors share a
+   class mod 3. A pair can survive only if it is congruent mod 3, and then it survives with probability 1/2. The corrected
+   expression is ½ · N₃ · ∏_{5≤r≤w}(1 − 2/(r − 1)), where N₃ counts the target pairs in a common class of r′ that are also
+   congruent mod 3. The measured E is 1.00 to 1.15 times this, so it is a lower bound in practice; it ignores the gain
+   from congruences mod 5, 7, … N₃/N is 0.35 to 0.48, not ½, because pairs at small multiples of r′ are congruent mod 3
+   less often than random pairs. So the convexity step should be applied to the classes of 3r′. The exact expectation,
+   computed from 48 sampled target pairs per large prime, matches the 20-draw mean within 4.3%, which checks the code.
+3. **(iii) The second moments are fine.** mean(E²)/mean(E)² per large prime is 1.26 at x = 3,000, C = 1, and falls to
+   1.0002 at large C and x.
+4. **(iv) Conflicts are O(1).** mean X / (mean E₁ · mean E₂) · |S| is 3.87 to 4.10 in every setting. That is 4, the value
+   for independent degrees.
+5. **(v) Deletion gives a constant near 1.5, not 2.** The largest fraction of good large primes (exactly one marked
+   pair, meeting no marked pair of another prime) is 0.09 to 0.11 at C = 1.35 (θ ≈ 0.2 to 0.35), 0.12 to 0.14 at C = 2,
+   and up to 0.28 at C = 8. It shows no trend in x. With a proportion φ ≈ 0.10 to 0.12 of the large primes striking two
+   survivors, the outline's constant is 1.349·(1 + φ) ≈ 1.48 to 1.51.
+6. **Random small classes plus greedy large primes reach a multiple of x ln x that grows with x.**
+   - C* (the largest C with nothing left in at least half the draws), w = x^0.9: 1.39, 1.93, 2.47, 3.14 at x = 3·10³,
+     10⁴, 3·10⁴, 10⁵.
+   - With w = x/2: 1.12, 1.40, 1.56, 1.78.
+   - C*/ln x is still rising (0.17 to 0.27 with w = x^0.9). The order of the large primes matters little. At x = 3,000 the three orders agree within 1%; from x = 10⁴ on, increasing beats decreasing by 2% to 9%, and random lies between.
+   - This stays below the all-greedy reach (5.52 to 8.38) and below ln x / ln ln x (3.85 to 4.71). Choosing the small
+     primes' classes greedily instead of at random is worth a factor 2.7 to 4 at these sizes.
+   - At C* the large primes strike mostly 2 to 4 survivors each: at x = 10⁵, w = x^0.9, C = 3, 28% strike two, 34%
+     three, 23% four and 6% five or more.
+   - The larger w = x^0.9 does better than w = x/2. It gives more large primes and fewer random small ones, and B is a
+     growing share of the primes up to x (0.50 at x = 3,000, 0.65 at 10⁵, 0.72 at 10⁶).
+
+## Tables
+
+TABLES
+
+## x = 10⁶ (reduced run)
+
+This run used 4 draws, C ∈ {1.35, 2, 4}, Report B bisection on [0.25, 10] in 9 steps, and no exact pair expectation. The run's
+JSON was lost when the container restarted before its last order (random, w = x^0.9) finished, so these numbers are the summary
+lines of `t1_x1000000.log`.
+
+| w | C | mean \|S\| | predicted | E / balls | E² ratio | conflicts | good max (θ) |
+|---|---|---|---|---|---|---|---|
+| x/2 | 1.35 | 67,157 | 67,230 | 0.572 | 1.005 | 4.026 | 0.114 (0.35) |
+| x/2 | 2 | 97,234 | 97,151 | 0.662 | 1.001 | 4.008 | 0.146 (0.35) |
+| x/2 | 4 | 186,440 | 186,228 | 0.790 | 1.000 | 3.998 | 0.203 (0.5) |
+| x^0.9 | 1.35 | 71,006 | 70,950 | 0.651 | 1.003 | 4.015 | 0.088 (0.2) |
+| x^0.9 | 2 | 102,642 | 102,525 | 0.727 | 1.001 | 4.007 | 0.114 (0.35) |
+| x^0.9 | 4 | 196,639 | 196,531 | 0.831 | 1.000 | 3.999 | 0.170 (0.5) |
+
+C* (Report B), by the order of the large primes:
+
+| w | increasing | decreasing | random |
+|---|---|---|---|
+| x/2 | 2.170 (draws 2.17 – 2.19) | 2.096 | 2.114 |
+| x^0.9 | 4.471 (draws 4.45 – 4.49) | 4.183 | lost in the restart |
+
+- The trends of the smaller x continue. With w = x^0.9, C* = 1.39, 1.93, 2.47, 3.14 and now 4.47, so C*/ln x = 0.32. With
+  w = x/2, C* = 1.12, 1.40, 1.56, 1.78 and now 2.17. Increasing order beats decreasing by 3.5% and 6.9%.
+- The fraction of good large primes at C = 1.35 is 0.09 to 0.11, as before, and the conflicts stay at 4.
+- E / balls keeps rising slowly with x at every C. With w = x/2 it goes from 0.532 at x = 10⁵ to 0.572 at 10⁶ (C = 1.35),
+  from 0.619 to 0.662 (C = 2) and from 0.763 to 0.790 (C = 4). With w = x^0.9 it goes from 0.587 to 0.651, 0.671 to 0.727
+  and 0.795 to 0.831. (An earlier version of this section compared these with the "≥2 / Poisson" column of the smaller runs
+  and reported a drop at C = 4; that was a column mix-up, pointed out by the consultant session.)
+- The θ = 0.9 hybrid of T3 measured C* = 4.477 at x = 10⁶ independently, with 2 other draws and a bracketed bisection. That
+  agrees with 4.471 here.
+
+## Files and checks
+
+| file | what it does |
+|---|---|
+| `t1lib.c` | kernels: occupancy of the classes of each large prime, conflicts, exact expectation by pair sampling, deletion, greedy (OpenMP, exact 32-bit modular reduction by multiplication) |
+| `t1.py` | driver: `python3 t1.py x [draws] [threads]` writes `t1_x<x>.json`; environment `T1_CGRID`, `T1_CBIS_MAX`, `T1_BIS_STEPS`, `T1_SKIP_EXACT`, `T1_ORDERS` reduce the work for x = 10^6 |
+| `test_t1.py` | checks every kernel against plain Python: occupancy, conflicts by brute force over pairs, greedy (same tie rule as `greedy_cover.py`), survivors by direct division, the exact expectation against 3,000 Monte Carlo draws (0.5%), and the deletion's Poisson rates |
+| `make_tables.py` | the tables above, from the JSON files |
+| `t1_x*.json`, `t1_x*.log` | full results, including per-θ deletion curves and per-draw thresholds |
+
+Build: `gcc -O3 -march=native -fopenmp -shared -fPIC -o t1lib.so t1lib.c -lm`. Run times on 4 cores: 1 s (x = 3,000), 7 s,
+46 s, and 9.5 minutes (x = 10⁵). The per-draw bisection assumes that "nothing left" is monotone in C. On the C grid it is,
+in every run.

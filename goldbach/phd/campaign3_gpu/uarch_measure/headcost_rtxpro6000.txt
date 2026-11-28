@@ -1,0 +1,30 @@
+# uarch headcost.sh (eeb89be) on gold-g4c, 2026-11-23 11:09:40-11:09:58Z: a second large-prime stage for primes in (2^27, 2^30] on the first 64 / 128 rows alone (bench_bigprimes.py), 2^24 window.
+
+2026-11-23T11:09:40Z paused pid 1826024
+--- 64 rows, rg 16, rcta 2 (as the stage is today)
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 64 rows, primes in (2^27, 2^30]: 46,796,475 of them, batch 2^24 members (32 tiles of 2^19 bits), groups of 16 rows, STAGED kernel: 576 chunks of primes, 2 rows and up to 8192 marks staged a CTA, cap 61,152 entries a bin (125 MB of bins)   (setup 5.5 s)
+expected marks a row 1,767,623 = 0.1 a member; pair visits a row 46,796,475
+64 rows timed (4 groups), scaled to 64 rows: gen 39.0 ms, apply 0.4 ms, total 39.4 ms; marks 0.11 G (1,767,579 a row = 0.1 a member); capacity retries 0; wall 55.9 ms
+  ns a mark: gen 0.3447   apply 0.0033   TOTAL 0.3480   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 2.347  (64 rows, 178.5 pair visits a member: 0.01302 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 18.5 ms = 0.1635 ns a mark, 0.00617 ns a pair visit; pass B (the writes) ~ 20.5 ms = 0.1812 ns a mark
+  bins written + read: 0.9 GB in 39.4 ms = 23 GB/s; bit tiles written: 0.1 GB
+--- 64 rows, rg 16, rcta 8, 512 threads
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 64 rows, primes in (2^27, 2^30]: 46,796,475 of them, batch 2^24 members (32 tiles of 2^19 bits), groups of 16 rows, STAGED kernel: 2302 chunks of primes, 8 rows and up to 8192 marks staged a CTA, cap 61,152 entries a bin (125 MB of bins)   (setup 5.5 s)
+expected marks a row 1,767,623 = 0.1 a member; pair visits a row 46,796,475
+64 rows timed (4 groups), scaled to 64 rows: gen 15.0 ms, apply 0.4 ms, total 15.4 ms; marks 0.11 G (1,767,579 a row = 0.1 a member); capacity retries 0; wall 31.9 ms
+  ns a mark: gen 0.1329   apply 0.0033   TOTAL 0.1362   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 0.918  (64 rows, 178.5 pair visits a member: 0.00502 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 7.9 ms = 0.0696 ns a mark, 0.00263 ns a pair visit; pass B (the writes) ~ 7.2 ms = 0.0632 ns a mark
+  bins written + read: 0.9 GB in 15.4 ms = 59 GB/s; bit tiles written: 0.1 GB
+--- 128 rows, rg 32, rcta 8, 512 threads
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 128 rows, primes in (2^27, 2^30]: 46,796,475 of them, batch 2^24 members (32 tiles of 2^19 bits), groups of 32 rows, STAGED kernel: 2302 chunks of primes, 8 rows and up to 8192 marks staged a CTA, cap 61,152 entries a bin (250 MB of bins)   (setup 5.6 s)
+expected marks a row 1,767,623 = 0.1 a member; pair visits a row 46,796,475
+128 rows timed (4 groups), scaled to 128 rows: gen 28.8 ms, apply 0.8 ms, total 29.5 ms; marks 0.23 G (1,767,501 a row = 0.1 a member); capacity retries 0; wall 42.3 ms
+  ns a mark: gen 0.1271   apply 0.0034   TOTAL 0.1305   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 1.760  (128 rows, 357.0 pair visits a member: 0.00480 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 15.0 ms = 0.0665 ns a mark, 0.00251 ns a pair visit; pass B (the writes) ~ 13.7 ms = 0.0606 ns a mark
+  bins written + read: 1.8 GB in 29.5 ms = 61 GB/s; bit tiles written: 0.3 GB
+2026-11-23T11:09:58Z resumed pid 1826024
+HEADCOST-DONE
+

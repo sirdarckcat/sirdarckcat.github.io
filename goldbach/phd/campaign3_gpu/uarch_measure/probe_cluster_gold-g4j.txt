@@ -1,0 +1,43 @@
+device NVIDIA RTX PRO 6000 Blackwell Server Edition (cc 12.0), 188 SMs, shared memory 100 KB an SM, 99 KB a block at most (opt-in); 512 threads a CTA
+  CL  1,  32 KB a CTA (   32 KB a cluster, 32 KB random range): local   2847.1 G/s, remote   2186.7 G/s, loop alone   2501.5 G/s
+  CL  1,  64 KB a CTA (   64 KB a cluster, 64 KB random range): local   2700.9 G/s, remote   1799.2 G/s, loop alone   2263.2 G/s
+  CL  1,  96 KB a CTA (   96 KB a cluster, 64 KB random range): local   2700.9 G/s, remote   1799.0 G/s, loop alone   2264.1 G/s
+  CL  1,  99 KB a CTA (   99 KB a cluster, 64 KB random range): local   2700.9 G/s, remote   1799.1 G/s, loop alone   2263.6 G/s
+  CL  2,  32 KB a CTA (   64 KB a cluster, 32 KB random range): local   2827.8 G/s, remote     39.0 G/s, loop alone   2465.3 G/s
+  CL  2,  64 KB a CTA (  128 KB a cluster, 64 KB random range): local   2640.8 G/s, remote     40.9 G/s, loop alone   2153.1 G/s
+  CL  2,  96 KB a CTA (  192 KB a cluster, 64 KB random range): local   2642.1 G/s, remote     40.9 G/s, loop alone   2153.1 G/s
+  CL  2,  99 KB a CTA (  198 KB a cluster, 64 KB random range): local   2641.6 G/s, remote     41.0 G/s, loop alone   2153.2 G/s
+  CL  4,  32 KB a CTA (  128 KB a cluster, 32 KB random range): local   2747.4 G/s, remote     25.6 G/s, loop alone   2380.1 G/s
+  CL  4,  64 KB a CTA (  256 KB a cluster, 64 KB random range): local   2115.7 G/s, remote     26.4 G/s, loop alone   1726.3 G/s
+  CL  4,  96 KB a CTA (  384 KB a cluster, 64 KB random range): local   2115.8 G/s, remote     26.4 G/s, loop alone   1726.3 G/s
+  CL  4,  99 KB a CTA (  396 KB a cluster, 64 KB random range): local   2115.7 G/s, remote     26.4 G/s, loop alone   1726.3 G/s
+  CL  8,  32 KB a CTA (  256 KB a cluster, 32 KB random range): local   2273.8 G/s, remote     21.6 G/s, loop alone   2000.2 G/s
+  CL  8,  64 KB a CTA (  512 KB a cluster, 64 KB random range): local   2115.6 G/s, remote     18.6 G/s, loop alone   1725.2 G/s
+  CL  8,  96 KB a CTA (  768 KB a cluster, 64 KB random range): local   2115.7 G/s, remote     18.6 G/s, loop alone   1725.1 G/s
+  CL  8,  99 KB a CTA (  792 KB a cluster, 64 KB random range): local   2115.3 G/s, remote     18.6 G/s, loop alone   1725.0 G/s
+  CL 16,  32 KB a CTA (  512 KB a cluster, 32 KB random range): local   2272.3 G/s, remote     15.9 G/s, loop alone   1993.8 G/s
+  CL 16,  64 KB a CTA ( 1024 KB a cluster, 64 KB random range): local   2113.8 G/s, remote     16.0 G/s, loop alone   1722.4 G/s
+  CL 16,  96 KB a CTA ( 1536 KB a cluster, 64 KB random range): local   2114.0 G/s, remote     16.0 G/s, loop alone   1722.4 G/s
+  CL 16,  99 KB a CTA ( 1584 KB a cluster, 64 KB random range): local   2113.7 G/s, remote     16.0 G/s, loop alone   1722.5 G/s
+largest cluster memory that launched: 1584 KB = one row of a window of 12976128 members (0.77 x 2^24; a 2^24 row needs 2,048 KB)
+  CL  1 x  32 KB: a window of 0.02 x 2^24 a cluster: marks    3.2 ms + pass A  883.2 ms =  886.4 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 883.2 ms)
+  CL  1 x  64 KB: a window of 0.03 x 2^24 a cluster: marks    3.9 ms + pass A  441.6 ms =  445.5 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 441.6 ms)
+  CL  1 x  96 KB: a window of 0.05 x 2^24 a cluster: marks    3.9 ms + pass A  294.4 ms =  298.3 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 294.4 ms)
+  CL  1 x  99 KB: a window of 0.05 x 2^24 a cluster: marks    3.9 ms + pass A  294.4 ms =  298.3 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 294.4 ms)
+  CL  2 x  32 KB: a window of 0.03 x 2^24 a cluster: marks  182.2 ms + pass A  441.6 ms =  623.8 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 441.6 ms)
+  CL  2 x  64 KB: a window of 0.06 x 2^24 a cluster: marks  173.4 ms + pass A  220.8 ms =  394.2 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 220.8 ms)
+  CL  2 x  96 KB: a window of 0.09 x 2^24 a cluster: marks  173.4 ms + pass A  147.2 ms =  320.6 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 173.4 ms)
+  CL  2 x  99 KB: a window of 0.10 x 2^24 a cluster: marks  173.3 ms + pass A  144.2 ms =  317.5 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 173.3 ms)
+  CL  4 x  32 KB: a window of 0.06 x 2^24 a cluster: marks  277.0 ms + pass A  220.8 ms =  497.8 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 277.0 ms)
+  CL  4 x  64 KB: a window of 0.12 x 2^24 a cluster: marks  269.0 ms + pass A  110.4 ms =  379.4 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 269.0 ms)
+  CL  4 x  96 KB: a window of 0.19 x 2^24 a cluster: marks  269.0 ms + pass A   73.6 ms =  342.6 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 269.0 ms)
+  CL  4 x  99 KB: a window of 0.19 x 2^24 a cluster: marks  269.0 ms + pass A   71.4 ms =  340.4 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 269.0 ms)
+  CL  8 x  32 KB: a window of 0.12 x 2^24 a cluster: marks  329.3 ms + pass A  110.4 ms =  439.7 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 329.3 ms)
+  CL  8 x  64 KB: a window of 0.25 x 2^24 a cluster: marks  381.0 ms + pass A   55.2 ms =  436.2 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 381.0 ms)
+  CL  8 x  96 KB: a window of 0.38 x 2^24 a cluster: marks  381.0 ms + pass A   36.8 ms =  417.8 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 381.0 ms)
+  CL  8 x  99 KB: a window of 0.39 x 2^24 a cluster: marks  381.0 ms + pass A   35.7 ms =  416.7 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 381.0 ms)
+  CL 16 x  32 KB: a window of 0.25 x 2^24 a cluster: marks  446.3 ms + pass A   55.2 ms =  501.5 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 446.3 ms)
+  CL 16 x  64 KB: a window of 0.50 x 2^24 a cluster: marks  443.0 ms + pass A   27.6 ms =  470.6 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 443.0 ms)
+  CL 16 x  96 KB: a window of 0.75 x 2^24 a cluster: marks  443.0 ms + pass A   18.4 ms =  461.4 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 443.0 ms)
+  CL 16 x  99 KB: a window of 0.77 x 2^24 a cluster: marks  443.0 ms + pass A   17.8 ms =  460.9 ms against today's ~34 ms a 2^24 window (marks and visits overlap at best: the max of the two, 443.0 ms)
+PROBE-CLUSTER-DONE

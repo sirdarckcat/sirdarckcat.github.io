@@ -1,0 +1,11 @@
+F_2: A = L6, a = 126, n = 504, lam = 1
+  d = 11: rows 186 ; r even 0; irreducible N-Q 10; [even,odd] by category {'formula': [0, 186]}; formula disagreements 0; 2s
+  d = 13: rows 630 ; r even 0; irreducible N-Q 34; [even,odd] by category {'formula': [0, 630]}; formula disagreements 0; 7s
+F_2: A = L6*x, a = 127, n = 508, lam = 1
+  d = 11: rows 186 ; r even 186; irreducible N-Q 0; [even,odd] by category {'formula': [186, 0]}; formula disagreements 0; 2s
+  d = 13: rows 630 ; r even 630; irreducible N-Q 0; [even,odd] by category {'formula': [630, 0]}; formula disagreements 0; 6s
+F_2: A = L4, a = 30, n = 120, lam = 1
+  d = 11: rows 186 ; r even 30; irreducible N-Q 24; [even,odd] by category {'formula': [0, 136], 'S!|A,rad|A': [6, 4], 'S!|A,rad!|A': [24, 16]}; formula disagreements 0; 0s
+  d = 13: rows 630 ; r even 134; irreducible N-Q 86; [even,odd] by category {'formula': [0, 358], 'S!|A,rad|A': [28, 34], 'S!|A,rad!|A': [106, 104]}; formula disagreements 0; 0s
+F_2: A = V3, a = 10, n = 40, lam = 1
+  d = 9: rows 56 ; r even 46; irreducible N-Q 2; [even,odd] by category {'S!|A,rad|A': [20, 10], 'formula': [16, 0], 'S!|A,rad!|A': [10, 0]}; formula disagreements 0; 0s

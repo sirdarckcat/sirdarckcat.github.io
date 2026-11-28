@@ -1,0 +1,17 @@
+# python3 proth/interop.py to-bls record.json out.json && python3 proth/divmod_pow_run.py verify_bls_record out.json  (bls/verify_bls_record.py unchanged except that its pow is proth/divmod_pow_run.py's pure-Python square-and-multiply with divmod reduction, checkpointed; restarted 02:27Z after the container was replaced)
+# proth/divmod_pow_run.py as of commit f5f63ad. Ran 02:27-03:28 UTC 2026-11-22 on this session's 4-core container, beside the xverify leg; it ran in full (no "[dpow] resumed" line).
+[dpow] bit 33433/203729, 600s
+[dpow] bit 67042/203729, 1200s
+[dpow] bit 100656/203729, 1800s
+[dpow] bit 133571/203729, 2400s
+[dpow] bit 166862/203729, 3000s
+[dpow] bit 200112/203729, 3600s
+PASS  g(N) = 10,000,141
+  N: 61,329 digits, sha256(decimal) 776ef0de49bc1618...
+  664,584 primes q < g: q=2 by parity, 664,583 odd q by 9,094 cover congruences
+  P = N - g (61,329 digits) prime by BLS, F = 2^67914, base 11; modexp 3665.9s (python int)
+  total 3667.7s
+
+real	61m7.955s
+user	60m41.616s
+sys	0m1.340s

@@ -1,0 +1,15 @@
+# Vector-mode tuning (vplt.sh) on gold-g4 (RTX PRO 6000), 2026-11-23 11:12:27-11:14:54Z, campaign paused: 24 test vectors (q170000_m89_t1_v8..v31), one 2^24 window
+# each from k_lo, batches of 4, production vector flags; the bubble (GBATCH_GROUP_DELAY_US) and the row-group size (--deep-rg) varied.
+
+v0      : gaps [1.575, 1.701, 1.603, 1.609, 1.428] | mean of batches 2..5 1.622 s | consumer waited 0.074 s, sieve busy 1.623 s, idle 0.000 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+d0      : gaps [1.578, 1.578, 1.564, 1.577, 1.341] | mean of batches 2..5 1.574 s | consumer waited 0.000 s, sieve busy 1.434 s, idle 0.122 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+d250    : gaps [1.575, 1.558, 1.592, 1.576, 1.327] | mean of batches 2..5 1.575 s | consumer waited 0.000 s, sieve busy 1.547 s, idle 0.006 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+r32     : gaps [1.564, 1.591, 1.579, 1.568, 1.352] | mean of batches 2..5 1.575 s | consumer waited 0.000 s, sieve busy 0.951 s, idle 0.629 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+r64     : gaps [1.642, 1.638, 1.631, 1.601, 1.338] | mean of batches 2..5 1.628 s | consumer waited 0.000 s, sieve busy 0.710 s, idle 0.985 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+r64d500 : gaps [1.611, 1.592, 1.595, 1.592, 1.315] | mean of batches 2..5 1.598 s | consumer waited 0.000 s, sieve busy 0.947 s, idle 0.687 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+r64d1000: gaps [1.597, 1.585, 1.612, 1.602, 1.338] | mean of batches 2..5 1.599 s | consumer waited 0.000 s, sieve busy 1.010 s, idle 0.445 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+v0b     : gaps [1.571, 1.6, 1.67, 1.583, 1.405] | mean of batches 2..5 1.606 s | consumer waited 0.050 s, sieve busy 1.627 s, idle 0.000 s a batch | slice lines vs v0: IDENTICAL (24) | ['C3GPU-EXHAUSTED', 'rc=2']
+VPLT-DONE
+
+# Reading: in vector mode the 500 us bubble only slows the sieve (the consumer waits 0.05-0.07 s a batch); no bubble, with row groups of 32 (r32), gives 1.575 s against
+# the control's 1.606-1.622 s (-2.4%) with the sieve idle 0.63 s a batch. Deployed on the three RTX PRO 6000s at 11:15:42-11:16:04Z (deploy_r32.py).

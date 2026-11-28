@@ -1,0 +1,34 @@
+
+=================================================================== 5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)
+2026-11-23T01:05:47Z
+window k0=4293656576: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294180864: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294705152: 16 blocks, 15744 members selected: identical to the CPU feeder
+window of 524288 members: 1.15 ms = 2.19 ns a member = 456.2 M members/s (1092 rows, 78409 primes, f=0.97)
+sweep: 1092 rows, 78409 primes, K = 2^19, f = 0.97; ms a window (mean of 5), the GPU phases from events; ns/member
+  config                                          wall   ns/m |   prep   sieve  count  select  final  wait1   rows  wait2   host  output
+  {'shoup': False, 'sieve_threads': 256}          1.27   2.42 |  0.038   0.656  0.041   0.141  0.051  0.032  0.289  0.282  0.021  same
+  {'shoup': False, 'sieve_threads': 1024}         0.98   1.86 |  0.027   0.400  0.041   0.141  0.051  0.021  0.278  0.282  0.018  same
+  {'shoup': True, 'sieve_threads': 256}           1.08   2.05 |  0.017   0.511  0.041   0.141  0.051  0.020  0.277  0.282  0.016  same
+  {'shoup': True, 'sieve_threads': 512}           0.91   1.73 |  0.014   0.351  0.041   0.141  0.051  0.018  0.277  0.282  0.016  same
+  {'shoup': True, 'sieve_threads': 1024}          0.85   1.63 |  0.011   0.298  0.041   0.141  0.051  0.019  0.277  0.282  0.015  same
+  {'shoup': True, 'sieve_threads': 1024, 'unroll': 3}    0.92   1.75 |  0.012   0.367  0.041   0.141  0.050  0.017  0.276  0.279  0.014  same
+  {'shoup': True, 'sieve_threads': 512, 'unroll': 3}    0.92   1.76 |  0.013   0.365  0.041   0.141  0.051  0.019  0.277  0.281  0.015  same
+ALL IDENTICAL
+  SM clock MHz: median 2422  min 2422  max 2422  (max allowed 2430)   [4 samples]
+  power W: median 92  max 124  (limit 600.00)   temperature C: median 52
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 4}
+
+=================================================================== 6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 100000000, a batch of 2^25 members)
+2026-11-23T01:05:51Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2147483648: identical to the CPU feeder
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2149580800: identical to the CPU feeder
+1092 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.27 GB of 52.4 GB free (tables 3.8 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 384.7 ms = 11.464 ns a member (87.2 M members/s); kept 335,872 members, 109,417,248 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.16  sieve (gen + tiles) 373.1  count 3.26  select 0.37  finalize 1.53  wait1 0.13  rows 6.07  wait2 6.08  host 0.02   (ms a batch)
+
+=================================================================== done
+2026-11-23T01:05:57Z
+output file: /content/measure_out2.txt
+MEASURE-DONE 2026-11-23T01:05:57Z

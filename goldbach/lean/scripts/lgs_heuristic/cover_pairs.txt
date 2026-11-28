@@ -1,0 +1,10 @@
+# python3 -I cover_pairs.py 170000 <cover file> 40 200000, on two cover files of the research session
+# (goldbach/fscan/cover/starts/q170000_m89r491.txt and starts/all/q170000_m89r491.txt, branch ccr-d4a17dd0-7uu03r, read on 2026-11-23)
+famB_491.txt: 40 covers, rows left as recomputed 1245..1248 (file says 1245..1248), p = 0.02398
+  T: mean -36.043, sd 0.160, min -36.322, max -35.700   (sieve primes up to 200000)
+  in nats of success probability (p^2 T): mean -0.020727, sd 0.000092, best minus worst 0.000358
+  for comparison one row is worth 0.0243 nats
+all_491.txt: 40 covers, rows left as recomputed 1245..1248 (file says 1245..1248), p = 0.02398
+  T: mean -36.039, sd 0.136, min -36.321, max -35.755   (sieve primes up to 200000)
+  in nats of success probability (p^2 T): mean -0.020725, sd 0.000078, best minus worst 0.000325
+  for comparison one row is worth 0.0243 nats

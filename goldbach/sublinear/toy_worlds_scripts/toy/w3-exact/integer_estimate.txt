@@ -1,0 +1,5 @@
+per survivor p = 0.0730; tilt of the hits in S: 1.36 sd; with parity (odd survivors o, sd 14.4, 2p each): 2.27 sd
+  keep 0.015: capture by S 0.210 (README: 0.199 at 1.5%), by o 0.538; tests per kept member 13.7 -> 6.8; hits per test x5.12 = 1.63 nats
+  keep 0.008: capture by S 0.148 (README: 0.199 at 1.5%), by o 0.443; tests per kept member 13.7 -> 6.8; hits per test x5.98 = 1.79 nats
+  keep 0.001: capture by S 0.042 (README: 0.199 at 1.5%), by o 0.205; tests per kept member 13.7 -> 6.8; hits per test x9.70 = 2.27 nats
+cover only (no member sieve): o ~ Bin(1502, 1/2), sd 19.4, tilt 0.97 sd; enrichment at keep 1%: 8.7

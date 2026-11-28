@@ -1,0 +1,6 @@
+B=1e+06: batch 2.70s (first run 2.9s), tests 37.59M counted 38.46M computed, expected hits 2.9911e-05, alive/k 489.9, E^ 26.26 | expected x1.000, time x1.000, expected/s x1.000
+B=2e+06: batch 3.50s (first run 3.5s), tests 35.76M counted 36.60M computed, expected hits 3.1142e-05, alive/k 466.4, E^ 26.29 | expected x1.041, time x1.296, expected/s x0.803
+B=4e+06: batch 4.60s (first run 4.6s), tests 34.11M counted 34.98M computed, expected hits 3.2439e-05, alive/k 445.2, E^ 26.30 | expected x1.085, time x1.704, expected/s x0.637
+B=1e+07: batch 7.60s (first run 8.3s), tests 32.21M counted 33.10M computed, expected hits 3.6072e-05, alive/k 419.9, E^ 26.27 | expected x1.206, time x2.815, expected/s x0.428
+B=2e+07: batch 14.70s (first run 15.2s), tests 30.87M counted 31.76M computed, expected hits 3.7504e-05, alive/k 402.6, E^ 26.28 | expected x1.254, time x5.444, expected/s x0.230
+SIEVEB-DONE

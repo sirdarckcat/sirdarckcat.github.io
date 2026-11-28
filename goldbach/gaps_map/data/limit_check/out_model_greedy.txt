@@ -1,0 +1,7 @@
+model x=151 D=2,751 D/(x ln^2 x)=0.724 lnln=1.613 t=0.1s
+model x=500 D=15,020 D/(x ln^2 x)=0.778 lnln=1.827 t=0.1s
+model x=1000 D=40,975 D/(x ln^2 x)=0.859 lnln=1.933 t=0.1s
+model x=2000 D=97,452 D/(x ln^2 x)=0.843 lnln=2.028 t=0.1s
+model x=5000 D=322,872 D/(x ln^2 x)=0.890 lnln=2.142 t=0.4s
+model x=10000 D=755,125 D/(x ln^2 x)=0.890 lnln=2.220 t=1.2s
+model x=20000 D=1,714,989 D/(x ln^2 x)=0.874 lnln=2.293 t=4.0s

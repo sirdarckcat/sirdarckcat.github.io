@@ -1,0 +1,10 @@
+  sieve 0/250 chunks, alive 32609/32768, 12s
+  sieve 50/250 chunks, alive 18648/32768, 48s
+  sieve 100/250 chunks, alive 18023/32768, 81s
+  sieve 150/250 chunks, alive 17647/32768, 114s
+  sieve 200/250 chunks, alive 17392/32768, 147s
+17231 sieve survivors of 32768; 0 already tested; expected tests per prime ~ 2117
+  test 1: t=0 ok=False 84.1s elapsed 84s
+  test 21: t=41 ok=False 81.5s elapsed 501s
+  test 41: t=87 ok=False 80.5s elapsed 901s
+  test 61: t=115 ok=False 77.8s elapsed 1294s

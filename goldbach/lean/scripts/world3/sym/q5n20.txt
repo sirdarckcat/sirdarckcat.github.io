@@ -1,0 +1,12 @@
+q=5 n=20: 3409 rows of degree <= 6, 685 orbits; family of 625 members
+family: tests 13512, mean L 76.9, time 1 s
+family best: L=718 (D=5, g index 367), L=715 (D=5, g index 497), L=591 (D=5, g index 24), L=587 (D=5, g index 7), L=582 (D=5, g index 364), L=471 (D=5, g index 119), L=466 (D=5, g index 94), L=466 (D=5, g index 9)
+cell model for all 5^20 members: line of 6 moduli (78125 cells), chance of a row left 0.1589; rows R with 10, 1, 0.1 members expected: 739, 796, 855
+BYDEGREE (d: rows of degree <= d | family members with all of them failing | expected among all members, cell model | its q-th root | orbits of those rows | family size x (share of all)^(orbits/rows))
+  d=1: rows 5 | family 625 of 625 | all 7.32e+13 | root 593 | orbits 1 | refined 593
+  d=2: rows 15 | family 561 of 625 | all 4.35e+13 | root 534 | orbits 3 | refined 534
+  d=3: rows 55 | family 359 of 625 | all 6.19e+12 | root 362 | orbits 11 | refined 362
+  d=4: rows 205 | family 102 of 625 | all 1.13e+10 | root 103 | orbits 41 | refined 103
+  d=5: rows 829 | family 0 of 625 | all 0.256 | root 0.762 | orbits 169 | refined 0.669
+  d=6: rows 3409 | family 0 of 625 | all 8.19e-45 | root 1.52e-09 | orbits 685 | refined 1.34e-09
+expected number of members of all 5^20 at the family's best level L >= 718: 22.6

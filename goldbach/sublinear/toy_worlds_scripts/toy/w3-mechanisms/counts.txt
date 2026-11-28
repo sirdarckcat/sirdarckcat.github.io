@@ -1,0 +1,23 @@
+characteristic 2 (Theorem 1), q a power of 4:
+  q =   4, J = 1: deg L_J = 4, n0 = 16; rows of degree <= 3: 30; forced by parity: 26 (+ 4 of degree <= J struck by divisibility); luck replaced 5.1 nats; forced rows per unit of degree 1.62
+  q =   4, J = 2: deg L_J = 20, n0 = 80; rows of degree <= 5: 294; forced by parity: 224 (+ 10 of degree <= J struck by divisibility); luck replaced 13.0 nats; forced rows per unit of degree 2.80
+  q =   4, J = 3: deg L_J = 84, n0 = 336; rows of degree <= 7: 3304; forced by parity: 2544 (+ 30 of degree <= J struck by divisibility); luck replaced 48.3 nats; forced rows per unit of degree 7.57
+  q =  16, J = 1: deg L_J = 16, n0 = 64; rows of degree <= 3: 1496; forced by parity: 1480 (+ 16 of degree <= J struck by divisibility); luck replaced 64.9 nats; forced rows per unit of degree 23.12
+  q =  16, J = 2: deg L_J = 272, n0 = 1088; rows of degree <= 5: 227528; forced by parity: 211072 (+ 136 of degree <= J struck by divisibility); luck replaced 871.4 nats; forced rows per unit of degree 194.00
+  q =  16, J = 3: deg L_J = 4368, n0 = 17472; rows of degree <= 7: 41370928; forced by parity: 38557632 (+ 1496 of degree <= J struck by divisibility); luck replaced 13817.1 nats; forced rows per unit of degree 2206.82
+  q =  64, J = 1: deg L_J = 64, n0 = 256; rows of degree <= 3: 89440; forced by parity: 89376 (+ 64 of degree <= J struck by divisibility); luck replaced 956.5 nats; forced rows per unit of degree 349.12
+  q =  64, J = 2: deg L_J = 4160, n0 = 16640; rows of degree <= 5: 219031072; forced by parity: 214835712 (+ 2080 of degree <= J struck by divisibility); luck replaced 57870.4 nats; forced rows per unit of degree 12910.80
+  q =  64, J = 3: deg L_J = 266304, n0 = 1065216; rows of degree <= 7: 639964591552; forced by parity: 628507107072 (+ 89440 of degree <= J struck by divisibility); luck replaced 3690675.4 nats; forced rows per unit of degree 590027.85
+  q = 256, J = 1: deg L_J = 256, n0 = 1024; rows of degree <= 3: 5625216; forced by parity: 5624960 (+ 256 of degree <= J struck by divisibility); luck replaced 14961.1 nats; forced rows per unit of degree 5493.12
+  q = 256, J = 2: deg L_J = 65792, n0 = 263168; rows of degree <= 5: 220981676160; forced by parity: 219907917824 (+ 32896 of degree <= J struck by divisibility); luck replaced 3745013.4 nats; forced rows per unit of degree 835618.00
+odd characteristic (Result 1), q an odd square, N = lam * V_J^p:
+  q =   9, J = 1: n0 = 27; forced: all 36 rows of degree 2; luck replaced 3.8 nats; forced rows per unit of degree 1.33
+  q =   9, J = 3: n0 = 2403; forced: all 1620 rows of degree 4; luck replaced 4.2 nats; forced rows per unit of degree 0.67
+  q =  25, J = 1: n0 = 125; forced: all 300 rows of degree 2; luck replaced 6.7 nats; forced rows per unit of degree 2.40
+  q =  25, J = 2: n0 = 3125; forced: all 5200 rows of degree 3; luck replaced 7.5 nats; forced rows per unit of degree 1.66
+  q =  25, J = 3: n0 = 81125; forced: all 97500 rows of degree 4; luck replaced 7.5 nats; forced rows per unit of degree 1.20
+  q =  49, J = 1: n0 = 343; forced: all 1176 rows of degree 2; luck replaced 9.4 nats; forced rows per unit of degree 3.43
+  q =  49, J = 2: n0 = 16807; forced: all 39200 rows of degree 3; luck replaced 10.5 nats; forced rows per unit of degree 2.33
+  q =  49, J = 3: n0 = 840007; forced: all 1440600 rows of degree 4; luck replaced 10.7 nats; forced rows per unit of degree 1.71
+  q =  81, J = 1: n0 = 243; forced: all 3240 rows of degree 2; luck replaced 36.5 nats; forced rows per unit of degree 13.33
+  q =  81, J = 3: n0 = 1613763; forced: all 10760040 rows of degree 4; luck replaced 41.7 nats; forced rows per unit of degree 6.67

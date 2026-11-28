@@ -1,0 +1,19 @@
+Exact counts over F_9 for `desert_smooth` with J = 3 (N = c * V_3^3, deg N = 2403): the rows Q (monic
+irreducible) of degree d, 3 not dividing d, whose derivative has no irreducible factor of degree above 3.
+Program: smooth_deriv_f9.c (own arithmetic of F_9 = F_3[i]/(i^2+1), no library), 2026-11-23.
+
+  gcc -O3 -march=native -fopenmp -o smooth_deriv_f9 smooth_deriv_f9.c
+  ./smooth_deriv_f9 5 3
+  F_9, degree 5: 11808 monic irreducible Q; 8928 of them have a 3-smooth derivative (0.7561)
+  ./smooth_deriv_f9 7 3
+  F_9, degree 7: 683280 monic irreducible Q; 282672 of them have a 3-smooth derivative (0.4137)
+
+The derivative of a row of degree d >= 3 is not a uniformly distributed polynomial of degree d - 1 (its
+coefficients of x^2, x^5, ... vanish in characteristic 3), so these differ from the proportions of 3-smooth
+polynomials among all monic ones: 0.7531 in degree 4 and 0.3867 in degree 6.
+
+Self-tests of the smoothness routine against closed formulas (third argument present: all monic polynomials):
+  ./smooth_deriv_f9 6 3 selftest   205509 of 531441   = 9^6 - I_4 9^2 - I_5 9 - I_6
+  ./smooth_deriv_f9 4 3 selftest     4941 of 6561     = 9^4 - I_4
+  ./smooth_deriv_f9 4 2 selftest     2781 of 6561     = 9^4 - I_4 - 9 I_3
+with I_1..I_7 = 9, 36, 240, 1620, 11808, 88440, 683280 the numbers of monic irreducibles over F_9.

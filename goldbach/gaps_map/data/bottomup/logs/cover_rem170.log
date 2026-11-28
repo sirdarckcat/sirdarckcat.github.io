@@ -1,0 +1,6 @@
+random covers (all classes allowed incl. 0): 4000 samples in 4 s: mean 2813.4 sd 1080.60 min 1784 max 6837
+random covers (nonzero classes): mean 1853.4 sd 22.86
+skewness 0.027 excess kurtosis -0.060
+REM (Gaussian) ground state with ln #covers = 442.9 (all classes): z = 29.8, n_min = 1853 - 29.8*22.86 = 1173
+REM (Gaussian) ground state with ln #covers = 441.2 (nonzero classes): z = 29.7, n_min = 1853 - 29.7*22.86 = 1174
+best found: annealing 1,524 (mine), campaign 1,502. rate of the cover: p*sd = 0.548 nats per sd (p = 0.02398)

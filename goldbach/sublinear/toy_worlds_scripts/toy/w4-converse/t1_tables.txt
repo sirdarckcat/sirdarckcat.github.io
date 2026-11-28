@@ -1,0 +1,22 @@
+(a) cover primes 89, largest 463; rows 1502; rows <= 463: 4 ([139, 211, 331, 337])
+    sifted set {463 < q < Q odd, q mod r not in {0, a_r} for all r}: 1498 elements; equal to the rows above 463: True; 467^2 = 218089 > Q = 200000
+    density of rows n/Q = 0.007510; (1/2) prod (1 - 2/r) = 0.010827
+(b) tables of the later primes
+    later primes in [467, 5000]: 579
+    s in [467,600): primes  19  mean table 2.819  var/mean 0.804 +- 0.008  max 7.84  empty classes 0.044  rows/nat: pin 0.800  free list 2.883 (density 0.956)  thin 2.883
+    s in [600,1000): primes  59  mean table 1.936  var/mean 0.830 +- 0.006  max 6.68  empty classes 0.125  rows/nat: pin 0.712  free list 2.066 (density 0.875)  thin 2.066
+    s in [1000,2000): primes 135  mean table 1.050  var/mean 0.853 +- 0.003  max 4.89  empty classes 0.329  rows/nat: pin 0.528  free list 1.282 (density 0.671)  thin 1.282
+    s in [2000,3500): primes 186  mean table 0.563  var/mean 0.880 +- 0.002  max 3.84  empty classes 0.551  rows/nat: pin 0.415  free list 0.860 (density 0.449)  thin 0.860
+    s in [3500,5000): primes 180  mean table 0.359  var/mean 0.897 +- 0.001  max 3.28  empty classes 0.685  rows/nat: pin 0.350  free list 0.674 (density 0.315)  thin 0.674
+    all 579 primes: var/mean 0.8716 +- 0.0015; pin 0.464, free list 1.090, thin 1.090 rows per nat
+    pin at 467: max 8, mean 3.216, (max-mean)/ln s = 0.778; max/ln s = 1.302 rows per nat
+(c) variance of the first-order score S = sum_s f_s(N mod s), by range of primes
+    sum of variances: primes 467..Q exact 921.5; Q..10^8 (integral) 617.3; total 1538.8 (sd 39.2 strikes)
+    primes to    509:   1.1% of the variance
+    primes to   1000:   8.9% of the variance
+    primes to   2000:  16.8% of the variance
+    primes to   5000:  26.5% of the variance
+    primes to  20000:  40.1% of the variance
+    primes to 200000:  59.9% of the variance
+(d) window: M = 2 prod r has 193 digits, ln M = 443.64; members below 10^200: K = 21378978 = 2^24.35, ln K = 16.88
+    pairs of later primes with product <= K: best excess over the mean 13.10 rows at 719 x 829 (maxima 9, 8); 467*479*487 = 108938491 > K

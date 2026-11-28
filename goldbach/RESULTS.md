@@ -1,5 +1,774 @@
 # Goldbach Desert Records
 
+## The 200-digit budget game (2026-11-24, 17:11 UTC): g(N) = 160,357 below 10^200
+
+**g(N) = 160,357** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g160357/`). It is the largest g known
+below 10^200, 2,148 above the 158,209 of the day before. Its N (9.53·10^199) is larger than 158,209's (5.06·10^199), so
+that one stays on the frontier.
+
+- **Closeness.** 7.53% of the largest g expected at 200 digits, 98.7× a typical number of that size (158,209: 7.45%).
+- **How.** A near-miss of the Q = 170,000 vector campaign: the member's first prime row, 160,357, lies below the design
+  Q, and every one of its 1,193 lower residual rows is composite.
+  - Vector: `q170000_m89r491_p0c00524_v232`, from the research session's 491 family. That family takes the first 88 odd
+    primes plus 491 in place of 463, with family-B start covers, 1,250 residual primes below 170,000 and M with 193 digits.
+    The vector was walked and checked on the card.
+  - Member: k = 19,221,795, in the vector's top 200-digit window.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py` in vector mode on an RTX PRO 6000 (Colab G4, gold-g4d).
+    - The deep sieve to 10^8 with rcta 8 and uarch's one-pass generate kernel, keep fraction 0.985.
+    - Fermat kernel 28 with the 29-bit step and the fused Fermat rounds.
+  - It came after 1.60 expected near-misses at or above 158,209 on the RTX cards since the last record.
+- **What changed since the last record.** Measured on the cards' own stats, in expected design hits a second
+  (`phd/campaign3_gpu/runlogs/2026-11-24/`):
+  - On the RTX cards: top-of-range windows, uarch's one-pass generate kernel, and the 491 family-B vectors
+    (×1.05-1.09 against the 463 production).
+  - On the L4s and the T4: options, one-pass and the top 16 levels (×1.17), then the top32-shifted family-B vectors
+    (×1.05).
+  - Colab ends every runtime at 24 h. In the first round (23 Nov 20:19Z - 24 Nov 00:48Z) all seven GPUs were replaced and
+    their state carried over. gold-gpu and the three RTX cards were replaced when Colab ended them, and the two L4s and the
+    T4 at ~23 h.
+- **Checked** the five usual ways (`certify_c3.sh`, `CLAIM_Q=158209`):
+  - 14,711 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py` (21 steps);
+  - slop's stdlib verifier: PASS, with g > 158,209, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+- **The campaign since.** Colab now holds G4s and L4s at two each. In the second round (24 Nov, ~23 h stops) two shares
+  lost their card. So five GPUs run: two RTX PRO 6000s, two L4s and a T4. RTX partition 2 and one L4 share wait in their
+  snapshots and are retried every 10 min. Expected and found counts are in `phd/campaign3_gpu/TALLY.md`.
+  - The rule since 24 Nov 22:46 UTC: no card is stopped early. Each runs to Colab's 24 h end, with snapshots at ~23 h and
+    ~23.75 h, and is replaced only after Colab has ended it (`phd/campaign3_gpu/README.md`).
+
+## The 200-digit budget game (2026-11-23, 12:48 UTC): g(N) = 158,209 below 10^200
+
+**g(N) = 158,209** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g158209/`). It is the largest g known
+below 10^200, 372 above the 157,837 of 02:08 UTC. Its N (5.06·10^199) is also smaller than those of 157,837 and 146,191,
+so it dominates both on the frontier.
+
+- **Closeness.** 7.45% of the largest g expected at 200 digits, 97.5× a typical number of that size (157,837: 7.42%).
+- **How.** A near-miss of the Q = 170,000 vector campaign: the member's first prime row, 158,209, lies below the design
+  Q, and every one of its 1,168 lower residual rows is composite.
+  - Vector: `q170000_m89_p2c00019_v545`, from the research session's covers on the first 89 odd primes (1,250 residual
+    primes below 170,000, M with 192.7 digits), walked and checked on the card.
+  - Member: k = 10,814,286, in the vector's first 200-digit window.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py` in vector mode on an RTX PRO 6000 (Colab G4).
+    - The deep sieve to 10^8 with rcta 8, keep fraction 0.985.
+    - Fermat kernel 28 with uarch's 29-bit step and the fused Fermat rounds.
+  - It came after 0.106 expected near-misses at or above 157,837 on the three RTX cards, 2.4 hours into the vector
+    campaign.
+- **The engine since the last record.** On the RTX PRO 6000s the expected near-misses beating the record per GPU-second
+  rose about ×2.0 against the 88-moduli production of the morning:
+  - 89-moduli vectors (×1.605 at the gate);
+  - row groups of 32 without a bubble;
+  - the 29-bit Fermat kernel (−4% a batch);
+  - f = 0.985 (×1.080);
+  - fused Fermat rounds with rcta 8 (−10% a batch).
+  Every change passed an identity check against production on the same windows and the known cases
+  (`phd/campaign3_gpu/README.md`).
+- **Checked** the five usual ways (`certify_c3.sh`, `CLAIM_Q=157837`):
+  - 14,535 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 157,837, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
+## The 200-digit budget game (2026-11-23, 02:08 UTC): g(N) = 157,837 below 10^200
+
+**g(N) = 157,837** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g157837/`). It is the largest g known
+below 10^200, 11,646 above the 146,191 of three hours earlier, whose smaller N stays on the frontier.
+
+- **Closeness.** 7.42% of the largest g expected at 200 digits, 97× a typical number of that size (146,191: 6.88%).
+- **How.** The first hit of the Q = 150,000 run, after ≈0.75 expected. Every success there has g ≥ 150,001.
+  - Vector: `pt_q150k_t528`, a residue-swap variant of the research session's 1,092-row cover `pt_q150k_b_v0`
+    (1,094 residual primes on campaign 3's 88 moduli, checked here independently). It survived 91 more uncovered rows
+    above 150,000.
+  - Member: k = 4,224,399,187.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py --deep 1` on an RTX PRO 6000 (Colab G4): the uarch session's deep sieve
+    (primes up to 10^8, a bucketed large-prime stage) and Fermat kernel 28 (redundant-limb step), skip-frac 0.97.
+- **The engine since the last record.** Per GPU-second the expected hits rose ×1.37 on the RTX PRO 6000s and ×1.40 on the
+  L4s:
+  - the deep sieve (from 01:14 UTC): tests ×0.75, kept hit mass ×1.43, identical to the old path at B = 10^6;
+  - new Fermat step files (+2.5% to +14% by GPU).
+  The fleet went from five GPUs to seven: three RTX PRO 6000s, three L4s and a T4 in the A100's place. Its rate at
+  Q = 150,000 is ≈7.5 expected hits a day. `phd/campaign3_gpu/TALLY.md` tracks expected against found.
+- **Checked** the five usual ways (`certify_c3.sh`):
+  - 14,508 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 146,191, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
+## The 200-digit budget game (2026-11-22, 23:08 UTC): g(N) = 146,191 below 10^200
+
+**g(N) = 146,191** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g146191/`). It is the largest g known
+below 10^200, 12,210 above the 133,981 of three hours earlier, whose 199-digit N stays on the frontier.
+
+- **Closeness.** 6.88% of the largest g expected at 200 digits, 90× a typical number of that size (133,981: 6.36%).
+- **How.** The first hit of the Q = 140,000 run. Every success there has g ≥ 140,009, so the move to that threshold made
+  any hit a record.
+  - Vector: the Lean session's `r200_q140k_c_v77` (1,008 residual primes on campaign 3's 88 moduli, checked here independently).
+  - Member: k = 3,101,585,871.
+  - Engine: `phd/campaign3_gpu/search_gpu5.py` on an RTX PRO 6000 (Colab G4): the uarch session's GPU sieve and Fermat kernel 28,
+    skip-frac 0.97.
+  - Expectation: ~1.3 hits over the Q = 140,000 run on all GPUs.
+- **The engine since 21:00 UTC.** Per RTX PRO 6000 it went from 1.3M to 4.8-5.0M full-weight members/s:
+  - pooled tests: `search_gpu3.py`;
+  - kernel 3: dedicated squaring, lazy reduction;
+  - the uarch session's kernel 28: 28-bit limbs;
+  - its CPU feeder, then its all-GPU sieve.
+  `phd/campaign3_gpu/TALLY.md` tracks expected against found per cover. Since this hit the GPUs run Q = 150,000.
+- **Checked** the five usual ways (`certify_c3.sh`):
+  - 13,523 witnesses;
+  - PARI primecert valid, re-verified by `ecpp_check.py`;
+  - slop's stdlib verifier: PASS, with g > 133,981, N < 10^200 and ≤ 200 digits;
+  - direct gmpy2 and PARI checks (`isprime(N − g)` = 1).
+
+## The 200-digit budget game (2026-11-22, 20:31 and 20:38 UTC): g(N) = 133,981 below 10^199
+
+**g(N) = 133,981** for a 199-digit even N < 10^199
+(`records/budget_1e200_199digit_g133981/`), the largest g known below 10^200.
+Eight minutes earlier the same campaign found **g(N) = 125,269**
+(`records/budget_1e200_199digit_g125269/`), at a slightly smaller N. The previous
+largest was 119,419 (`records/budget_1e200_199digit_g119419/`). All three stay on
+the frontier, since each larger g comes with a larger N.
+
+- **Closeness.** 133,981: 6.36% of the largest g expected at 199 digits, 83× a
+  typical number of that size. 125,269: 5.94%, 78×. 119,419: 5.70%.
+- **A third hit**, 7 minutes after the second: **g(N) = 132,103**
+  (`records/budget_1e200_199digit_g132103/`), variant `r200b_q122k_v851`,
+  k = 538,125,153, closeness 6.27%. Its N falls between the other two, and so
+  does its g, so it is a frontier point as well. Same five checks.
+- **The second hit.** Variant `r200b_q122k_w175` (870 residual primes) of a second
+  family of residue swaps, at member k = 541,000,854. Found by the second RTX PRO 6000
+  after 3.90·10^9 members (the model expected 0.4), 9 minutes into its run. Checked the
+  same five ways: 12,493 witnesses, a 31-step ECPP chain, PASS from the stdlib verifier.
+- **How (the first hit).** campaign3's cover: Q = 122,000, 88 classes, M of 191 digits.
+  Residue-swap variant `r200b_q122k_v367`, with 874 residual primes, at member
+  k = 533,337,309. Above Q the classes go on killing most N − p, so g came out
+  3,269 above Q (the first prime past Q is 122,011).
+- **The engine.** `phd/campaign3_gpu/search_gpu3.py` on a Colab RTX PRO 6000
+  Blackwell (G4), about 10 minutes into its run:
+  - It tests the emptiest 3% of each block (skip-frac 0.97, 14.2% of the hit
+    mass), with the survivors of 32 slices pooled into one GPU tester.
+  - It scans the top half of k first, where N is largest and E lowest.
+  - Before the hit it covered 5.39·10^9 members, where the model expected
+    0.5 hits.
+  - The pooling replaced `search_gpu2.py`, where 41% of the GPU's Fermat tests
+    fell after a member's first PRP (93% at skip-frac 0.97). On this GPU it
+    gives 1.32M members/s of full hit mass, against 63k for `search_gpu2.py`
+    on the L4.
+- **Checked** five ways (`phd/campaign3_gpu/certify_c3.sh`):
+  - a witness for each of the 11,757 primes below g;
+  - PARI `primecert` of N − g, valid;
+  - the certificate re-verified without PARI (`ecpp_check.py`);
+  - slop's stdlib-only `verify_record.py`, which rebuilds N from the classes
+    and checks g > 119,419 and ≤ 199 digits;
+  - direct gmpy2 and PARI checks from N and g alone (`isprime(N − g)` = 1).
+- **Lean.** The found line went to the Lean session (via session 2ce9e63a)
+  for a kernel-checked proof.
+
+## Smallest N above the exhaustive range (2026-11-22, 19:20 UTC): g(N) = 10,729 at 3.1·10^22
+
+**g(N) = 10,729** for N = 30625623272505310405982 (23 digits,
+`records/threshold_23digit_g10729/`), the fifth success of the same `fscan`
+run on the progressions with 197 residual primes. It is the smallest N
+known to us with g above 9,781; closeness 69.9%. The frontier at the low
+end is now three numbers: this one, 3.6·10^22 with g = 10,771, and
+5.4·10^22 with g = 11,701 (the best closeness, 74.3%). Checked from N and g
+alone by the finding session and here (gmpy2, PARI); 1,307 primes below g.
+
+## Best closeness so far (2026-11-22, 19:05 UTC): g(N) = 11,701 at 5.4·10^22, 74.3%
+
+**g(N) = 11,701** for N = 54284735534856910692542 (23 digits,
+`records/threshold_23digit_g11701/`). It is not the smallest N above the
+exhaustive range (that stays 3.6·10^22 with g = 10,771, next section), but
+its g is so much larger that it scores higher: 74.3% of the largest g
+expected at its size. No smaller N with a g this large is known, so it is
+a frontier point, and it takes the 40-digit N (g = 11,173) off the
+frontier.
+
+- **How.** Fourth success of the `fscan` run on the progressions with 197
+  residual primes (`e383cbc`, AVX2 build, a Colab machine);
+  member k = 4,149,333. The scan only asks for g > 10,000; where g lands
+  above that is luck, and here N − q stayed composite for another 175
+  primes.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,404 primes below g).
+
+## The low end of the threshold game (2026-11-22, 19:00 UTC): g(N) = 10,771 at 3.6·10^22
+
+**g(N) = 10,771** for N = 35505990484772441527442 (23 digits,
+`records/threshold_23digit_g10771/`). It is smaller than every N we had
+with g above the exhaustive range and its g is larger than all of theirs,
+including the 30-digit N (g = 10,459). So one number now holds the low end
+of the frontier alone: the next frontier point is the 40-digit N with
+g = 11,173.
+
+- **Closeness.** 69.7% of the largest g expected at that size.
+- **How.** The third success of the `fscan` run on the progressions with
+  197 residual primes (scanner at `e383cbc`, AVX2 build, one of the Colab
+  machines); member k = 2,713,952.
+- **Expected against found** for that class is still partial: the one
+  finished slice of six expected 0.13 successes and found 1; three
+  successes in the class so far. The full counts follow when the other
+  slices end.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,311 primes below g).
+
+## The records of the parallel collection, brought onto the scoreboard (2026-11-22)
+
+`slop/goldbach/records/` holds six certified records from an earlier
+parallel effort (July 2026) that this directory only mentioned in a note.
+Each now has a directory in `records/` (N, g, a pointer to the source
+package with its hash, and a fresh direct check), so `closeness.py` and the
+frontier see them. The proof files stay where they are: the source package
+has the congruence classes and a PARI ECPP certificate for N − g, and
+`slop/goldbach/records/verify_record.py` re-derives every witness.
+
+| record | g | digits of N | closeness | on the frontier | what it changes |
+|---|---|---|---|---|---|
+| `budget_1e200_199digit_g119419` | 119,419 | 199 | 5.7% | yes | the largest g known below 10^200; it supersedes our 112,249 at 200 digits |
+| `threshold_186digit_g109357` | 109,357 | 186 | 6.1% | yes | takes the 197-digit and 195-digit records off the frontier |
+| `height_2480digit_g1157341` | 1,157,341 | 2,480 | 0.25% | yes | takes the 2,692-digit record (g = 1,134,871) off the frontier |
+| `dual_199digit_g110917` | 110,917 | 199 | 5.3% | no | superseded by the 119,419 record |
+| `threshold_193digit_g102337` | 102,337 | 193 | 5.2% | no | superseded by the 186-digit record |
+| `threshold_179digit_g101149` | 101,149 | 179 | 6.1% | no | superseded by the 150-digit record (g = 104,527) |
+
+Checked here on 2026-11-22 with gmpy2, from N and g alone: for each of the
+six, N − p is composite for every prime p < g and N − g is a probable
+prime (`direct_check.log` in each directory; 89,840 primes for the
+2,480-digit one). The collection's own verifier, which also re-verifies
+the ECPP certificate, was re-run on the five records of up to 199 digits
+and passes (`verify_record.log` in each directory). For the 2,480-digit
+record that run did not finish within two hours and was not repeated, so
+its certificate was not re-verified today.
+
+## The low end of the threshold game (2026-11-22, later that evening): g(N) = 10,399 at 23 digits
+
+**g(N) = 10,399** for N = 78209882584085138254532 (23 digits, 7.8·10^22,
+`records/threshold_23digit_g10399/`). It is smaller than the 23-digit N
+found an hour earlier and has a larger g, so it beats that one and the
+25-digit N (g = 10,357) on both counts; both leave the frontier. The
+30-digit N (g = 10,459) stays on it.
+
+- **Closeness.** 65.0% of the largest g expected at that size.
+- **How.** The same scan as the record below: `fscan` on the progressions
+  with 197 residual primes, this time on the slice run by the finding
+  session's own container; member k = 5,978,086 of one of them.
+- **Checked** from N and g alone by the finding session and here (gmpy2,
+  PARI), and packaged with the usual proof files (1,273 primes below g).
+
+## The low end of the threshold game (2026-11-22, evening): g(N) > 10,000 at 23 digits
+
+**g(N) = 10,159** for N = 83668534093338795647672 (23 digits,
+`records/threshold_23digit_g10159/`). It is 65 times smaller than the
+25-digit N and is now the smallest N known to us whose g exceeds everything
+in the exhaustive range (9,781).
+
+- **Closeness.** g is 63.3% of the largest g expected at that size (model
+  line); the 25-digit record has 53.8%.
+- **How.** A new scanner, `fscan`, written by a third session (branch
+  `ccr-d4a17dd0-7uu03r`, not merged here yet). It scores every member with
+  byte tables instead of sieving it, and runs the Fermat tests 12 or 16 at
+  a time with vector instructions; it reaches a small share of each
+  progression's successes but covers far more progressions. The session
+  with the Colab machines ran it on the progressions with 197 residual
+  primes below 10^23; the success came about 15 minutes after it started,
+  at k = 6,395,326 of one of them. Expected-versus-found counts for the
+  whole class are not in yet.
+- **Checked three times from N and g alone**: by the finding session
+  (gmpy2 and PARI), and here with gmpy2 and with PARI.
+- **Proof.** As for the other threshold records: `evidence.json` has a
+  compositeness witness for N − q for each of the 1,246 primes q < g,
+  N − g has a PARI ECPP certificate, and `direct_check.gp` repeats the
+  whole check in PARI.
+
+The 25-digit N stays on the frontier: its g = 10,357 is larger, and no
+smaller N with a g that large is known. Scans of other classes below 10^23
+are still running, so a smaller N may follow.
+
+## The 100% line, computed instead of fitted (2026-11-22)
+
+Closeness divides g by the largest g a number of that size is expected to
+have. That line used to be 1.4·ln²N·ln ln N, with the 1.4 fitted to one
+number, the largest g of the exhaustive search. It is now computed from the
+Hardy–Littlewood prime tuple heuristic with no fitted constant
+(`ceiling_model.py`; its docstring states the model). Nothing about the size
+of g(N) is proved, so the line is still a prediction. These are the checks
+it passes.
+
+- **Random numbers.** `gsample.c` computed g for 600 million random even N
+  in [10^18, 1.1·10^18) (`samples/random_1e18.txt`). The model's chance of
+  g(N) ≥ y agrees with the measured share within 0.5% from y = 11 (86% of
+  the numbers) to y = 1,801 (one in 43,000), within 2% to y = 2,203 (one in
+  240,000), and within the counting error beyond that: 75 numbers have
+  g ≥ 3,001 where the model expects 69. The same test on 300 million random
+  14-digit numbers (`samples/random_1e13.txt`) agrees within 1.3% down to
+  one in 43,000 (y = 1,201) and within the counting error beyond.
+- **Real numbers far in the tail.** For one progression of the 25-digit
+  search (residues fixed on 13 primes, 189 complements left) two unrelated
+  computations give the chance that a member has g > 10,000: the scanner's
+  sieve statistics over 16.7 million consecutive members, and the model's
+  average over the residues. Both give e^−25.40, within the 0.6% counting
+  error of the first.
+- **Successes of the scanner.** `tscan` predicts its successes with the same
+  model, with the sieve done by brute force. Over its test instances and
+  the four record searches it predicted 138 and found 145.
+- **Record holders.** `record_holders.txt` has the 69 record holders below
+  4·10^18: each is the first N whose g reaches its value. For the last one,
+  g = 9,781 at 3.3·10^18, the model's median for the largest g below that N
+  is 9,570 (5% to 95%: 9,190 to 10,240). For each record holder the model
+  also gives the expected number of earlier numbers with a g at least as
+  large; with an exact model these behave like a standard exponential
+  variable (median 0.69). Over the 35 record holders above 10^9 the median
+  is 0.29: the real ones come somewhat early, by about two standard errors.
+  If that is a real effect the line is about 1.5% too low. No correction is
+  applied.
+- **The sampler** that evaluates the model agrees with full enumeration of
+  the residue vectors on small cases to four digits.
+
+| digits of N | largest g expected below N (median) | 5% to 95% | ÷ ln²N·ln ln N | earlier fitted line |
+|---|---|---|---|---|
+| 19 (3.3·10^18) | 9,570 | 9,190 to 10,240 | 1.40 | 9,560 |
+| 20 | 11,560 | 11,120 to 12,350 | 1.42 | 11,370 |
+| 22 | 14,560 | 14,070 to 15,450 | 1.45 | 14,100 |
+| 25 | 19,740 | 19,120 to 20,830 | 1.47 | 18,800 |
+| 28 | 25,770 | 25,090 to 26,970 | 1.49 | 24,240 |
+| 32 | 35,240 | 34,430 to 36,690 | 1.51 | 32,680 |
+| 40 | 59,000 | 57,930 to 60,880 | 1.54 | 53,720 |
+| 50 | 98,250 | 96,860 to 100,720 | 1.56 | 88,070 |
+| 63 | 165,920 | 164,030 to 169,300 | 1.58 | 146,630 |
+| 80 | 283,410 | 280,870 to 287,920 | 1.60 | 247,790 |
+| 100 | 465,350 | 462,100 to 471,120 | 1.61 | 403,730 |
+| 150 | 1.14 million | 1.13 million to 1.15 million | 1.63 | 976,120 |
+| 200 | 2.13 million | 2.12 million to 2.14 million | 1.64 | 1.82 million |
+
+The ratio to ln²N·ln ln N is 1.40 at 19 digits, where the old constant was
+fitted, and it grows with size. The earlier line was therefore too low
+everywhere above 19 digits, by 5% at 25 digits and 10% at 40, and every
+closeness figure drops (`closeness.py` now interpolates this table):
+
+| record | g | closeness, fitted line | closeness, model line |
+|---|---|---|---|
+| 25 digits | 10,357 | 56.4% | 53.8% |
+| 27 digits | 10,111 | 47.3% | 44.7% |
+| 30 digits | 10,459 | 39.0% | 36.5% |
+| 46 digits | 20,551 | 28.2% | 25.5% |
+| 63 digits | 30,139 | 20.7% | 18.3% |
+| 150 digits | 104,527 | 10.7% | 9.2% |
+
+The closeness figures in the sections below were written with the fitted
+line; the table in the Closeness section near the end has the model values
+for every record.
+
+Two more numbers from the model. The smallest N with g > 10,000 is expected
+near 7·10^18, just above the exhaustive range; our 25-digit N is about a
+million times larger. And about 9·10^9 even numbers below that 25-digit N
+should have a g of at least its 10,357 (for the 27-digit record: 9·10^12).
+
+What is published (literature check by a third session, 2026-11-22; it
+could not open the 2014 paper itself, so the second item is second-hand).
+Granville, van de Lune and te Riele (1989, p. 432) conjecture only the
+order, g(N) ≪ ln²N·ln ln N, with no constant. Two candidate constants for
+the limit of max g ÷ (ln²N·ln ln N) are attributed to Granville in later
+papers (Juhász et al. 2023, citing Oliveira e Silva, Herzog and Pardi 2014):
+1/C₂ = 1.515 and 2e^−γ/C₂ = 1.701, C₂ being the twin prime constant, with
+the data called inconclusive. We found no published calculation of the
+expected record at a given size. The model here has 1/C₂ as its limit, but
+from above and extremely slowly: its ratio is 1.40 at 19 digits, passes
+1.515 near 35 digits, and is still rising at 200 (1.64). So a ratio above
+1.515 at reachable sizes says nothing against that limit, and the two
+candidates cannot be told apart by any feasible search.
+
+Past the table (above 200 digits) `closeness.py` uses a formula that
+reproduces the table within 1.5%, and within 0.3% from 50 digits up: the
+ceiling is the prime number with index
+(L ÷ 1.3203)·(L − ln 2 − 0.71·ln L − 2.74), where L = ln N and
+1.3203 is twice the twin prime constant.
+
+## The threshold game at 30,000 (2026-11-22): g(N) > 30,000 at 63 digits
+
+**g(N) = 30,139** for
+N = 563696031021545043161771326159246716394341421918582840246518722
+(63 digits, `records/threshold_63digit_g30139/`). It is the smallest N known
+to us with g above 30,000. The next N we know with a g that large is the
+150-digit one (g = 104,527).
+
+- **Closeness.** g is 20.7% of the conjectural ceiling for a 63-digit
+  number (`closeness.py`) and 77 times the g of a typical number of that
+  size. A perfect N for this g would have about 31 digits.
+- **Search.** N mod r is fixed for 32 primes r ≤ 149 (`cover.py 30011 22`;
+  131 and 139 are left free), which leaves 348 primes below 30,011
+  uncovered. `tscan/scan.py` scanned the members k < 7.03·10^9 of that one
+  progression in 19 minutes on 4 cores: 6.3 million k per second, testing
+  the 0.86% of the k with at most 126 complements left, which hold 16–17%
+  of the expected successes. The success is at k = 6,878,744,425. The model
+  put the expected number of successes up to k = 7.03·10^9 at 0.22, so this
+  one came early.
+- **Proof.** Built the same way as for the 25-digit record below.
+  `evidence.json` has a compositeness witness for N − q for each of the
+  3,260 primes q < g: a cover prime (2,911), a prime below 10^5 (224), a
+  failed strong base-2 test (124), or parity (q = 2). N − g is proved prime
+  by a PARI ECPP certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The low end of the frontier after today's three records (a point is on it
+when no smaller known N has a g at least as large):
+
+| digits of N | g | closeness | record |
+|---|---|---|---|
+| 19 | 9,781 | ~100% | exhaustive search ≤ 4·10^18 (not ours) |
+| 25 | 10,357 | 56.4% | `threshold_25digit_g10357` (today) |
+| 30 | 10,459 | 39.0% | `threshold_30digit_g10459` |
+| 40 | 11,173 | 20.9% | table in the 30-digit section |
+| 46 | 20,551 | 28.2% | `threshold_46digit_g20551` (today) |
+| 63 | 30,139 | 20.7% | `threshold_63digit_g30139` (today) |
+| 150 | 104,527 | 10.7% | `threshold_150digit_g104527` |
+
+## The low end of the threshold game (2026-11-22, later): g(N) > 10,000 at 25 digits
+
+**g(N) = 10,357** for N = 5471513744131872011405456 (25 digits,
+`records/threshold_25digit_g10357/`). It is 55 times smaller than the
+27-digit N two sections down and has a larger g, so it replaces that N as
+the smallest N known to us whose g exceeds everything in the exhaustive
+range (9,781).
+
+- **Closeness.** g is 56.4% of the conjectural ceiling for a 25-digit
+  number (`closeness.py`) and 92 times the g of a typical number of that
+  size. The 27-digit record has 47.3%.
+- **What changed.** One progression became 1,009. `tscan/variants.py`
+  lists every residue vector on the 13 primes r ≤ 43 that leaves at most
+  189 primes below 10,007 uncovered: 6 vectors with 186, 28 with 187, 157
+  with 188 and 818 with 189. They all share the modulus M.
+  `tscan/vscan.py` scans them in lockstep, always advancing the progression
+  that is lowest, so N grows as slowly as possible for the work done.
+- **Search.** 4.9·10^11 members in 6.5 hours on 4 cores. The 191
+  progressions with at most 188 residual primes were scanned for k below
+  7.4·10^8 or more (N up to 9.7·10^24), the 818 with 189 for k below
+  4.2·10^8. The scanner tested about 1% of the members (the ones with the
+  fewest complements left after the sieve: at most 49 of 189 in the
+  progression that succeeded), and by the survivor histogram those hold
+  about two thirds of the expected successes. The success is at
+  k = 418,223,156 of a progression with 189 residual primes.
+- **It came late.** By the model the expected number of successes up to
+  there was 2.7; the chance of none by then is 7%. Because of the empty
+  stretch the scanner and the model were checked again before the success
+  turned up, on cut-down instances where successes are common (only the
+  first 110 or 130 residual primes as rows): 103 successes found against
+  95 expected, and 16 against 17.5 with `vscan.py` end to end. Every one
+  of them was confirmed with gmpy2.
+- **Nothing smaller in the scan.** All 1,009 progressions have been
+  scanned up to this N, and this is the only success among the members
+  tested. The members that were not tested hold the other third of the
+  expected successes, so a smaller N may still sit among them or in other
+  progressions.
+- **Proof.** Nothing in it depends on the scanner. `evidence.json` has a
+  compositeness witness for N − q for each of the 1,270 primes q < g: a
+  cover prime (1,073), a prime below 10^5 (146), a failed strong base-2
+  test (50), or parity (q = 2). N − g is proved prime by a PARI ECPP
+  certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The 27-digit N leaves the frontier, because a smaller N with a larger g is
+now known. The 30-digit N stays: no smaller N with a g as large as its
+10,459 is known.
+
+## The threshold game at 20,000 (2026-11-22): g(N) > 20,000 at 46 digits
+
+**g(N) = 20,551** for N = 7687588743764734829791950727864816819276291322
+(46 digits, `records/threshold_46digit_g20551/`). It is the smallest N known
+to us with g above 20,000. Until now the smallest N we had with a g that
+large was the 150-digit one (g = 104,527).
+
+- **Closeness.** g is 28.2% of the conjectural ceiling for a 46-digit
+  number (`closeness.py`) and 79 times the g of a typical number of that
+  size. A perfect N for this g would have about 26 digits.
+- **Search.** N mod r is fixed for 24 primes r ≤ 101 (`cover.py 20011 22`;
+  97 is left free), which leaves 268 primes below 20,011 uncovered.
+  `tscan/scan.py` scanned the members k < 4.15·10^9 of that one progression
+  in 6.5 minutes on 4 cores: 10.8 million k per second, testing the 1.09%
+  of the k with at most 88 complements left, which hold 27–28% of the
+  expected successes. The success is at k = 3,202,304,117. The model put
+  the expected number of successes up to k = 4.15·10^9 at 0.26, so this
+  one came early.
+- **Proof.** Built the same way as for the 27-digit record below.
+  `evidence.json` has a compositeness witness for N − q for each of the
+  2,319 primes q < g: a cover prime (2,038), a prime below 10^5 (186), a
+  failed strong base-2 test (94), or parity (q = 2). N − g is proved prime
+  by a PARI ECPP certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+It is a frontier point: every smaller N we know has a smaller g (the
+40-digit N in the table further down has 11,173).
+
+## The low end of the threshold game (2026-11-22): g(N) > 10,000 at 27 digits
+
+**g(N) = 10,111** for N = 301232067011489734233412892 (27 digits,
+`records/threshold_27digit_g10111/`). It is 646 times smaller than the
+30-digit N of the next section and replaces it as the smallest N known to
+us whose g exceeds everything in the exhaustive range (9,781).
+Later the same day the 25-digit N at the top of this file took that place,
+and this N left the frontier.
+
+- **Closeness.** g is 47.3% of the conjectural ceiling for a 27-digit
+  number (`closeness.py`); the 30-digit record has 39.0%.
+- **What changed.** The scan step was rewritten in C (`tscan/`, see its
+  README). Two things make it fast:
+  - A bit sieve over the table (residual prime q, member k) removes every
+    N − q with a prime factor below 131,072.
+  - Only the k with the fewest surviving complements are tested. Here that
+    was 1.26% of the k (at most 49 of 188 complements left), and by the
+    survivor histogram they hold 61–66% of the expected successes.
+  - Speed on 4 cores: 16–19 million k per second. `search.py`, which
+    tests every k, did 0.3 million per second on the 30-digit job.
+- **Search.** N mod r is fixed for the 13 primes r ≤ 43
+  (`cover.py 10007 23`), which leaves 188 primes below 10,007 uncovered.
+  The members k < 2.38·10^10 of that one progression were scanned in 24
+  minutes. The success is at k = 23,025,113,687; the model put the
+  expected number of successes up to there at 0.7.
+- **Proof.** Nothing in it depends on the scanner. `evidence.json` has a
+  compositeness witness for N − q for each of the 1,241 primes q < g: a
+  cover prime (1,049), a prime below 10^5 (137), a failed strong base-2
+  test (54), or parity (q = 2). N − g is proved prime by a PARI ECPP
+  certificate (`complement_cert.gp`, `primecertisvalid` = 1).
+  `direct_check.gp` repeats the whole check in PARI without the evidence
+  file.
+
+The 30-digit N keeps its place on the frontier: its g = 10,459 is larger,
+and no smaller N with a g that large is known.
+
+## The low end of the threshold game (2026-11-21, night): g(N) > 10,000 at 30 digits
+
+**g(N) = 10,459** for N = 194465365536282197945444045558 (30 digits,
+`records/threshold_30digit_g10459/`).
+
+- **Why this target.** Exhaustive search has g(N) ≤ 9,781 for every even
+  N ≤ 4·10^18 (Oliveira e Silva, Herzog & Pardi), so T(10,000), the
+  smallest N with g(N) > 10,000, lies above 4·10^18 and is not known. The
+  conjectural ceiling first reaches 10,000 near 10^19, so the true value
+  is expected not far above that. This N was the smallest known to us
+  whose g exceeds everything in the exhaustive range, until the 27-digit
+  N of the section above.
+- **Closeness.** g is 39.0% of the conjectural ceiling for a 30-digit
+  number (`closeness.py`). Our next best is the 150-digit record at 10.7%.
+- **Search.** N mod r is fixed for the 16 primes r ≤ 59 (greedy residues),
+  which leaves 177 primes below 10,007 uncovered. A scan of the 3.67·10^8
+  members N0 + k·M between 10^29 and 8.0·10^29 (53 minutes on 4 cores,
+  gmpy2) gave one member with g > 10,000, at k = 101,138,639.
+- **Proof.** `evidence.json` has a compositeness witness for N − q for each
+  of the 1,279 primes q < g: a cover prime (1,098), a prime below 10^5
+  (134), a failed strong base-2 test (46), or parity (q = 2). N − g is
+  proved prime by a PARI ECPP certificate (`complement_cert.gp`,
+  `primecertisvalid` = 1). `direct_check.gp` repeats the whole check in
+  PARI without the evidence file.
+
+The same cover-and-scan method at other sizes, each proved in PARI the same
+way. Scan effort differs from row to row, so read the closeness column as
+"what a few CPU-minutes to one CPU-hour buys", not as a limit.
+
+| digits | N | g | closeness | members scanned | on the frontier |
+|---|---|---|---|---|---|
+| 20 | 70009540006994447438 | 5,407 | 48.4% | 4.8·10^8 (the whole progression) | no: 9,781 is known at 19 digits |
+| 22 | 8314310102096915044292 | 6,073 | 43.4% | 2.9·10^7 | no: same reason |
+| 30 | 194465365536282197945444045558 | 10,459 | 39.0% | 3.7·10^8 | yes |
+| 40 | 8495171008612585955282488984129056734312 | 11,173 | 20.9% | 6.3·10^6 | yes |
+| 46 | 7687588743764734829791950727864816819276291322 | 20,551 | 28.2% | 4.1·10^9 (`tscan`, own section above) | yes |
+| 63 | 563696031021545043161771326159246716394341421918582840246518722 | 30,139 | 20.7% | 7.0·10^9 (`tscan`, own section above) | yes |
+
+Just above the exhaustive range a cover plus a scan reaches about half the
+ceiling, and a smaller number with a larger g is already known. A point
+counts only when it is on the frontier: no smaller known N has a g at least
+as large. Such a point is at once a T record (smallest N for its g) and an
+R record (largest g below its N).
+
+## New height record (2026-11-22): g(N) = 16,046,137
+
+**g(N) = 16,046,137** for a 91,752-digit N
+(`records/height_91752digit_g16046137/`):
+- **Cover.** All 1,033,885 primes below g lie in a class of a complete
+  13,094-class cover (prime moduli ≤ 459,089, built for the primes below
+  Q = 16,045,849). g is the first prime the cover misses.
+- **Proof.** N − g = m·2^101604 + 1 (m odd) is proved prime by
+  7^((P−1)/2) ≡ −1 (mod P) with 2^101604 > P^(1/3), plus the BLS
+  non-square condition. P has 304,793 bits.
+- **Search.** 13,124 distinct candidates were tested, against ~4,488
+  expected per prime: a late draw, with a probability of ~5%.
+  - Main range t < 32768, sieved to 3·10¹¹ (14,579 survivors): 12,470
+    tested. 7,168 of these were GPU screens on a Colab A100 (6.1 s each).
+    The rest ran on up to six Colab CPU runtimes: GMP Euler tests at
+    ~1,000 s each, then from 07:50Z on 22 Nov OpenPFGW Fermat PRP tests at
+    ~60 s each, four per runtime (`proth/pfgw_search.py`).
+  - Fallback range t ∈ [32768, 131072): the spec allows t < 2^20. It was
+    sieved to 3·10¹¹ on this session's container while the search ran
+    (44,130 survivors), and each CPU runtime moved there when its main
+    slice ran out.
+  - The hit is the fallback range's 643rd test: t = 127,534, found by PFGW
+    on the A100 host's CPUs (45.5 s). 2,109 survivors below 32768 were
+    still untested.
+- **Verification.** No screen result is trusted. The hit was re-proved
+  with `desert.bls_prove` on the runtime, and again on this container's
+  CPU (759 s). It passes `verify.py` (700 s).
+  - The independent `bls/` stack passes: `xverify.py` (2.4 h) and
+    `verify_bls_record.py` (2.5 h) on Python ints, through
+    `proth/divmod_pow_run.py` (`xverify_divmod.log`,
+    `verify_bls_record_divmod.log`). Each ran alone on a Colab CPU
+    runtime, with CPython 3.13.18 as here.
+  - It passes the PARI cross-check (`crosscheck.log`, no error lines),
+    5.4 h in all: PARI's own N−1 certificate for P (valid),
+    `isprime(P) = 1` (about 3 h of the total, on one core), and a
+    brute-force gcd scan of all 1,033,885 complements.
+  - A second gcd scan, in six ranges on two Colab CPU runtimes, passes as
+    well (`crosscheck_ranges_colab.log`).
+- **Cross-verification.** The second session rebuilt N from `spec.json`
+  and t alone and got the same sha256. On its own machine:
+  - `verify.py` passed (632 s), and `bls/xverify.py` passed (8,313 s).
+  - The PARI gcd scan passed in nine ranges whose counts add up to
+    1,033,885 = π(g − 1), and PARI's N−1 certificate is valid.
+  - Its own PARI `isprime` call was not completed (it needs about 3 hours on
+    one core and was stopped at a 2-hour task limit); the first session's
+    PARI run printed isprime(P) = 1. Log: `crossverify_2ce9e63a.log`.
+
+## New height record (2026-11-21, night): g(N) = 10,000,141, GPU-screened
+
+**g(N) = 10,000,141** for a 61,329-digit N
+(`records/height_61329digit_g10000141/`):
+- **Cover.** All 664,584 primes below g lie in a class of a complete
+  9,095-class cover (prime moduli ≤ 306,239). g itself is the first prime
+  above 10⁷ that the cover misses.
+- **Proof.** N − g = m·2^67914 + 1 (m odd) is proved prime by
+  11^((P−1)/2) ≡ −1 (mod P) with 2^67914 > P^(1/3) (P has 203,731 bits).
+- **Search.** 3,072 GPU screens on Colab A100s, 2.35 s per test with
+  engine v3 (2.76 s with v2), ~2 h of GPU time in all.
+  - The survivors were deep-sieved from 10⁹ to 10¹¹ while the search ran.
+  - The hit is the 2,718th survivor of the 10¹¹ list (expected ~3,130).
+  - The total includes 113 tests on candidates the deeper sieve removed
+    later, and the rest of the hit's batch.
+  - Another ~1.4 h of GPU work was lost when a runtime vanished; those
+    candidates were re-run.
+- **Verification.** No GPU result is trusted. The hit was re-proved on the
+  CPU with `desert.bls_prove` (306 s), and it passes `verify.py` (292 s)
+  and the PARI cross-check: PARI's own N−1 certificate, `isprime`, and a
+  brute-force gcd scan of all 664,584 complements (2.8 h, `crosscheck.log`,
+  no error lines). The independent `bls/` stack passes as well:
+  `xverify.py` and `verify_bls_record.py`, 61 min each on Python ints
+  (`xverify_divmod.log`, `verify_bls_record_divmod.log`).
+  - Both ran unchanged except for their one big modular exponentiation.
+    `proth/divmod_pow_run.py` supplies it as a square-and-multiply that
+    reduces with `divmod`, ~4× faster than the built-in 3-argument `pow`
+    at this size on CPython ≥ 3.12, and checkpointed.
+  - The first, fully unmodified runs were lost at ~3.4 h, when this
+    session's container was replaced.
+- **Cross-verification.** The second session re-ran all three checks on
+  its own machine, with verifier code from a commit older than the record:
+  `proth/verify.py` (246 s), the PARI cross-check, and `bls/xverify.py`
+  on Python ints with the same kind of `divmod` exponentiation (51 min).
+  All passed (`crossverify_2ce9e63a.log`).
+
+This doubles the evening's 5·10⁶ record, which is described next. The cost
+model had put this rung at ~3.4 days on 4 cores. The 16,045,849 rung now
+has the GPU, with a CPU fleet beside it (`proth/README.md`, "GPU
+screening").
+
+## New height record (2026-11-21, evening): g(N) = 5,000,251, GPU-screened
+
+**g(N) = 5,000,251** for a 33,938-digit N
+(`records/height_33938digit_g5000251/`):
+- **Cover.** All 348,526 primes below g lie in a class of a complete
+  5,342-class cover (moduli ≤ 167,107).
+- **Proof.** N − g = m·2^37583 + 1 (here 2^37584 | P − 1) is proved prime
+  by 5^((P−1)/2) ≡ −1 (mod P) with 2^37584 > P^(1/3).
+- **Search.** It ran on a Colab A100: 68 CPU tests, then 3,072 GPU screens
+  of 2^((P−1)/2) mod P (`proth/gpu_screen.py`, 0.82–0.92 s per
+  112,738-bit test, ~100× one GMP core). The hit was the 3,080th sieve
+  survivor (expected ~2,118).
+- **Verification.** No GPU result is trusted. The hit was re-proved on the
+  CPU (81 s), and it passes `verify.py` and the PARI cross-check: PARI's
+  own N−1 certificate, `isprime`, and a brute-force gcd scan of all
+  348,526 complements. The independent `bls/` stack passes as well
+  (`xverify.py` and `verify_bls_record.py`, pure-Python ints, 46 min each).
+
+This is 2.5× the record set earlier the same day, which is described next.
+The 4-core cost model had put this rung at ~11 h; it took 44 min of GPU
+time.
+
+## New height records (2026-11-21): g(N) = 2,000,269 and 1,200,109, proved without ECPP
+
+**g(N) = 2,000,269** for a 15,595-digit N
+(`records/height_15595digit_g2000269/`): all 148,950 primes below g
+are excluded by an explicit divisor from a complete 2,670-class cover, and
+N − g = m·2^17273 + 1 is proved prime by 11^((P−1)/2) ≡ −1 (mod P) with
+2^17274 > P^(1/3). Found after 648 tests (expected ~970), 37 minutes on 4
+cores; verified by the stdlib verifier and by the PARI cross-check. This is
+Campaign C's target ("g > 2,000,000", budgeted at 6–12 h of ECPP plus
+re-verification) with no ECPP at all. The first record of the series,
+found earlier the same day, is described next; the method is the same.
+
+### g(N) = 1,200,109
+
+**N** has 11,263 digits (`records/height_11263digit_g1200109/`,
+full decimal in `N.txt`); its least Goldbach summand is
+**g(N) = 1,200,109**, above both earlier height records (1,157,341 at
+2,480 digits in `slop/goldbach/records/g1`, and 1,134,871 at 2,692 digits
+below). What changed is not the number but the proof:
+
+| | megagap record (July) | this record |
+|---|---|---|
+| primes q < g excluded by an explicit divisor | 85,476 + 895 of 88,239 | **all 92,942** |
+| excluded by a strong-pseudoprime witness | 1,867 | **0** |
+| primality of N − g | 253-step ECPP certificate | **one modular exponentiation** |
+| re-verifying the partition proof | replay a 253-step ECPP chain | replay one `powmod` (5.7 s) |
+| full re-verification incl. PARI cross-check | — | 134 s on one core |
+
+The complement is *constructed* as P = N − g = m·2^12475 + 1: every cover
+congruence N ≡ a_r (mod r) is a congruence on m, so the cover and the
+"Pocklington-friendly form" that the SoK called the most valuable open
+trick intersect by CRT. Then 7^((P−1)/2) ≡ −1 (mod P) with
+2^12477 > P^(1/3) proves P prime (Brillhart–Lehmer–Selfridge N−1 test).
+With certification free, a *complete* cover (no residual primes, hence no
+lottery) is the cheapest design; the search is for one prime in a
+progression (2,647 tests here against an expectation of ~700 — an
+unlucky 2% draw; the density model was re-checked and holds).
+
+Verified by `proth/verify.py` (stdlib only) and independently by PARI/GP
+(`crosscheck.gp`: PARI's own N−1 certificate, `isprime`, and a brute-force
+scan of all 92,942 primes that does not use the cover). Method, cost
+model and the ladder to g > 16,045,848 (longer than the largest known
+prime gap of any kind): `proth/README.md`; the same construction as
+derived by the second session: `phd/wp11_bls_game1.md`. What a proof of
+GRH would and would not change here: `phd/wp10_grh_remark.md`. Theory
+that came out of the review — a new constant for covering the primes and
+a sieve ceiling for covering certificates — is in
+`phd/wp12_prime_covering_grh_ledger.md`.
+
+### g(N) = 1,200,109 a second time — an independent certificate
+
+A second session, working separately, found the same construction the
+same morning and certified g = 1,200,109 for a **different** 11,263-digit
+N (`records/bls_game1_11263digit_g1200109/`). Its code shares nothing with
+`proth/`: its own cover builder, CRT, sieve and search (`goldbach/bls/` at
+commit `6c66bcd`; that search code was retired at the merge in favour of
+`proth/desert.py`) and its own stdlib verifier
+(`bls/verify_bls_record.py`, which rebuilds N from the congruences by
+product-tree CRT). Its complement has P − 1 = 2^12475·R with R odd; the
+first record's has 2^12477 | P − 1.
+
+The two certificates come from one progression: same cover, same g, same
+n, and the second search ran over exactly the odd-index half of the first
+one's candidates (`proth/overlap_check.py`; 1,341 integers were tested by
+both). Each search alone looked like a 1–2% unlucky wait (3,472 tests
+against 762 expected there, 2,647 against ~700 here); jointly it is one
+~5% event. The 3,245 candidates neither session had tested were then
+probed exhaustively: 6 primes against 4.62 expected (z = +0.64), so the
+density model holds on fresh numbers
+(`phd/wp12_prime_covering_grh_ledger.md` §6).
+
+Every record passes every verifier: `proth/verify.py`,
+`bls/verify_bls_record.py` (through `proth/interop.py` for the two
+`height_*` records), `bls/xverify.py`, and PARI's own N−1 certificate with
+a brute-force scan (`crosscheck.gp` in each record directory). The reviews
+the two sessions wrote of each other are `phd/crossreview_8ffe9d7a.md` and
+`phd/crossreview_2ce9e63a.md`; what was agreed at the merge is in
+`phd/merge_2026-11-21.md`.
+
 ## Prior-art check (2026-07-27)
 
 A web literature search for published constructions of even integers
@@ -17,6 +786,12 @@ N with g = 109 621 (both re-verified in this repo before we started).
 The records below are therefore "smallest/largest known to us"; if a
 competing constructive literature exists it did not surface in the
 search.
+
+Addendum (2026-11-21): a second search found no competing constructions
+either, but did find a theorem: W. Shi, arXiv:2605.21529v6, Thm 6.22
+proves max_{n≤X} p(n) ≥ (½+o(1))·ln X·ln ln X by counting, which already
+supersedes the paper's FGKMT-transfer bound; `phd/wp12_prime_covering_grh_ledger.md`
+improves the constant to 1.349 by an explicit covering.
 
 In-repo note: a parallel effort in `slop/goldbach/records/` (merged
 from another working branch) holds a certified T(100k) bound of 179
@@ -326,7 +1101,12 @@ below.
 **Remaining open targets from the challenge**: the absolute-known-gap
 milestone g ≥ 16 045 849 (beating the largest PRP-endpoint gap) needs
 π(16M) ≈ 1.03M covered offsets → M ≈ 20 000 digits and ~0.2 s/modexp,
-i.e. a distributed campaign roughly 100–1000× this 4-core box. The
+i.e. a distributed campaign roughly 100–1000× this 4-core box.
+(Superseded 2026-11-21: with a full cover and an N−1-form complement the
+same milestone is ~5,700 PRP tests at 91,753 digits and needs no ECPP —
+about two weeks on this box with GMP, hours on the GPU fleet or a few
+dozen cores of gwnum-class FFT code; see
+`proth/README.md`.) The
 "1M-desert below 200 digits" bonus is beyond covering methods entirely:
 a ≤192-digit modulus leaves ≥20 000 residual primes below 1.1M, giving
 success density e^−400; note (log N)²·log log N ≈ 1.3×10⁶ at 200 digits,
@@ -408,6 +1188,57 @@ predicted density e^−18.2. The measured density model (calibrated at
 | T(100 000) upper bound | 5.83·10^198 (199 digits) | **6.94·10^196 (197 digits)** |
 | R(10^199) lower bound | 105 667 | **107 719** |
 
+## Closeness: every record scored against the size of its N (2026-11-21, line recomputed 2026-11-22)
+
+The height game has no ceiling, so its records measure compute, not how
+remarkable the number is. `closeness.py` scores each record by
+g(N) ÷ ceiling(N), where ceiling(N) is the largest g a number of that size
+is expected to have: the median of the largest g below N in the
+Hardy–Littlewood model of `ceiling_model.py` (a prediction, checked as
+described in the first section of this file; tabulated up to 200 digits
+and continued by a formula beyond). The literal bound g ≤ N/2 is attained
+only at N = 4 and 6 and is useless elsewhere.
+
+| record | g | digits of N | ceiling at that size | closeness | × a random number of that size | digits a perfect N would have |
+|---|---|---|---|---|---|---|
+| exhaustive search ≤ 4·10^18 (not ours) | 9,781 | 19 | ~9,600 | 102% (inside the model's 5% to 95% range) | 131 | 19 |
+| `threshold_23digit_g11701` | 11,701 | 23 | ~15,700 | 74.3% | 117 | 20 |
+| `threshold_23digit_g10771` | 10,771 | 23 | ~15,400 | 69.7% | 109 | 19 |
+| `threshold_23digit_g10729` | 10,729 | 23 | ~15,300 | 69.9% | 109 | 19 |
+| `threshold_23digit_g10399` | 10,399 | 23 | ~16,000 | 65.0% | 103 | 19 |
+| `threshold_23digit_g10159` | 10,159 | 23 | ~16,100 | 63.3% | 100 | 19 |
+| `threshold_25digit_g10357` | 10,357 | 25 | ~19,200 | 53.8% | 92 | 19 |
+| `threshold_27digit_g10111` | 10,111 | 27 | ~22,600 | 44.7% | 81 | 19 |
+| `threshold_30digit_g10459` | 10,459 | 30 | ~28,600 | 36.5% | 73 | 19 |
+| `threshold_46digit_g20551` | 20,551 | 46 | ~80,700 | 25.5% | 79 | 25 |
+| `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
+| `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
+| `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e200_200digit_g157837` | 157,837 | 200 | ~2.1M | 7.4% | 97 | 62 |
+| `budget_1e200_200digit_g146191` | 146,191 | 200 | ~2.1M | 6.9% | 90 | 60 |
+| `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
+| `budget_1e200_199digit_g132103` | 132,103 | 199 | ~2.1M | 6.3% | 82 | 57 |
+| `budget_1e200_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
+| `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
+| `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
+| `height_2480digit_g1157341` | 1,157,341 | 2,480 | ~4.7·10^8 | 0.25% | 39 | 151 |
+| `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.5·10^8 | 0.20% | 35 | 150 |
+| `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |
+| `height_33938digit_g5000251` | 5,000,251 | 33,938 | ~1.1·10^11 | 0.0044% | 9.3 | 296 |
+| `height_61329digit_g10000141` | 10,000,141 | 61,329 | ~3.9·10^11 | 0.0026% | 9.8 | 409 |
+| `height_91752digit_g16046137` | 16,046,137 | 91,752 | ~9.0·10^11 | 0.0018% | 10.2 | 509 |
+
+Two readings. (1) A random even number with as many digits as the 5M
+record already has g near 540,000 (Hardy–Littlewood mean; measured on
+random numbers at 300 and 1,000 digits, see the script's docstring), so
+that record is about 9 times ordinary for its size. (2) Closeness falls
+roughly like 1/ln N for every covering construction, because covers give
+g proportional to ln N while the ceiling grows like ln²N. A single
+closeness leaderboard is therefore won at the smallest sizes, where
+exhaustive search already holds ~100%. The non-arbitrary races are the
+fixed-target ones: for a given g, the smallest N (the T game; the last
+column is the target), and for a given size, the largest g (the R game).
+
 ## Reproduction
 
 ```
@@ -428,3 +1259,10 @@ k) and re-derives all witnesses; nothing depends on the discovery path.
 - `verify_record.py` — per-offset compositeness evidence generator
 - `package_record.py` — record dir: evidence + PARI ECPP certificate
 - `records/` — the record integers and their proofs
+- `tscan/` — the C scanner for the small-N threshold game, with its drivers
+- `closeness.py` — every record scored against the largest g expected at
+  its size
+- `ceiling_model.py` — that largest expected g, from the Hardy–Littlewood
+  heuristic with no fitted constant; `ceiling_table.json` is its output
+- `gsample.c` — g(N) for random N of a given size; `samples/` has two runs
+- `record_holders.txt` — the 69 record holders of g below 4·10^18

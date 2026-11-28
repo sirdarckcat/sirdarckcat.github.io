@@ -3,13 +3,352 @@
 Programme: *Extremal Least Goldbach Summands* (4-year proposal, record snapshot 2026-07-22).
 Student log, year 3 — project kickoff with delegated subagent execution.
 
-## Record board (updated 2026-07-28 — session close)
+## Record board (updated 2026-11-21)
 
 | Game | Incumbent | Value | Status |
 |---|---|---|---|
-| Height H (Game 1) | 2,480-digit N (slop/goldbach/records/g1) | g = 1,157,341 | external session |
+| Height H (Game 1) | **91,752-digit** N (records/height_91752digit_g16046137) | g = **16,046,137** | **new 2026-11-22**; PFGW-screened (Colab CPU), CPU-proved (BLS), complete cover. Passes verify.py, PARI (N−1 certificate, isprime and the full scan) and both bls/ verifiers here. Cross-verified by the second session (verify.py, bls/xverify.py, the PARI scan and certificate: all pass). Previous: g = 10,000,141 @ 61,329d (records/height_61329digit_g10000141), GPU-screened (Colab A100), CPU-proved (BLS), complete cover; passes verify.py, PARI and both bls/ verifiers here; cross-verified by the second session (verify.py, PARI, bls/xverify.py: all pass). Earlier the same evening: g = 5,000,251 @ 33,938d (records/height_33938digit_g5000251), GPU-screened, CPU-proved; passes verify.py, PARI and both bls/ verifiers. Earlier the same day: g = 2,000,269 @ 15,595d (records/height_15595digit_g2000269), N−1 (BLS) proof, no ECPP, complete cover; passes both independently written verifiers and PARI. Same day: g = 1,200,109 certified twice, for two different 11,263-digit N, by two independent sessions (records/height_11263digit_g1200109 and records/bls_game1_11263digit_g1200109). Previous: g = 1,157,341 @ 2,480d (slop/goldbach/records/g1) |
 | Threshold T(100,000) (Game 2) | **150-digit** N (GPU fleet, records/threshold_150digit_g104527) | g = 104,527 | **re-verified PASS here** (witnesses + independent ECPP, 2026-07-28) |
-| Budget R(10^199)/R(10^200) (Game 3) | 199-digit N (r200 round 1) | g = 119,419 | re-verified PASS here |
+| Budget R(10^199)/R(10^200) (Game 3) | **200-digit** N (records/budget_1e200_200digit_g157837) | g = **157,837** | **new 2026-11-23 02:08 UTC**; campaign3 at Q = 150,000 on Colab GPUs, `search_gpu5.py --deep 1` (the uarch session's deep sieve, B = 10^8), certified by certify_c3.sh (witnesses, PARI primecert, ecpp_check.py, slop's stdlib verify_record.py, direct gmpy2 and PARI). Before it: g = 146,191 (200 digits, 2026-11-22 23:08 UTC, Q = 140,000), 133,981 / 132,103 / 125,269 (199 digits). All are frontier points |
+
+### 2026-11-23 (early) — Game 3: g = 146,191 and 157,837 below 10^200 (`ccr-8ffe9d7a` session)
+
+- 146,191 at 23:08 UTC on 2026-11-22: the first hit of the Q = 140,000 run (Lean vector `r200_q140k_c_v77`).
+- 157,837 at 02:08 UTC: the first hit of the Q = 150,000 run (`pt_q150k_t528`, a residue-swap variant of the research
+  session's 1,092-row cover). It survived 91 uncovered rows past Q against 40.8 expected (tail 0.11).
+- Engine changes between the two, all checked for identical output first (`campaign3_gpu/README.md`):
+  - the uarch session's Fermat step files: +2.5% (RTX PRO 6000) to +14% (A100, L4);
+  - the deep sieve at B = 10^8: a bucketed large-prime stage, ×1.37 expected hits per GPU-second on the RTX PRO 6000s and
+    ×1.40 on the L4s (tests ×0.75, kept hit mass ×1.43 at f = 0.97).
+- The fleet grew from five GPUs to seven (three RTX PRO 6000s, three L4s, a T4) and runs ≈7.5 expected hits a day at
+  Q = 150,000. By the lead's plan it moves to Q = 160,000 (1,181-row covers) after four certified hits there or at
+  ~23:00 UTC.
+
+### 2026-11-22 (night) — Game 3 on Colab GPUs (`ccr-8ffe9d7a` session): g = 125,269, 132,103, 133,981 below 10^199
+
+- **Engine.** `search_gpu2.py` (GPU sieve plus GPU Fermat tests) ran 63-67k members/s on an L4. `prof_gpu2.py` showed why:
+  41% of the tests computed fell after a member's first PRP (93% at skip-frac 0.97), because a launch held one block's members.
+  `search_gpu3.py` pools a batch of 32 slices into one tester (all variants share M), which cuts the waste to 5-9%.
+  `check_v3.py` shows identical alive matrices and slice lines to `search_gpu2.py`, and Q = 3001 end to end against brute force.
+  Production uses skip-frac 0.97 (each block's emptiest 3%, ~14% of the hit mass) and the top of k first: E falls as N grows,
+  ≈ 0.25 nats between k ≈ 10^7 and the 199-digit ceiling.
+- **Hardware.** Colab G4 runtimes (NVIDIA RTX PRO 6000 Blackwell; the kernel does 8.9·10^6 tests/s against 2.3·10^6 on an
+  L4): three of them, plus the L4 and later an A100. One G4 does 9.3M members/s at f = 0.97, i.e. 1.32M members/s of full
+  hit mass, ~21x `search_gpu2.py` on the L4.
+- **Hits.** In the first 25 minutes with the 867-row campaign-3 families (Q = 122,000, N < 10^199): 125,269 (v367),
+  133,981 (w175), 132,103 (v851). All are certified and all are frontier points; 133,981 is the largest g known below 10^200
+  (closeness 6.36%).
+- **Lean 850-row cover** (Q = 122,000, N < 10^200; 3,000 residue-swap variants): four more hits, 122,827-126,397, none
+  above the record. The overshoot model, from the cover's own classes beyond Q (an uncovered prime there is killed with
+  probability 1 − 0.122, then N − q is prime with probability ≈ 0.024), gives a mean g − Q ≈ 3,300-3,450 and
+  P(g > 133,981) ≈ 0.034 per hit. So the two large hits were lucky draws, and larger Q is the lever.
+- **Tally** (`campaign3_gpu/TALLY.md`): over all covers, 7.26 expected against 7 found. The model is on target in aggregate.
+- **Since 21:08Z**: Q = 140,000 (research cover, 1,011 rows; E^ 24.04-24.18 measured) and Q = 150,000 (1,093-1,094 rows;
+  E^ 25.97-26.14). Both covers were checked here.
+- **Kernel 3** (`gpu_fermat3.py`, 21:25Z): dedicated squaring plus lazy Montgomery reduction (16n < 2^672). It matches gmpy2
+  and the proven kernel, and is 1.48x faster on the RTX PRO 6000 and 1.78x on the L4. Expected rate ≈ 8 hits a day at
+  Q = 140,000 on three GPUs.
+
+### 2026-11-21 (evening) — Campaign G (`ccr-8ffe9d7a` session): GPU rungs on Colab; g = 5,000,251 and 10,000,141
+
+Authorized by the user ("colab the fuck out of this problem"). One A100
+runtime (the account allows one GPU at a time), its 12 vCPUs, and a second
+8-vCPU CPU runtime. The split with the other session: it runs g > 3·10⁶ on
+its own CPU; this session owns 5·10⁶, 10⁷ and 16,045,849.
+
+- **Engine.** `proth/gpu_screen.py` is a CuPy batched Montgomery engine
+  (15-bit limbs in float64, cuFFT).
+  - v1 failed validation on structured operands: Mont(1) = R mod P has
+    long 0x7FFF limb runs. An exact carry-lookahead kernel fixed it.
+  - v2 merges an inverse FFT (1.11×). v3 drops the copies (1.12×, bit-for-bit
+    equal to v2).
+  - Every version is validated against gmpy2 and the known primes before
+    use. GPU passes are re-proved on the CPU.
+- **g = 5,000,251 at 33,938 digits.** 68 CPU and 3,072 GPU tests (0.85 s
+  each). The hit is the 3,080th survivor, against ~2,118 expected
+  (p ≈ 0.23 of waiting that long). It passes the CPU BLS proof, `verify.py`
+  and the PARI cross-check, which is now a `parforprime`: identical logs,
+  2.8× faster on 3 threads. The second stack passes too: `bls/xverify.py` and
+  `verify_bls_record.py` (via `interop.py to-bls`), in pure-Python ints,
+  46 min each. Their logs are in the record directory.
+- **g = 10,000,141 at 61,329 digits.** 3,072 GPU tests (512 with v2 at
+  2.76 s, the rest with v3 at 2.35 s), ~2 h of A100 time in all. The hit
+  t = 6063 is the 2,718th survivor of the 10¹¹-sieved list (expected
+  ~3,130; p ≈ 0.42 of waiting that long).
+  - The total includes 113 tests on candidates that the live deep sieve
+    removed later.
+  - The hit was re-proved on the CPU (BLS, 306 s) and passes `verify.py`:
+    9,095 cover classes and all 664,584 primes below g.
+  - It also passes the PARI cross-check (2.8 h) and both `bls/`
+    verifiers (61 min each through `proth/divmod_pow_run.py`). The second
+    session re-ran `verify.py`, PARI and `bls/xverify.py`: all pass.
+  - g is the first prime above 10⁷ that the cover (built for the odd
+    primes below 10⁷) misses; the five primes in between are covered.
+- **Deeper sieve.** `deepsieve.c` takes the survivors from 10⁹ to 10¹¹
+  (10⁷ rung) and toward 10¹² (16M rung) while the GPU runs. That is ~18%
+  and ~25% fewer expected tests. It repurposes the 16M CPU helper's
+  cores: PRP tests on CPU would have covered ~8% of that rung in the same
+  time.
+- **Incident.** My batch-boundary restart script for the 10⁷ rung read
+  the line count of a log that did not exist yet, fell through, and killed
+  the first 10⁷ batch at 76%. That lost ~17 min of GPU time. The intended
+  end state (a reloading search) was reached anyway. Lesson: guard every
+  wait on a file's existence.
+- **Second incident (an H100 attempt).** An H100 has ~2.2× the A100's
+  memory bandwidth, and the engine is bandwidth-bound. The account allows
+  one GPU, so trying meant releasing the A100. My freeze script waited
+  for the 10⁷ deep sieve to finish but not for the batch boundary, and
+  stopped a batch at 98.5%. It also used `pkill -f` inside `sh -c`, which
+  matched its own shell, so the later kills never ran; a PID-based kill
+  finished the job. All state was harvested and no H100 was available, so
+  a fresh A100 took over after 10 min idle (engine re-validated on it,
+  queue resumed from the logs). Cost: ~33 min of GPU time in all.
+- **CPU fleet for 16M.** Colab allows 7 active runtimes (one GPU). The six
+  CPU slots hold gold-cpu (sieving), four 8-vCPU runtimes running
+  `cpu_search.py` top-down on t mod 8 = 0..3 (~29 tests/h each), and one
+  orphan CPU runtime that a timed-out TPU request left behind. The CLI
+  cannot address the orphan. The A100 host's CPUs and gold-cpu join as
+  slices 4 and 5 when their sieve ranges finish, which together adds ~30%
+  to the GPU's ~570 tests/h. A third pgrep self-match (`os.popen` →
+  `sh -c`) would have blocked the joins; it was caught in the first status
+  cycle and fixed with the `[.]` pattern trick.
+- **Third incident (the replacement A100 vanished).** Between 21:33Z and
+  21:47Z the A100 runtime dropped out of Colab's assignment list, with no
+  error or notice. The CLI then pruned it as stale. Its loss was costly
+  because the A100 watcher had hung since ~20:36Z on a `colab exec` to
+  gold-cpu that never returned; the CLI's own `--timeout` did not fire.
+  So the 10⁷ log had last been harvested at 2,048 tests. About three
+  batches (~1,500 tests) and a partial fourth were lost, ~1.4 h of GPU
+  time with the restart.
+  - Correctness is unaffected: the search re-runs those survivors in the
+    same order.
+  - A new A100 passed the v3 known-answer check and resumed at 21:56Z.
+  - Fixes: every Colab call now has a hard `timeout`; each watcher loop
+    writes a heartbeat that the alarm checks; the 16M fleet's master list
+    and kill lists are kept locally, not on the GPU host.
+  - A seventh runtime was then refused with six active, so the six slots
+    are the GPU and five CPU runtimes. The orphan is gone.
+- **16M sieve to 3·10¹¹.** gold-cpu's [10¹¹, 3·10¹¹) pass (7.7·10⁹ primes,
+  2.5 h on 8 threads) found 767 kills, all re-verified locally (p prime,
+  p | P_t). 636 are new against the 10¹¹ list, which goes 15,215 → 14,579.
+  gold-cpu then joins the fleet as slice 5.
+- **Fourth incident (this session's container was replaced).** At ~02:11Z
+  on 11-22 the local container was reclaimed while no harness-tracked task
+  was running: the failure mode logged on 2026-07-22. Files survived;
+  processes did not.
+  - Lost: the two unmodified `bls/` verifier legs for 10⁷, ~3.4 h into
+    a ~4.5 h run, and the local Colab watchers.
+  - Unaffected: Colab. All six runtimes kept searching the 16M rung.
+  - Recovery: the legs were re-run through `proth/divmod_pow_run.py`
+    (divmod reduction, ~4× faster, checkpointed) as harness-tracked
+    tasks, which also keep the container alive. Both passed in 61 min.
+    When nothing is running, a scheduled check-in now resumes the session.
+  - Both legs do the same exponentiation, so they shared one checkpoint
+    file. Neither resumed from it, so each computed it in full. The
+    checkpoint key now includes the verifier's name, and a finished run
+    deletes its checkpoint.
+- **Time limit, relay and a fallback range (05:45Z).** The alarm and the
+  local slice 6/8 reached the harness's 2 h limit for background tasks.
+  They were not restarted: the alarm now runs under the Monitor tool
+  (30-min re-arms), and the local cores went to the fallback below.
+  - After 5,517 tests with no hit, the chance that the remaining 9,062
+    survivors below 32768 hold no prime is e^(−9062/4488) ≈ 13%. The spec
+    allows t < 2^20, so the local cores sieve t ∈ [32768, 131072) by the
+    same chain.
+  - That sieve reproduced the main 10⁹ pool exactly below 32768. The
+    local `deepsieve` build matched the Colab kills on [10⁹, 2·10⁹)
+    exactly (607 of 607). [10⁹, 10¹¹) took 56,187 → 45,994 survivors
+    (−18.1%; the main pool lost 18.0%).
+  - A relay now puts every tested t on every machine as a `*.kills.json`
+    list, so the GPU (bottom-up) and the fleet (top-down) stop at each
+    other's work. gold-cpu3's first reload dropped exactly the 516
+    GPU-tested t of its slice.
+- **PFGW (~07:50Z, approved by the user).** OpenPFGW 4.1.8 (gwnum)
+  replaced GMP on all six CPU runtimes, as a screen only; a pass is
+  re-proved by `desert.bls_prove`.
+  - On gold-cpu5, with its GMP search paused, the 10⁷ record's P was
+    3-PRP in 23 s, and eight known composites came out composite with
+    reproducible residues.
+  - A 16M test took ~60 s with four in parallel, against ~1,000 s for one
+    GMP test with eight in parallel: ~240 tests/h per runtime instead of
+    ~29.
+  - The fleet goes from ~170 to ~1,450 tests/h, beside the GPU's ~590.
+  - gold-gpu runs five at nice 19 so the GPU's host process keeps
+    priority.
+- **g = 16,046,137 at 91,752 digits (hit 10:52Z on 11-22).** It was found
+  on gold-gpu's fallback slice 4/6, at t = 127,534: PFGW 3-PRP in 45.5 s,
+  then `desert.bls_prove` on the runtime. All searches stopped at 10:53Z.
+  - Tests run: 13,124 distinct t. 12,470 of the 14,579 survivors below
+    32768 were tested (7,168 GPU, the rest CPU), and 643 of the 44,130 in
+    the fallback range.
+  - 191 t were tested by both the GPU and the fleet, where they met; all
+    were composite both times.
+  - At ~4,488 expected tests per prime, a first prime this late has a
+    probability of ~5%. The hit came from the fallback range while 2,109
+    survivors below 32768 were still untested. Those had about a 37%
+    chance of holding a prime; that range is now left unsearched.
+  - Proved again here with `desert.bls_prove` (759 s). F = 2^101604, since
+    m = m0 + t·Mc is divisible by 16; P has 304,793 bits.
+  - The second session rebuilt N from `spec.json` and t alone and got the
+    same sha256. Its `verify.py` passed in 632 s.
+  - Both `bls/` legs pass, run alone on two Colab CPU runtimes:
+    `xverify` in 2.4 h and `verify_bls_record` in 2.5 h.
+  - PARI here passes in full (5.4 h): N−1 certificate valid,
+    `isprime(P) = 1` (~3 h on one core), and the complete scan. A second
+    scan, in six ranges on two Colab runtimes, passes too.
+  - Colab reclaimed the four runtimes that sat idle after the search,
+    the A100 among them.
+  - The second session's `xverify` and PARI scan (nine ranges) pass too.
+- **Not available.** A second GPU (TooManyAssignments) and a TPU host
+  (pool "Service Unavailable" twice). The compute-unit balance (~9,300)
+  is not a constraint.
+
+### 2026-11-21 — the two branches merged (`ccr-2ce9e63a-hn0fuw` ← `ccr-8ffe9d7a-4ni11u`)
+- Two sessions started from the same commit, both prompted by the same
+  PDF, and worked separately. Both concluded that a proof of GRH moves no record, both
+  found the same N−1 construction for Game 1, and both certified
+  g = 1,200,109 (two different N). Each then reviewed the other, and the
+  merge was agreed by message between the sessions at the user's request.
+  Decisions, path map and errata: `merge_2026-11-21.md`.
+- **Layout.** One build-and-search pipeline (`proth/desert.py`). One
+  verification stack with three independently written legs
+  (`proth/verify.py`, `bls/verify_bls_record.py` + `bls/xverify.py`, and
+  PARI's own N−1 proof via `crosscheck.gp` in each record directory). All
+  three records in `records/`. Memos: WP10 and WP11 are the
+  `ccr-8ffe9d7a` session's, WP12 the `ccr-2ce9e63a` session's.
+- **Errata folded in.** The two long searches at 1.2·10⁶ were one
+  progression (joint p = 0.046, not ≈1%); the paper's Theorem 14 is
+  superseded in rate, and GRH's Linnik gain on the paper's smooth moduli
+  is ×1.2, not ×2.5; one mutation-test harness had never been committed.
+- **Out-of-sample probe of the 1.2·10⁶ progression** (WP12 §6): the 3,245
+  sieve survivors with t ≤ 16,383 that neither search had tested, done
+  exhaustively. 6 primes against 4.62 expected (z = +0.64); over the
+  whole range 8 against 11.0. The density model holds on fresh numbers;
+  the long waits were chance.
+- **Verified by both sessions after the merge**: every record passes
+  every leg in both containers. The other session's check of the merged
+  branch found four small misstatements of its work, all fixed
+  (`merge_2026-11-21.md`, errata 9–12).
+- The entries below are kept as each session wrote them, labelled by
+  branch.
+
+### 2026-11-21 — cross-review of `ccr-8ffe9d7a-4ni11u` (by the `ccr-2ce9e63a` session)
+- A second session did the same exercise separately and converged on the
+  same construction (BLS-form complement, complete cover, n = 12,475) and
+  the same g = 1,200,109, for a different N. Full review:
+  `phd/crossreview_8ffe9d7a.md`.
+- **Cross-verification, all PASS**: their stdlib verifier on both records
+  here (via `proth/interop.py`), this branch's verifier and PARI's N−1
+  proof on theirs. Three records, two independently written checkers,
+  plus PARI.
+- **The two unlucky waits were one event.** Their search ran over exactly
+  the odd-t half of this branch's progression (re-sieving reproduces their
+  3,472 tests); 1,341 integers were tested by both. Jointly: 2 primes
+  where 6.42 were expected, p = 0.046 — not two independent 1–2% tails.
+  Pooled over all probes and searches: 112 primes vs 114.7 expected.
+- **Adopted from them**: verifier mutation test (11/11 rejected).
+  **Corrected here**: Theorem 2 of WP12 is vacuous at record scale (their
+  finite-size sieve computation shows it); caveat added.
+- **For them**: the board is at 2,000,269; the paper's Theorem 14 is
+  superseded, not merely re-constanted; lazy covers and a 10⁹ sieve are
+  ~35% less search; PARI gives a second proof where they have BPSW.
+- Trial merge: conflicts only in the SoK and this log. (Merged later the
+  same day; see the entry above.)
+
+### 2026-11-21 — cross-review of `ccr-2ce9e63a-hn0fuw` (by the `ccr-8ffe9d7a` session)
+- The other session found the WP11 construction independently and first
+  (08:03 against 08:44 UTC). It then certified g = 2,000,269 with a lazy
+  cover ~10% shorter, and proved two covering theorems:
+  - C(x) ≥ 1.349·x·ln x, which beats the paper's Theorem 14 and Shi's ½;
+  - C(x) ≤ x^(4+ε).
+- **Verification.** All three records pass both branches' verifiers and
+  PARI, re-run here. Their theorems were re-derived; their Shi citation
+  was verified verbatim against the v6 PDF.
+- **Corrections here.** "New record" and "first without ECPP" are
+  relabelled "independent second certificate"; WP11's ladder is ~30%
+  pessimistic next to the lazy cover.
+- **Open item (corrected at the merge, at this session's request).** The
+  two Q = 1.2·10^6 searches were not independent (one progression); joint
+  P(≤ 2) = 0.046; out-of-sample probe in WP12. A merge plan is in
+  `crossreview_2ce9e63a.md` (carried out; see the entry above).
+
+### 2026-11-21 — WP12 (`ccr-2ce9e63a` session; numbered WP10 on its branch): review "with the GRH announcement for inspiration"
+- User directive: look over the Goldbach-gaps work for improvements, reading
+  `alpo.ge/remark.pdf` for inspiration. The PDF is not about Goldbach: it
+  announces a proof of RH/GRH found with Claude and formalized in Lean
+  (not checked here). Full memo: `phd/wp12_prime_covering_grh_ledger.md`.
+- **GRH ledger** (WP12 §3): it moves constants, not walls. Realisation
+  constant 0.56 → 0.67; guaranteed N−1-certifiable realisation exponent
+  12 → 6 (practice: 1.5); Miller's deterministic test would cost ~12
+  core-years per 11k-digit complement, against one modexp for a
+  constructed one; the bounded games and the density model are untouched.
+- **Certification wall of Game 1 removed** (`goldbach/proth/`): complement
+  built as m·2ⁿ+1, cover congruences moved onto m by CRT, primality by the
+  BLS N−1 test. With certification free, complete covers beat partial
+  cover + luck by 4–8× here (REGISTRY A2 "dominated" flips for this game).
+  Record g = 1,200,109 at 11,263 digits; 2,647 PRP tests against ~700
+  expected (a 2% tail; sieve and density model re-validated at full and
+  at reduced scale before accepting that it was luck). Then
+  g = 2,000,269 at 15,595 digits on the shorter lazy cover: 648 tests
+  against ~970 expected, 37 min on 4 cores — Campaign C's target.
+- **Covers**: weighted lazy greedy over a 3× prime pool is ~10% shorter
+  than the paper's fixed-order greedy (the one-kill tail mostly goes);
+  a price-reweighted variant was tried and was worse. Remaining gap to a
+  proper packing of the sparse tail is the new Door-1-style problem.
+- **Theory** (WP12 §2): prime-covering function C(x) ≥ (e^γ/2C₂ − o(1))·x·ln x
+  = 1.349·x·ln x by pigeonhole — stronger than the paper's FGKMT-transfer
+  Theorem 14 and than the counting constant ½ of arXiv:2605.21529 — and
+  C(x) ≤ x^{4+ε} by the linear sieve + Bombieri–Vinogradov, the first
+  impossibility statement in the family. Greedy data: 0.72·x·ln²x.
+- **Not done**: a Lean proof of the record. Toolchain installation was
+  refused by the session's permission policy; nothing unchecked was
+  committed. Paper patch drafted (WP12 appendix) but `paper.tex` untouched.
+
+### 2026-11-21 — WP11 (`ccr-8ffe9d7a` session): Game 1's certification wall removed; g = 1,200,109 (independent second certificate; see the cross-reviews above)
+- **Prompt.** The user pushed back after WP10: if frontier research is
+  possible, find a non-brute-force way to move faster. Answer: for the T
+  and R games the brute force is the cheap part (≈0.03 nats of luck per
+  residual against ≥ ln Q ≈ 11.5 nats to plant a divisor). Game 1's wall,
+  though, was an artifact of proving whatever prime the search produced.
+- **The trick (SoK §6/§7.2, flagged as open).** The cover modulus is odd,
+  so N ≡ g+1+2^n (mod 2^(n+1)) is free by CRT. Then 2^n exactly divides
+  P − 1 for P = N − g, and with 2^(3n) > P the BLS theorem proves P prime
+  from one modexp. The price is ×1.5 digits. With full covers (no
+  residuals), the certificate is the congruences plus one modexp. The
+  proof is re-derived in `wp11_bls_game1.md` §1.
+- **Validation.**
+  - `bls/full_cover.py` reproduces the paper's Table rows for Q = 10^5,
+    10^6 and 10^7 exactly.
+  - The independent stdlib verifier rejects 6/6 tampered records. It had
+    one bug at record scale (Python's 4,300-digit int-to-string cap),
+    now fixed.
+  - The density model was measured at z = +0.76 and −0.43; the sieve was
+    audited.
+- **Record.** 11,263 digits, g = 1,200,109, found after 3,472 tests on 4
+  cores in 76 min. That was a ~1%-tail draw against 762 expected. It was
+  verified three ways: the stdlib proof checker (87 s), GMP BPSW, and a
+  GMP recheck of the congruences.
+- **Ladder on this box (GMP).** 5M ≈ 13 h, 10^7 ≈ 3.6 d, 16,045,849 ≈ 13 d
+  (longer than every known prime gap). GWNUM or the GPU fleet should be
+  5–10× faster. The T(10^5) and R(10^200) frontiers are unchanged.
+
+### 2026-11-21 — WP10 (`ccr-8ffe9d7a` session): a claimed RH/GRH proof (alpo.ge/remark.pdf) assessed: no lever moves
+- User asked whether the announcement inspires frontier progress. The
+  analysis assumes the claim is true. The Lean archive was not checked,
+  and the verdict does not depend on it. Memo:
+  `wp10_grh_remark.md`. Numbers: `wp10/grh_reach.py` (6 s).
+- RH/GRH are √x-quality statements and every bottleneck here is
+  x^{o(1)}-scale. The RH prime-window is 10^72.4 too coarse for the
+  150-digit desert. GRH on the scanned progression is 10^65.6 short and
+  bites only at N ≈ 280 digits. The sieve level GRH gives is the one
+  Bombieri–Vinogradov already gives, and there the Door-1 floors are
+  vacuous (−0.46·π(Q)). H1 and H2 are untouched. Miller-under-GRH
+  certification costs 5.8 core-days at 2,480 digits against ECPP's ~2 h,
+  with no certificate.
+- Paper constants only: the Linnik step L ≤ 5 becomes 2 + o(1). SoK §7.3's
+  GRH sub-angle is closed. The one transferable idea is methodological:
+  proof-carrying records (SoK §7.8). The board is unchanged; Doors 1 and 2
+  remain the only levers.
 
 ### 2026-07-29 — WP9 (Door 3) underway: closure theorem + falsification engine
 - User directive: work Door 3 first (AlphaEvolve access offered for the

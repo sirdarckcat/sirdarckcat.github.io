@@ -1,0 +1,11 @@
+B=1e+06: 78409 primes, setup 0.0s, 1 windows of 2^22 in 4.5s (1072.3 ns/member, 1 thread); alive/k 489.41, sd 16.06
+B=1e+07: 664490 primes, setup 0.2s, 1 windows of 2^22 in 5.8s (1374.6 ns/member, 1 thread); alive/k 419.51, sd 15.79
+B=1e+08: 5761366 primes, setup 2.0s, 1 windows of 2^22 in 23.9s (5695.8 ns/member, 1 thread); alive/k 367.07, sd 15.39
+B=1e+09: 50847445 primes, setup 25.6s, 1 windows of 2^22 in 168.5s (40183.9 ns/member, 1 thread); alive/k 326.29, sd 14.95
+members 4194304, p_B: 1e+06: 0.0536, 1e+07: 0.0625, 1e+08: 0.0715, 1e+09: 0.0804
+hit mass kept (weights from B = 1e+09) and tests per kept member, by selection bound and f:
+  f=0.95: B=1e+06 kept 22.29% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 26.41% tests 15.99 -> mass/test x1.382 | B=1e+08 kept 30.35% tests 13.99 -> mass/test x1.815 | B=1e+09 kept 34.17% tests 12.44 -> mass/test x2.299
+  f=0.97: B=1e+06 kept 15.87% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 19.26% tests 15.99 -> mass/test x1.416 | B=1e+08 kept 22.65% tests 13.99 -> mass/test x1.903 | B=1e+09 kept 25.95% tests 12.44 -> mass/test x2.453
+  f=0.98: B=1e+06 kept 12.03% tests 18.66 -> mass/test x1.000 | B=1e+07 kept 14.87% tests 15.99 -> mass/test x1.442 | B=1e+08 kept 17.75% tests 13.99 -> mass/test x1.968 | B=1e+09 kept 20.64% tests 12.44 -> mass/test x2.574
+  f=0.99: B=1e+06 kept  7.39% tests 18.66 -> mass/test x1.000 | B=1e+07 kept  9.40% tests 15.99 -> mass/test x1.484 | B=1e+08 kept 11.54% tests 13.99 -> mass/test x2.082 | B=1e+09 kept 13.71% tests 12.44 -> mass/test x2.784
+  f=0.995: B=1e+06 kept  4.47% tests 18.66 -> mass/test x1.000 | B=1e+07 kept  5.88% tests 15.99 -> mass/test x1.536 | B=1e+08 kept  7.35% tests 13.99 -> mass/test x2.193 | B=1e+09 kept  8.93% tests 12.44 -> mass/test x3.000

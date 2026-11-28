@@ -1,0 +1,61 @@
+alive rows of the annealed cover: n = 1524  window ln K = 16.9
+
+(A) Research's table recomputed from the real rows (exact residue counts, not Poisson): (463, z], cap e
+   z    e   lnP   typical smooth part, sd | needed sqrt(n lnK lnP) | typical/needed | best-of-window(+5.4sd)/needed
+  1000  1     513      459,   18 |   3634 | 0.126 | 0.153
+  1000  2    1025      792,   38 |   5139 | 0.154 | 0.194
+  1000  3    1538      980,   56 |   6293 | 0.156 | 0.204
+  1500  1    1019      831,   32 |   5122 | 0.162 | 0.196
+  1500  2    2037     1344,   60 |   7243 | 0.186 | 0.230
+  1500  3    3056     1589,   80 |   8871 | 0.179 | 0.228
+  2300  1    1795     1281,   49 |   6800 | 0.188 | 0.228
+  2300  2    3591     1942,   83 |   9617 | 0.202 | 0.248
+  2300  3    5386     2216,  102 |  11778 | 0.188 | 0.235
+  4000  1    3468     1964,   75 |   9450 | 0.208 | 0.251
+  4000  2    6935     2757,  111 |  13365 | 0.206 | 0.251
+  4000  3   10403     3046,  127 |  16368 | 0.186 | 0.228
+ 10000  1    9452     3251,  120 |  15603 | 0.208 | 0.250
+ 10000  2   18905     4146,  152 |  22066 | 0.188 | 0.225
+ 10000  3   28357     4438,  165 |  27025 | 0.164 | 0.197
+ 50000  1   49288     5659,  192 |  35629 | 0.159 | 0.188
+ 50000  2   98577     6586,  215 |  50388 | 0.131 | 0.154
+ 50000  3  147865     6878,  225 |  61712 | 0.111 | 0.131
+   best typical/needed on this grid: 0.208 at (z, e) = (10000, 1)
+
+(B) Variants.  ratio = (agreement of the target) / sqrt(lnK * cost); success of any Coppersmith/GSS-type decoder needs ratio >= 1
+   B1 hard lists with their true sizes (GSS: cost = sum_s ln s * |R mod s| instead of n*lnP), e = 1:
+      z=  1500  typical/needed 0.226  (Coppersmith with degree n: 0.162)  best-of-window 0.273
+      z=  2300  typical/needed 0.243  (Coppersmith with degree n: 0.188)  best-of-window 0.293
+      z=  4000  typical/needed 0.247  (Coppersmith with degree n: 0.208)  best-of-window 0.297
+      z= 10000  typical/needed 0.226  (Coppersmith with degree n: 0.208)  best-of-window 0.271
+   B2 soft decoding, weights = row counts, per-prime scale optimised (GSS soft-decision ceiling):
+      z=  1500  typical/needed 0.214  best-of-window 0.280  optimised over all per-prime scales 0.280
+      z=  2300  typical/needed 0.240  best-of-window 0.305  optimised over all per-prime scales 0.305
+      z=  4000  typical/needed 0.263  best-of-window 0.326  optimised over all per-prime scales 0.326
+      z= 10000  typical/needed 0.285  best-of-window 0.345  optimised over all per-prime scales 0.345
+      z= 50000  typical/needed 0.296  best-of-window 0.355  optimised over all per-prime scales 0.356
+   closed form: ratio^2 <= ln(1 + n/x)/lnK = 0.0862 -> typical/needed <= 0.294 for ANY prime band beyond x = 463
+   B3 subsets of the rows (hard lists, z = 4000, e = 1): n_sub -> typical/needed
+      n =  100  typical smooth part    202  needed   2421  ratio 0.083  ratio^2 0.0070
+      n =  300  typical smooth part    563  needed   4193  ratio 0.134  ratio^2 0.0181
+      n =  700  typical smooth part   1147  needed   6405  ratio 0.179  ratio^2 0.0321
+      n = 1524  typical smooth part   1964  needed   9450  ratio 0.208  ratio^2 0.0432
+   B4 product of m shifted copies F(k+a_1)...F(k+a_m) (degree n*m; every prime counted once; z = 4000, e = 1):
+      m =    1  agreement   1886  needed    9450  ratio 0.200
+      m =    2  agreement   2630  needed   13365  ratio 0.197
+      m =    3  agreement   2994  needed   16368  ratio 0.183
+      m =    5  agreement   3301  needed   21131  ratio 0.156
+      m =   10  agreement   3452  needed   29884  ratio 0.116
+      m =   30  agreement   3468  needed   51761  ratio 0.067
+      m =  100  agreement   3468  needed   94503  ratio 0.037
+      m = 1000  agreement   3468  needed  298844  ratio 0.012
+   B5 necessary condition: agreement <= ln P, so ratio^2 <= lnP/(n lnK): for lnP = 3,468: ratio <= 0.367 whatever the member is
+   B6 pinning entropy first: window ln K' = 16.9 - (nats pinned) ; typical/needed at z = 4000, e = 1 (agreement 1964):
+      pinned 0.0 nats -> ln K' = 16.90 : typical/needed 0.208
+      pinned 6.3 nats -> ln K' = 10.60 : typical/needed 0.262
+      pinned 12.6 nats -> ln K' = 4.30 : typical/needed 0.412
+      pinned 16.0 nats -> ln K' = 0.90 : typical/needed 0.901
+      pinned 16.5 nats -> ln K' = 0.40 : typical/needed 1.351
+      pinned 16.9 nats -> ln K' = 0.00 : typical/needed 27017.254
+   B7 the window the method could handle for the typical member (hard lists, Coppersmith): ln K <= agreement^2/(n lnP) = 0.73 nats; soft ceiling ln(1+n/x) = 1.46 nats
+   B8 cost: Coppersmith lattice has dimension >= n = 1524 with entries of >= 5002 bits (z = 4000): LLL ~ dim^4 * bits = 2.7e+16 bit-operations at the very least; the sieve over a window of K = e^16.9 members costs about K * 1,500 marks = 3.3e+10

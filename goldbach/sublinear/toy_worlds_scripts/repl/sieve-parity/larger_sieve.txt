@@ -1,0 +1,4 @@
+best member k = 18044336: T = 573; ln K = 16.878
+its class is above the mean at 270 of 532 primes, in the heaviest 5% of classes at 24; mean z per prime +0.226, largest +4.41
+hindsight lists (all classes at least as heavy as its own): sum ln s = 4069.6, sum ln s/nu_s = 15.694 against ln K = 16.878: the larger sieve needs the second to exceed the third
+best sub-collection of primes (hindsight): none reaches ln K (largest attainable sum 15.694)

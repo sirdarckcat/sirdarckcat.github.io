@@ -1,0 +1,8 @@
+F_8: A = L1, a = 8, n = 32, lam = 1
+  d = 2: rows 28 ; r even 28; irreducible N-Q 0; [even,odd] by category {'formula': [28, 0]}; formula disagreements 0; 0s
+  d = 3: rows 168 ; r even 0; irreducible N-Q 24; [even,odd] by category {'formula': [0, 168]}; formula disagreements 0; 0s
+  d = 4: rows 1008 ; r even 1008; irreducible N-Q 0; [even,odd] by category {'formula': [896, 0], 'q_{d-1}=0': [112, 0]}; formula disagreements 0; 0s
+F_8: A = L1*x, a = 9, n = 36, lam = z
+  d = 2: rows 28 ; r even 0; irreducible N-Q 9; [even,odd] by category {'formula': [0, 28]}; formula disagreements 0; 0s
+  d = 3: rows 168 ; r even 168; irreducible N-Q 0; [even,odd] by category {'formula': [168, 0]}; formula disagreements 0; 0s
+  d = 4: rows 1008 ; r even 0; irreducible N-Q 147; [even,odd] by category {'formula': [0, 896], 'q_{d-1}=0': [0, 112]}; formula disagreements 0; 1s

@@ -1,0 +1,11 @@
+# Live harvests of the Colab GPU logs (rewritten on every watcher poll).
+# They are committed explicitly with git add -f at milestones, e.g. a finished rung.
+gpu_tests.jsonl
+gpu_hits.jsonl
+# Live harvest of the Colab-CPU helper's desert.py log for the 16M rung.
+colab_cpu_tests.jsonl
+colab_cpu_run.log
+# gold-cpu sieve kills, relayed to the A100 host by the watcher (committed at milestones).
+q16m_surv_cpu.kills.json
+# Live harvests of the 16M CPU fleet logs (committed at milestones).
+q16045849/fleet/

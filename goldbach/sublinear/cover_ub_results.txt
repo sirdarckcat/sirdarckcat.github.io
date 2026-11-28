@@ -1,0 +1,131 @@
+cover_ub.c (uarch, 24 Nov 2026): rigorous bounds for complete covers, one class per modulus on the first M odd primes, rows = the odd
+primes below Y.  Branches on the free modulus with the fewest qualifying classes (the small moduli at the top), over those classes; node
+bound f = |U| - (sum of the free moduli's fullest classes among U) never decreases along a path; proof mode prunes f >= 1 (and a row no
+qualifying class strikes), floor mode records the least f at depth j.  Every vector lies below exactly one node of each depth.
+
+Validation:
+ * cover_ub_validate.sh ./cover_ub 2 27: for n = 2..27, Y = D(n) finds a cover (the vector rechecked: every odd prime below D(n) struck)
+   and Y = the next prime after D(n) says NO COVER: VALIDATE OK.  (n = 27 at the next prime: 27,721,428 nodes, 7.9 s on 2 threads.)
+ * floor mode against brute force over all vectors, 6 moduli (Y = 80, 120, 200, 300) and 7 moduli (Y = 150, 250, 400): at full depth the
+   floor equals the least number of rows any vector leaves, and the floors at depths 1..M never decrease and never exceed it.
+ * findD.py (climb from a value known to be attained): D(27) = 1801 (10.5 s), D(28) = 1933 (46 s; desert_fast5 with the overflow fix, run
+   separately: D(28) = 1933, 3,027,581,327 nodes, 1,107 s).
+
+D(89) upper bounds (proof mode, M = 89 moduli 3..463, 4 threads): no vector strikes every odd prime below Y, so D(89) < Y:
+   M=89 Y=170000 NO COVER: nodes=6240 (cut by f: 5640, dead: 5; 476 prefixes at depth 4) seconds=0.2
+   M=89 Y=120000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 120000, so D(89) < 120000; nodes=9231 (cut by f: 8394, dead: 6; 713 prefixes at depth 4) seconds=0.3
+   M=89 Y=80000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 80000, so D(89) < 80000; nodes=93820 (cut by f: 87027, dead: 72; 890 prefixes at depth 4) seconds=0.4
+   M=89 Y=60000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 60000, so D(89) < 60000; nodes=438508 (cut by f: 378130, dead: 8509; 1051 prefixes at depth 4) seconds=1.5
+   M=89 Y=50000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 50000, so D(89) < 50000; nodes=2201281 (cut by f: 2008509, dead: 27961; 1132 prefixes at depth 4) seconds=4.7
+   M=89 Y=45000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 45000, so D(89) < 45000; nodes=17745606 (cut by f: 16270886, dead: 102761; 1140 prefixes at depth 4) seconds=33.0
+   M=89 Y=40000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 40000, so D(89) < 40000; nodes=92610951 (cut by f: 82046192, dead: 1728629; 1150 prefixes at depth 4) seconds=160.9
+
+cover_ub.c with ARGM and absolute histogram indices (same validation: cover_ub_validate.sh 2..27 OK; floor mode = brute force on the 7 cases):
+   M=89 Y=60000: 438,508 -> 119,427 nodes, 2.0 -> 1.0 s;  M=89 Y=45000: 17,745,606 -> 2,255,667 nodes, 36.5 -> 11.8 s (4 threads)
+   (the pair bound, the exact best union of two consecutive free moduli from their joint histogram, cut nodes by 25% at Y = 45,000 but saved
+   no time; not kept)
+
+Floor at Y = 170,000 on the 89 moduli (floor mode, FIXORDER=1: the first j moduli 3, 5, 7, ... fixed; the least over their classes of
+|U| - (sum of the other moduli's fullest classes among U); checked against a brute-force floor on 6 and 7 moduli):
+   M=89 Y=170000 FLOOR depth 6 (the first j moduli): every vector leaves at least 401 of the 15496 odd primes below 170000 unstruck; nodes=106026 (cut by f: 98254, ARGM: 14023; 1155 prefixes) seconds=3.2
+   M=89 Y=170000 FLOOR depth 4 (the first j moduli): every vector leaves at least -68 of the 15496 odd primes below 170000 unstruck; nodes=1174 (cut by f: 1047, ARGM: 0; 0 prefixes) seconds=0.1
+   M=89 Y=170000 FLOOR depth 8 (the first j moduli): every vector leaves at least 644 of the 15496 odd primes below 170000 unstruck; nodes=4468093 (cut by f: 2689813, ARGM: 31137375; 1155 prefixes) seconds=176.0
+
+Count mode (cover_ub M D(M) count; a separate program from desert_fast5's count mode): the number of optimal vectors equals the table for every
+n = 2..26, including n = 25 (2) and n = 26 (12), the two counts first made with the desert_fast5 build that had the ord[MAXN] overflow:
+   M=2 Y=7 COUNT: 2 vectors strike every odd prime below 7 with every modulus used; nodes=5 seconds=0.0
+   M=20 Y=1051 COUNT: 1 vectors strike every odd prime below 1051 with every modulus used; nodes=53925 seconds=0.0
+   M=21 Y=1213 COUNT: 2 vectors strike every odd prime below 1213 with every modulus used; nodes=27391 seconds=0.0
+   M=22 Y=1279 COUNT: 2 vectors strike every odd prime below 1279 with every modulus used; nodes=196128 seconds=0.2
+   M=23 Y=1381 COUNT: 1 vectors strike every odd prime below 1381 with every modulus used; nodes=547435 seconds=0.4
+   M=24 Y=1471 COUNT: 1 vectors strike every odd prime below 1471 with every modulus used; nodes=1478748 seconds=1.1
+   M=25 Y=1567 COUNT: 2 vectors strike every odd prime below 1567 with every modulus used; nodes=4562625 seconds=3.7
+   M=26 Y=1669 COUNT: 12 vectors strike every odd prime below 1669 with every modulus used; nodes=14347162 seconds=12.0
+   M=27 Y=1801 COUNT: 10 vectors strike every odd prime below 1801 with every modulus used; nodes=19307434 seconds=18.2
+   M=27 Y=1801 COUNT: 10 vectors strike every odd prime below 1801 with every modulus used; nodes=19307434 seconds=18.2
+   M=28 Y=1933 COUNT: 1 vectors strike every odd prime below 1933 with every modulus used; nodes=92692472 seconds=89.3
+
+D(29) = 2137 (findD.py 29 1933, 2 threads, 91.5 s; research's sampling scan had predicted 2,137 before the run):
+   n=29: a cover of every odd prime below 1933 (729422 nodes, 0.5 s); its least unstruck prime 1987
+   n=29: a cover of every odd prime below 1993 (2622061 nodes, 1.8 s); its least unstruck prime 2011
+   n=29: a cover of every odd prime below 2017 (5739895 nodes, 3.5 s); its least unstruck prime 2017
+   n=29: a cover of every odd prime below 2027 (21297322 nodes, 16.3 s); its least unstruck prime 2029
+   n=29: a cover of every odd prime below 2039 (9980030 nodes, 10.3 s); its least unstruck prime 2089
+   n=29: a cover of every odd prime below 2099 (6219720 nodes, 6.6 s); its least unstruck prime 2137
+   n=29: NO COVER below 2141 (51620752 nodes, 52.5 s)
+   FINDD n=29 D=2137 (attained by the vector; no vector strikes every odd prime below 2141) seconds=91.5 vector: 3:2 5:3 7:3 11:2 13:7 17:15 19:3 23:22 29:8 31:5 37:16 41:22 43:42 47:45 53:15 59:42 61:59 67:30 71:24 73:7 79:24 83:22 89:19 97:66 101:83 103:61 107:2 109:73 113:105
+
+D(30) = 2311 (findD.py 30 2137, 2 threads, 89.5 s; equal to the tempering value research quoted):
+   n=30: a cover of every odd prime below 2137 (8841001 nodes, 8.2 s); its least unstruck prime 2137
+   n=30: a cover of every odd prime below 2141 (15107891 nodes, 10.5 s); its least unstruck prime 2161
+   n=30: a cover of every odd prime below 2179 (222114 nodes, 0.2 s); its least unstruck prime 2179
+   n=30: a cover of every odd prime below 2203 (4420159 nodes, 2.8 s); its least unstruck prime 2221
+   n=30: a cover of every odd prime below 2237 (7964127 nodes, 5.5 s); its least unstruck prime 2251
+   n=30: a cover of every odd prime below 2267 (7726130 nodes, 5.4 s); its least unstruck prime 2281
+   n=30: a cover of every odd prime below 2287 (14660156 nodes, 10.9 s); its least unstruck prime 2311
+   n=30: NO COVER below 2333 (55774293 nodes, 46.0 s)
+   FINDD n=30 D=2311 (attained by the vector; no vector strikes every odd prime below 2333) seconds=89.5 vector: 3:2 5:3 7:5 11:10 13:11 17:6 19:3 23:21 29:12 31:7 37:31 41:14 43:27 47:24 53:19 59:55 61:56 67:59 71:9 73:65 79:78 83:82 89:10 97:30 101:80 103:22 107:97 109:40 113:26 127:106
+
+Calibration (research's request): proof-mode cost at n = 30 against Y above D(30) = 2311 (Y = the first prime above f * D, f = 1.00 .. 3.00):
+   M=30 Y=2333 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2333, so D(30) < 2333; nodes=55774293 (cut by f: 2767441, dead: 0, children not built (ARGM): 92432235; 749 prefixes at depth 4) seconds=38.9
+   M=30 Y=2437 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2437, so D(30) < 2437; nodes=19710621 (cut by f: 1061078, dead: 0, children not built (ARGM): 34224564; 725 prefixes at depth 4) seconds=13.8
+   M=30 Y=2543 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2543, so D(30) < 2543; nodes=5569895 (cut by f: 367824, dead: 0, children not built (ARGM): 9937862; 712 prefixes at depth 4) seconds=4.5
+   M=30 Y=2777 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 2777, so D(30) < 2777; nodes=422662 (cut by f: 47342, dead: 0, children not built (ARGM): 816942; 670 prefixes at depth 4) seconds=0.4
+   M=30 Y=3011 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 3011, so D(30) < 3011; nodes=150536 (cut by f: 19343, dead: 0, children not built (ARGM): 298278; 624 prefixes at depth 4) seconds=0.2
+   M=30 Y=3467 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 3467, so D(30) < 3467; nodes=12589 (cut by f: 2815, dead: 0, children not built (ARGM): 27392; 567 prefixes at depth 4) seconds=0.0
+   M=30 Y=4637 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 4637, so D(30) < 4637; nodes=854 (cut by f: 353, dead: 0, children not built (ARGM): 2109; 345 prefixes at depth 4) seconds=0.0
+   M=30 Y=6947 NO COVER: no vector on the first 30 odd primes strikes every odd prime below 6947, so D(30) < 6947; nodes=115 (cut by f: 53, dead: 0, children not built (ARGM): 296; 0 prefixes at depth 31) seconds=0.0
+
+D(31) = 2521 (findD.py 31 2311, 4 threads, 146 s):
+   n=31: a cover of every odd prime below 2311 (3454259 nodes, 2.2 s); its least unstruck prime 2311
+   n=31: a cover of every odd prime below 2333 (46053350 nodes, 28.5 s); its least unstruck prime 2341
+   n=31: a cover of every odd prime below 2347 (45810974 nodes, 29.3 s); its least unstruck prime 2437
+   n=31: a cover of every odd prime below 2441 (33958860 nodes, 22.9 s); its least unstruck prime 2521
+   n=31: NO COVER below 2531 (89423756 nodes, 63.4 s)
+   FINDD n=31 D=2521 (attained by the vector; no vector strikes every odd prime below 2531) seconds=146.3 vector: 3:2 5:3 7:2 11:7 13:7 17:12 19:3 23:19 29:2 31:22 37:17 41:14 43:22 47:14 53:31 59:52 61:33 67:32 71:9 73:35 79:44 83:75 89:38 97:12 101:9 103:21 107:4 109:53 113:52 127:67 131:100
+
+D(32) = 2647 (findD.py 32 2521, 4 threads, 549 s):
+   n=32: a cover of every odd prime below 2521 (3897105 nodes, 2.7 s); its least unstruck prime 2551
+   n=32: a cover of every odd prime below 2557 (105680 nodes, 0.1 s); its least unstruck prime 2557
+   n=32: a cover of every odd prime below 2579 (5837509 nodes, 3.7 s); its least unstruck prime 2617
+   n=32: a cover of every odd prime below 2621 (144817196 nodes, 101.8 s); its least unstruck prime 2647
+   n=32: NO COVER below 2657 (603371797 nodes, 440.4 s)
+   FINDD n=32 D=2647 (attained by the vector; no vector strikes every odd prime below 2657) seconds=548.7 vector: 3:2 5:3 7:5 11:10 13:7 17:3 19:3 23:21 29:2 31:2 37:10 41:5 43:18 47:8 53:16 59:55 61:59 67:18 71:57 73:61 79:48 83:82 89:29 97:69 101:64 103:26 107:97 109:59 113:71 127:24 131:80 137:75
+
+D(33) = 2749 (findD.py 33 2647, 4 threads shared with the D(89) and floor runs, 1,325 s):
+   n=33: a cover of every odd prime below 2647 (5255929 nodes, 3.6 s); its least unstruck prime 2671
+   n=33: a cover of every odd prime below 2677 (1822835 nodes, 1.3 s); its least unstruck prime 2677
+   n=33: a cover of every odd prime below 2683 (577953216 nodes, 442.9 s); its least unstruck prime 2749
+   n=33: NO COVER below 2753 (1180565607 nodes, 877.6 s)
+   FINDD n=33 D=2749 (attained by the vector; no vector strikes every odd prime below 2753) seconds=1325.3 vector: 3:2 5:3 7:3 11:6 13:8 17:11 19:14 23:21 29:2 31:25 37:2 41:7 43:27 47:45 53:9 59:40 61:59 67:58 71:64 73:1 79:21 83:37 89:47 97:19 101:32 103:22 107:40 109:22 113:45 127:97 131:54 137:59 139:133
+
+D(89) walk with cover_ub.c (ARGM; from Y = 35,000 also without the dead-row test), 4 threads (the 35,000 run shared the machine with the
+floor and findD runs): the walk stops here (research: no more than a one-hour run), so 15,907 <= D(89) < 35,000:
+   M=89 Y=40000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 40000, so D(89) < 40000; nodes=25540840 (cut by f: 14976081, dead: 1728629, children not built (ARGM): 67070111; 1150 prefixes at depth 4) seconds=80.3
+   M=89 Y=37000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 37000, so D(89) < 37000; nodes=114986460 (cut by f: 52122745, dead: 9942831, children not built (ARGM): 579812760; 1154 prefixes at depth 4) seconds=512.4
+   M=89 Y=35000 NO COVER: no vector on the first 89 odd primes strikes every odd prime below 35000, so D(89) < 35000; nodes=457405148 (cut by f: 182710606, dead: 46058197, children not built (ARGM): 2033321416; 1154 prefixes at depth 4) seconds=3699.8
+
+Cross-check of the counts at n = 27, 28 with desert_fast5's count mode (the fixed build, 2 threads at nice 10): 10 and 1, as cover_ub:
+   n=27 r=107 COUNT D=1801 optimal vectors=10 above D=0 nodes=698600428 dead=315995907 skipped=76192466 forced=111720372 modulus-branchings=176038673 (over 32 classes: 0) rebuilds=17550 seconds=453.8
+   n=28 r=109 COUNT D=1933 optimal vectors=1 above D=0 nodes=2927575954 dead=1278366951 skipped=246172892 forced=601850142 modulus-branchings=703111343 (over 32 classes: 6) rebuilds=19656 seconds=1844.3
+
+D(34) = 2953 (findD.py 34 2749, 4 threads shared with the floor and count runs, 2,713 s; equal to the tempering value research quoted):
+   n=34: a cover of every odd prime below 2749 (1236983 nodes, 0.9 s); its least unstruck prime 2767
+   n=34: a cover of every odd prime below 2777 (29918360 nodes, 20.5 s); its least unstruck prime 2797
+   n=34: a cover of every odd prime below 2801 (903641541 nodes, 611.9 s); its least unstruck prime 2953
+   n=34: NO COVER below 2957 (2783123988 nodes, 2079.8 s)
+   FINDD n=34 D=2953 (attained by the vector; no vector strikes every odd prime below 2957) seconds=2713.0 vector: 3:2 5:2 7:2 11:8 13:3 17:8 19:13 23:20 29:20 31:23 37:32 41:26 43:31 47:40 53:21 59:2 61:10 67:19 71:69 73:30 79:15 83:37 89:50 97:37 101:69 103:73 107:58 109:90 113:109 127:97 131:107 137:135 139:72 149:88
+
+D(35) = 3079 (findD.py 35 2953, 3 threads, 6,226 s; research's forecast before the run: near 3,110, with a value outside 3,040..3,190 to count as a surprise; 3,079 is inside that window):
+   n=35: a cover of every odd prime below 2953 (5878343 nodes, 2.0 s); its least unstruck prime 2953
+   n=35: a cover of every odd prime below 2957 (227071110 nodes, 84.8 s); its least unstruck prime 2971
+   n=35: a cover of every odd prime below 2999 (180733317 nodes, 63.6 s); its least unstruck prime 3049
+   n=35: a cover of every odd prime below 3061 (4225514253 nodes, 1565.5 s); its least unstruck prime 3061
+   n=35: a cover of every odd prime below 3067 (2792437784 nodes, 1033.4 s); its least unstruck prime 3079
+   n=35: NO COVER below 3083 (8973037043 nodes, 3476.4 s)
+   FINDD n=35 D=3079 (attained by the vector; no vector strikes every odd prime below 3083) seconds=6225.7 vector: 3:2 5:2 7:3 11:2 13:6 17:6 19:13 23:15 29:20 31:27 37:9 41:7 43:9 47:45 53:39 59:18 61:26 67:32 71:37 73:8 79:24 83:69 89:8 97:12 101:29 103:43 107:56 109:39 113:92 127:95 131:98 137:88 139:25 149:122 151:98
+
+Floor at Y = 170,000, j = 10 (FIXORDER=1, 1 thread):
+   M=89 Y=170000 FLOOR depth 10 (the first j moduli): every vector leaves at least 777 of the 15496 odd primes below 170000 unstruck; nodes=726699931 (cut by f: 666744667, ARGM: 467347593; 1155 prefixes) seconds=12243.6
+   So every vector on the 89 moduli leaves >= 401 / 644 / 777 of the 15,496 odd primes below 170,000 unstruck (j = 6 / 8 / 10); the
+   best cover known (tempering) leaves 1,248.

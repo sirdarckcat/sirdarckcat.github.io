@@ -1,0 +1,5 @@
+F_3, J = 3: 32 rows of degree <= 4; room deg V_J = 33; best aligned R leaves 0 rows (R coefficients low to high: [2, 0, 2, 0, 1]); the parity desert's room is 99
+F_3, J = 2: 14 rows of degree <= 3; room deg V_J = 9; best aligned R leaves 1 rows (R coefficients low to high: [0, 1, 0, 1]); the parity desert's room is 27
+F_5, J = 2: 55 rows of degree <= 3; room deg V_J = 25; best aligned R leaves 3 rows (R coefficients low to high: [1, 1, 0, 1]); the parity desert's room is 125
+F_7, J = 1: 28 rows of degree <= 2; room deg V_J = 7; best aligned R leaves 5 rows (R coefficients low to high: [1, 0, 1]); the parity desert's room is 49
+F_5, J = 1: 15 rows of degree <= 2; room deg V_J = 5; best aligned R leaves 3 rows (R coefficients low to high: [1, 1, 1]); the parity desert's room is 25

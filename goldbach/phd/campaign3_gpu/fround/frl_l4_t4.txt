@@ -1,0 +1,64 @@
+# Fused Fermat rounds on the L4s and the T4, 88 moduli (frl.sh: campaign stopped ~3-5 min, checks, campaign restarted), 2026-11-23 12:31-12:41Z.
+# base / base_b: production (search_gpu5.py k29, /content/f29, fermat29_step_s1w.cuh); frw: search_gpu5_fr.py --fused-rounds 1, /content/f29fr, the same step.
+# 8 windows of 2^25 just below 2^30; the 146,191 known case on the normal and the deep sieve; deployed only if frw >= 1% faster.
+
+=== gold-l4b
+/content/frl/status.txt 2026-11-23T12:31:38Z stopping the campaign in /content/c170 (slice 33554432, test windows k in [1006632960, 2^30))
+2026-11-23T12:31:39Z stopped
+2026-11-23T12:34:40Z checks done
+2026-11-23T12:34:40Z campaign restarted in /content/c170 with K28_STEP=fermat29_step_s1w.cuh FERMAT28_DIR=/content/f29fr 
+2026-11-23T12:35:00Z procs 1
+/content/frl/result.txt base  : gaps [9.706, 9.808, 9.757] | mean after the first batch 9.757 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+frw   : gaps [9.559, 9.664, 9.554] | mean after the first batch 9.592 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+base_b: gaps [9.728, 9.823, 9.724] | mean after the first batch 9.758 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+kca: known case (normal sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+kcc: known case (deep sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+batch: frw 9.592 s against 9.758 s for production (x0.9831); deploy needs <= x0.99: True
+FRL-GATE PASSED
+FRL-DONE
+/content/frl/deploy.txt deployed: driver search_gpu5_fr.py as search_gpu5.py (the old one kept as search_gpu5_prev_fr.py), FERMAT28_DIR=/content/f29fr, --fused-rounds 1 in deep_env
+=== gold-gpu
+/content/frl/status.txt 2026-11-23T12:36:00Z stopping the campaign in /content/c170 (slice 33554432, test windows k in [1006632960, 2^30))
+2026-11-23T12:36:01Z stopped
+2026-11-23T12:38:57Z checks done
+2026-11-23T12:38:58Z campaign restarted in /content/c170 with K28_STEP=fermat29_step_s1w.cuh FERMAT28_DIR=/content/f29fr 
+2026-11-23T12:39:18Z procs 1
+/content/frl/result.txt base  : gaps [9.499, 9.501, 9.551] | mean after the first batch 9.517 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+frw   : gaps [9.399, 9.4, 9.348] | mean after the first batch 9.382 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+base_b: gaps [9.521, 9.523, 9.518] | mean after the first batch 9.521 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+kca: known case (normal sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+kcc: known case (deep sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+batch: frw 9.382 s against 9.519 s for production (x0.9857); deploy needs <= x0.99: True
+FRL-GATE PASSED
+FRL-DONE
+/content/frl/deploy.txt deployed: driver search_gpu5_fr.py as search_gpu5.py (the old one kept as search_gpu5_prev_fr.py), FERMAT28_DIR=/content/f29fr, --fused-rounds 1 in deep_env
+=== gold-l4c
+/content/frl/status.txt 2026-11-23T12:36:09Z stopping the campaign in /content/c170 (slice 33554432, test windows k in [1006632960, 2^30))
+2026-11-23T12:36:10Z stopped
+2026-11-23T12:39:07Z checks done
+2026-11-23T12:39:07Z campaign restarted in /content/c170 with K28_STEP=fermat29_step_s1w.cuh FERMAT28_DIR=/content/f29fr 
+2026-11-23T12:39:27Z procs 1
+/content/frl/result.txt base  : gaps [9.525, 9.542, 9.597] | mean after the first batch 9.555 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+frw   : gaps [9.431, 9.432, 9.435] | mean after the first batch 9.433 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+base_b: gaps [9.531, 9.559, 9.582] | mean after the first batch 9.557 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+kca: known case (normal sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+kcc: known case (deep sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+batch: frw 9.433 s against 9.556 s for production (x0.9871); deploy needs <= x0.99: True
+FRL-GATE PASSED
+FRL-DONE
+/content/frl/deploy.txt deployed: driver search_gpu5_fr.py as search_gpu5.py (the old one kept as search_gpu5_prev_fr.py), FERMAT28_DIR=/content/f29fr, --fused-rounds 1 in deep_env
+=== gold-xt4
+/content/frl/status.txt 2026-11-23T12:36:15Z stopping the campaign in /content/c170 (slice 33554432, test windows k in [1006632960, 2^30))
+2026-11-23T12:36:16Z stopped
+2026-11-23T12:41:16Z checks done
+2026-11-23T12:41:16Z campaign restarted in /content/c170 with K28_STEP=fermat29_step_s1w.cuh FERMAT28_DIR=/content/f29fr 
+2026-11-23T12:41:36Z procs 1
+/content/frl/result.txt base  : gaps [9.296, 9.345, 9.388, 9.396, 9.378, 9.416, 9.417] | mean after the first batch 9.377 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+frw   : gaps [9.105, 9.198, 9.185, 9.149, 9.237, 9.23, 9.279] | mean after the first batch 9.198 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+base_b: gaps [9.286, 9.349, 9.277, 9.352, 9.358, 9.34, 9.336] | mean after the first batch 9.328 s | slice lines vs base: IDENTICAL (8) | ['C3GPU-EXHAUSTED', 'rc=2']
+kca: known case (normal sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+kcc: known case (deep sieve): reported [(3101585871, 146191, True)] | slices 1 | ['C3GPU-EXHAUSTED', 'rc=2'] | 146,191's member: True
+batch: frw 9.198 s against 9.352 s for production (x0.9834); deploy needs <= x0.99: True
+FRL-GATE PASSED
+FRL-DONE
+/content/frl/deploy.txt deployed: driver search_gpu5_fr.py as search_gpu5.py (the old one kept as search_gpu5_prev_fr.py), FERMAT28_DIR=/content/f29fr, --fused-rounds 1 in deep_env

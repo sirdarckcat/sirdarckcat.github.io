@@ -1,0 +1,6 @@
+kmax=28 shifts=126 stream_members=354228 stream_mass=7.36058 pairs=21653324 nb_mass_all=41.1791 nb_mass_outside_stream=37.5494  R_all=5.595 R_outside=5.101
+kmax=29 shifts=126 stream_members=1039832 stream_mass=15.2222 pairs=63524195 nb_mass_all=117.299 nb_mass_outside_stream=97.0898  R_all=7.706 R_outside=6.378
+kmax=30 shifts=126 stream_members=2612970 stream_mass=27.1671 pairs=159502137 nb_mass_all=284.362 nb_mass_outside_stream=204.367  R_all=10.467 R_outside=7.523
+kmax=31 shifts=126 stream_members=5742016 stream_mass=43.0124 pairs=350104030 nb_mass_all=600.317 nb_mass_outside_stream=355.464  R_all=13.957 R_outside=8.264
+rho=0.45:
+kmax=30 shifts=126 stream_members=2612970 stream_mass=110.327 pairs=159502137 nb_mass_all=1366.08 nb_mass_outside_stream=1042.8  R_all=12.382 R_outside=9.452

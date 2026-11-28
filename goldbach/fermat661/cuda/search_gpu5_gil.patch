@@ -1,0 +1,13 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -99,6 +99,10 @@
+ from gmpy2 import mpz              # noqa: E402
+ import cupy as cp                  # noqa: E402
+ import cupyx                       # noqa: E402
++# The GIL hand-off between this process's Python threads (the sieve thread, the two pool halves, the main thread): a thread that wants the GIL while another is running Python bytecode waits for the
++# interpreter's switch interval, 5 ms by default.  Every round of run_pool ends in one host read (a sync) after which the thread needs the GIL back, and the sieve thread does the same after every row group.
++# PY_SWITCH_S=0.0002 asks for a 0.2 ms hand-off.  Default: unchanged.
++sys.setswitchinterval(float(os.environ.get("PY_SWITCH_S", "0.005")))
+ from gpu_fermat import kernel as kernel2, to_limbs   # noqa: E402
+ from gpu_fermat3 import kernel as kernel3      # noqa: E402
+ sys.path.insert(0, os.path.join(args.sieve200, "cuda"))

@@ -1,0 +1,73 @@
+name, driver_version, power.limit [W], clocks.max.sm [MHz]
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 580.82.07, 600.00 W, 2430 MHz
+
+=================================================================== F. is clock64() the SM clock?  (ticks per ns of %globaltimer, ticks per dependent IMAD: 4 expected; the SM clock is sampled beside it)
+2026-11-23T04:07:12Z
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 1 warp(s) an SM, 188 SMs, 300 ms: clock64 ticks at 2.430 GHz (min 2.427, max 2.430); 6.012 ticks per dependent IMAD (4 expected if clock64 counts SM cycles: ratio 1.503)
+NVIDIA RTX PRO 6000 Blackwell Server Edition, 4 warp(s) an SM, 188 SMs, 300 ms: clock64 ticks at 2.430 GHz (min 2.427, max 2.430); 6.012 ticks per dependent IMAD (4 expected if clock64 counts SM cycles: ratio 1.503)
+compare the GHz with nvidia-smi's SM clock during the run (nvidia-smi --query-gpu=clocks.sm --format=csv -lms 100); a ratio well below 1 means clock64 ticks slower than the SM executes
+  nvidia-smi SM clock during the run: median 2422 MHz, min 2422, max 2422
+
+=================================================================== G. accumulators a column: s1r_asm (production) against s2r_asm and s4r_asm (tests/s, --check against gmpy2; the cost model for a throughput-bound step: -2.5% and -7%)
+2026-11-23T04:07:13Z
+device: NVIDIA RTX PRO 6000 Blackwell Server Edition  batch 1048576  threads 128  15 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (36 base-2 PRPs)
+  s1r_asm  regs  92 local  88 B: median   23,291,777 tests/s  best   23,296,959  (334 loops)
+  s2r_asm: 0 mismatches against gmpy2 in 2000 candidates (45 base-2 PRPs)
+  s2r_asm  regs  96 local  88 B: median   22,483,866 tests/s  best   22,489,269  (322 loops)
+  s4r_asm: 0 mismatches against gmpy2 in 2000 candidates (27 base-2 PRPs)
+  s4r_asm  regs  94 local  88 B: median   21,441,125 tests/s  best   21,447,817  (307 loops)
+
+=================================================================== C. the Fermat step inside the real kernel (bench_fm28_step.py): E1 loop-body size, E2 extra instructions, E3 occupancy (the GHz column: clock64 ticks per ns of event time, to compare with the SM clock sampled beside it)
+2026-11-23T04:08:00Z
+--- style s1r_asm
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, style s1r_asm, 3000 steps a launch, 128 threads a CTA
+
+E1  loop-body size (clock64 ticks per warp-step per scheduler; the next to last column divides by the IMAD.WIDE of the step; GHz = clock64 ticks per ns of wall time: the SM clock if clock64 counts SM cycles)
+ limbs IMAD.WIDE  ~code KB  regs  CTAs/SM  ticks/step  ticks/IMAD.WIDE    GHz
+     8       100       2.1    35        5         499             4.99  2.421
+    12       222       4.7    50        5        1055             4.75  2.422
+    16       392       8.3    62        5        1806             4.61  2.424
+    20       610      12.9    72        5        2806             4.60  2.426
+    24       876      18.5    80        5        4001             4.57  2.426
+
+E2  extra instructions inside the 24-limb step (ticks a warp-step, difference to the first row, per added instruction)
+config                  regs  CTAs/SM  ticks/step    added  per instruction    GHz
+baseline                  80        5        4001                            2.426
+
+E3  occupancy (24 limbs): ticks per warp-step per scheduler against the warps a scheduler holds (flat: the pipe is the limit; falling with more warps: latency bound)
+ CTAs/SM  warps/scheduler  ticks/step  ticks/IMAD.WIDE    GHz
+       1                1        5890             6.72  2.425
+       2                2        4035             4.61  2.425
+       3                3        2715             3.10  1.431
+       4                4        3987             4.55  2.426
+       5                5        4001             4.57  2.423
+       6                6        3547             4.05  2.191
+--- style s1rw
+NVIDIA RTX PRO 6000 Blackwell Server Edition: 188 SMs, style s1rw, 3000 steps a launch, 128 threads a CTA
+
+E1  loop-body size (clock64 ticks per warp-step per scheduler; the next to last column divides by the IMAD.WIDE of the step; GHz = clock64 ticks per ns of wall time: the SM clock if clock64 counts SM cycles)
+ limbs IMAD.WIDE  ~code KB  regs  CTAs/SM  ticks/step  ticks/IMAD.WIDE    GHz
+     8       100       2.1    38        5         521             5.21  2.424
+    12       222       4.7    48        5        1094             4.93  2.424
+    16       392       8.3    62        5        1872             4.78  2.425
+    20       610      12.9    78        5        2908             4.77  2.426
+    24       876      18.5    90        5        4077             4.65  2.425
+
+E2  extra instructions inside the 24-limb step (ticks a warp-step, difference to the first row, per added instruction)
+config                  regs  CTAs/SM  ticks/step    added  per instruction    GHz
+baseline                  90        5        4077                            2.426
+
+E3  occupancy (24 limbs): ticks per warp-step per scheduler against the warps a scheduler holds (flat: the pipe is the limit; falling with more warps: latency bound)
+ CTAs/SM  warps/scheduler  ticks/step  ticks/IMAD.WIDE    GHz
+       1                1        5511             6.29  2.425
+       2                2        3874             4.42  2.425
+       3                3        2587             2.95  1.215
+       4                4        3898             4.45  2.426
+       5                5        4077             4.65  2.426
+       6  (the registers do not allow it)
+  nvidia-smi SM clock during section C (samples above 500 MHz): median 2422 MHz, min 2422, max 2422
+
+=================================================================== done
+2026-11-23T04:08:07Z
+output file: /content/probe/exp_rtx.txt

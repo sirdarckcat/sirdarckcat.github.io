@@ -1,0 +1,38 @@
+T1 k best of a product: 300 random instances, 0 failures; max pushes per output 2.67 (bound 3)
+T2 arc identity frac(sum x_r u_r/r) = x/P: 49462 integers over 4 sets of moduli, all exact
+T3 rounded DP: 60 random instances, 0 failures; listed 2069, of them below X 1365 (ratio 1.516; worst instance 2.25); nodes visited per listed point at most 4.65
+T4 exact trellis width at a cut (prefix = first t moduli), and the fooling set; X <= P/2
+  moduli [3, 5, 7, 11, 13], X=1000, P=15015, e^D=15.0
+    t=1: P_I=3, P_Ic=5005, det. width 3, min(P_I,P_Ic,X)=3, fooling True
+    t=2: P_I=15, P_Ic=1001, det. width 15, min(P_I,P_Ic,X)=15, fooling True
+    t=3: P_I=105, P_Ic=143, det. width 105, min(P_I,P_Ic,X)=105, fooling True
+    t=4: P_I=1155, P_Ic=13, det. width 13, min(P_I,P_Ic,X)=13, fooling True
+  moduli [3, 5, 7, 11, 13], X=7000, P=15015, e^D=2.1
+    t=1: P_I=3, P_Ic=5005, det. width 3, min(P_I,P_Ic,X)=3, fooling True
+    t=2: P_I=15, P_Ic=1001, det. width 15, min(P_I,P_Ic,X)=15, fooling True
+    t=3: P_I=105, P_Ic=143, det. width 105, min(P_I,P_Ic,X)=105, fooling True
+    t=4: P_I=1155, P_Ic=13, det. width 26, min(P_I,P_Ic,X)=13, fooling True
+  moduli [13, 11, 7, 5, 3], X=300, P=15015, e^D=50.0
+    t=1: P_I=13, P_Ic=1155, det. width 13, min(P_I,P_Ic,X)=13, fooling True
+    t=2: P_I=143, P_Ic=105, det. width 119, min(P_I,P_Ic,X)=105, fooling True
+    t=3: P_I=1001, P_Ic=15, det. width 15, min(P_I,P_Ic,X)=15, fooling True
+    t=4: P_I=5005, P_Ic=3, det. width 3, min(P_I,P_Ic,X)=3, fooling True
+  moduli [5, 7, 11, 13, 17], X=40000, P=85085, e^D=2.1
+    t=1: P_I=5, P_Ic=17017, det. width 5, min(P_I,P_Ic,X)=5, fooling True
+    t=2: P_I=35, P_Ic=2431, det. width 35, min(P_I,P_Ic,X)=35, fooling True
+    t=3: P_I=385, P_Ic=221, det. width 261, min(P_I,P_Ic,X)=221, fooling True
+    t=4: P_I=5005, P_Ic=17, det. width 34, min(P_I,P_Ic,X)=17, fooling True
+  moduli [7, 3, 13, 5, 11, 2], X=2000, P=30030, e^D=15.0
+    t=1: P_I=7, P_Ic=4290, det. width 7, min(P_I,P_Ic,X)=7, fooling True
+    t=2: P_I=21, P_Ic=1430, det. width 21, min(P_I,P_Ic,X)=21, fooling True
+    t=3: P_I=273, P_Ic=110, det. width 199, min(P_I,P_Ic,X)=110, fooling True
+    t=4: P_I=1365, P_Ic=22, det. width 44, min(P_I,P_Ic,X)=22, fooling True
+    t=5: P_I=15015, P_Ic=2, det. width 2, min(P_I,P_Ic,X)=2, fooling True
+T5 rectangles inside the widened arc: |A||C| against the bound; strip: points of the top strip that can share a rectangle with a given one
+  moduli [3, 5, 7, 11, 13, 17] cut 3 (P_I=105, P_Ic=2431), X=6000, e^D=42.5, eps=0.25: largest rectangle found 126 <= bound 166.0; strip partners 35 <= 120.8; states needed >= max(36.1, 12.4); the DP uses B = 1022
+  moduli [3, 5, 7, 11, 13, 17] cut 3 (P_I=105, P_Ic=2431), X=2000, e^D=127.6, eps=0.5: largest rectangle found 39 <= bound 54.8; strip partners 10 <= 61.3; states needed >= max(36.5, 16.3); the DP uses B = 1532
+  moduli [3, 5, 7, 11, 13, 17] cut 3 (P_I=105, P_Ic=2431), X=20000, e^D=12.8, eps=0.1: largest rectangle found 680 <= bound 793.7; strip partners 54 <= 199.9; states needed >= max(25.2, 10.0); the DP uses B = 766
+  moduli [3, 5, 7, 11, 13, 17] cut 2 (P_I=15, P_Ic=17017), X=6000, e^D=42.5, eps=0.25: largest rectangle found 600 <= bound 680.3; strip partners 100 <= 289.6; states needed >= max(8.8, 5.2); the DP uses B = 1022
+  moduli [5, 7, 11, 13, 17, 19] cut 3 (P_I=385, P_Ic=4199), X=30000, e^D=53.9, eps=0.05: largest rectangle found 215 <= bound 255.1; strip partners 4 <= 24.5; states needed >= max(117.6, 61.2); the DP uses B = 6467
+  moduli [5, 7, 11, 13, 17, 19] cut 3 (P_I=385, P_Ic=4199), X=3000, e^D=538.9, eps=1.0: largest rectangle found 26 <= bound 36.9; strip partners 18 <= 75.8; states needed >= max(81.3, 39.6); the DP uses B = 3234
+T6 rank-two Bohr sets: 25 random instances, 0 failures; states B1*B2 = (m/eps)^2 * P^2/(X1 X2) (m = 4, eps = 1: ratio 16.8); |R| / |Bohr set| on average 3.73

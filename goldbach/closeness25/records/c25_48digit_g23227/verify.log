@@ -1,0 +1,2 @@
+N has 48 digits; 2,590 odd primes q < 23,227: 2,500 with a factor <= 1,000,000 of N - q, 90 by a failed Fermat test; 0 not shown composite (1 s)
+g(N) = 23,227: N - 23227 is a probable prime (BPSW + 25 rounds); every q below it fails (1 s)

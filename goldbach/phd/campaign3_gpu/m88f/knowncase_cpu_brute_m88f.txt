@@ -1,0 +1,49 @@
+# m88f known case, CPU side (cpu_brute_k0.py, this session's container, 4 processes, 2026-11-23 16:07-16:38Z): every member k in [2^32 - 2^19, 2^32) of
+# q170000_m88f_t1_v0 (kc_spec_m88f.json), residual rows recomputed from gcd(N0 - q, M), each member's rows scanned in ascending order with gmpy2.is_bpsw_prp until the first
+# prime; listed: every member whose least prime q is >= T = 45,061 (the 400th residual row).
+
+q170000_m88f_t1_v0: residual recomputed from gcd: 1257 rows (identical to the spec's), k in [4294443008, 4294967296), T = 45061
+BRUTE k=4294454767 q=53857
+BRUTE k=4294464281 q=53617
+BRUTE k=4294473436 q=48817
+BRUTE k=4294480898 q=48049
+BRUTE k=4294491537 q=51607
+BRUTE k=4294541430 q=47041
+BRUTE k=4294542945 q=46861
+BRUTE k=4294559947 q=53617
+BRUTE k=4294567075 q=48757
+BRUTE k=4294577715 q=51691
+BRUTE k=4294583129 q=51061
+BRUTE k=4294594077 q=45979
+BRUTE k=4294601316 q=49171
+BRUTE k=4294646766 q=52999
+BRUTE k=4294649190 q=47797
+BRUTE k=4294660934 q=51517
+BRUTE k=4294661226 q=55051
+BRUTE k=4294675479 q=46861
+BRUTE k=4294678224 q=55057
+BRUTE k=4294684842 q=46171
+BRUTE k=4294689431 q=49477
+BRUTE k=4294700014 q=58687
+BRUTE k=4294704723 q=48871
+BRUTE k=4294723595 q=51349
+BRUTE k=4294843739 q=47041
+BRUTE k=4294864526 q=46171
+BRUTE k=4294867414 q=46861
+BRUTE k=4294867716 q=48817
+BRUTE k=4294870650 q=48649
+BRUTE k=4294874592 q=49669
+BRUTE k=4294875689 q=46867
+BRUTE k=4294904695 q=48259
+BRUTE k=4294905461 q=51439
+BRUTE k=4294927539 q=52189
+BRUTE k=4294933892 q=75037
+BRUTE k=4294934565 q=46687
+BRUTE k=4294954675 q=48757
+BRUTE k=4294955845 q=45979
+BRUTE k=4294957980 q=51061
+BRUTE k=4294960722 q=46441
+BRUTE-DONE 40 members with no prime below 45061
+
+# Against the GPU side (checks_l4_cpu.txt, kc: the production deep path on gold-l4b at f = 0, --near-miss 45061, k in [2^32 - 2^19, 2^32)):
+# 40 members on both sides, the same k and the same least prime q for every one: IDENTICAL (the lead's condition 3).

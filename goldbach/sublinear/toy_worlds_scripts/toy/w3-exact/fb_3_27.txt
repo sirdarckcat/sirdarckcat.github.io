@@ -1,0 +1,10 @@
+q=3 n=27: family F_q[x^p-x]: 19683 members (7s); random sample 100000 of q^n = 7.626e+12; rows to degree 10 (9382)
+  best family member: D = 9, G = 1580: N = x^27 + x^24 + x^22 + x^20 + x^18 + x^16 + 2*x^15 + x^14 + 2*x^13 + 2*x^11 + 2*x^10 + 2*x^9 + x^8 + x^7 + x^6 + x^5 + 2*x^4 + 2*x^3 + 2*x + 2
+  D >= 2: family  19683 of 19683 (1.000e+00); sample   89185 of 100000 (8.919e-01); root-law prediction for the family  18946.2; (family rate)^p = 1.000e+00 => expected number among all q^n: 7.63e+12
+  D >= 3: family  18880 of 19683 (9.592e-01); sample   79616 of 100000 (7.962e-01); root-law prediction for the family  18242.8; (family rate)^p = 8.825e-01 => expected number among all q^n: 6.73e+12
+  D >= 4: family  15166 of 19683 (7.705e-01); sample   59607 of 100000 (5.961e-01); root-law prediction for the family  16565.0; (family rate)^p = 4.574e-01 => expected number among all q^n: 3.49e+12
+  D >= 5: family  12364 of 19683 (6.282e-01); sample   34404 of 100000 (3.440e-01); root-law prediction for the family  13792.0; (family rate)^p = 2.479e-01 => expected number among all q^n: 1.89e+12
+  D >= 6: family   8448 of 19683 (4.292e-01); sample   10324 of 100000 (1.032e-01); root-law prediction for the family   9233.7; (family rate)^p = 7.907e-02 => expected number among all q^n: 6.03e+11
+  D >= 7: family   4342 of 19683 (2.206e-01); sample    1130 of 100000 (1.130e-02); root-law prediction for the family   4416.9; (family rate)^p = 1.073e-02 => expected number among all q^n: 8.19e+10
+  D >= 8: family    669 of 19683 (3.399e-02); sample       6 of 100000 (6.000e-05); root-law prediction for the family    770.6; (family rate)^p = 3.926e-05 => expected number among all q^n: 2.99e+08
+  D >= 9: family     13 of 19683 (6.605e-04); sample       0 of 100000 (0.000e+00); root-law prediction for the family      nan; (family rate)^p = 2.881e-10 => expected number among all q^n: 2.2e+03

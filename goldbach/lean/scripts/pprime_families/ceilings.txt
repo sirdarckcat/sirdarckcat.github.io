@@ -1,0 +1,14 @@
+# incidences with the primes 29..199: mean 75.33, sd 5.38 over all members
+order of all members | N examined for 1 | 3 | 10 | 30 successes | gain in nats over cover first at 1 | 3 | 10 | 30
+rows left at depth 23 (cover first) | 2,982 | 63,350 | 253,380 | 1,205,425 | +0.00 | +0.00 | -0.00 | -0.00
+rows left at depth 200 (ideal) | 13 | 401 | 10,811 | 73,849 | +5.44 | +5.06 | +3.15 | +2.79
+incidences with 29..199 alone, most first | 95,028 | 340,021 | 3,328,889 | 10,026,809 | -3.46 | -1.68 | -2.58 | -2.12
+number of primes 29..199 with N in the best third of classes, most first | 36,258 | 552,955 | 2,081,876 | 9,519,870 | -2.50 | -2.17 | -2.11 | -2.07
+cover first, ties broken by incidences | 1,071 | 26,003 | 216,153 | 1,209,622 | +1.02 | +0.89 | +0.16 | -0.00
+rows left at depth 23 - 0.1 x (incidences - 75) | 755 | 14,375 | 224,358 | 1,242,916 | +1.37 | +1.48 | +0.12 | -0.03
+rows left at depth 23 - 0.2 x (incidences - 75) | 515 | 46,242 | 170,235 | 1,300,316 | +1.76 | +0.31 | +0.40 | -0.08
+rows left at depth 23 - 0.3 x (incidences - 75) | 592 | 68,150 | 181,188 | 1,433,651 | +1.62 | -0.07 | +0.34 | -0.17
+rows left at depth 23 - 0.4 x (incidences - 75) | 1,091 | 76,365 | 201,744 | 1,519,935 | +1.01 | -0.19 | +0.23 | -0.23
+rows left at depth 23 - 0.5 x (incidences - 75) | 2,521 | 57,759 | 218,044 | 1,711,612 | +0.17 | +0.09 | +0.15 | -0.35
+rows left at depth 23 - 0.7 x (incidences - 75) | 7,146 | 23,911 | 288,343 | 2,170,076 | -0.87 | +0.97 | -0.13 | -0.59
+rows left at depth 23 - 1.0 x (incidences - 75) | 23,094 | 43,198 | 612,539 | 2,722,057 | -2.05 | +0.38 | -0.88 | -0.81

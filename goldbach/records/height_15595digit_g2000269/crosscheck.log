@@ -1,0 +1,5 @@
+PARI N-1 (Pocklington-Lehmer) certificate for P = N - g: valid
+PARI isprime(P) = 1
+primes q < g scanned: 148950   (pi(g-1) = 148950)
+complements N - q with no prime factor <= 79139: 0
+CROSSCHECK PASSED: g(N) = 2000269

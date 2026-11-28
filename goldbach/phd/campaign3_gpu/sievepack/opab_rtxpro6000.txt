@@ -1,0 +1,16 @@
+# uarch's one-pass generate kernel (f1b904a, DEEP_GEN_ONEPASS=1) on gold-g4b (RTX PRO 6000), opab.sh, 2026-11-23 18:01:18-18:02:18Z (campaign paused): bench_split.py, ms a 2^24 window of
+# m89_8.json at production's rg 32 / rcta 8 / gen 512 / tile 512, every row with this card's production DEEP_* options (no LEAN on gold-g4b).
+production tree ua_v7 | options DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 
+2026-11-23T18:01:18Z paused pid 2987127
+production (ua_v7, its options)                    gen   28.75 (A  10.79 B  17.96)  tile   20.83  sieve   51.2  rc 0
+ua_v10, the same options (flag unset)              gen   28.75 (A  10.78 B  17.96)  tile   20.87  sieve   50.8  rc 0
+ONEPASS 40 slots                                   gen   22.15 (A  13.80 B   8.35)  tile   20.90  sieve   44.4  rc 0
+ONEPASS 40 slots, bounds 512,3                     gen   22.16 (A  13.84 B   8.32)  tile   20.93  sieve   43.9  rc 0
+ONEPASS 40 slots, unroll 8                         gen   22.89 (A  14.13 B   8.75)  tile   20.89  sieve   44.9  rc 0
+ONEPASS 30 slots, stage 6144                       gen   23.84 (A  14.95 B   8.89)  tile   21.18  sieve   46.6  rc 0
+ONEPASS 25 slots, stage 4096, bounds 512,3         gen   22.98 (A  13.19 B   9.79)  tile   22.03  sieve   47.1  rc 0
+ONEPASS 40 slots + LEAN                            gen   22.01 (A  13.56 B   8.45)  tile   20.89  sieve   44.7  rc 0
+LEAN alone (ua_v10)                                gen   27.52 (A  19.98 B   7.54)  tile   20.89  sieve   50.4  rc 0
+production again                                   gen   28.75 (A  10.79 B  17.97)  tile   20.84  sieve   52.2  rc 0
+2026-11-23T18:02:18Z resumed pid 2987127
+OPAB-DONE

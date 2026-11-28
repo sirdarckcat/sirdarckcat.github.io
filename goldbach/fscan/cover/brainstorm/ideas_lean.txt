@@ -1,0 +1,117 @@
+From the Lean session (session_01SVqhfkqGUryddoyPSxGpdM). The user asked me, in their words: "Send 100 ideas to the Research session on how to improve our closeness dramatically. Don't think too much about them just babble." So this is babble on purpose: unvetted, unranked, some of it repeats things we closed (marked), some of it is probably wrong. Take what is useful; no reply needed.
+
+SEARCH SPEED (tests)
+1. Dedicated squaring in the kernel: cross products once, then double. Up to 1.5 times fewer limb products than a general multiply.
+2. 64-bit limbs on the GPU with __umul64hi: 11 limbs instead of 21, about a quarter of the products.
+3. Double-precision FMA limbs (52 bits) on cards with fast FP64.
+4. One level of Karatsuba at 21 limbs, or 3 blocks of 7.
+5. Lazy reduction: drop the conditional subtraction in mont_sqr and keep x < 2n; R = 2^672 against n < 2^665 leaves the room.
+6. R mod n costs 672 doublings per test: compute it on the CPU per row and update it in k, or start from a small power and square.
+7. Shift by up to 4 bits and reduce once instead of one dbl_mod per set bit.
+8. Since n = cq + kM, look once for any exponent structure shared along k for a fixed row. Probably none; one hour to know.
+9. A100/H100 instead of L4: 3 to 6 times per card.
+10. Spot rentals of consumer cards (4090 class).
+11. Volunteers: a WebGPU page or a BOINC application that scans a variant range.
+12. FPGA Montgomery farm; 665 bits is small.
+13. AVX-512 IFMA kernel, 13 limbs of 52 bits, 8 lanes, for the CPU machines.
+14. Product-tree gcd of survivors against primes up to 2^40 on the GPU before any Fermat test.
+15. A sieve to 2^40 doubles the prime density among tested rows, so a member dies in half the tests; find the cheapest way to get there.
+16. Inside a member, test first the rows that survived the deepest sieve.
+17. Tune the number of rows tested per launch by member score.
+18. Sieve on one GPU and tests on another so both run flat out.
+19. The GPU is at half its test rate: lower the selection threshold until tests saturate.
+20. Re-optimise the sieve bound on the GPU by measurement (tests per death against sieve cost).
+
+SIEVE AND SELECTION
+21. Sieve to 2^32 on the GPU by one modular inverse per (row, prime): 240 survivors instead of 450.
+22. Two-stage selection: shallow sieve, keep the emptiest 20 percent, deep sieve those, keep the emptiest 2 percent, test.
+23. A third stage with batch gcd against slices of a primorial.
+24. Score by exact posterior: a row that survived a deeper bound weighs more.
+25. Sieve deeper only the rows that survive more often.
+26. Bit-sliced 16-bit survivor counts with popcount on packed rows.
+27. Share sieve tables between neighbouring vectors; they differ in a few rows.
+28. 64 variants at once: same M, so the inverse of M modulo each sieve prime is shared.
+29. Enumerate only the k in the best classes modulo 443*449*457: structured selection without touching M.
+30. Go on: a tree over k mod 463, 467, 479, ... with branch and bound on expected survivors.
+31. Sample k by Gibbs/tempering in the residue space of k with weight exp(-theta * survivors) instead of scanning: the cover sampler one level down.
+32. Measure the density of states one level down (how many k have at most u survivors) and choose the temperature where sieve cost and test cost balance.
+33. Sort all (vector, k) of a batch globally by survivors before testing, not per vector.
+34. Drop a vector early if its first million members show a worse survivor distribution than the pool.
+35. Reuse a PRP found for one variant in another: rows are not shared across different N0. Dead, recorded.
+36. Reuse results between the 122,000 and the 140,000 campaigns: different covers, different N0. Dead, recorded.
+37. Bank every member that survives all rows below 100,000 as a semi-success and extend those; it is what sequential testing does inside a member, but check that nothing is thrown away between campaigns.
+38. Near-miss mining: members that died on one of their last five rows.
+39. Learn a score on the Q = 3001 toy, where successes are frequent: is there signal beyond the survivor count?
+40. Reorder rows per vector by which rows kill most often in practice.
+
+COVERS AND VECTORS
+41. More seeds and longer runs of both samplers at the chosen Q; merge pools. The scatter between runs is four rows.
+42. Pair and triple moves; crossover of blocks of classes between replicas.
+43. Exact polish: fix all but 15 moduli and solve the rest exactly.
+44. Let the sampler change the modulus SET (add and remove moves under a budget on ln M).
+45. 89 moduli with 1.2e7 members per vector: +0.1 nats if per-vector setup is cheap.
+46. Full budget: M up to the cap, one member per vector, Gray-code enumeration of vectors with incremental CRT and incremental row lists.
+47. Slightly oversized covers by meet in the middle with lists of 1e9: +0.2 to 0.4 nats by your costing.
+48. BKZ on a 30-dimensional subproblem to push the oversize a few more digits.
+49. Soft Q: weight 1 below Q and a taper above, to raise the overshoot.
+50. Optimise for the expected MAXIMUM g of the planned campaign, not for P(g >= Q).
+51. One vector family good at 130k, 140k and 150k at once (a Pareto front from the sampler).
+52. In the shell slightly above the optimum vectors are e^40 times more numerous: among them pick those whose rows the SIEVE kills most.
+53. Among equal-row vectors choose the one whose rows cluster most modulo the first sieve primes (fatter low-survivor tail). Measure; could be 0.01 or 0.5 nats.
+54. Choose N0 for a fixed vector so that the classes c(q,s) coincide for many rows at small s.
+55. Drop up front the members with N divisible by a non-cover prime s below 2,000: they lose every kill by s.
+56. Prefer members whose N mod s is the richest class for s = 443, 449, 457, 461, 463, before sieving.
+57. N mod 4, 8, 16: does nothing for the rows. Recorded.
+58. Allow class 0 for the five largest moduli (it kills the row q = r).
+59. Let the sampler pick the last moduli from a pool up to 2,000; some large prime may have a freak class.
+60. For each of the last ten moduli compare "best class" with "leave it out and enlarge the k range"; a variable-set sampler decides.
+
+STRUCTURE OF N (mostly closed; listed so nobody has to wonder again)
+61. N = u^2 + c with rows c + v^2. Closed: sqrt(Q) rows, sqrt(X) members.
+62. N = f(u), degree 3 or more. Worse.
+63. N - q = a^4 + 4b^4 for chosen rows. One row per identity.
+64. Aurifeuillian N. Same.
+65. N = c*2^n + d: covering on the exponent, and n < 665 leaves no room.
+66. Several rows being perfect powers: forces small bases.
+67. A common large factor of several rows: impossible above Q (theorem).
+68. Primes in (Q, Q^2) planted for one row each: 12 nats per row.
+69. Prime powers and composite moduli: closed (theorem).
+70. A row that is a base-2 pseudoprime kills a true success in the search. Astronomically rare at 200 digits; one line in the README.
+
+OTHER WAYS TO READ "CLOSENESS"
+71. Closeness is g over the ceiling at the size of N. Inside N < 1e200 the best closeness is not at 200 digits: the 23-digit numbers have 74 percent. Ask the user which reading counts.
+72. Map closeness against digits for what one GPU-day buys at 23, 30, 40, 60, 100, 150, 200 digits.
+73. At 30 to 60 digits tests are a hundred times cheaper; run the GPU engine there with re-optimised covers.
+74. Your partial-witness exhaustive scan pushed to 1e21 or 1e22 with the GPU sieve.
+75. Hybrid at 25 to 35 digits: covers with M near 1e16 and exhaustive k.
+76. Recompute the ceiling with the cover-aware first moment instead of the random-N one.
+77. Calibrate the ceiling on your 432 first-occurrence numbers; if the true line at 200 digits is below 2.13 million, closeness rises with no new N.
+78. Report closeness in nats next to the percentage; progress is linear on that scale.
+
+MORE COMPUTE, CHEAPLY
+79. A price list for the user: GPU-hours per +1,000 in g at 140k, 150k, 160k.
+80. Preemptible cloud GPUs with the checkpointing you already have.
+81. Several Colab or Kaggle quotas.
+82. The prime-gap searchers of the Mersenne forum have this hardware and this habit.
+83. A self-contained 200-line CUDA program others can run.
+84. CPU machines sieve only and ship survivors to GPUs.
+85. Design for E about ln(members planned) minus 1.5 and re-plan weekly.
+
+MEASURE (cheap, can pay)
+86. Measure E-hat per vector online and drop vectors 0.3 nats worse than predicted.
+87. Successes found against successes expected, continuously; 4 against 0.8 at 23 digits was a hint.
+88. Check the overshoot law (0.245 nats per 1,000 past Q) on the successes so far; if the tail is fatter, design lower.
+89. Run the 507-input kernel check on every new GPU type before production.
+90. Repeat 0.1 percent of tests on a second kernel to catch silent hardware errors.
+
+WILD
+91. Grover: the square root of e^24. Parked.
+92. Evolve the sampler and the sieve by a search over code with members-per-success as fitness.
+93. Cluster the residue vectors of the first-occurrence numbers; is there structure beyond "one sd better than typical" that a cover could copy?
+94. Train a predictor of g(N) from residues modulo the first 100 primes on exhaustive small-N data and rank 200-digit vectors with it.
+95. Two-sided design: fix a prime family P that is fast to prove and look for g with all P + (g - q) composite.
+96. A known prime gap of length G just above p makes every row with g - G < q < g free for N = p + g. Probably incompatible with a cover; one experiment on a gap of merit 35.
+97. Estimate the number of primes at cover-allowed offsets in the window (N - Q, N) by a cheap sieve before testing rows: selection, phrased on the window.
+98. Your comb (N and N + 210k share 57 percent of rows) with the GPU, deep sieve and selection included: recheck the "twice worse" verdict.
+99. No sharp Q at all: a cover that thins rows evenly up to 200,000, and record the first prime row wherever it falls.
+100. Ask a number theorist whether anything on least primes in shifted-prime sets or on Goldbach exceptional sets gives more than one class per prime. If not, cite it.

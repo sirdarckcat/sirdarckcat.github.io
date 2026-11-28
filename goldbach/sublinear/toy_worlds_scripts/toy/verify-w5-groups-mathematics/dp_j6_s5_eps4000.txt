@@ -1,0 +1,10 @@
+j = 6, sigma = 5, eps = 4000: D = 20.2580, e^D = 6.28e+08; E = 12; states B = 1883935 = 0.00 e^D; coordinates with a choice 58, classes kept 4700; transitions B * classes = 8.854e+09
+forward pass 3.1 s; target buckets 13 (the arc itself is 0.00 buckets); least excess over the relaxed set: 1
+listing 7.1 s: relaxed points listed 17110 (930288 nodes visited, 54.4 per point); below X 4, outside 17106 (overhead 4277.500)
+feasible points by first-order score: {1459: 4}
+meet in the middle listed 4 points; identical sets: True
+COST: B * classes = 8.854e+09 = 14.1 e^D; outputs 4; total time 10.1 s
+
+real	0m10.545s
+user	0m6.957s
+sys	0m0.068s

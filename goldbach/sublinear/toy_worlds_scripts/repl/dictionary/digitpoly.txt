@@ -1,0 +1,20 @@
+cover rows N - q (200 digits) | base 3 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 5 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 7 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 10 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 16 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 100 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+cover rows N - q (200 digits) | base 65536 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+  (164 s)
+random odd 200-digit integers | base 3 | 2500 integers | reducible digit polynomials: 2 | smallest factor values g(b) and degrees: [(7, [2, 416]), (7, [2, 416])] | largest 'smallest factor value': 7
+random odd 200-digit integers | base 5 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+random odd 200-digit integers | base 7 | 2500 integers | reducible digit polynomials: 1 | smallest factor values g(b) and degrees: [(57, [2, 233])] | largest 'smallest factor value': 57
+random odd 200-digit integers | base 10 | 2500 integers | reducible digit polynomials: 19 | smallest factor values g(b) and degrees: [(11, [1, 198]), (11, [1, 198]), (11, [1, 198]), (11, [1, 198]), (11, [1, 198]), (11, [1, 198])] | largest 'smallest factor value': 101
+random odd 200-digit integers | base 16 | 2500 integers | reducible digit polynomials: 18 | smallest factor values g(b) and degrees: [(17, [1, 164]), (17, [1, 164]), (17, [1, 164]), (17, [1, 164]), (17, [1, 164]), (17, [1, 164])] | largest 'smallest factor value': 17
+random odd 200-digit integers | base 100 | 2500 integers | reducible digit polynomials: 5 | smallest factor values g(b) and degrees: [(101, [1, 98]), (101, [1, 98]), (101, [1, 98]), (101, [1, 98]), (101, [1, 98])] | largest 'smallest factor value': 101
+random odd 200-digit integers | base 65536 | 2500 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+  (162 s)
+cover rows N - q (200 digits) | base 2 | 400 integers | reducible digit polynomials: 0 | smallest factor values g(b) and degrees: [] | largest 'smallest factor value': None
+  (33 s)
+random odd 200-digit integers | base 2 | 400 integers | reducible digit polynomials: 16 | smallest factor values g(b) and degrees: [(3, [1, 660]), (3, [1, 660]), (3, [1, 660]), (3, [1, 661]), (3, [1, 661]), (3, [1, 661])] | largest 'smallest factor value': 5
+  (33 s)

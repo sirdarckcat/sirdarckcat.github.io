@@ -1,0 +1,11 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 966dc63fcad1aa0d200785aa912c9f9a174c47f7353350c873271f36b57b7253
+[A] N reconstructed: 199 digits, t=538125153, 88 congruences OK
+[B] primes below q: 12333; residual (uncovered): 987
+    ... 500/987 residual complements proven composite
+[B] all 987 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 132103 prime (trial division); N - q proven prime by ECPP (23 steps, independently re-verified)
+[D] q = 132103 > 119419 OK
+[D] N has 199 <= 199 digits OK
+[PASS] g(N) = 132103 for the 199-digit N in /home/user/sirdarckcat.github.io/goldbach/records/budget_1e200_199digit_g132103/package_stdlib.json
+rc=0

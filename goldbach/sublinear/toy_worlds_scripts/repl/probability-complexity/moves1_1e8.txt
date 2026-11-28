@@ -1,0 +1,30 @@
+depth 100000000: K 21378978 mean 505.638 sd 18.014 var 324.52 min 412 max 605
+variance share v_p of single later primes (x1e3): 467:0.802 479:0.931 487:0.816 491:0.827 499:0.886 503:0.910 509:0.812 521:0.756 523:0.801 541:0.762 547:0.784 557:0.766
+sum of v_p, p in (463,1000]: 0.0475; (463,2000]: 0.0875; (463,3000]: 0.1081
+move k -> k+D | measured corr(S(k),S(k+D)) | +-1sd noise | predicted sum of v_p over later primes p | D
+  1                      -0.00001  +-0.00022  pred 0.00000
+  2                      -0.00062  +-0.00022  pred 0.00000
+  210                    +0.00011  +-0.00022  pred 0.00000
+  463 (cover prime)      -0.00063  +-0.00022  pred 0.00000
+  467                    +0.00085  +-0.00022  pred 0.00080
+  479                    +0.00041  +-0.00022  pred 0.00093
+  2*467                  +0.00147  +-0.00022  pred 0.00080
+  1009                   +0.00040  +-0.00022  pred 0.00042
+  10007                  -0.00022  +-0.00022  pred 0.00000
+  100003                 -0.00070  +-0.00022  pred 0.00000
+  467*479                +0.00147  +-0.00022  pred 0.00173
+  3*467*479              +0.00139  +-0.00022  pred 0.00173
+  467*487                +0.00110  +-0.00022  pred 0.00162
+  479*487                +0.00132  +-0.00022  pred 0.00175
+  1009*1013              +0.00065  +-0.00022  pred 0.00085
+  467*10007              +0.00075  +-0.00024  pred 0.00080
+  467^2                  +0.00101  +-0.00022  pred 0.00080
+  random 1234567         -0.00011  +-0.00022  pred 0.00000
+  random 7654321         -0.00034  +-0.00027  pred 0.00000
+  4999999 (prime)        -0.00007  +-0.00025  pred 0.00000
+keep 0.015: threshold S<=467 (z=-2.14); pairs at D=467*479 both kept 5900; lift 0.9994 (ln -0.0006 +- 0.0130); Gaussian prediction ln lift ~ rho z^2 = 0.0080
+     mean S of the D-neighbours of kept members minus mean: -0.025 rows (prediction rho*(mean kept - mu) = -0.077)
+keep 0.001: threshold S<=450 (z=-3.09); pairs at D=467*479 both kept 18; lift 0.8238 (ln -0.1938 +- 0.2357); Gaussian prediction ln lift ~ rho z^2 = 0.0165
+     mean S of the D-neighbours of kept members minus mean: -0.319 rows (prediction rho*(mean kept - mu) = -0.104)
+keep 0.0001: threshold S<=439 (z=-3.70); pairs at D=467*479 both kept 0; lift 0.0000 (ln +nan +- 1.0000); Gaussian prediction ln lift ~ rho z^2 = 0.0237
+     mean S of the D-neighbours of kept members minus mean: +0.101 rows (prediction rho*(mean kept - mu) = -0.122)

@@ -1,0 +1,34 @@
+exponent per row 0.02430 nats
+level r | rows of the (cover minus r) | rows left: best class (the cover's? ) | mean over classes | sd over classes | flat scan of all classes: ln mean exp(-lam rows) as rows-equivalent | gain of best class over flat, nats | room ln r | nats per nat
+  3 | 3644 | 1502 (cover's class leaves 1502) | 2429.3 | 897.76 | 1547.2 | +1.099 | 1.10 | 1.0000
+  5 | 2233 | 1502 (cover's class leaves 1502) | 1786.4 | 240.53 | 1567.8 | +1.598 | 1.61 | 0.9930
+  7 | 1953 | 1502 (cover's class leaves 1502) | 1674.0 | 125.37 | 1577.0 | +1.823 | 1.95 | 0.9367
+  11 | 1753 | 1502 (cover's class leaves 1502) | 1593.6 | 57.03 | 1567.7 | +1.598 | 2.40 | 0.6663
+  13 | 1727 | 1502 (cover's class leaves 1502) | 1594.2 | 45.42 | 1573.2 | +1.730 | 2.56 | 0.6744
+  17 | 1649 | 1502 (cover's class leaves 1502) | 1552.0 | 27.90 | 1545.3 | +1.052 | 2.83 | 0.3714
+  439 | 1512 | 1502 (cover's class leaves 1502) | 1508.6 | 1.70 | 1508.5 | +0.158 | 6.08 | 0.0260
+  443 | 1514 | 1502 (cover's class leaves 1502) | 1510.6 | 1.65 | 1510.5 | +0.208 | 6.09 | 0.0341
+  449 | 1511 | 1502 (cover's class leaves 1502) | 1507.6 | 1.58 | 1507.6 | +0.136 | 6.11 | 0.0223
+  457 | 1512 | 1502 (cover's class leaves 1502) | 1508.7 | 1.73 | 1508.7 | +0.162 | 6.12 | 0.0264
+  461 | 1511 | 1502 (cover's class leaves 1502) | 1507.7 | 1.58 | 1507.7 | +0.138 | 6.13 | 0.0226
+  463 | 1511 | 1502 (cover's class leaves 1502) | 1507.7 | 1.62 | 1507.7 | +0.139 | 6.14 | 0.0226
+  cover's class is the best class at 89 of 89 levels; sum of single-level gains 36.33 nats for 442.9 nats of room (0.0820 per nat)
+  levels 3..50: 14 primes, gain 16.18 nats, room 40.3, 0.4018 per nat
+  levels 50..150: 20 primes, gain 8.62 nats, room 90.7, 0.0951 per nat
+  levels 150..300: 27 primes, gain 6.61 nats, room 145.4, 0.0455 per nat
+  levels 300..464: 28 primes, gain 4.92 nats, room 166.6, 0.0295 per nat
+86-prime cover: 1530 rows; the 449*457*463 = 9.500e+07 sub-windows strike (first order) mean 10.06 sd 2.87 rows; the real cover's three classes strike 28; best classes separately 28
+  share of sub-windows striking >= 28 rows (first order): 3.158e-08; flat scan of the 86-prime window = mean + 0.10 rows; best sub-window gains +0.434 nats over the flat scan and uses 18.4 nats less room
+continuation below the cover (later primes; these levels cost members of the window): r | best class strikes | mean | gain nats (first order, exponent per row) | per nat
+  467 | 8 | 3.22 | +0.116 | 0.0189
+  479 | 8 | 3.14 | +0.118 | 0.0192
+  487 | 8 | 3.08 | +0.119 | 0.0193
+  491 | 8 | 3.06 | +0.120 | 0.0194
+  499 | 7 | 3.01 | +0.097 | 0.0156
+  503 | 9 | 2.99 | +0.146 | 0.0235
+  509 | 8 | 2.95 | +0.123 | 0.0197
+  997 | 7 | 1.51 | +0.133 | 0.0193
+  1999 | 4 | 0.75 | +0.079 | 0.0104
+  4999 | 3 | 0.30 | +0.066 | 0.0077
+  9973 | 3 | 0.15 | +0.069 | 0.0075
+  99991 | 1 | 0.02 | +0.024 | 0.0021

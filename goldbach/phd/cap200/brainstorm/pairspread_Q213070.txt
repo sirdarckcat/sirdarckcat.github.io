@@ -1,0 +1,5 @@
+Q = 213070, 8 covers with 1634 to 1634 rows left, p = 0.02390
+pair term of ln P(success), nats: mean -0.0316, sd 0.0000, min -0.0316, max -0.0316
+pairs of uncovered rows congruent modulo a non-cover prime <= 5000, observed / expected: mean 0.8523, sd 0.0000, min 0.8522, max 0.8523 (mean count 366581)
+what 'twice the expected number' would be worth: +0.216 nats
+and how many sd of the pool that is: 36982

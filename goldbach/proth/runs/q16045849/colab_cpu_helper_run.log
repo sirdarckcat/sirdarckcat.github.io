@@ -1,0 +1,2 @@
+18562 sieve survivors of 32768; 0 already tested; expected tests per prime ~ 5724
+  test 1: t=32759 ok=False 1135.5s elapsed 1135s

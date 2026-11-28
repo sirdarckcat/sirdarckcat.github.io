@@ -1,0 +1,14 @@
+# Cross-batch sieve pipeline v1 (uarch search_gpu5_xbatch.patch 2647b28 + overlap.Pipeline, d1c6797) on gold-g4b (RTX PRO 6000), 2026-11-23 08:16:05-08:17:20Z,
+# campaign mode (the pipeline exists only there), campaign paused (SIGSTOP). 6 Q = 170,000 vectors x 2 windows of 2^25 = 12 slices = 6 batches of 2.
+#   p: production driver (--pool 2097152 --pool-threads 2)      f: patched driver --pipeline 1 --flush-each-window 1 --pool-threads 1
+#   g: patched driver --pipeline 1 --flush-each-window 1 --pool-threads 2      p_nm / g_nm: p / g with --near-miss 100000
+# Batch ends stamped every 20 ms from the stats file; steady = mean of batches 3..6 (the first is compile + setup). Peak GPU memory includes the paused
+# campaign's ~32 GB. CPU checks before: test_xbatch_campaign_fake.py on the patched driver OK, test_overlap_cpu.py ALL OK.
+
+p    : 6 batch ends, gaps [1.74, 1.737, 1.766, 1.747, 1.759], steady (batches 3..6) 1.752 s | driver figures [') 5.8s', ') 1.7s', ') 1.7s', ') 1.8s', ') 1.8s', ') 1.8s'] | slice lines vs p: IDENTICAL (12) | peak GPU memory 50142 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+f    : 6 batch ends, gaps [1.86, 1.876, 1.838, 1.844, 1.646], steady (batches 3..6) 1.801 s | driver figures [') 6.0s', ') 1.9s', ') 1.9s', ') 1.8s', ') 1.9s', ') 1.6s'] | slice lines vs p: IDENTICAL (12) | peak GPU memory 46376 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+g    : 6 batch ends, gaps [1.673, 1.701, 1.695, 1.684, 1.508], steady (batches 3..6) 1.647 s | driver figures [') 6.0s', ') 1.7s', ') 1.7s', ') 1.7s', ') 1.7s', ') 1.5s'] | slice lines vs p: IDENTICAL (12) | peak GPU memory 46508 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+p_nm : 6 batch ends, gaps [1.733, 1.762, 1.741, 1.75, 1.76], steady (batches 3..6) 1.753 s | driver figures [') 5.5s', ') 1.7s', ') 1.8s', ') 1.7s', ') 1.8s', ') 1.7s'] | slice lines vs p: IDENTICAL (12) | peak GPU memory 50142 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+g_nm : 6 batch ends, gaps [1.693, 1.672, 1.688, 1.693, 1.508], steady (batches 3..6) 1.640 s | driver figures [') 5.7s', ') 1.7s', ') 1.7s', ') 1.7s', ') 1.7s', ') 1.5s'] | slice lines vs p: IDENTICAL (12) | peak GPU memory 46508 MiB | ['C3GPU-EXHAUSTED', 'rc=2']
+near-misses at 100,000: p_nm 0, g_nm 0, identical: True
+PLT-DONE

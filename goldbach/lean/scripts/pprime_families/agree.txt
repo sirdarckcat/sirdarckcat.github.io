@@ -1,0 +1,14 @@
+best class | all even N < 1e9 | most agreeing primes 8 (N = 85830420) | largest amplitude 36.93 nats (N = 727195558) | histogram of the number of agreeing primes: 0:317549144 1:145416344 2:32018755 3:4518534 4:459003 5:35894 6:2193 7:127 8:6
+best class | members | most agreeing primes 8 (N = 707201008) | largest amplitude 36.93 nats (N = 727195558) | histogram of the number of agreeing primes: 0:100183789 1:46010427 2:10157263 3:1436994 4:146438 5:11352 6:707 7:48 8:2
+best 2 classes | all even N < 1e9 | most agreeing primes 10 (N = 171195790) | largest amplitude 45.46 nats (N = 700249364) | histogram of the number of agreeing primes: 0:200061279 1:186517802 2:83578896 3:23986547 4:4958136 5:786185 6:99749 7:10451 8:892 9:58 10:5
+best 2 classes | members | most agreeing primes 10 (N = 700249364) | largest amplitude 45.46 nats (N = 700249364) | histogram of the number of agreeing primes: 0:63031890 1:58940814 2:26489092 3:7619673 4:1579549 5:250178 6:32134 7:3386 8:284 9:19 10:1
+best 3 classes | all even N < 1e9 | most agreeing primes 12 (N = 669791804) | largest amplitude 55.09 nats (N = 700249364) | histogram of the number of agreeing primes: 0:124984733 1:178021406 2:121805706 3:53363210 4:16825065 5:4069721 6:786064 7:125565 8:16532 9:1815 10:163 11:18 12:2
+best 3 classes | members | most agreeing primes 12 (N = 700249364) | largest amplitude 55.09 nats (N = 700249364) | histogram of the number of agreeing primes: 0:39321021 1:56181442 2:38558591 3:16937337 4:5355497 5:1295503 6:251161 7:40446 8:5380 9:597 10:38 11:6 12:1
+best third of the classes | all even N < 1e9 | most agreeing primes 29 (N = 477430294) | largest amplitude 133.65 nats (N = 767157842) | histogram of the number of agreeing primes: 0:196 1:3868 2:33527 3:191067 4:791371 5:2540161 6:6584064 7:14187255 8:25869342 9:40545473 10:55213259 11:65906273 12:69436346 13:64952120 14:54158287 15:40377175 16:26995985 17:16212970 18:8768322 19:4260983 20:1864713 21:734052 22:259805 23:82537 24:23343 25:5827 26:1368 27:264 28:41 29:6
+best third of the classes | members | most agreeing primes 29 (N = 829585028) | largest amplitude 130.74 nats (N = 829585028) | histogram of the number of agreeing primes: 0:54 1:1209 2:10408 3:59348 4:247552 5:795168 6:2061587 7:4452350 8:8128169 9:12749674 10:17393656 11:20786212 12:21932767 13:20541681 14:17151322 15:12805458 16:8573919 17:5156314 18:2791870 19:1358553 20:595191 21:234938 22:83362 23:26325 24:7526 25:1864 26:432 27:94 28:16 29:1
+largest incidence sum with the primes 29..199 | all even N < 1e9 | 106 (N = 171007712)
+largest incidence sum with the primes 29..199 | members | 106 (N = 171007712)
+
+real	2m9.235s
+user	2m8.124s
+sys	0m0.009s

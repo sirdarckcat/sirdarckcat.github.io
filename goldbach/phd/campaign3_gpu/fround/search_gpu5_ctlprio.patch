@@ -1,0 +1,35 @@
+--- a/goldbach/phd/campaign3_gpu/search_gpu5.py
++++ b/goldbach/phd/campaign3_gpu/search_gpu5.py
+@@ -274,7 +274,8 @@
+     the first probable prime over the member's fully tested prefix."""
+     if args.fused_rounds:
+         import fround                                           # noqa: E402  (FERMAT28_DIR: next to gpu_fermat28.py)
+-        return fround.run_pool_fused(tester, kv, cnt, cols, target=args.target if target is None else target, dmax=args.dmax, check_range=(args.kernel == 28), profile=bool(args.profile_pool))
++        return fround.run_pool_fused(tester, kv, cnt, cols, target=args.target if target is None else target, dmax=args.dmax, check_range=(args.kernel == 28), profile=bool(args.profile_pool),
++                                     ctl_stream=_ctl_stream())
+     n = int(kv.size)
+     prof = [] if args.profile_pool else None
+     t_prof = time.perf_counter()
+@@ -338,6 +339,22 @@
+ 
+ 
+ _SPLIT_STREAMS = []             # two long-lived streams: cupy's pool keeps a free list per stream, so a stream made for every pool would strand its blocks
++_CTL_STREAMS = {}               # (device, the Fermat stream) -> its control stream, made once for the same reason
++
++
++def _ctl_stream():
++    """FERMAT_CTL_PRIORITY=<n> with --fused-rounds 1: the bookkeeping of a pool's rounds (the fr_* kernels, the two scans and the host read of each round) runs on a control stream of this priority and only the
++    Fermat kernel on the pool's own stream, the two ordered by events (fround.run_pool_fused's ctl_stream).  Why: beside the sieve (the highest stream priority) the pool's stream is the lowest, and each of a
++    round's ~8 small kernels waits for SM slots that the sieve's queued CTAs take first (--profile-pool beside the sieve: a gap of 0.24-0.30 s for a half-pool of 36-41 rounds = 6-8 ms a round).  -100 = the greatest
++    priority: give the sieve one level below it (OVERLAP_SIEVE_PRIORITY=-4), else both are at the greatest and nothing changes.  Unset: None, everything on the pool's stream as before."""
++    v = os.environ.get("FERMAT_CTL_PRIORITY", "")
++    if not v or not args.fused_rounds:
++        return None
++    from overlap import new_stream                          # noqa: E402  (sieve200/cuda)
++    key = (cp.cuda.Device().id, cp.cuda.get_current_stream().ptr)
++    if key not in _CTL_STREAMS:
++        _CTL_STREAMS[key] = new_stream(cp, int(v), "Fermat control")
++    return _CTL_STREAMS[key]
+ 
+ 
+ def _fermat_stream():

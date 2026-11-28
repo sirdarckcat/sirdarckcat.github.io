@@ -1,0 +1,26 @@
+# The same on the T4 (gold-xt4), 2026-11-23: part 1 (opl4gate1.sh, 18:56-19:02Z), part 2 (opl4gate2.sh, 19:05-19:06Z; the first try at 19:02 lacked /content/kc_m88f.json on
+# this card and ran nothing). The per-member lines of part 1's result are empty by design (that step is part 2).
+2026-11-23T18:56:18Z stopping the campaign in /content/c170f | base tree /content/uaB/goldbach/sieve200 | new: DEEP_BIN_PACK=1 DEEP_GEN_HOIST=1 DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1 DEEP_GEN_UNROLL=4 DEEP_TILE_UNROLL=4 DEEP_TILE_PREFETCH=256 DEEP_GEN_ONEPASS=1 DEEP_GEN_SLOT_C=75 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512
+2026-11-23T18:56:19Z stopped
+2026-11-23T19:02:02Z campaign restarted in /content/c170f (unchanged)
+base  : gaps [9.438, 9.537, 9.6, 9.495, 9.423, 9.309, 9.242] | mean 9.435 s | slice lines vs base: IDENTICAL (8) | []
+new   : gaps [8.421, 8.563, 8.721, 8.686, 8.603, 8.474, 8.445] | mean 8.559 s | slice lines vs base: IDENTICAL (8) | []
+base_b: gaps [9.363, 9.451, 9.608, 9.548, 9.43, 9.356, 9.262] | mean 9.431 s | slice lines vs base: IDENTICAL (8) | []
+new_b : gaps [8.43, 8.528, 8.73, 8.699, 8.593, 8.513, 8.422] | mean 8.559 s | slice lines vs base: IDENTICAL (8) | []
+new 8.559 s a batch against base 9.433 s: x0.9074
+one 2^25 window at f = 0, near-misses >= 45,061: base 0, new 0, per-member identical True | slices base {} new {} | [] []
+known case inside it (k >= 2^32 - 2^19): 0 near-misses, identical to the CPU brute force's 40: False
+L4-GATE1 PASSED x0.9074 (part 1: timing and slice identity; the per-member part is opl4gate2.sh)
+OPL4G1-DONE
+
+2026-11-23T19:05:06Z stopping the campaign in /content/c170f | base tree /content/uaB/goldbach/sieve200
+2026-11-23T19:05:07Z stopped
+2026-11-23T19:06:34Z campaign restarted in /content/c170f (unchanged)
+one 2^25 window at production f, near-misses >= 45,061 among the tested: base 129, new 129, per-member identical True | slices identical True {'q170000_m88f_t1_v0@4261412864': 'tests=14121781 prp=1007616 p^=0.0714 alive/k=422.2 E^=30.13 hit%=25.2 found=0'} | [] []
+  of them inside [2^32 - 2^19, 2^32): 0, each equal to the CPU brute force's entry: True ([])
+known case (2^19, f = 0) with new's options and parameters, one-pass off: 40 near-misses, identical to the CPU brute force's 40: True | []
+L4-GATE2 PASSED
+OPL4G2-DONE
+
+# The 129 near-misses of part 2 are the same 129 the L4 gave on that window (gate_deploy_l4.txt): the T4 and the L4 agree member by member.
+# Deployed (deploy_l4op.py) with the top-16 levels and the top3 append: [dl4] 19:11:41Z | options 1 | vectors 2172 | ['SIEVE200=/content/ua_v10/goldbach/sieve200', 'DEEP_GEN_ONEPASS=1', 'KLO=3758096384'] | procs 1 | deep_env 0000000 --p-est 0.0715 --deep-max-rows 1300 --fused-rounds 1 --deep-rg 32 --deep-gen-threads 512 --deep-tile-threads 512 | stats ['2026-11-23T19:11:28Z batch q170000_m88f_top2_v

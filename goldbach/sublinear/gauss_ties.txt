@@ -1,0 +1,42 @@
+## python3 gauss_ties.py 3000 400
+# R = 3000: targets generic 3530680, real axis 1500, diagonal 2121; rows to norm 400: 316
+# norm m | rows of that norm | generic alive after m | real axis alive | diagonal alive | ln P(real)/ln P(generic) | ln P(diag)/ln P(generic)
+2 | 4 | 3530680 | 1499 | 2120 | nan | nan
+5 | 8 | 796442 | 648 | 1015 | 0.564 | 0.495
+9 | 4 | 336686 | 387 | 707 | 0.576 | 0.467
+13 | 8 | 58652 | 159 | 212 | 0.548 | 0.562
+17 | 8 | 10564 | 56 | 75 | 0.566 | 0.575
+29 | 8 | 2216 | 27 | 38 | 0.545 | 0.545
+37 | 8 | 462 | 14 | 15 | 0.523 | 0.554
+41 | 8 | 96 | 2 | 3 | 0.630 | 0.624
+49 | 4 | 48 | 1 | 3 | 0.653 | 0.586
+53 | 8 | 8 | 1 | 0 | 0.563 | nan
+61 | 8 | 0 | 0 | 0 | nan | nan
+# deepest generic: g = 61 at N = 581 + 2441i (of 3530680 targets; sqrt of the generic count = 1879)
+# deepest real axis: g = 61 at N = 1218 + 0i (of 1500 targets; sqrt of the generic count = 1879)
+# deepest diagonal: g = 53 at N = 938 + 938i (of 2121 targets; sqrt of the generic count = 1879)
+
+## python3 gauss_ties.py 7000 600
+# R = 7000: targets generic 19233748, real axis 3500, diagonal 4949; rows to norm 600: 432
+# norm m | rows of that norm | generic alive after m | real axis alive | diagonal alive | ln P(real)/ln P(generic) | ln P(diag)/ln P(generic)
+2 | 4 | 19233748 | 3499 | 4948 | nan | nan
+5 | 8 | 5091276 | 1639 | 2600 | 0.571 | 0.484
+9 | 4 | 2398662 | 1049 | 1926 | 0.579 | 0.453
+13 | 8 | 521856 | 490 | 694 | 0.545 | 0.545
+17 | 8 | 116956 | 206 | 295 | 0.555 | 0.553
+29 | 8 | 29006 | 82 | 149 | 0.578 | 0.539
+37 | 8 | 7208 | 42 | 66 | 0.561 | 0.547
+41 | 8 | 1752 | 16 | 35 | 0.579 | 0.532
+49 | 4 | 886 | 8 | 29 | 0.609 | 0.515
+53 | 8 | 252 | 6 | 12 | 0.566 | 0.536
+61 | 8 | 64 | 2 | 5 | 0.592 | 0.547
+73 | 8 | 18 | 2 | 4 | 0.538 | 0.513
+89 | 8 | 4 | 1 | 4 | 0.530 | 0.463
+97 | 8 | 0 | 1 | 2 | nan | nan
+101 | 8 | 0 | 0 | 2 | nan | nan
+109 | 8 | 0 | 0 | 2 | nan | nan
+113 | 8 | 0 | 0 | 1 | nan | nan
+121 | 4 | 0 | 0 | 0 | nan | nan
+# deepest generic: g = 97 at N = 978 + 5282i (of 19233748 targets; sqrt of the generic count = 4386)
+# deepest real axis: g = 101 at N = 5466 + 0i (of 3500 targets; sqrt of the generic count = 4386)
+# deepest diagonal: g = 121 at N = 4237 + 4237i (of 4949 targets; sqrt of the generic count = 4386)

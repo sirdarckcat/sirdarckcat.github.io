@@ -1,0 +1,10 @@
+# B = 1e+08: primes in (463, B]: 5,761,365
+# w: exact product 0.336642; ln 463 / ln B = 0.333198 (ratio 0.98977)
+# R = prod (1 - 1/(s-1)^2): exact 0.99970483; exp(-1/(463 ln 463)) = 0.99964817
+# data/q200000_m89.txt: 300 cover lines, Q = 200,000
+line | rows (claimed) | ordered pairs whose difference has a prime factor in (463, B] | sum of 1/(s0-2) over them, from the differences | from the class counts | with the exact w and R: E S | n w (1-w) | pair term w^2 sum(rho-1) | Var S | sd ratio | with w = ln 463/ln B and R = exp(-1/(463 ln 463)): n w (1-w) | Var S | sd ratio
+0 | 1502 (1502) | 807,396 | 569.346 | 569.346 | 505.64 | 335.42 | -10.91 | 324.51 | 0.9836 | 333.71 | 308.83 | 0.9620
+# class counts of the rows of line 0 modulo the 78 primes 467..997: variance / mean, averaged over the primes:
+#   all s classes, population variance: 0.8233 (min 0.725, max 0.974)
+#   the s - 1 nonzero classes, population variance: 0.8203 (min 0.718, max 0.973)
+#   all s classes, sample variance: 0.8244 (min 0.727, max 0.976)

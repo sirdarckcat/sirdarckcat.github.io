@@ -1,0 +1,170 @@
+
+=================================================================== 1. GPU
+2026-11-23T01:38:03Z
+name, driver_version, memory.total [MiB], pstate, power.limit [W], power.max_limit [W], clocks.max.sm [MHz], clocks.max.memory [MHz]
+NVIDIA A100-SXM4-40GB, 580.82.07, 40960 MiB, P0, 400.00 W, 400.00 W, 1410 MHz, 1215 MHz
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Mon Nov 23 01:38:03 2026
+Driver Version                            : 580.82.07
+CUDA Version                              : 13.0
+
+Attached GPUs                             : 1
+GPU 00000000:00:04.0
+    GPU Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : 51.02 W
+        Current Power Limit               : 400.00 W
+        Requested Power Limit             : 400.00 W
+        Default Power Limit               : 400.00 W
+        Min Power Limit                   : 100.00 W
+        Max Power Limit                   : 400.00 W
+    Power Samples
+        Duration                          : 2.38 sec
+        Number of Samples                 : 119
+        Max                               : 51.36 W
+        Min                               : 51.02 W
+        Avg                               : 51.17 W
+    GPU Memory Power Readings 
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+    Module Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+        Current Power Limit               : N/A
+        Requested Power Limit             : N/A
+        Default Power Limit               : N/A
+        Min Power Limit                   : N/A
+        Max Power Limit                   : N/A
+    Clocks
+        Graphics                          : 210 MHz
+        SM                                : 210 MHz
+        Memory                            : 1215 MHz
+        Video                             : 585 MHz
+    Applications Clocks
+        Graphics                          : 1095 MHz
+        Memory                            : 1215 MHz
+    Default Applications Clocks
+        Graphics                          : 1095 MHz
+        Memory                            : 1215 MHz
+    Deferred Clocks
+        Memory                            : N/A
+    Max Clocks
+        Graphics                          : 1410 MHz
+        SM                                : 1410 MHz
+        Memory                            : 1215 MHz
+        Video                             : 1290 MHz
+    Max Customer Boost Clocks
+        Graphics                          : 1410 MHz
+    SM Clock Samples
+        Duration                          : Not Found
+        Number of Samples                 : Not Found
+        Max                               : Not Found
+        Min                               : Not Found
+        Avg                               : Not Found
+    Memory Clock Samples
+        Duration                          : Not Found
+        Number of Samples                 : Not Found
+        Max                               : Not Found
+        Min                               : Not Found
+        Avg                               : Not Found
+    Clock Policy
+        Auto Boost                        : N/A
+        Auto Boost Default                : N/A
+
+cupy 14.0.1 numpy 2.4.6 cuda runtime 13000
+
+=================================================================== 2. Fermat kernels with the SM clock and power sampled beside them (20 s each)
+2026-11-23T01:38:03Z
+--- s1r_asm
+device: NVIDIA A100-SXM4-40GB  batch 1048576  threads 128  20 s a variant
+  s1r_asm: 0 mismatches against gmpy2 in 2000 candidates (41 base-2 PRPs)
+  s1r_asm  regs  96 local  88 B: median    6,931,100 tests/s  best    6,933,242  (133 loops)
+  SM clock MHz: median 1410  min 1395  max 1410  (max allowed 1410)   [40 samples]
+  power W: median 280  max 283  (limit 400.00)   temperature C: median 54
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 40}
+--- s1rw
+device: NVIDIA A100-SXM4-40GB  batch 1048576  threads 128  20 s a variant
+  s1rw: 0 mismatches against gmpy2 in 2000 candidates (41 base-2 PRPs)
+  s1rw     regs  94 local  88 B: median    7,615,586 tests/s  best    7,617,723  (146 loops)
+  SM clock MHz: median 1410  min 1410  max 1410  (max allowed 1410)   [40 samples]
+  power W: median 248  max 249  (limit 400.00)   temperature C: median 54
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 40}
+
+=================================================================== 3. bench_pipes.py part 3: scattered marks in global memory
+2026-11-23T01:38:46Z
+
+part 3: global memory, scattered marks.  G ops/s over the whole GPU (1 / that = ns an operation); 8 chains x 256 threads x 8 CTAs an SM
+  operation                                         64 MB       512 MB         4 GB
+  scattered atomicAnd (random word)                8.0 G/s       5.4 G/s       5.2 G/s
+  scattered plain store (random word)              8.5 G/s       6.2 G/s       6.0 G/s
+  scattered load (random word)                    19.9 G/s      14.0 G/s      13.5 G/s
+  128 B runs at random places (bin writes)       506.7 G/s     350.5 G/s     340.2 G/s
+  reference: device copy of 1 GB (read + write): 1374 GB/s; a 32-byte sector of it is 0.023 ns
+
+=================================================================== 4. bench_bigprimes.py: the large-prime stage of a deeper sieve bound
+2026-11-23T01:38:49Z
+NVIDIA A100-SXM4-40GB: 40 rows, primes in (2^20, 2^22]: 213,922 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 55,360 entries a bin (227 MB of bins)   (setup 0.6 s)
+expected marks a row 3,197,269 = 0.1 a member; pair visits a row 213,922
+40 rows timed (3 groups), scaled to 40 rows: gen 3.3 ms, apply 1.6 ms, total 4.9 ms; marks 0.13 G (3,197,278 a row = 0.1 a member); capacity retries 0; wall 33.6 ms
+  ns a mark: gen 0.0256   apply 0.0124   TOTAL 0.0381   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 0.145  (40 rows, 0.3 pair visits a member: 0.38330 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 0.6 ms = 0.0046 ns a mark, 0.06911 ns a pair visit; pass B (the writes) ~ 2.7 ms = 0.0210 ns a mark
+  bins written + read: 1.0 GB in 4.9 ms = 210 GB/s; bit tiles written: 0.2 GB
+  check against numpy (first 2 rows): identical
+NVIDIA A100-SXM4-40GB: 1093 rows, primes in (2^20, 2^24]: 995,846 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 105,152 entries a bin (431 MB of bins)   (setup 0.4 s)
+expected marks a row 6,116,178 = 0.2 a member; pair visits a row 995,846
+128 rows timed (8 groups), scaled to 1093 rows: gen 247.0 ms, apply 73.5 ms, total 320.5 ms; marks 6.68 G (6,116,167 a row = 0.2 a member); capacity retries 0; wall 519.0 ms
+  ns a mark: gen 0.0369   apply 0.0110   TOTAL 0.0479   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 9.553  (1093 rows, 32.4 pair visits a member: 0.22693 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 19.5 ms = 0.0029 ns a mark, 0.01793 ns a pair visit; pass B (the writes) ~ 227.5 ms = 0.0340 ns a mark
+  bins written + read: 53.5 GB in 320.5 ms = 167 GB/s; bit tiles written: 4.6 GB
+NVIDIA A100-SXM4-40GB: 1093 rows, primes in (2^20, 2^26]: 3,875,784 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 150,848 entries a bin (618 MB of bins)   (setup 1.2 s)
+expected marks a row 8,801,810 = 0.3 a member; pair visits a row 3,875,784
+64 rows timed (4 groups), scaled to 1093 rows: gen 377.8 ms, apply 102.9 ms, total 480.7 ms; marks 9.62 G (8,801,810 a row = 0.3 a member); capacity retries 0; wall 790.0 ms
+  ns a mark: gen 0.0393   apply 0.0107   TOTAL 0.0500   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 14.325  (1093 rows, 126.2 pair visits a member: 0.08918 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 31.3 ms = 0.0033 ns a mark, 0.00738 ns a pair visit; pass B (the writes) ~ 346.5 ms = 0.0360 ns a mark
+  bins written + read: 77.0 GB in 480.7 ms = 160 GB/s; bit tiles written: 4.6 GB
+NVIDIA A100-SXM4-40GB: 1093 rows, primes in (2^20, 2^28]: 14,548,818 of them, batch 2^25 members (64 tiles of 2^19 bits), groups of 16 rows, cap 193,088 entries a bin (791 MB of bins)   (setup 4.8 s)
+expected marks a row 11,288,352 = 0.3 a member; pair visits a row 14,548,818
+32 rows timed (2 groups), scaled to 1093 rows: gen 615.1 ms, apply 151.5 ms, total 766.6 ms; marks 12.34 G (11,288,590 a row = 0.3 a member); capacity retries 0; wall 1781.5 ms
+  ns a mark: gen 0.0499   apply 0.0123   TOTAL 0.0621   <- the cost of one mark by a prime above the tile
+  ns a member of the batch: 22.847  (1093 rows, 473.9 pair visits a member: 0.03868 ns a visit in gen)
+  of gen: pass A (visits + counting, no writes) 105.3 ms = 0.0085 ns a mark, 0.00662 ns a pair visit; pass B (the writes) ~ 509.8 ms = 0.0413 ns a mark
+  bins written + read: 98.7 GB in 766.6 ms = 129 GB/s; bit tiles written: 4.6 GB
+
+=================================================================== 5. test_gpu_sieve.py: the GPU sieve against the CPU feeder, per-phase times, sweep of the options (SM clock sampled)
+2026-11-23T01:38:59Z
+window k0=4293656576: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294180864: 16 blocks, 15744 members selected: identical to the CPU feeder
+window k0=4294705152: 16 blocks, 15744 members selected: identical to the CPU feeder
+window of 524288 members: 5.15 ms = 9.82 ns a member = 101.8 M members/s (1093 rows, 78409 primes, f=0.97)
+sweep: 1093 rows, 78409 primes, K = 2^19, f = 0.97; ms a window (mean of 5), the GPU phases from events; ns/member
+  config                                          wall   ns/m |   prep   sieve  count  select  final  wait1   rows  wait2   host  output
+  {'shoup': False, 'sieve_threads': 256}          7.89  15.04 |  0.059   6.516  0.108   0.240  0.130  0.097  0.705  0.684  0.031  same
+  {'shoup': False, 'sieve_threads': 1024}         4.32   8.25 |  0.054   3.139  0.102   0.208  0.112  0.041  0.637  0.633  0.029  same
+  {'shoup': True, 'sieve_threads': 256}           4.45   8.48 |  0.037   3.256  0.101   0.207  0.112  0.059  0.646  0.633  0.029  same
+  {'shoup': True, 'sieve_threads': 512}           3.66   6.97 |  0.043   2.481  0.102   0.208  0.112  0.042  0.638  0.633  0.029  same
+  {'shoup': True, 'sieve_threads': 1024}          3.12   5.95 |  0.037   1.960  0.101   0.206  0.112  0.041  0.635  0.630  0.027  same
+  {'shoup': True, 'sieve_threads': 1024, 'unroll': 3}    2.79   5.31 |  0.044   1.612  0.101   0.205  0.112  0.046  0.639  0.630  0.027  same
+  {'shoup': True, 'sieve_threads': 512, 'unroll': 3}    2.84   5.41 |  0.038   1.667  0.101   0.205  0.112  0.044  0.641  0.632  0.029  same
+ALL IDENTICAL
+  SM clock MHz: median 1230  min 1095  max 1410  (max allowed 1410)   [13 samples]
+  power W: median 61  max 125  (limit 400.00)   temperature C: median 38
+  throttle/event reasons (bit mask: count): {'0x0000000000000000': 13}
+
+=================================================================== 6. bench_batch.py: the whole batch pipeline of a deeper sieve bound at production size (B = 100000000, a batch of 2^25 members)
+2026-11-23T01:39:07Z
+NVIDIA A100-SXM4-40GB
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2147483648: identical to the CPU feeder
+check 40 rows, B=4194304, 2^21 members, tile 2^19, 78409 small + 217449 large primes, k0=2149580800: identical to the CPU feeder
+1093 rows, 5,761,366 primes up to 100000000 (78,409 through the tile kernel, 5,682,957 through gbig), batch 2^25 members: bit matrix 4.27 GB of 39.0 GB free (tables 13.6 s)
+  rg=16 tile threads=256 gen threads=256 ppt=4: wall 795.9 ms = 23.721 ns a member (42.2 M members/s); kept 335,872 members, 109,520,880 survivor rows; bin cap 165,280, gen retries 0
+    prep 0.22  sieve (gen + tiles) 772.3  count 3.53  select 0.61  finalize 2.46  wait1 0.20  rows 16.53  wait2 16.53  host 0.04   (ms a batch)
+
+=================================================================== done
+2026-11-23T01:39:26Z
+output file: /content/measure_out.txt
+MEASURE-DONE 2026-11-23T01:39:26Z

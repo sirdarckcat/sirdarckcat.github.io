@@ -1,0 +1,84 @@
+j = 3, sigma = 0, eps = 1: D = 1.6284, e^D = 5.096; E = 4; states B = 21 = 4.12 e^D; coordinates with a choice 4, classes kept 12; transitions B * classes = 252
+forward pass 0.4 s; target buckets 9 (the arc itself is 4.12 buckets); least excess over the relaxed set: 0
+listing 0.0 s: relaxed points listed 32 (118 nodes visited, 3.7 per point); below X 14, outside 18 (overhead 2.286)
+feasible points by first-order score: {1478: 14}
+meet in the middle listed 14 points; identical sets: True
+COST: B * classes = 252 = 49.45 e^D; outputs 14; total time 0.4 s
+j = 3, sigma = 0, eps = 1, cover frozen: D = 1.6284, e^D = 5.096; E = 3; states B = 16 = 3.14 e^D; coordinates with a choice 3, classes kept 10; transitions B * classes = 160
+forward pass 0.4 s; target buckets 7 (the arc itself is 3.14 buckets); least excess over the relaxed set: 0
+listing 0.0 s: relaxed points listed 14 (40 nodes visited, 2.9 per point); below X 7, outside 7 (overhead 2.000)
+feasible points by first-order score: {1478: 7}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [7]
+COST: B * classes = 160 = 31.4 e^D; outputs 7; total time 0.4 s
+
+j = 3, sigma = 2, eps = 1: D = 1.6284, e^D = 5.096; E = 6; states B = 31 = 6.08 e^D; coordinates with a choice 37, classes kept 332; transitions B * classes = 1.029e+04
+forward pass 0.4 s; target buckets 13 (the arc itself is 6.08 buckets); least excess over the relaxed set: 0
+listing 2.8 s: relaxed points listed 25711 (700824 nodes visited, 27.3 per point); below X 11983, outside 13728 (overhead 2.146)
+feasible points by first-order score: {1478: 14, 1479: 520, 1480: 11449}
+meet in the middle listed 11983 points; identical sets: True
+COST: B * classes = 1.029e+04 = 2020 e^D; outputs 11983; total time 3.5 s
+j = 3, sigma = 2, eps = 1, cover frozen: D = 1.6284, e^D = 5.096; E = 3; states B = 16 = 3.14 e^D; coordinates with a choice 3, classes kept 100; transitions B * classes = 1600
+forward pass 0.5 s; target buckets 7 (the arc itself is 3.14 buckets); least excess over the relaxed set: 0
+listing 0.0 s: relaxed points listed 698 (1435 nodes visited, 2.1 per point); below X 306, outside 392 (overhead 2.281)
+feasible points by first-order score: {1478: 7, 1479: 59, 1480: 240}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [7, 59, 240]
+COST: B * classes = 1600 = 314 e^D; outputs 306; total time 0.5 s
+
+j = 4, sigma = 1, eps = 1: D = 7.8248, e^D = 2502; E = 6; states B = 15012 = 6.00 e^D; coordinates with a choice 20, classes kept 90; transitions B * classes = 1.351e+06
+forward pass 0.4 s; target buckets 13 (the arc itself is 6.00 buckets); least excess over the relaxed set: 1
+listing 0.0 s: relaxed points listed 3 (63 nodes visited, 21.0 per point); below X 2, outside 1 (overhead 1.500)
+feasible points by first-order score: {1471: 2}
+meet in the middle listed 2 points; identical sets: True
+COST: B * classes = 1.351e+06 = 540 e^D; outputs 2; total time 0.4 s
+j = 4, sigma = 1, eps = 1, cover frozen: D = 7.8248, e^D = 2502; E = 4; states B = 10008 = 4.00 e^D; coordinates with a choice 4, classes kept 42; transitions B * classes = 4.203e+05
+forward pass 0.4 s; target buckets 9 (the arc itself is 4.00 buckets); least excess over the relaxed set: > sigma
+listing 0.0 s: relaxed points listed 0 (0 nodes visited, 0.0 per point); below X 0, outside 0 (overhead 0.000)
+feasible points by first-order score: {}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [0, 0]
+COST: B * classes = 4.203e+05 = 168 e^D; outputs 0; total time 0.4 s
+
+j = 4, sigma = 3, eps = 1: D = 7.8248, e^D = 2502; E = 8; states B = 20016 = 8.00 e^D; coordinates with a choice 47, classes kept 981; transitions B * classes = 1.964e+07
+forward pass 0.4 s; target buckets 17 (the arc itself is 8.00 buckets); least excess over the relaxed set: 1
+listing 0.2 s: relaxed points listed 1265 (56312 nodes visited, 44.5 per point); below X 596, outside 669 (overhead 2.122)
+feasible points by first-order score: {1471: 2, 1472: 30, 1473: 564}
+meet in the middle listed 596 points; identical sets: True
+COST: B * classes = 1.964e+07 = 7848 e^D; outputs 596; total time 0.7 s
+j = 4, sigma = 3, eps = 1, cover frozen: D = 7.8248, e^D = 2502; E = 4; states B = 10008 = 4.00 e^D; coordinates with a choice 4, classes kept 363; transitions B * classes = 3.633e+06
+forward pass 0.4 s; target buckets 9 (the arc itself is 4.00 buckets); least excess over the relaxed set: 2
+listing 0.0 s: relaxed points listed 25 (105 nodes visited, 4.2 per point); below X 13, outside 12 (overhead 1.923)
+feasible points by first-order score: {1472: 4, 1473: 9}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [0, 0, 4, 9]
+COST: B * classes = 3.633e+06 = 1452 e^D; outputs 13; total time 0.4 s
+
+j = 5, sigma = 2, eps = 1: D = 14.0374, e^D = 1.248e+06; E = 8; states B = 9987723 = 8.00 e^D; coordinates with a choice 39, classes kept 456; transitions B * classes = 4.554e+09
+forward pass 1.5 s; target buckets 17 (the arc itself is 8.00 buckets); least excess over the relaxed set: 2
+listing 0.0 s: relaxed points listed 3 (120 nodes visited, 40.0 per point); below X 2, outside 1 (overhead 1.500)
+feasible points by first-order score: {1465: 2}
+meet in the middle listed 2 points; identical sets: True
+COST: B * classes = 4.554e+09 = 3648 e^D; outputs 2; total time 1.5 s
+j = 5, sigma = 2, eps = 1, cover frozen: D = 14.0374, e^D = 1.248e+06; E = 5; states B = 6242327 = 5.00 e^D; coordinates with a choice 5, classes kept 224; transitions B * classes = 1.398e+09
+forward pass 0.7 s; target buckets 11 (the arc itself is 5.00 buckets); least excess over the relaxed set: > sigma
+listing 0.0 s: relaxed points listed 0 (0 nodes visited, 0.0 per point); below X 0, outside 0 (overhead 0.000)
+feasible points by first-order score: {}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [0, 0, 0]
+COST: B * classes = 1.398e+09 = 1120 e^D; outputs 0; total time 0.7 s
+
+j = 5, sigma = 4, eps = 1: D = 14.0374, e^D = 1.248e+06; E = 10; states B = 12484653 = 10.00 e^D; coordinates with a choice 56, classes kept 2470; transitions B * classes = 3.084e+10
+forward pass 7.8 s; target buckets 21 (the arc itself is 10.00 buckets); least excess over the relaxed set: 2
+listing 0.1 s: relaxed points listed 246 (13620 nodes visited, 55.4 per point); below X 117, outside 129 (overhead 2.103)
+feasible points by first-order score: {1465: 2, 1466: 5, 1467: 110}
+meet in the middle listed 117 points; identical sets: True
+COST: B * classes = 3.084e+10 = 2.47e+04 e^D; outputs 117; total time 7.8 s
+j = 5, sigma = 4, eps = 1, cover frozen: D = 14.0374, e^D = 1.248e+06; E = 5; states B = 6242327 = 5.00 e^D; coordinates with a choice 5, classes kept 1034; transitions B * classes = 6.455e+09
+forward pass 2.0 s; target buckets 11 (the arc itself is 5.00 buckets); least excess over the relaxed set: 4
+listing 0.0 s: relaxed points listed 1 (6 nodes visited, 6.0 per point); below X 1, outside 0 (overhead 1.000)
+feasible points by first-order score: {1467: 1}
+deficit counts 0..sigma (compare with the brute force over the cover's own window): [0, 0, 0, 0, 1]
+COST: B * classes = 6.455e+09 = 5170 e^D; outputs 1; total time 2.0 s
+
+j = 4, sigma = 3, eps = 1/4: D = 7.8248, e^D = 2502; E = 8; states B = 80062 = 32.00 e^D; coordinates with a choice 47, classes kept 981; transitions B * classes = 7.854e+07
+forward pass 0.5 s; target buckets 41 (the arc itself is 32.00 buckets); least excess over the relaxed set: 1
+listing 0.1 s: relaxed points listed 779 (35482 nodes visited, 45.5 per point); below X 596, outside 183 (overhead 1.307)
+feasible points by first-order score: {1471: 2, 1472: 30, 1473: 564}
+meet in the middle listed 596 points; identical sets: True
+COST: B * classes = 7.854e+07 = 3.139e+04 e^D; outputs 596; total time 0.6 s

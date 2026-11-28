@@ -1,0 +1,46 @@
+# prefix_check.py table: the points of cover_price_prefix.txt, dispersions exact for the primes below Q, moduli in increasing order
+
+x = 463
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+10000 | 275.5 | +8.5e-14 | 0.1 at 3 (position 1 of 89) | 275.5 | 0, largest 0 | 1.000 | +6.6e-02, 0.0e+00, +8.5e-14 | v > 1 at 0, v < 1e-4 at 0
+14000 | 367.9 | -8.5e-14 | -16.8 at 43 (position 13 of 89) | 373.4 | 15, largest 53 | 3.543 | -2.7e-06, 2.7e-06, -1.0e-06 | v > 1 at 0, v < 1e-4 at 0
+15300 | 395.1 | -2.4e-13 | -25.2 at 53 (position 15 of 89) | 405.3 | 18, largest 67 | 4.577 | -5.8e-06, 5.8e-06, -1.6e-06 | v > 1 at 0, v < 1e-4 at 0
+15907 | 416.4 | -2.9e-13 | -23.6 at 61 (position 17 of 89) | 424.7 | 22, largest 83 | 4.217 | -5.4e-07, 7.3e-07, -2.7e-07 | v > 1 at 0, v < 1e-4 at 0
+
+x = 797
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+18559 | 426.2 | +1.7e-13 | -4.2 at 31 (position 10 of 138) | 426.4 | 10, largest 31 | 1.125 | +1.3e-07, 4.2e-07, -4.8e-08 | v > 1 at 0, v < 1e-4 at 0
+23198 | 515.1 | +2.6e-13 | -22.4 at 47 (position 14 of 138) | 522.5 | 18, largest 67 | 3.857 | -4.8e-06, 6.5e-06, +2.7e-06 | v > 1 at 0, v < 1e-4 at 0
+26291 | 587.9 | +2.6e-13 | -24.7 at 73 (position 20 of 138) | 591.8 | 24, largest 97 | 2.490 | -2.2e-06, 2.5e-06, +2.0e-07 | v > 1 at 0, v < 1e-4 at 0
+28766 | 630.3 | +4.3e-13 | -41.1 at 89 (position 23 of 138) | 642.7 | 29, largest 113 | 4.503 | -3.4e-06, 3.4e-06, -3.1e-06 | v > 1 at 0, v < 1e-4 at 0
+
+x = 997
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+15000 | 315.0 | +5.7e-13 | -9.1 at 5 (position 2 of 167) | 319.4 | 2, largest 5 | 3.453 | -7.0e-08, 7.0e-08, +1.4e-07 | v > 1 at 0, v < 1e-4 at 0
+25000 | 524.6 | +2.3e-13 | -14.3 at 47 (position 14 of 167) | 528.0 | 14, largest 47 | 2.966 | -7.0e-07, 2.5e-06, -4.6e-07 | v > 1 at 0, v < 1e-4 at 0
+38000 | 779.8 | +2.6e-13 | -52.0 at 113 (position 29 of 167) | 790.7 | 33, largest 139 | 2.936 | -1.1e-05, 1.1e-05, -1.6e-06 | v > 1 at 0, v < 1e-4 at 0
+40111 | 820.1 | +4.5e-13 | -60.1 at 131 (position 31 of 167) | 833.7 | 41, largest 181 | 3.486 | -1.3e-05, 1.3e-05, +2.5e-06 | v > 1 at 0, v < 1e-4 at 0
+
+x = 1499
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+42067 | 774.1 | -4.5e-13 | -30.6 at 83 (position 22 of 238) | 780.1 | 22, largest 83 | 2.456 | -3.2e-06, 3.4e-06, +2.1e-06 | v > 1 at 0, v < 1e-4 at 0
+52583 | 955.1 | +1.7e-13 | -56.9 at 113 (position 29 of 238) | 967.7 | 33, largest 139 | 3.463 | -1.1e-05, 1.2e-05, -1.4e-06 | v > 1 at 0, v < 1e-4 at 0
+59594 | 1082.0 | -2.8e-13 | -76.8 at 151 (position 35 of 238) | 1099.1 | 45, largest 199 | 4.009 | -6.4e-06, 6.4e-06, +2.0e-06 | v > 1 at 0, v < 1e-4 at 0
+65203 | 1168.7 | -1.4e-12 | -100.0 at 181 (position 41 of 238) | 1194.7 | 52, largest 241 | 4.706 | -1.7e-05, 1.7e-05, -3.9e-06 | v > 1 at 0, v < 1e-4 at 0
+
+x = 1999
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+59239 | 1005.6 | -1.1e-12 | -47.7 at 109 (position 28 of 302) | 1015.8 | 29, largest 113 | 3.536 | -7.7e-06, 1.1e-05, +6.5e-06 | v > 1 at 0, v < 1e-4 at 0
+74048 | 1231.9 | -1.1e-12 | -89.1 at 151 (position 35 of 302) | 1256.7 | 45, largest 199 | 5.287 | -8.0e-06, 1.3e-05, -1.2e-06 | v > 1 at 0, v < 1e-4 at 0
+83921 | 1397.7 | +2.3e-13 | -114.7 at 199 (position 45 of 302) | 1424.8 | 57, largest 271 | 4.301 | -9.5e-06, 1.7e-05, -1.0e-06 | v > 1 at 0, v < 1e-4 at 0
+91820 | 1517.9 | -1.8e-12 | -144.1 at 229 (position 49 of 302) | 1556.8 | 66, largest 331 | 5.611 | -1.8e-05, 2.0e-05, -5.1e-05 | v > 1 at 0, v < 1e-4 at 0
+
+x = 2999
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+50000 | 775.7 | -1.4e-12 | -16.0 at 47 (position 14 of 429) | 779.0 | 14, largest 47 | 2.474 | -9.7e-06, 1.1e-05, +7.5e-07 | v > 1 at 0, v < 1e-4 at 0
+100000 | 1512.3 | -1.8e-12 | -90.8 at 167 (position 38 of 429) | 1530.1 | 45, largest 199 | 3.063 | -5.1e-05, 5.1e-05, -1.2e-05 | v > 1 at 0, v < 1e-4 at 0
+
+x = 9973
+Q | loss, recursion as it was | sum of level entropies - (theta' - p_start rows) | lowest prefix entropy, at modulus | loss with the constraint | moduli with weight > 1 | weight of the first | certificate: lowest prefix entropy, largest |entropy| where the multiplier is positive, primal - dual | dispersion outside the cut
+100000 | 1182.2 | +3.6e-12 | -17.8 at 53 (position 15 of 1228) | 1185.0 | 15, largest 53 | 2.325 | -8.9e-06, 4.4e-05, -9.4e-06 | v > 1 at 0, v < 1e-4 at 0
+300000 | 3348.8 | +9.1e-12 | -260.8 at 317 (position 65 of 1228) | 3425.6 | 75, largest 383 | 6.354 | -2.2e-04, 2.2e-04, +1.2e-04 | v > 1 at 0, v < 1e-4 at 0

@@ -1,0 +1,31 @@
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+overlap: no stream priorities ('types.SimpleNamespace' object has no attribute 'ExternalStream'); a plain non-blocking sieve stream
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+C3GPU-EXHAUSTED
+  run A: return code 2 (2 = exhausted), 1.5 s
+  run A2: return code 2 (2 = exhausted), 1.5 s
+  run B: return code 2 (2 = exhausted), 1.7 s
+  run C: return code 2 (2 = exhausted), 1.3 s
+  run D: return code 2 (2 = exhausted), 4.9 s
+  run E: return code 2 (2 = exhausted), 2.5 s
+  run L: return code 2 (2 = exhausted), 5.0 s
+  run Lref: return code 2 (2 = exhausted), 4.4 s
+  A2 (carry fround.py, --carry-over 0) against A (deployed fround.py): search.log, gpu3_stats.log and found.jsonl identical but times: ok
+  A: 48 slices, 3883 found records (2770 SUCCESS lines, 1377 near-miss lines, 656 discrepancy lines), 16 batch lines, 906643 tests counted / 932036 computed (waste 2.72%), 1062 launches
+  run B: 48 slices, each line once: True; slice blocks identical to the reference: True; found.jsonl the same 3883 records, each N once: True; tests counted 906643 (reference 906643): True; computed 908280 / 932036 (waste 0.18% / 2.72%), launches 701 / 1062; expected hits summed 2.8680e+03 / 2.8694e+03: ok
+  run C: 48 slices, each line once: True; slice blocks identical to the reference: True; found.jsonl the same 3883 records, each N once: True; tests counted 906643 (reference 906643): True; computed 913639 / 932036 (waste 0.77% / 2.72%), launches 394 / 1062; expected hits summed 2.8681e+03 / 2.8694e+03: ok
+C3GPU-EXHAUSTED
+  run D: 48 slices, each line once: True; slice blocks identical to the reference: True; found.jsonl the same 7800 records, each N once: True; tests counted 1815766 (reference 1815766): True; computed 1817421 / 1867913 (waste 0.09% / 2.79%), launches 1267 / 1627; expected hits summed 5.7685e+03 / 5.7674e+03: ok
+  run E: 48 slices, each line once: True; slice blocks identical to the reference: True; found.jsonl the same 3883 records, each N once: True; tests counted 906643 (reference 906643): True; computed 1139642 / 932036 (waste 20.44% / 2.72%), launches 893 / 1062; expected hits summed 2.8695e+03 / 2.8694e+03: ok
+  run L: 144 slices, each line once: True; slice blocks identical to the reference: True; found.jsonl the same 11762 records, each N once: True; tests counted 2727359 (reference 2727359): True; computed 2728957 / 2804511 (waste 0.06% / 2.75%), launches 2069 / 3266; expected hits summed 8.6748e+03 / 8.6751e+03: ok
+   run B: a batch line in the middle: 2026-11-25T18:55:44Z batch v0@65536..v2@65536 (3 slices) 0.1s: tests 37852 counted, 56885 computed (waste 33.5%), 42 launches, expected hits 1.1392e+02, expected near>=17471 1.6403e+02, found 209 [v5 gpu-sieve] [near-miss >= 17471] [carry-over: 2 slice lines; 995 members / 124372 rows into the next pool; 11 slices open]
+   run B: the drain's line:            2026-11-25T18:55:45Z batch (carry-over drain) (0 slices) 0.0s: tests 228567 counted, 15218 computed (waste -1402.0%), 29 launches, expected hits 7.1930e+02, expected near>=17471 1.0266e+03, found 129 [v5 gpu-sieve] [near-miss >= 17471] [carry-over: 12 slice lines; 0 members / 0 rows into the next pool; 0 slices open]
+   run L: a batch line in the middle: 2026-11-25T18:55:56Z batch v0@196608..v2@196608 (3 slices) 0.1s: tests 77121 counted, 57540 computed (waste -34.0%), 43 launches, expected hits 2.4135e+02, expected near>=17471 3.5201e+02, found 229 [v5 gpu-sieve] [near-miss >= 17471] [carry-over: 4 slice lines; 989 members / 126071 rows into the next pool; 13 slices open]
+   run L: the drain's line:            2026-11-25T18:55:58Z batch (carry-over drain) (0 slices) 0.0s: tests 271085 counted, 14963 computed (waste -1711.7%), 33 launches, expected hits 8.5122e+02, expected near>=17471 1.2399e+03, found 135 [v5 gpu-sieve] [near-miss >= 17471] [carry-over: 14 slice lines; 0 members / 0 rows into the next pool; 0 slices open]
+OK
+rc=0

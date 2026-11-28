@@ -1,0 +1,51 @@
+# uarch's flat flush and grid order (DEEP_GEN_FLUSH2=1 DEEP_GEN_ORDER=1, 8558276) on top of production's four sieve options, on the three RTX PRO 6000s (flushab.sh, then
+# deploy_flush.py), 2026-11-23 13:46-13:51Z: per card, the 24 test windows base (production) / v6 (ua_v6 with production's options) / + FLUSH2 / + FLUSH2 + ORDER, alternating;
+# the known case with all six options.
+
+=== gold-g4c
+/content/flushab/result.txt base  : gaps [0.775, 0.847, 0.823, 0.802, 0.648] | mean of batches 2-5 0.812 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.789, 0.814, 0.851, 0.772, 0.665] | mean of batches 2-5 0.807 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.796, 0.845, 0.791, 0.782, 0.635] | mean of batches 2-5 0.803 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.735, 0.826, 0.777, 0.761, 0.657] | mean of batches 2-5 0.775 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.82, 0.811, 0.799, 0.809, 0.644] | mean of batches 2-5 0.810 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.822, 0.765, 0.769, 0.804, 0.621] | mean of batches 2-5 0.790 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.843, 0.789, 0.769, 0.771, 0.636] | mean of batches 2-5 0.793 s | slice lines vs base: IDENTICAL (24) | []
+phu (+FLUSH2) 0.797 s (x0.9826) | phup (+FLUSH2 +ORDER) 0.784 s (x0.9669) | base 0.811 s | v6 with production's options 0.807 s
+known case with phup's settings (all six options): 23 near-misses, identical to the CPU brute force's 23: True
+FLUSH-CHOICE phup x0.9669
+FLUSH-GATE PASSED
+FLUSHAB-DONE
+/content/flushd.log [df] 13:48:32Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v6/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1']
+FLUSHD-DONE
+
+=== gold-g4
+/content/flushab/result.txt base  : gaps [0.826, 0.815, 0.817, 0.795, 0.64] | mean of batches 2-5 0.813 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.803, 0.813, 0.81, 0.817, 0.619] | mean of batches 2-5 0.811 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.774, 0.787, 0.8, 0.786, 0.609] | mean of batches 2-5 0.787 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.794, 0.79, 0.775, 0.775, 0.633] | mean of batches 2-5 0.783 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.832, 0.827, 0.815, 0.813, 0.631] | mean of batches 2-5 0.822 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.743, 0.843, 0.809, 0.752, 0.643] | mean of batches 2-5 0.787 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.78, 0.794, 0.78, 0.769, 0.621] | mean of batches 2-5 0.781 s | slice lines vs base: IDENTICAL (24) | []
+phu (+FLUSH2) 0.787 s (x0.9624) | phup (+FLUSH2 +ORDER) 0.782 s (x0.9565) | base 0.817 s | v6 with production's options 0.811 s
+known case with phup's settings (all six options): 23 near-misses, identical to the CPU brute force's 23: True
+FLUSH-CHOICE phup x0.9565
+FLUSH-GATE PASSED
+FLUSHAB-DONE
+/content/flushd.log [df] 13:51:24Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v6/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1']
+FLUSHD-DONE
+
+=== gold-g4b
+/content/flushab/result.txt base  : gaps [0.87, 0.802, 0.817, 0.78, 0.652] | mean of batches 2-5 0.817 s | slice lines vs base: IDENTICAL (24) | []
+v5    : gaps [0.836, 0.816, 0.779, 0.823, 0.636] | mean of batches 2-5 0.813 s | slice lines vs base: IDENTICAL (24) | []
+phu   : gaps [0.799, 0.775, 0.787, 0.787, 0.634] | mean of batches 2-5 0.787 s | slice lines vs base: IDENTICAL (24) | []
+phup  : gaps [0.792, 0.78, 0.792, 0.776, 0.615] | mean of batches 2-5 0.785 s | slice lines vs base: IDENTICAL (24) | []
+base_b: gaps [0.822, 0.822, 0.799, 0.827, 0.632] | mean of batches 2-5 0.818 s | slice lines vs base: IDENTICAL (24) | []
+phu_b : gaps [0.817, 0.763, 0.8, 0.777, 0.621] | mean of batches 2-5 0.789 s | slice lines vs base: IDENTICAL (24) | []
+phup_b: gaps [0.805, 0.793, 0.784, 0.776, 0.626] | mean of batches 2-5 0.790 s | slice lines vs base: IDENTICAL (24) | []
+phu (+FLUSH2) 0.788 s (x0.9643) | phup (+FLUSH2 +ORDER) 0.787 s (x0.9633) | base 0.817 s | v6 with production's options 0.813 s
+known case with phup's settings (all six options): 23 near-misses, identical to the CPU brute force's 23: True
+FLUSH-CHOICE phup x0.9633
+FLUSH-GATE PASSED
+FLUSHAB-DONE
+/content/flushd.log [df] 13:51:31Z | procs 1 | phup | ['DEEP_STAGED=1', 'SKIPF=0.985', 'DEEP_RCTA=8', 'NEAR_MISS=158209', 'SIEVE200=/content/ua_v6/goldbach/sieve200', 'DEEP_BIN_PACK=1', 'DEEP_GEN_HOIST=1', 'DEEP_TILE_UNROLL=4', 'DEEP_TILE_PREFETCH=256', 'DEEP_GEN_FLUSH2=1', 'DEEP_GEN_ORDER=1']
+FLUSHD-DONE

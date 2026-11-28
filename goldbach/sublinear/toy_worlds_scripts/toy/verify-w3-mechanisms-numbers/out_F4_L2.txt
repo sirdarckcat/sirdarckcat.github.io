@@ -1,0 +1,7 @@
+F_4: A = L2, a = 20, n = 80, lam = 1
+  d = 2: rows 6 ; r even 6; irreducible N-Q 0; [even,odd] by category {'formula': [6, 0]}; formula disagreements 0; 0s
+  d = 3: rows 20 ; r even 20; irreducible N-Q 0; [even,odd] by category {'formula': [20, 0]}; formula disagreements 0; 0s
+  d = 4: rows 60 ; r even 12; irreducible N-Q 0; [even,odd] by category {'formula': [0, 48], 'q_{d-1}=0': [12, 0]}; formula disagreements 0; 0s
+  d = 5: rows 204 ; r even 204; irreducible N-Q 0; [even,odd] by category {'formula': [204, 0]}; formula disagreements 0; 1s
+  d = 6: rows 670 ; r even 382; irreducible N-Q 32; [even,odd] by category {'formula': [270, 240], 'q_{d-1}=0': [112, 48]}; formula disagreements 0; 4s
+  d = 7: rows 2340 ; r even 1948; irreducible N-Q 64; [even,odd] by category {'S!|A,rad|A': [108, 72], 'formula': [1440, 0], 'S!|A,rad!|A': [400, 320]}; formula disagreements 0; 14s

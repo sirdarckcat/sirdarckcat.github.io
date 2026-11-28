@@ -1,0 +1,18 @@
+theta(463) = 443.639, ln M = 443.639, ln X = 460.517, K0 = 21378978
+   D(467) = -10.7;   D(479) = -4.6;   D(487) = 1.6;   D(491) = 7.8;   D(499) = 14.0;   D(503) = 20.3;   D(509) = 26.5;   D(521) = 32.7;   D(523) = 39.0;   D(541) = 45.3;   D(547) = 51.6;   D(600) = 102.5;   D(700) = 206.0;   D(1000) = 495.7;   D(2000) = 1479.3;   D(5000) = 4451.2;   D(10000) = 9435.5;   D(100000) = 99224.9;   D(200000) = 199058.4;   D(1000000) = 998023.7;
+cover 1-optimal (all dlt >= 0): True ; cover primes with a second class at cost 0: 1
+cover class vectors at first-order cost exactly 0..7: [2, 59, 1128, 16507, 202243, 2165385, 20830117, 183376981]
+   j=1 (s=467): D = -10.732; unconstrained optimum 1494; own window best 1494 (137338 members), mean hits 3.22
+   j=2 (s=479): D = -4.560; unconstrained optimum 1486; own window best 1486 (1148 members), mean hits 6.35
+   j=3 (s=487): D = 1.628; unconstrained optimum 1478; own window best 1478 (7 members), mean hits 9.44
+   j=4 (s=491): D = 7.825; unconstrained optimum 1470; own window best 1472 (4 members), mean hits 12.50
+   j=5 (s=499): D = 14.037; unconstrained optimum 1463; own window best 1467 (1 members), mean hits 15.51
+   j=6 (s=503): D = 20.258; unconstrained optimum 1454; own window best 1461 (1 members), mean hits 18.49
+   j=7 (s=509): D = 26.490; unconstrained optimum 1446; own window best 1456 (1 members), mean hits 21.44
+   j=8 (s=521): D = 32.746; unconstrained optimum 1438; own window best 1453 (3 members), mean hits 24.33
+   j=1: class-vector multiplicities in the window: min 45779, max 45780
+   j=2: class-vector multiplicities in the window: min 95, max 96
+
+real	0m8.517s
+user	0m3.807s
+sys	0m1.656s

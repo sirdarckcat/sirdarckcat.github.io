@@ -1,0 +1,6 @@
+prod  batches [5.8, 1.8, 1.8] steady 1.80s | slice lines vs prod: IDENTICAL | [] | []
+ps1   batches [5.7, 1.8, 1.8] steady 1.80s | slice lines vs prod: IDENTICAL | [] | []
+ps2   batches [6.0, 1.8, 1.8] steady 1.80s | slice lines vs prod: IDENTICAL | [] | ['[profile-pool] 1007616 members, 45 rounds, 14560597 tests: Fermat kernels 0.655 s on the GPU, run_pool wall 1.339 s, gap 0.683 s (51.1% of run_pool); 22.2M tests/s while a kernel runs, 10.9M over the pool', "[profile-pool] flush wall 1.353 s (the pool's Fermat rounds, its concatenations and the per-slice statistics)"]
+ps2b  batches [5.8, 1.7, 1.7] steady 1.70s | slice lines vs prod: IDENTICAL | [] | []
+near-miss with --pool-threads 2: [(3101585871, 146191, True)] []
+PSCHECK-DONE

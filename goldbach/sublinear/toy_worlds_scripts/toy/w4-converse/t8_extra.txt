@@ -1,0 +1,20 @@
+(a) additive energy of the heavy list and the largest additive coefficient
+    s in [467,1000): density 0.38; energy / random - 1: +0.00026 +- 0.00007  (an interval of that size would give +0.83);  share of variance in the largest coefficient: real 0.0190, shuffled 0.0180
+    s in [1000,2000): density 0.45; energy / random - 1: +0.00010 +- 0.00003  (an interval of that size would give +0.61);  share of variance in the largest coefficient: real 0.0139, shuffled 0.0098
+    s in [2000,3500): density 0.45; energy / random - 1: +0.00018 +- 0.00002  (an interval of that size would give +0.50);  share of variance in the largest coefficient: real 0.0146, shuffled 0.0059
+    s in [3500,5000): density 0.31; energy / random - 1: +0.00066 +- 0.00004  (an interval of that size would give +1.13);  share of variance in the largest coefficient: real 0.0142, shuffled 0.0038
+(b) pair correlations, 16 windows of 2^17 consecutive members of the real window, primes 467..1999
+    z = corr sqrt(members): rms 0.9417 (independent draws: 1), largest |z| 6.61 of 361248 (expected about 5.06); |z| > 3: 1381 (expected 975)
+(c) tail of S over 2^22 members against the convolution of the tables
+    mean 309.505 (product: 309.505); sd 16.074 (product: 16.076)
+    S >= 331: expected   405102.6, observed   404980, ratio 0.9997 +- 0.0016
+    S >= 348: expected    41184.5, observed    41231, ratio 1.0011 +- 0.0049
+    S >= 361: expected     3880.0, observed     3855, ratio 0.9936 +- 0.0161
+    S >= 372: expected      345.6, observed      345, ratio 0.9981 +- 0.0538
+    S >= 381: expected       35.9, observed       49, ratio 1.3631 +- 0.1668
+    S >= 389: expected        3.9, observed        6, ratio 1.5453 +- 0.5075
+    largest S in the window: 391; expected number at or above it 2.16
+
+real	0m33.128s
+user	0m34.813s
+sys	0m5.276s

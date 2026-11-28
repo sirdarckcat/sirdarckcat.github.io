@@ -1,0 +1,2703 @@
+PRIME SPECIALIZATION IN GENUS 0
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+Abstract. For a prime polynomial f (T ) ∈ Z[T ], a classical conjecture predicts how often
+f has prime values. For a finite field κ and a prime polynomial f (T ) ∈ κ[u][T ], the
+natural analogue of this conjecture (a prediction for how often f takes prime values on
+κ[u]) is not generally true when f (T ) is a polynomial in T p (p the characteristic of κ). The
+explanation rests on a new global obstruction which can be measured by an appropriate
+average of the nonzero Möbius values µ(f (g)) as g varies. We prove the surprising fact
+that this “Möbius average,” which can be defined without reference to any conjectures,
+has a periodic behavior governed by the geometry of the plane curve f = 0.
+The periodic Möbius average behavior implies in specific examples that a polynomial
+in κ[u][T ] does not take prime values as often as analogies with Z[T ] suggest, and it leads
+to a modified conjecture for how often prime values occur.
+
+1. Introduction
+A conjecture of Bouniakowsky [5] says that a nonconstant prime polynomial f (T ) in
+Z[T ] has infinitely many prime values in Z unless there is a local obstruction: all values
+of f (T ) on Z are divisible by a nontrivial common factor. For example, 3T 2 − T + 2 is
+prime in Z[T ] but has an obstruction at 2 to taking prime values: 3n2 − n + 2 is even for
+every n ∈ Z. (We allow negative primes, so we don’t need to assume f (T ) has a positive
+leading coefficient.) When no local obstruction occurs, there is an asymptotic conjecture
+(as x → ∞) for how many 1 ≤ m ≤ x (or |m| ≤ x) give prime values f (m); this is due
+to Hardy and Littlewood [12] in special cases and Bateman and Horn [1] more generally.
+The only proved case is in degree 1: the prime number theorem is the case f (T ) = T and
+Dirichlet’s theorem is the case f (T ) = aT + b with a and b nonzero and relatively prime.
+Let κ be a finite field and pick a prime polynomial f (T ) in κ[u][T ] which is nonconstant in
+T such that the values of f (T ) on κ[u] do not all share a nontrivial common factor (we say
+f (T ) has no local obstruction). Qualitatively, it is natural to expect under these conditions
+that f (g) is prime for infinitely many g in κ[u]. Quantitatively, a conjectural asymptotic
+estimate for how often f (g) is prime as g varies is easy to write down using analogies
+between Z (which we will call the classical case) and κ[u]. The only proved instance of this
+asymptotic conjecture is the case degT f = 1, just as in the classical situation. What if
+degT f > 1?
+When κ has characteristic 2 it is shown in [15] that the values of T 8 + u3 on κ[u] are
+never prime when [κ : F2 ] is odd and are prime only finitely many times (at noncubes in κ)
+when [κ : F2 ] is even. Here are some interesting examples in odd characteristic.
+Example 1.1. Let f (T ) = T 12 +(u+1)T 6 +u4 over F3 [u]. Numerical evidence in [6, Table 3]
+suggests that the count of prime values of f (g) as g runs over F3 [u] exceeds the amount
+predicted from analogies with the classical case by a ratio ≈ 1.33.
+1991 Mathematics Subject Classification. 11N32.
+Key words and phrases. Bateman–Horn conjecture, Hardy–Littlewood conjecture, Möbius function.
+1
+
+2
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Example 1.2. Let f (T ) = T 9 +(2u2 +u)T 6 +(2u+2)T 3 +u2 +2u+1 over F3 [u]. Numerical
+data [6, Table 5] suggest f (g) is prime as often as expected (by analogies with the classical
+case) when deg g is even, it is never prime when deg g ≡ 1 mod 4, and it is prime about
+twice as often as expected when deg g ≡ 3 mod 4. In particular, the statistical behavior
+seems to depend on the mod 4 value of the degree in which we are sampling f . The absence
+of prime f (g) for deg g ≡ 1 mod 4 will be proved in Example 6.10.
+We observed three common features of prime polynomials in κ[u][T ] whose primality
+statistics do not seem to match expectations based on analogies to the classical case:
+• The polynomial f (T ) lies in κ[u][T p ], where p is the characteristic of κ; equivalently
+(since f (T ) is irreducible over κ(u)) f (T ) is inseparable over κ(u).
+• The ratio between the actual number of prime values f (g), as g runs over polynomials
+with a common degree n, and the conjectural asymptotic estimate for that number
+based on analogies to the classical case appears to have a limit as n → ∞ if we fix
+n mod 4. However, the apparent limit (which is not necessarily 1) may be different
+for different classes mod 4, and there are 1, 2, or 4 apparent limits (never 3).
+• The Möbius function for κ[u] (see Definition 2.1) has unusual statistics on the values
+f (g). Roughly speaking, the nonzero values of µ(f (g)) may fail to be equally often
+1 and −1.
+
+The main impact of the third observation is that statistics for prime values of f (g) as
+g varies can be linked to appropriate averages of the nonzero values of µ(f (g)) as g varies
+(and the averages we define are effectively computable in any example). Subtracting these
+averages from 1 enables us to predict the 1, 2, or 4 apparent limits in the second observation.
+A simple example is the polynomial f (T ) in Example 1.1. As g runs over the polynomials
+in F3 [u][T ] having a common degree ≥ 2 the value µ(f (g)) is −1 twice as often as it is 1 (by
+Example 3.2), so the average nonzero value of µ(f (g)) in each degree (at least 2) is exactly
+−1/3. Subtracting this from 1 gives 4/3 = 1.33 . . . , which matches the deviation we found
+in Example 1.1.
+The theme of this paper is the study of µ(f (g)) when f (T ) is a polynomial in κ[u][T p ]
+which is squarefree in κ[u][T ]. The intended application of this work, which we will give
+in the final section, is the formulation of a conjecture for the frequency of prime values of
+f (T ) when f (T ) is a prime polynomial. However, our work on µ(f (g)) does not require that
+f (T ) be prime. Letting f (T ) be squarefree instead provides greater technical flexibility. For
+instance, squarefreeness is preserved under finite extension of the constant field κ.
+Here is an outline of the paper. In §2 and §3 we discuss some general features of the
+Möbius function, discriminants, and resultants relative to κ[u]. This builds on ideas of
+Swan [15] and is applied in §4 where we prove that µ(f (g)), under suitable hypotheses, is
+periodic in g when κ has odd characteristic (see Theorem 4.8). In §5 we treat characteristic
+2, which is more difficult. For instance, we need to use 2-adic lifts and residues of differential
+forms (Theorem 5.10). Finally, §6 uses these ideas to define a notion of Möbius average
+that seems to work well as a new correction factor for asymptotically estimating how often
+a prime polynomial in κ[u][T ] takes prime values on κ[u] (Conjecture 6.2).
+While the classical conjectures on prime values of prime polynomials in Z[T ] involve
+only local obstructions, the Möbius average in the κ[u]-setting is a fundamentally global
+obstruction. The Möbius function could be considered as a “parity” obstruction to prime
+values once we know f (g) is squarefree (crudely put, if µ(f (g)) = 1 then f (g) is definitely
+not prime). We have not found a role for a similar type of obstruction to prime values based
+
+PRIME SPECIALIZATION IN GENUS 0
+
+3
+
+on the number of irreducible factors of the squarefree values of f (g) counted modulo 3 or
+higher, and our correction based on Möbius averages gives an excellent fit with all observed
+numerics.
+Notation and Terminology. Throughout the paper, κ denotes a finite field of characteristic p and size q. We often write χ instead of χκ to denote the quadratic character on
+the multiplicative group κ× when p )= 2.
+For a nonzero polynomial h in one variable, we write the leading coefficient as lead h.
+For a nonzero polynomial f in two variables u and T over a ring R, the T -degree of f and
+the leading coefficient of f as a polynomial in T are indicated with a subscript: degT f ≥ 0
+and leadT f ∈ R[u]. We write degu,T f to denote the total degree of such an f . An element
+in R[u] is primitive when its coefficients generate the unit ideal in R. When R is a domain,
+the discriminant of a nonzero one-variable polynomial h with coefficients in R is denoted
+disc h, or discR h for emphasis. Our definition of polynomial discriminants does not match
+the usual definition when the polynomial is not monic; see (2.3) and (2.4).
+Let R be a local ring with residue field k. A lift of a polynomial h ∈ k[u][T ] is a polynomial
+H ∈ R[u][T ] whose reduction to k[u][T ] is h. The length of an R-module M is denoted
+#(M ), and if Z is an artinian scheme then #(Z) denotes the length of the ring Γ(Z, OZ ).
+Acknowledgments. We thank C. Elsholtz, O. Gabber, A. Granville, A. J. de Jong,
+M. Larsen, B. Poonen, A. Silberstein, and H. Stark for their advice and encouragement.
+We are also very grateful to an anonymous referee who offered helpful suggestions on an
+earlier version of this work. B.C. was partially supported by Alfred P. Sloan Foundation and
+NSF grant DMS-0093542 during work on this paper. K.C. thanks the Clay Mathematics
+Institute and the Number Theory Foundation for support.
+2. The Möbius function over finite fields
+Definition 2.1. Let R be a Dedekind domain. The Möbius function on nonzero ideals of R
+is µR (p1 · · · pm ) = (−1)m for distinct nonzero prime ideals pj , µR ((1)) = 1, and µR (b) = 0
+for any nonzero ideal b ⊆ R divisible by the square of a prime. For nonzero r ∈ R, we
+define µR (r) = µR (rR). If R is understood from context, we write µ rather than µR .
+The first step in the analysis of µκ[u] (f (g)) when f ∈ κ[u][T p ] is fixed and g ∈ κ[u]
+varies is the derivation of a formula for µκ[u] (h) (for any nonzero h ∈ κ[u]) in terms of
+the discriminant of h. (This has no known analogue for the Möbius function on Z.) The
+Möbius function of h (for h )= 0) can be viewed as the Möbius function of the finite κ-algebra
+κ[u]/(h) via the following definition.
+Definition 2.2. Let κ be a finite field. For a finite κ-algebra A, let µ(A) = (−1)# Spec A if
+A is étale over κ (i.e., reduced) and let µ(A) = 0 otherwise.
+Theorem 2.3. Suppose κ is finite with odd characteristic, and let χκ be the quadratic
+character on κ× , with χκ (0) = 0. For any finite κ-algebra A,
+(2.1)
+
+µ(A) = (−1)dimκ A χκ (discκ A).
+
+Proof. We immediately reduce to the case when A is a finite extension field of κ, and this
+is settled as in the proof of [6, Lemma 4.1] by computing the sign of a Galois-theoretic
+Frobenius as a permutation.
+!
+We need an analogue of Theorem 2.3 in characteristic 2 that still involves discriminants.
+This analogue will use a lifting of A into characteristic 0. We shall now formulate a setup
+
+4
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+for finite κ with arbitrary characteristic, extending work of Swan [15]. (Swan essentially
+obtained Theorem 2.4 below and applied it to a compute µκ[u] (h) in a few examples, although
+he expressed his answer directly in terms of the parity of the number of irreducible factors
+instead of in terms of the Möbius function.)
+Let κ be a finite field of characteristic p and W = W (κ) be the ring of Witt vectors
+! such that A/p
+! A
+! is isomorphic to A as κ-algebras.
+of κ. Consider finite flat W -algebras A
+For instance, a finite flat lifting of κ[u]/(h(u)) over W is W [u]/(H(u)), where H ∈ W [u]
+!
+satisfies H mod p = h and deg H = deg h. By Hensel’s lemma, if A is étale over κ then A
+exists (and is finite étale over W ) and is unique up to unique W -isomorphism. If A is not
+étale over κ, a finite flat lifting of A over W may not exist (see [4, Example 3.2(4)]).
+! lies in W × /(W × )2 .
+Suppose κ has characteristic 2 and A is étale over κ, so discW A
+×
+×
+×
+×
+Embed κ into W by the Teichmüller lifting, so W = κ × (1 + 2W ). The 1-unit part
+! lies in 1 + 4W . (Ambiguity of discW A
+! up to a unit-square does not affect the
+of discW A
+2
+meaning of this assertion, since (1 + 2w) ∈ 1 + 4W for all w ∈ W .)
+! of A over W ,
+Theorem 2.4. For any finite κ-algebra A that admits a finite flat lifting A
+!
+(2.2)
+µ(A) = (−1)dimκ A χ
+!(discW A),
+
+where χ
+! is the unique quadratic character on W × when κ has odd characteristic and is the
+unique quadratic character on κ× × (1 + 4W ) killing (W × )2 when κ has characteristic 2.
+(An explicit formula for χ
+! in the characteristic 2 case is given in (5.24), where the formula
+is first needed.) In both cases, χ
+! is extended by 0 to pW .
+
+The proof, which we omit, goes exactly as for Theorem 2.3, except that unramified
+extensions of the fraction field of W are used instead of finite extensions of κ.
+When F is a field and h in F [u] is nonconstant of degree d with roots γ1 , . . . , γd (counted
+with multiplicity) in a splitting field, we define the discriminant of h to be
+"
+(γi − γj )2 ∈ F,
+(2.3)
+disc h :=
+i<j
+
+whether or not h is monic. (The discriminant of a nonzero constant polynomial is understood to be 1.) The usual definition of disc h has an additional square factor (lead h)2d−2 ,
+which makes the discriminant a homogeneous function of the coefficients of h. We prefer to
+use our definition since it agrees with the universally accepted definition of the discriminant
+of the finite F -algebra F [u]/(h) relative to the ordered basis {1, u, . . . , ud−1 }, whether or
+not h is monic. In terms of the derivative of h, (2.3) is the same as
+d
+
+(2.4)
+
+(−1)d(d−1)/2 " #
+(−1)d(d−1)/2
+disc h =
+N(F [u]/(h))/F (h# ).
+h
+(γ
+)
+=
+i
+(lead h)d
+(lead h)d
+i=1
+
+Theorems 2.3 and 2.4 give
+#
+(−1)deg h χ(discκ h),
+(2.5)
+µκ[u] (h) =
+(−1)deg h χ
+!(discW H),
+
+if κ has odd characteristic,
+if κ has any characteristic,
+
+where H is a lifting of h into W [u] with deg H = deg h. (Since our polynomial discriminants differ from the usual definition by a square factor, the usual definition can also be
+used in (2.5).) The formula in (2.5) for the case of characteristic 2 uses a discriminant in
+characteristic 0. There is an intrinsic variant of the discriminant in characteristic 2 (see
+[3]), but we have not found this to be useful for our purposes.
+
+PRIME SPECIALIZATION IN GENUS 0
+
+5
+
+Example 2.5. Let κ be a finite field with characteristic p )= 2. For nonconstant g =
+cun + · · · ∈ κ[u] we see via (2.4) and (2.5) that µ(g p + u) = (−1)n χ(c)n χ(−1)n(pn−1)/2 .
+When n is odd, this equals 1 and −1 equally often as g varies in degree n. When n is
+even, µ(g p + u) equals χ(−1)n/2 for all g of degree n. For instance, when n ≡ 0 mod 4,
+µ(g p + u) = 1 for all g of degree n. Thus g p + u is not prime when 4| deg g and deg g > 0.
+3. Discriminants and Resultants
+We wish to understand the behavior of µ(f (g)) when f ∈ κ[u][T p ] is fixed with degT f > 0
+and g varies in κ[u] with large degree. Formula (2.5) suggests, at least for p )= 2, that we
+should study disc(f (g)) as an algebraic function of g with a specified degree n, where n
+is large. (We need n at least large enough that deg(f (g)) depends on g only through its
+degree n.) Following Swan [15], we will find it useful to work with resultants rather than
+discriminants.
+For an integral domain C, the resultant of two nonzero polynomials h1 and h2 in C[u],
+denoted RC (h1 , h2 ) = R(h1 , h2 ), is defined to be
+"
+(3.1)
+R(h1 , h2 ) = (lead h1 )deg h2
+h2 (α)
+h1 (α)=0
+
+with the product running over the roots of h1 (counted with multiplicity) in a splitting
+field over the fraction field of C. There is a classical expression for R(h1 , h2 ) given as the
+determinant of a universal matrix in the coefficients of h1 and h2 , and the size of the matrix
+depends on the degrees of h1 and h2 . Write Rd1 ,d2 (h1 , h2 ) to indicate that hj is being treated
+as a polynomial of degree dj for the resultant calculation via a universal determinant. We
+make the convention that when a resultant R(h1 , h2 ) appears without degree subscripts then
+it is defined in terms of the actual degrees of its arguments if h1 and h2 are nonzero. When
+some hj vanishes we define R(h1 , h2 ) = 0, which is compatible with universal determinants
+that define resultants (letting the zero polynomial be assigned whatever positive degree we
+please).
+If nonzero h1 and h2 have actual degrees d1 and d2 , then for any d3 ≥ d2 ,
+(3.2)
+
+Rd1 ,d3 (h1 , h2 ) = (lead h1 )d3 −d2 Rd1 ,d2 (h1 , h2 ).
+
+Though (3.1) is valid as written when h2 is given a fake higher degree (still denoted deg h2 ),
+it is generally not valid when h1 is given a fake higher degree.
+Warning. Failure to remember that resultants are sensitive to degrees can lead to errors
+when universal formulas over Z (such as (3.3) below) are used in characteristic p > 0.
+The relation between discriminants and resultants is given by the formula
+(3.3)
+
+disc h =
+
+(−1)d(d−1)/2 Rd,d−1 (h, h# )
+,
+(lead h)2d−1
+
+where d = deg h ≥ 1. If h# )= 0 then this formula simplifies by (3.2) to
+(3.4)
+
+disc h =
+
+(−1)d(d−1)/2 R(h, h# )
+,
+(lead h)d+deg h!
+
+where R(h, h# ) is the resultant of h and h# computed with a determinant whose size is based
+on the actual degree of h# (which might be less than d − 1 in positive characteristic).
+
+6
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Example 3.1. Let f (T ) = T 9 + (2u2 + u)T 6 + (2u + 2)T 3 + u2 + 2u + 1 in κ[u][T ], where
+κ has characteristic 3. (Example 1.2 is κ = F3 .) For nonconstant g = cun + . . . in κ[u]
+with c )= 0, f (g) has degree 9n with leading coefficient c9 and f (g)# = (∂u f )(g) has degree
+6n + 1 < 9n − 1. By (3.4),
+(3.5)
+
+disc f (g) =
+
+(−1)n(n−1)/2 R(f (g), (∂u f )(g))
+.
+(c9 )15n+1
+
+Here R(f (g), (∂u f )(g)) = R9n,6n+1 (f (g), (∂u f )(g)). If instead we use (c9 )2d−1 = (c9 )18n−1
+in the denominator (see (3.3)) then an erroneous factor of (c9 )3n−2 is introduced in (3.5),
+and this extra power of c affects the quadratic character of the right side of (3.5). In view
+of (2.5), such an error would lead to incorrect calculations of µ(f (g)).
+Resultants have several useful algebraic properties. We state five of them without proof,
+as in [15]. In this list, polynomials are nonzero and have coefficients in a domain C.
+(1) R(h1 , h2 ) = (−1)(deg h1 )(deg h2 ) R(h2 , h1 ).
+(2) R(h1 , h2 ) is bimultiplicative: R(h1 h3 , h2 ) = R(h1 , h2 )R(h3 , h2 ) and R(h1 , h2 h3 ) =
+R(h1 , h2 )R(h1 , h3 ).
+(3) R(u, h) = h(0). More generally, R(u − c, h) = h(c) and R(h, u − c) = (−1)deg h h(c)
+for c ∈ C.
+(4) R(c, h) = R(h, c) = cdeg h for c ∈ C, h )= 0. Thus, R(c1 , c2 ) = 1 for c1 , c2 )= 0 in C.
+(5) For nonzero M , h1 , h2 in C[u],
+h1 ≡ h2 mod M =⇒ R(M, h1 ) = (lead M )deg h1 −deg h2 R(M, h2 ).
+
+We call property (5) the quasi-periodicity of the resultant (in its second argument). For
+monic M in C[u] and any f (T ) ∈ C[u][T ], R(M, f (h)) is genuinely periodic in h. The
+notation R(h1 , h2 ) in [15] differs by a sign factor from the definition of resultants generally
+used today; it denotes our R(h2 , h1 ), so comparisons with [15] must keep this distinction in
+mind.
+Example 3.2. Let f (T ) = T 12 + (u + 1)T 6 + u4 ∈ κ[u][T ] with char(κ) = 3, as in Example 1.1. Let q = #κ. We shall compute µ(f (g)) when n = deg g ≥ 1.
+Let h = f (g), so h# = g 6 + u3 = (g 2 + u)3 . Since deg h = 12n, deg h# = 6n, and lead h is
+a square, (2.5) and (3.4) give µ(f (g)) = χ(R(f (g), (g 2 + u)3 )) = χ(R(g 2 + u, f (g))). Since
+f (g) ≡ u6 − u3 mod g 2 + u, quasi-periodicity of the resultant gives
+R(g 2 + u, f (g)) = (lead g)2(12n−6) R(g 2 + u, u6 − u3 ).
+
+Since R(g 2 + u, u6 − u3 ) = R(g 2 + u, u)3 R(g 2 + u, u − 1)3 = g(0)6 (g(1)2 + 1)3 ,
+(3.6)
+
+µ(f (g)) = χ(g(0))2 χ(g(1)2 + 1).
+
+(Further calculation shows that disc f (g) = (lead g)−36(4n+1) g(0)18 (g(1)2 + 1)9 .) As g runs
+over all polynomials of a given degree n ≥ 2 in κ[u], g(0) and g(1) can be “independently
+assigned” (think about g mod u(u − 1)). So, for instance, if −1 is not a square in κ, we see
+that µ(f (g)) vanishes 1/q of the time (when g(0) = 0), and is −1 twice as often as it is 1.
+
+Example 3.3. Let f (T ) = T 9 + (2u2 + u)T 6 + (2u + 2)T 3 + u2 + 2u + 1 ∈ κ[u][T ], with
+char(κ) = 3, as in Example 1.2. For nonconstant g(u) = cun + · · · with degree n ≥ 1,
+deg(f (g)) = 9n and deg(f (g)# ) = 6n + 1, so µ(f (g)) = (−1)n χ(disc f (g)) by (2.5). By (3.5),
+(3.7)
+
+µ(f (g)) = (−1)n (χ(−1))n(n−1)/2 χ(c)n+1 χ(R(f (g), (∂u f )(g))).
+
+PRIME SPECIALIZATION IN GENUS 0
+
+7
+
+Since the algebraic properties of resultants are analogous to the algebraic properties of
+intersection numbers of plane curves, a recursive algebraic procedure that imitates the
+computation of such intersection numbers (as is given in detail in the proof of Theorem 4.1)
+yields
+(3.8)
+
+R(f (g), (∂u f )(g)) = c54n−6 (g(1)2 + g(1) + 2)3 g(2)9 .
+
+Inserting (3.8) into (3.7), we find our Möbius formula:
+(3.9)
+
+µ(f (g)) = (−1)n χ(−1)n(n−1)/2 χ(c)n+1 χ(g(1)2 + g(1) + 2))χ(g(2))
+
+for nonconstant g in κ[u]. This depends on g mod (u − 1)(u − 2), deg g mod 4, and the
+quadratic character of the leading coefficient of g. This formula shows that Möbius behavior can change upon extension of the ground field: when −1 is a square in κ, the term
+χ(−1)n(n−1)/2 drops out, so dependence of µ(f (g)) on deg g mod 4 drops to dependence on
+deg g mod 2.
+Definition 3.4. If f1 , f2 ∈ F [u][T ] are two nonzero polynomials over a perfect field F such
+to be the monic
+that their zero loci Zf1 and Zf2 in A2F have finite intersection, define Mfgeom
+1 ,f2
+separable polynomial in F [u] whose zero locus is the image of Zf1 ∩ Zf2 in the u-axis (so
+= 1 if Zf1 ∩ Zf2 is empty, such as when some fj lies in F × ). When f ∈ F [u][T ] is
+Mfgeom
+1 ,f2
+geom
+when this makes sense (i.e., when ∂u f )= 0 and Zf ∩ Z∂u f
+nonzero, define Mfgeom := Mf,∂
+uf
+is finite).
+For applications to prime values of polynomials in κ[u][T ] we will use the last part of
+Definition 3.4, so let us describe Mfgeom more geometrically. The projection from the zero
+locus Zf to the T -axis is flat and generically étale, so this projection is non-étale at a finite
+set of points on Zf , say at the set B. The image of B in the u-axis is a finite set of geometric
+points. Then Mfgeom is the monic polynomial in κ[u] that vanishes precisely at this finite set
+on the u-axis, with each root having multiplicity 1 (so Mfgeom is squarefree). If the leading
+coefficient cd (u) of f (T ) ∈ κ[u][T ] does not have double roots then Mfgeom is the radical of
+the κ[u]-resultant of f and ∂u f .
+For f ∈ F [u][T ] with f )∈ F , the following lemma gives sufficient conditions for Mfgeom to
+be defined when F has positive characteristic.
+Lemma 3.5. Let F be perfect of characteristic p > 0.
+1) Choose a nonzero f ∈ F [u][T p ] such that f is squarefree in F [u][T ]. Then f and ∂u f
+have no nonconstant common factor in F [u][T ], or equivalently the zero loci {f = 0} and
+{∂u f = 0} in the affine plane A2F intersect at finitely many points.
+2) If f ∈ F [u][T ] is nonzero and f (T p ) is squarefree in F [u][T ] (so f is squarefree in
+F [u][T ]), then f and ∂u f have no nonconstant common factor in F [u][T ].
+Note that if f )∈ F then f (T ) cannot lie in F [up ][T ] under either hypothesis in the lemma,
+so ∂u f )= 0 in such cases. It may happen that ∂u f is constant; e.g., f = up T p + u + 1 (or
+f = u). The second case in Lemma 3.5 will be used only when p = 2.
+Proof. It suffices to check the second part, since if f is in F [u][T p ] and is squarefree in
+F [u][T ] then f (T p ) is squarefree in F [u][T ].
+The case f ∈ F × is trivial, so we may assume f )∈ F . In particular, ∂u f )= 0. Let Zf and
+Z∂u f be the respective zero loci of f and ∂u f in the affine plane (Z∂u f may be empty). Since
+F is perfect, extending scalars to an algebraic closure of F preserves the property of being
+
+8
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+squarefree and hence we may assume F is algebraically closed. The hypothesis on f in case
+(2) implies that f (T p ) is a squarefree element in F (T p )[u] with nonzero u-derivative, so the
+image of Zf ∩ Z∂u f in the T -axis does not contain the generic point and hence is F -finite.
+To conclude the finiteness of Zf ∩ Z∂u f it therefore suffices (since F is algebraically closed)
+to prove that Zf contains no lines T = c for c ∈ F . But if Zf contains such a line then
+f (T p ) is divisible by T p − c = (T − c1/p )p , contrary to the squarefreeness hypothesis.
+!
+4. A resultant formula
+Our goal in this section is show that for p )= 2, polynomials f (T ) in κ[u][T p ] which are
+squarefree in κ[u][T ] have “periodic” Möbius values: for g ∈ κ[u] with sufficiently large
+degree, µ(f (g)) is determined by (i) the reduction of g modulo some nonzero M ∈ κ[u], (ii)
+the mod-4 congruence class of the degree of g, and (iii) the quadratic character of the leading
+coefficient of g (cf. Example 3.3). This will be proved as Theorem 4.8 via a periodicity
+property for resultants over arbitrary perfect fields.
+We indulge in the following notational device: for a field F and a nonzero M ∈ F [u],
+we write F [u]/(M ) to denote the vector-scheme of remainders upon long division by M
+over F -algebras A. That is, F [u]/(M ) is viewed as an affine space of dimension deg M ,
+whose coordinates arise from coefficients of ui for 0 ≤ i < deg M . The context will indicate
+whether F [u]/(M ) denotes an affine space over Spec F or its set of F -valued points, the
+“usual” F -vector space F [u]/(M ).
+We will also work with the scheme
+Polyn/F = An ×Spec F Gm = Spec F [a0 , . . . , an , 1/an ]
+
+of polynomials of exact degree n ≥ 0, as well as the scheme
+
+Poly≤n/F = An+1
+= Spec F [a0 , . . . , an ]
+F
+
+$
+of polynomials of degree ≤ n. The coordinates (a0 , . . . , an ) correspond to i≤n ai ui , with
+Polyn/F the locus in Poly≤n/F where an is a unit. For example, given nonconstant M ∈ F [u]
+and any n ≥ deg M , formation of remainders under long division by M defines an algebraic
+morphism
+(4.1)
+
+ρn,M : Polyn/F → F [u]/(M ) ≃ Poly≤(deg M −1)/F
+
+that is a trivial Polyd/F -bundle with d = n−deg M , by the division algorithm. We interpret
+Poly≤−1/F to be a 1-point space, so when M ∈ F × the map
+(4.2)
+
+ρn,M : Polyn/F → Spec F
+
+is the structure map to a point.
+Let f ∈ F [u][T ] be a nonzero element with T -degree d. It will be useful later to record
+the simple formulas for the degree and leading coefficient of f (g) ∈ F [u] when d > 0 and
+g ∈ F [u] has deg g / 0, and to make the condition deg g / 0 effective. Write
+(4.3)
+
+f (T ) = αd (u)T d + αd−1 (u)T d−1 + · · · + α0 (u),
+
+with αd (u) )= 0 and d > 0. For g ∈ F [u] with sufficiently large degree (depending on f ),
+the degree and leading coefficient of f (g) in κ[u] are the same as those for αd g d :
+(4.4)
+
+deg(f (g)) = d · deg g + deg αd = (degT f )n + deg(leadT f ),
+
+(4.5)
+
+lead(f (g)) = (lead αd )(lead g)d ,
+
+PRIME SPECIALIZATION IN GENUS 0
+
+9
+
+where n = deg g. In particular, deg(f (g)) is a linear polynomial in deg g when deg g / 0.
+An explicit lower bound on deg g, in terms of f , such that (4.4) and (4.5) apply to f (g) is
+deg αi − deg αd
+(4.6)
+deg g > ν(f ) := max
+,
+0≤i≤d−1
+d−i
+where terms with αi = 0 are omitted or use the convention that deg 0 = −∞. For completeness, set ν(f ) = 0 in the vacuous case that f (T ) = α(u)T d is a T -monomial (no i’s to
+consider), with the case d = 0 permitted.
+Since deg(f (g)) is determined by n = deg g for g of large degree (depending on f , as in
+(4.4) and (4.6)), there is a well-posed algebraic discriminant function
+(4.7)
+
+disc ◦ f : Polyn/F → A1F
+
+defined by g 1→ disc(f (g)) when n is sufficiently large; note that (4.7) does not extend to
+an algebraic function on Poly≤n/F . Our aim is to understand the structure of the algebraic
+function (4.7) for f as in Lemma 3.5, and in particular the extent to which this function
+factors through the remainder morphism ρn,M for some nonzero M ∈ F [u].
+To exploit inductive arguments, it is convenient to re-interpret the study of disc(f (g))
+as the study of the resultant R(f (g), (∂u f )(g)). The utility of this point of view is that
+it allows us to consider the more general algebraic function Polyn/F → A1F defined by
+g 1→ R(f1 (g), f2 (g)) for large n, with fixed nonzero relatively prime f1 , f2 ∈ F [u][T ] (a
+condition satisfied for f1 = f and f2 = ∂u f under either hypothesis in Lemma 3.5 when
+f )∈ F ). The merit of this generality is that we may separately vary f1 and f2 . Restricting
+attention to F of positive characteristic is not adequate: our later work in characteristic 2
+will use the present considerations with a 2-adic field F .
+Theorem 4.1. Let F be a perfect field with any characteristic and let f1 , f2 ∈ F [u][T ]
+be nonzero (possibly constant) elements with zero loci Zf1 and Zf2 in A2F that have finite
+intersection. For each x = (ux , tx ) ∈ Zf1 ∩ Zf2 , let ix (Zf1 , Zf2 ) = #(OZf1 ∩Zf2 ,x ) be the local
+intersection number.
+There exist c0 , c1 ∈ F × and m0 , m1 ∈ Z such that for g ∈ F [u] with sufficiently large
+degree n, the resultant RF (f1 (u, g), f2 (u, g)) is given by
+"
+RF (f1 (u, g), f2 (u, g)) = c0 cn1 (lead g)m0 +m1 n
+NF (x)/F (g(ux ) − tx )ix (Zf1 ,Zf2 )
+x∈Zf1 ∩Zf2
+
+= c0 cn1 (lead g)m0 +m1 n N(Zf1 ∩Zf2 )/ Spec F (g − T ),
+
+where lead g ∈ F × is the leading coefficient of g (and the product is 1 if Zf1 ∩ Zf2 = ∅); in
+fact, m1 = (degT f1 ) · (degT f2 ). The “sufficiently large” condition on n only depends on
+the total degrees degu,T f1 and degu,T f2 .
+Theorem 4.1 will be proved near the end of this section after a lot of preparatory work.
+The identity in Theorem 4.1 is really a universal algebraic identity for g with coefficients in
+any F -algebra domain. The formulation of this identity is not well-suited to our method of
+proof, so we will first prove a less precise version after setting up some notation. Fixing f1
+and f2 as in Theorem 4.1, for g ∈ F [u] of degree n the degree of fj (g) ∈ F [u] is provided
+by (4.4) when n > ν(fj ) (see (4.6)): it is equal to
+(4.8)
+
+dj,n := (degT fj )n + deg(leadT fj ).
+
+For n > max(ν(f1 ), ν(f2 )) let G = a0 + a1 u + · · · + an un ∈ F [a0 , . . . , an ][u] denote
+the universal polynomial over the scheme Poly≤n/F = Spec F [a0 , . . . , an ] of polynomials of
+
+10
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+degree ≤ n over F -algebras; we are not requiring an to be a unit. Consider the following
+universal polynomial depending on f1 and f2 :
+(4.9)
+
+Rn (G) := RF [a0 ,...,an ] (f1 (G), f2 (G)) ∈ F [a0 , . . . , an ],
+
+where the resultant is computed by viewing fj (G) as having u-degree dj,n . Since n > ν(fj ),
+dj,n is also the u-degree of the specialization of fj (G) at all field-valued points of the open
+subscheme Polyn/F ⊆ Poly≤n/F where an is a unit.
+Lemma 4.2. For any n > max(ν(f1 ), ν(f2 )), Rn (G) in F [a0 , . . . , an ] is nonzero.
+
+Proof. Specializing G to un +a0 commutes with formation of the resultant and carries fj (G)
+to the polynomial fj (u, un + a0 ) that is obtained from fj (u, T ) via the automorphism of the
+plane (u, a0 ) 1→ (u, un + a0 ). Hence, the zero loci of f1 (u, un + a0 ) and f2 (u, un + a0 ) in the
+(u, a0 )-plane have finite intersection, so the specialized F [a0 ]-resultant is nonzero.
+!
+We want to understand the structure of Rn (G) as an algebraic function in the aj ’s. For
+each of the finitely many intersection points x = (ux , tx ) of Zf1 and Zf2 in A2F , the finite
+extension F (x)/F is generated over F by the subextensions F (ux ) and F (tx ).
+Definition 4.3. For n ≥ 1, define Px,n (a0 , . . . , an ) to be the norm-form polynomial
+NF (x)[a0 ,...,an ]/F [a0 ,...,an ] (a0 + a1 ux + · · · + an unx − tx ) ∈ F [a0 , . . . , an ].
+
+For any F -algebra F # and any g ∈ Poly≤n/F (F # ), we have
+
+Px,n (g) = N(F (x)⊗F F ! )/F ! (g(ux ⊗ 1) − tx ⊗ 1) ∈ F # .
+
+Lemma 4.4. Assume n ≥ 1. For each x ∈ Zf1 ∩ Zf2 such that F (x)/F is separable, Px,n
+is irreducible in the coordinate ring of Poly≤n/F . If x and x# are two such distinct points
+then Px,n and Px! ,n are not unit multiples of each other in this coordinate ring.
+Proof. The extension F (x)/F is finite separable and Px,n is the norm of a polynomial in
+F (x)[a0 , . . . , an ] whose coefficients generate F (x) over F (since n ≥ 1), so the irreducibility
+is obvious. If L/F is a finite Galois extension into which F (x) admits an F -embedding, then
+over L we see that Px,n factors as a product of linear forms Pxi ,n defined by the L-points
+xi of A2F that lie over x. Thus, if x# is another point on Zf1 ∩ Zf2 such that F (x# )/F is
+separable then the geometric zero locus of Px,n is distinct from that of Px! ,n . Hence, Px,n
+and Px! ,n are not unit multiples of each other.
+!
+Now assume F is perfect, so Lemma 4.4 applies to all x ∈ Zf1 ∩ Zf2 . Each Px,n is a
+non-unit in F (a1 , . . . , an )[a0 ] and so is not an F × -multiple of an . Thus, the conclusions of
+Lemma 4.4 also hold in the coordinate ring of Polyn/F . By Definition 3.4 we have
+"
+NF (ux )/F (u − ux ) ∈ F [u] − {0},
+(u) =
+(4.10)
+Mfgeom
+1 ,f2
+ux
+
+= 1 if
+where ux runs over the distinct images of the x’s on the u-axis. In particular, Mfgeom
+1 ,f2
+Zf1 and Zf2 are disjoint. If g1 , g2 ∈ F [u] have respective large degrees n1 and n2 then from
+(4.10) and the definition Px,n (g) = NF (x)/F (g(ux ) − tx ) for n ≥ deg g we see
+g1 ≡ g2 mod Mfgeom
+=⇒ Px,n1 (g1 ) = Px,n2 (g2 )
+1 ,f2
+
+where nj = deg gj .
+For M := Mfgeom
+)= 0, consider the division-algorithm morphism ρn,M as in (4.1) and
+1 ,f2
+(4.2). For each x ∈ Zf1 ∩ Zf2 we have M (ux ) = 0, so Px,n = Px,deg M −1 ◦ ρn,M ; note that
+
+PRIME SPECIALIZATION IN GENUS 0
+
+11
+
+deg M > 0 if such x exist. The following theorem is a weak version of Theorem 4.1 in the
+sense that the dependence on n for the parameters bn and en in (4.11) is not made explicit;
+the proof of Theorem 4.1 will rest on this weaker result.
+Theorem 4.5. With hypotheses as in Theorem 4.1, assume n > 2 degu,T (f1 ) degu,T (f2 ) if
+f1 , f2 )∈ F and assume n > max(ν(f1 ), ν(f2 )) otherwise (with ν(f ) as in (4.6)).
+There exists a unique bn ∈ F × and integer en ≥ 0 such that
+"
+"
+ix (Zf ,Zf )
+ix (Zf1 ,Zf2 )
+(4.11)
+Rn (G) = bn aenn ·
+Px,n 1 2 = bn aenn ·
+Px,deg M
+−1 ◦ ρn,M
+x∈Zf1 ∩Zf2
+
+x∈Zf1 ∩Zf2
+
+as algebraic functions on Polyn/F , where M = Mfgeom
+as in Definition 3.4 and it is under1 ,f2
+stood that the products over x are taken to be 1 if Zf1 ∩ Zf2 is empty.
+Beware that bn is generally sign-dependent on the ordering of the pair f1 and f2 .
+
+Proof. We shall first establish a weaker form of (4.11) in which the intersection number at
+each x is replaced with an unknown positive exponent ex,n . Since the Px,n ’s are irreducible
+and not scalar multiples of each other in the coordinate ring of Polyn/F , to establish this
+weaker form of (4.11) it suffices (by the Nullstellensatz) to show that the restriction of
+Rn (G) to Polyn/F has geometric zero locus equal to the union of the geometric zero loci of
+the Px,n ’s. If F /F is an algebraic closure then by separability of F (x)/F the irreducible
+factorization of Px,n in F [a0 , . . . , an ] is the product of the Pxi ,n ’s for the F -points xi of
+A2F over the physical point x. Thus, we may assume F is algebraically closed and we wish
+to prove that if g ∈ F [u] has large exact degree n then the resultant of f1 (u, g(u)) and
+f2 (u, g(u)) vanishes if and only if g(ux ) = tx for some x in the intersection of the zeroloci Zfj . But this is obvious since the vanishing of the resultant says that f1 (u, g(u)) and
+f2 (u, g(u)) have a common root u0 ∈ F , and then x = (u0 , g(u0 )) lies on both zero-loci Zfj .
+It remains to prove that ex,n = ix (Zf1 , Zf2 ) for all x ∈ Zf1 ∩ Zf2 and for n as large as in
+the theorem. By perfectness of F it is harmless to assume that F is algebraically closed,
+so we now assume this to be the case. If degT f1 = degT f2 = 0 or if some fj lies in F ×
+then there are no x’s and Rn (G) lies in F × and has no dependence on n. Hence, we may
+suppose at least one of the fj ’s has positive T -degree, say f2 , and f1 )∈ F × . First assume
+degT f1 = 0, so f1 ∈ F [u] with positive degree. By multiplicativity of local intersection
+numbers and resultants, we can assume f1 = u − u0 for some u0 ∈ F . Thus, by quasiperiodicity of resultants and the analogous property for local intersection numbers we can
+replace f2 with the nonzero f2 (u0 , T ) ∈ F [T ] that we may assume has positive degree. We
+likewise reduce to the case f2 = T − t0 with t0 ∈ F . Hence, Zf1 ∩ Zf2 = {(u0 , t0 )} with
+intersection number 1 and clearly Rn (G) = (−1)n (G(u0 ) − t0 ), so e(u0 ,t0 ),n = 1 as desired.
+We may now assume degT f1 and degT f2 are positive. Let us first argue by deformation
+theory that ex,n ≥ ix (Zf1 , Zf2 ) for all x. (We are grateful to de Jong for suggesting this
+approach, which generalizes to the case of higher genus [8].) Consider any deformation f!j
+of fj over F [[τ ]] with the same T -degree such that leadT (f!j ) ∈ F [[τ ]][u] has leading F [[τ ]]coefficient that is a unit, so its u-degree is the same as that of its reduction leadT (fj ) ∈ F [u].
+Require also that degu,T (f!j ) = degu,T (fj ). For example, we may define f!j = fj + τ fj,0 for
+any fj,0 ∈ F [u][T ] such that degT fj,0 = degT fj , degu leadT (fj,0 ) = degu leadT (fj ), and
+degu,T (fj,0 ) = degu,T (fj ); a good choice of such fj,0 will be made later. The T -degree and
+!n (G) := RF [[τ ]] (f!1 (u, G(u)), f!2 (u, G(u))) for
+u-degree conditions on f!1 and f!2 ensure that R
+universal G with large degree n specializes to Rn (G) modulo τ .
+
+12
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+The affine F [[τ ]]-scheme Zfe1 ∩ Zfe2 is necessarily quasi-finite. Indeed, RF [[τ ]][u] (f!1 , f!2 ) specializes to RF [u] (f1 , f2 ) )= 0, so if the F ((τ ))-fibers of the Zfej ’s have a common irreducible
+component then the f!j ’s (which are τ -primitive) must have a common τ -primitive factor in
+F [[τ ]][u] whose reduction modulo τ is necessarily some c ∈ F × (as f1 and f2 do not have a
+common factor in F [u]). Such a common factor lies in c + τ F [[τ ]][u] and must have positive
+u-degree (as otherwise it is a unit), so each leadT (f!j ) ∈ F [[τ ]][u] is forced to have its topdegree coefficient divisible by τ . This contradicts how the f!j ’s were chosen, so the desired
+quasi-finiteness holds. Also, the degu,T -condition on the f!j ’s ensures that n is “sufficiently
+large” for comparing generic and specialized resultants for f!1 and f!2 over F ((τ )) in degree
+n.
+Since {f1 , f2 } is a regular sequence in F [u][T ], by [13, Cor. to 22.5] the F [[τ ]]-scheme
+Zfe1 ∩ Zfe2 is flat in a neighborhood of its closed fiber and so is flat. Hence, the “finite part”
+of this quasi-finite flat F [[τ ]]-scheme (in the sense of the structure theorem [11, 18.5.11]) is
+a finite flat F [[τ ]]-scheme whose points are naturally labelled by the points x of Zf1 ∩ Zf2 ,
+and the x-component has rank ix (Zf1 , Zf2 ) over F [[τ ]] because F is algebraically closed.
+We next claim that the deformations f!j can be chosen so that the F ((τ ))-fibers of the
+Zfej ’s are smooth and their finite intersection is F ((τ ))-étale. Fix j ∈ {1, 2} and consider
+the F -vector space spanned by u, T , and the monomials that appear in fj . This vector
+space of functions contains fj and (since degT fj > 0) its generic member has T -degree
+equal to degT fj , leading T -coefficient with u-degree degu (leadT (fj )), and total (u, T )-degree
+degu,T (fj ). This defines a closed immersion of the affine (u, T )-plane into an affine space
+ANj . By Bertini’s theorem there is a Zariski-dense open locus Wj of affine hyperplanes in
+ANj whose members have smooth intersection with the (u, T )-plane. In particular, if fj,0
+is generically chosen in Wj then the pencil fj + τ fj,0 has all but finitely many members
+with smooth zero locus in the (u, T )-plane and it satisfies the degree requirements (over
+F [τ ]) that we have demanded for f!j (over F [[τ ]]). Taking this pencil to define f!j over F [[τ ]]
+therefore makes the Zfej ’s have smooth F ((τ ))-fibers, so it remains to arrange the choices of
+f1,0 and f2,0 to ensure that Zfe1 ∩ Zfe2 is F ((τ ))-étale.
+We fix any f2,0 ∈ W2 as above and will choose f1,0 ∈ W1 appropriately. The zero-scheme
+of f2,0 is smooth in the (u, T )-plane, so a Zariski-dense open locus of affine hyperplanes in
+AN1 therefore meets this zero-scheme with étale overlap and does not meet the part of its
+closure in PN1 that lies in the hyperplane at infinity. Thus, we can choose the pencil of
+affine hyperplanes f!1 = f1 + τ f1,0 so that Zf1,0 ∩ Zf2,0 is étale and coincides with the overlap
+of the closures of the Zfj,0 ’s in PN1 . The overlap of the associated pencils of projective
+hyperplanes in PN1 (with parameter τ ∈ P1 for the two pencils) is therefore finite and flat
+over a neighborhood of τ = ∞ in P1 , so it is (finite and) étale over such a neighborhood as
+well. With this choice of f1,0 , the intersection Zfe1 ∩ Zfe2 over F ((τ )) is étale.
+Let K be an algebraic closure of F ((τ )). With the f!j ’s as just chosen, the quasi-finite flat
+overlap Zfe1 ∩ Zfe2 over F [[τ ]] with étale generic fiber contains exactly ix (Zf1 , Zf2 ) points on
+!n (G)
+the geometric generic fiber (over K) that specialize to x. The universal resultant R
+associated to f!1 and f!2 over K is a determinant that lies in F [[τ ]][a0 , . . . , an ] and (as we
+noted earlier) it specializes to Rn (G) under reduction modulo τ . Thus, by applying the
+proved weak form of (4.11) (with exponents ex,n positive but not yet known) to the f!j ’s
+
+PRIME SPECIALIZATION IN GENUS 0
+
+13
+
+!n (G)
+over K, each K-point of Zfe1 ∩ Zfe2 that specializes to x contributes a linear factor to R
+over K[a0 , . . . , an ] with coefficients in the integral closure O of F [[τ ]] in K, and this element
+of O[a0 ,$
+. . . , an ] has reduction modulo the maximal ideal of O equal to the irreducible
+Px,n =
+ai uix − tx (that involves a0 ) over F . By Gauss’ lemma over a sufficiently large
+finite extension of F ((τ )), each such K-point of Zfe1 ∩ Zfe2 therefore contributes a factor to
+!n (G) in O[a0 , . . . , an ] with reduction Px,n , and these factors are pairwise relatively prime
+R
+over K. There are ix (Zf1 , Zf2 ) such K-points, so overall we see that Px,n divides Rn (G) with
+multiplicity at least as large as this intersection number. This gives the desired inequality
+ex,n ≥ ix (Zf1 , Zf2 ).
+To$
+deduce equality for all x, by adding these inequalities for all x it is enough to prove
+that x ex,n is equal to the F -length of $
+Zf1 ∩ Zf2 . Each Px,n is a linear polynomial in the
+aj ’s with exact degree 1 in a0 . Hence, x ex,n is the a0 -degree of Rn (G). Consider the
+specialization map F [a0 , . . . , an ][1/an ] → F [T ] that carries G to hn (u) + T ∈ F [u][T ] with
+hn (u) ∈ F [u] defined to be
+P
+"
+(4.12)
+hn (u) := un− x (ix (Zf1 ,Zf2 )+1) · (u − ux )ix (Zf1 ,Zf2 )+1 .
+x
+
+The factor given by the power of u in this definition has a nonnegative exponent due to
+Bézout’s theorem and the largeness hypothesis on n. This specialization mapping carries
+a0 -degree to T -degree
+$ and Rn (G) to RF [T ] (f1 (u, hn (u) + T ), f2 (u, hn (u) + T )) (due to the
+largeness of n), so x ex,n = degT RF [T ] (f1 (u, hn (u) + T ), f2 (u, hn (u) + T ). Our problem is
+therefore to prove
+?
+
+degT RF [T ] (f1 (u, hn (u) + T ), f2 (u, hn (u) + T )) = #(Zf1 ∩ Zf2 )
+
+for n as large as in the theorem. Due to the largeness of n, each gj (u, T ) = fj (u, hn (u) + T )
+has leading coefficient in F × when considered as a polynomial in u (with coefficients in
+F [T ]). Hence, by the following lemma, the above T -degree of the resultant is equal to the
+length of the (necessarily F -finite) intersection scheme of the zero loci of the polynomials
+gj (u, T ).
+Lemma 4.6 (Zeuthen’s rule). Let g1 (u, T ) = 0 and g2 (u, T ) = 0 be (possibly empty) plane
+curves over an algebraically closed field K, and assume that these zero loci do not share
+a common irreducible component and that the leading u-coefficients leadu (g1 ), leadu (g2 ) ∈
+K[T ] do not have a common zero at t0 ∈ K. The resultant RK[T ] (g1 , g2 ) vanishes at t0 to
+order
+%
+ordt0 RK[T ] (g1 , g2 ) =
+i(c,t0 ) (g1 , g2 ),
+c∈K
+
+where ix (g1 , g2 ) = dimK OA2 ,x /(g1 , g2 ) is the intersection number at x.
+
+In characteristic 0 this identity can proved by using the Puiseux series description of
+finite extensions of K((T − t0 )) [10, 1.2.5(f)]. In positive characteristic there is no simple
+description like this, so a different method is required.
+Proof. We may assume t0 = 0. Both sides of the desired identity are finite, and each side
+is unaffected by switching the roles of g1 and g2 . In K[[T ]][u] at least one of g1 or g2 has a
+unit leading coefficient, so we may assume g1 has this$property and we wish to prove that
+the nonzero element RK[[T ]] (g1 , g2 ) ∈ K[[T ]] has order c #(K[[u − c, T ]]/(g1 , g2 )) as c ranges
+through the finitely many common roots of g1 (u, 0) and g2 (u, 0) (with g1 (u, 0) )= 0). The
+
+14
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+gj ’s shall now only matter through their associated ideals in K[[T ]][u], so in particular it is
+permissible to replace each of them with a K[[T ]]× -multiple (that may not lie in K[T ][u]).
+Clearly K[[T ]][u]/(g1 ) is a finite flat K[[T ]]-algebra and replacing g1 with a K[[T ]]× -multiple
+allows us to assume that g1 is monic in u, so by universal identities
+RK[[T ]] (g1 , g2 ) = N(K[[T ]][u]/(g1 ))/K[[T ]] (g2 mod (g1 ))
+in K[[T ]]. If degu g1 = 0 then g1 = 1, so the desired result is trivial in this case. Now
+assume degu g1 > 0. The decomposition of K[[T ]][u]/(g1 ) into a finite product of finite local
+K[[T ]]-algebras matches the decomposition of K[u]/(g1 (u, 0)) into a finite product of finite
+local K-algebras. For each root c ∈ K of the nonconstant g1 (u, 0), the image of g2 in the
+corresponding factor is a unit if g2 (c, 0) )= 0 and is not a unit otherwise, so the K[[T ]]-norm
+of g2 mod (g1 ) is a unit multiple of the product of the norms of g2 with respect to the finite
+local K[[T ]]-algebras K[[u − c, T ]]/(g1 ) as c ranges through the common roots of g1 (u, 0) and
+g2 (u, 0). It therefore suffices to prove that for each such c,
+?
+
+ord(N(K[[u−c,T ]]/(g1 ))/K[[T ]] (g2 )) = #(K[[u − c, T ]]/(g1 , g2 )).
+
+We may assume c = 0. The K[[T ]]-algebra K[[u, T ]]/(g1 ) is finite and flat, with g2 a regular
+element that is not a unit, so the right side is the Herbrand quotient for multiplication
+by g2 on the K[[T ]]-module K[[u, T ]]/(g1 ) and the left side is the Herbrand quotient for
+its determinant acting on the K[[T ]]-module K[[T ]]. Hence, the desired equality of order
+and length is a special case of the general behavior of Herbrand quotients with respect to
+determinants [10, Lemma A.2.6].
+!
+Returning to the proof of Theorem 4.5, since Zf1 ∩ Zf2 = Zg1 ∩ Zg2 as sets (by the
+definition of hn (u) in (4.12)) it remains to improve this to an equality of schemes. That
+is, we want ix (Zf1 , Zf2 ) = ix (Zg1 , Zg2 ) for all x in this common overlap. By construction,
+hn (u) vanishes at ux to order exceeding ix (Zf1 , Zf2 ). Hence, we just have to prove that
+if two curves meet properly with intersection number r > 0 at a point x on a smooth
+surface S then the intersection number at x is invariant under any local deformation of
+the defining equations of the curves if the deformation is the identity to order r. That is,
+if k is an algebraically closed field and {f1 , f2 } is a system of parameters in k[[u, T ]] with
+r = #(k[[u, T ]]/(f1 , f2 )) then we claim that for any ε1 , ε2 ∈ (u, T )r+1 the k-finite quotient
+k[[u, T ]]/(f1 + ε1 , f2 + ε2 ) has length r as well. In fact, even the ideals (f1 + ε1 , f2 + ε2 ) and
+(f1 , f2 ) in k[[u, T ]] coincide: since (u, T )r ⊆ I := (f1 , f2 ) we have ε1 , ε2 ∈ (u, T )I, so the
+elements f1 + ε1 , f2 + ε2 ∈ I are a pair of generators of I by Nakayama’s Lemma.
+!
+Corollary 4.7. Let F be a perfect field with positive characteristic p and f (T ) ∈ F [u][T ] a
+nonconstant squarefree element. Let Mfgeom be as in Definition 3.4.
+1) If f lies in F [u][T p ] then for deg g > 2 degu,T (f ) degu,T (∂u f ) the property of f (g) being
+separable in F [u] is determined by g mod Mfgeom .
+2) If f (T p ) is squarefree in F [u][T ] then for deg g > 2p2 degu,T (f ) degu,T (∂u f ), the property of f (g p ) being separable in F [u] is determined by g mod Mfgeom .
+
+Since f )∈ F , Lemma 3.5 assures us that ∂u f )= 0 and that f and ∂u f have no nonconstant
+common factor in F [u][T ] (so Mfgeom makes sense). For the study of p = 2 we will need the
+second case in this corollary.
+Proof. If f as in the first case is written in the form f = h(T p ) then Mhgeom = Mfgeom
+because on geometric points the map (u, t) 1→ (u, tp ) sets up a bijection between Zf ∩ Z∂u f
+
+PRIME SPECIALIZATION IN GENUS 0
+
+15
+
+and Zh ∩ Z∂u h . Replacing T p with T decreases the total degree at most by a proportion
+1/p, so as in the proof of Lemma 3.5 it suffices to prove the second case.
+We may apply Theorem 4.5 with f1 = f (T p ) and f2 = (∂u f )(T p ) to conclude that
+for g with large degree as in (2), the vanishing of the resultant of f (g p ) and (∂u f )(g p ) only
+depends on g mod Mfgeom . Also, f (g p ) is inseparable in F [u] precisely when it has a common
+geometric root with its derivative f (g p )# = (∂u f )(g p ). Hence, the separability of f (g p ) only
+depends on g mod Mfgeom for g with large degree as in (2).
+!
+Before we prove Theorem 4.1, we apply it to prove a periodicity property for µ(f (g)):
+Theorem 4.8. Let κ have odd characteristic p, and let χ be the quadratic character on κ× ;
+define χ(0) = 0. Let f (T ) ∈ κ[u][T p ] be squarefree in κ[u][T ], and assume f )∈ κ.
+There is a nonzero polynomial M = Mf,κ in κ[u] such that for g1 = c1 un1 + · · · and
+g2 = c2 un2 + · · · in κ[u] with sufficiently large degrees n1 and n2 ,
+
+(4.13)
+
+g1 ≡ g2 mod M, n1 ≡ n2 mod 4, χ(c1 ) = χ(c2 ) =⇒ µ(f (g1 )) = µ(f (g2 )).
+
+If −1 is a square in κ or degT f is even, the second congruence in (4.13) may be relaxed to
+n1 ≡ n2 mod 2.
+A choice for the modulus M is Mfgeom as in Definition 3.4. Moreover, the “sufficiently
+large” condition on n1 and n2 only depends on the total degree degu,T f and deg M (not on
+#κ).
+min of minimal degree in κ[u] for which (4.13) true for all large
+The monic modulus Mf,κ
+n1 and n2 is a factor of any other M . Moreover, there is a finite extension κ# /κ such that
+min = M geom whenever κ## is a finite extension of κ# .
+Mf,κ
+!!
+f
+Proof. In this proof, the importance of f (T ) being a polynomial in T p is that for any
+g ∈ κ[u], the u-derivative of f (g(u)) ∈ κ[u] is (∂u f )(g(u)). In other words, ∂u (f (u, g(u))) =
+(∂u f )(u, g(u)) is a polynomial in g with no dependence on g # (u).
+For g in κ[u] of sufficiently large degree, f (g) is nonzero and (2.5) and (3.4) yield
+µ(f (g)) = (−1)d χ(disc f (g))
+!
+
+= (−1)d χ(lead f (g))d+deg f (g) (χ(−1))d(d−1)/2 χ(R(f (g), f (g)# )),
+with d = deg f (g). Note f (g)# = (∂u f )(g) since f ∈ κ[u][T p ]. Since f is squarefree and
+f )∈ κ, so ∂u f )= 0 by Lemma 3.5, we have (∂u f )(g) )= 0 when deg g > ν(∂u f ).
+When deg g ≥ degu,T f , both d = deg f (g) and deg((∂u f )(g)) are linear in deg g by (4.4)
+and (4.6). Using (4.4) and (4.5) to compute deg f (g) and lead f (g) in terms of deg g and
+lead g for such g, we have by Theorem 4.1 that there exist ε0 , ε1 ∈ {±1} and integers m0
+and m1 such that for deg g sufficiently large (depending only on degu,T f ),
+(4.14)
+
+g
+µ(f (g)) = ε0 εdeg
+(χ(−1))(deg f (g))(deg f (g)−1)/2 χ(lead g)m0 +m1 deg g χ(L(g))
+1
+
+where L is an algebraic function on the affine space κ[u]/(Mfgeom ) over κ. This formula
+depends on deg g modulo 4. If −1 is a square in κ or degT f is a multiple of 4 then the
+formula (4.14) depends on deg g modulo 2.
+Since any congruence class in κ[u]/(M ) with M )= 0 may be represented by a polynomial
+of any degree ≥ deg M with any desired leading coefficient, it is a trivial exercise with the
+Chinese remainder theorem to check that for any two moduli M1 and M2 for µ(f (g)), the
+min (defined to be the monic
+greatest common divisor (M1 , M2 ) is also a modulus. Hence, Mf,κ
+modulus of least degree) divides all other moduli for µ(f (g)).
+
+16
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+min for
+Now let us establish the final part of Theorem 4.8 concerning the behavior of Mf,κ
+!
+#
+#
+sufficiently large finite extensions κ of κ. Let κ /κ be a finite extension such that all points
+in the finite set Zf ∩ Z∂u f ⊆ A2κ are κ# -rational, and so in particular Mfgeom splits into
+linear factors in κ# [T ]. This rationality property is inherited by all finite extensions of κ# .
+min = M geom when κ## is any finite extension of κ# . To prove this, we can
+We claim that Mf,κ
+!!
+f
+min |M geom .
+assume Mfgeom is nonconstant since Mf,κ
+!!
+f
+geom
+Choose a monic linear factor of Mf
+in κ# [u], say u − ux for some (κ# -rational) point
+x = (ux , tx ) ∈ Zf ∩ Z∂u f . We can find polynomials g1 and g2 in κ# [u] with any large degree n
+and a common leading coefficient such that g1 (ux ) = tx )= g2 (ux ) and g1 (ux! ) = g2 (ux! ) )= tx!
+for all x# ∈ Zf ∩ Z∂u f with x# )= x. By (4.11) and the positivity of the intersection numbers
+in the exponents, for sufficiently large n the resultant of f (g1 ) and (∂u f )(g1 ) = f (g1 )#
+vanishes and the resultant of f (g2 ) and f (g2 )# is nonzero; that is, µκ! [u] (f (g1 )) = 0 and
+µκ! [u] (f (g2 )) )= 0. The same properties persist after replacing κ# with any finite extension
+κ## . Since g1 and g2 are clearly congruent modulo Mfgeom /(u − ux ), we conclude that this
+min .
+divisor of Mfgeom cannot be a modulus for µκ!! [u] (f (g)) and so cannot be divisible by Mf,κ
+!!
+geom
+min
+.
+!
+Thus, Mf,κ!! = Mf
+min |M geom , there are only finitely many possibilities for M min as κ#
+Example 4.9. Since Mf,κ
+f,κ!
+f
+geom
+min
+.
+varies over finite extensions of κ. We now give an example where Mf,κ )= Mf
+12
+4
+3
+2
+6
+3
+Let f (T ) = T + (2u + u + u + 2)T + 2u + 1 in κ[u][T ], where κ has characteristic
+3. For nonconstant g in κ[u], the proof of Theorem 4.8 gives
+
+µ(f (g)) = χ(g(0)2 + 1)2 χ(g(1))χ(R(u2 + 1, f (g))).
+Note that χ(g(0)2 + 1)2 is not always 1 because it may vanish. Since R(u2 + 1, f (g)) only
+depends on g mod u2 + 1 (by quasi-periodicity of resultants), we see that µ(f (g)) only
+depends on g mod u(u − 1)(u2 + 1). (Since Rκ[u] (f, ∂u f ) = u12 (u − 1)18 (u2 + 1)12 , we have
+Mfgeom = u(u − 1)(u2 + 1).) If [κ : F3 ] is odd then g(0)2 + 1 is nonzero, so µ(f (g)) only
+min = (u − 1)(u2 + 1) )= M geom .
+depends on g modulo (u − 1)(u2 + 1) for such κ; hence, Mf,κ
+f
+As preparation for the proof of Theorem 4.1, which uses an algebraic method that rests
+on variation in the ordered pair (f1 , f2 ), we need to establish an alternative formulation of
+the result. Fix a nonzero M ∈ F [u]. Choose
+n0 > 2 degu,T f1 · degu,T f2
+)) and (in case some fj is in F × ) n0 > max(ν(f1 ), ν(f2 ))
+such that n0 ≥ deg(lcm(M, Mfgeom
+1 ,f2
+(see (4.6)). Consider the claim that there exist c ∈ F × , integers m0 and m1 , and an
+algebraic function Lf1 ,f2 : F [u]/(M ) → A1F such that for n ≥ n0 there is an equality of
+algebraic functions
+(4.15)
+
+0 +m1 n
+Rn (G) = cn am
+· (Lf1 ,f2 ◦ ρn,M )
+n
+
+on Polyn/F , with ρn,M as in (4.1) or (4.2). The key point is that a formula as in (4.15)
+holds for some such M and all n ≥ n0 if and only if en is a Z-polynomial of degree ≤ 1
+in such n and bn = β0 β1n for some β0 , β1 ∈ F × for such n (with en and bn as in Theorem
+4.5). Sufficiency is obvious by Theorem 4.5, and for necessity we may replace M with
+
+PRIME SPECIALIZATION IN GENUS 0
+
+17
+
+) to get to the case where Mfgeom
+|M and n0 ≥ deg M , so we have formulas
+lcm(M, Mfgeom
+1 ,f2
+1 ,f2
+" ix (Zf ,Zf )
+1
+2
+Px,deg M
+Rn (G) = bn aenn
+−1 ◦ ρn,M
+x
+
+and
+
+0 +m1 n
+Rn (G) = cn am
+· Lf1 ,f2 ◦ ρn,M
+n
+as rational functions on Polyn/F for all n ≥ n0 . Thus, the rational function
+
+g 1→ bn c−n an (g)en −(m0 +m1 n)
+
+on Polyn/F factors through ρn,M , or equivalently for generic (or universal) g it only depends
+on g mod M . This forces en = m0 + m1 n for all such n, so
+" ix (Zf ,Zf )
+1
+2
+Px,deg M
+bn c−n
+−1 ◦ ρn,M = Lf1 ,f2 ◦ ρn,M
+x
+
+for all such n. Hence,
+
+bn c−n
+
+"
+x
+
+ix (Zf ,Zf )
+
+1
+2
+Px,deg M
+−1 = Lf1 ,f2
+
+on Poly≤(deg M −1)/F . Since Lf1 ,f2 and the Px,deg M −1 ’s do not depend on n, we conclude
+that bn c−n ∈ F × is equal to a constant c# that does not depend on our large n. Thus,
+bn = c# cn for c, c# ∈ F × and all n ≥ n0 ; this is the desired result.
+We shall now aim to prove an identity of the form (4.15) for large n (without making
+the lower bound on n explicit) by means of induction on the ordered pair (f1 , f2 ). The
+flexibility in the choice of M will be essential for the success of the induction. For example,
+the preceding argument shows that if this goal is satisfied for a particular pair (f1 , f2 ) then
+we must have
+upon replacing M with a nonzero multiple so that it is divisible by Mfgeom
+1 ,f2
+" ix (Zf ,Zf )
+1
+2
+Lf1 ,f2 = c0
+Px,deg M
+−1
+x
+
+∈ F ×.
+
+for some c0
+In what follows we will (for expository simplicity) work with a generic
+field-valued point g of the geometrically integral F -variety Polyn/F for large n, though one
+can instead work throughout in the universal case with g having a unit leading coefficient
+and large degree n.
+$
+≤
+Remark 4.10. Since deg Mfgeom
+x ix (Zf1 , Zf2 ) ≤ (degu,T f1 )(degu,T f2 ), the inter1 ,f2
+ested reader may easily check that the inductive argument below determines an n0 =
+holds for all n ≥ n0 . The main
+n0 (degu,T f1 , degu,T f2 ) so that (4.15) with M = Mfgeom
+1 ,f2
+point is that the number of steps in the recursive procedure is bounded above in terms of
+degu,T f1 and degu,T f2 . We have not attempted to make such an n0 explicit.
+Note that although R(f1 (g), f2 (g)) generally depends on the ordering of f1 and f2 , the
+existence of an identity as in (4.15) does not depend on this ordering. Indeed, for generic g
+of any sufficiently large degree (such as deg g > max(ν(f1 ), ν(f2 )) with notation as in (4.6)),
+R(f1 (g), f2 (g)) = (−1)(deg f1 (g))(deg f2 (g)) R(f2 (g), f1 (g))
+= (−1)e0 (−1)e1 deg g R(f2 (g), f1 (g)),
+where e0 = (deg $
+α1,d1 )(deg α2,d2 ) and e1 = d1 deg α2,d2 + d2 deg α1,d1 + d1 d2 , with dj =
+degT fj and fj = αj,i T i . Thus, we need not be concerned with sign-changes in resultants
+when f1 and f2 are interchanged. We will use this repeatedly.
+
+18
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Our proof of Theorem 4.1 will roughly be a series of identities
+g
+R(f1 (g), f2 (g)) = c0 cdeg
+(lead g)µ0 +µ1 deg g R(f3 (g), f4 (g))
+1
+
+for generic g of large positive degree (or universal g with a unit leading coefficient and
+large degree), where the elements c0 , c1 ∈ F × and µ0 , µ1 ∈ Z depend on the ordered pair
+(f1 , f2 ), and the ordered pair (f3 , f4 ) of nonzero relatively prime polynomials in F [u][T ] is
+in some sense smaller than (f1 , f2 ). (There is more than one sense of “smaller” that we use,
+depending on the stage of our argument.) In this way, induction and the reformulation via
+(4.15) will establish Theorem 4.1, provided that along the way we also prove that m1 in
+(4.15) is equal to (degT f1 ) · (degT f2 ).
+To get started, the case when f1 (T ) has T -degree 0, say f1 (T ) = a(u) ∈ F [u], is trivial:
+writing a(u) = ca1 (u) with c ∈ F × and a1 (u) monic,
+(4.16)
+
+R(a(u), f2 (g)) = R(c, f2 (g))R(a1 (u), f2 (g)) = cdeg f2 (g) R(a1 (u), f2 (g)).
+
+g
+For generic g with degree exceeding ν(f2 ), cdeg f2 (g) = c0 cdeg
+for suitable c0 and c1 in F ×
+1
+that are independent of g. The factor R(a1 (u), f2 (g)) is an algebraic function of g modulo
+a1 (u), since a1 (u) is monic. This proves (4.15) in the present case for large n (with m1 = 0),
+and so proves Theorem 4.1 when some degT fj vanishes.
+To prove Theorem 4.1 in general, we can assume that the coefficients of f1 as a polynomial
+in T have no common factor in F [u], and similarly for f2 . Indeed, if f1 (T ) = a(u)h(T ) for
+a(u) in F [u] (so f2 is relatively prime to both a(u) and h(T ) in F [u][T ]), then
+
+(4.17)
+
+R(f1 (g), f2 (g)) = R(a(u), f2 (g))R(h(g), f2 (g)),
+
+with the first factor on the right side satisfying the inductive hypothesis by the preceding
+discussion. Removing a common factor from the coefficients of f2 as a polynomial in T goes
+the same way.
+We will prove Theorem 4.1 (in the guise of (4.15)) by two inductions: on the maximum
+of degT f1 and degT f2 when these degrees are distinct, and for f1 and f2 of equal T -degree
+we will induct on the minimum u-degree of their leading coefficients as polynomials in T .
+Lemma 4.11. Let h1 (T ) and h2 (T ) in F [u][T ] have common T -degree d ≥ 1:
+h1 (T ) = α(u)T d + · · · ,
+
+h2 (T ) = β(u)T d + · · · .
+
+Assume α ! β and β ! α (so α, β )∈ F ). Then there exist c ∈ F × , ε = ±1, m ∈ Z, and
+a second pair of polynomials !
+h1 (T ) and !
+h2 (T ) in F [u][T ] with T -degree d whose leading
+!
+coefficients as polynomials in T , α
+!(u) and β(u),
+satisfy
+(4.18)
+
+! < min(deg α, deg β)
+min(deg α
+!, deg β)
+
+such that for all extensions F # /F and all g in F # [u] with sufficiently large degree (depending
+only on d and the u-degrees of the monomials appears in the hj ’s) we have
+(4.19)
+
+R(h1 (g), h2 (g)) = cεdeg g (lead g)m R(!
+h1 (g), !
+h2 (g)).
+
+If the hj ’s are relatively prime in F [u][T ] then the !
+hj ’s must be relatively prime in F [u][T ].
+
+Proof. We will prove the lemma when deg α ≤ deg β. (When deg α > deg β, we can
+reduce to the other case by interchanging h1 and h2 , at the cost of changing c and ε in
+the conclusion.) In F [u], write β(u) = α(u)q(u) + r(u), where r )= 0 and deg r < deg α.
+Since r )= 0, k(T ) := h2 (T ) − q(u)h1 (T ) has leading term r(u)T d as a polynomial in T with
+
+PRIME SPECIALIZATION IN GENUS 0
+
+19
+
+coefficients in F [u]. For all g, clearly h2 (g) ≡ k(g) mod h1 (g). When deg g is at least as
+large as ν(h1 ), ν(h2 ), and ν(k) (notation as in (4.6)), quasi-periodicity gives
+R(h1 (g), h2 (g)) = (lead h1 (g))deg h2 (g)−deg k(g) R(h1 (g), k(g))
+= c(lead g)m R(h1 (g), k(g)),
+where c = (lead α)deg β−deg r and m = d(deg β − deg r). Let !
+h1 = h1 and !
+h2 = k, or !
+h1 = k
+and !
+h2 = h1 . By Lemma 4.2, the identity (4.19) forces relative primality of the !
+hj ’s when
+the hj ’s are relatively prime.
+!
+Now we modify the hypothesis in the previous lemma. Rather than assuming that the
+leading T-coefficients of h1 (T ) and h2 (T ) do not divide each other, we assume h1 (T ) and
+h2 (T ) are relatively prime.
+Lemma 4.12. Let h1 (T ) and h2 (T ) in F [u][T ] have common T -degree d ≥ 1:
+h1 (T ) = α(u)T d + · · · ,
+
+h2 (T ) = β(u)T d + · · · .
+
+Assume the hj ’s are relatively prime in F [u][T ]. There exist c ∈ F × , ε = ±1, m ∈ Z,
+and a second pair of nonzero relatively prime polynomials !
+h1 (T ) and !
+h2 (T ) in F [u][T ]
+#
+!
+!
+with degT h1 < degT h2 = d such that for all extensions F /F and all g in F # [u] with
+sufficiently large degree (depending only on d and the u-degrees of the monomials appearing
+in the hj ’s), we have R(h1 (g), h2 (g)) = cεdeg g (lead g)m+m1 deg(g) R(!
+h1 (g), !
+h2 (g)) with m1 =
+!
+d(d − degT h1 ).
+
+Proof. If neither α nor β divides the other in F [u], apply Lemma 4.11 to get a second pair
+of polynomials in F [u][T ] with T -degree d. Repeat this process if again neither leading
+coefficient as a polynomial in T divides the other. (Note that terms like cεdeg g (lead g)m
+behave well under multiplication: the c’s and ε’s are multiplicative and the m’s are additive.)
+The condition (4.18) ensures that we eventually reach the case where α(u)|β(u) or β(u)|α(u).
+Thus, we may interchange h1 and h2 if necessary to suppose α(u)|β(u). Write β(u) =
+α(u)q(u). The polynomial k(T ) := h2 (T ) − q(u)h1 (T ) has T -degree less than d. This
+polynomial is nonzero and is relatively prime to h1 since (h1 , h2 ) = 1. Proceed as in the
+proof of Lemma 4.11, taking !
+h1 = k and !
+h2 = h1 .
+!
+We are now ready to prove Theorem 4.1:
+
+Proof. (of Theorem 4.1). We argue via (4.15) by induction on max(degT f1 , degT f2 ), and
+we refer the reader to Remark 4.10. Set d1 = degT f1 and d2 = degT f2 . We can assume
+both d1 and d2 are positive, since the cases d1 = 0 or d2 = 0 have been settled via (4.16).
+Remove any nontrivial common factor from the F [u]-coefficients of f1 (T ) as a polynomial in
+T , using (4.17), so f1 (T ) is primitive over F [u]. Similarly make f2 primitive. By Lemma 4.12
+and induction, we may assume d1 )= d2 , and without loss of generality 0 < d1 < d2 . Writing
+(4.20)
+
+f1 (T ) = α(u)T d1 + . . . , f2 (T ) = β(u)T d2 + . . . ,
+
+we wish to reduce to the case deg β < deg α (at the expense of possibly losing the primitivity
+condition for f2 but not for f1 ).
+Write β(u) = α(u)q(u) + r(u), where r = 0 or deg r < deg α. The polynomial k(T ) =
+f2 (T ) − q(u)T d2 −d1 f1 (T ) is nonzero and relatively prime to f1 . If r is nonzero then k(T )
+
+20
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+has leading term r(u)T d2 . If r = 0 then degT k < d2 . In either case, f2 (g) ≡ k(g) mod f1 (g)
+for all field-valued points g of Polyn/F . When n = deg g is sufficiently large,
+R(f1 (g), f2 (g)) = (lead f1 (g))deg f2 (g)−deg k(g) R(f1 (g), k(g)).
+g
+The power of lead f1 (g) can be written in the form c0 cdeg
+(lead g)m0 +m1 deg g for suitable
+1
+×
+c0 , c1 ∈ F and m0 , m1 ∈ Z that do not depend on g, with m1 = d1 (d2 − degT k), so we are
+now reduced to proving (4.15) with f2 replaced by k.
+Either degT k = d2 and the leading coefficient of k as a polynomial in T has smaller
+degree than deg α, or degT k < d2 . In the latter case we have max(degT f1 , degT k) < d2 ,
+so (4.15) (and hence Theorem 4.1) with f1 and k has already been proved by the inductive
+hypothesis. Thus, it remains to treat the case (4.20) with deg β < deg α; observe that this
+reduction step preserves primitivity for f1 but possibly loses it for f2 .
+Our resultant now looks like R(f1 (g), f2 (g)) = R(α(u)g d1 + · · · , β(u)g d2 + · · · ). Since
+d1 < d2 , it is natural to want to reduce f2 (g) modulo f1 (g) and use quasi-periodicity, hoping
+to lower the maximum T -degree of the pair f1 , f2 in our resultants. However, deg β < deg α,
+so there is no progress through a division algorithm on the leading coefficients as in the
+proof of Lemma 4.11. To circumvent this problem, we shall use a trick that puts us in the
+case in which α|β: consider the universal identity
+
+(4.21)
+
+R(f1 (g), α(u))R(f1 (g), f2 (g)) = R(f1 (g), α(u)f2 (g))
+
+with g the universal polynomial of large degree n with a unit leading coefficient. The first
+term in (4.21) is nonzero, since primitivity of f1 forces (f1 (g), α(u)) = 1. Since all three
+resultants admit expressions as in Theorem 4.5 for a common modulus M , if (4.15) is proved
+for two of the three pairs (f1 , α), (f1 , f2 ), and (f1 , αf2 ) in (4.21) then it follows for the third.
+Since the case of a polynomial of T -degree zero has already been settled, it suffices to treat
+the ordered pair (f1 , α(u)f2 ).
+The right side of (4.21) has the form R(α(u)g d1 + · · · , α(u)β(u)g d2 + · · · ). Let h(T ) =
+α(u)f2 (T ) − β(u)f1 (T )T d2 −d1 . Since (f1 , f2 ) = 1 and f1 is primitive over F [u], and we may
+assume degT f1 > 0, it follows that h is nonzero and satisfies degT h < d2 and (f1 , h) = 1.
+Since h(g) ≡ α(u)f2 (g) mod f1 (g) for all g, when deg g / 0 the right side of (4.21) is
+R(f1 (g), α(u)f2 (g)) = (lead f1 (g))deg α+deg f2 (g)−deg h(g) R(f1 (g), h(g))
+g
+= c0 cdeg
+(lead g)m0 +m1 deg g R(f1 (g), h(g))
+1
+
+for suitable c0 , c1 ∈ F × and m0 , m1 ∈ Z. Explicitly, m1 = d1 (d2 − degT h). Since degT f1
+and degT h are both less than d2 , the theorem holds for the pair (f1 , h) by induction on the
+maximum T -degree. We may now infer the desired result for the pair (f1 , αf2 ).
+!
+Example 4.13. For f as in Lemma 3.5 with f )∈ F , the pair f1 = f and f2 = ∂u f satisfies
+the hypotheses in Theorem 4.1. A local calculation shows that in this case B = Zf1 ∩ Zf2 is
+the non-étale locus for projection from {f = 0} to the T -axis, and ix (Zf1 , Zf2 ) is the length
+of B at x. As an illustration (via Example 3.2), for f as in Example 1.1 the projection
+from the plane curve {f = 0} to the T -axis is non-étale at precisely the geometric points
+(0, 0) and (1, t) with t2 + 1 = 0, and the branch scheme has respective lengths 18 and 9
+at these points. Theorems 4.1 and 4.5 thereby explain why µ(f (g)) has the form given in
+(3.6); note the appearance of g(0)18 (g(1)2 + 1)9 in the discriminant formula immediately
+following (3.6).
+
+PRIME SPECIALIZATION IN GENUS 0
+
+21
+
+Corollary 4.14. Let F be a perfect field of characteristic p > 0 and let f1 and f2 be
+m
+nonzero and relatively prime in F [u][T ]. Assume, for some m ≥ 0, fj = hj (u, T p ) for
+j = 1 and 2. For each x ∈ Zf1 ∩ Zf2 , the multiplicity of Px,n as a factor of the algebraic
+function g 1→ R(f1 (g), f2 (g)) on Polyn/F for sufficiently large n as in Theorem 4.5 is equal
+to pm · i(1×φm )(x) (Zh1 , Zh2 ), with φ the relative Frobenius on the T -line over F .
+
+Proof. We just have to prove ix (Zf1 , Zf2 ) = pm · i(1×φm )(x) (Zh1 , Zh2 ). As a radicial self-map
+of the affine plane, 1 × φm is finite flat with degree pm and it identifies Zf1 ∩ Zf2 with the
+fiber over Zh1 ∩ Zh2 . Thus, it multiplies lengths by pm since F is perfect.
+!
+
+Corollary 4.14 is useful in the study of variation of Möbius periodicity as we vary f :
+$
+Example 4.15. Consider the algebraic family of polynomials ni=0 αi (u)T ei with a fixed
+strictly increasing sequence of nonnegative integers {ei } and varying αi (u)’s with specified
+degrees di ≥ 0 such that di > 0 for some i. We are interested in the case when p ! ei0 for
+some i0 , but we do not impose such a condition yet. Fix m ≥ 0. Denoting a polynomial in
+m
+our algebraic family as h, is the branch scheme nonempty for projection from h(T p ) = 0
+to the T -axis for generic h in the family when p )= 2? The generic existence of branch
+points amounts to the generic resultant R(h, ∂u h) of h and ∂u h as polynomials in T having
+positive u-degree. In the special case that di ≤ 1 for all i, the generic resultant is nonzero
+with u-degree 0 and hence there are no branch points for generic h. In all other cases there
+are branch points for generic h, as we now explain.
+Assume di1 ≥ 2 for some i1 . As we have noted, the generic existence of branch points
+amounts to the resultant R(h, ∂u h) of h and ∂u h (as polynomials in T ) having positive
+u-degree for generic αi with degree di . If deg αi = 0 for all i > 0 (so deg α0 ≥ 2) then
+the resultant is α0# (u)degT h , and this has positive degree in the generic case since p > 2.
+Suppose instead that deg αi > 0 for some i > 0, so d := degT ∂u h is positive. Choose any
+i1 with di1 ≥ 2, so αi# 1 has positive degree in the generic case (as p )= 2). Let c = leadu (αi# 1 )
+in the generic case. Consider the expansion of the universal determinant that defines the
+u-polynomial R(h, ∂u h) (over the ring of generic coefficients of the αi ’s). Since the generic
+constant term of each αj does not appear in ∂u f , this expansion involves exactly one
+appearance of
+deg h·degu (α!i )
+1
+cdegT h αn (0)r α0 (0)s u T
+with r, s ≥ 0 and r maximal (r = 0 in case i1 = n). Hence, this term with positive u-degree
+does not cancel out.
+If some ei0 is not divisible by p and di1 ≥ 2 for some i1 , then when p )= 2 the projection
+from Zh to the T -axis has an étale point on its branch scheme for generic h; this is proved
+via deformation theory and Bertini theorems in [9] (with the u-line replaced by an arbitrary
+smooth affine curve over κ with one geometric point at infinity). Thus, except for the cases
+when di ≤ 1 for all i, if p )= 2 then the branch scheme of projection
+to the T -axis from the
+$
+zero-scheme of a generic member of any algebraic family { αi T µi | deg αi = di } as above
+has a point with odd (and even p-power) length when p|µi for all i, due to Corollary 4.14.
+5. Characteristic 2
+The analogue of Theorem 4.8 in characteristic 2 is subtle because (2.5) in characteristic
+2 requires liftings into characteristic 0. When κ has characteristic 2, ideally we want a
+result about the periodicity of µ(f (g)) for squarefree f ∈ κ[u][T 2 ]. We will be able to
+prove something about µ(f (g)) when f is a polynomial in T 2 (Theorem 5.10), but not
+
+22
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+periodicity: Möbius formulas in particular examples (even the polynomial T 2 + u, as in [7])
+do not seem to satisfy simple periodicity properties. However, we shall prove (Theorem
+5.12) that squarefree polynomials in T 4 have periodic Möbius values.
+In odd characteristic, a modulus of Möbius periodicity for a squarefree polynomial f (T )
+is given by a geometrically constructed polynomial Mfgeom as in Definition 3.4. In characteristic 2 we have to use a slightly different procedure, as follows. Writing f (T ) = h(T 2 ),
+h(T ) is squarefree since f (T ) is, and f (T ) has no local obstructions if and only if h(T )
+has none. The relevant “modulus” for g 1→ µ(f (g)) will turn out to be not Mfgeom , but a
+polynomial closely related to Mhgeom (and in some examples it does not seem that there is
+a squarefree modulus, as can always be found in odd characteristic). The work we carry
+out in characteristic 2 will involve an interplay between resultants in characteristic 2 and in
+characteristic 0. For the application to finite fields κ, we will need to work in the Witt vectors of κ. Since finiteness of the field won’t matter until we reach the application to Möbius
+values, our work on resultants will be carried out over any perfect field k of characteristic
+2 and over its Witt vector ring W = W (k).
+Hypothesis. Our running convention throughout §5 is that k is a perfect field with
+characteristic 2 and h is a polynomial in k[u][T ] such that h )∈ k and h(T 2 ) is squarefree in
+k[u][T ]. If k is finite then we also assume that h(T ) has no local obstructions; that is, h(T )
+is nonzero as a function on the finite fields k[u]/(π) for all π.
+Our hypotheses force h to be squarefree in k[u][T ] and not to have any prime factors
+in k[T ] (otherwise h(T 2 ) has a factor in k[T 2 ] = k[T ]2 since k is perfect), and also force
+h(g 2 ) )= 0 for all g ∈ k[u]. Since h )∈ k, Lemma 3.5(2) ensures that ∂u h )= 0 and that h and
+∂u h are relatively prime in k[u][T ]. Thus, Rk[u] (h, ∂u h) )= 0 and we may define Mhgeom as in
+Definition 3.4. Corollary 4.7(2) ensures that whether or not h(g 2 ) is separable in k[u] only
+depends on g mod Mhgeom , provided deg g is sufficiently large. This largeness only depends
+on the total degree of h.
+Let us check that our hypotheses on h ensure that for any sufficiently large d there exists
+g ∈ k[u] with degree d such that h(g 2 ) is nonconstant and separable in k[u]. Since h(T 2 )
+is squarefree in k[u][T ] and h )∈ k, for infinite k the existence of such a g in any degree
+exceeding max(ν(h), ν(∂u h)) (see (4.6)) follows from Lemma 4.2 and the Zariski-denseness
+of the locus of k-rational points in any affine space over k. In the case of finite k, we use the
+additional hypothesis (for such k) that h has no local obstructions, as then the existence
+of such g in any large degree is ensured by [14, Thm. 3.4] (where the hypothesis of no
+local obstructions is replaced by the weaker assumption that h(T 2 ) is nonzero as a function
+on k[u]/(π 2 ) for all prime π ∈ k[u]). The condition that h(g 2 ) is separable is a congruence
+condition on g mod Mhgeom . Since deg Mhgeom is bounded in terms of degu,T h, it follows that
+we may find such g with any desired degree exceeding a lower bound determined by degu,T h
+(and not depending on k). Taking this universal bound large enough forces deg h(g 2 ) > 0,
+so (∂u h)(g 2 ) = h(g 2 )# is nonzero and Rk (h(g 2 ), h(g 2 )# ) is nonzero.
+Let H be a lift of h to W [u][T ] = W (k)[u][T ] such that degT H = degT h and leadT (H) ∈
+W [u] has the same u-degree as leadT (h) ∈ k[u], so leadT (H) ∈ W [u] has unit leading
+coefficient and reduces to leadT (h) ∈ k[u]. We also require degu,T H = degu,T h; this
+condition on the total degrees can certainly be satisfied, and its only purpose is to ensure
+that various largeness conditions below only depend on degu,T h and not on H.
+Let G ∈ W [u] be a lift of g with unit leading coefficient (so deg G = deg g). Assume
+deg g is sufficiently large so that the degree of h(g 2 ) ∈ k[u] is given by a generic formula
+
+PRIME SPECIALIZATION IN GENUS 0
+
+23
+
+as in (4.4), and likewise for the degree of H(G2 ); this condition on deg g only depends on
+degu,T h (since degu,T H = degu,T h). Note that H(G2 ) ∈ W [u] has unit leading coefficient
+(and hence the same degree as h(g 2 )), so W [u]/(H(G2 )) is a finite flat W -algebra that lifts
+the finite étale k-algebra k[u]/(h(g 2 )). Keeping in mind (2.5) for applications to finite k,
+we want to understand how the unit discriminant discW (H(G2 )) mod 8W depends on G.
+Let F denote the fraction field of W = W (k). Since leadT H ∈ W [u] has leading coefficient
+in W × and h = H mod 2 ∈ k[u][T ] is not in k and has no prime factors in k[T ] (as h(T 2 )
+is squarefree), we conclude that H is not in W and that H has no prime factors in W [T ].
+Moreover, since h is squarefree in k[u][T ] we see that its lift H is squarefree in W [u][T ].
+The same therefore holds using F -coefficients, so ∂u H )= 0. The zero loci ZH = {H = 0}
+and Z∂u H = {∂u H = 0} in A2F have finite intersection by:
+Lemma 5.1. If K is perfect with arbitrary characteristic and f ∈ K[u][T ] is not in K,
+then the zero loci of f and ∂u f in A2K have finite intersection if and only if the following
+three conditions hold: f is squarefree in K[u][T ], f has no irreducible factors in K[T ], and
+the projection
+prT : Zf = Spec K[u][T ]/(f ) → Spec K[T ] = A1K
+to the T -axis is generically étale on Zf . When this happens, the non-étale locus of prT
+is finite and its image in the u-axis is the zero locus of Mfgeom in A1K , with Mfgeom as in
+Definition 3.4.
+
+The generically-étale property is always satisfied for squarefree nonzero f ∈ K[u][T ] in
+characteristic 0 since prT is a priori quasi-finite and flat. The case of 2-adic fields is of most
+interest for our present purposes.
+Proof. Necessity of the conditions that f be squarefree and have no irreducible factors in
+K[T ] is clear. Granting these conditions, the plane curve Zf is reduced (hence geometrically
+reduced since K is perfect) and its projection to the T -axis is quasi-finite and hence flat.
+Thus, the property of prT being étale at a point of Zf may be checked on the geometric
+fibers of prT . Extending scalars to an algebraic closure of K, we thereby see that the nonétale locus for prT is where Zf meets Z∂u f in A2K . This completes the proof of the desired
+equivalence, and also yields the asserted relationship between Mfgeom and the non-étale locus
+of prT .
+!
+We conclude that RW [u] (H, ∂u H) ∈ W [u] is nonzero and that the monic squarefree polygeom
+geom
+nomial MH
+∈ F [u] can be formed as in Definition 3.4. The geometric roots of MH
+are
+2
+the u-coordinates of intersection points of ZH and Z∂u H in AF . Since degu,T H = degu,T h,
+geom
+is bounded in terms of degu,T h (by Bézout’s theorem over F ).
+the degree of MH
+2
+#
+Though H(G ) )= (∂u H)(G2 ) in characteristic 0, the mod-2 reductions agree. Thus, the
+F -resultants
+(5.1)
+
+RF (H(G2 ), H(G2 )# ), RF (H(G2 ), (∂u H)(G2 ))
+
+lie in W and have reductions in k that are both zero or both nonzero (see (3.2) and the
+Warning above (3.3)). Both reductions therefore lie in k × since h(g 2 ) is separable, so both
+terms in (5.1) lie in W × . When k is finite, the quadratic character of the first resultant in
+(5.1) is related to discW (H(G2 )) and intervenes in the study of µ(h(g 2 )) (see (2.5)). The
+second resultant in (5.1), for finite k, is one to which Theorem 4.1 may be applied over the
+field F of characteristic zero since ZH ∩ Z∂u H ⊆ A2F is finite. We are going to show that the
+ratio of the resultants in (5.1), which is in W × , can be made explicit in (W/8W )× modulo
+
+24
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+unit-square factors, so we will be able to use Theorem 4.1 to study the quadratic character
+of discW (H(G2 )). (A lot of algebraic calculations are coming up; a special case where the
+main ideas can be seen without complications is in [7].)
+The leading coefficient of H(G2 ) is a unit and the reduction h(g 2 ) is separable, so the
+roots of H(G2 ) in an algebraic closure F are integral, lie in an unramified extension of F ,
+and have pairwise-distinct reductions. Let {α} be the (nonempty) set of roots of H(G2 )
+in F and let α denote the reduction of each such root α, so (∂u h)(g 2 )(α) = (h(g 2 ))# (α) is
+nonzero and hence (∂u H)(G2 )(α) is an integral unit for all such α.
+Since H(G2 )# = (∂u H)(G2 ) + 2(∂T H)(G2 )GG# , the classical formula (3.1) for resultants
+in terms of products over geometric roots gives
+' (
+"&
+RF (H(G2 ), H(G2 )# )
+(∂T H)(G2 )GG# ''
+2 dG
+(5.2)
+= lead(H(G ))
+,
+1+2·
+RF (H(G2 ), (∂u H)(G2 ))
+(∂u H)(G2 ) '
+α
+
+α
+
+where dG := deg(H(G2 )# ) − deg((∂u H)(G2 )).
+
+Remark 5.2. For deg g large, dG = 0 if leadT H ∈ W [u] is nonconstant (or equivalently, if
+leadT h ∈ k[u] is nonconstant). If leadT H ∈ W × , then for deg g large we have
+dG = 2 degT h deg g − 1 − deg(leadT ∂u H) − 2(degT ∂u H) deg G.
+= 2(degT h − degT ∂u H) deg g − (1 + deg(leadT ∂u H)).
+
+In either case, the largeness condition on deg g is determined by degu,T h.
+
+We want to understand the product in (5.2) modulo 8W . The remarkable surprise is that
+there is a very simple formula for this product mod 8W (see (5.5)), and the formula only
+depends on g and h (not on G or H). We need to make two definitions before we can state
+the formula of interest.
+Definition 5.3. For any perfect field K and any rational differential form ω on P1K , set
+%
+(5.3)
+s2 (ω) :=
+Resy1 ω · Resy2 ω ∈ K,
+{y1 ,y2 }
+
+where the sum runs over unordered pairs of distinct geometric poles of ω on P1K .
+
+Our interest in s2 (ω) will be restricted largely to cases when ω has at worst simple poles.
+For ω varying with only simple poles, s2 (ω) is not algebraic in ω if we do not fix the number
+of simple geometric poles of ω. For example, if ω = b · du/u + du/(u − a) with b )= 0, −1
+then s2 (ω) = −b(b + 1) − 1 if a )= 0 and s2 (ω) = −(b + 1)2 if a = 0.
+
+Definition 5.4. For g ∈ k[u], define ωh,g = ((∂T h)(g 2 )g/h(g 2 ))dg; the initial hypotheses
+on h ∈ k[u][T ] in this section ensure that h(g 2 ) )= 0.
+
+When g is a square in k[u] or h is a polynomial in T 2 , ωh,g vanishes. For g ∈ k[u] with
+large degree such that h(g 2 ) is separable, the equation
+(5.4)
+
+ωh,g =
+
+(∂T h)(g 2 )g 2 dg
+·
+h(g 2 )
+g
+
+shows this rational differential form on P1k has simple poles. We will see in Theorem 5.10
+that s2 (ωh,g ) intervenes in the behavior of µ(h(g 2 )) when k is finite. For finite k, the
+vanishing of s2 (ωh,g2 ) will therefore make the behavior of µ(h(g 4 )) very accessible; this is
+µ(f (g)) when f is a polynomial in T 4 .
+
+PRIME SPECIALIZATION IN GENUS 0
+
+25
+
+Theorem 5.5. Choose H ∈ W [u][T ] reducing to h ∈ k[u][T ] such that leadT (H) ∈ W [u]
+has unit leading coefficient in W and degu,T H = degu,T h. For g ∈ k[u] of large degree with
+h(g 2 ) separable and G ∈ W [u] lifting g with lead(G) ∈ W × , the product in (5.2) satisfies
+'
+(
+"&
+(∂T H)(G2 )GG# ''
+(5.5)
+1+2·
+≡ 1 + 2 deg g degT h + 4s2 (ωh,g ) mod 8W,
+(∂u H)(G2 ) 'u=α
+α
+where α runs over the geometric roots of H(G2 ). The largeness of deg g only depends on
+degu,T h and not on H or k.
+Proof. Let P = H(G2 ). Since P has simple zeros at each of its roots α, and hence serves
+as a local coordinate there, we get the residue description
+'
+&
+(
+(∂T H)(G2 )GG# dP
+(∂T H)(G2 )GG# ''
+= Resα
+·
+.
+(5.6)
+(∂u H)(G2 ) 'u=α
+(∂u H)(G2 )
+P
+
+We will first show
+(5.7)
+
+'
+(∂T H)(G2 )GG# ''
+2
+≡ 2Resα ωH,G + 4(Resα ωH,G )2 mod 8W ,
+(∂u H)(G2 ) 'u=α
+
+where W is the integral closure of W in an algebraic closure F of F and we define ωH,G by
+the formula (5.4) with H and G replacing h and g respectively. Note that we can replace
+the second residue in (5.7) with a residue in characteristic 2, namely Resα (ωh,g ) with α the
+reduction of α.
+×
+Since (H(G2 ))# ≡ (∂u H)(G2 ) mod 2W [u] with H(G2 )# (α) ∈ W , we have
+&
+&
+(
+(2
+((∂T H)(G2 )GG# )2
+(∂T H)(G2 )GG#
+dH(G2 )
+Resα
+du
+≡
+Res
+mod 2W .
+α
+(∂u H)(G2 )H(G2 )
+(∂u H)(G2 )
+H(G2 )
+However, using P = H(G2 ),
+(∂T H)(G2 )GG# dP
+·
+(∂u H)(G2 )
+P
+
+=
+=
+
+(∂T H)(G2 )GG# ((∂u H)(G2 ) + 2(∂T H)(G2 )GG# )
+du
+(∂u H)(G2 )H(G2 )
+(∂T H)(G2 )G
+((∂T H)(G2 )(GG# ))2
+dG + 2
+du,
+2
+H(G )
+(∂u H)(G2 )H(G2 )
+
+so by (5.6) we conclude that in W /8W
+)&
+*
+'
+(
+(2
+&
+(∂T H)(G2 )GG#
+dP
+(∂T H)(G2 )GG# ''
+(∂T H)(G2 )G
+dG + 4Resα
+.
+2
+= 2Resα
+(∂u H)(G2 ) 'u=α
+H(G2 )
+(∂u H)(G2 )
+P
+
+The first residue on the right side is Resα (ωH,G ). The second residue only matters modulo
+2. Reducing it modulo 2 gives the square of the residue at α of
+(∂T h)(g 2 )gg # d(h(g 2 ))
+(∂T h)(g 2 )g 2 dg
+·
+=
+·
+= ωh,g
+(∂u h)(g 2 )
+h(g 2 )
+h(g 2 )
+g
+
+since Resx (sp dr/r) = Resx (sdr/r)p in characteristic p > 0. This establishes (5.7).
+Using (5.7), expanding the product on the left side of (5.5) modulo 8 gives the element
+%
+%
+%
+(5.8)
+1+2
+Resα ωH,G + 4
+Resα (ωh,g )2 ∈ W/8W,
+Resα1 ωh,g Resα2 ωh,g + 4
+α
+
+α1 (=α2
+
+α
+
+26
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+where α1 and α2 in the second sum run over unordered pairs of distinct F -roots of H(G2 ).
+By the residue theorem in characteristic 0, the first sum over the zeros α of H(G2 ) in (5.8)
+is equal to
+&
+(
+(∂T H)(G2 )G2 dG
+−Res∞
+·
+= deg G degT H = deg g degT h
+H(G2 )
+G
+
+since (∂T H)(G2 )G2 and H(G2 ) have the same degree and have leading coefficients with
+ratio degT H.
+The final sum in (5.8) lies in k, where it equals
+*2
+)
+%
+%
+Resα (ωh,g )
+= Res∞ (ωh,g )2 = Res∞ (ωh,g ) ·
+Resα (ωh,g )
+α
+
+α
+
+by the residue theorem in characteristic 2. The second and third sums in (5.8) therefore
+combine to give 4s2 (ωh,g ) in (5.5).
+!
+
+By (3.4), (5.2), and Theorem 5.5, if deg g is sufficiently large (in a manner determined by
+degu,T h) and h(g 2 ) is separable then the discriminant discW (H(G2 )) is congruent modulo
+8W to
+(−1)δg (δg −1)/2
+RW (H(G2 ), (∂u H)(G2 ))(1 + 2 deg g degT h + 4s2 (ωh,g )),
+(5.9)
+(lead H(G2 ))2δg −1−dG
+where
+δg = deg(h(g 2 )) = 2 deg g degT h + deg(leadT h)
+and dG is given by Remark 5.2; the exponent 2δg − 1 − dG of lead H(G2 ) in (5.9) is linear
+in deg g = deg G when deg g is large (depending only on degu,T h). Since −4 ≡ 4 mod 8,
+discW (H(G2 )) mod 8W is equal to
+RW (H(G2 ), (∂u H)(G2 ))
+((−1)δg (δg −1)/2 (1 + 2 deg g degT h) + 4s2 (ωh,g )).
+(lead H(G2 ))2δg −1−dG
+Write δg = 2ab + c, with a = deg g, b = degT h, and c = deg(leadT h), so
+δg (δg − 1)
+c(c − 1)
+≡ ab +
+mod 2
+2
+2
+and (by checking cases for ab modulo 4)
+&
++
+,(
+1 + ab
+ab+c(c−1)/2
+c(c−1)/2
+1+4
+(−1)
+(1 + 2ab) ≡ (−1)
+mod 8,
+2
+
+where 4·5 denotes the greatest-integer function. Thus, separability of h(g 2 ) implies that
+discW (H(G2 )) mod 8W is equal to
+(5.10)
+
+RW (H(G2 ), (∂u H)(G2 ))
+(−1)deg(leadT h)(deg(leadT h)−1)/2 (1 + 4(mg + s2 (ωh,g ))),
+(lead H(G2 ))2δg −1−dG
+
+where mg = 4(1 + (deg g)(degT h))/25 and deg g / 0 (depending only on degu,T h).
+If we had instead chosen g of large degree as above such that h(g 2 ) is not separable and
+G ∈ W [u] is a lift of g with lead(G) ∈ W × , then since H(G2 ) has the same degree as
+its reduction h(g 2 ) we see via (3.2) that RW (H(G2 ), (∂u H)(G2 )) has reduction that is a
+k × -multiple (depending on G) of
+Rk (h(g 2 ), (∂u h)(g 2 )) = Rk (h(g 2 ), h(g 2 )# ) = 0.
+
+PRIME SPECIALIZATION IN GENUS 0
+
+27
+
+Thus, RW (H(G2 ), (∂u H)(G2 )) ∈ 2W in such cases, so although discW (H(G2 )) may not
+be congruent modulo 8 to (5.10) when h(g 2 ) is not separable, the expression (5.10) always makes sense in W and is a non-unit precisely when discW (H(G2 )) is a non-unit.
+We can therefore use the resultant RW (H(G2 ), (∂u H)(G2 )) from characteristic 0 to study
+discW (H(G2 )) mod 8W even though usually (∂u H)(G2 ) )= H(G2 )# in W [u].
+Since RF [u] (H, ∂u H) ∈ F [u] is nonzero, by Theorem 4.1 for large n we obtain an identity
+of algebraic functions on Polyn/F ,
+"
+Px,n (G)ex ,
+(5.11)
+RF (H(G), (∂u H)(G)) = β0 β1n · lead(G)m0 +m1 n ·
+x
+
+∈ F × independent of n, the product taken over the set of
+
+with m0 , m1 ∈ Z and β0 , β1
+x = (ux , tx ) ∈ ZH ∩ Z∂u H ⊆ A2F , Px,n (G) = NF (x)/F (G(ux ) − tx ), and ex = ix (ZH , Z∂u H ).
+The parameters in (5.11) may depend on the fixed choice of H lifting h (subject to the
+conditions degT H = degT h, degu (leadT (H)) = degu (leadT (h)), and degu,T H = degu,T h).
+When G ∈ W [u], the left side of (5.11) is a resultant over W . We now show that the identity
+(5.11) over F can be factored in a manner that is well-behaved with respect to W .
+
+Lemma 5.6. For large n (depending only on degu,T h and not k or H), the algebraic maps
+"
+"
+ex
+ex
+(5.12)
+β0 ·
+Px,n
+, β1n ·
+Px,n
+: Poly≤n/F → A1F
+|ux |≤1,|tx |>1
+
+|ux |>1
+
+extend uniquely to W -maps Poly≤n/W → A1W with nonzero reduction. That is, these polynomial functions in a0 , . . . , an have W -coefficients and have nonzero reduction.
+Proof. When |ux | ≤ 1 and |tx | > 1, we have an identity
+
+(5.13)
+
+Px,n (G) = NF (x)/F (G(ux ) − tx ) = NF (x)/F (tx ) · NF (x)/F (t−1
+x G(ux ) − 1)
+
+as algebraic functions of G ∈ Poly≤n/F . Likewise, if we let G∗ denote the polynomial of
+(possibly fake) degree n obtained by reversing the order of the coefficients of G, then for
+|ux | > 1 we have an identity
+(5.14)
+
+Px,n (G) = NF (x)/F (G(ux ) − tx ) = NF (x)/F (ux )n · NF (x)/F (G∗ (1/ux ) − u−n
+x tx )
+
+and |u−n
+x tx | < 1 for large n. Note the nth power of NF (x)/F (ux ) in (5.14). Since H(ux , tx ) =
+0 and leadT H ∈ W [u] has unit leading coefficient, for |ux | > 1 the largeness on n that is
+required to force |u−n
+x tx | < 1 is determined by degu,T H = degu,T h (use an integrality
+argument).
+To see that (5.12) extends over W it suffices to show that the elements
+"
+"
+NF (x)/F (ux )ex
+(5.15)
+b0 := β0 ·
+NF (x)/F (tx )ex , b1 := β1 ·
+|ux |>1
+
+|ux |≤1,|tx |>1
+
+in F are integral. We shall prove these are in fact in W × (this claim has nothing to do with
+n), so for large n determined by degu,T h the first map in (5.12) extends over W and has
+constant reduction b0 ∈ k × . Likewise, for the same large n the second map in (5.12) then
+extends over W and has reduction
+P
+
+g 1→ b1 · an (g)
+
+|ux |>1 [F (x):F ]ex
+
+$
+n+1
+with coefficients in W the value
+for g = i≤n ai (g)ui , since for G ∈ Poly≤n/F (F ) = F
+G∗ (1/ux ) has the same reduction as G∗ (0) = an (G) when |ux | > 1.
+
+28
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+We may assume k is algebraically closed, so k is infinite. Thus, as we have seen in the
+beginning of this section, for n > max(ν(h), ν(∂u h)) there exists gn ∈ k[u] of degree n such
+that Rk (h(gn ), (∂u h)(gn )) )= 0. For Gn ∈ W [u] lifting any such gn with lead(Gn ) ∈ W × , the
+W -resultant of H(Gn ) and (∂u H)(Gn ) is a unit in W . Thus, the left side of (5.11) is a unit
+in W when evaluated at Gn . Now consider the right side of (5.11) when
+- evaluated at Gn .
+The contribution of lead(Gn ) is an integral unit, so we conclude β0 β1n x Px,n (Gn )ex ∈ W × .
+By the norm-scaling calculations (5.13) and (5.14), we thereby obtain
+"
+"
+"
+Px,n (Gn )ex ∈ W × ,
+NF (x)/F (ux )ex )n ·
+NF (x)/F (tx )ex )(β1 ·
+(β0 ·
+|ux |≤1,|tx |>1
+
+-
+
+|ux |>1
+
+|ux |,|tx |≤1
+
+or equivalently b0 bn1 · |ux |,|tx |≤1 Px,n (Gn )ex ∈ W × .
+Obviously a W -point x = (ux , tx ) in the zero loci of H and ∂u H reduces to a geometric
+point in the zero loci of h and ∂u h. Thus, for such x we conclude via Theorem 4.5 that
+the reduction of Px,n (Gn ) ∈ W must be nonzero, since the resultant of h(gn ) and (∂u h)(gn )
+is nonzero. Hence, Px,n (Gn ) ∈ W × for such x, so b0 bn1 ∈ W × for all large n. This forces
+b0 , b 1 ∈ W × .
+!
+In the study of (5.11) with G replaced by G2 , where G has unit leading coefficient, we
+will be able to ignore x’s with |ux | > 1 due to:
+
+Theorem 5.7. -For G ∈ W [u] with lead(G) ∈ W × and n = deg G large (determined by
+degu,T h), β12n · |ux |>1 Px,2n (G2 )ex ∈ (W × )2 .
+Proof. By Lemma 5.6, the square β12n · |ux |>1 NF (x)/F (ux )2nex = b2n
+1 is a unit, so we may
+divide by this without harm. This reduces us to proving
+"
+ex
+(5.16)
+NF (x)/F (G∗ (1/ux )2 − u−2n
+∈ (W × )2 ,
+x tx )
+|ux |>1
+
+where G∗ is the polynomial of (possibly fake) degree n obtained by reversing the order of the
+
+coefficients of G. Note that the square G∗ (1/ux )2 is a unit when |ux | > 1, as its reduction
+∗
+2
+−2n
+is lead(g)2 )= 0. Since u−2n
+x tx → 0 as n → ∞, for large n we see that G (1/ux ) − ux tx
+is very close to a unit square in the valuation ring of F (x). Hence, depending only on the
+absolute ramification degree of F (x) (bounded by [F (x) : F ]) and not on k, we can make n
+large enough such that G∗ (1/ux )2 − u−2n
+x tx is a square in the integral units of F (x). Since
+[F (x) : F ] ≤ degF (ZH ∩ Z∂u H ) ≤ degu,T H · degu,T ∂u H
+
+and degu,T H = degu,T h, the largeness condition on n only depends on degu,T h. Passing
+to n that uniformly large for all the finitely many x’s such that |ux | > 1, the norm-product
+(5.16) is a unit square in W .
+!
+To emphasize that the unit b0 in W from (5.15) depends on H, we now rename it: define
+"
+bH = β0 ·
+NF (x)/F (tx )ex ∈ W × ,
+|ux |≤1,|tx |>1
+
+so bH depends on H since the algebraic factorization on the right side of (5.11) depends on
+H. Also define
+RH (G) := RW (H(G2 ), (∂u H)(G2 )).
+
+PRIME SPECIALIZATION IN GENUS 0
+
+29
+
+Using Lemma 5.6 and Theorem 5.7, together with the obvious fact that lead(G2 ) is a
+unit square when G ∈ W [u] has unit leading coefficient, the identity (5.11) implies
+"
+"
+2
+ex
+·
+Px,2n (G2 )ex · (W × )2
+G(u
+)
+−
+1)
+(5.17) RH (G) ∈ bH ·
+NW (x)/W (t−1
+x
+x
+|ux |,|tx |≤1
+
+|ux |≤1,|tx |>1
+
+when the reduction g of G has degree that is sufficiently large (depending on degu,T h).
+Since bH ∈ W × and all terms in the products in (5.17) are integral, the resultant RH (G)
+is a unit in W if and only if each of the terms in the products in (5.17) is a unit, in which
+case the image of RH (G) in W × /(W × )2 is represented by the expression in (5.17).
+Define
+!bH = (−1)deg(leadT h)(deg(leadT h)−1)/2 · lead(leadT H)eH · bH ∈ W ×
+
+where eH = 1 if leadT H )∈ W × and eH = deg(leadT ∂u H) if leadT H ∈ W × ; !bH absorbs
+both the constant sign-factor and (by Remark 5.2) the odd-exponent power of the unit
+lead(H(G2 )) in (5.10) modulo (W × )2 . Choose g ∈ k[u] with large degree as required in
+(5.10) and (5.17), and choose G ∈ W [u] lifting g with deg G = deg g. When h(g 2 ) is
+separable it follows from (5.10) that discW (H(G2 )) ∈ W × is a unit-square multiple of the
+integral product
+"
+"
+2
+ex
+(5.18) !bH ·(1+4(mg +!
+s2 (ωh,g )))·
+NW (x)/W (t−1
+Px,2n (G2 )ex ,
+x G(ux ) −1) ·
+|ux |≤1,|tx |>1
+
+|ux |,|tx |≤1
+
+with mg = 4(1 + deg g degT h)/25 and s!2 (ωh,g ) denoting any lift of s2 (ωh,g ) from k to W
+(see (5.3)). On the other hand, if h(g 2 ) is not separable then (5.17) implies that one of the
+terms Px,2n (G2 ) with |ux |, |tx | ≤ 1 is in the maximal ideal of W , so (5.18) is also in the
+maximal ideal of W in such cases.
+Motivated by the shape of (5.18), consider the W -scheme map LH,n : Poly≤n/W → A1W
+defined by
+%
+"
+"
+2
+ex
+LH,n : G =
+ai ui 1→ !bH ·
+NW (x)/W (t−1
+Px,2n (G2 )ex .
+x G(ux ) − 1) ·
+i≤n
+
+|ux |≤1,|tx |>1
+
+|ux |,|tx |≤1
+
+Each term on the right, viewed as an algebraic function of G, factors through the divisionalgorithm morphism
+(5.19)
+
+geom ≤1
+ρ!n,H := ρn,(M geom )≤1 : Poly≤n/W → W [u]/((MH
+) )
+H
+
+to the affine W -scheme of remainders modulo the monic polynomial
+"
+geom ≤1
+) :=
+(u − ux ) ∈ W [u],
+(5.20)
+(MH
+|ux |≤1
+
+geom ≤1
+which is separable over F . Here we are viewing W [u]/((MH
+) ) as an affine space over
+Spec W . Since ρ!n,H is smooth and surjective, it follows by Yoneda’s lemma (or a direct
+construction with norms) that
+
+(5.21)
+
+LH,n = LH ◦ ρ!n,H
+
+geom ≤1
+for a unique W -scheme map LH : W [u]/((MH
+) ) → A1W that is independent of n.
+Summarizing the conclusions of the above efforts, for any g ∈ k[u] with large degree
+(determined by degu,T h) and any G ∈ W [u] lifting g with deg G = deg g, we have
+(5.22)
+discW (H(G2 )) ≡ (1 + 4(4(1 + deg g degT h)/25 + s2 (ωh,g ))) · LH (!
+ρn,H (G)) · (W × )2 mod 8W
+
+30
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+when h(g 2 ) is separable, and otherwise both sides lie in 2W/8W .
+When k is finite, we will use the quadratic character of (5.22) to investigate µ(h(g 2 )).
+geom ≤1
+Before passing to the case of finite k we study the relationship between (MH
+) and
+geom
+geom
+Mh . We may factor MH
+in F [u] as a product of monic polynomials
+geom
+geom ≤1
+geom >1
+MH
+= (MH
+) (MH
+) ,
+geom ≤1
+geom
+geom >1
+where the roots of (MH
+) are the roots of MH
+in W (see (5.20)) and (MH
+)
+geom ≤1
+contains the other roots. Each root of the squarefree polynomial (MH ) is integral over
+geom ≤1
+W and is a root of the resultant RW [u] (H, ∂u H), so this resultant is divisible by (MH
+)
+in W [u].
+geom
+
+geom ≤1
+Definition 5.8. The reduction of (MH
+) is denoted M H
+geom
+
+∈ k[u].
+
+geom
+To compute M H , choose c ∈ F × such that cMH
+is primitive in W [u] and has its
+geom
+geom
+unit coefficient in highest degree equal to 1. The reduction of cMH
+modulo 2 is M H .
+geom
+By reduction of divisibility over W , M H
+divides Rk[u] (h, ∂u h) in k[u]; the polynomial
+geom
+MH
+need not be squarefree (see Example 5.15).
+geom
+There is a general relationship between Mhgeom and the radical of M H :
+
+Lemma 5.9. For all lifts H ∈ W [u][T ] of h ∈ k[u][T ] such that degT H = degT h,
+degu,T H = degu,T h, and leadT (H) ∈ W [u] has the same u-degree as leadT (h) ∈ k[u],
+geom
+we have Mhgeom |M H
+in k[u]. In particular, for deg g sufficiently large (depending only
+on degu,T h and not on H or k), the property of h(g 2 ) being squarefree is determined by
+geom
+g mod M H . If leadT h is separable (e.g., h is monic in T ), then Mhgeom is the radical of
+geom
+MH .
+Proof. Recall that by Corollary 4.7(2), g mod Mhgeom determines whether or not h(g 2 ) is
+geom
+squarefree. Since Mhgeom is squarefree, clearly Mhgeom |M H if and only if each root of Mhgeom
+geom
+is the reduction of an integral root of MH
+. We will prove this root-lifting property by
+using the structure theorem for quasi-finite separated morphisms.
+We know h is not a unit in k[u][T ], and ∂u h is not a zero divisor in k[u][T ]/(h) since no
+irreducible factor of h divides ∂u h (by Lemma 3.5(2)). Thus k[u][T ]/(h, ∂u h) is a finite kalgebra, ∂u H is nowhere a zero divisor on Spec W [u][T ]/(H) at points over the closed point
+of Spec W , and the W -scheme Spec W [u][T ]/(H, ∂u H) is flat at points over the closed point
+of Spec W . (We used the local flatness criterion for the second and third assertions.) On the
+generic fiber over Spec F (F is the fraction field of W ), F [u][T ]/(H, ∂u H) is a finite (flat)
+F -algebra since {H = 0} meets {∂u H = 0} at only finitely many points in A2F (Lemma
+5.1). To summarize, the finite-type separated morphism Spec W [u][T ]/(H, ∂u H) → Spec W
+is quasi-finite and flat.
+By the structure theorem for quasi-finite separated schemes over a henselian local base [11,
+18.5.11], W [u][T ]/(H, ∂u H) equals Rf × R# , where Rf is a finite product of finite local W algebras and R# is a quasi-finite (hence finite) F -algebra. Moreover, Rf must be W -flat.
+The image of the map
+.
+Spec Rf
+Spec R# = Spec W [u][T ]/(H, ∂u H) → Spec W [u] = A1W
+is topologically a union of a closed subscheme that is finite flat over W (the image of
+Spec Rf ) and an F -finite closed subscheme of the generic fiber (the image of Spec R# ). The
+geometric points of this image in the closed and generic geometric fibers of A1W over Spec W
+
+PRIME SPECIALIZATION IN GENUS 0
+
+31
+
+geom
+are the roots of Mhgeom and MH
+respectively. Thus, each root of Mhgeom is the reduction
+geom
+of an integral root of MH
+because each geometric closed point of a finite flat W -scheme
+f
+(specifically, Spec R ) is the specialization of an integral generic-fiber geometric point.
+geom
+when leadT h is separable, we check that
+To prove that Mhgeom is the radical of M H
+if (c, t) is a geometric point in the common zero locus of H and ∂u H, and c is integral
+geom ≤1
+(such c’s are the roots of (MH
+) ), then t is also integral. It suffices to show that
+H(c, T ) or (∂u H)(c, T ) has unit leading coefficient. That is, if (leadT h)(c) = 0 then we
+want (leadT h)# (c) )= 0. Since leadT h is separable, we are done.
+!
+
+Now let g ∈ k[u] be arbitrary with large degree as in Lemma 5.9. The property of h(g 2 )
+geom
+geom
+being separable is determined by g mod M H , and even by g modulo the radical of M H .
+geom
+Thus, the monic polynomial M H constructed by reduction from characteristic 0 controls
+the separability of h(g 2 ) in characteristic 2 when deg g is as large as required in (5.10) and
+(5.17).
+For the rest of this section we specialize to the case of a finite field k = κ of characteristic
+2. We want to study Möbius behavior in κ[u]. Pick a nonconstant f ∈ κ[u][T 2 ] which is
+squarefree in κ[u][T ] and has no local obstructions. Write f (T ) = h(T 2 ). Choose a lift H
+of h as in Lemma 5.9, and pick g ∈ κ[u] of large degree (depending only on degu,T h) as in
+Lemma 5.9. Finally, choose a lift G ∈ W [u] of g with the same degree (i.e., with unit leading
+coefficient). Hence, H(G2 ) is a lift of h(g 2 ) with the same degree, and discW (H(G2 )) is a unit
+precisely when h(g 2 ) is separable. Recall (as above Theorem 2.4) that if discW (H(G2 )) ∈
+W × then it lies in κ× × (1 + 4W ); that is, its 1-unit part lies in 1 + 4W , not merely in
+1 + 2W , when it is a unit in W .
+By Theorem 2.4 we have
+(5.23)
+
+µ(h(g 2 )) = (−1)deg(leadT h) χ
+!(discW (H(G2 ))),
+
+where χ
+! vanishes on 2W and is defined on κ× × (1 + 4W ) by
+(5.24)
+
+χ
+!(c · (1 + 4w)) = (−1)Trκ/F2 (w mod 2) .
+
+We can now prove an analogue of (4.14) in characteristic 2:
+
+Theorem 5.10. Let κ be finite of characteristic 2, and h ∈ κ[u][T ] be such that h )∈ κ
+and h(T 2 ) is squarefree in κ[u][T ]. Also assume that h(T ) has no local obstructions. Fix
+H ∈ W [u][T ] lifting h such that degT (H) = degT (h), leadT (H) ∈ W [u] has unit leading
+coefficient (so degu (leadT (H)) = degu (leadT (h))), and degu,T H = degu,T h.
+For g of sufficiently large degree n,
+(5.25)
+
+µ(h(g 2 )) = (−1)deg leadT (h)+[κ:F2 ]+(1+n degT h)/2,+Trκ/F2 (s2 (ωh,g )) · χ
+!(LH (!
+ρn,H (G))),
+
+where G ∈ W [u] is any lift of g with degree n. Here, s2 (ωh,g ) is defined by (5.3), ρ!n,H is
+defined by (5.19), and LH is defined in (5.21). The “sufficient largeness” for deg g only
+depends on degu,T h and not on κ or H.
+In particular, if g1 and g2 ∈ κ[u] have sufficiently large degrees (depending only on
+geom
+degu,T h), deg g1 ≡ deg g2 mod 4, and g1 ≡ g2 mod M H , then
+(5.26)
+
+(−1)Trκ/F2 (s2 (ωh,g1 )) µ(h(g12 )) = (−1)Trκ/F2 (s2 (ωh,g2 )) µ(h(g22 )).
+
+If degT h is even then the congruence on deg gj ’s for (5.26) to hold need only be taken
+modulo 2, and if 4| degT h or if [κ : F2 ] is even then no congruence is necessary on the
+deg gj ’s for (5.26) to hold.
+
+32
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Proof. The preceding calculations ensure that LH (!
+ρn,H (G)) ∈ W lies in κ× ×(1+4W ) when
+it is a unit (because the same is true for both discW (H(G2 )) and squares in W × ). Thus, the
+asserted formula (5.25) for µ(h(g 2 )) makes sense and is immediate from (5.23), (5.24), and
+geom
+(5.22). Since any two elements g1 , g2 ∈ κ[u] that are congruent modulo the reduction M H
+geom ≤1
+of the monic polynomial (MH ) may be respectively lifted to G1 , G2 ∈ W [u] with unit
+geom ≤1
+leading coefficients such that G1 ≡ G2 mod (MH
+) (so ρ!n1 ,H (G1 ) = ρ!n2 ,H (G2 ) with
+nj = deg Gj = deg gj ), the identity (5.26) follows from the congruence conditions on gj ’s
+and deg gj ’s using (5.25).
+!
+Since s2 (ωh,g2 ) = 0 we get
+Corollary 5.11. Let κ be finite of characteristic 2, and h ∈ κ[u][T ] be such that h )∈ κ, h
+has no local obstructions, and h(T 2 ) is squarefree in κ[u][T ]. Fix H ∈ W [u][T ] lifting h as
+in Theorem 5.10.
+For g of sufficiently large degree n (depending only on degu,T h),
+µ(h(g 4 )) = (−1)deg leadT h+[κ:F2 ](degT h)·n · χ
+!(LH (!
+ρn,H (G))),
+
+where G ∈ W [u] is any lift of g with degree n. In particular, for g1 and g2 in κ[u] of such
+sufficiently large degrees in κ[u],
+(5.27)
+
+geom
+
+g1 ≡ g2 mod M H
+
+, deg g1 ≡ deg g2 mod 2 =⇒ µ(h(g14 )) = µ(h(g24 )).
+
+There is no dependence on deg g mod 2 if [κ : F2 ] or degT h is even.
+
+For applications it is convenient to restate the final part of Corollary 5.11 as follows (a
+characteristic 2 analogue of Theorem 4.8):
+Theorem 5.12. Let κ be a finite field with characteristic 2. Fix f (T ) ∈ κ[u][T 4 ] that is
+squarefree in κ[u][T ] and assume f )∈ κ. There is a nonzero polynomial M = Mf,κ in κ[u]
+such that for all g1 and g2 in κ[u] with sufficiently large degrees n1 and n2 ,
+(5.28)
+
+g1 ≡ g2 mod M, n1 ≡ n2 mod 2 =⇒ µ(f (g1 )) = µ(f (g2 )).
+
+If [κ : F2 ] is even or degT f ≡ 0 mod 8 then there is no dependence on deg g mod 2.
+geom
+The modulus M may be chosen to be M H
+where f (T ) = h(T 4 ) and H is any lift of h
+as in Theorem 5.10.
+min of minimal degree
+Example 5.15 below suggests that in characteristic 2 the modulus Mf,κ
+in Theorem 5.12 (which must divide any modulus in Theorem 5.12) is not always squarefree,
+which is a contrast with Theorem 4.8. However, it divides the reduction of a squarefree
+polynomial from characteristic 0.
+
+Example 5.13. Let f (T ) = T 4 +u. Take H(T ) = T +u ∈ W [u][T ] as a lift of h(T ) = T +u
+geom
+from κ[u][T ]. Clearly M H
+= 1 in κ[u], so Corollary 5.11 says µ(f (g)) = µ(h(g 4 )) only
+depends on deg g mod 2 when deg g / 0. In [7] there is a more precise study of µ(g 2 + u)
+which, replacing g with g 2 , implies µ(g 4 + u) = (−1)[κ:F2 ] deg g when deg g ≥ 1. It follows
+that g 4 + u is never prime when [κ : F2 ] is even and g is nonconstant or when [κ : F2 ] is
+odd and deg g is even. See [6, Table 1] for data on prime values of T 4 + u over F2 [u].
+Example 5.14. Let f (T ) = T 8 +(u3 +u)T 4 +u in κ[u][T ]. Take H(T ) = T 2 +(u3 +u)T +u.
+geom
+geom
+= 1 and degT H is even. Thus
+A calculation shows MH
+= 6u5 + 2u3 + 1, so M H
+Corollary 5.11 says µ(f (g)) is constant for deg g / 0. A closer analysis, carried out in [7],
+shows that µ(f (g)) = 1 for deg g ≥ 3 and this is sharp: µ(f (g)) = −1 for some g of degree
+2.
+
+PRIME SPECIALIZATION IN GENUS 0
+
+33
+
+Example 5.15. In κ[u][T ], let f (T ) = T 16 + (u9 + u4 + u2 + u)T 8 + u5 + u3 and define the
+geom
+lift H = T 4 + (u9 + u4 + u2 + u)T 2 + u5 + u3 ∈ W [u][T ]. Then M H = u24 (u + 1)8 , so for
+g1 and g2 with sufficiently large degree,
+g1 ≡ g2 mod u24 (u + 1)8 =⇒ µ(f (g1 )) = µ(f (g2 )).
+
+Further work shows the lower-degree modulus u9 (u + 1)4 works in (5.15) when g1 and g2
+have degree at least 2. Numerical evidence suggests that when κ = F2 we can even use
+u3 (u + 1) instead of u9 (u + 1)4 as a modulus (but not any proper factor of u3 (u + 1)). The
+proof of Corollary 5.11 shows that in principle the determination of the minimal degree
+monic modulus in characteristic 2 is a finite calculation, but we have not carried it out
+explicitly in this example.
+6. A revised characteristic p conjecture
+We want to describe applications of the preceding work in this paper to the formulation
+of a modified conjectural asymptotic estimate on primality statistics of prime polynomials
+in κ[u][T ]. Our new correction factor makes sense on its own for squarefree polynomials,
+not just prime polynomials, so we define it in that setting:
+Definition 6.1. Let κ be a finite field. Let f ∈ κ[u][T ] be squarefree. Assume degT f > 0
+and f has no local obstructions. For any nonzero M ∈ κ[u] and n ≥ 0, define
+$
+deg g=n,(f (g),M )=1 µ(f (g))
+(6.1)
+Λκ,M (f ; n) := 1 − $
+.
+deg g=n,(f (g),M )=1 |µ(f (g))|
+
+By work of Poonen [14, Thm. 3.1] applied to M · f , the denominator in (6.1) is positive
+for large n. Note that Λκ,M (f ; n) is a rational number in the interval [0, 2]. The closer
+Λκ,M (f ; n) is to 1 (resp. to 0, to 2), the more equally distributed (resp. skewed towards
+1, skewed towards −1) the nonzero Möbius values of f (g) are for g in degree n such that
+(f (g), M ) = 1.
+The particular case of most interest to us is when f (T ) is a polynomial in T p for p )= 2 or
+a polynomial in T 4 for p = 2. In this case µ(f (g)) is periodic in g (Theorems 4.8 and 5.12)
+min having least degree. For this particular
+and there is a monic modulus of periodicity Mf,κ
+modulus we set
+(6.2)
+
+Λκ (f ; n) := Λκ,M min (f ; n).
+f,κ
+
+(We will see in Example 6.10 that Λκ (f ; n) is not always the same as Λκ,1 (f ; n), although it
+is in Examples 1.1 and 2.5.) For any two choices of modulus M1 and M2 as in Theorem 4.8
+or Theorem 5.12, Theorem 6.5 below ensures that the corresponding sequences Λκ,M1 (f ; n)
+and Λκ,M2 (f ; n) agree for all n ≥ n0 , where n0 depends only on deg M1 , deg M2 , and
+degu,T f . This provides a robustness that makes Definition 6.1 less sensitive to change in
+M than it may initially seem to be when f (T ) is a polynomial in T p or T 4 . (For example,
+if p )= 2 then Λκ (f ; n) equals Λκ,M geom (f ; n) for large n depending only on degu,T f .) The
+f
+marvelous fact (Theorem 6.5) is that in this case Λκ (f ; n) is periodic in n with period 1, 2,
+or 4 for all sufficiently large n (determined by degu,T f ), so Λκ (f ; n) is far simpler than it at
+first appears to be. This periodicity makes the following conjecture on primality statistics
+simple to appreciate.
+Conjecture 6.2. Let κ be a finite field and let f ∈ κ[u][T
+] be prime with positive T -degree
+and with no local obstructions. Define C(f ) = log q · v(=∞ (1 − ωf (v)/qv )/(1 − 1/qv ), where
+
+34
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+q = #κ, the product runs over all the places of κ(u) except ∞, qv is the size of the residue
+field at v, and ωf (v) denotes the number of roots of f in the residue field at v. If f ∈ κ[u][T p ]
+for p )= 2 and if f ∈ κ[u][T 4 ] for p = 2, then as n → ∞
+(6.3)
+
+?
+
+#{g ∈ κ[u] : deg g = n, f (g) is prime} ∼ Λκ (f ; n)
+
+C(f ) (q − 1)q n
+.
+degT f log(q n )
+
+The product C(f ) is defined according to increasing values of qv , with all v )= ∞ having
+a common qv -value introduced into the product at the same time. (It is convergent because
+f has no local obstructions, and usually is not absolutely convergent.)
+Example 6.10 will show that in (6.3) it is crucial to impose the relative primality condition
+min ) = 1 on the averaging process in the definition of Λ (f ; n). If 0 is in the period
+(f (g), Mf,κ
+κ
+of the sequence Λκ (f ; n) (e.g., Example 6.6 below) then for each g of degree n where
+min ) )= 1, so f (g) is composite when n is
+Λκ (f ; n) = 0 either µ(f (g)) = 1 or (f (g), Mf,κ
+min ). Thus, the appearance of 0 in the
+large (in particular, we at least require n > deg Mf,κ
+period for Λκ (f ; n) implies that the left side of (6.3) is 0 for such n. When n runs through
+a sequence in which Λκ (f ; n) does not vanish, we have not proved a connection between
+Λκ (f ; n) and primality counts for f (g) with deg g = n as n → ∞, but (6.3) agrees well with
+the extensive numerical testing that we have carried out.
+Let us give a brief heuristic justification for including the relative primality condition
+min .
+(f (g), M ) = 1 in the definition of Λκ (f ; n) for large n with M a nonzero multiple of Mf,κ
+When making asymptotic primality predictions based on a randomness model, it is reasonable to expect that imposing a local condition such as (f (g), M ) = 1 on the sample space
+of g’s (with a fixed nonzero M ) should not influence the statistics. But our theory and
+examples of Möbius periodicity show that for a nonzero M ∈ κ[u] the formation of Möbius
+averages as in the definition of Λκ,M (f ; n) for large n can be sensitive to the particular
+min . Hence, it is natural to require M to be
+choice of M , except when M is a multiple of Mf,κ
+sufficiently divisible in this sense when we define Λκ (f ; n).
+In Theorem 5.12 we gave a Möbius periodicity result for polynomials in T 4 , but we did
+not address the possibility that there may also be periodicity for other polynomials in T 2
+in characteristic 2. Numerical evidence suggests that Möbius periodicity can arise in many
+such cases (including the possibility of periodicity depending on deg g mod 4 rather than
+just on deg g mod 2 as in Theorem 5.12), but the general picture appears to be complicated.
+For example, T 2 + u over F2 [u] does not appear to exhibit non-trivial Möbius periodicities,
+though it also numerically fits the naive conjecture for predicting primality statistics (of
+g 2 + u with g ∈ F2 [u] of large degree) and therefore a non-trivial correction factor in this
+case (as in Conjecture 6.2) is apparently not necessary.
+Remark 6.3. Let us make some observations concerning omitted cases in Conjecture 6.2.
+If Theorem 5.12 can be generalized to allow f ∈ κ[u][T 2 ] then it should be possible to
+formulate a version of (6.3) in characteristic 2 without the restriction that f ∈ κ[u][T 4 ].
+Now suppose f is separable and irreducible over κ(u) without local obstructions. In this
+case we expect f (g) to be prime as often as analogies between Z and κ[u] predict, and in the
+context of Conjecture 6.2 this corresponds to removing the factor Λκ (f ; n) from (6.3). Thus,
+let us formulate a conjecture for p )= 2 that does not treat the separable and inseparable
+cases separately. Let f (T ) be any prime polynomial in κ[u][T ] with positive T -degree and
+no local obstructions. Consider the projection π from Zf = {f = 0} to the T -axis. The
+finite (possibly empty) set B ⊆ Zf of isolated points in the non-étale locus of π has finite
+
+PRIME SPECIALIZATION IN GENUS 0
+
+35
+
+image in the u-axis, so we may define Mfgeom in terms of B just as we can in the inseparable
+case. (This works even if Definition 3.4 does not apply to f .) Set Λκ (f ; n) = Λκ,M geom (f ; n),
+f
+which recovers (6.2) for large n when f (T ) is a polynomial in T p (by Theorem 6.5). Equation
+(6.3) now makes sense as a conjecture in characteristic p )= 2 even if f is not a polynomial
+in T p , but nothing is proved about the behavior of Λκ (f ; n) when f is separable. (See [2]
+for some work in the case of separable f .) We expect that any reasonable averaging process
+for µ(f (g)) should tend to 0 in the large-degree limit when f is separable over κ(u), so we
+expect Λκ (f ; n) → 1 as n → ∞ for separable f . This would make (6.3) for separable f
+equivalent to the conjecture based only on analogies between Z and κ[u].
+For inseparable f we have always been able to prove a posteriori that Λκ (f ; n) = 1 for
+all large n in congruence classes c mod 4 for which the numerical data suggest classical
+analogies are making correct asymptotic predictions when n ≡ c mod 4. In Examples 6.9
+and 6.10 we will check that (6.3) appears to fix the discrepancies in Examples 1.1 and 1.2.
+We turn now to justifying the properties of Λκ,M (f ; n) used above when f is inseparable
+in T . For Λκ,M (f ; n) to make sense, its denominator has to be positive: there needs to be
+a g ∈ κ[u] of degree n such that (f (g), M ) = 1 and f (g) is squarefree. The following lemma
+addresses this problem and gives some information on the required largeness of n.
+Lemma 6.4. Let κ be a finite field of characteristic p and let f ∈ κ[u][T p ] be squarefree
+in κ[u][T ], and assume that f has no local obstructions (so in particular, f has no prime
+factors in κ[u]). For any nonzero M ∈ κ[u], there exist polynomials g ∈ κ[u] with any
+sufficiently large degree (depending only on deg M and degu,T f ) such that (f (g), M ) = 1
+and f (g) is squarefree in κ[u].
+Proof. By replacing M with its radical, we can assume M is squarefree. Hence, f (g) is
+squarefree and relatively prime to M if and only if M f (g) is squarefree. Since M · f (T ) ∈
+κ[u][T ] is squarefree (as f has no irreducible factors in κ[u]), the absence of local obstructions
+allows us to apply [14, Thm. 3.4] to get the result except for determining how the required
+largeness of deg g depends on M and f .
+By our work on Möbius periodicity (using extra care in characteristic 2), since f is a
+polynomial in T p we know that if deg g is large enough (depending only on degu,T f ) then
+whether or not f (g) is squarefree depends only on a congruence condition on g modulo
+a nonzero polynomial with degree bounded in terms of degu,T f . The relative primality
+property (f (g), M ) = 1 is also a congruence condition on g mod M , so overall the combined
+properties we are requiring for g are congruence conditions modulo a nonzero polynomial
+with degree bounded in terms of deg M and degu,T f when deg g is sufficiently large (depending only on degu,T f ). Since we have shown that this collection of congruence conditions in
+κ[u] has a solution in some large degree, it has solutions in any degree exceeding a bound
+determined by deg M and degu,T f .
+!
+Our work in §2–§5 leads to the following important periodicity result.
+
+Theorem 6.5. Let κ be finite, and f (T ) be as in Definition 6.1. Assume f ∈ κ[u][T p ], and
+if p = 2 then assume f ∈ κ[u][T 4 ]. For any finite extension κ# /κ, the sequence Λκ! (f ; n) is
+periodic with period dividing 4 for n / 0, and this largeness for n only depends on degu,T f
+and not on κ# .
+min , Λ ! (f ; n) = Λ !
+For any nonzero M in κ# [u] which is divisible by Mf,κ
+!
+κ
+κ ,M (f ; n) when n is
+sufficiently large. More precisely, for each d ≥ 1 there is an n0 depending only on degu,T f
+
+36
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+min in κ# [u] with deg M ≤ d then
+and d such that if M ∈ κ# [u] is a nonzero multiple of Mf,κ
+!
+Λκ! (f ; n) = Λκ! ,M (f ; n) for all n ≥ n0 .
+
+Proof. This is a simple argument with quadratic character sums; in [9] the argument is given
+with κ[u] replaced by the coordinate ring of any smooth affine κ-curve with one geometric
+point at infinity. The main requirement on the largeness of n is that it be large enough as
+in Theorem 4.8 (for p )= 2), Theorem 5.12 (for p = 2), and Lemma 6.4.
+!
+Periodicity of Λκ,1 (f ; n) (omitting the relative primality condition on f (g)’s) follows by
+the same arguments as for Λκ (f ; n) in the proof of Theorem 6.5.
+
+Example 6.6. Let p )= 2 and f (T ) = T p + u ∈ κ[u][T ] (Example 2.5). Then Mfgeom = 1,
+Λκ (f ; n) = 1 for odd n, Λκ (f ; n) = 0 for positive n ≡ 0 mod 4, and Λκ (f ; n) = 1 − χκ (−1)
+if n ≡ 2 mod 4. In particular, ΛF3 (T 3 + u; n) is 1, 2, 1, 0, 1, 2, 1, 0, . . . , ΛF9 (T 3 + u; n) is
+1, 0, 1, 0, 1, 0, 1, 0, . . . , and ΛF5 (T 5 +u; n) is 1, 0, 1, 0, 1, 0, 1, 0, . . . for n ≥ 1. This is consistent
+with numerical data when (6.3) is tested for T p +u over F3 , F9 , and F5 . In particular, g p +u
+is not prime for any g in degree n when Λκ (T p + u; n) = 0.
+Example 6.7. Let p )= 2 and f (T ) = T p + u2 ∈ κ[u][T ]. Then Mfgeom = u and
+µ(g p + u2 ) = (−1)n (χ(−1))n(pn+1)/2 χ(2)n χ(c)n+1 χ(g(0)),
+where g has leading term cun and n ≥ 1. In particular, Λκ (T p + u2 ; n) = 1 for n ≥ 1; this is
+consistent with the numerical observation that if κ = F3 , F9 , F5 , or F7 then asymptotically
+g p + u2 appears to be prime as often as classical analogies suggest it should be.
+Example 6.8. When
+f (T ) = T 12 + (2u4 + 2u3 + 2u2 + u + 1)T 6 + 2u3 + 2u2 + u
+in characteristic 3, ΛF3 (f ; n) = 2/3 for n ≥ 3. Numerical evidence for Conjecture 6.2 in
+this case looks good.
+Example 6.9. Let f (T ) = T 12 + (u + 1)T 6 + u4 be the polynomial from Example 1.1,
+considered over any finite field κ of characteristic 3; let q = #κ. (The polynomial f is
+irreducible over F3 but it factors over F9 .) We use the formula µ(f (g)) = χ(g(0)2 (g(1)2 +1))
+from (3.6), and M := Mfgeom = u(u − 1). We need to determine when (f (g), u(u − 1)) )= 1:
+f (g)|u=0 = g(0)6 (g(0)2 + 1)3 ,
+
+f (g)|u=1 = (g(1)2 + 1)6 .
+
+If (u−1)|f (g) then g(1)2 +1 = 0, so µ(f (g)) = 0. Therefore the condition (f (g), u−1) = 1 in
+the sums in Λκ (f ; n) can be ignored. We have u|f (g) if and only if g(0) = 0 or g(0)2 +1 = 0;
+if g(0) = 0 then µ(f (g)) = 0. Thus, the condition (f (g), u(u−1)) = 1 in the sums of Λκ (f ; n)
+can be relaxed to g(0)2 + 1 )= 0. When n ≥ 2, polynomials g of degree n in κ[u] are equally
+spread out over the pairs (g(0), g(1)), so
+$
+$
+2 2
+2 2
+a2 +1(=0 χ(a (b + 1))
+a,b∈κ χ(a (b + 1)) −
+$
+Λκ (f ; n) = 1 − $
+2 2
+2 2
+a,b∈κ |χ(a (b + 1))| −
+a2 +1(=0 |χ(a (b + 1))|
+#
+1 + 1/(q − 2), if χ(−1) = 1,
+=
+1 + 1/q,
+if χ(−1) = −1,
+$
+since b∈κ χ(b2 − d) = −1 when d )= 0. In particular, ΛF3 (f ; n) = 4/3 for all n ≥ 2. This
+agrees well with the data on primality statistics for f (g) in [6, Table 3].
+
+PRIME SPECIALIZATION IN GENUS 0
+
+37
+
+Example 6.10. Let f (T ) be the polynomial from Example 1.2, but viewed in κ[u][T ] for
+any κ of characteristic 3. We recall (3.9) from Example 3.3: when g = cun + · · · ∈ κ[u] with
+n = deg g ≥ 1,
+(6.4)
+
+µ(f (g)) = (−1)n (χ(−1))n(n−1)/2 χ(c)n+1 χ(g(1)2 + g(1) + 2)χ(g(2)).
+
+min = (u − 1)(u − 2). Call this M for simplicity.
+This formula implies Mf,κ
+To compute Λκ (f ; n), we only count g of degree n such that (f (g), M ) = 1, a condition
+we want to make explicit in terms of g. Clearly (f (g), M ) = 1 if and only if f (g)|u=1 )= 0
+and f (g)|u=2 )= 0. Since
+
+(6.5)
+
+f (g)|u=1 = (g(1) − 1)3 (g(1)2 + g(1) + 2)3 ,
+
+f (g)|u=2 = (g(2))6 (g(2) + 1)3 ,
+
+the √
+condition (f (g), M ) √
+= 1 is equivalent to the combined conditions that g(1) is not 1 or
+1 ± −1 (the term 1 ± −1 appears only if [κ : F3 ] is even) and that g(2) is not 0 or −1.
+If κ has size q = 3m , then by separately treating the cases when m is even or odd and
+when n is even or odd, elementary arguments resting on (6.4) and (6.5) show that
+#
+1,
+if n > 0 is even,
+Λκ (f ; n) =
+(n+1)/2
+1 + 2 · (−1)
+/((q − 1)(q − 2)), if n is odd,
+
+for odd m and
+
+#
+1,
+if n > 0 is even,
+Λκ (f ; n) =
+1 + 2/((q − 2)(q − 3)), if n is odd,
+
+for even m.
+As a special case, for n ≥ 1 the periodic sequence of values ΛF3 (f ; n) is
+0, 1, 2, 1, 0, 1, 2, 1, . . . ,
+
+which is an excellent fit with the discrepancies between Example 1.2 and the conjectural
+asymptotic for primality statistics of f (T ) on F3 [u] based only on the analogy between Z
+and F3 [u]. Taking κ = F9 , ΛF9 (f ; n) = 1 for even n and ΛF9 (f ; n) = 22/21 for odd n; this
+fits numerical evidence. Returning to κ = F3 , if n ≡ 1 mod 4 then µ(f (g)) = −1 only when
+(f (g), M ) )= 1. If n ≡ 3 mod 4 then µ(f (g)) = 1 only when (f (g), M ) )= 1. In particular,
+since M = (u − 1)(u − 2) and deg f (g) > 1 when deg g ≥ 1, it follows that f (g) is composite
+in F3 [u] whenever g ∈ F3 [u] satisfies deg g ≡ 1 mod 4.
+min ) = 1 in the definition of {Λ (f ; n)}
+If we did not include the condition (f (g), Mf,κ
+κ
+n≥1
+then this sequence would become constant: Λκ,1 (f ; n) = 1 for n ≥ 1. In other words, the
+nonzero values of µ(f (g)) for g of a fixed degree n ≥ 1 are equally often 1 and −1, but
+what matters for the link to primality statistics appears to be the nonzero values of µ(f (g))
+min ) = 1. (We can replace M min with
+constrained by the additional local condition (f (g), Mf,κ
+f,κ
+geom
+any nonzero multiple, such as Mf
+when p )= 2, by Theorem 6.5.)
+A striking example of the distinction between Λκ (f ; n) and Λκ,1 (f ; n) when used as
+correction factors in (6.3) is given by f (T ) = (u − 1)T 12 + u2 T 6 + u3 − 1 ∈ F3 [u][T ]:
+ΛF3 (f ; n) = 6/5 > 1 for n ≥ 4 whereas ΛF3 ,1 (f ; n) = 6/7 < 1 for n ≥ 3. Thus, for this
+f , if we replace ΛF3 (f ; n) with ΛF3 ,1 (f ; n) in (6.3) then we would be predicting a deficit
+of prime values for f (T ) in comparison to predictions based purely on analogies with the
+classical case (no Λ-factor), whereas numerical data and the actual prediction of Conjecture
+6.2 suggest a surplus.
+
+38
+
+BRIAN CONRAD, KEITH CONRAD, AND ROBERT GROSS
+
+Remark 6.11. If we search for prime values of f (g) not over all g in each degree, but
+just monic g in each degree (say), then we need a monic version of Λκ (f ; n). This is a
+periodic sequence (with mod 4 periodicity, etc., by the same arguments), and it can differ
+from Λκ (f ; n). Numerical data support the use of this new sequence as correction factors
+in a “monic g sampling” version of Conjecture 6.2.
+Fix κ with characteristic p )= 2 and a polynomial f ∈ κ[u][T p ] with degT f positive such
+that f is squarefree in κ[u][T ]. Assume that f has no local obstructions on κ[u]. We now
+look at how Λκ,M (f ; n) varies when we let the constant field grow (initially keeping f fixed,
+but then we shall let f vary). Our constraints on f are inherited over any finite extension
+κ# /κ, and the absence of local obstructions automatically holds if we increase κ so that
+#κ > degT f . For c ∈ {0, 1, 2, 3}, let λκ! (f ; c) be the common value of Λκ! (f ; n) for all large
+n ≡ c mod 4. (By Theorem 6.5, this largeness of n only depends on degu,T f and not on
+κ# /κ.) Theoretical considerations show that this function on Z/4Z is usually very close to
+1 when [κ# : κ] is large enough:
+Theorem 6.12. For κ and f as above with p )= 2 and a fixed c ∈ {0, 1, 2, 3}, as [κ# : κ] → ∞
+the numbers λκ! (f ; c) either tend to 1 or else lie in the set {0, 2} for all κ# . In the latter
+case, λκ! (f ; c) only depends on the parity of [κ# : κ]. Moreover, for “generic” f the limiting
+value is 1 for each c.
+The meaning of genericity for f in Theorem 6.12 is that at least one of the local intersection numbers among the points in the intersection of the zero loci of f and ∂u f is odd (and
+in particular, there is such an intersection point); we saw in Example 4.15 that if p )= 2 then
+for most f (in a sense made precise with the Zariski topology) this property is satisfied.
+Theorem 6.12 is the genus-0 case of a more general result that is proved in [9] (in the
+setting of arbitrary genus) by using the Lang–Weil estimate and a link between the Λκ ’s
+and zeta-functions. (In [9] we also prove an analogue of Theorem 6.12 for the case p = 2
+and any genus.) To illustrate Theorem 6.12, let κ# run over finite fields of characteristic 3
+and let f (T ) be the polynomial from Example 1.2. We saw in Example 6.10 that λκ! (f ; c)
+equals 1, 1 ± 2/(q − 1)(q − 2), or 1 + 2/(q − 2)(q − 3), where q is the size of κ# , so λκ! (f ; c) → 1
+for each c as [κ# : F3 ] → ∞. For any odd p and f = αT p + (βu + γ) with α, β, γ ∈ κ and
+α, β )= 0, Example 2.5 gives λκ! (f ; c) = 1 for odd c and λκ! (f ; c) = 1 − χκ! (−1)c/2 for even
+c. Hence, values of 0 or 2 as in Theorem 6.12 do really occur.
+What happens to λκ! (f ; c) if$we vary f over large finite fields (with characteristic p )= 2)?
+To be precise, fix a family { αi T µi | deg αi = di } as at the end of Example 4.15 with
+common T -degree d and consider finite extensions κ/Fp with #κ > d, so there are no
+local obstructions for κ-points f in the Zariski-dense open locus U satisfying the condition
+gcdi (αi ) = 1. For ε > 0, does the proportion of f ∈ U (κ) such that |λκ (f ; c) − 1| < ε for all
+c ∈ {0, 1, 2, 3} (let us say that such an f is ε-classical) tend to 1 as [κ : Fp ] → ∞? To rule
+out families such as {αT p + (βu + γ)} that give a negative answer, Example 4.15 suggests
+requiring di ≥ 2 for some i. The sufficiency of this condition is proved in [9] in the setting
+of odd characteristic and arbitrary genus g, with the lower bound of 2 on some di replaced
+with a lower bound of 2g + 2 and with the locus of ε-classical f ’s even proved to contain all
+points in a Zariski-dense open subset U 0 ⊆ U with values in any sufficiently large extension
+κ of Fp (where the largeness on [κ : Fp ] depends on ε but U 0 does not). There we also prove
+that if moreover the T -degrees of f and ∂u f are odd for generic f in the family then there
+exists a positive integer N and a Zariski-dense open subset U # ⊆ U such that for f ∈ U # (κ)
+the correction factor λκ! (f ; ·) is not identically 1 on Z/4Z whenever N |[κ# : κ], except for
+
+PRIME SPECIALIZATION IN GENUS 0
+
+39
+
+r
+
+families of the form {α1 T p + α0 } with deg αi ≥ 2 for some i (in which case the opposite
+extreme λκ! (f ; ·) = 1 on Z/4Z occurs whenever N |[κ# : κ] and f ∈ U (κ) lies in a suitable
+Zariski-dense open subset of U ). In this sense, the theory of the correction factor λκ (f ; c)
+is often non-trivial.
+References
+[1]
+
+P. T. Bateman and R. A. Horn, Primes represented by irreducible polynomials in one variable, Proc.
+Sympos. Pure Math., Vol. VIII, 1965, pp. 119–132. MR 31 #1234
+[2] A. O. Bender and O. Wittenberg, A potential analogue of Schinzel’s hypothesis for polynomials with
+coefficients in Fq [t], Int. Math. Res. Not. 36 (2005), 2237–2248.
+[3] E. R. Berlekamp, An analog to the discriminant over fields of characteristic two, J. Algebra 38 (1976),
+no. 2, 315–317. MR 53 #8000
+[4] P. Berthelot and A. Ogus, Notes on crystalline cohomology, Princeton University Press, Princeton, 1978.
+MR 58 #10908
+[5] V. Bouniakowsky, Sur les diviseurs numériques invariables des fonctions rationnelles entières, Mémoires
+sc. math. et phys. 6 (1854), 306–329.
+[6] K. Conrad, Irreducible values of polynomials: a non-analogy, Number Fields and Function Fields –Two
+Parallel Worlds, 2005, pp. 71–85.
+[7] B. Conrad and K. Conrad, The Möbius function and the residue theorem, Journal of Number Theory
+110 (2005), 22–36. MR 2114671
+, Prime specialization in higher genus I. In preparation.
+[8]
+[9] B. Conrad, K. Conrad, and R. Gross, Prime specialization in higher genus II. In preparation.
+[10] W. Fulton, Intersection theory, 2nd ed., Ergebnisse der Mathematik und ihrer Grenzgebiete, vol. 2,
+Springer-Verlag, Berlin, 1997. MR 99d:14003
+[11] A. Grothendieck, Éléments de géométrie algébrique IV4 . Étude locale des schémas et des morphismes
+de schémas, Inst. Hautes Études Sci. Publ. Math. (1967), no. 32, 361. MR 39 #220
+[12] G. H. Hardy and J. E. Littlewood, Some problems of Partitio Numerorum III: on the expression of a
+number as a sum of primes, Acta Math. 44 (1923), 1–70.
+[13] H. Matsumura, Commutative ring theory, 2nd ed., Cambridge studies in advanced mathematics, vol. 8,
+Cambridge Univ. Press, Cambridge, 1990. MR 90i:13001
+[14] B. Poonen, Squarefree values of multivariable polynomials, Duke Math. J. 118 (2003), no. 2, 353–373.MR
+2004d:11094
+[15] R. G. Swan, Factorization of polynomials over finite fields, Pacific J. Math. 12 (1962), 1099–1106. MR
+26 #2432
+Department of Mathematics, University of Michigan, Ann Arbor, MI 48109-1043, U.S.A.
+E-mail address: bdconrad@umich.edu
+Department of Mathematics, University of Connecticut, Storrs, CT 06269-3009, U.S.A.
+E-mail address: kconrad@math.uconn.edu
+Department of Mathematics, Boston College, Chestnut Hill, MA 02467-3806, U.S.A.
+E-mail address: gross@bc.edu
+
+

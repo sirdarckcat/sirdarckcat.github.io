@@ -1,0 +1,13 @@
+x=   2e+03 lnln= 2.03  C/x=0.433   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.689   model-only(g_b=1,f_t=1)=0.559   1.349/(lnln-1)=1.312   1.349/lnln=0.665
+x=   2e+04 lnln= 2.29  C/x=0.436   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.720   model-only(g_b=1,f_t=1)=0.588   1.349/(lnln-1)=1.043   1.349/lnln=0.588
+x=   1e+05 lnln= 2.44  C/x=0.435   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.726   model-only(g_b=1,f_t=1)=0.594   1.349/(lnln-1)=0.935   1.349/lnln=0.552
+x=   1e+06 lnln= 2.63  C/x=0.429   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.723   model-only(g_b=1,f_t=1)=0.593   1.349/(lnln-1)=0.830   1.349/lnln=0.514
+x=   1e+09 lnln= 3.03  C/x=0.404   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.687   model-only(g_b=1,f_t=1)=0.565   1.349/(lnln-1)=0.664   1.349/lnln=0.445
+x=   1e+12 lnln= 3.32  C/x=0.382   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.649   model-only(g_b=1,f_t=1)=0.535   1.349/(lnln-1)=0.582   1.349/lnln=0.406
+x=   1e+15 lnln= 3.54  C/x=0.364   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.617   model-only(g_b=1,f_t=1)=0.509   1.349/(lnln-1)=0.531   1.349/lnln=0.381
+x=   1e+20 lnln= 3.83  C/x=0.341   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.575   model-only(g_b=1,f_t=1)=0.475   1.349/(lnln-1)=0.477   1.349/lnln=0.352
+x=   1e+30 lnln= 4.24  C/x=0.310   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.519   model-only(g_b=1,f_t=1)=0.430   1.349/(lnln-1)=0.417   1.349/lnln=0.319
+x=   1e+45 lnln= 4.64  C/x=0.281   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.469   model-only(g_b=1,f_t=1)=0.388   1.349/(lnln-1)=0.371   1.349/lnln=0.291
+x=   1e+60 lnln= 4.93  C/x=0.263   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.437   model-only(g_b=1,f_t=1)=0.362   1.349/(lnln-1)=0.343   1.349/lnln=0.274
+x=   1e+90 lnln= 5.33  C/x=0.240   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.396   model-only(g_b=1,f_t=1)=0.328   1.349/(lnln-1)=0.311   1.349/lnln=0.253
+x=  1e+120 lnln= 5.62  C/x=0.222   D/(x ln^2 x): calibrated(g_b=.73,f_t=.88)=0.365   model-only(g_b=1,f_t=1)=0.303   1.349/(lnln-1)=0.292   1.349/lnln=0.240

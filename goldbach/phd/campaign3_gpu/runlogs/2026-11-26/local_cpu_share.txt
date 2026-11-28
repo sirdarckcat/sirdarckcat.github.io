@@ -1,0 +1,8 @@
+The local CPU share of campaign3 at Q = 150,000 (campaign3_hi150, specs_8ffe150.json), run on the 4 CPUs of the operating session's own container
+(not a Colab runtime, no units), stopped by the final wind-down at 08:39:52Z on 26 Nov.
+slices 46,839 (distinct), members 0.049e12, hit mass 0.0152e12, mean E^ 26.11, model expected design hits (members x hit% x exp(-1.0275 E^ + 0.33)) 0.0474, found lines 0 (found= in the slice lines: 0)
+driver.log, last lines:
+  chunk done: 256 slices in 1530s
+  2026-11-26T08:15:17Z run_campaign3_hi rc=0
+  search_c.py: 46592 slices done; chunk budget 3600s
+  2026-11-26T08:39:52Z stopped by the final wind-down (the lead, 26 Nov 08:36Z)

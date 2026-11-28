@@ -1,0 +1,1 @@
+stretch 1627 even N; big in stretch: 176 ; primes below: mean in stretch for big N 3.0 vs window mean 14.8; min 1

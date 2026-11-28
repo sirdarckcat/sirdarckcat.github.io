@@ -1,0 +1,116 @@
+=== A. full agreement, lists of density rho at every place of degree d0..d1 ===
+q=5 rho=2/5 degrees 1..1: places m=5, total degree T=5, Mertens mass mu=1.0000, list entries=10
+   limit of the guarantee: n - 1 < mu/rho = 2.5000  ->  n <= 3   (T/n = 1.7)
+   n=  2: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=10, unknowns M_n(D)=15, D=5, y-degree bound J=4;  q^n=2.500e+01;  ln E|C(L)| for random lists = -1.4
+   n=  3: guaranteed at t=3 (s_e = t q^(d1-e)): constraints C=60, unknowns M_n(D)=64, D=15, y-degree bound J=7;  q^n=1.250e+02;  ln E|C(L)| for random lists = 0.2
+   n=  4: no guarantee for t <= 60;  q^n=6.250e+02;  ln E|C(L)| = 1.9
+
+q=5 rho=2/5 degrees 1..2: places m=15, total degree T=25, Mertens mass mu=1.8000, list entries=110
+   limit of the guarantee: n - 1 < mu/rho = 4.5000  ->  n <= 5   (T/n = 5.0)
+   n=  3: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=350, unknowns M_n(D)=529, D=45, y-degree bound J=22;  q^n=1.250e+02;  ln E|C(L)| for random lists = -8.9
+   n=  4: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=350, unknowns M_n(D)=360, D=45, y-degree bound J=14;  q^n=6.250e+02;  ln E|C(L)| for random lists = -7.3
+   n=  5: guaranteed at t=4 (s_e = t q^(d1-e)): constraints C=4100, unknowns M_n(D)=4140, D=180, y-degree bound J=44;  q^n=3.125e+03;  ln E|C(L)| for random lists = -5.7
+   n=  6: no guarantee for t <= 60;  q^n=1.562e+04;  ln E|C(L)| = -4.1
+
+q=5 rho=2/5 degrees 1..3: places m=55, total degree T=145, Mertens mass mu=2.7600, list entries=2110
+   limit of the guarantee: n - 1 < mu/rho = 6.9000  ->  n <= 7   (T/n = 20.7)
+   n=  5: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=12250, unknowns M_n(D)=15051, D=345, y-degree bound J=86;  q^n=3.125e+03;  ln E|C(L)| for random lists = -42.3
+   n=  6: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=41750, unknowns M_n(D)=47955, D=690, y-degree bound J=137;  q^n=1.562e+04;  ln E|C(L)| for random lists = -40.7
+   n=  7: guaranteed at t=3 (s_e = t q^(d1-e)): constraints C=88500, unknowns M_n(D)=89787, D=1035, y-degree bound J=172;  q^n=7.812e+04;  ln E|C(L)| for random lists = -39.1
+   n=  8: no guarantee for t <= 60;  q^n=3.906e+05;  ln E|C(L)| = -37.5
+
+q=5 rho=2/5 degrees 1..4: places m=205, total degree T=745, Mertens mass mu=3.7200, list entries=39610
+   limit of the guarantee: n - 1 < mu/rho = 9.3000  ->  n <= 10   (T/n = 74.5)
+   n=  8: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=383750, unknowns M_n(D)=387279, D=2325, y-degree bound J=332;  q^n=3.906e+05;  ln E|C(L)| for random lists = -175.0
+   n=  9: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=1348750, unknowns M_n(D)=1353732, D=4650, y-degree bound J=581;  q^n=1.953e+06;  ln E|C(L)| for random lists = -173.4
+   n= 10: guaranteed at t=10 (s_e = t q^(d1-e)): constraints C=29993750, unknowns M_n(D)=30042876, D=23250, y-degree bound J=2583;  q^n=9.766e+06;  ln E|C(L)| for random lists = -171.7
+   n= 11: no guarantee for t <= 60;  q^n=4.883e+07;  ln E|C(L)| = -170.1
+
+q=3 rho=1/3 degrees 1..3: places m=14, total degree T=33, Mertens mass mu=2.5556, list entries=84
+   limit of the guarantee: n - 1 < mu/rho = 7.6667  ->  n <= 8   (T/n = 4.1)
+   n=  6: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=459, unknowns M_n(D)=511, D=69, y-degree bound J=13;  q^n=7.290e+02;  ln E|C(L)| for random lists = -8.8
+   n=  7: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=1539, unknowns M_n(D)=1656, D=138, y-degree bound J=22;  q^n=2.187e+03;  ln E|C(L)| for random lists = -7.7
+   n=  8: guaranteed at t=4 (s_e = t q^(d1-e)): constraints C=5562, unknowns M_n(D)=5580, D=276, y-degree bound J=39;  q^n=6.561e+03;  ln E|C(L)| for random lists = -6.6
+   n=  9: no guarantee for t <= 60;  q^n=1.968e+04;  ln E|C(L)| = -5.5
+
+q=3 rho=1/3 degrees 1..4: places m=32, total degree T=105, Mertens mass mu=3.4444, list entries=570
+   limit of the guarantee: n - 1 < mu/rho = 10.3333  ->  n <= 11   (T/n = 9.5)
+   n=  9: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=17901, unknowns M_n(D)=19740, D=558, y-degree bound J=69;  q^n=1.968e+04;  ln E|C(L)| for random lists = -25.3
+   n= 10: guaranteed at t=3 (s_e = t q^(d1-e)): constraints C=38151, unknowns M_n(D)=39339, D=837, y-degree bound J=92;  q^n=5.905e+04;  ln E|C(L)| for random lists = -24.2
+   n= 11: guaranteed at t=11 (s_e = t q^(d1-e)): constraints C=471339, unknowns M_n(D)=472473, D=3069, y-degree bound J=306;  q^n=1.771e+05;  ln E|C(L)| for random lists = -23.1
+   n= 12: no guarantee for t <= 60;  q^n=5.314e+05;  ln E|C(L)| = -22.0
+
+q=3 rho=1/3 degrees 1..6: places m=196, total degree T=1041, Mertens mass mu=5.3868, list entries=32646
+   limit of the guarantee: n - 1 < mu/rho = 16.1605  ->  n <= 17   (T/n = 61.2)
+   n= 15: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=2161485, unknowns M_n(D)=2206974, D=7854, y-degree bound J=560;  q^n=1.435e+07;  ln E|C(L)| for random lists = -198.8
+   n= 16: guaranteed at t=4 (s_e = t q^(d1-e)): constraints C=8140014, unknowns M_n(D)=8232564, D=15708, y-degree bound J=1047;  q^n=4.305e+07;  ln E|C(L)| for random lists = -197.8
+   n= 17: guaranteed at t=27 (s_e = t q^(d1-e)): constraints C=351243135, unknowns M_n(D)=351370167, D=106029, y-degree bound J=6626;  q^n=1.291e+08;  ln E|C(L)| for random lists = -196.7
+   n= 18: no guarantee for t <= 60;  q^n=3.874e+08;  ln E|C(L)| = -195.6
+
+q=3 rho=2/3 degrees 1..6: places m=196, total degree T=1041, Mertens mass mu=5.3868, list entries=65292
+   limit of the guarantee: n - 1 < mu/rho = 8.0802  ->  n <= 9   (T/n = 115.7)
+   n=  7: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=1207224, unknowns M_n(D)=1287075, D=3927, y-degree bound J=654;  q^n=2.187e+03;  ln E|C(L)| for random lists = -71.8
+   n=  8: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=4322970, unknowns M_n(D)=4410021, D=7854, y-degree bound J=1121;  q^n=6.561e+03;  ln E|C(L)| for random lists = -70.7
+   n=  9: guaranteed at t=27 (s_e = t q^(d1-e)): constraints C=702486270, unknowns M_n(D)=702687318, D=106029, y-degree bound J=13253;  q^n=1.968e+04;  ln E|C(L)| for random lists = -69.6
+   n= 10: no guarantee for t <= 60;  q^n=5.905e+04;  ln E|C(L)| = -68.5
+
+q=13 rho=6/13 degrees 1..1: places m=13, total degree T=13, Mertens mass mu=1.0000, list entries=78
+   limit of the guarantee: n - 1 < mu/rho = 2.1667  ->  n <= 3   (T/n = 4.3)
+   n=  2: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=78, unknowns M_n(D)=91, D=13, y-degree bound J=12;  q^n=1.690e+02;  ln E|C(L)| for random lists = -4.9
+   n=  3: guaranteed at t=11 (s_e = t q^(d1-e)): constraints C=5148, unknowns M_n(D)=5184, D=143, y-degree bound J=71;  q^n=2.197e+03;  ln E|C(L)| for random lists = -2.4
+   n=  4: no guarantee for t <= 60;  q^n=2.856e+04;  ln E|C(L)| = 0.2
+
+q=13 rho=6/13 degrees 1..3: places m=819, total degree T=2353, Mertens mass mu=2.9172, list entries=744354
+   limit of the guarantee: n - 1 < mu/rho = 6.3205  ->  n <= 7   (T/n = 336.1)
+   n=  5: guaranteed at t=1 (s_e = t q^(d1-e)): constraints C=4442334, unknowns M_n(D)=5137615, D=6409, y-degree bound J=1602;  q^n=3.713e+05;  ln E|C(L)| for random lists = -620.4
+   n=  6: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=15383394, unknowns M_n(D)=16436522, D=12818, y-degree bound J=2563;  q^n=4.827e+06;  ln E|C(L)| for random lists = -617.9
+   n=  7: guaranteed at t=7 (s_e = t q^(d1-e)): constraints C=167569584, unknowns M_n(D)=167746496, D=44863, y-degree bound J=7477;  q^n=6.275e+07;  ln E|C(L)| for random lists = -615.3
+   n=  8: no guarantee for t <= 60;  q^n=8.157e+08;  ln E|C(L)| = -612.7
+
+q=2 rho=1/2 degrees 1..8: places m=71, total degree T=472, Mertens mass mu=6.7031, list entries=5412
+   limit of the guarantee: n - 1 < mu/rho = 13.4062  ->  n <= 14   (T/n = 33.7)
+   n= 12: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=499712, unknowns M_n(D)=537108, D=3432, y-degree bound J=311;  q^n=4.096e+03;  ln E|C(L)| for random lists = -40.9
+   n= 13: guaranteed at t=3 (s_e = t q^(d1-e)): constraints C=1079040, unknowns M_n(D)=1106820, D=5148, y-degree bound J=428;  q^n=8.192e+03;  ln E|C(L)| for random lists = -40.2
+   n= 14: guaranteed at t=9 (s_e = t q^(d1-e)): constraints C=9167616, unknowns M_n(D)=9181458, D=15444, y-degree bound J=1187;  q^n=1.638e+04;  ln E|C(L)| for random lists = -39.5
+   n= 15: no guarantee for t <= 60;  q^n=3.277e+04;  ln E|C(L)| = -38.8
+
+q=2 rho=1/2 degrees 1..12: places m=747, total degree T=8032, Mertens mass mu=10.6348, list entries=946980
+   limit of the guarantee: n - 1 < mu/rho = 21.2695  ->  n <= 22   (T/n = 365.1)
+   n= 20: guaranteed at t=2 (s_e = t q^(d1-e)): constraints C=194871296, unknowns M_n(D)=199777625, D=87120, y-degree bound J=4585;  q^n=1.049e+06;  ln E|C(L)| for random lists = -503.9
+   n= 21: guaranteed at t=3 (s_e = t q^(d1-e)): constraints C=426123264, unknowns M_n(D)=426996900, D=130680, y-degree bound J=6533;  q^n=2.097e+06;  ln E|C(L)| for random lists = -503.2
+   n= 22: guaranteed at t=15 (s_e = t q^(d1-e)): constraints C=10159595520, unknowns M_n(D)=10165363845, D=653400, y-degree bound J=31114;  q^n=4.194e+06;  ln E|C(L)| for random lists = -502.5
+   n= 23: no guarantee for t <= 60;  q^n=8.389e+06;  ln E|C(L)| = -501.8
+
+=== B. Mertens mass per degree  e I_q(e) / q^e  (at most 1) ===
+2 [1.0, 0.5, 0.75, 0.75, 0.9375, 0.8438, 0.9844, 0.9375, 0.9844, 0.9668, 0.999, 0.9814]
+3 [1.0, 0.6667, 0.8889, 0.8889, 0.9877, 0.9547, 0.9986, 0.9877, 0.9986, 0.9958, 1.0, 0.9985]
+5 [1.0, 0.8, 0.96, 0.96, 0.9984, 0.9907, 0.9999, 0.9984, 0.9999, 0.9997, 1.0, 0.9999]
+13 [1.0, 0.9231, 0.9941, 0.9941, 1.0, 0.9995, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
+=== C. a window of dimension w after pins; later places of degree d0..d1; lists of density rho, list-symmetric
+       weights.  typical member (agreement rho by mass) is inside the guarantee iff rho*mu > w - 1;
+       fully consistent member iff mu/rho > w - 1.  Compare the size of the input with the window q^w. ===
+q=3 rho=1/3 d0=4 w=12 (full agreement): needs mass > 3.67: degrees 4..7, T=3.192e+03, window q^w=5.314e+05, T/q^w=6.006e-03, ln E(#fully consistent in window)=-5.295e+02
+q=3 rho=1/3 d0=4 w=12 (typical member ): needs mass > 33.00: degrees 4..37, T=6.754e+17, window q^w=5.314e+05, T/q^w=1.271e+12
+q=3 rho=2/3 d0=4 w=12 (full agreement): needs mass > 7.33: degrees 4..11, T=2.653e+05, window q^w=5.314e+05, T/q^w=4.992e-01, ln E(#fully consistent in window)=-1.031e+04
+q=3 rho=2/3 d0=4 w=12 (typical member ): needs mass > 16.50: degrees 4..20, T=5.230e+09, window q^w=5.314e+05, T/q^w=9.841e+03
+q=5 rho=2/5 d0=3 w=10 (full agreement): needs mass > 3.60: degrees 3..6, T=1.932e+04, window q^w=9.766e+06, T/q^w=1.978e-03, ln E(#fully consistent in window)=-3.094e+03
+q=5 rho=2/5 d0=3 w=10 (typical member ): needs mass > 22.50: degrees 3..25, T=3.725e+17, window q^w=9.766e+06, T/q^w=3.815e+10
+q=5 rho=4/5 d0=3 w=10 (full agreement): needs mass > 7.20: degrees 3..10, T=1.220e+07, window q^w=9.766e+06, T/q^w=1.250e+00, ln E(#fully consistent in window)=-2.804e+05
+q=5 rho=4/5 d0=3 w=10 (typical member ): needs mass > 11.25: degrees 3..14, T=7.629e+09, window q^w=9.766e+06, T/q^w=7.812e+02
+q=2 rho=1/2 d0=9 w=24 (full agreement): needs mass > 11.50: degrees 9..20, T=2.094e+06, window q^w=1.678e+07, T/q^w=1.248e-01, ln E(#fully consistent in window)=-7.688e+04
+q=2 rho=1/2 d0=9 w=24 (typical member ): needs mass > 46.00: degrees 9..55, T=7.206e+16, window q^w=1.678e+07, T/q^w=4.295e+09
+
+=== D. the same boundary in one line (places of all degrees 1..d, density rho):  n_max = ceil(mu_d / rho) ===
+q=3 rho=0.25: d=1: n<=4, log10 E=0.102; d=2: n<=7, log10 E=-0.273; d=4: n<=14, log10 E=-12.6; d=8: n<=30, log10 E=-779; d=16: n<=62, log10 E=-2.52e+06
+q=3 rho=0.5: d=1: n<=2, log10 E=0.0512; d=2: n<=4, log10 E=0.102; d=4: n<=7, log10 E=-6.29; d=8: n<=15, log10 E=-390; d=16: n<=31, log10 E=-1.26e+06
+q=3 rho=0.75: d=1: n<=2, log10 E=0.579; d=2: n<=3, log10 E=0.682; d=4: n<=5, log10 E=-1.61; d=8: n<=10, log10 E=-160; d=16: n<=21, log10 E=-5.22e+05
+q=5 rho=0.25: d=1: n<=4, log10 E=-0.214; d=2: n<=8, log10 E=-3.44; d=4: n<=15, log10 E=-113; d=8: n<=31, log10 E=-3.81e+04; d=16: n<=63, log10 E=-7.3e+09
+q=5 rho=0.5: d=1: n<=2, log10 E=-0.107; d=2: n<=4, log10 E=-1.72; d=4: n<=8, log10 E=-56.1; d=8: n<=16, log10 E=-1.9e+04; d=16: n<=32, log10 E=-3.65e+09
+q=5 rho=0.75: d=1: n<=2, log10 E=0.773; d=2: n<=3, log10 E=0.223; d=4: n<=5, log10 E=-22.1; d=8: n<=11, log10 E=-7.9e+03; d=16: n<=21, log10 E=-1.52e+09
+q=13 rho=0.25: d=1: n<=4, log10 E=-3.37; d=2: n<=8, log10 E=-45.9; d=4: n<=16, log10 E=-4.75e+03; d=8: n<=32, log10 E=-6.73e+07; d=16: n<=64, log10 E=-2.73e+16
+q=13 rho=0.5: d=1: n<=2, log10 E=-1.69; d=2: n<=4, log10 E=-22.9; d=4: n<=8, log10 E=-2.37e+03; d=8: n<=16, log10 E=-3.37e+07; d=16: n<=32, log10 E=-1.36e+16
+q=13 rho=0.75: d=1: n<=2, log10 E=0.604; d=2: n<=3, log10 E=-8.03; d=4: n<=6, log10 E=-982; d=8: n<=11, log10 E=-1.4e+07; d=16: n<=22, log10 E=-5.66e+15
+q=101 rho=0.25: d=1: n<=4, log10 E=-52.8; d=2: n<=8, log10 E=-3.09e+03; d=4: n<=16, log10 E=-1.59e+07; d=8: n<=32, log10 E=-8.24e+14; d=16: n<=64, log10 E=-4.46e+30
+q=101 rho=0.5: d=1: n<=2, log10 E=-26.4; d=2: n<=4, log10 E=-1.54e+03; d=4: n<=8, log10 E=-7.94e+06; d=8: n<=16, log10 E=-4.12e+14; d=16: n<=32, log10 E=-2.23e+30
+q=101 rho=0.75: d=1: n<=2, log10 E=-8.61; d=2: n<=3, log10 E=-638; d=4: n<=6, log10 E=-3.29e+06; d=8: n<=11, log10 E=-1.71e+14; d=16: n<=22, log10 E=-9.25e+29

@@ -1,0 +1,6 @@
+# RTX production after the sieve variants (prod_rate.py on each card's gpu3_stats.log, 13:18:30-13:34:00Z). The expected near-misses now count from NEAR_MISS = 158,209 (the new
+# record), so near/batch is not comparable with the earlier 157,837 figures; the design hits a second are (8.45e-7 against 8.02-8.11e-7 before).
+
+gold-g4 [ab] batches 1140 | span 930 s | batch 0.8165 s | near/batch 4.4644e-06 | near/s 5.4677e-06 | hits/s 8.4487e-07 | tests/batch 14118598 | slices/batch 4.000 | first 13:18:30 last 13:34:00
+gold-g4b [ab] batches 1144 | span 930 s | batch 0.8136 s | near/batch 4.4680e-06 | near/s 5.4913e-06 | hits/s 8.4486e-07 | tests/batch 14116860 | slices/batch 4.000 | first 13:18:30 last 13:34:00
+gold-g4c [ab] batches 1144 | span 930 s | batch 0.8136 s | near/batch 4.4313e-06 | near/s 5.4462e-06 | hits/s 8.4580e-07 | tests/batch 14117424 | slices/batch 4.000 | first 13:18:30 last 13:34:00

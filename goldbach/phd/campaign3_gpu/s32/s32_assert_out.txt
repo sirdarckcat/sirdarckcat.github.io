@@ -1,0 +1,7 @@
+2026-11-23T21:32:11Z
+[s32] 12000 shifted specs matched to their unshifted covers | bad 0 | N at KLO >= 0.9458e200 | largest N 1.0000000000e200 | k_shift range 5603499370..5603499371
+[s32] ASSERTS PASSED
+
+real	0m8.683s
+user	0m7.322s
+sys	0m1.224s

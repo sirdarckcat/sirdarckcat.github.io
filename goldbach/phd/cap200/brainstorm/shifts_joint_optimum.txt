@@ -1,0 +1,2 @@
+N itself: 1772 rows left of 19050, E = 42.87
+N +   30030: 1826 rows left (+3%), E = 44.18; 542 of them are row values of N (30%); new rows 1284, E of the new rows 31.07

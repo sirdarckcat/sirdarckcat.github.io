@@ -1,0 +1,5 @@
+C2 over F_2: 2363 instances, 0 disagreements
+C2 control (S not dividing A): 1332 instances, 720 disagreements (about half expected if the hypothesis matters)
+C4 over F_3: trace 0: 600 of 600 reducible; trace non-zero: irreducible exactly when g is in 600 of 600
+C4 over F_5: trace 0: 600 of 600 reducible; trace non-zero: irreducible exactly when g is in 600 of 600
+C4 over F_7: trace 0: 600 of 600 reducible; trace non-zero: irreducible exactly when g is in 600 of 600

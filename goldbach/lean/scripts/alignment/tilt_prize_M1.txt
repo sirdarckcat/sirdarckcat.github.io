@@ -1,0 +1,18 @@
+# M1: X = 1e9, target 1000, line 23: members 157,947,020, successes 256
+# k1: mean 36.80, sd 2.865; k2: mean 23.34, sd 3.141; regression of k2 on k1: slope 0.635; correlation r = 0.579, r^2 = 0.335
+# chance that a row left at full depth is prime, fitted: p = 0.4848; theta = 0.663; lambda = theta sd(k2) = 2.083; r lambda = 1.206
+# mean k1 of the successes: 33.25 (model: 33.35); mean k2 of the successes: 16.85 (model: 16.80)
+successes wanted | share f | N examined, cover first: exact | model | ideal: exact | model | prize: exact | model
+1 | 0.00391 | 2,982 | 8,728 | 13 | 166 | 5.44 | 3.96
+3 | 0.01172 | 63,350 | 40,733 | 401 | 1,077 | 5.06 | 3.63
+10 | 0.03906 | 253,380 | 236,819 | 10,811 | 9,516 | 3.15 | 3.21
+30 | 0.11719 | 1,205,425 | 1,311,269 | 73,849 | 84,158 | 2.79 | 2.75
+100 | 0.39062 | 12,004,497 | 10,885,575 | 1,720,522 | 1,438,877 | 1.94 | 2.02
+tier (k2 at most) | members | rarity | cover nats: exact | model r^2 z^2/2 with z from the tier's mean k2 | luck nats: exact
+8 | 62 | 14.75 | 3.95 | 4.11 | 10.80
+9 | 401 | 12.88 | 3.29 | 3.59 | 9.59
+10 | 1,965 | 11.29 | 2.78 | 3.13 | 8.52
+11 | 8,739 | 9.80 | 2.44 | 2.70 | 7.36
+12 | 33,598 | 8.46 | 2.13 | 2.31 | 6.33
+13 | 114,100 | 7.23 | 1.84 | 1.96 | 5.39
+14 | 343,538 | 6.13 | 1.56 | 1.63 | 4.57

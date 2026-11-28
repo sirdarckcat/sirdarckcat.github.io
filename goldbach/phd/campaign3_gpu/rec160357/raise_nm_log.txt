@@ -1,0 +1,15 @@
+gold-g4e: [rnm] 17:15:50Z /content/c170r | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:15:09Z batch q170000_m89r491_p1c00516_v141@3382594..q170000_m89r491_p1c00516_v144@3382594 (4 slices) 0.7s:'] | gen 1 | rg 1
+gold-g4f: [rnm] 17:16:37Z /content/c170r | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:15:57Z batch q170000_m89r491_p2c00508_v236@3382594..q170000_m89r491_p2c00508_v239@3382594 (4 slices) 0.7s:'] | gen 1 | rg 1
+gold-l4d: [rnm] 17:17:27Z /content/c170g | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:17:25Z batch q170000_m88f_top4s_v1844@4093640704..q170000_m88f_top4s_v1847@4093640704 (2 slices) 8.0s: tes'] | gen 0 | rg 0
+gold-l4e: [rnm] 17:18:12Z /content/c170g | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:18:10Z batch q170000_m88f_top4s_v6548@4127195136..q170000_m88f_top4s_v6551@4127195136 (2 slices) 8.0s: tes'] | gen 0 | rg 0
+gold-l4f: [rnm] 17:19:04Z /content/c170g | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:19:03Z batch q170000_m88f_top4s_v6087@4127195136..q170000_m88f_top4s_v6090@4127195136 (2 slices) 8.1s: tes'] | gen 0 | rg 0
+gold-xt4b: [rnm] 17:19:56Z /content/c170g | near-miss now ['160357'] | procs 1 | env ['NEAR_MISS=160357'] | stats ['2026-11-24T17:19:48Z batch q170000_m88f_top4s_v3038@4127195136..q170000_m88f_top4s_v3038@4127195136 (1 slices) 8.9s: tes'] | gen 0 | rg 0
+gold-g4d 2026-11-24T17:20:31Z batch near-miss >= 160357
+gold-g4e 2026-11-24T17:20:34Z batch near-miss >= 160357
+gold-g4f 2026-11-24T17:20:37Z batch near-miss >= 160357
+gold-l4d 2026-11-24T17:20:37Z batch near-miss >= 160357
+gold-l4e 2026-11-24T17:20:42Z batch near-miss >= 160357
+gold-l4f 2026-11-24T17:20:48Z batch near-miss >= 160357
+gold-xt4b 2026-11-24T17:20:59Z batch near-miss >= 160357
+
+[exited with code 0]
