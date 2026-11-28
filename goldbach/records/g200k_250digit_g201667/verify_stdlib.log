@@ -1,0 +1,12 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 94c464419e022dc694ff276fcb45d582913a858db27bce0feb5e56a311591012
+[A] N reconstructed: 250 digits, t=128743795, 107 congruences OK
+[B] primes below q: 18113; residual (uncovered): 1370
+    ... 500/1370 residual complements proven composite
+    ... 1000/1370 residual complements proven composite
+[B] all 1370 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 201667 prime (trial division); N - q proven prime by ECPP (37 steps, independently re-verified)
+[D] q = 201667 > 200000 OK
+[D] N < N_bound OK (250 vs 251 digits)
+[D] N has 250 <= 250 digits OK
+[PASS] g(N) = 201667 for the 250-digit N in goldbach/records/g200k_250digit_g201667/package_stdlib.json

@@ -10,7 +10,8 @@ with extreme S can be produced at a cost proportional to the output. This sessio
   folding uses, and prime powers.
 - `world4.md`: the random box. It covers a lower bound for all algorithms on a random window, the dynamic-programming width of the
   integer window, the bound on merges that split the places, what an exact selection must read when the sieve reaches past the
-  window, the NP-completeness of the problem for arbitrary tables, the converse table, and the additive labelling measured.
+  window, the NP-completeness of the problem for arbitrary tables (under an expected-polynomial-time randomized reduction for
+  distinct prime moduli, or deterministic for prime-power/composite moduli), the converse table, and the additive labelling measured.
 - Scripts and outputs:
   - `johnson_cost.py` → `johnson_cost.out`
   - `johnson_named.py` → `johnson_named.out`

@@ -67,6 +67,8 @@ Cross-checks (optional, need PARI/GP): `g1/crosscheck_g1.gp`,
 
 SHA-256 hashes: `g1/SHA256SUMS`, `g23/SHA256SUMS`.
 
+**Verifier note:** `verify_record.py`, `ecpp_verify.py`, and their copies in `work/` have been patched to use the exact radical-free Goldwasser–Kilian bound $q > (N^{1/4}+1)^2$ and composite-modulus equal-$x$ point-addition guards. The copies archived inside `g23/` are intentionally left untouched to preserve `g23/SHA256SUMS`; use the top-level `verify_record.py` (which passes on both `g1/record_g1.json` and `g23/record_g23.json`).
+
 ## How the numbers were found
 
 1. **Cover optimization** (`work/build_cover.py`): weighted set cover —

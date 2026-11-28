@@ -31,7 +31,25 @@ Checks performed (all must pass):
                         {"digits_at_most": D} => len(dec(N)) <= D
 Exit code 0 iff everything passes.
 """
-import hashlib, json, math, sys
+import hashlib, json, math, re, sys
+
+_INT_STR_RE = re.compile(r"\s*[+-]?[0-9]+\s*", re.ASCII)
+
+def strict_int(v, name="value"):
+    """Parse an exact integer from JSON (int or decimal string); reject bool/float/other."""
+    if isinstance(v, bool):
+        raise ValueError(f"{name}: boolean is not a valid integer")
+    if isinstance(v, int):
+        return v
+    if isinstance(v, str) and _INT_STR_RE.fullmatch(v):
+        return int(v)
+    raise ValueError(f"{name}: expected integer or decimal string, got {type(v).__name__}")
+
+def _assert_int(v, name="value"):
+    try:
+        return strict_int(v, name)
+    except (TypeError, ValueError) as exc:
+        raise AssertionError(str(exc)) from None
 
 # ---------------------------------------------------------------- utilities
 def sieve_flags(n):
@@ -45,7 +63,8 @@ def sieve_flags(n):
 def sprp_composite(n, a):
     """True iff a proves n composite by the strong probable-prime test.
     (Primes NEVER return True: this is a rigorous compositeness witness.)"""
-    assert n > 2
+    assert n >= 2
+    if n == 2: return False
     if n % 2 == 0: return True
     if a % n == 0: return False          # test says nothing when a ≡ 0 (mod n)
     d, s = n - 1, 0
@@ -56,6 +75,17 @@ def sprp_composite(n, a):
         x = x * x % n
         if x == n - 1: return False
     return True
+
+def fast_comp_gmpy2(n, gmpy2_mod):
+    """gmpy2-accelerated equivalent of sprp_composite(n, 2) or sprp_composite(n, 3)."""
+    return (
+        n > 2 and (
+            n % 2 == 0
+            or (n > 3 and n % 3 == 0)
+            or not gmpy2_mod.is_strong_prp(n, 2)
+            or (n > 3 and not gmpy2_mod.is_strong_prp(n, 3))
+        )
+    )
 
 # ------------------------------------------------- ECPP certificate checker
 class CompositeFactor(Exception): pass
@@ -78,7 +108,12 @@ def ec_add(P, Qp, a, n):
     if Qp is None: return P
     x1, y1 = P; x2, y2 = Qp
     if (x1 - x2) % n == 0:
-        if (y1 + y2) % n == 0: return None
+        if (y1 + y2) % n == 0:
+            if (y1 - y2) % n != 0 and math.gcd(y1 - y2, n) != 1:
+                raise CompositeFactor(math.gcd(y1 - y2, n))
+            return None
+        if (y1 - y2) % n != 0:
+            raise CompositeFactor(math.gcd(y1 - y2, n))
         lam = (3 * x1 * x1 + a) * inv_mod(2 * y1, n) % n
     else:
         lam = (y2 - y1) * inv_mod(x2 - x1, n) % n
@@ -100,17 +135,29 @@ def is_prime_u64(n):
     return not any(sprp_composite(n, a) for a in (2,3,5,7,11,13,17,19,23,29,31,37,41))
 
 def ecpp_verify(cert, expect_top):
-    cert = [[int(v) if not isinstance(v, list) else [int(w) for w in v] for v in st] for st in cert]
-    assert cert[0][0] == expect_top, "certificate is not for the claimed integer"
-    for idx, (N, t, s, a, (x, y)) in enumerate(cert):
+    expect_top = _assert_int(expect_top, "expect_top")
+    assert isinstance(cert, list) and len(cert) > 0, "empty or non-list certificate"
+    parsed = []
+    for idx, st in enumerate(cert):
+        assert isinstance(st, list) and len(st) == 5, f"step {idx}: expected 5-element list"
+        pt = st[4]
+        assert isinstance(pt, list) and len(pt) == 2, f"step {idx}: expected 2-element point list"
+        N = _assert_int(st[0], f"step {idx} N")
+        t = _assert_int(st[1], f"step {idx} t")
+        s = _assert_int(st[2], f"step {idx} s")
+        a = _assert_int(st[3], f"step {idx} a")
+        x = _assert_int(pt[0], f"step {idx} x")
+        y = _assert_int(pt[1], f"step {idx} y")
+        parsed.append((N, t, s, a, (x, y)))
+    assert parsed[0][0] == expect_top, "certificate is not for the claimed integer"
+    for idx, (N, t, s, a, (x, y)) in enumerate(parsed):
         assert N > 1 and math.gcd(N, 6) == 1, f"step {idx}: gcd(N,6)!=1"
         m = N + 1 - t
         assert s > 0 and m % s == 0, f"step {idx}: s ∤ m"
         assert t * t <= 4 * N, f"step {idx}: Hasse bound violated"
         q = m // s
-        r4 = math.isqrt(math.isqrt(N))
-        while (r4 + 1) ** 4 <= N: r4 += 1
-        assert q > (r4 + 1) ** 2, f"step {idx}: q <= (N^(1/4)+1)^2"
+        D = q * q + 6 * q + 1 - N
+        assert q > 1 and D > 0 and D * D > 16 * q * (q + 1) * (q + 1), f"step {idx}: q <= (N^(1/4)+1)^2"
         b = (y * y - x * x * x - a * x) % N
         assert math.gcd((4 * a * a * a + 27 * b * b) % N, N) == 1, f"step {idx}: singular curve"
         try:
@@ -119,33 +166,54 @@ def ecpp_verify(cert, expect_top):
             assert ec_mul(q, R, a, N) is None, f"step {idx}: [q][s]P != O"
         except CompositeFactor as e:
             raise AssertionError(f"step {idx}: nontrivial gcd {e.args[0]} => N composite")
-        if idx + 1 < len(cert):
-            assert cert[idx + 1][0] == q, f"step {idx}: chain broken"
+        if idx + 1 < len(parsed):
+            assert parsed[idx + 1][0] == q, f"step {idx}: chain broken"
         else:
-            assert is_prime_u64(q), f"final step: q={q} not proven prime"
+            assert 1 < q < 3317044064679887385961981 and is_prime_u64(q), f"final step: q={q} not proven prime"
     return True
 
 # ------------------------------------------------------------------- driver
 def main(path):
     try:
         import gmpy2
-        fast_comp = lambda n: not gmpy2.is_strong_prp(n, 2) or not gmpy2.is_strong_prp(n, 3)
+        fast_comp = lambda n: fast_comp_gmpy2(n, gmpy2)
         print("[info] gmpy2 acceleration available")
     except ImportError:
         fast_comp = None
         print("[info] pure stdlib mode")
-    pkg = json.load(open(path))
-    N = int(pkg["N"]); q = int(pkg["q"]); t = int(pkg["t"])
-    classes = [(int(r), int(b)) for r, b in pkg["classes"]]
+    with open(path) as fh:
+        pkg = json.load(fh)
+    assert isinstance(pkg, dict), "package must be a JSON object"
+    for key in ("N", "q", "t", "classes", "ecpp_cert"):
+        assert key in pkg, f"missing required field {key!r}"
+    N = _assert_int(pkg["N"], "N")
+    q = _assert_int(pkg["q"], "q")
+    t = _assert_int(pkg["t"], "t")
+    assert isinstance(pkg["classes"], list), "classes must be a list"
+    classes = []
+    for idx, item in enumerate(pkg["classes"]):
+        assert isinstance(item, list) and len(item) == 2, f"classes[{idx}]: expected [r, b]"
+        classes.append((_assert_int(item[0], f"classes[{idx}][0]"),
+                        _assert_int(item[1], f"classes[{idx}][1]")))
     claims = pkg.get("claims", {})
-    print(f"[input] sha256 of package file: {hashlib.sha256(open(path,'rb').read()).hexdigest()}")
+    assert isinstance(claims, dict), "claims must be a JSON object"
+    with open(path, "rb") as fh:
+        print(f"[input] sha256 of package file: {hashlib.sha256(fh.read()).hexdigest()}")
+
+    assert N > 4 and N % 2 == 0, "N must be even and > 4"
+    assert q > 1, "q must be > 1"
+    assert q < N, "q must be < N"
 
     # A. reconstruct N by CRT
-    assert len(set(r for r, _ in classes)) == len(classes), "duplicate modulus"
+    seen_r = set()
     M, N0 = 2, 0                                    # start with N ≡ 0 (mod 2)
     for r, b in sorted(classes):
-        assert all(r % pp for pp in range(2, math.isqrt(r) + 1)), f"modulus {r} not prime"
+        assert r not in seen_r, "duplicate modulus"
+        seen_r.add(r)
+        assert 1 < r < N - q, "witness would not be a proper divisor"
         assert 0 <= b < r, f"bad residue {b} mod {r}"
+        assert N % r == b, f"N !≡ {b} (mod {r})"
+        assert r < 3317044064679887385961981 and is_prime_u64(r), f"modulus {r} not prime"
         g, inv, _ = egcd(M % r, r)
         assert g == 1, "moduli not coprime"
         N0 = N0 + M * ((b - N0) * inv % r)
@@ -189,14 +257,17 @@ def main(path):
 
     # D. record claims
     if "q_exceeds" in claims:
-        assert q > int(claims["q_exceeds"]), "q does not exceed claimed bound"
-        print(f"[D] q = {q} > {claims['q_exceeds']} OK")
+        q_bound = _assert_int(claims["q_exceeds"], "claims.q_exceeds")
+        assert q > q_bound, "q does not exceed claimed bound"
+        print(f"[D] q = {q} > {q_bound} OK")
     if "N_below" in claims:
-        assert N < int(claims["N_below"]), "N not below claimed bound"
-        print(f"[D] N < N_bound OK ({len(str(N))} vs {len(str(int(claims['N_below'])))} digits)")
+        n_bound = _assert_int(claims["N_below"], "claims.N_below")
+        assert N < n_bound, "N not below claimed bound"
+        print(f"[D] N < N_bound OK ({len(str(N))} vs {len(str(n_bound))} digits)")
     if "digits_at_most" in claims:
-        assert len(str(N)) <= int(claims["digits_at_most"]), "too many digits"
-        print(f"[D] N has {len(str(N))} <= {claims['digits_at_most']} digits OK")
+        d_bound = _assert_int(claims["digits_at_most"], "claims.digits_at_most")
+        assert len(str(N)) <= d_bound, "too many digits"
+        print(f"[D] N has {len(str(N))} <= {d_bound} digits OK")
     print(f"[PASS] g(N) = {q} for the {len(str(N))}-digit N in {path}")
 
 if __name__ == "__main__":

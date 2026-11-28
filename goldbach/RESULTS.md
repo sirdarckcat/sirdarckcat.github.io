@@ -1,5 +1,30 @@
 # Goldbach Desert Records
 
+## Fixed-gap 200,000 on GPUs (2026-11-27): g(N) ≥ 200,000 down to 250 digits
+
+**g(N) = 201,667** for a **250-digit** even N (N ≈ 6.79·10^249, `records/g200k_250digit_g201667/`). It sets the new
+T(200,000) record, taking **69 digits** off the 319-digit CPU record (`207,307`) via four consecutive GPU breakthroughs
+on 27 November 2026 (`closeness.py`: **5.84%** of the 250-digit ceiling, **95.2×** a typical 250-digit even number).
+
+| record | digits | g(N) | cover (first odd primes) | residuals `<200k` | canonical `k` | closeness (`× typ.`) | ECPP steps | Pareto frontier |
+|---|---:|---:|---|---:|---:|---|---:|---|
+| `g200k_280digit_g210631` | 280 | 210,631 | 118 (`3..653`, `c0060_r1283`) | 1,283 | 10,255,023 | 4.78% (87.1×) | 38 | yes |
+| `g200k_266digit_g203659` | 266 | 203,659 | 113 (`3..619`, `c0089_r1311`) | 1,311 | 18,834,171 | 5.16% (89.4×) | 38 | yes |
+| `g200k_255digit_g201307` | 255 | 201,307 | 109 (`3..601`, `c0463_r1340`) | 1,340 | 21,388,016 | 5.59% (92.9×) | 35 | no (dominated by 250d) |
+| `g200k_250digit_g201667` | 250 | 201,667 | 107 (`3..593`, `c0382_r1354`) | 1,354 | 128,743,795 | 5.84% (95.2×) | 37 | yes (T(200,000) record) |
+
+- **How.** Multi-limb GPU DeepSieve (to `10^8`) + fused 28-bit Montgomery Fermat scanner (`gpu_g200k_v2.py`) on GCP Spot
+  A100 GPUs.
+- **Checked** across all stacks for each of the four records: `verify_record.py` (per-offset compositeness witnesses for
+  every prime `p < g`), `fscan/check.py` from `N` alone, PARI/GP 2.15.4 `primecert(N − g)` + `primecertisvalid`, patched
+  `goldbach/ecpp_check.py` (exact radical-free Goldwasser–Kilian bound + composite-modulus Jacobian guards), patched
+  `slop/goldbach/records/verify_record.py` (stdlib CRT + SPRP + ECPP check), and standalone PARI `crosscheck.gp` proving
+  `isprime(N − g) = 1` and `primecertisvalid(cert) = 1` with top-level binding.
+- **Earlier CPU `g200k` records upgraded to exact ECPP.** The four earlier CPU `g200k` records (`319d g=207,307`,
+  `347d g=216,289`, `400d g=200,293`, and `400d g=206,593`), independently confirmed exact via PARI ECPP in PR #34
+  review, now also carry committed PARI/GP ECPP certificates (`complement_cert.gp`, 42 / 45 / 46 / 60 steps),
+  `ecpp_check.log`, and standalone exact PARI `crosscheck.gp` checks.
+
 ## The 200-digit budget game (2026-11-24, 17:11 UTC): g(N) = 160,357 below 10^200
 
 **g(N) = 160,357** for a 200-digit even N < 10^200 (`records/budget_1e200_200digit_g160357/`). It is the largest g known
@@ -1214,6 +1239,8 @@ only at N = 4 and 6 and is useless elsewhere.
 | `threshold_63digit_g30139` | 30,139 | 63 | ~164,400 | 18.3% | 77 | 30 |
 | `threshold_150digit_g104527` | 104,527 | 150 | ~1.1M | 9.2% | 91 | 51 |
 | `threshold_186digit_g109357` | 109,357 | 186 | ~1.8M | 6.1% | 74 | 52 |
+| `budget_1e200_200digit_g160357` | 160,357 | 200 | ~2.1M | 7.5% | 99 | 62 |
+| `budget_1e200_200digit_g158209` | 158,209 | 200 | ~2.1M | 7.4% | 98 | 62 |
 | `budget_1e200_200digit_g157837` | 157,837 | 200 | ~2.1M | 7.4% | 97 | 62 |
 | `budget_1e200_200digit_g146191` | 146,191 | 200 | ~2.1M | 6.9% | 90 | 60 |
 | `budget_1e200_199digit_g133981` | 133,981 | 199 | ~2.1M | 6.4% | 83 | 57 |
@@ -1221,6 +1248,14 @@ only at N = 4 and 6 and is useless elsewhere.
 | `budget_1e200_199digit_g125269` | 125,269 | 199 | ~2.1M | 5.9% | 78 | 56 |
 | `budget_1e200_199digit_g119419` | 119,419 | 199 | ~2.1M | 5.7% | 74 | 54 |
 | `budget_1e200_200digit_g112249` | 112,249 | 200 | ~2.1M | 5.3% | 69 | 53 |
+| `g200k_250digit_g201667` | 201,667 | 250 | ~3.5M | 5.8% | 95 | 69 |
+| `g200k_255digit_g201307` | 201,307 | 255 | ~3.6M | 5.6% | 93 | 69 |
+| `g200k_266digit_g203659` | 203,659 | 266 | ~3.9M | 5.2% | 89 | 69 |
+| `g200k_280digit_g210631` | 210,631 | 280 | ~4.4M | 4.8% | 87 | 70 |
+| `g200k_319digit_g207307` | 207,307 | 319 | ~5.9M | 3.5% | 73 | 70 |
+| `g200k_347digit_g216289` | 216,289 | 347 | ~7.0M | 3.1% | 69 | 71 |
+| `g200k_400digit_g206593` | 206,593 | 400 | ~9.5M | 2.2% | 56 | 69 |
+| `g200k_400digit_g200293` | 200,293 | 400 | ~9.5M | 2.1% | 55 | 69 |
 | `height_2480digit_g1157341` | 1,157,341 | 2,480 | ~4.7·10^8 | 0.25% | 39 | 151 |
 | `megagap_2692digit_g1134871` | 1,134,871 | 2,692 | ~5.5·10^8 | 0.20% | 35 | 150 |
 | `height_15595digit_g2000269` | 2,000,269 | 15,595 | ~2.2·10^10 | 0.0090% | 8.7 | 194 |

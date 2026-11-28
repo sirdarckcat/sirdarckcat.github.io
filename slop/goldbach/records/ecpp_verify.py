@@ -27,7 +27,19 @@ Usage: ecpp_verify.py cert.json  (cert as JSON list-of-lists, integers as
 strings or ints).  Exits 0 and prints PRIME iff the certificate is valid for
 the top-level N printed.
 """
-import json, math, sys
+import json, math, re, sys
+
+_INT_STR_RE = re.compile(r"\s*[+-]?[0-9]+\s*", re.ASCII)
+
+def strict_int(v, name="value"):
+    """Parse an exact integer from JSON (int or decimal string); reject bool/float/other."""
+    if isinstance(v, bool):
+        raise ValueError(f"{name}: boolean is not a valid integer")
+    if isinstance(v, int):
+        return v
+    if isinstance(v, str) and _INT_STR_RE.fullmatch(v):
+        return int(v)
+    raise ValueError(f"{name}: expected integer or decimal string, got {type(v).__name__}")
 
 def egcd(a, b):
     x0, x1, y0, y1 = 1, 0, 0, 1
@@ -54,7 +66,11 @@ def ec_add(P, Qp, a, n):
     x1, y1 = P; x2, y2 = Qp
     if (x1 - x2) % n == 0:
         if (y1 + y2) % n == 0:
+            if (y1 - y2) % n != 0 and math.gcd(y1 - y2, n) != 1:
+                raise CompositeFactor(math.gcd(y1 - y2, n))
             return None
+        if (y1 - y2) % n != 0:
+            raise CompositeFactor(math.gcd(y1 - y2, n))
         lam = (3 * x1 * x1 + a) * inv_mod(2 * y1, n) % n
     else:
         lam = (y2 - y1) * inv_mod(x2 - x1, n) % n
@@ -94,17 +110,35 @@ def is_prime_small(n):
         if mr_witness(n, a): return False
     return True
 
-def isqrt4_bound(n):
-    """(n^{1/4}+1)^2, computed exactly with isqrt."""
-    r = math.isqrt(math.isqrt(n))
-    while (r + 1) ** 4 <= n: r += 1   # r = floor(n^{1/4})
-    return (r + 1) ** 2
+def exceeds_gk_bound(q, n):
+    """Exact radical-free check for q > (n^{1/4} + 1)^2."""
+    if q <= 1 or n <= 0:
+        return False
+    D = q * q + 6 * q + 1 - n
+    return D > 0 and D * D > 16 * q * (q + 1) * (q + 1)
 
 def verify(cert):
-    cert = [[int(v) if not isinstance(v, list) else [int(w) for w in v] for v in step] for step in cert]
-    top = cert[0][0]
+    if not isinstance(cert, list) or len(cert) == 0:
+        return False, "empty or non-list certificate"
+    parsed = []
     for idx, step in enumerate(cert):
-        N, t, s, a, (x, y) = step
+        if not isinstance(step, list) or len(step) != 5:
+            return False, f"step {idx}: expected 5-element list"
+        pt = step[4]
+        if not isinstance(pt, list) or len(pt) != 2:
+            return False, f"step {idx}: expected 2-element point list"
+        try:
+            N = strict_int(step[0], f"step {idx} N")
+            t = strict_int(step[1], f"step {idx} t")
+            s = strict_int(step[2], f"step {idx} s")
+            a = strict_int(step[3], f"step {idx} a")
+            x = strict_int(pt[0], f"step {idx} x")
+            y = strict_int(pt[1], f"step {idx} y")
+        except (TypeError, ValueError) as exc:
+            return False, f"step {idx}: invalid integer field ({exc})"
+        parsed.append((N, t, s, a, (x, y)))
+    top = parsed[0][0]
+    for idx, (N, t, s, a, (x, y)) in enumerate(parsed):
         if N < 2 or math.gcd(N, 6) != 1:
             return False, f"step {idx}: N divisible by 2 or 3"
         m = N + 1 - t
@@ -114,7 +148,7 @@ def verify(cert):
         # Hasse check on t keeps the certificate honest
         if t * t > 4 * N:
             return False, f"step {idx}: |t| violates Hasse bound"
-        if q <= isqrt4_bound(N):
+        if not exceeds_gk_bound(q, N):
             return False, f"step {idx}: q too small ((N^1/4+1)^2 test)"
         b = (y * y - x * x * x - a * x) % N
         disc = (4 * a * a * a + 27 * b * b) % N
@@ -130,16 +164,17 @@ def verify(cert):
         except CompositeFactor as e:
             return False, f"step {idx}: N composite, factor gcd={e.args[0]}"
         # link to next step
-        if idx + 1 < len(cert):
-            if cert[idx + 1][0] != q:
+        if idx + 1 < len(parsed):
+            if parsed[idx + 1][0] != q:
                 return False, f"step {idx}: chain broken (q != next N)"
         else:
-            if not is_prime_small(q):
+            if q >= 3317044064679887385961981 or not is_prime_small(q):
                 return False, f"step {idx}: final q={q} not proven prime"
     return True, top
 
 if __name__ == "__main__":
-    cert = json.load(open(sys.argv[1]))
+    with open(sys.argv[1]) as fh:
+        cert = json.load(fh)
     ok, info = verify(cert)
     if ok:
         print(f"PRIME {info}")

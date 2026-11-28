@@ -5,8 +5,9 @@
 This pull request collects five days of work, from 21 to 26 November 2026, on one question about prime numbers. The work
 was done by nine AI sessions running Claude Code, each on its own branch of this repository, and coordinated by the
 session that opened this pull request. The owner of the repository set the goal and steered the work through their
-messages. No human mathematician has refereed any of it. Everything is in the `goldbach/` folder, and
-`goldbach/README.md` is the place to start reading the files.
+messages. No human mathematician has refereed any of it. Everything for this work is in the `goldbach/` folder (apart
+from the ECPP verifier soundness patch in `slop/goldbach/records/` noted below), and `goldbach/README.md` is the place
+to start reading the files.
 
 I have tried to write this letter so that it can be read without a mathematics degree. It explains the question, how
 the search works, what we found, the long search for a better method (which did not succeed), the mistakes we made and
@@ -32,8 +33,9 @@ The same methods set records in related problems:
   1,157,341.
 - The smallest number we know whose g(N) is larger than anything in the range that computers have checked exhaustively
   has 23 digits. Before, the smallest such example in this repository had 150 digits.
-- The fewest digits we know for a number with g(N) of at least 200,000 is 319. For g(N) of at least a million it is
-  1,797, down from 2,480.
+- The fewest digits we know for a number with g(N) of at least 200,000 is now 250 (g(N) = 201,667, found in follow-up
+  GPU work via 280, 266, and 255 digits, down from the 319-digit CPU record of 26 November). For g(N) of at least a
+  million it is 1,797, down from 2,480.
 
 We also wrote a search program for graphics cards, worked out from first principles how large g(N) should get for
 numbers of each size, and proved a number of theorems that a computer proof checker has verified step by step.
@@ -174,8 +176,8 @@ The record number is
 
 For this N, the number N − p is composite for each of the 14,711 primes p below 160,357, and N − 160,357 is prime. Its
 folder is `goldbach/records/budget_1e200_200digit_g160357/`, and the other records have folders next to it. Every record
-in the table from 125,269 on has all the checks listed above, except that 132,103 has no Lean proof and no
-second-session check yet.
+in the table from 125,269 on has all the checks listed above, except that 132,103 has no Lean proof yet (an independent
+PR review check with PARI/GP ECPP subsequently confirmed g(N) = 132,103 exactly).
 
 ### How good is 160,357?
 
@@ -190,10 +192,14 @@ ways: against g(N) computed exactly for 900 million random numbers of various si
 found by the computer check of Goldbach's conjecture below 4·10^18. Both agree with it. Before this work the repository
 used a single constant fitted to the computer-check data instead.
 
-The owner's dream of two million is about the ceiling itself: probably only a handful of numbers below 10^200 come
-close to it. More modest targets are far more common. The same model says that about 10^175 even numbers below 10^200
-have g(N) of at least 213,070, which is 10% of the ceiling. Even so, that is only one in 10^25 of all even numbers below
-10^200, and such numbers do not sit in the small, structured corner that a cover lets us search.
+The owner's dream of two million is still well below the 2.13 million ceiling in abundance: in the saved model output
+(`goldbach/ceiling_table.json`), the expected count below 10^200 is already about 24.3 million at g(N) ≥ 2,043,617
+(exp(17.00674)), and far larger still at g(N) ≥ 2,000,000. The "handful" regime sits near the 2.13 million ceiling
+itself — median 2,130,704, with a 5%–95% range of 2.123 million to 2.144 million (2,123,360 to 2,143,754), passing an
+expected count of about 1.02 at 2,128,769. More modest targets are vastly more common. The same model says that about
+10^175 even numbers below 10^200 have g(N) of at least 213,070, which is 10% of the ceiling. Even so, that is only one
+in 10^25 of all even numbers below 10^200, and such numbers do not sit in the small, structured corner that a cover lets
+us search.
 
 ### Records in related problems
 
@@ -220,12 +226,17 @@ N = 30,625,623,272,505,310,405,982   (23 digits)   g(N) = 10,729
 Before this work, the smallest such example in this repository had 150 digits. We also hold g above 20,000 at 46 digits
 (g = 20,551) and above 30,000 at 63 digits (g = 30,139).
 
-**The fewest digits for a given g (the fixed-gap games).** For g(N) of at least 200,000, the best is a 319-digit N with
-g(N) = 207,307, found by the performance session on ordinary processors; it also found 216,289 at 347 digits and two
-numbers at 400 digits. For g(N) of at least a million, the second analysis session found a 1,797-digit N with
-g(N) = 1,021,897, against 2,480 digits before. In both games Lean has checked that N − p is composite for every prime p
-below the stated g, which is all the game asks. That N − g itself is prime has been checked by strong probabilistic
-tests but not proved; at these sizes a proof needs a long ECPP run that nobody started.
+**The fewest digits for a given g (the fixed-gap games).** For g(N) of at least 200,000, the best is now a 250-digit N
+with g(N) = 201,667 (`records/g200k_250digit_g201667/`), reached on 27 November via GPU records at 280 digits (210,631),
+266 digits (203,659), and 255 digits (201,307), improving by 69 digits on the performance session's CPU records at 319
+digits (207,307), 347 digits (216,289), and 400 digits (200,293 and 206,593). All eight g(N) ≥ 200,000 records (250 to
+400 digits) now have committed PARI/GP ECPP primality certificates for N − g, independently re-verified by
+`goldbach/ecpp_check.py` (and independently confirmed by the PR reviewer in PARI/GP for the 319-, 347-, and 400-digit
+endpoints). For g(N) of at least a million, the second analysis session found a 1,797-digit N with g(N) = 1,021,897,
+against 2,480 digits before. The four 319–400-digit records and the three million-gap records (1,797, 1,997, and 2,196
+digits) also have Lean proofs that N − p is composite for every prime p below the stated g, which is all the fixed-gap
+game asks; for the million-gap numbers (1,797–2,196 digits), primality of N − g itself remains BPSW probable-prime only
+(PARI ECPP timed out at those sizes).
 
 **Closeness.** Against the ceiling for its size, our best number is a 23-digit N with g(N) = 11,701, at 74.3% of the
 ceiling. We also tracked a *closeness frontier*: the largest size at which we hold a number reaching a given closeness.
@@ -361,10 +372,13 @@ have unusually few rows left after sieving by the primes up to 2,000: about 1,11
 1,309 give or take 14. A method that produced such numbers for less than the cost of about 550 primality tests each would
 break even with the GPU search. An ideal one would be worth a factor somewhere between 20 and 60,000, depending on the
 assumptions, which is enough to make 200,000 likely. We know what such a method would have to achieve, and we found no
-way to build one. The second analysis session showed, on paper, that for arbitrary tables of this kind, finding such
-candidates quickly would solve an NP-complete problem, a problem from a large family believed to have no fast solution
-(no other session has read that proof yet). So a shortcut would have to use something special about the actual primes,
-and every test of their structure (additive, multiplicative, lattice, spectral, statistical) found nothing usable.
+way to build one. The second analysis session showed, on paper, that for arbitrary tables of this kind (encoded by
+their two allowed residues at each distinct prime modulus), finding such candidates quickly would solve an NP-complete
+problem in randomized polynomial time (via an expected-polynomial-time Las Vegas reduction, implying NP ⊆ ZPP and
+NP ⊆ RP, and giving deterministic NP-completeness if prime-power moduli are allowed or the primes are supplied; the
+reduction was qualified following PR #34 review). So a shortcut would have to use something special about the actual
+primes, and every test of their structure (additive, multiplicative, lattice, spectral, statistical) found nothing
+usable.
 
 **What this adds up to.** The covers are as good as covers can be, the program is close to what the hardware allows,
 the tests cannot be made cheap enough to matter, and no tool we know finds the rare good numbers faster than looking at
@@ -410,15 +424,24 @@ below 10,000 with every prime below 614,101 (both in Lean). With 238 and 302 sma
 98,731 (computed, and each can be checked from its list of remainders). How far the first n odd primes alone can reach
 is known exactly for n up to 35: in Lean up to 9, computed twice up to 15, and once beyond that.
 
-**Hardness.** For arbitrary tables of rows, deciding whether a window contains a candidate with no surviving rows is
-NP-complete. That proof is on paper, by the second analysis session. Lean has a related result: if arbitrary numbers
-replace the primes to be covered, deciding whether a cover exists at all is as hard as the satisfiability problem of
-logic. Neither makes our particular problem hard, but they mean that a fast method would have to use something special
-about the primes.
+**Hardness.** For arbitrary tables of rows (encoded by their two allowed residues at each distinct prime modulus),
+deciding whether a window contains a candidate with no surviving rows is NP-complete under an expected-polynomial-time
+randomized (Las Vegas) reduction from subset sum, so a fast solver would put NP ⊆ ZPP (and hence NP ⊆ RP), rather than
+unconditionally giving P = NP; the reduction becomes deterministic if the primes are supplied, under Cramér-type
+prime-gap bounds, or when pairwise-coprime prime-power/composite moduli are allowed (as in Manders–Adleman 1978). That
+proof is on paper, by the second analysis session (`bottom_up/worlds/world4.md`, W4.5). Lean has a related deterministic
+result: if arbitrary numbers replace the primes to be covered, deciding whether a cover exists at all is as hard as the
+satisfiability problem of logic (`Cap/Hardness.lean`). Neither makes our particular problem hard, but they mean that a
+fast method would have to use something special about the primes.
 
 **Limits of search methods.** Lean proofs that certain kinds of method (lattice decoding, black-box search, lists of
-remainders modulo one prime) cannot beat the plain search; that treating rows as independent can only overstate the
-number of good candidates; and that the GPU's Fermat arithmetic is correct.
+remainders modulo one prime) cannot beat the plain search; that for moduli that separate the remaining rows into
+distinct residue classes (`Set.InjOn (fun q => q % m) S` in `Cap/Thinning.lean`, in particular all moduli ≥ Q when
+every row is below Q), treating rows as independent can only overstate the number of good candidates; and that the
+GPU's Fermat arithmetic is correct. The distinct-residue hypothesis is necessary: without it, two rows can collide
+modulo a small prime — for example, prime rows 7 and 13 both leave remainder 1 modulo 3, so both vanish whenever
+N ≡ 1 (mod 3), giving a joint removal probability of 1/3 rather than the independent product 1/9 (so independence
+understates, rather than overstates, the fraction of candidates that clear both rows).
 
 **The toy worlds.** Stickelberger's theorem in Swan's form, the parity mechanism and the family identity in polynomials
 over finite fields, and the one-condition reformulation, all in Lean.
@@ -467,10 +490,12 @@ cost. The main items:
 3. **Two predictions that were never measured.** Combining two or four sorted lists on the one-condition problem was
    predicted to gain a little and lose a little respectively; and a possible difference between candidates with even
    and odd index was seen at 2.6 standard deviations and then reversed in a later sample.
-4. **Records that are easy to extend.** The fixed-gap 200,000 record below 319 digits, the million-gap record below
+4. **Records that are easy to extend.** The fixed-gap 200,000 record below 250 digits, the million-gap record below
    1,797 digits, and the closeness frontier at 10% beyond 110 digits all have their tools ready.
-5. **Proofs owed.** A Lean proof and a second-session check for 132,103; a proof that N − g is prime for the
-   fixed-gap and million-gap numbers; and the stronger growth bound in full in Lean.
+5. **Proofs owed.** A Lean proof for 132,103 (whose exact value was independently confirmed in PARI/GP) and for the four
+   250–280-digit fixed-gap records; a primality proof of N − g for the 1,797–2,196-digit million-gap numbers (the
+   250–400-digit fixed-gap endpoints now all carry verified ECPP certificates); and the stronger growth bound in full in
+   Lean.
 6. **Checks owed.** Several of the newest toy-world results have not been read by a second session, and the
    calibration of near-misses at 140,000 and of waiting times in the fixed-gap game was left inconclusive.
 7. **The literature.** Read Radomskii's Section 3; search MathSciNet and zbMATH; read the classical papers our notes
@@ -478,7 +503,8 @@ cost. The main items:
 
 ## How to check our work
 
-Every record folder has a `README.md` saying what was checked and how. To repeat the checks for the 160,357 record,
+Recent record folders (the 200-digit campaign and the 250–280-digit fixed-gap records) have a `README.md` saying what
+was checked and how, and every folder holds its number and proof files. To repeat the checks for the 160,357 record,
 run these from the `goldbach/` folder. Each takes a few seconds; all four passed again while this letter was being
 written.
 
@@ -517,7 +543,13 @@ three standard ones appear. `goldbach/lean/HANDOVER.md` has the details.
 | helper | `ccr-03a7c98c-0b9khc` | covers at 290 to 400 digits; rechecks of the ceiling; processor scans | `sublinear/contractor_results/` |
 | outside reviewer | `ccr-7a21f8cd-hof5z0` | a review of the whole effort from outside, with its own checks | `review/` |
 
-All of these branches are merged into this pull request at their final commits. Nothing outside `goldbach/` is changed.
+All of these branches are merged into this pull request at their final commits. Aside from `goldbach/`, the only files
+modified are the active pure-Python ECPP verifiers under `slop/goldbach/records/` (`verify_record.py`, `ecpp_verify.py`,
+their working copies in `work/`, and a brief verifier note in `slop/goldbach/records/README.md`), which received the
+same soundness fix as `goldbach/ecpp_check.py` (exact radical-free Goldwasser–Kilian bound $q > (N^{1/4}+1)^2$ and
+composite-modulus equal-$x$ point-addition guards, verified by `goldbach/test_ecpp_soundness.py`). The historical July
+2026 snapshot in `slop/goldbach/records/g23/` is intentionally left untouched so its `g23/SHA256SUMS` archive remains
+intact; verify `g23/record_g23.json` with the patched top-level `slop/goldbach/records/verify_record.py`.
 
 ## Glossary
 

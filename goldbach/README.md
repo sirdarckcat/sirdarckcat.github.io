@@ -13,7 +13,7 @@ The main question was how large g(N) can be for an even N below 10^200. The best
    mathematics degree. It ends with a glossary.
 2. **`REMAINING_WORK.md`**: everything left unfinished, with where to pick it up and what it would cost.
 3. **`RESULTS.md`**: the record log, newest first, with the details of how each record was found and checked.
-4. **`records/`**: one folder per record, each with the number, its proof files and a `README.md`.
+4. **`records/`**: one folder per record, each with the number and its proof files (and a `README.md` in the 200-digit campaign and 250–280-digit `g200k` folders).
 
 Each of the sessions that worked here wrote a handover note in plain English:
 
@@ -33,7 +33,7 @@ Each of the sessions that worked here wrote a handover note in plain English:
 
 | path | what is there |
 |---|---|
-| `records/` | every certified record. Folder names say the game, the size of N and g: `budget_1e200_200digit_g160357` is the record below 10^200, `height_...` the height game (no limit on N), `threshold_...` the smallest N for a given g, `g200k_...` the fewest digits for g ≥ 200,000 |
+| `records/` | every certified record. Folder names say the game, the size of N and g: `budget_1e200_200digit_g160357` is the record below 10^200, `height_...` the height game (no limit on N), `threshold_...` the smallest N for a given g, `g200k_...` the fewest digits for g ≥ 200,000 (down to 250 digits in `g200k_250digit_g201667`) |
 | `g_million/` | the fewest digits for g ≥ 1,000,000 (1,797, 1,997 and 2,196 digits) |
 | `closeness25/` | two numbers at a quarter of the largest g expected for their size (47 and 48 digits) |
 
@@ -89,9 +89,11 @@ A parallel collection from that time is in `../slop/goldbach/`.
 
 ## Checking a record
 
-Each record folder's `README.md` lists its proof files and the commands that check them. `COVER_LETTER.md` has a worked
-example for the 160,357 record: four commands, each taking a few seconds, that rebuild N, check the primality
-certificate of N − g, and recompute g(N) from N alone in Python and in PARI/GP.
+The recent record folders (the 200-digit campaign and the 250–280-digit `g200k` records) each include a `README.md`
+listing their proof files and verification commands. `COVER_LETTER.md` has a worked example for the 160,357 record: four
+commands, each taking a few seconds, that rebuild N, check the primality certificate of N − g, and recompute g(N) from N
+alone in Python and in PARI/GP. Running `python3 goldbach/test_ecpp_soundness.py` from the repository root runs the
+standalone ECPP verifier soundness and tamper test suite across all five active Python checkers.
 
 ## How much to trust each result
 

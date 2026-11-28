@@ -1,0 +1,12 @@
+[info] gmpy2 acceleration available
+[input] sha256 of package file: 5a65029393874fd0d7db794bf9e1c1b48c27ef6ed3133eeb10bc1f9714245d4d
+[A] N reconstructed: 266 digits, t=18834171, 113 congruences OK
+[B] primes below q: 18277; residual (uncovered): 1341
+    ... 500/1341 residual complements proven composite
+    ... 1000/1341 residual complements proven composite
+[B] all 1341 residual complements composite; all covered complements divisible by their class modulus
+[C] q = 203659 prime (trial division); N - q proven prime by ECPP (38 steps, independently re-verified)
+[D] q = 203659 > 200000 OK
+[D] N < N_bound OK (266 vs 267 digits)
+[D] N has 266 <= 266 digits OK
+[PASS] g(N) = 203659 for the 266-digit N in goldbach/records/g200k_266digit_g203659/package_stdlib.json

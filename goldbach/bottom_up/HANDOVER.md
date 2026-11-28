@@ -90,12 +90,15 @@ This session took two of them.
 - **World 4: random tables** (`world4.md`). All of the following are proved.
   - On a random window, no method beats scoring by more than a small factor.
   - A method that is exact to the sieve's depth must read 300 to 440 table entries per candidate, close to what the sieve does.
-  - For arbitrary tables, deciding whether a window holds even one qualifying candidate is NP-complete. That means it is as hard as
-    a large family of problems believed to have no fast solution.
+  - For arbitrary tables (encoded by their two allowed residues), deciding whether a window holds even one qualifying candidate is
+    NP-complete under an expected-polynomial-time randomized reduction for distinct prime moduli (so a fast solver implies
+    NP ⊆ ZPP / RP), and deterministically NP-complete if prime-power/composite moduli are allowed or the primes are supplied. That
+    means it is as hard as a large family of problems believed to have no fast solution.
 - **World 2: candidates that form an error-correcting code** (`world2.md`). Proved: decoding methods of this kind are never cheaper
   than scanning at our sizes. Folding several remainders into one symbol, or counting one several times, gains nothing. One
   statement was corrected after the research session's checker read it.
-- The results written on 26 November (W4.4, W4.5 and W2.1b) have not yet been checked by another session.
+- The results written on 26 November (W4.4, W4.5 and W2.1b) have not yet been checked by another session (W4.5's reduction was
+  qualified as randomized following PR #34 review).
 
 ## Smaller pieces
 
@@ -120,4 +123,4 @@ This session took two of them.
 - **Unscanned covers.** 411 of the first 3,000 covers in the 613 family were never scanned, nor the 2,727 free covers of the 479
   family, nor covers 3,000 to 5,999 of the 613 family. The ledger in `cpu_scan/` says how their specifications are made.
 - **The 1,700-digit step** of the million-gap search.
-- **Outside checks** of W4.4, W4.5 and W2.1b.
+- **Outside checks** of W4.4, W4.5 (since qualified as a randomized reduction following PR #34 review) and W2.1b.
